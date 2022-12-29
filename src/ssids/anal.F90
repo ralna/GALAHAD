@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 12:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -12,7 +12,7 @@ module spral_ssids_anal_precision
   use spral_precision
   use spral_core_analyse_precision, only : basic_analyse
   use spral_cuda_precision, only : detect_gpu
-  use spral_hw_topology_precision, only : guess_topology, numa_region
+  use spral_hw_topology, only : guess_topology, numa_region
   use spral_pgm, only : writePPM
   use spral_ssids_akeep_precision, only : ssids_akeep
   use spral_ssids_cpu_subtree_precision, only : construct_cpu_symbolic_subtree

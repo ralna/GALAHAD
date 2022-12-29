@@ -45,6 +45,11 @@ zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
 
+ma48:
+	( cd $(GALAHAD)/src/external/ma48 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
+
 #  required blas
 
 blas.o: $(BLG)(blas.o)

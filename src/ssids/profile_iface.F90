@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 12:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -64,7 +64,7 @@ module spral_ssids_profile_precision
 contains
 
   subroutine profile_begin(regions)
-    use spral_hw_topology_precision, only : numa_region, c_numa_region
+    use spral_hw_topology, only : numa_region, c_numa_region
     implicit none
 
     type(numa_region), dimension(:), intent(in) :: regions

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 16:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ T R I M S Q P   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,8 +8,7 @@
 !
 !  Author: Nick Gould and Daniel Robinson
 
-
-MODULE GALAHAD_TRIMSQP_double
+MODULE GALAHAD_TRIMSQP_precision
 
 !     ------------------------------------------------------------------
 !    |                                                                  |
@@ -25,82 +26,81 @@ MODULE GALAHAD_TRIMSQP_double
 !    |                                                                  |
 !     ------------------------------------------------------------------
 
-  USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type, &
-                                 NLPT_write_problem
-  USE GALAHAD_LSQP_double
-  USE GALAHAD_QPC_double
-  USE GALAHAD_EQP_double
-  USE GALAHAD_QPT_double
-  USE GALAHAD_QPD_double, LSQP_data_type => QPD_data_type
-  USE GALAHAD_SMT_double
-  USE GALAHAD_SPECFILE_double
-  USE GALAHAD_SPACE_double
+  USE GALAHAD_USERDATA_precision
+  USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_write_problem
+  USE GALAHAD_LSQP_precision
+  USE GALAHAD_QPC_precision
+  USE GALAHAD_EQP_precision
+  USE GALAHAD_QPT_precision
+  USE GALAHAD_QPD_precision, LSQP_data_type => QPD_data_type
+  USE GALAHAD_SMT_precision
+  USE GALAHAD_SPECFILE_precision
+  USE GALAHAD_SPACE_precision
   USE GALAHAD_COPYRIGHT
   USE GAlAHAD_SYMBOLS
-  USE GALAHAD_NORMS_double
-  USE GALAHAD_CHECK_double
-  USE GALAHAD_SORT_double
-  USE GALAHAD_mop_double
+  USE GALAHAD_NORMS_precision
+  USE GALAHAD_CHECK_precision
+  USE GALAHAD_SORT_precision
+  USE GALAHAD_MOP_precision
 
   IMPLICIT NONE
 
   PRIVATE
-  PUBLIC :: TRIMSQP_initialize, TRIMSQP_read_specfile,   &
+  PUBLIC :: TRIMSQP_initialize, TRIMSQP_read_specfile,                         &
             TRIMSQP_solve, TRIMSQP_terminate
 
 !  Set precision
 
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-  REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-  REAL ( KIND = wp ), PARAMETER :: five = 5.0_wp
-  REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-  REAL ( KIND = wp ), PARAMETER :: tenth = 0.1_wp
-  REAL ( KIND = wp ), PARAMETER :: twentieth = 0.05_wp
-  REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm2 = 0.01_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm3 = 0.001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm4 = 0.0001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm6 = 0.000001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm7 = 0.0000001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm8 = 0.00000001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm9 = 0.000000001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenm10= 0.0000000001_wp
-  REAL ( KIND = wp ), PARAMETER :: tenp2 = 100.0_wp
-  REAL ( KIND = wp ), PARAMETER :: tenp3 = 1000.0_wp
-  REAL ( KIND = wp ), PARAMETER :: tenp4 = 10000.0_wp
-  REAL ( KIND = wp ), PARAMETER :: hundred = ten ** ( 2 )
-  REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-  REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
-  REAL ( KIND = wp ), PARAMETER :: point3 = 0.3_wp
-  REAL ( KIND = wp ), PARAMETER :: point4 = 0.4_wp
-  REAL ( KIND = wp ), PARAMETER :: point5 = 0.5_wp
-  REAL ( KIND = wp ), PARAMETER :: point6 = 0.6_wp
-  REAL ( KIND = wp ), PARAMETER :: point7 = 0.7_wp
-  REAL ( KIND = wp ), PARAMETER :: point8 = 0.8_wp
-  REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-  REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-  REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-  REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-  REAL ( KIND = wp ), PARAMETER :: tenp5  = ten ** 5
-  REAL ( KIND = wp ), PARAMETER :: tenp6  = ten ** 6
-  REAL ( KIND = wp ), PARAMETER :: tenp7  = ten ** 7
-  REAL ( KIND = wp ), PARAMETER :: tenp8  = ten ** 8
-  REAL ( KIND = wp ), PARAMETER :: tenp9  = ten ** 9
-  REAL ( KIND = wp ), PARAMETER :: tiny   = ten ** ( - 7 )
-  REAL ( KIND = wp ), PARAMETER :: very_tiny = ten ** ( - 9 )
-  REAL ( KIND = wp ), PARAMETER :: mu_tiny = ten ** ( - 6 )
-  REAL ( KIND = wp ), PARAMETER :: y_tiny = ten ** ( - 6 )
-  REAL ( KIND = wp ), PARAMETER :: z_tiny = ten ** ( - 6 )
-  REAL ( KIND = wp ), PARAMETER :: gzero = ten ** ( - 10 )
-  REAL ( KIND = wp ), PARAMETER :: hzero = ten ** ( - 10 )
-  REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( 1 )
-!  REAL ( KIND = wp ), PARAMETER :: too_small = epsmch ** 0.5
+  REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: five = 5.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenth = 0.1_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: twentieth = 0.05_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm2 = 0.01_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm3 = 0.001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm4 = 0.0001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm6 = 0.000001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm7 = 0.0000001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm8 = 0.00000001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm9 = 0.000000001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenm10= 0.0000000001_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenp2 = 100.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenp3 = 1000.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: tenp4 = 10000.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: hundred = ten ** ( 2 )
+  REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+  REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
+  REAL ( KIND = rp_ ), PARAMETER :: point3 = 0.3_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point4 = 0.4_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point5 = 0.5_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point6 = 0.6_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point7 = 0.7_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point8 = 0.8_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+  REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+  REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+  REAL ( KIND = rp_ ), PARAMETER :: tenp5  = ten ** 5
+  REAL ( KIND = rp_ ), PARAMETER :: tenp6  = ten ** 6
+  REAL ( KIND = rp_ ), PARAMETER :: tenp7  = ten ** 7
+  REAL ( KIND = rp_ ), PARAMETER :: tenp8  = ten ** 8
+  REAL ( KIND = rp_ ), PARAMETER :: tenp9  = ten ** 9
+  REAL ( KIND = rp_ ), PARAMETER :: tiny   = ten ** ( - 7 )
+  REAL ( KIND = rp_ ), PARAMETER :: very_tiny = ten ** ( - 9 )
+  REAL ( KIND = rp_ ), PARAMETER :: mu_tiny = ten ** ( - 6 )
+  REAL ( KIND = rp_ ), PARAMETER :: y_tiny = ten ** ( - 6 )
+  REAL ( KIND = rp_ ), PARAMETER :: z_tiny = ten ** ( - 6 )
+  REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
+  REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
+  REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( 1 )
+!  REAL ( KIND = rp_ ), PARAMETER :: too_small = epsmch ** 0.5
 
   LOGICAL, PARAMETER :: exact_dual = .FALSE.
 !  LOGICAL, PARAMETER :: exact_dual = .TRUE.
@@ -110,20 +110,20 @@ MODULE GALAHAD_TRIMSQP_double
 !  The BFGS_data_type derived type
 !  =====================================
   TYPE, PUBLIC :: TRIMSQP_bfgs_type
-     integer :: mod_type
-     REAL ( KIND = wp ) :: std, theta, damp_factor, stBs
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: d, Bs
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
+     integer ( kind = ip_ ) :: mod_type
+     REAL ( KIND = rp_ ) :: std, theta, damp_factor, stBs
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: d, Bs
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
   END TYPE TRIMSQP_bfgs_type
 
 !  =====================================
 !  The L_BFGS_data_type derived type
 !  =====================================
   TYPE, PUBLIC :: TRIMSQP_l_bfgs_type
-     integer, allocatable, dimension( : ) :: ind
-     REAL ( KIND = wp ) :: eta
-     REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( :, : ) :: A, B, S, Y, SB_inner
-     REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
+     integer ( kind = ip_ ), allocatable, dimension( : ) :: ind
+     REAL ( KIND = rp_ ) :: eta
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: A, B, S, Y, SB_inner
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
      TYPE ( SMT_type ) :: A_smt, B_smt
   END TYPE TRIMSQP_l_bfgs_type
 
@@ -131,18 +131,18 @@ MODULE GALAHAD_TRIMSQP_double
 !  The TRIMSQP_control_type derived type
 !  =====================================
   TYPE, PUBLIC :: TRIMSQP_control_type
-     INTEGER :: error, out, alive_unit, print_level, max_iterate
-     INTEGER :: start_print, stop_print, print_gap
-     INTEGER :: f_derivative_level, c_derivative_level
-     INTEGER :: header_every, correction_type, NM_steps
-     INTEGER :: B_type, L_BFGS_number, L_BFGS_curve_mod
-     REAL ( KIND = wp ) :: stop_p, stop_c, stop_d
-     REAL ( KIND = wp ) :: initial_penalty, max_penalty, penalty_expansion
-     REAL ( KIND = wp ) :: initial_TRpred, max_TRpred
-     REAL ( KIND = wp ) :: max_TRsqp, TRsqp_scale
-     REAL ( KIND = wp ) :: max_infeas, infinity
-     REAL ( KIND = wp ) :: eta_successful, eta_very_successful
-     REAL ( KIND = wp ) :: eta_extremely_successful
+     INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, max_iterate
+     INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
+     INTEGER ( KIND = ip_ ) :: f_derivative_level, c_derivative_level
+     INTEGER ( KIND = ip_ ) :: header_every, correction_type, NM_steps
+     INTEGER ( KIND = ip_ ) :: B_type, L_BFGS_number, L_BFGS_curve_mod
+     REAL ( KIND = rp_ ) :: stop_p, stop_c, stop_d
+     REAL ( KIND = rp_ ) :: initial_penalty, max_penalty, penalty_expansion
+     REAL ( KIND = rp_ ) :: initial_TRpred, max_TRpred
+     REAL ( KIND = rp_ ) :: max_TRsqp, TRsqp_scale
+     REAL ( KIND = rp_ ) :: max_infeas, infinity
+     REAL ( KIND = rp_ ) :: eta_successful, eta_very_successful
+     REAL ( KIND = rp_ ) :: eta_extremely_successful
      LOGICAL :: print_sol, fulsol, J_implicit, H_implicit
      LOGICAL :: space_critical, deallocate_error_fatal
      LOGICAL :: use_steering, use_seqp, use_siqp
@@ -167,12 +167,13 @@ MODULE GALAHAD_TRIMSQP_double
 !  ==================================
 
   TYPE, PUBLIC :: TRIMSQP_inform_type
-     INTEGER :: status, alloc_status, iterate, cg_iter, itcgmx
-     INTEGER :: num_f_eval, num_g_eval, num_c_eval, num_J_eval, num_H_eval
-     INTEGER :: nvar, ngeval, iskip, ifixed, nfacts, nmods
-     INTEGER :: factorization_status, num_descent_active
-     INTEGER :: factorization_integer, factorization_real
-     REAL ( KIND = wp ) :: obj, primal_vl, dual_vl, comp_vl
+     INTEGER ( KIND = ip_ ) :: status, alloc_status, iterate, cg_iter, itcgmx
+     INTEGER ( KIND = ip_ ) :: num_f_eval, num_g_eval, num_c_eval
+     INTEGER ( KIND = ip_ ) :: num_J_eval, num_H_eval
+     INTEGER ( KIND = ip_ ) :: nvar, ngeval, iskip, ifixed, nfacts, nmods
+     INTEGER ( KIND = ip_ ) :: factorization_status, num_descent_active
+     INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+     REAL ( KIND = rp_ ) :: obj, primal_vl, dual_vl, comp_vl
      LOGICAL :: newsol
      CHARACTER ( LEN = 80 ) :: bad_alloc
      TYPE ( TRIMSQP_time_type ) :: time
@@ -186,20 +187,23 @@ MODULE GALAHAD_TRIMSQP_double
 !  =====================================
 
   TYPE, PUBLIC :: TRIMSQP_revert_type
-     REAL( KIND = wp ) :: f_revert, norm_c_revert, merit_revert
-     !REAL( KIND = wp ) :: primal_vl_rev, dual_vl_rev, comp_vl_rev
-     !REAL( KIND = wp ) :: sub_primal_vl_rev, sub_dual_vl_rev, sub_comp_vl_rev
-     REAL( KIND = wp ) :: TRpred_revert
-     REAL( KIND = wp ) :: primal_vl_revert, dual_vl_revert, comp_vl_revert
-     REAL( KIND = wp ) :: penalty_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: g_revert, Jval_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_revert, Z_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_revert, Y_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ax_revert, Y_a_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Bval_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l_revert, C_RES_u_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l_revert, A_RES_u_revert
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l_revert, X_RES_u_revert
+     REAL( KIND = rp_ ) :: f_revert, norm_c_revert, merit_revert
+     !REAL( KIND = rp_ ) :: primal_vl_rev, dual_vl_rev, comp_vl_rev
+     !REAL( KIND = rp_ ) :: sub_primal_vl_rev, sub_dual_vl_rev, sub_comp_vl_rev
+     REAL( KIND = rp_ ) :: TRpred_revert
+     REAL( KIND = rp_ ) :: primal_vl_revert, dual_vl_revert, comp_vl_revert
+     REAL( KIND = rp_ ) :: penalty_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g_revert, Jval_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_revert, Z_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_revert, Y_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ax_revert, Y_a_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Bval_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_u_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_RES_u_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l_revert
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_RES_u_revert
   END TYPE TRIMSQP_revert_type
 
 !  =====================================
@@ -208,8 +212,8 @@ MODULE GALAHAD_TRIMSQP_double
 
   TYPE, PUBLIC :: TRIMSQP_nonmonotone_type
      logical :: revert, active
-     integer :: num_fail
-     real ( KIND = wp ) :: decreaseH, merit_best
+     integer ( kind = ip_ ) :: num_fail
+     real ( KIND = rp_ ) :: decreaseH, merit_best
   END TYPE TRIMSQP_nonmonotone_type
 
 !  =====================================
@@ -217,50 +221,53 @@ MODULE GALAHAD_TRIMSQP_double
 !  =====================================
 
   TYPE, PUBLIC :: TRIMSQP_data_type
-     REAL ( KIND = wp ) :: penalty, penalty_new, merit, merit_new, ratio
-     REAL ( KIND = wp ) :: penalty_pre_steer, merit_pre_steer
-     REAL ( KIND = wp ) :: TRpred, TRsqp, alpha, alpha_c, alpha_feas, F_new
-     REAL ( KIND = wp ) :: TRpred_expand, TRpred_contract, f_cauchy
-     REAL ( KIND = wp ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_Y_s
-     REAL ( KIND = wp ) :: min_TRpred, min_TRsqp, TR_reset_value
-     REAL ( KIND = wp ) :: primal_vl, dual_vl, comp_vl, inf_norm_Y_steer
-     REAL ( KIND = wp ) :: primal_vl2, dual_vl2, comp_vl2
-     REAL ( KIND = wp ) :: primal_vl3, dual_vl3, comp_vl3
-     REAL ( KIND = wp ) :: sub_primal_vl, sub_dual_vl, eta, eta_contract
-     REAL ( KIND = wp ) :: sub_comp_vl, sub_subgrad_vl
-     REAL ( KIND = wp ) :: sub_stop_p, sub_stop_d, sub_stop_c
-     REAL ( KIND = wp ) :: norm_c, norm_c_new, two_norm_s_p !norm_c_linearize
-     REAL ( KIND = wp ) :: inf_norm_s_p, inf_norm_s_c, inf_norm_s_s, inf_norm_s_steer
-     REAL ( KIND = wp ) :: inf_norm_s_f, H_norm_bound, inf_norm_Y, Y_bound
-     REAL ( KIND = wp ) :: max_infeas
-     REAL ( KIND = wp ) :: decreaseH_pred, decreaseH_cauchy, decreaseH_full
-     REAL ( KIND = wp ) :: decreaseB, decreaseB_smooth
-     REAL ( KIND = wp ) :: decrease_con_viol_s_p, decrease_con_viol_s_steer
-     REAL ( KIND = wp ) :: gts_pred, stHs, vtBv, LBFGS_damping_factor
-     REAL ( KIND = wp ) :: Sp_B_Sp, Sp_H_Sp, Sc_H_Sc, Ss_H_Ss, Sf_H_Sf
-     REAL ( KIND = wp ) :: min_penalty
-     REAL ( KIND = wp ) :: steer_L_factor, steer_Q_factor, con_viol_s_steer, ac_factor
-     REAL ( KIND = wp ) :: opt_measure, opt_measure_cur, opt_measure_p, opt_measure_s
-     REAL ( KIND = wp ) :: primal_vl_cur, primal_vl_p, primal_vl_s
-     REAL ( KIND = wp ) :: dual_vl_cur, dual_vl_p, dual_vl_s
-     REAL ( KIND = wp ) :: comp_vl_cur, comp_vl_p, comp_vl_s
-     REAL ( KIND = wp ) :: dec_norm_c_pred, dec_norm_c_steer
-     REAL ( KIND = wp ) :: norm_c_linearize_pred, norm_c_linearize_cauchy
-     REAL ( KIND = wp ) :: norm_c_linearize_full, norm_c_linearize_steer
+     REAL ( KIND = rp_ ) :: penalty, penalty_new, merit, merit_new, ratio
+     REAL ( KIND = rp_ ) :: penalty_pre_steer, merit_pre_steer
+     REAL ( KIND = rp_ ) :: TRpred, TRsqp, alpha, alpha_c, alpha_feas, F_new
+     REAL ( KIND = rp_ ) :: TRpred_expand, TRpred_contract, f_cauchy
+     REAL ( KIND = rp_ ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_Y_s
+     REAL ( KIND = rp_ ) :: min_TRpred, min_TRsqp, TR_reset_value
+     REAL ( KIND = rp_ ) :: primal_vl, dual_vl, comp_vl, inf_norm_Y_steer
+     REAL ( KIND = rp_ ) :: primal_vl2, dual_vl2, comp_vl2
+     REAL ( KIND = rp_ ) :: primal_vl3, dual_vl3, comp_vl3
+     REAL ( KIND = rp_ ) :: sub_primal_vl, sub_dual_vl, eta, eta_contract
+     REAL ( KIND = rp_ ) :: sub_comp_vl, sub_subgrad_vl
+     REAL ( KIND = rp_ ) :: sub_stop_p, sub_stop_d, sub_stop_c
+     REAL ( KIND = rp_ ) :: norm_c, norm_c_new, two_norm_s_p !norm_c_linearize
+     REAL ( KIND = rp_ ) :: inf_norm_s_p, inf_norm_s_c, inf_norm_s_s
+     REAL ( KIND = rp_ ) :: inf_norm_s_f, H_norm_bound, inf_norm_Y, Y_bound
+     REAL ( KIND = rp_ ) :: max_infeas, inf_norm_s_steer
+     REAL ( KIND = rp_ ) :: decreaseH_pred, decreaseH_cauchy, decreaseH_full
+     REAL ( KIND = rp_ ) :: decreaseB, decreaseB_smooth
+     REAL ( KIND = rp_ ) :: decrease_con_viol_s_p, decrease_con_viol_s_steer
+     REAL ( KIND = rp_ ) :: gts_pred, stHs, vtBv, LBFGS_damping_factor
+     REAL ( KIND = rp_ ) :: Sp_B_Sp, Sp_H_Sp, Sc_H_Sc, Ss_H_Ss, Sf_H_Sf
+     REAL ( KIND = rp_ ) :: min_penalty, ac_factor, opt_measure_s
+     REAL ( KIND = rp_ ) :: steer_L_factor, steer_Q_factor, con_viol_s_steer
+     REAL ( KIND = rp_ ) :: opt_measure, opt_measure_cur, opt_measure_p
+     REAL ( KIND = rp_ ) :: primal_vl_cur, primal_vl_p, primal_vl_s
+     REAL ( KIND = rp_ ) :: dual_vl_cur, dual_vl_p, dual_vl_s
+     REAL ( KIND = rp_ ) :: comp_vl_cur, comp_vl_p, comp_vl_s
+     REAL ( KIND = rp_ ) :: dec_norm_c_pred, dec_norm_c_steer
+     REAL ( KIND = rp_ ) :: norm_c_linearize_pred, norm_c_linearize_cauchy
+     REAL ( KIND = rp_ ) :: norm_c_linearize_full, norm_c_linearize_steer
      LOGICAL :: converged, merit_first_order, blow_up, sqp_good_dec, TR_reset
      LOGICAL :: sqp_ratio_used, sqp_computed, step_accepted, LP_penalty_update
      LOGICAL :: seqp_computed, seqp_use_pred, penalty_steer_reset
      LOGICAL :: steering_good, computed_steering, mono_blow_up, check_suboptimal
-     INTEGER :: iterate, lbreak, num_consec_blow_up, QPpred_fails
-     INTEGER :: iterates_pred, iterates_sqp, num_consec_Y_free, consec_Y_free_needed
-     INTEGER :: num_consec_Y_active, consec_Y_active_needed
-     INTEGER :: num_sat, num_vl_l, num_vl_u, success, best_mults
-     INTEGER :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp
-     INTEGER :: nspos, nsneg, nJpos, nJneg, nApos, nAneg
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IBREAK
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: vl_l, vl_u, sat
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: fr, fx, wA, wA_comp, wJ, wJ_comp
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: spos, sneg, Apos, Aneg, Jpos, Jneg
+     INTEGER ( KIND = ip_ ) :: iterate, lbreak, num_consec_blow_up, QPpred_fails
+     INTEGER ( KIND = ip_ ) :: iterates_pred, iterates_sqp
+     INTEGER ( KIND = ip_ ) :: num_consec_Y_free, consec_Y_free_needed
+     INTEGER ( KIND = ip_ ) :: num_consec_Y_active, consec_Y_active_needed
+     INTEGER ( KIND = ip_ ) :: num_sat, num_vl_l, num_vl_u, success, best_mults
+     INTEGER ( KIND = ip_ ) :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp
+     INTEGER ( KIND = ip_ ) :: nspos, nsneg, nJpos, nJneg, nApos, nAneg
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IBREAK
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: vl_l, vl_u, sat
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: fr, fx, wA, wJ
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: wA_comp, wJ_comp
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: spos, sneg, Apos
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Aneg, Jpos, Jneg
      CHARACTER ( LEN = 7 ) :: success_str
      CHARACTER ( LEN = 4 ) :: descent_constraint_status
      CHARACTER ( LEN = 8 ) :: change_penalty
@@ -277,48 +284,42 @@ MODULE GALAHAD_TRIMSQP_double
      TYPE ( TRIMSQP_revert_type ) :: revert
      TYPE ( TRIMSQP_nonmonotone_type ) :: NM
      type ( SMT_type ) :: B
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_new, C_cauchy
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: cauchy_Y, cauchy_Y_a
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CplusJsc, CplusJxSp, cauchy_Z
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: s_p, s_c, s_ac,  s_s, s_f, w, s_steer
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GplusHs, descent_con
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: J_norms, H_norms
-     !REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Jv, Av, Atv, Atv2
-     !REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Atv3, Jtv3
-     !REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Atv_cur, Atv_p, Atv_s
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AxSp, AxSc, AxSac, AxSs, AXplusSc
-     !REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Jtv, Jtv2, Hv, BxSp, HxSp, HxSc, HxSs, HxSf
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BxSp, HxSp, HxSc, HxSac, HxSs, HxSf
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JxSp, JxSc, JxSac, JxSs, JxSf, JxSsteer
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: u_in, v_in
-     !REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Jtv_cur, Jtv_p, Jtv_s
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY, AtYa
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_cur, AtYa_cur
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_p, AtYa_p
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_s, AtYa_s
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: J_cauchy, g_prev, Jval_prev, Jval_dummy
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_seqp, Ya_seqp, Z_seqp
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: cauchy_Zexact,sqp_Zexact, pred_Zexact
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Zexact
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_new, C_cauchy
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: cauchy_Y, cauchy_Y_a
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: CplusJsc, CplusJxSp
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: cauchy_Z
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: s_p, s_c, s_ac, s_s
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: s_f, w, s_steer
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GplusHs, descent_con
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_norms, H_norms
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Jv, Av, Atv, Atv2
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Atv3, Jtv3
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Atv_cur, Atv_p, Atv_s
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AxSp, AxSc, AxSac
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AxSs, AXplusSc
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Jtv, Jtv2, Hv, BxSp
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HxSp, HxSc, HxSs, HxSf
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BxSp, HxSp, HxSc
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HxSac, HxSs, HxSf
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JxSp, JxSc, JxSac
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JxSs, JxSf, JxSsteer
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: u_in, v_in
+     !REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Jtv_cur, Jtv_p, Jtv_s
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY, AtYa
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_cur, AtYa_cur
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_p, AtYa_p
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_s, AtYa_s
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_cauchy, g_prev
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Jval_prev, Jval_dummy
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_seqp, Ya_seqp, Z_seqp
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: cauchy_Zexact
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: sqp_Zexact, pred_Zexact
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Zexact
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
   END TYPE TRIMSQP_data_type
-
-!  ==================================
-!  Interfaces
-!  ==================================
-
-!  INTERFACE TWO_NORM
-!
-!     FUNCTION DNRM2( n, X, incx )
-!       DOUBLE PRECISION :: DNRM2
-!       INTEGER, INTENT( IN ) :: n, incx
-!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!     END FUNCTION DNRM2
-!
-!  END INTERFACE
 
 CONTAINS
 
@@ -462,7 +463,7 @@ CONTAINS
 !  The Maximum infeasibility tolerated will be the larger of max_infeas
 !  and ten times the initial infeasibility
 
-    control%max_infeas = 100.0_wp
+    control%max_infeas = 100.0_rp_
 
 !  User defined infinity
 
@@ -572,7 +573,7 @@ CONTAINS
 !-----------------------------------------------
 
     TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control
-    INTEGER, INTENT( IN ) :: device
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_TRIMSQP
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_QPfeas
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_QPpred
@@ -586,7 +587,7 @@ CONTAINS
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    INTEGER, PARAMETER :: lspec = 60
+    INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 60
     CHARACTER( LEN = 16 ), PARAMETER :: specname_TRIMSQP = 'TRIMSQP         '
     CHARACTER( LEN = 16 ), PARAMETER :: specname_QPfeas  = 'QP_feasibility  '
     CHARACTER( LEN = 16 ), PARAMETER :: specname_QPpred  = 'QP_predictor    '
@@ -657,42 +658,44 @@ CONTAINS
 !  Read the specfile
 
     IF ( PRESENT( alt_specname_TRIMSQP ) ) THEN
-       CALL SPECFILE_read( device, alt_specname_TRIMSQP, spec, lspec, control%error )
+       CALL SPECFILE_read( device, alt_specname_TRIMSQP, spec, lspec,          &
+                           control%error )
     ELSE
-       CALL SPECFILE_read( device, specname_TRIMSQP, spec, lspec, control%error )
+       CALL SPECFILE_read( device, specname_TRIMSQP, spec, lspec,              &
+                           control%error )
     END IF
 
 !  Interpret the result
 
 !  Set integer values
 
-    CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
+    CALL SPECFILE_assign_integer( spec( 1 ), control%error,                    &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
+    CALL SPECFILE_assign_integer( spec( 2 ), control%out,                      &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
+    CALL SPECFILE_assign_integer( spec( 3 ), control%out,                      &
                                   control%alive_unit )
-    CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
+    CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,              &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 5 ), control%max_iterate,             &
+    CALL SPECFILE_assign_integer( spec( 5 ), control%max_iterate,              &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
+    CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,              &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
+    CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,               &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
+    CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,                &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 9 ), control%f_derivative_level,      &
+    CALL SPECFILE_assign_integer( spec( 9 ), control%f_derivative_level,       &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 10 ), control%c_derivative_level,     &
+    CALL SPECFILE_assign_integer( spec( 10 ), control%c_derivative_level,      &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 11 ), control%header_every,           &
+    CALL SPECFILE_assign_integer( spec( 11 ), control%header_every,            &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 12 ), control%correction_type,       &
+    CALL SPECFILE_assign_integer( spec( 12 ), control%correction_type,         &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 13 ), control%NM_steps,             &
+    CALL SPECFILE_assign_integer( spec( 13 ), control%NM_steps,                &
                                   control%error )
-    CALL SPECFILE_assign_integer( spec( 14 ), control%B_type,                 &
+    CALL SPECFILE_assign_integer( spec( 14 ), control%B_type,                  &
                                   control%error )
     CALL SPECFILE_assign_integer( spec( 15 ), control%L_BFGS_number,           &
                                   control%error )
@@ -702,66 +705,66 @@ CONTAINS
 
 !  Set real values
 
-    CALL SPECFILE_assign_real( spec( 17 ), control%stop_p,                    &
+    CALL SPECFILE_assign_real( spec( 17 ), control%stop_p,                     &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 18 ), control%stop_d,                    &
+    CALL SPECFILE_assign_real( spec( 18 ), control%stop_d,                     &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 19 ), control%stop_c,                    &
+    CALL SPECFILE_assign_real( spec( 19 ), control%stop_c,                     &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 20 ), control%eta_successful,            &
+    CALL SPECFILE_assign_real( spec( 20 ), control%eta_successful,             &
                                control%error )
-    CALL SPECFILE_assign_real( spec( 21 ), control%eta_very_successful,       &
+    CALL SPECFILE_assign_real( spec( 21 ), control%eta_very_successful,        &
                                control%error )
-    CALL SPECFILE_assign_real( spec( 22 ), control%eta_extremely_successful,  &
+    CALL SPECFILE_assign_real( spec( 22 ), control%eta_extremely_successful,   &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 23 ), control%initial_TRpred,            &
+    CALL SPECFILE_assign_real( spec( 23 ), control%initial_TRpred,             &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 24 ), control%max_TRpred,                &
+    CALL SPECFILE_assign_real( spec( 24 ), control%max_TRpred,                 &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 25 ), control%TRsqp_scale,        &
+    CALL SPECFILE_assign_real( spec( 25 ), control%TRsqp_scale,                &
                                 control%error )
-!    CALL SPECFILE_assign_real( spec( 26 ), control%max_TRsqp,                &
+!    CALL SPECFILE_assign_real( spec( 26 ), control%max_TRsqp,                 &
 !                                control%error )
-    CALL SPECFILE_assign_real( spec( 27 ), control%max_infeas,                &
+    CALL SPECFILE_assign_real( spec( 27 ), control%max_infeas,                 &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 28 ), control%infinity,                  &
+    CALL SPECFILE_assign_real( spec( 28 ), control%infinity,                   &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 29 ), control%initial_penalty,           &
+    CALL SPECFILE_assign_real( spec( 29 ), control%initial_penalty,            &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 30 ), control%max_penalty,               &
+    CALL SPECFILE_assign_real( spec( 30 ), control%max_penalty,                &
                                 control%error )
-    CALL SPECFILE_assign_real( spec( 31 ), control%penalty_expansion,         &
+    CALL SPECFILE_assign_real( spec( 31 ), control%penalty_expansion,          &
                                 control%error )
 
 
 !  Set logical values
 
-    CALL SPECFILE_assign_logical( spec( 40 ), control%space_critical,         &
+    CALL SPECFILE_assign_logical( spec( 40 ), control%space_critical,          &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 41 ),                                 &
-                                  control%deallocate_error_fatal,             &
+    CALL SPECFILE_assign_logical( spec( 41 ),                                  &
+                                  control%deallocate_error_fatal,              &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 42 ),                                 &
-                                  control%use_steering,                       &
+    CALL SPECFILE_assign_logical( spec( 42 ),                                  &
+                                  control%use_steering,                        &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 43 ),                                 &
-                                  control%use_seqp,                           &
+    CALL SPECFILE_assign_logical( spec( 43 ),                                  &
+                                  control%use_seqp,                            &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 44 ),                                 &
-                                  control%use_siqp,                           &
+    CALL SPECFILE_assign_logical( spec( 44 ),                                  &
+                                  control%use_siqp,                            &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 45 ), control%J_implicit,             &
+    CALL SPECFILE_assign_logical( spec( 45 ), control%J_implicit,              &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 46 ), control%H_implicit,             &
+    CALL SPECFILE_assign_logical( spec( 46 ), control%H_implicit,              &
                                   control%error )
-    CALL SPECFILE_assign_logical( spec( 48 ), control%print_sol,              &
+    CALL SPECFILE_assign_logical( spec( 48 ), control%print_sol,               &
                                    control%error )
-    CALL SPECFILE_assign_logical( spec( 49 ), control%fulsol,                 &
+    CALL SPECFILE_assign_logical( spec( 49 ), control%fulsol,                  &
                                    control%error )
 
 !  Set character values
 
-    CALL SPECFILE_assign_string( spec( 60 ), control%alive_file,              &
+    CALL SPECFILE_assign_string( spec( 60 ), control%alive_file,               &
                                  control%error )
 
 !  Set LSQP control values
@@ -773,7 +776,8 @@ CONTAINS
     END IF
 
     !IF ( PRESENT( alt_specname_QPsteer ) ) THEN
-    !  CALL LSQP_read_specfile(control%QPsteer_control,device,alt_specname_QPsteer)
+    !  CALL LSQP_read_specfile(control%QPsteer_control,device,                 &
+    !                          alt_specname_QPsteer)
     !ELSE
     !  CALL LSQP_read_specfile(control%QPsteer_control,device,specname_QPsteer)
     !END IF
@@ -788,19 +792,22 @@ CONTAINS
     END IF
 
     IF ( PRESENT( alt_specname_QPsiqp )  ) THEN
-       CALL QPC_read_specfile( control%QPsiqp_control, device, alt_specname_QPsiqp )
+       CALL QPC_read_specfile( control%QPsiqp_control, device,                 &
+                               alt_specname_QPsiqp )
     ElSE
        CALL QPC_read_specfile( control%QPsiqp_control, device, specname_QPsiqp )
     END IF
 
     IF ( PRESENT( alt_specname_QPseqp )  ) THEN
-       CALL EQP_read_specfile( control%QPseqp_control, device, alt_specname_QPseqp )
+       CALL EQP_read_specfile( control%QPseqp_control, device,                 &
+                               alt_specname_QPseqp )
     ElSE
        CALL EQP_read_specfile( control%QPseqp_control, device, specname_QPseqp )
     END IF
 
     IF ( PRESENT( alt_specname_QPsteer ) ) THEN
-      CALL QPC_read_specfile(control%QPsteer_control,device,alt_specname_QPsteer)
+      CALL QPC_read_specfile( control%QPsteer_control, device,                 &
+                              alt_specname_QPsteer)
     ELSE
       CALL QPC_read_specfile(control%QPsteer_control,device,specname_QPsteer)
     END IF
@@ -833,7 +840,7 @@ CONTAINS
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
     TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-    TYPE ( NLPT_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
+    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
     TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control
     TYPE ( TRIMSQP_inform_type ), INTENT( INOUT ) :: inform
     TYPE ( TRIMSQP_data_type ), INTENT( INOUT ) :: data
@@ -842,40 +849,36 @@ CONTAINS
     INTERFACE
 
        SUBROUTINE eval_FC( status, X, userdata, F, C )
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-         REAL ( kind = wp ), OPTIONAL, INTENT( OUT ) :: F
-         REAL ( kind = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+         USE GALAHAD_USERDATA_precision
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+         REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+         REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+         REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
 
        SUBROUTINE eval_G( status, X, userdata, G )
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+         USE GALAHAD_USERDATA_precision
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
 
        SUBROUTINE eval_J( status, X, userdata, J_val )
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+         USE GALAHAD_USERDATA_precision
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J_val
+         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
 
        SUBROUTINE eval_HL(status, X, Y, userdata, Hval, no_f )
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+         USE GALAHAD_USERDATA_precision
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
          LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
@@ -885,13 +888,14 @@ CONTAINS
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-  integer :: i, iores, out, max_iterate, m, m_a, n, nLMV
-  real ( kind = wp ) :: dummy_real, too_small, Gi, vl
-  real ( kind = wp ) :: stop_p!, stop_d, stop_c
-  !real ( kind = wp ) :: opt_measure, opt_measure_cur, opt_measure_p, opt_measure_s
+  integer ( kind = ip_ ) :: i, iores, out, max_iterate, m, m_a, n, nLMV
+  real ( kind = rp_ ) :: dummy_real, too_small, Gi, vl
+  real ( kind = rp_ ) :: stop_p!, stop_d, stop_c
+  !real ( kind = rp_ ) :: opt_measure, opt_measure_cur
+  !real ( kind = rp_ ) :: opt_measure_p, opt_measure_s
   logical :: filexx, print_1line, print_detail, print_debug, qpc_successful
-  INTEGER :: sfiledevice = 62                           ! solution file number
-!  INTEGER :: QPpred_sif_out = 66
+  INTEGER ( KIND = ip_ ) :: sfiledevice = 62            ! solution file number
+!  INTEGER ( KIND = ip_ ) :: QPpred_sif_out = 66
   CHARACTER ( LEN = 30 ) :: sfilename = 'TRIMSQPSOL.d'  ! solution file name
 
 !******************************************************************************
@@ -967,8 +971,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !  data%min_TRpred        = ten ** ( - 10 )
 !  data%min_TRsqp         = ten ** ( - 10 )
   !data%TR_reset_value    = min ( point1, tenp5 * data%min_TRpred )
-  !data%TR_reset_value    = 0.000001_wp
-  data%TR_reset_value    = 0.000001_wp
+  !data%TR_reset_value    = 0.000001_rp_
+  data%TR_reset_value    = 0.000001_rp_
   data%TR_reset_value    = max( data%TR_reset_value, data%min_TRpred )
   data%converged         = .false.
   data%step_accepted     = .true.
@@ -977,7 +981,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   data%success_str       = '       '
   data%success           = 0
   data%H_norm_bound      = ten ** ( 5 )
-  data%BFGS%damp_factor  = 0.2_wp
+  data%BFGS%damp_factor  = 0.2_rp_
   data%NM%revert         = .false.
   data%NM%active         = .false.
   data%NM%num_fail       = 0
@@ -1028,7 +1032,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   CALL SPACE_resize_array( nlp%n, data%s_c, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%s_ac, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%s_ac, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%s_s, inform%status, inform%alloc_status )
@@ -1037,35 +1041,36 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   CALL SPACE_resize_array( nlp%n, data%s_f, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%s_steer, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%s_steer, inform%status,                 &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Hv, inform%status, inform%alloc_status  )
+  !CALL SPACE_resize_array( nlp%n, data%Hv, inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%HxSp, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%HxSp, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%HxSc, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%HxSc, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%HxSac, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%HxSac, inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%HxSs, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%HxSs, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%HxSf, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%HxSf, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%BxSp, inform%status, inform%alloc_status  )
+  CALL SPACE_resize_array( nlp%n, data%BxSp, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array(nlp%n, data%GplusHs, inform%status,      &
+  CALL SPACE_resize_array(nlp%n, data%GplusHs, inform%status,                  &
                                                inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%descent_con, inform%status,      &
+  CALL SPACE_resize_array( nlp%n, data%descent_con, inform%status,             &
                                                     inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1081,10 +1086,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                                                 inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%spos, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%spos, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%sneg, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%sneg, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%cauchy_Zexact, inform%status,      &
@@ -1118,46 +1123,48 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
  ! CALL SPACE_resize_array( nlp%m, data%Jv, inform%status, inform%alloc_status )
  ! IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSp, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSp, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSc, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSc, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSac, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSac, inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSs, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSs, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSsteer, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSsteer, inform%status,                &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSf, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSf, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%Jpos, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%Jpos, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%Jneg, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%Jneg, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%u_in, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%u_in, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%v_in, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%v_in, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%JtY, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_cur, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%JtY_cur, inform%status,                 &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_p, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%JtY_p, inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_s, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%JtY_s, inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   !CALL SPACE_resize_array( nlp%n, data%Jtv, inform%status, inform%alloc_status )
@@ -1352,9 +1359,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   if ( nlp%m > 0 ) then
      do i = 1, nlp%m
-        if ( nlp%C_l(i) > - data%control%infinity ) then
-           if ( nlp%C_u(i) < data%control%infinity ) then
-              if ( abs( nlp%C_u(i) - nlp%C_l(i) ) > two*data%control%stop_p ) then
+       if ( nlp%C_l(i) > - data%control%infinity ) then
+         if ( nlp%C_u(i) < data%control%infinity ) then
+           if ( abs( nlp%C_u(i) - nlp%C_l(i) ) > two*data%control%stop_p ) then
                  data%C_type(i) = 'RB'
               else
                  data%C_type(i) = 'EQ'
@@ -1376,9 +1383,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   if ( nlp%m_a > 0 ) then
      do i = 1, nlp%m_a
-        if ( nlp%A_l(i) > - data%control%infinity ) then
-           if ( nlp%A_u(i) < data%control%infinity ) then
-              if ( abs( nlp%A_u(i) - nlp%A_l(i) ) > two*data%control%stop_p ) then
+       if ( nlp%A_l(i) > - data%control%infinity ) then
+         if ( nlp%A_u(i) < data%control%infinity ) then
+           if ( abs( nlp%A_u(i) - nlp%A_l(i) ) > two*data%control%stop_p ) then
                  data%A_type(i) = 'RB'
               else
                  data%A_type(i) = 'EQ'
@@ -1538,20 +1545,24 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      call eval_J( inform%status, nlp%X, userdata, nlp%J%val )
      if ( inform%status /= GALAHAD_ok ) write( out, 1002 ) 'eval_J'
 
-     CALL SPACE_resize_array( nlp%J%ne, data%J_cauchy, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%J%ne, data%J_cauchy, inform%status,          &
+                              inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%J%ne, data%Jval_prev, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%J%ne, data%Jval_prev, inform%status,         &
+                              inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%J%ne, data%Jval_dummy, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%J%ne, data%Jval_dummy, inform%status,        &
+                              inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
      inform%num_J_eval = inform%num_J_eval + 1
      inform%num_c_eval = inform%num_c_eval + 1  !From earlier.
 
      if ( data%control%NM_steps > 0 ) then
-        CALL SPACE_resize_array( nlp%J%ne, data%revert%Jval_revert, inform%status, inform%alloc_status )
+        CALL SPACE_resize_array( nlp%J%ne, data%revert%Jval_revert,            &
+                                 inform%status, inform%alloc_status )
         IF ( inform%status /= GALAHAD_ok ) GO TO 990
      end if
 
@@ -1646,12 +1657,12 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      if ( nlp%m > 0 ) then
         data%JtY_cur = zero
-        call mop_Ax( one, nlp%J, nlp%Y( : nlp%m ), one, data%JtY_cur,      &
+        call mop_Ax( one, nlp%J, nlp%Y( : nlp%m ), one, data%JtY_cur,         &
                      out, data%control%error, transpose=.true. )
      end if
      if ( nlp%m_a > 0 ) then
         data%AtYa_cur = zero
-        call mop_Ax( one, nlp%A, nlp%Y_a( : nlp%m_a ), one, data%AtYa_cur, &
+        call mop_Ax( one, nlp%A, nlp%Y_a( : nlp%m_a ), one, data%AtYa_cur,    &
                      out, data%control%error, transpose=.true. )
      end if
 
@@ -1731,11 +1742,13 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%Y_seqp( data%wJ( : data%nwJ) ) = data%QPseqp%Y( : data%nwJ )
 
            data%Ya_seqp = zero
-           data%Ya_seqp( data%wA( : data%nwA) ) = data%QPseqp%Y( data%nwJ + 1 : data%nwJ + data%nwA )
+           data%Ya_seqp( data%wA( : data%nwA) ) &
+             = data%QPseqp%Y( data%nwJ + 1 : data%nwJ + data%nwA )
 
            data%Z_seqp = zero
-           data%Z_seqp( data%fx( : data%nfx) ) = &
-                                data%QPseqp%Y( data%nwJ + data%nwA + 1 : data%nwJ + data%nwA + data%nfx )
+           data%Z_seqp( data%fx( : data%nfx) ) &
+             = data%QPseqp%Y( data%nwJ + data%nwA + 1 : &
+                              data%nwJ + data%nwA + data%nfx )
 
            if ( nlp%m > 0 ) then
               data%JtY_s = zero
@@ -1763,7 +1776,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            if ( nlp%m > 0 ) then
               data%JtY_s = zero
-              call mop_Ax(one, nlp%J, data%QPsiqp%Y( : m ), one, data%JtY_s, &
+              call mop_Ax(one, nlp%J, data%QPsiqp%Y( : m ), one, data%JtY_s,   &
                           out, data%control%error, transpose=.true. )
            end if
 
@@ -1964,11 +1977,14 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                        data%sub_stop_d = data%sub_stop_p
                        data%sub_stop_c = data%sub_stop_p
                     else
-                       data%sub_stop_p = max( half*data%sub_stop_p, point9*stop_p )
+                       data%sub_stop_p = max( half*data%sub_stop_p,            &
+                                              point9*stop_p )
                        data%sub_stop_d = data%sub_stop_p
                        data%sub_stop_c = data%sub_stop_p
-                       dummy_real      = data%control%penalty_expansion * data%penalty
-                       data%penalty    = min( data%control%max_penalty, dummy_real )
+                       dummy_real      = data%control%penalty_expansion        &
+                                           * data%penalty
+                       data%penalty    = min( data%control%max_penalty,        &
+                                              dummy_real )
                        data%merit      = nlp%f + data%penalty * data%norm_c
                        data%change_penalty = 'increase'
                     end if
@@ -2022,7 +2038,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      ! Decide if nonmonotone should be used.
      ! *************************************
 
-     if ( data%control%NM_steps > 0 .and. (.not. data%NM%active) .and. m > 0 ) then
+     if ( data%control%NM_steps > 0 .and. (.not. data%NM%active) .and. m > 0 ) &
+        then
 !        if ( data%primal_vl <= five*five*five ) then
         if ( data%primal_vl <= one ) then
 
@@ -2168,7 +2185,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               write( out, * ) 'X         = ', data%QPpred%X
               write( out, * ) 'Y         = ', data%QPpred%Y
               write( out, * ) 'Z         = ', data%QPpred%Z
-              write( out, * ) 'infinity  = ', data%control%QPpred_control%infinity
+              write( out, * ) 'infinity  = ',                                  &
+                   data%control%QPpred_control%infinity
            end if
 
 !           control%QPpred_control%QPB_control%muzero = 1.8e+14
@@ -2191,10 +2209,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               call mop_Ax( one, nlp%J, data%s_p, one, data%JxSp, &
                            out, control%error, transpose=.false. )
               data%CplusJxSp = nlp%C + data%JxSp
-              call constraint_violation(nlp, data%CplusJxSp, data,                 &
-                                        data%norm_c_linearize_pred, inform%status, &
-                                        data%sat, data%vl_l, data%vl_u,            &
-                                        data%num_sat, data%num_vl_l, data%num_vl_u )
+              call constraint_violation(nlp, data%CplusJxSp, data,             &
+                                    data%norm_c_linearize_pred, inform%status, &
+                                    data%sat, data%vl_l, data%vl_u,            &
+                                    data%num_sat, data%num_vl_l, data%num_vl_u )
            end if
 
            data%dec_norm_c_pred = data%norm_c - data%norm_c_linearize_pred
@@ -3356,7 +3374,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         if ( data%NM%active ) then ! success = 0
 
-!           data%TRpred = min( 100_wp * data%TRpred, data%control%max_TRpred
+!           data%TRpred = min( 100_rp_ * data%TRpred, data%control%max_TRpred
            data%TRpred = min( data%TRpred, data%control%max_TRpred )
 
         else ! sucess >= 1
@@ -4070,7 +4088,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer :: len
+    integer ( kind = ip_ ) :: len
 
     ! Define infinity
 
@@ -4239,7 +4257,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer :: len
+    integer ( kind = ip_ ) :: len
 
     ! Define infinity
 
@@ -4434,8 +4452,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer :: len, Ane, tally, i, j, out, error, m, n, m_a, L!, Hne, Bne
-    integer :: B_type, Bind, Aind, I_Bind, I_Aind, Ltn, np2m
+    integer ( kind = ip_ ) :: len, Ane, tally, i, j, out, error, m, n, m_a, L!, Hne, Bne
+    integer ( kind = ip_ ) :: B_type, Bind, Aind, I_Bind, I_Aind, Ltn, np2m
     character, allocatable, dimension( : ) :: store_type
 
     ! For convenience
@@ -4450,7 +4468,7 @@ end do
 
     ! Set infinity
 
-    data%control%QPpred_control%infinity = data%control%infinity / 100.0_wp
+    data%control%QPpred_control%infinity = data%control%infinity / 100.0_rp_
 
     ! Set dimensions
 
@@ -4810,7 +4828,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------------------
 
-    integer :: len, Ane, i, j, tally, descent_row
+    integer ( kind = ip_ ) :: len, Ane, i, j, tally, descent_row
     character, allocatable, dimension( : ) :: store_type
 
     ! Define infinity
@@ -5226,7 +5244,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------------------
 
-    integer :: len
+    integer ( kind = ip_ ) :: len
     character, allocatable, dimension( : ) :: store_type
 
     !!!! Define infinity
@@ -5512,7 +5530,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer :: tally, i, j
+    integer ( kind = ip_ ) :: tally, i, j
 
     inform%status = -1
 
@@ -5528,7 +5546,7 @@ end do
     QPfeas%Z    = zero
 
     do i = 1, QPfeas%n
-       QPfeas%WEIGHT(i) = max( min( abs( QPfeas%X(i) ), 100.0_wp ), one )
+       QPfeas%WEIGHT(i) = max( min( abs( QPfeas%X(i) ), 100.0_rp_ ), one )
     end do
 
     ! Load QPfeas%A with the portion from A.
@@ -5622,7 +5640,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer :: tally, i, j, m, m_a, n
+    integer ( kind = ip_ ) :: tally, i, j, m, m_a, n
 
     inform%status = -1
 
@@ -5674,7 +5692,7 @@ end do
     QPsteer%Z    = zero
 
  !   do i = 1, QPsteer%n
- !      QPsteer%WEIGHT(i) = max( min( abs( QPsteer%X(i) ), 100.0_wp ), one )
+ !      QPsteer%WEIGHT(i) = max( min( abs( QPsteer%X(i) ), 100.0_rp_ ), one )
  !   end do
 
     ! Load QPsteer%A with the portions from | J I -I |
@@ -5840,10 +5858,10 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer :: tally, i, j, l, Ane, m, n, m_a, np2m, B_type, error, out
-    integer :: Ltn, A_ind, B_ind, iterate
-    real( kind = wp ) :: Bij, di, Bsi, theta, stBs, damp_factor
-    real( kind = wp ) :: B_lammin, B_lammax, dummy_real
+    integer ( kind = ip_ ) :: tally, i, j, l, Ane, m, n, m_a, np2m, B_type, error, out
+    integer ( kind = ip_ ) :: Ltn, A_ind, B_ind, iterate
+    real( kind = rp_ ) :: Bij, di, Bsi, theta, stBs, damp_factor
+    real( kind = rp_ ) :: B_lammin, B_lammax, dummy_real
 
     B_lammin = tenm5
     B_lammax = tenp8
@@ -6510,7 +6528,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer :: tally, tally2, i, j, Ane, correction_type, m, m_a, n
+    integer ( kind = ip_ ) :: tally, tally2, i, j, Ane, correction_type, m, m_a, n
 
     correction_type = data%control%correction_type
 
@@ -6632,7 +6650,7 @@ end do
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
-       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_wp !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
+       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
 
        ! G
@@ -6706,7 +6724,7 @@ end do
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
-       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_wp !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
+       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
 
        ! G
@@ -6745,7 +6763,7 @@ end do
        if ( m > 0 ) then
           QPsiqp%X_l( n + 1 : n + 2*m ) = zero
           QPsiqp%X_u( n + 1 : n + 2*m ) = data%control%infinity
-!          QPsiqp%X_u( n + 1 : n + 2*m ) = 1000_wp * QPsiqp%X( n + 1 : n + 2*m )
+!          QPsiqp%X_u( n + 1 : n + 2*m ) = 1000_rp_ * QPsiqp%X( n + 1 : n + 2*m )
        end if
 
        ! Z
@@ -6951,8 +6969,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp, i, j, tally, out, nvl
-    integer, dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
+    integer ( kind = ip_ ) :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp, i, j, tally, out, nvl
+    integer ( kind = ip_ ), dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
 
     out = data%control%out
 
@@ -7855,8 +7873,8 @@ end do
 !   D u m m y   A r g u m e n t s
 !---------------------------------------------------
 
-    integer, intent( in ) :: error, out
-    integer, intent( inout ) :: status
+    integer ( kind = ip_ ), intent( in ) :: error, out
+    integer ( kind = ip_ ), intent( inout ) :: status
     character, intent( in ) :: name
     type( SMT_type ), intent( in )  :: A
 
@@ -7864,7 +7882,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: i
+    integer ( kind = ip_ ) :: i
 
 
     status = -1
@@ -7983,25 +8001,25 @@ end do
 !---------------------------------------------------
 
     type( NLPT_problem_type ), intent( inout )         :: nlp
-    real( kind = wp ), dimension( : ), intent( in )    :: JtY, AtY_a, G
-    real( kind = wp ), dimension( : ), intent( in )    :: Y, Y_a, Z_in
-    real( kind = wp ), dimension( : ), intent( out )   :: Z_out
+    real( kind = rp_ ), dimension( : ), intent( in )    :: JtY, AtY_a, G
+    real( kind = rp_ ), dimension( : ), intent( in )    :: Y, Y_a, Z_in
+    real( kind = rp_ ), dimension( : ), intent( out )   :: Z_out
     character( len = 2 ), dimension( : ), intent( in ) :: C_type, A_type, X_type
-    real( kind = wp ), dimension( : ), intent( in )    :: C_RES_l, C_RES_u
-    real( kind = wp ), dimension( : ), intent( in )    :: A_RES_l, A_RES_u
-    real( kind = wp ), dimension( : ), intent( in )    :: X_RES_l, X_RES_u
-    real( kind = wp ), intent( out ) :: primal_vl, dual_vl, comp_vl
+    real( kind = rp_ ), dimension( : ), intent( in )    :: C_RES_l, C_RES_u
+    real( kind = rp_ ), dimension( : ), intent( in )    :: A_RES_l, A_RES_u
+    real( kind = rp_ ), dimension( : ), intent( in )    :: X_RES_l, X_RES_u
+    real( kind = rp_ ), intent( out ) :: primal_vl, dual_vl, comp_vl
     logical, intent( in )  :: exact
-    integer, intent( in )  :: out
-    integer, intent( out ) :: status
+    integer ( kind = ip_ ), intent( in )  :: out
+    integer ( kind = ip_ ), intent( out ) :: status
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: i
-    real( kind = wp ) :: Gi, vl, term1, term2, rel_res !sign, rel_res
-    real( kind = wp ), dimension( size(Z_in) ) :: Z
+    integer ( kind = ip_ ) :: i
+    real( kind = rp_ ) :: Gi, vl, term1, term2, rel_res !sign, rel_res
+    real( kind = rp_ ), dimension( size(Z_in) ) :: Z
 
 
     status = -1
@@ -8480,34 +8498,34 @@ end do
 
     !  Dummy arguments
 
-    INTEGER, INTENT( IN ) :: m, out, lbreak
-    INTEGER, INTENT( OUT ) :: inform
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, out, lbreak
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
     LOGICAL, INTENT( IN ) :: print_1line, print_detail, print_debug, exact
-    REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, s_norm
-    REAL ( KIND = wp ), INTENT( IN ) :: rho_g, too_small
-    REAL ( KIND = wp ), INTENT( OUT ) :: t_min
-    INTEGER, INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
-    REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_norms
-    !REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-    REAL ( KIND = wp ), INTENT( IN ),                                        &
+    REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm
+    REAL ( KIND = rp_ ), INTENT( IN ) :: rho_g, too_small
+    REAL ( KIND = rp_ ), INTENT( OUT ) :: t_min
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
+    !REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ),                                        &
          DIMENSION( m ) ::  RES_l
-    REAL ( KIND = wp ), INTENT( IN ),                                        &
+    REAL ( KIND = rp_ ), INTENT( IN ),                                        &
          DIMENSION( m ) ::  RES_u
-    REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-    REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
     CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: C_type
 
     !  Local variables
 
-    INTEGER :: i, j, nbreak, inheap, iter, ibreakp, nbreak_total
-    INTEGER :: cluster_start, cluster_end
-    REAL ( KIND = wp ) :: as, res
-    REAL ( KIND = wp ) :: val, slope, curv, slope_old, exact_val, exact_slope
-    REAL ( KIND = wp ) :: t_break, t_star, feasep, epsqrt, infeas_g
-    REAL ( KIND = wp ) :: fun, gradient, gradient_in, t_pert, t_old
-    REAL ( KIND = wp ) :: pert_val, pert_eps, cosine, tiny_cosine, val_old
-    REAL ( KIND = wp ) :: breakp_max, slope_infeas_g
-    REAL ( KIND = wp ) :: fun_min
+    INTEGER ( KIND = ip_ ) :: i, j, nbreak, inheap, iter, ibreakp, nbreak_total
+    INTEGER ( KIND = ip_ ) :: cluster_start, cluster_end
+    REAL ( KIND = rp_ ) :: as, res
+    REAL ( KIND = rp_ ) :: val, slope, curv, slope_old, exact_val, exact_slope
+    REAL ( KIND = rp_ ) :: t_break, t_star, feasep, epsqrt, infeas_g
+    REAL ( KIND = rp_ ) :: fun, gradient, gradient_in, t_pert, t_old
+    REAL ( KIND = rp_ ) :: pert_val, pert_eps, cosine, tiny_cosine, val_old
+    REAL ( KIND = rp_ ) :: breakp_max, slope_infeas_g
+    REAL ( KIND = rp_ ) :: fun_min
 
     LOGICAL :: beyond_first_breakpoint, recover
     CHARACTER ( LEN = 14 ) :: cluster
@@ -8972,11 +8990,11 @@ end do
        !  are allowed to vary from this one and still be considered to be
        !  within the same cluster
 
-       !       pert_val = MAX( epsmch ** 0.5, 0.001_wp * t_break )
-       pert_val = MAX( teneps, 0.001_wp * t_break )
+       !       pert_val = MAX( epsmch ** 0.5, 0.001_rp_ * t_break )
+       pert_val = MAX( teneps, 0.001_rp_ * t_break )
        pert_eps = epsmch
 
-       !       pert_val = epsmch * 100.0_wp
+       !       pert_val = epsmch * 100.0_rp_
        !       pert_eps = epsmch
        !       pert_val = zero
        !       pert_eps = zero
@@ -9261,7 +9279,7 @@ end do
        !  are allowed to vary from this one and still be considered to be
        !  within the same cluster
 
-       pert_val = MAX( teneps, 0.001_wp * t_break )
+       pert_val = MAX( teneps, 0.001_rp_ * t_break )
        pert_eps = epsmch
 
        feasep = t_break + pert_val
@@ -9370,7 +9388,7 @@ end do
 
       FUNCTION cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,          &
                                RES_l, RES_u, A_s, t, too_small )
-      REAL ( KIND = wp ) cauchy_get_val
+      REAL ( KIND = rp_ ) cauchy_get_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -9381,21 +9399,21 @@ end do
 !  Dummy arguments
 
 !      TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: m!, n
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho_g
-      REAL ( KIND = wp ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-      !REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m!, n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      !REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
       CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: C_type
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_u
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: as, infeas_g
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: as, infeas_g
 
       infeas_g = zero
 
@@ -9483,27 +9501,27 @@ end do
 !  Dummy arguments
 
 !      TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: m!, n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m!, n
       logical, intent( in ) :: exact
       CHARACTER ( Len = 2 ), DIMENSION( m ), INTENT( IN ) :: C_type
-!      INTEGER, INTENT( IN ) :: m_link
-!      INTEGER, INTENT( IN ), DIMENSION( m ) :: C_stat
-!      INTEGER, INTENT( IN ), DIMENSION( m_link ) :: REF
-!      INTEGER, INTENT( IN ), DIMENSION( n ) :: B_stat
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho_g
-      REAL ( KIND = wp ), INTENT( IN ) :: t, t_pert, too_small
-      REAL ( KIND = wp ), INTENT( OUT ) :: val, slope
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-!      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_link
+!      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
+!      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_link ) :: REF
+!      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: B_stat
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, t_pert, too_small
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+!      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_u
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: tp, as, infeas_g, slope_g
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: tp, as, infeas_g, slope_g
 
       IF ( exact ) THEN
         tp = t
@@ -9618,22 +9636,22 @@ end do
     type( TRIMSQP_inform_type ), intent( inout )    :: inform
     type( TRIMSQP_data_type ), intent( inout )      :: data
     type( NLPT_problem_type ), intent( inout )      :: nlp
-    real( kind = wp ), intent( in ), dimension( : ) :: Y, Y_a
-    real( kind = wp ), intent( in ), dimension( : ) :: JtY, AtY_a, Z
-    real( kind = wp ), intent( in ), dimension( : ) :: C_RES_l, C_RES_u
-    real( kind = wp ), intent( in ), dimension( : ) :: A_RES_l, A_RES_u
-    real( kind = wp ), intent( in ), dimension( : ) :: X_RES_l, X_RES_u
-    integer, intent( in ) :: out
+    real( kind = rp_ ), intent( in ), dimension( : ) :: Y, Y_a
+    real( kind = rp_ ), intent( in ), dimension( : ) :: JtY, AtY_a, Z
+    real( kind = rp_ ), intent( in ), dimension( : ) :: C_RES_l, C_RES_u
+    real( kind = rp_ ), intent( in ), dimension( : ) :: A_RES_l, A_RES_u
+    real( kind = rp_ ), intent( in ), dimension( : ) :: X_RES_l, X_RES_u
+    integer ( kind = ip_ ), intent( in ) :: out
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: i
-    real( kind = wp ) :: Gi, vl !, zi, low, upp, abs_i, Yi, sign
-    real( kind = wp ) :: primal_vl, dual_vl, comp_vl, rel_res
-    real( kind = wp ) :: penalty, dummy_real, term1, term2 !, stop_c
-    real( kind = wp ) :: sub_stop_p, sub_stop_c, subgrad_vl
+    integer ( kind = ip_ ) :: i
+    real( kind = rp_ ) :: Gi, vl !, zi, low, upp, abs_i, Yi, sign
+    real( kind = rp_ ) :: primal_vl, dual_vl, comp_vl, rel_res
+    real( kind = rp_ ) :: penalty, dummy_real, term1, term2 !, stop_c
+    real( kind = rp_ ) :: sub_stop_p, sub_stop_c, subgrad_vl
 
     inform%status = -1
 
@@ -10034,18 +10052,18 @@ end do
 
     type( NLPT_problem_type ), intent( in ) :: nlp
     type( TRIMSQP_data_type ), intent( in ) :: data
-    integer, intent( out ) :: status
-    integer, intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
-    integer, intent( inout ), dimension( nlp%m ), optional :: sat, vl_l, vl_u
-    real( kind = wp ), intent( out ) :: viol
-    real( kind = wp ), intent( in ), dimension( nlp%m ) :: v
+    integer ( kind = ip_ ), intent( out ) :: status
+    integer ( kind = ip_ ), intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
+    integer ( kind = ip_ ), intent( inout ), dimension( nlp%m ), optional :: sat, vl_l, vl_u
+    real( kind = rp_ ), intent( out ) :: viol
+    real( kind = rp_ ), intent( in ), dimension( nlp%m ) :: v
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: i
-    real( kind = wp ) :: res
+    integer ( kind = ip_ ) :: i
+    real( kind = rp_ ) :: res
 
     status = 0
 
@@ -10167,8 +10185,8 @@ end do
 !  Dummy arguments
 
     type( TRIMSQP_data_type ), intent( inout ) :: data
-    integer, intent( inout ) :: status
-    integer, intent( in ) :: qp
+    integer ( kind = ip_ ), intent( inout ) :: status
+    integer ( kind = ip_ ), intent( in ) :: qp
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -10273,7 +10291,7 @@ end do
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: out
+    integer ( kind = ip_ ) :: out
 
     out = data%control%out
 
@@ -10331,7 +10349,7 @@ end do
 
 !  Dummy arguments
 
-    real( kind = wp ) :: max_feas_step
+    real( kind = rp_ ) :: max_feas_step
     type( TRIMSQP_data_type ), intent( inout ) :: data
     type( NLPT_problem_type ), intent( in ) :: nlp
     character( len = 2 ), intent( in ), dimension(:) :: X_type, A_type, C_type
@@ -10340,11 +10358,11 @@ end do
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: nspos, nsneg, nApos, nAneg, nJpos, nJneg
-    integer :: i
-    real( kind = wp ) :: alpha_x, alpha_A, alpha_C
-    real( kind = wp ) :: dummy
-!    real( kind = wp ), parameter :: very_tiny = 1
+    integer ( kind = ip_ ) :: nspos, nsneg, nApos, nAneg, nJpos, nJneg
+    integer ( kind = ip_ ) :: i
+    real( kind = rp_ ) :: alpha_x, alpha_A, alpha_C
+    real( kind = rp_ ) :: dummy
+!    real( kind = rp_ ), parameter :: very_tiny = 1
 
     nspos = 0
     nsneg = 0
@@ -10500,15 +10518,15 @@ end do
 !  Dummy arguments
 
     character( len = 2 ), intent( in ), dimension(:) :: v_type
-    real( kind = wp ), intent( in ), dimension(:) :: vl, v, vu
-    real( kind = wp ), intent( out ), dimension(:) :: res_vl, res_vu
+    real( kind = rp_ ), intent( in ), dimension(:) :: vl, v, vu
+    real( kind = rp_ ), intent( out ), dimension(:) :: res_vl, res_vu
     !type( NLPT_problem_type ), intent( in ) :: nlp
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-    integer :: n, i
+    integer ( kind = ip_ ) :: n, i
 
     n = size(vl)
 
@@ -10536,20 +10554,20 @@ end do
 ! Dummy arguments
 
   character( len = 2 ), intent( in ), dimension(:) :: x_type
-  integer, intent( in ) :: out
-  real( kind = wp ), intent( in ) :: tol
-  real( kind = wp ), intent( in ), dimension(:) :: xl, xu
-  integer, intent( inout ), dimension(:) :: fx, fr, vl
-  real( kind = wp ), intent( in ), dimension(:) :: res_xl, res_xu
-  integer, intent( out ) :: nfx, nfr, nvl
+  integer ( kind = ip_ ), intent( in ) :: out
+  real( kind = rp_ ), intent( in ) :: tol
+  real( kind = rp_ ), intent( in ), dimension(:) :: xl, xu
+  integer ( kind = ip_ ), intent( inout ), dimension(:) :: fx, fr, vl
+  real( kind = rp_ ), intent( in ), dimension(:) :: res_xl, res_xu
+  integer ( kind = ip_ ), intent( out ) :: nfx, nfr, nvl
   !type( NLPT_problem_type ), intent( in ) :: nlp
 
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
-  integer :: n, i
-  real( kind = wp) :: r
+  integer ( kind = ip_ ) :: n, i
+  real( kind = rp_) :: r
 
   n = size( xl )
 
@@ -10640,20 +10658,20 @@ end do
   ! Dummy arguments
 
   !character( len = 2 ), intent( in ), dimension(:) :: x_type
-  integer, intent( in ) :: iterate, curve_mod, L, error, out
-  real( kind = wp ), intent( in ) :: eta
-  real( kind = wp ), intent( in ), dimension(:) :: gradLx_new, gradLx, s_f
-  integer, intent( inout ), dimension(:) ::  ind
-  real( kind = wp ), intent( inout ), dimension(:,:) :: A, B, S, Y, SBinner
+  integer ( kind = ip_ ), intent( in ) :: iterate, curve_mod, L, error, out
+  real( kind = rp_ ), intent( in ) :: eta
+  real( kind = rp_ ), intent( in ), dimension(:) :: gradLx_new, gradLx, s_f
+  integer ( kind = ip_ ), intent( inout ), dimension(:) ::  ind
+  real( kind = rp_ ), intent( inout ), dimension(:,:) :: A, B, S, Y, SBinner
   type( SMT_type ), intent( in ) :: Bzero
 
   !---------------------------------------------------
   !   L o c a l   V a r i a b l e s
   !---------------------------------------------------
 
-  integer :: dummy_int, last, col, i, j, k
-  real( kind = wp ) :: theta, sta, stBs, ytS
-  real( kind = wp ), dimension(size(s_f)) :: Bs
+  integer ( kind = ip_ ) :: dummy_int, last, col, i, j, k
+  real( kind = rp_ ) :: theta, sta, stBs, ytS
+  real( kind = rp_ ), dimension(size(s_f)) :: Bs
 
  ! Figure out which column is being added/replaced.
 
@@ -10737,4 +10755,4 @@ end SUBROUTINE get_L_BFGS
 
 !  End of module GALAHAD_TRIMSQP
 
-   END MODULE GALAHAD_TRIMSQP_double
+   END MODULE GALAHAD_TRIMSQP_precision

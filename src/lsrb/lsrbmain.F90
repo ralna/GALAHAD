@@ -17,7 +17,7 @@
     USE GALAHAD_BLLS_precision
     USE GALAHAD_SLLS_precision
     USE hsl_mi35_precision, ONLY: mi35_control, mi35_info, mi35_check_matrix
-    USE spral_rutherford_boeing
+    USE SPRAL_RUTHERFORD_BOEING_precision
 
     IMPLICIT NONE
 

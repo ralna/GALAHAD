@@ -1,10 +1,13 @@
-! THIS VERSION: GALAHAD 3.3 - 30/05/2021 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:20 GMT.
+#include "galahad_modules.h"
 PROGRAM S2QP_test !! far from comprehensive
-  USE GALAHAD_SMT_double
-  USE GALAHAD_NLPT_double
-  USE GALAHAD_S2QP_double
-  USE GALAHAD_SPACE_double
-  USE GALAHAD_SMT_double
+
+  USE GALAHAD_USERDATA_precision
+  USE GALAHAD_SMT_precision
+  USE GALAHAD_NLPT_precision
+  USE GALAHAD_S2QP_precision
+  USE GALAHAD_SPACE_precision
+  USE GALAHAD_SMT_precision
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
   !*************************************************!
@@ -21,26 +24,25 @@ PROGRAM S2QP_test !! far from comprehensive
   !                        -2 <=  x4 <= 2           !
   !                                                 !
   !*************************************************!
-  INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision.
-  REAL ( KIND = wp ), PARAMETER :: zero     = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one      = 1.0_wp
-  REAL ( KIND = wp ), PARAMETER :: two      = 2.0_wp
-  REAL ( KIND = wp ), PARAMETER :: three    = 3.0_wp
-  REAL ( KIND = wp ), PARAMETER :: four     = 4.0_wp
-  REAL ( KIND = wp ), PARAMETER :: ten      = 10.0_wp
-  REAL ( KIND = wp ), PARAMETER :: infinity = 1.0D+18
-  INTEGER, PARAMETER :: out   = 6
-  INTEGER, PARAMETER :: error = 6
-  INTEGER :: m, m_a, n, Ane, Jne, Hne, status, alloc_status
-  INTEGER :: num_recursive_calls, max_num_recursive_calls
+  REAL ( KIND = rp_ ), PARAMETER :: zero     = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one      = 1.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: two      = 2.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: three    = 3.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: four     = 4.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: ten      = 10.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: infinity = 1.0D+18
+  INTEGER ( KIND = ip_ ), PARAMETER :: out   = 6
+  INTEGER ( KIND = ip_ ), PARAMETER :: error = 6
+  INTEGER ( KIND = ip_ ) :: m, m_a, n, Ane, Jne, Hne, status, alloc_status
+  INTEGER ( KIND = ip_ ) :: num_recursive_calls, max_num_recursive_calls
   LOGICAL :: is_specfile, print_debug
   CHARACTER ( LEN = 16 ) :: spec_name = "RUNS2QP.SPC"
-  INTEGER, PARAMETER :: spec_device = 60
+  INTEGER ( KIND = ip_ ), PARAMETER :: spec_device = 60
   TYPE ( NLPT_problem_type ) :: nlp 
   TYPE ( S2QP_control_type ) :: control
   TYPE ( S2QP_inform_type ) :: inform
   TYPE ( S2QP_data_type ) :: data
-  TYPE ( NLPT_userdata_type ) :: userdata
+  TYPE ( GALAHAD_userdata_type ) :: userdata
   EXTERNAL fun_FC, fun_GJ, fun_H
   
   ! Set problem dimensions.
@@ -149,7 +151,7 @@ PROGRAM S2QP_test !! far from comprehensive
   nlp%C_u      = (/ two, four /)
   nlp%X_l      = (/ -two, -two, -two, -two /)
   nlp%X_u      = (/  two,  two,  two, two /)
-  nlp%X        = (/  0.1_wp, 0.125_wp, 0.666666_wp, 0.142857_wp /)
+  nlp%X        = (/  0.1_rp_, 0.125_rp_, 0.666666_rp_, 0.142857_rp_ /)
   nlp%Y        = zero
   nlp%Y_a      = zero
   nlp%Z        = zero
@@ -184,8 +186,9 @@ PROGRAM S2QP_test !! far from comprehensive
    ELSE
      WRITE( 6, "( ' error return, statu = ', I0 )" ) inform%status
    END IF
-
+   WRITE( 6, "( /, ' tests completed' )" )
    WRITE( 6, "( /, ' ** far from comprehensive, to be improved' )" )
+
    STOP
 
    ! Abnormal return.
@@ -200,22 +203,21 @@ PROGRAM S2QP_test !! far from comprehensive
  ! ------------------------   EXTERNAL FUNCTIONS   --------------------------
 
  SUBROUTINE fun_FC( status, X, userdata, F, C )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 ) ! Set precision
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: F
-   REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-   INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+   REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
    
-   REAL( KIND = wp ) :: X1, X2, X3, X4
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4
 
    ! Compute function values.
 
@@ -238,24 +240,23 @@ PROGRAM S2QP_test !! far from comprehensive
 !-*-*-*-*-*-*-*-*-   f u n G J   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_GJ( status, X, userdata, G, Jval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: G
-   REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: Jval
-   INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT(INOUT) :: userdata
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), intent(out), OPTIONAL, DIMENSION( : ) :: G
+   REAL ( KIND = rp_ ), intent(out), OPTIONAL, DIMENSION( : ) :: Jval
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
 
    ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24 
+   REAL( KIND = rp_ ) :: X1, X2, X3
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24 
 
    ! get the gradient function values.
    
@@ -291,24 +292,23 @@ PROGRAM S2QP_test !! far from comprehensive
 !-*-*-*-*-*-*-*-*-   f u n H   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_H( status, X, Y, userdata, Hval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  twelve = 12.0_wp   
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_   
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 
-   REAL( KIND = wp ) :: X1, Y1, Y2
-   REAL( KIND = wp ) :: H11, H21, H22, H31, H32, H33
+   REAL( KIND = rp_ ) :: X1, Y1, Y2
+   REAL( KIND = rp_ ) :: H11, H21, H22, H31, H32, H33
 
    ! to prevent warning message
 

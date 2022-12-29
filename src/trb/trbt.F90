@@ -332,6 +332,7 @@
    END DO
    DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
    DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
 
 CONTAINS
 

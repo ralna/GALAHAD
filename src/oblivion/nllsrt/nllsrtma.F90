@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 08/02/2013 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 Program NLLSRTMA
 
@@ -7,10 +9,11 @@ Program NLLSRTMA
   Implicit None
   Integer :: N, M
   Integer, Parameter :: INSPEC = 46, INPUT = 47, IOUT = 6
-  INTEGER, PARAMETER :: io_buffer = 11
-  INTEGER, PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
-  INTEGER :: IERR, MYMAXIT, iter, iprint, iter_int, iter_int_tot, cutest_status 
-  Real( Kind = wp ), Dimension( : ), Allocatable :: X,BL,BU,V,CL,CU,TOL,OUTPUT
+  INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+  INTEGER ( KIND = ip_ ), PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
+  INTEGER ( KIND = ip_ ) :: IERR, MYMAXIT, iter, iprint, iter_int
+  INTEGER ( KIND = ip_ ) :: iter_int_tot, cutest_status 
+  Real( Kind = rp_ ), Dimension( : ), Allocatable :: X,BL,BU,V,CL,CU,TOL,OUTPUT
   Real, Dimension( 2 ) :: CPU( 2 )
   Real, Dimension( 7 ) :: CALLS( 7 )
   Character( len = 10 ) ::  PNAME
@@ -64,7 +67,7 @@ Program NLLSRTMA
      OPEN( UNIT = 200, FILE = 'history_rt', STATUS='old' , POSITION='append')
      write(200,'(''Problem '',A10, ''N='',I5,'' M='',I5)') PNAME , N,M
   end if
-  CALL NLLSRT(N,M, X, MYMAXIT,TOL,OUTPUT, IERR,iter,iter_int,iter_int_tot,iprint)
+  CALL NLLSRT(N,M, X, MYMAXIT,TOL,OUTPUT,IERR,iter,iter_int,iter_int_tot,iprint)
 	
   !
   !  Close the problem file
@@ -104,7 +107,7 @@ Program NLLSRTMA
        sqrt(OUTPUT(1)),OUTPUT(1), OUTPUT(2)
   write(100,'(  ''iter='',I5,''  iter_int='',I8,''  iter_int_tot='',I8 )') &
 	 iter, iter_int, iter_int_tot
-  write(100,'(''exit='',I2,''    Set up time= '',f8.2, '' solve time= '',f8.2   )') &
+  write(100,"('exit=',I2,'    Set up time= '',f8.2, ' solve time= ',f8.2   )") &
 	IERR, CPU(1), CPU(2) 
   !
   !
@@ -112,12 +115,13 @@ Program NLLSRTMA
   !
   if (iprint.gt.0) then
      write(200,'()') 
-     write(200,'(''||C_k||='',d10.5,'' ||C_k||^2='',d10.5,'' ||g_k||='', d10.5 )') sqrt(OUTPUT(1)),OUTPUT(1), OUTPUT(2)
-     WRITE(200,'( ''iter='',I5, ''  iter_int='',I8,''  iter_int_tot='',I8 )') &
+     write(200,"('||C_k||=',d10.5,' ||C_k||^2=',d10.5,' ||g_k||=', d10.5 )")   &
+        sqrt(OUTPUT(1)),OUTPUT(1), OUTPUT(2)
+     WRITE(200,"( 'iter=',I5, '  iter_int=',I8,'  iter_int_tot=',I8 )")        &
 	iter, iter_int, iter_int_tot
-     WRITE(200,'( ''exit='',I2,''    Set up time= '',f8.2, '' solve time= '',f8.2   )') & 
+     WRITE(200,"( 'exit=',I2,'    Set up time= ',f8.2, ' solve time= ',f8.2 )")&
 	IERR, CPU(1), CPU(2)
-     write(200,'( ''************************************************'')')
+     write(200,"( '************************************************')")
   end if
   !
   !

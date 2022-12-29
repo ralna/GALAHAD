@@ -1,4 +1,6 @@
-  ! THIS VERSION: GALAHAD 2.1 - 22/12/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N S 2 Q P _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,7 +9,8 @@
 !  December 22nd 2007
 
    PROGRAM RUNS2QP_SIF
-   USE GALAHAD_USES2QP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USES2QP_precision
 
 !  Main program for the SIF interface to S2QP, a trust-region SQP
 !  method algorithm for nonlinear programming, in which descent is
@@ -15,10 +18,10 @@
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

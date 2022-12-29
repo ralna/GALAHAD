@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ F I S Q P   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FISQP_double
+   MODULE GALAHAD_FISQP_precision
 
 !     ----------------------------------------------------------
 !    |                                                          |
@@ -33,20 +35,20 @@
 !$    USE omp_lib
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
-     USE GALAHAD_USERDATA_double
-     USE GALAHAD_FILTER_double
-     USE GALAHAD_L1QP_double
-     USE GALAHAD_EQP_double
-     USE GALAHAD_SLS_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-     USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_FILTER_precision
+     USE GALAHAD_L1QP_precision
+     USE GALAHAD_EQP_precision
+     USE GALAHAD_SLS_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+     USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
      USE GALAHAD_STRING
-     USE GALAHAD_OPT_double
-     USE GALAHAD_MOP_double
-     USE GALAHAD_LMS_double
+     USE GALAHAD_OPT_precision
+     USE GALAHAD_MOP_precision
+     USE GALAHAD_LMS_precision
 
      IMPLICIT NONE
 
@@ -55,53 +57,46 @@
                FISQP_terminate, NLPT_problem_type, GALAHAD_userdata_type,      &
                SMT_type, SMT_put
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER, PARAMETER :: fixed = 0
-     INTEGER, PARAMETER :: equality = 0
-     INTEGER, PARAMETER :: lower = 1
-     INTEGER, PARAMETER :: upper = 2
-     INTEGER, PARAMETER :: both = 3
-     INTEGER, PARAMETER :: free = 4
-     INTEGER, PARAMETER :: history_max = 100
+     INTEGER ( KIND = ip_ ), PARAMETER :: fixed = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: equality = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: lower = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: upper = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: both = 3
+     INTEGER ( KIND = ip_ ), PARAMETER :: free = 4
+     INTEGER ( KIND = ip_ ), PARAMETER :: history_max = 100
 
-     INTEGER, PARAMETER :: s_accel = 1
-     INTEGER, PARAMETER :: s_normal = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: s_accel = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: s_normal = 2
 
-     INTEGER, PARAMETER :: identity_predictor_hessian = 0
-     INTEGER, PARAMETER :: se_modified_predictor_hessian = 1
-     INTEGER, PARAMETER :: dd_modified_predictor_hessian = 2
-     INTEGER, PARAMETER :: l_bfgs_predictor_hessian = 3
-     INTEGER, PARAMETER :: powell_l_bfgs_predictor_hessian = 4
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: five = 5.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: tenth = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-     REAL ( KIND = wp ), PARAMETER :: point8 = 0.8_wp
-     REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: minus_infinity = - ( HUGE( one ) / two )
-     REAL ( KIND = wp ), PARAMETER :: ten5 = ten ** 5
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: y_tiny = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: z_tiny = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: mu_tol = point1
+     INTEGER ( KIND = ip_ ), PARAMETER :: identity_predictor_hessian = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: se_modified_predictor_hessian = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: dd_modified_predictor_hessian = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: l_bfgs_predictor_hessian = 3
+     INTEGER ( KIND = ip_ ), PARAMETER :: powell_l_bfgs_predictor_hessian = 4
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: five = 5.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenth = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point8 = 0.8_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: minus_infinity = - ( HUGE( one ) / two )
+     REAL ( KIND = rp_ ), PARAMETER :: ten5 = ten ** 5
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: y_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: z_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: mu_tol = point1
 
 !    LOGICAL, PARAMETER :: print_debug = .TRUE.
      LOGICAL, PARAMETER :: print_debug = .FALSE.
@@ -119,43 +114,43 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   the number of iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !   removal of the file alive_file from unit alive_unit causes execution
 !    to cease
 
-       INTEGER :: alive_unit = 60
+       INTEGER ( KIND = ip_ ) :: alive_unit = 60
        CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   maximum number of iterations
 
-       INTEGER :: maxit = 100
+       INTEGER ( KIND = ip_ ) :: maxit = 100
 
 !   number of fails allowed before a monotone step is required
 
-       INTEGER :: max_fails = 0
+       INTEGER ( KIND = ip_ ) :: max_fails = 0
 
 !   predictor Hessian B_k update strategy
 !    = 0 if scaled identity
@@ -164,14 +159,15 @@
 !    = 3 if L-BFGS with indefinite update skipping used
 !    = 4 if L-BFGS with Powell corrections used
 
-       INTEGER :: predictor_hessian = se_modified_predictor_hessian
+       INTEGER ( KIND = ip_ ) :: predictor_hessian                             &
+                                   = se_modified_predictor_hessian
 
 !   scale the constraints
 !    = 0 unscaled
 !    = 1 scale by the infinity norms of the Jacobian rows at the initial point
 !    = 2 scale as in 1 but rescale relative to the largest
 
-       INTEGER :: scale_constraints = 0
+       INTEGER ( KIND = ip_ ) :: scale_constraints = 0
 
 !  indefinite linear equation solver for use with predictor = 2
 
@@ -180,7 +176,7 @@
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-       REAL ( KIND = wp ) :: infinity = ten ** 19
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   overall convergence tolerances. The iteration will terminate when the norm
 !    of violation of the constraints (the "primal infeasibility") is smaller
@@ -190,71 +186,71 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_p = ten ** ( - 5 )
-       REAL ( KIND = wp ) :: stop_rel_p = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_p = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_d = ten ** ( - 5 )
-       REAL ( KIND = wp ) :: stop_rel_d = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_d = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-       REAL ( KIND = wp ) :: stop_abs_c = ten ** ( - 5 )
-       REAL ( KIND = wp ) :: stop_rel_c = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_c = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
 
 !   the required absolute and relative accuracies for the infeasibility
 !    The iteration will stop at a minimizer of the infeasibility if the
 !    gradient of the infeasibility (J^T c) is smaller in norm than
 !    control%stop_abs_i times the norm of c
 
-       REAL ( KIND = wp ) :: stop_abs_i = ten ** ( - 5 )
-       REAL ( KIND = wp ) :: stop_rel_i = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_i = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_rel_i = epsmch
 
 !   the minimum useful predictor decrease allowed when approximately feasible
 
-       REAL ( KIND = wp ) :: stop_predictor = ten ** ( - 12 )
+       REAL ( KIND = rp_ ) :: stop_predictor = ten ** ( - 12 )
 
 !   the maximum infeasibility tolerated will be the larger of
 !    max_abs_i and max_rel_i times the initial infeasibility
 
-       REAL ( KIND = wp ) :: max_abs_i = ten
-       REAL ( KIND = wp ) :: max_rel_i = ten
+       REAL ( KIND = rp_ ) :: max_abs_i = ten
+       REAL ( KIND = rp_ ) :: max_rel_i = ten
 
 !   the minimum and maximum constraint scaling factors allowed with
 !    scale_constraints > 0
 
-       REAL ( KIND = wp ) :: min_constraint_scaling = ten ** ( - 5 )
-       REAL ( KIND = wp ) :: max_constraint_scaling = ten ** 5
+       REAL ( KIND = rp_ ) :: min_constraint_scaling = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: max_constraint_scaling = ten ** 5
 
 !   the minimum perturbation when building the predictor Hessian
 
-       REAL ( KIND = wp ) :: min_hessian_perturbation = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: min_hessian_perturbation = ten ** ( - 5 )
 
 !   initial trust-region radius for steering subproblem
 
-       REAL ( KIND = wp ) :: radius_steering = ten ** 2
+       REAL ( KIND = rp_ ) :: radius_steering = ten ** 2
 
 !   initial trust-region radius for accelerator subproblem
 
-       REAL ( KIND = wp ) :: radius_accelerator = ten ** 2
+       REAL ( KIND = rp_ ) :: radius_accelerator = ten ** 2
 
 !   step reduction factor when back-tracking to balance the step steering and
 !    predictor steps
 
-       REAL ( KIND = wp ) :: tau_reduce = 0.5_wp
+       REAL ( KIND = rp_ ) :: tau_reduce = 0.5_rp_
 
 !   lower bound on the back-tracking balancing step
 
-       REAL ( KIND = wp ) :: tau_min = ten ** ( - 14 )
+       REAL ( KIND = rp_ ) :: tau_min = ten ** ( - 14 )
 
 !   initial penalty parameter
 
-       REAL ( KIND = wp ) :: sigma_0 = 10.0_wp
+       REAL ( KIND = rp_ ) :: sigma_0 = 10.0_rp_
 
 !   minimum penalty parameter increase
 
-       REAL ( KIND = wp ) :: sigma_inc = 5.0_wp
+       REAL ( KIND = rp_ ) :: sigma_inc = 5.0_rp_
 
 !   use the accelerator step?
 
@@ -262,73 +258,73 @@
 
 !   lower bound on step size for cauchy-f
 
-       REAL ( KIND = wp ) :: alpha_f_min = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: alpha_f_min = ten ** ( - 8 )
 
 !   lower bound on step size for cauchy-phi
 
-       REAL ( KIND = wp ) :: alpha_phi_min = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: alpha_phi_min = ten ** ( - 8 )
 
 !   Filter margin reduction parameter; require an improvement by at least
 !    beta * violation in one filter dimension
 
-       REAL ( KIND = wp ) :: beta = 0.98_wp
+       REAL ( KIND = rp_ ) :: beta = 0.98_rp_
 
 !   Filter margin reduction parameter; require an improvement in violation
 !    by at least eta_v * linearized violation reduction
 
-       REAL ( KIND = wp ) :: eta_v = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: eta_v = ten ** ( - 3 )
 
 !   Filter margin reduction parameter; require an improvement in objective
 !    by at least gamma * new violation
 
-       REAL ( KIND = wp ) :: gamma = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: gamma = ten ** ( - 3 )
 
 !   violation reduction parameter; require an improvement in linearized
 !    violation by at least gamma_v * linearized objective reduction to
 !    be a v-pair
 
-       REAL ( KIND = wp ) :: gamma_v = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: gamma_v = ten ** ( - 3 )
 
 !   objective reduction parameter; require an improvement in objective value
 !    by at least gamma_f * predicted objective reduction to be an o-pair
 
-       REAL ( KIND = wp ) :: gamma_f = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: gamma_f = ten ** ( - 4 )
 
 !   penalty function reduction parameter; require an improvement in penalty
 !    value by at least gamma_phi * predicted penalty reduction to be an b-
 !    or p-pair
 
-       REAL ( KIND = wp ) :: gamma_phi = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: gamma_phi = ten ** ( - 4 )
 
 !   penalty parameter increase parameter; increase sigma if linearized
 !    penalty function is less that eta_sigma * linearized violation
 
-       REAL ( KIND = wp ) :: eta_sigma = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: eta_sigma = ten ** ( - 6 )
 
 !   The penalty parameter will be updated if the predicted penalty function
 !    decrease at s_k relative to that at s_k^p is smaller than eta_phi
 
-       REAL ( KIND = wp ) :: eta_phi = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: eta_phi = ten ** ( - 3 )
 
 !   backtracking parameter
 
-       REAL ( KIND = wp ) :: alpha_reduce = 0.5_wp
+       REAL ( KIND = rp_ ) :: alpha_reduce = 0.5_rp_
 
 !   a lower bound on permitted step size
 
-       REAL ( KIND = wp ) :: s_tiny = epsmch
+       REAL ( KIND = rp_ ) :: s_tiny = epsmch
 
 !  zero Jacobian entry tolerance
 
-       REAL ( KIND = wp ) :: jacobian_zero_tolerance = epsmch
+       REAL ( KIND = rp_ ) :: jacobian_zero_tolerance = epsmch
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: clock_time_limit = - one
+       REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   full_solution specifies whether the full solution or only highlights
 !    will be printed
@@ -394,43 +390,43 @@
 
 !  the total CPU time spent in the package
 
-       REAL ( KIND = wp ) :: total = 0.0
+       REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-       REAL ( KIND = wp ) :: preprocess = 0.0
+       REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-       REAL ( KIND = wp ) :: analyse = 0.0
+       REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-       REAL ( KIND = wp ):: factorize = 0.0
+       REAL ( KIND = rp_ ):: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-       REAL ( KIND = wp ) :: solve = 0.0
+       REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-       REAL ( KIND = wp ) :: clock_preprocess = 0.0
+       REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-       REAL ( KIND = wp ) :: clock_analyse = 0.0
+       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-       REAL ( KIND = wp ) :: clock_factorize = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-       REAL ( KIND = wp ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
      END TYPE FISQP_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -441,11 +437,11 @@
 
 !  return status. See FISQP_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -457,72 +453,72 @@
 
 !  the total number of iterations performed
 
-       INTEGER :: iter = 0
+       INTEGER ( KIND = ip_ ) :: iter = 0
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by FISQP_solve
 
-       REAL ( KIND = wp ) :: obj = HUGE( one )
+       REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the value of the primal infeasibility
 
-       REAL ( KIND = wp ) :: primal_infeasibility = HUGE( one )
+       REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
 !  the value of the dual infeasibility
 
-       REAL ( KIND = wp ) :: dual_infeasibility = HUGE( one )
+       REAL ( KIND = rp_ ) :: dual_infeasibility = HUGE( one )
 
 !  the value of the complementary slackness
 
-       REAL ( KIND = wp ) :: complementary_slackness = HUGE( one )
+       REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
 !  the number of times that penalty mode was entered
 
-       INTEGER :: entered_penalty = 0
+       INTEGER ( KIND = ip_ ) :: entered_penalty = 0
 
 !  the number of iterations in penalty mode.
 
-       INTEGER :: iter_in_penalty = 0
+       INTEGER ( KIND = ip_ ) :: iter_in_penalty = 0
 
 !  the number of accepted v-pairs
 
-       INTEGER :: num_v = 0
+       INTEGER ( KIND = ip_ ) :: num_v = 0
 
 !  the number of accepted o-pairs
 
-       INTEGER :: num_o = 0
+       INTEGER ( KIND = ip_ ) :: num_o = 0
 
 !  the number of accepted b-pairs
 
-       INTEGER :: num_b = 0
+       INTEGER ( KIND = ip_ ) :: num_b = 0
 
 !  the number of accepted p-pairs
 
-       INTEGER :: num_p = 0
+       INTEGER ( KIND = ip_ ) :: num_p = 0
 
 !  the number of nonmonotone steps taken
 
-       INTEGER :: num_nm = 0
+       INTEGER ( KIND = ip_ ) :: num_nm = 0
 
 !  the number of objective and constraint function evaluations
 
-       INTEGER :: fc_eval = 0
+       INTEGER ( KIND = ip_ ) :: fc_eval = 0
 
 !  the number of gradient and Jacobian evaluations
 
-       INTEGER :: gj_eval = 0
+       INTEGER ( KIND = ip_ ) :: gj_eval = 0
 
 !  the number of Hessian evaluations
 
-       INTEGER :: h_eval = 0
+       INTEGER ( KIND = ip_ ) :: h_eval = 0
 
 !  the number of factorizations that modified the original matrix
 
-       INTEGER :: modifications = 0
+       INTEGER ( KIND = ip_ ) :: modifications = 0
 
 !  the number of threads used
 
-       INTEGER :: threads = 1
+       INTEGER ( KIND = ip_ ) :: threads = 1
 
 !  was the last whether Hessian modified?
 
@@ -560,21 +556,22 @@
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: FISQP_data_type
-       INTEGER :: branch, eval_status, H_ne, J_ne, fails, success_iter
-       INTEGER :: out, error, print_level, start_print, stop_print
-       INTEGER :: print_level_eqp, print_level_eqp_sbls, print_level_eqp_gltr
+       INTEGER ( KIND = ip_ ) :: branch, eval_status, H_ne, J_ne, fails
+       INTEGER ( KIND = ip_ ) :: out, error, success_iter, print_level_eqp_gltr
+       INTEGER ( KIND = ip_ ) :: print_level, start_print, stop_print
+       INTEGER ( KIND = ip_ ) :: print_level_eqp, print_level_eqp_sbls
        REAL :: time_start, time_now
-       REAL ( KIND = wp ) :: clock_start, clock_now
-       REAL ( KIND = wp ) :: alpha, tau, stop_p, stop_d, stop_c, stop_i
-       REAL ( KIND = wp ) :: del_ellf, del_ellf_ref, del_ellphi, del_ellv
-       REAL ( KIND = wp ) :: del_ellv_ref, del_ellv_steer_ref, del_qf, del_qphi
-       REAL ( KIND = wp ) :: del_qphi_pred, ellv, f_current, f_ref, f_trial
-       REAL ( KIND = wp ) :: rho_f_ref, rho_phi_ref, sigma, sigma_new, s_norm
-       REAL ( KIND = wp ) :: sigma_new_ref, accel_norm
-       REAL ( KIND = wp ) :: phi, phi_ref, primal_viol, primal_viol_ref
-       REAL ( KIND = wp ) :: comp_viol, comp_viol_ref, viol_trial,phi_trial
-       REAL ( KIND = wp ) :: stop_p_inner, stop_d_inner, stop_c_inner, h_norm
-       REAL ( KIND = wp ) :: radius_accelerator
+       REAL ( KIND = rp_ ) :: clock_start, clock_now
+       REAL ( KIND = rp_ ) :: alpha, tau, stop_p, stop_d, stop_c, stop_i
+       REAL ( KIND = rp_ ) :: del_ellf, del_ellf_ref, del_ellphi, del_ellv
+       REAL ( KIND = rp_ ) :: del_ellv_ref, del_ellv_steer_ref, del_qf, del_qphi
+       REAL ( KIND = rp_ ) :: del_qphi_pred, ellv, f_current, f_ref, f_trial
+       REAL ( KIND = rp_ ) :: rho_f_ref, rho_phi_ref, sigma, sigma_new, s_norm
+       REAL ( KIND = rp_ ) :: sigma_new_ref, accel_norm
+       REAL ( KIND = rp_ ) :: phi, phi_ref, primal_viol, primal_viol_ref
+       REAL ( KIND = rp_ ) :: comp_viol, comp_viol_ref, viol_trial,phi_trial
+       REAL ( KIND = rp_ ) :: stop_p_inner, stop_d_inner, stop_c_inner, h_norm
+       REAL ( KIND = rp_ ) :: radius_accelerator
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -585,24 +582,24 @@
        CHARACTER ( LEN = 1 ) :: it_type = REPEAT( ' ', 1 )
        CHARACTER ( LEN = 1 ) :: d_type = REPEAT( ' ', 1 )
        CHARACTER ( LEN = 8 ) :: step_used = REPEAT( ' ', 8 )
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DG
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_ref
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_steer
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_pred
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_accel
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_accel_ref
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_ref
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_trial
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_trial
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_scale
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_accel
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_accel
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK_n
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK_m
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_ref
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_steer
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_pred
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_accel
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_accel_ref
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_ref
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_trial
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_trial
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_accel
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_accel
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_n
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_m
 
 !  copy of controls
 
@@ -757,7 +754,7 @@
 !-----------------------------------------------
 
      TYPE ( FISQP_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -766,66 +763,77 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: alive_unit = out + 1
-     INTEGER, PARAMETER :: print_level = alive_unit + 1
-     INTEGER, PARAMETER :: start_print = print_level + 1
-     INTEGER, PARAMETER :: stop_print  = start_print + 1
-     INTEGER, PARAMETER :: print_gap = stop_print + 1
-     INTEGER, PARAMETER :: maxit = print_gap + 1
-     INTEGER, PARAMETER :: infinity = maxit + 1
-     INTEGER, PARAMETER :: stop_abs_p = infinity + 1
-     INTEGER, PARAMETER :: stop_rel_p = stop_abs_p + 1
-     INTEGER, PARAMETER :: stop_abs_d = stop_rel_p + 1
-     INTEGER, PARAMETER :: stop_rel_d = stop_abs_d + 1
-     INTEGER, PARAMETER :: stop_abs_c = stop_rel_d + 1
-     INTEGER, PARAMETER :: stop_rel_c = stop_abs_c + 1
-     INTEGER, PARAMETER :: stop_abs_i = stop_rel_c + 1
-     INTEGER, PARAMETER :: stop_rel_i = stop_abs_i + 1
-     INTEGER, PARAMETER :: stop_predictor = stop_rel_i + 1
-     INTEGER, PARAMETER :: max_abs_i = stop_predictor + 1
-     INTEGER, PARAMETER :: max_rel_i = max_abs_i + 1
-     INTEGER, PARAMETER :: min_constraint_scaling = max_abs_i + 1
-     INTEGER, PARAMETER :: max_constraint_scaling                              &
-                             = min_constraint_scaling + 1
-     INTEGER, PARAMETER :: min_hessian_perturbation                            &
-                             = max_constraint_scaling + 1
-     INTEGER, PARAMETER :: just_penalty = min_hessian_perturbation + 1
-     INTEGER, PARAMETER :: just_filter = just_penalty + 1
-     INTEGER, PARAMETER :: max_fails = just_filter + 1
-     INTEGER, PARAMETER :: predictor_hessian = max_fails + 1
-     INTEGER, PARAMETER :: scale_constraints = predictor_hessian + 1
-     INTEGER, PARAMETER :: radius_steering = scale_constraints + 1
-     INTEGER, PARAMETER :: eta_v = radius_steering + 1
-     INTEGER, PARAMETER :: tau_reduce = eta_v + 1
-     INTEGER, PARAMETER :: tau_min = tau_reduce + 1
-     INTEGER, PARAMETER :: eta_sigma = tau_min + 1
-     INTEGER, PARAMETER :: eta_phi = eta_sigma + 1
-     INTEGER, PARAMETER :: sigma_0 = eta_phi + 1
-     INTEGER, PARAMETER :: sigma_inc = sigma_0 + 1
-     INTEGER, PARAMETER :: use_accelerator = sigma_inc + 1
-     INTEGER, PARAMETER :: radius_accelerator = use_accelerator + 1
-     INTEGER, PARAMETER :: alpha_f_min = radius_accelerator + 1
-     INTEGER, PARAMETER :: alpha_phi_min = alpha_f_min + 1
-     INTEGER, PARAMETER :: beta = alpha_phi_min + 1
-     INTEGER, PARAMETER :: gamma = beta + 1
-     INTEGER, PARAMETER :: gamma_v = gamma + 1
-     INTEGER, PARAMETER :: gamma_f = gamma_v + 1
-     INTEGER, PARAMETER :: gamma_phi = gamma_f + 1
-     INTEGER, PARAMETER :: alpha_reduce = gamma_phi + 1
-     INTEGER, PARAMETER :: s_tiny = alpha_reduce + 1
-     INTEGER, PARAMETER :: jacobian_zero_tolerance = s_tiny + 1
-     INTEGER, PARAMETER :: cpu_time_limit = jacobian_zero_tolerance + 1
-     INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER, PARAMETER :: filter_uses_steering = clock_time_limit + 1
-     INTEGER, PARAMETER :: full_solution = filter_uses_steering + 1
-     INTEGER, PARAMETER :: space_critical = full_solution + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: linear_solver_for_modifications = alive_file + 1
-     INTEGER, PARAMETER :: prefix = linear_solver_for_modifications + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = alive_unit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_print  = start_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_p = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_p = stop_abs_p + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_d = stop_rel_p + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_d = stop_abs_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_c = stop_rel_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_i = stop_rel_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_i = stop_abs_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_predictor = stop_rel_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_abs_i = stop_predictor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_rel_i = max_abs_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_abs_i + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
+                                            = min_constraint_scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_hessian_perturbation             &
+                                            = max_constraint_scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: just_penalty                         &
+                                            = min_hessian_perturbation + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: just_filter = just_penalty + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_fails = just_filter + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: predictor_hessian = max_fails + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_constraints                    &
+                                            = predictor_hessian + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: radius_steering                      &
+                                            = scale_constraints + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_v = radius_steering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: tau_reduce = eta_v + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: tau_min = tau_reduce + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_sigma = tau_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_phi = eta_sigma + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sigma_0 = eta_phi + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sigma_inc = sigma_0 + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: use_accelerator = sigma_inc + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: radius_accelerator                   &
+                                            = use_accelerator + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_f_min = radius_accelerator + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_phi_min = alpha_f_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: beta = alpha_phi_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: gamma = beta + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: gamma_v = gamma + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: gamma_f = gamma_v + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: gamma_phi = gamma_f + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_reduce = gamma_phi + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: s_tiny = alpha_reduce + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: jacobian_zero_tolerance = s_tiny + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+                                            = jacobian_zero_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: filter_uses_steering                 &
+                                            = clock_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: full_solution                        &
+                                            = filter_uses_steering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = full_solution + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: linear_solver_for_modifications      &
+                                            = alive_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix                               &
+                                           = linear_solver_for_modifications + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 16 ), PARAMETER :: specname = 'FISQP          '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1177,7 +1185,7 @@
 !  For full details see the specification sheet for GALAHAD_FISQP.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_FISQP_double
+!  ** GALAHAD_FISQP_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -1229,7 +1237,7 @@
 !    be allocated when the dense or diagonal storage schemes are used.
 !
 !   H%ptr is a rank-one allocatable array of dimension n+1 and type default
-!    integer, that holds the starting position of  each row of the lower
+!    integer, that holds the starting position of each row of the lower
 !    triangular part of H, as well as the total number of entries plus one,
 !    in the sparse row-wise storage scheme. It need not be allocated when the
 !    other schemes are used.
@@ -1535,34 +1543,31 @@
 
      INTERFACE
        SUBROUTINE eval_FC( status, X, userdata, f, C )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: f
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: f
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_GJ( status, X, userdata, G, Jval )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, Jval
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, Jval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_HL( status, X, Y, userdata, Hval, no_f )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
@@ -1594,27 +1599,27 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ic, ii, ir, j, l, ne_eqp, s_start, s_type, active
-!    INTEGER :: Rk
-     REAL ( KIND = wp ) :: complementary_slackness, multiplier_norm
-     REAL ( KIND = wp ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
-     REAL ( KIND = wp ) :: fil_f, fil_viol, gts, sths, rho_f, rho_phi
-     REAL ( KIND = wp ) :: max_viol, new_sigma, new_sigma_denom, relaxed_viol
-     REAL ( KIND = wp ) :: alpha, alpha_cf, del_qf_pred, del_qf_cf, si, val
-     REAL ( KIND = wp ) :: delta, dgtdg, dxtdg, dual_infeasibility, radius
-
-!    REAL ( KIND = wp ) :: num_c_act, num_c_free, num_x_free
-!    REAL ( KIND = wp ) :: C_l_act, C_u_act, c_act, c_free
-!    REAL ( KIND = wp ) :: X_l_act, X_u_act, x_act, x_free
-!    REAL ( KIND = wp ) :: K, rhs, sol, g_old, Jx_old, step
-!    REAL ( KIND = wp ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
-!    REAL ( KIND = wp ) :: normg, normHess, muLS, accel_bd_viol
+     INTEGER ( KIND = ip_ ) :: i, ic, ii, ir, j, l
+     INTEGER ( KIND = ip_ ) :: ne_eqp, s_start, s_type, active
+!    INTEGER ( KIND = ip_ ) :: Rk
+     REAL ( KIND = rp_ ) :: complementary_slackness, multiplier_norm
+     REAL ( KIND = rp_ ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
+     REAL ( KIND = rp_ ) :: fil_f, fil_viol, gts, sths, rho_f, rho_phi
+     REAL ( KIND = rp_ ) :: max_viol, new_sigma, new_sigma_denom, relaxed_viol
+     REAL ( KIND = rp_ ) :: alpha, alpha_cf, del_qf_pred, del_qf_cf, si, val
+     REAL ( KIND = rp_ ) :: delta, dgtdg, dxtdg, dual_infeasibility, radius
+!    REAL ( KIND = rp_ ) :: num_c_act, num_c_free, num_x_free
+!    REAL ( KIND = rp_ ) :: C_l_act, C_u_act, c_act, c_free
+!    REAL ( KIND = rp_ ) :: X_l_act, X_u_act, x_act, x_free
+!    REAL ( KIND = rp_ ) :: K, rhs, sol, g_old, Jx_old, step
+!    REAL ( KIND = rp_ ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
+!    REAL ( KIND = rp_ ) :: normg, normHess, muLS, accel_bd_viol
      LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
 
-!$   INTEGER :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -2834,7 +2839,7 @@
 
        IF ( data%control%scale_constraints > 0 ) THEN
          multiplier_norm =                                                     &
-           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),           &
+           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
                 nlp%m, nlp%Y( : nlp%m ) / data%C_scale( : nlp%m ) ) )
          inform%primal_infeasibility =                                         &
            OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                  &
@@ -2966,7 +2971,7 @@
        data%clock_now = data%clock_now - data%clock_start
 
        IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
-             REAL( data%time_now - data%time_start, wp )                       &
+             REAL( data%time_now - data%time_start, rp_ )                      &
                > data%control%cpu_time_limit ) .OR.                            &
              ( data%control%clock_time_limit >= zero .AND.                     &
                data%clock_now - data%clock_start                               &
@@ -3023,7 +3028,8 @@
            data%QP_pred%H%n = nlp%n ; data%QP_pred%H%ne = data%H_ne
            data%QP_pred%H%val( : data%H_ne ) = nlp%H%val( : data%H_ne )
 !write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
-!write(6,*)  'det ', data%QP_pred%H%val( 1 ) * data%QP_pred%H%val( 3 ) - data%QP_pred%H%val( 2 ) ** 2
+!write(6,*)  'det ', data%QP_pred%H%val( 1 ) * data%QP_pred%H%val( 3 ) &
+! - data%QP_pred%H%val( 2 ) ** 2
 !write(6,*)' pivot_control ',   data%control%SLS_control%pivot_control
            CALL SLS_factorize( data%QP_pred%H, data%SLS_data,                  &
                                data%control%SLS_control, inform%SLS_inform )
@@ -3062,7 +3068,7 @@
               &   ES23.16, ' using ', A )" ) prefix,                           &
                 inform%SLS_inform%largest_modified_pivot,                      &
                 TRIM( data%control%linear_solver_for_modifications )
-!write(6,*) ' pert = ', data%QP_pred%H%val( data%QP_pred%H%ne + 1 :        &
+!write(6,*) ' pert = ', data%QP_pred%H%val( data%QP_pred%H%ne + 1 :            &
 !                                           data%QP_pred%H%ne + nlp%n )
 
                data%QP_pred%H%ne = data%H_ne + nlp%n
@@ -4566,7 +4572,7 @@
 !      Jx_old = Jx
 !      step = data%X_trial - nlp%X
 
-       IF ( data%control%predictor_hessian == l_bfgs_predictor_hessian )      &
+       IF ( data%control%predictor_hessian == l_bfgs_predictor_hessian )       &
          data%DX = data%X_trial - nlp%X
        nlp%X = data%X_trial
        nlp%f = data%f_trial ; inform%obj = nlp%f
@@ -4808,7 +4814,7 @@
 
  900 CONTINUE
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = REAL( data%time_now - data%time_start, wp )
+     inform%time%total = REAL( data%time_now - data%time_start, rp_ )
      inform%time%clock_total = data%clock_now - data%clock_start
 
 !  restore scaled-cnstraint data
@@ -5045,7 +5051,7 @@
  910 CONTINUE
      inform%status = GALAHAD_error_allocate
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = REAL( data%time_now - data%time_start, wp )
+     inform%time%total = REAL( data%time_now - data%time_start, rp_ )
      inform%time%clock_total = data%clock_now - data%clock_start
      RETURN
 
@@ -5492,4 +5498,4 @@
 
 !  End of module GALAHAD_FISQP
 
-   END MODULE GALAHAD_FISQP_double
+   END MODULE GALAHAD_FISQP_precision

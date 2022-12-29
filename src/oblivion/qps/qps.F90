@@ -1,4 +1,9 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! *****************************************************************************
+! ************************* BROKEN ** DO NOT USE ******************************
+
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -6,7 +11,7 @@
 !  Copyright reserved
 !  May 15th 2002
 
-   MODULE GALAHAD_QPS_double
+   MODULE GALAHAD_QPS_precision
 
 !     -------------------------------------------------
 !     | Scale the data for the quadratic program      |
@@ -22,46 +27,41 @@
 !     | Started May 2002, Finished ???                |
 !     -------------------------------------------------
 
-      USE GALAHAD_QPT_double
+      USE GALAHAD_PRECISION
+      USE GALAHAD_QPT_precision
 
       IMPLICIT NONE
 
       PRIVATE
       PUBLIC :: QPS_initialize, QPS_get_scalings, QPS_apply, QPS_restore
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
       TYPE, PUBLIC :: QPS_control_type
-        INTEGER :: error
-        REAL ( KIND = wp ) :: infinity
+        INTEGER ( KIND = ip_ ) :: error
+        REAL ( KIND = rp_ ) :: infinity
         LOGICAL :: treat_zero_bounds_as_general
       END TYPE
 
       TYPE, PUBLIC :: QPS_inform_type
-        INTEGER :: status, alloc_status
+        INTEGER ( KIND = ip_ ) :: status, alloc_status
       END TYPE
 
       TYPE, PUBLIC :: QPS_scale_type
-         REAL ( KIND = wp ) :: col_scale_rhs
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: row_scale
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: col_scale_x 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: col_scale_c
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: shift_x, shift_c
+         REAL ( KIND = rp_ ) :: col_scale_rhs
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: row_scale
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: col_scale_x 
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: col_scale_c
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: shift_x, shift_c
       END TYPE
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_cycle = 10
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_cycle = 10
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
    CONTAINS
 
@@ -78,14 +78,14 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QPS_scale_type ), INTENT( IN ) :: scale
+      TYPE ( QPS_scale_type ), INTENT( INOUT ) :: scale
       TYPE ( QPS_control_type ), INTENT( IN ) :: control
       TYPE ( QPS_inform_type ), INTENT( OUT ) :: inform
 
-      INTEGER :: cycle, i, k, n_slacks
-      REAL ( KIND = wp ) :: row_norm
-      INTEGER, DIMENSION( prob%m ) :: SLACKS
-      REAL ( KIND = wp ), DIMENSION( prob%m ) :: RHS
+      INTEGER ( KIND = ip_ ) :: cycle, i, k, n_slacks
+      REAL ( KIND = rp_ ) :: row_norm, cl, cu, xl, xu
+      INTEGER ( KIND = ip_ ), DIMENSION( prob%m ) :: SLACKS
+      REAL ( KIND = rp_ ), DIMENSION( prob%m ) :: RHS
 
       n_slacks = 0
 
@@ -194,6 +194,10 @@
       TYPE ( QPS_control_type ), INTENT( IN ) :: control
       TYPE ( QPS_inform_type ), INTENT( OUT ) :: inform
 
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i
+
 !  Un-shift the variables
 
       DO i = 1, prob%n
@@ -212,7 +216,9 @@
 
       END SUBROUTINE QPS_restore
 
-
 !  End of module QPS
 
-   END MODULE GALAHAD_QPS_double
+   END MODULE GALAHAD_QPS_precision
+
+! ************************* BROKEN ** DO NOT USE ******************************
+! *****************************************************************************

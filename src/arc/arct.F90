@@ -348,6 +348,7 @@
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, nlp%H%type,      &
                userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_ARC_test_deck
 

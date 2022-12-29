@@ -18,8 +18,9 @@ PACKAGE = CQPS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps make_qpd make_userdata make_bqp make_bqpb \
-               make_mi28 make_icfs make_lancelot_psls make_psls
+DEPENDENCIES = make_qpd_deps make_qpd make_userdata  make_checkpoint \
+               make_rpd make_cqp make_bqp make_bqpb make_mi28 \
+               make_icfs make_lancelot_psls make_psls
 
 #  other packages that depend on package
 

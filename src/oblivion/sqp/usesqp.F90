@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 31/05/2021 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ S Q P  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,43 +8,40 @@
 !  Copyright reserved
 !  Started: March 8th 2006
 
-   MODULE GALAHAD_USESQP_double
+   MODULE GALAHAD_USESQP_precision
 
-     USE GALAHAD_CUTEST_FUNCTIONS_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SMT_double
-     USE GALAHAD_SBLS_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_QPC_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_SBLS_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_QPC_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_SYMBOLS
 
      IMPLICIT NONE
      PRIVATE
      PUBLIC :: USE_SQP_DPR
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER ::  zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER ::  zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  ten = 10.0_rp_
 
-     INTEGER, PARAMETER :: out = 6
-     INTEGER, PARAMETER :: error = 6
-     INTEGER, PARAMETER :: io_buffer = 11
-!    INTEGER, PARAMETER :: out_sol = 23
-     INTEGER, PARAMETER :: out_sol = 0
-     INTEGER, PARAMETER :: it_max = 20
-!    INTEGER, PARAMETER :: it_max = 2
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+!    INTEGER ( KIND = ip_ ), PARAMETER :: out_sol = 23
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_sol = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: it_max = 20
+!    INTEGER ( KIND = ip_ ), PARAMETER :: it_max = 2
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      CHARACTER ( LEN = 30 ) :: sfilename = 'SQPSOL.d'
-     REAL ( KIND = wp ), PARAMETER ::  pr_opt = ten ** ( - 12 )
-     REAL ( KIND = wp ), PARAMETER ::  du_opt = ten ** ( - 12 )
-     REAL ( KIND = wp ), PARAMETER ::  infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER ::  pr_opt = ten ** ( - 12 )
+     REAL ( KIND = rp_ ), PARAMETER ::  du_opt = ten ** ( - 12 )
+     REAL ( KIND = rp_ ), PARAMETER ::  infinity = ten ** 19
 
    CONTAINS
 
@@ -52,20 +51,21 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Simple SQP method without linesearch
 
-     INTEGER :: i, l, iter, iores, smt_stat
-     INTEGER :: n, m, npm, J_ne, H_ne, J_len, H_len
-     INTEGER :: status, alloc_status, cutest_status
+     INTEGER ( KIND = ip_ ) :: i, l, iter, iores, smt_stat
+     INTEGER ( KIND = ip_ ) :: n, m, npm, J_ne, H_ne, J_len, H_len
+     INTEGER ( KIND = ip_ ) :: status, alloc_status, cutest_status
      LOGICAL :: grlagf, filexx, inequality, use_merit
      CHARACTER ( len = 1 ) :: pert
  
-     REAL ( KIND = wp ) :: obj, pr_feas, du_feas, dx, dy, alpha, merit, sigma
-     REAL ( KIND = wp ) :: merit_trial
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, Y, X_trial, C_trial
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
+     REAL ( KIND = rp_ ) :: obj, pr_feas, du_feas, dx, dy, alpha, merit, sigma
+     REAL ( KIND = rp_ ) :: merit_trial
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, Y
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_trial, C_trial
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
 
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( SMT_type ) :: A, H, C
@@ -404,7 +404,7 @@
                nlp%X = X_trial
                EXIT
              ELSE
-               alpha = 0.5_wp * alpha
+               alpha = 0.5_rp_ * alpha
              END IF
            END DO
          ELSE
@@ -641,4 +641,4 @@
 
      END SUBROUTINE USE_SQP_DPR
 
-   END MODULE GALAHAD_USESQP_double
+   END MODULE GALAHAD_USESQP_precision

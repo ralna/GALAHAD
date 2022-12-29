@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 10/11/2014 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E S U P E R B  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,14 +8,15 @@
 !  Copyright reserved
 !  Started: October 22nd 2002
 
-   MODULE GALAHAD_USESUPERB_double
+   MODULE GALAHAD_USESUPERB_precision
 
 !  This is the driver program for running SUPERB for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_SUPERB_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SUPERB_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SYMBOLS
      USE GALAHAD_COPYRIGHT
      IMPLICIT NONE
@@ -29,11 +32,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -49,25 +48,25 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores
+     INTEGER ( KIND = ip_ ) :: iores
      LOGICAL :: filexx, is_specfile
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 31
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 31
      CHARACTER ( LEN = 16 ) :: specname = 'RUNSUPERB'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNSUPERB.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: vfiledevice = 63
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: vfiledevice = 63
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data    = .FALSE.
      LOGICAL :: write_solution        = .FALSE.
      LOGICAL :: write_solution_vector = .FALSE.
@@ -86,27 +85,28 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
 
-!    INTEGER :: m, n
-     INTEGER :: i
+!    INTEGER ( KIND = ip_ ) :: m, n
+     INTEGER ( KIND = ip_ ) :: i
 
 !  ------------------ Open the specfile for runlpsqp ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
-       OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED', STATUS = 'OLD' )
+       OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',               &
+             STATUS = 'OLD' )
 
 !   Define the keywords
 
@@ -269,6 +269,6 @@
 
      END SUBROUTINE USE_SUPERB
 
-!  End of module USESUPERB_double
+!  End of module USESUPERB
 
-   END MODULE GALAHAD_USESUPERB_double
+   END MODULE GALAHAD_USESUPERB_precision

@@ -15,8 +15,6 @@
 
    MODULE GALAHAD_TRB_precision
             
-     USE GALAHAD_PRECISION
-
 !     ------------------------------------------------------------------
 !    |                                                                  |
 !    | TRB, a trust-region algorithm for bound-constrained optimization |
