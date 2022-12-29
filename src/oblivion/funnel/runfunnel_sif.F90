@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 17/10/2007 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 12:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N F U N N E L _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 17th 2007
 
    PROGRAM RUNFUNNEL_SIF
-   USE GALAHAD_USEFUNNEL_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEFUNNEL_precision
 
 !  Main program for the SIF interface to FUNNEL, a filter trust-funnel
 !  algorithm for nonlinear programming
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

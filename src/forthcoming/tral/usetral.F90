@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 26/06/2013 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ T R A L  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,18 +8,19 @@
 !  Copyright reserved
 !  June 25th 2012
 
-   MODULE GALAHAD_USETRAL_double
+   MODULE GALAHAD_USETRAL_precision
 
 !  This is the driver program for running TRAL for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
+     USE GALAHAD_PRECISION
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_TRAL_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_TRAL_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -31,11 +34,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -55,29 +54,29 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i, j, ir, ic, l
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l
      LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
-!    REAL ( KIND = wp ) :: clocko, clockt
+!    REAL ( KIND = rp_ ) :: clocko, clockt
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNTRAL'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNTRAL.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -95,18 +94,18 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv = 'TRAL   '
 
 !  ------------------ Open the specfile for TRAL ----------------
@@ -224,9 +223,9 @@
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-     CALL TRAL_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
-                     eval_H = CUTEST_eval_H, eval_HPROD = CUTEST_eval_HPROD )
+     CALL TRAL_solve( nlp, control, inform, data, userdata,                    &
+                      eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,          &
+                      eval_H = CUTEST_eval_H, eval_HPROD = CUTEST_eval_HPROD )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -354,11 +353,10 @@
  2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F5.1, I4, F9.2, I5 )
  2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, I9, ' :', F9.2, I5 )
 
-
 !  End of subroutine USE_TRAL
 
      END SUBROUTINE USE_TRAL
 
-!  End of module USETRAL_double
+!  End of module USETRAL
 
-   END MODULE GALAHAD_USETRAL_double
+   END MODULE GALAHAD_USETRAL_precision

@@ -1,22 +1,24 @@
-! THIS VERSION: GALAHAD 2.6 - 26/06/2013 AT 08:30 GMT.
-   PROGRAM GALAHAD_TRAL_test_deck
-   USE GALAHAD_TRAL_double                       ! double precision version
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 15:40 GMT.
+#include "galahad_modules.h"
+   PROGRAM GALAHAD_TRAL_test_program
+   USE GALAHAD_USERDATA_precision
+   USE GALAHAD_TRAL_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLPT_problem_type ):: nlp
    TYPE ( TRAL_control_type ) :: control
    TYPE ( TRAL_inform_type ) :: inform
    TYPE ( TRAL_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER :: i, s, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: i, s, scratch_out = 56
    logical :: alive
-   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
-   REAL ( KIND = wp ) :: dum
+   REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
+   REAL ( KIND = rp_ ) :: dum
 ! start problem data
-   nlp%n = 1 ; nlp%H%ne = 1                     ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%G( nlp%n ) )
+   nlp%n = 1 ; nlp%m = 1 ; nlp%H%ne = 1                     ! dimensions
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
+             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -63,7 +65,9 @@
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1
-     nlp%X = 1.0_wp                              ! start from one
+     nlp%X = 1.0_rp_                             ! start from one
+     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
+     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
      control%hessian_available = .FALSE.         ! Hessian prods will be used
 
      IF ( s == - GALAHAD_error_restrictions ) THEN
@@ -74,7 +78,7 @@
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
      ELSE IF ( s == - GALAHAD_error_cpu_limit ) THEN
-       control%cpu_time_limit = 0.0_wp
+       control%cpu_time_limit = 0.0_rp_
      END IF
      DO                                           ! Loop to solve problem
        CALL TRAL_solve( nlp, control, inform, data, userdata )
@@ -92,17 +96,17 @@
            END IF
          END IF
          IF ( s == - GALAHAD_error_cpu_limit ) THEN
-           dum = 0.0_wp
+           dum = 0.0_rp_
            DO i = 1, 10000000
-             dum = dum + 0.0000001_wp * i / ( i + 1 )
+             dum = dum + 0.0000001_rp_ * i / ( i + 1 )
            END DO
            nlp%f = ( nlp%f + dum ) - dum
          END IF
        CASE ( 3 )                                 ! Obtain the gradient
-         nlp%G( 1 ) = - 2.0_wp * nlp%X( 1 )
+         nlp%G( 1 ) = - 2.0_rp_ * nlp%X( 1 )
          data%eval_status = 0                     ! record successful evaluation
        CASE ( 5 )                                 ! Obtain Hessian-vector prod
-         data%U( 1 ) = data%U( 1 ) - 2.0_wp * data%V( 1 )
+         data%U( 1 ) = data%U( 1 ) - 2.0_rp_ * data%V( 1 )
          data%eval_status = 0                     ! record successful evaluation
        CASE ( 6 )                                 ! Apply the preconditioner
          data%U( 1 ) = - data%V( 1 )
@@ -122,17 +126,20 @@
 
    control%subproblem_direct = .TRUE.         ! Use a direct method
    CALL TRAL_solve( nlp, control, inform, data, userdata,                      &
-                   eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+                    eval_F = FUN, eval_G = GRAD, eval_H = HESS )
 
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
+               nlp%H%val, nlp%H%row, nlp%H%col )
 
 !  =========================
 !  test of available options
 !  =========================
 
 ! start problem data
-   nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%G( nlp%n ) )
+   nlp%n = 3 ; nlp%m = 1 ; nlp%H%ne = 5                  ! dimensions
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
+             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
+
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -149,8 +156,9 @@
      CALL TRAL_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
-     nlp%X = 1.0_wp                           ! start from one
-
+     nlp%X = 1.0_rp_                          ! start from one
+     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
+     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
@@ -186,30 +194,30 @@
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%preconditioner = 3
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%preconditioner = 5
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
        control%preconditioner = - 2
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
        control%model = 1
        control%maxit = 1000
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD )
+                        eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN
        control%model = 3
        control%maxit = 1000
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD )
+                        eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -220,15 +228,17 @@
 
      CALL TRAL_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
+               nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
 !  ============================
 !  full test of generic problem
 !  ============================
 
 ! start problem data
-   nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%G( nlp%n ) )
+   nlp%n = 3 ; nlp%m = 1 ; nlp%H%ne = 5                  ! dimensions
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
+             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -245,8 +255,9 @@
      CALL TRAL_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
-     nlp%X = 1.0_wp                             ! start from one
-
+     nlp%X = 1.0_rp_                             ! start from one
+     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
+     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
      IF ( i == 1 ) THEN
        control%subproblem_direct = .TRUE.       ! Use a direct method
        CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
@@ -275,30 +286,30 @@
                    ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + COS( nlp%X( 1 ) )
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 3 )                               ! Obtain the gradient
-           nlp%G( 1 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -             &
+           nlp%G( 1 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -            &
                         SIN( nlp%X( 1 ) )
-           nlp%G( 2 ) = 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           nlp%G( 3 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +             &
-                        2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
+           nlp%G( 2 ) = 2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
+           nlp%G( 3 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +            &
+                        2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 4 )                               ! Obtain the Hessian
-           nlp%H%val( 1 ) = 2.0_wp - COS( nlp%X( 1 ) )
-           nlp%H%val( 2 ) = 2.0_wp
-           nlp%H%val( 3 ) = 2.0_wp
-           nlp%H%val( 4 ) = 2.0_wp
-           nlp%H%val( 5 ) = 4.0_wp
+           nlp%H%val( 1 ) = 2.0_rp_ - COS( nlp%X( 1 ) )
+           nlp%H%val( 2 ) = 2.0_rp_
+           nlp%H%val( 3 ) = 2.0_rp_
+           nlp%H%val( 4 ) = 2.0_rp_
+           nlp%H%val( 5 ) = 4.0_rp_
            data%eval_status = 0                  ! record successful evaluation
          CASE ( 5 )                              ! Obtain Hessian-vector prod
-           data%U( 1 ) = data%U( 1 ) + 2.0_wp * ( data%V( 1 ) + data%V( 3 ) )  &
+           data%U( 1 ) = data%U( 1 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 3 ) ) &
                            - COS( nlp%X( 1 ) ) * data%V( 1 )
-           data%U( 2 ) = data%U( 2 ) + 2.0_wp * ( data%V( 2 ) + data%V( 3 ) )
-           data%U( 3 ) = data%U( 3 ) + 2.0_wp * ( data%V( 1 ) + data%V( 2 ) +  &
-                         2.0_wp * data%V( 3 ) )
+           data%U( 2 ) = data%U( 2 ) + 2.0_rp_ * ( data%V( 2 ) + data%V( 3 ) )
+           data%U( 3 ) = data%U( 3 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 2 ) + &
+                         2.0_rp_ * data%V( 3 ) )
            data%eval_status = 0                  ! record successful evaluation
          CASE ( 6 )                              ! Apply the preconditioner
-           data%U( 1 ) = 0.5_wp * data%V( 1 )
-           data%U( 2 ) = 0.5_wp * data%V( 2 )
-           data%U( 3 ) = 0.25_wp * data%V( 3 )
+           data%U( 1 ) = 0.5_rp_ * data%V( 1 )
+           data%U( 2 ) = 0.5_rp_ * data%V( 2 )
+           data%U( 3 ) = 0.25_rp_ * data%V( 3 )
            data%eval_status = 0                  ! record successful evaluation
          CASE DEFAULT                            ! Terminal exit from loop
            EXIT
@@ -315,17 +326,19 @@
 
      CALL TRAL_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
+               nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
    WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
-   END PROGRAM GALAHAD_TRAL_test_deck
+
+   END PROGRAM GALAHAD_TRAL_test_program
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), INTENT( OUT ) :: f
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -333,60 +346,56 @@
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   G( 1 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
-   G( 2 ) = 2.0_wp * ( X( 2 ) + X( 3 ) )
-   G( 3 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
-            2.0_wp * ( X( 2 ) + X( 3 ) )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
+   G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
+   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
+            2.0_rp_ * ( X( 2 ) + X( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   Hval( 1 ) = 2.0_wp - COS( X( 1 ) )
-   Hval( 2 ) = 2.0_wp
-   Hval( 3 ) = 2.0_wp
-   Hval( 4 ) = 2.0_wp
-   Hval( 5 ) = 4.0_wp
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   Hval( 1 ) = 2.0_rp_ - COS( X( 1 ) )
+   Hval( 2 ) = 2.0_rp_
+   Hval( 3 ) = 2.0_rp_
+   Hval( 4 ) = 2.0_rp_
+   Hval( 5 ) = 4.0_rp_
    status = 0
    RETURN
    END SUBROUTINE HESS
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V ) ! Hessian-vector product
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = U( 1 ) + 2.0_wp * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_wp * ( V( 2 ) + V( 3 ) )
-   U( 3 ) = U( 3 ) + 2.0_wp * ( V( 1 ) + V( 2 ) + 2.0_wp * V( 3 ) )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   U( 1 ) = U( 1 ) + 2.0_rp_ * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
+   U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
+   U( 3 ) = U( 3 ) + 2.0_rp_ * ( V( 1 ) + V( 2 ) + 2.0_rp_ * V( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE HESSPROD
 
    SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = 0.5_wp * V( 1 )
-   U( 2 ) = 0.5_wp * V( 2 )
-   U( 3 ) = 0.25_wp * V( 3 )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   U( 1 ) = 0.5_rp_ * V( 1 )
+   U( 2 ) = 0.5_rp_ * V( 2 )
+   U( 3 ) = 0.25_rp_ * V( 3 )
    status = 0
    RETURN
    END SUBROUTINE PREC

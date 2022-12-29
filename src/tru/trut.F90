@@ -180,7 +180,7 @@
 !      control%trs_control%print_level = 1
 !      control%trs_control%sls_control%print_level = 3
        control%subproblem_direct = .TRUE.
-!      control%psls_control%definite_linear_solver = 'sytr '
+       control%psls_control%definite_linear_solver = 'sytr '
 !      control%trs_control%definite_linear_solver = 'ma27 '
 !      control%trs_control%symmetric_linear_solver = 'ma27 '
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
@@ -342,6 +342,8 @@
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type,      &
                userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
+
    END PROGRAM GALAHAD_TRU_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

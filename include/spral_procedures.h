@@ -33,7 +33,6 @@
 #define spral_blas_iface_precision spral_blas_iface_single
 #define spral_core_analyse_precision spral_core_analyse_single
 #define spral_cuda_precision spral_cuda_single
-#define spral_hw_topology_precision spral_hw_topology_single
 #define spral_lapack_iface_precision spral_lapack_iface_single
 #define spral_match_order_precision spral_match_order_single
 #define spral_matrix_util_precision spral_matrix_util_single
@@ -45,6 +44,7 @@
 #define spral_ssids_anal_precision spral_ssids_anal_single
 #define spral_ssids_contrib_precision spral_ssids_contrib_single
 #define spral_ssids_contrib_free_precision spral_ssids_contrib_free_single
+#define spral_ssids_contrib_precision_free spral_ssids_contrib_single_free
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_single
 #define spral_ssids_types_precision spral_ssids_types_single
@@ -60,6 +60,7 @@
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_profile_precision spral_ssids_profile_single
 #define spral_ssids_subtree_precision spral_ssids_subtree_single
+#define spral_ssids_contrib_get_data_precision spral_ssids_contrib_get_data_single
 #else
 #define analyse_precision analyse_double
 #define analyse_precision_ptr32 analyse_double_ptr32
@@ -95,7 +96,6 @@
 #define spral_blas_iface_precision spral_blas_iface_double
 #define spral_core_analyse_precision spral_core_analyse_double
 #define spral_cuda_precision spral_cuda_double
-#define spral_hw_topology_precision spral_hw_topology_double
 #define spral_lapack_iface_precision spral_lapack_iface_double
 #define spral_match_order_precision spral_match_order_double
 #define spral_matrix_util_precision spral_matrix_util_double
@@ -106,7 +106,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_double
 #define spral_ssids_anal_precision spral_ssids_anal_double
 #define spral_ssids_contrib_precision spral_ssids_contrib_double
-#define spral_ssids_contrib_free_precision spral_ssids_contrib_free_double
+#define spral_ssids_contrib_precision_free spral_ssids_contrib_double_free
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_double
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_double
@@ -122,6 +122,7 @@
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_profile_precision spral_ssids_profile_double
 #define spral_ssids_subtree_precision spral_ssids_subtree_double
+#define spral_ssids_contrib_get_data_precision spral_ssids_contrib_get_data_double
 #endif
 
 

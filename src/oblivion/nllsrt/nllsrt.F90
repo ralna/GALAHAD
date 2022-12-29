@@ -1,34 +1,40 @@
-  MODULE GALAHAD_NLLSRT_double
-  CONTAINS
-  SUBROUTINE NLLSRT(N,M, X, MAXIT,TOL, OUTPUT,IERR, iter, iter_int, iter_int_tot, iprint)
-  ! Version 9 July 2008
-    USE GALAHAD_LSRT_DOUBLE                                                
+!  Version 9 July 2008
 
-    INTEGER, PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
+#include "galahad_modules.h"
+
+  MODULE GALAHAD_NLLSRT_precision
+    USE GALAHAD_PRECISION
+  CONTAINS
+    SUBROUTINE NLLSRT( N, M, X, MAXIT,TOL, OUTPUT,IERR, iter, iter_int,        &
+                       iter_int_tot, iprint)
+    USE GALAHAD_LSRT_precision
        
     ! dummy arguments
-    INTEGER, INTENT( IN ) :: N,M , iprint  
-    INTEGER, INTENT(OUT) :: IERR, iter, iter_int, iter_int_tot
-    INTEGER, INTENT(IN) :: MAXIT       !  maximum number of iterations
-    REAL (KIND=wp), INTENT( INOUT ) :: X(N)
-    REAL (KIND=wp), INTENT(IN) :: TOL(4)
-    REAL (KIND=wp), INTENT(OUT) :: OUTPUT(2)
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: N,M , iprint  
+    INTEGER ( KIND = ip_ ), INTENT(OUT) :: IERR, iter, iter_int, iter_int_tot
+    INTEGER ( KIND = ip_ ), INTENT(IN) :: MAXIT !  maximum number of iterations
+    REAL (KIND = rp_), INTENT( INOUT ) :: X(N)
+    REAL (KIND = rp_), INTENT(IN) :: TOL(4)
+    REAL (KIND = rp_), INTENT(OUT) :: OUTPUT(2)
 
     !local variables
-    REAL (KIND=wp) ::  C(M+1),CJAC(M+1,N+1),CJACT(N+1,M+1), CJACTXPS(N+1,M+1)
-    REAL (KIND=wp) ::  GRAD(N),S(N), U(M), V(N), RES(M), XPS(N), CXPS(M+1),AS(N)
-    REAL (KIND=wp) ::  sigma,p,  NC, NG, NRES, NCXPS, NS, rho, nrho,drho,NG0,NC0
-    REAL (KIND=wp) ::  eps_ca, eps_cr,eps_ga,eps_gr, epsbar, q, e,n2ATb
-    INTEGER :: itc ,i ,l, INFO        !iteration counter
+    REAL (KIND = rp_) ::  C(M+1),CJAC(M+1,N+1),CJACT(N+1,M+1), CJACTXPS(N+1,M+1)
+    REAL (KIND = rp_) ::  GRAD(N),S(N), U(M), V(N), RES(M), XPS(N), CXPS(M+1)
+    REAL (KIND = rp_) ::  AS(N)
+    REAL (KIND = rp_) ::  sigma, p, NC, NG, NRES, NCXPS, NS, rho, nrho
+    REAL (KIND = rp_) ::  drho, NG0, NC0
+    REAL (KIND = rp_) ::  eps_ca, eps_cr,eps_ga,eps_gr, epsbar, q, e, n2ATb
+    INTEGER ( KIND = ip_ ) :: itc ,i ,l, INFO        !iteration counter
 
     TYPE (LSRT_data_type) :: data           ! used by lsrt_solve
     TYPE (LSRT_control_type) :: control
     TYPE (LSRT_inform_type) :: inform
 
     !internal parameters
-    REAL(KIND=wp),PARAMETER::eta1=0.01_wp, eta2=0.95_wp, gamma1=1.0_wp, &
-                             gamma2=2.0_wp, eps_m=10.0_wp**(-15)  
-    REAL(KIND=wp),PARAMETER:: one=1.0_wp, zero=0.0_wp, ten=10.0_wp, half=0.5_wp
+    REAL(KIND = rp_),PARAMETER::eta1=0.01_rp_, eta2=0.95_rp_, gamma1=1.0_rp_, &
+                             gamma2=2.0_rp_, eps_m=10.0_wp**(-15)  
+    REAL(KIND = rp_),PARAMETER:: one=1.0_rp_, zero=0.0_rp_
+    REAL(KIND = rp_),PARAMETER:: ten=10.0_rp_, half=0.5_rp_
 
    !parameter setting
    eps_ca=TOL(1)
@@ -43,15 +49,15 @@
     !       = -1  small step
     
     !initialization
-    OUTPUT = 0.0_wp
+    OUTPUT = 0.0_rp_
     sigma = one    !initial regularization parameter
-    p = 3.0_wp
+    p = 3.0_rp_
     IERR = -3
     iter_int = 0
     iter_int_tot = 0	
-    XPS = 0.0_wp
-    CXPS = 0.0_wp
-    CJACTXPS = 0.0_wp
+    XPS = 0.0_rp_
+    CXPS = 0.0_rp_
+    CJACTXPS = 0.0_rp_
 
     ! compute C(x_0) and JAC(x_0)^T  
     CALL CCFG( N, M, X, M+1, C, .TRUE., N+1, M+1,  CJACT, .true. )  
@@ -66,16 +72,19 @@
          
     DO itc=1,MAXIT
        
-          OUTPUT(1) = NC**2
-          OUTPUT(2) = NG
-          iter = itc - 1 
+      OUTPUT(1) = NC**2
+      OUTPUT(2) = NG
+      iter = itc - 1 
        
-        if (iprint.gt.0) then
-	     print '(''It='', I4, '' ||C_k||= '',d10.5,'' ||grad_k||= '',d10.5 ) ', iter,  NC, NG
-             write(200, '(''It='', I4, '' ||C_k||= '',d10.5,'' ||grad_k||= '',d10.5 )')iter,  NC, NG
+      if (iprint.gt.0) then
+        print '(''It='', I4, '' ||C_k||= '',d10.5,'' ||grad_k||= '',d10.5 ) ', &
+          iter,  NC, NG
+        write(200, "('It=', I4, ' ||C_k||= ',d10.5,' ||grad_k||= ',d10.5 )")   &
+          iter,  NC, NG
         end if
 
-       IF ((NC.le.max(eps_cr* NC0,eps_ca)).or.(NG.le.max(eps_gr* NG0,eps_ga)))    then 	
+       IF ((NC.le.max(eps_cr* NC0,eps_ca)).or.(NG.le.max(eps_gr* NG0,eps_ga)))&
+          then 	
 	 	
 	 if  (NC.le.max(eps_cr* NC0,eps_ca)) THEN
 	                IERR=0                  ! zero residual solution found
@@ -92,22 +101,23 @@
      !        
      !             min 0.5 ||Js+C||^2+sigma/p ||s||^p 
      !
-     !using the GALAHAD module  GALAHAD_LSRT_DOUBLE   
+     !using the GALAHAD module  GALAHAD_LSRT_precision
      
      
-     CALL LSRT_initialize(data,control,inform)      ! initialize control parameters
+     CALL LSRT_initialize(data,control,inform) ! initialize control parameters
    
 	if (NC.le.ten**(-1)) then
              control%fraction_opt = one               
 	else
-	     control%fraction_opt = 0.9_wp 	  ! only require 90% of the best
+	     control%fraction_opt = 0.9_rp_  ! only require 90% of the best
 	end if
 
-!     control%fraction_opt=0.9_wp               
+!     control%fraction_opt=0.9_rp_               
      control%print_level = 1
-     n2ATb=dot_product(matmul(CJACT(:N,:M),-C(:M)),matmul(CJACT(:N,:M),-C(:M)))  ! norma al quadrato grad modello nel punto inz 0
+     n2ATb=dot_product(matmul(CJACT(:N,:M),-C(:M)),matmul(CJACT(:N,:M),-C(:M)))
+! norma al quadrato grad modello nel punto inz 0
      
-    control%stop_relative=min(0.1_wp,sqrt(sqrt(n2ATb)))
+    control%stop_relative=min(0.1_rp_,sqrt(sqrt(n2ATb)))
       
      U = -C(:M)                                ! the term b in min||Ax-b||
      inform%status = 1
@@ -184,8 +194,8 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
        !  compute rho
    
-       nrho = half * (NC**2-NCXPS**2)                    ! numerator
-       drho = half * NC**2 -(half*NRES**2 + (sigma/p)*NS**p)     ! denominator     
+       nrho = half * (NC**2-NCXPS**2)                         ! numerator
+       drho = half * NC**2 -(half*NRES**2 + (sigma/p)*NS**p)  ! denominator
        rho = nrho/drho
         
        ! if rho<0, compute an estimate of the rounding error e
@@ -201,17 +211,18 @@
           epsbar=eps_m*e
        
 	! set rho=1 if nrho or drho are < eps_m*e  
-          if (((abs(nrho).lt.epsbar).and.(abs(drho).lt.epsbar)).or.(NCXPS.eq.NRES)) then
+          if (((abs(nrho).lt.epsbar).and.(abs(drho).lt.epsbar)).or.            &
+               (NCXPS.eq.NRES)) then
    	 	rho = one 
    	 	print*,'rho===1'
-   	 	write(200,'(''rho===1'')')
+   	 	write(200,"('rho===1')")
  		endif
        end if
 
      
        if (iprint.gt.0) then
-       !  print'(3X, ''iter_in='', I3,'' rho='', d15.8, '' ||s||='',d10.5,  '' sigma='',d10.5 )' inform%iter,  rho, NS, sigma
-  	  write(200,'(3X,'' pass1='', I4, '' pass2='', I4,'' rho='', d15.8, '' ||s||='',d10.5,  '' sigma='',d10.5 )')  &
+  	  write(200,"(3X,' pass1=', I4, ' pass2=', I4,' rho=', d15.8,          &
+         & ' ||s||=',d10.5,  ' sigma=',d10.5 )")                               &
 		 inform%iter, inform%iter_pass2, rho, NS, sigma
 	  end if
     !    read(*,*)
@@ -224,19 +235,19 @@
          sigma = max (min (gamma1 * sigma, NG), eps_m)  ! ACO rule
         
          if (iprint.gt.0) then
-             write(200,'(''  verys'')')
+             write(200,"('  verys')")
          end if
  
      ELSE IF (rho.GE.eta1) THEN 
                    
          if (iprint.gt.0) then
-            write(200,'(''  succ'')')
+            write(200,"('  succ')")
          end if
 
       ELSE
 
          if (iprint.gt.0) then
-            write(200,'(''  uns'')')
+            write(200,"('  uns')")
          end if
 
          sigma = gamma2 * sigma
@@ -255,7 +266,7 @@
          CJACT = CJACTXPS                        ! Jac^T(x_k+1)  
          CJAC(:M,:N) = transpose(CJACT(:N,:M))   ! Jac (x_k+1)
                  
-         GRAD = matmul(CJACT(:N,:M),C(:M)) ! grad(x_k+1)=Jac(x_k+1)^TC(x_k+1) nx1
+         GRAD = matmul(CJACT(:N,:M),C(:M)) ! grad(x_k+1)=Jac(x_k+1)^TC(x_k+1)nx1
      
          NG = SQRT(DOT_PRODUCT(GRAD,GRAD)) ! ||grad(x_k+1)||
 	
@@ -273,14 +284,14 @@
 
  SUBROUTINE    ABSV(N,V,AV)
 
-   INTEGER, PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
+   INTEGER ( KIND = ip_ ), PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
    !Dummy arguments
-   INTEGER, INTENT( IN ) :: N
-   REAL (KIND=wp), INTENT( IN ) :: V(N)
-   REAL (KIND=wp), INTENT( OUT ) :: AV(N)
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: N
+   REAL (KIND = rp_), INTENT( IN ) :: V(N)
+   REAL (KIND = rp_), INTENT( OUT ) :: AV(N)
    
    !local variables
-   INTEGER :: i
+   INTEGER ( KIND = ip_ ) :: i
    
    DO i=1,N
       AV(i)=ABS(V(i))
@@ -289,4 +300,4 @@
    RETURN
  END SUBROUTINE ABSV
  
-  END MODULE GALAHAD_NLLSRT_double
+  END MODULE GALAHAD_NLLSRT_precision

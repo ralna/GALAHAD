@@ -55,6 +55,8 @@
    DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u )
    DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
    CLOSE( UNIT = scratch_out )
+   WRITE( 6, "( /, ' tests completed' )" )
+
    END PROGRAM GALAHAD_DGO_TEST
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

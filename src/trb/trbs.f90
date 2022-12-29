@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_TRB_EXAMPLE  !  GALAHAD 3.3 - 29/07/2021 AT 07:45 GMT
+   PROGRAM GALAHAD_TRB_EXAMPLE  !  GALAHAD 4.1 - 2022-12-29 AT 11:15 GMT
    USE GALAHAD_TRB_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -6,7 +6,7 @@
    TYPE ( TRB_control_type ) :: control
    TYPE ( TRB_inform_type ) :: inform
    TYPE ( TRB_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
@@ -46,12 +46,12 @@
    END PROGRAM GALAHAD_TRB_EXAMPLE
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), INTENT( OUT ) :: f
    REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -59,12 +59,12 @@
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
    G( 2 ) = 2.0_wp * ( X( 2 ) + X( 3 ) )
    G( 3 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
@@ -74,12 +74,13 @@
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    Hval( 1 ) = 2.0_wp - COS( X( 1 ) )
    Hval( 2 ) = 2.0_wp
    Hval( 3 ) = 2.0_wp

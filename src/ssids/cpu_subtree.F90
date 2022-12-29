@@ -97,7 +97,7 @@ module spral_ssids_cpu_subtree_precision
 
      integer(C_INT) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_solve_fwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_solve_fwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -109,7 +109,7 @@ module spral_ssids_cpu_subtree_precision
 
      integer(C_INT) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_solve_diag_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_solve_diag_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -121,7 +121,7 @@ module spral_ssids_cpu_subtree_precision
 
      integer(C_INT) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
           x, ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_solve_diag_bwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -133,7 +133,7 @@ module spral_ssids_cpu_subtree_precision
      
      integer(C_INT) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_solve_bwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_solve_bwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -144,7 +144,7 @@ module spral_ssids_cpu_subtree_precision
      end function c_subtree_solve_bwd
 
      subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_enquire_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_enquire_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -154,7 +154,7 @@ module spral_ssids_cpu_subtree_precision
      end subroutine c_subtree_enquire
 
      subroutine c_subtree_alter(posdef, subtree, d) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_alter_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_alter_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -164,7 +164,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
           delay_perm, delay_val, lddelay) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_get_contrib_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_get_contrib_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -180,7 +180,7 @@ module spral_ssids_cpu_subtree_precision
      end subroutine c_get_contrib
      
      subroutine c_free_contrib(posdef, subtree) &
-          bind(C, name="spral_ssids_cpu_subtree_precision_free_contrib_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_free_contrib_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef

@@ -1,19 +1,20 @@
-! THIS VERSION: GALAHAD 2.6 - 23/10/2014 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_TRACE_test_deck
-   USE GALAHAD_TRACE_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_TRACE_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLPT_problem_type ):: nlp
    TYPE ( TRACE_control_type ) :: control
    TYPE ( TRACE_inform_type ) :: inform
    TYPE ( TRACE_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER :: i, s, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: i, s, scratch_out = 56
    logical :: alive
-   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
-   REAL ( KIND = wp ) :: dum
+   REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
+   REAL ( KIND = rp_ ) :: dum
 ! start problem data
    nlp%n = 1 ; nlp%H%ne = 1                     ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%G( nlp%n ) )
@@ -63,7 +64,7 @@
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1
-     nlp%X = 1.0_wp                              ! start from one
+     nlp%X = 1.0_rp_                              ! start from one
      control%hessian_available = .FALSE.         ! Hessian prods will be used
 
      IF ( s == - GALAHAD_error_restrictions ) THEN
@@ -74,7 +75,7 @@
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
      ELSE IF ( s == - GALAHAD_error_cpu_limit ) THEN
-       control%cpu_time_limit = 0.0_wp
+       control%cpu_time_limit = 0.0_rp_
      END IF
      DO                                          ! Loop to solve problem
        CALL TRACE_solve( nlp, control, inform, data, userdata )
@@ -92,17 +93,17 @@
            END IF
          END IF
          IF ( s == - GALAHAD_error_cpu_limit ) THEN
-           dum = 0.0_wp
+           dum = 0.0_rp_
            DO i = 1, 10000000
-             dum = dum + 0.0000001_wp * i / ( i + 1 )
+             dum = dum + 0.0000001_rp_ * i / ( i + 1 )
            END DO
            nlp%f = ( nlp%f + dum ) - dum
          END IF
        CASE ( 3 )                                 ! Obtain the gradient
-         nlp%G( 1 ) = - 2.0_wp * nlp%X( 1 )
+         nlp%G( 1 ) = - 2.0_rp_ * nlp%X( 1 )
          data%eval_status = 0                     ! record successful evaluation
        CASE ( 5 )                                 ! Obtain Hessian-vector prod
-         data%U( 1 ) = data%U( 1 ) - 2.0_wp * data%V( 1 )
+         data%U( 1 ) = data%U( 1 ) - 2.0_rp_ * data%V( 1 )
          data%eval_status = 0                     ! record successful evaluation
        CASE ( 6 )                                 ! Apply the preconditioner
          data%U( 1 ) = - data%V( 1 )
@@ -151,12 +152,12 @@
      CALL TRACE_initialize( data, control, inform )  ! Initialize control params
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
-     nlp%X = 1.0_wp                           ! start from one
+     nlp%X = 1.0_rp_                           ! start from one
 
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
-      control%out = scratch_out
+       control%out = scratch_out
        control%error = scratch_out
        control%print_level = 101
 !      control%print_level = 5
@@ -169,7 +170,8 @@
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       control%subproblem_direct = .TRUE.         ! Use a direct method
+       control%subproblem_direct = .TRUE.
+       control%psls_control%definite_linear_solver = 'sytr '
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
                          eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
@@ -189,30 +191,30 @@
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%PSLS_control%preconditioner = 3
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%PSLS_control%preconditioner = 5
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
        control%PSLS_control%preconditioner = - 2
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
        control%model = 1
        control%maxit = 1000
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD )
+                         eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN
        control%model = 3
        control%maxit = 1000
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD )
+                         eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -250,21 +252,21 @@
      CALL TRACE_initialize( data, control, inform )  ! Initialize control params
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
-     nlp%X = 1.0_wp                             ! start from one
+     nlp%X = 1.0_rp_                             ! start from one
 
      IF ( i == 1 ) THEN
        control%subproblem_direct = .TRUE.       ! Use a direct method
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 2 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
+                         eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
        control%PSLS_control%preconditioner = - 3        ! User's preconditioner
        CALL TRACE_solve( nlp, control, inform, data, userdata, eval_F = FUN,   &
-              eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
+                        eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
        IF ( i == 4 ) THEN
          control%subproblem_direct = .TRUE.       ! Use a direct method
@@ -280,30 +282,30 @@
                    ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + COS( nlp%X( 1 ) )
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 3 )                               ! Obtain the gradient
-           nlp%G( 1 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -             &
+           nlp%G( 1 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -            &
                         SIN( nlp%X( 1 ) )
-           nlp%G( 2 ) = 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           nlp%G( 3 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +             &
-                        2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
+           nlp%G( 2 ) = 2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
+           nlp%G( 3 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +            &
+                        2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 4 )                               ! Obtain the Hessian
-           nlp%H%val( 1 ) = 2.0_wp - COS( nlp%X( 1 ) )
-           nlp%H%val( 2 ) = 2.0_wp
-           nlp%H%val( 3 ) = 2.0_wp
-           nlp%H%val( 4 ) = 2.0_wp
-           nlp%H%val( 5 ) = 4.0_wp
+           nlp%H%val( 1 ) = 2.0_rp_ - COS( nlp%X( 1 ) )
+           nlp%H%val( 2 ) = 2.0_rp_
+           nlp%H%val( 3 ) = 2.0_rp_
+           nlp%H%val( 4 ) = 2.0_rp_
+           nlp%H%val( 5 ) = 4.0_rp_
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 5 )                               ! Obtain Hessian-vector prod
-           data%U( 1 ) = data%U( 1 ) + 2.0_wp * ( data%V( 1 ) + data%V( 3 ) )  &
+           data%U( 1 ) = data%U( 1 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 3 ) ) &
                          - COS( nlp%X( 1 ) ) * data%V( 1 )
-           data%U( 2 ) = data%U( 2 ) + 2.0_wp * ( data%V( 2 ) + data%V( 3 ) )
-           data%U( 3 ) = data%U( 3 ) + 2.0_wp * ( data%V( 1 ) + data%V( 2 ) +  &
-                         2.0_wp * data%V( 3 ) )
+           data%U( 2 ) = data%U( 2 ) + 2.0_rp_ * ( data%V( 2 ) + data%V( 3 ) )
+           data%U( 3 ) = data%U( 3 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 2 ) + &
+                         2.0_rp_ * data%V( 3 ) )
            data%eval_status = 0                   ! record successful evaluation
          CASE ( 6 )                               ! Apply the preconditioner
-           data%U( 1 ) = 0.5_wp * data%V( 1 )
-           data%U( 2 ) = 0.5_wp * data%V( 2 )
-           data%U( 3 ) = 0.25_wp * data%V( 3 )
+           data%U( 1 ) = 0.5_rp_ * data%V( 1 )
+           data%U( 2 ) = 0.5_rp_ * data%V( 2 )
+           data%U( 3 ) = 0.25_rp_ * data%V( 3 )
            data%eval_status = 0                   ! record successful evaluation
          CASE DEFAULT                             ! Terminal exit from loop
            EXIT
@@ -323,16 +325,17 @@
      CALL TRACE_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
    WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
+
    END PROGRAM GALAHAD_TRACE_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), INTENT( OUT ) :: f
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -340,61 +343,57 @@
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   G( 1 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
-   G( 2 ) = 2.0_wp * ( X( 2 ) + X( 3 ) )
-   G( 3 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
-            2.0_wp * ( X( 2 ) + X( 3 ) )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
+   G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
+   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
+            2.0_rp_ * ( X( 2 ) + X( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   Hval( 1 ) = 2.0_wp - COS( X( 1 ) )
-   Hval( 2 ) = 2.0_wp
-   Hval( 3 ) = 2.0_wp
-   Hval( 4 ) = 2.0_wp
-   Hval( 5 ) = 4.0_wp
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   Hval( 1 ) = 2.0_rp_ - COS( X( 1 ) )
+   Hval( 2 ) = 2.0_rp_
+   Hval( 3 ) = 2.0_rp_
+   Hval( 4 ) = 2.0_rp_
+   Hval( 5 ) = 4.0_rp_
    status = 0
    RETURN
    END SUBROUTINE HESS
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   U( 1 ) = U( 1 ) + 2.0_wp * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_wp * ( V( 2 ) + V( 3 ) )
-   U( 3 ) = U( 3 ) + 2.0_wp * ( V( 1 ) + V( 2 ) + 2.0_wp * V( 3 ) )
+   U( 1 ) = U( 1 ) + 2.0_rp_ * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
+   U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
+   U( 3 ) = U( 3 ) + 2.0_rp_ * ( V( 1 ) + V( 2 ) + 2.0_rp_ * V( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE HESSPROD
 
    SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = 0.5_wp * V( 1 )
-   U( 2 ) = 0.5_wp * V( 2 )
-   U( 3 ) = 0.25_wp * V( 3 )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   U( 1 ) = 0.5_rp_ * V( 1 )
+   U( 2 ) = 0.5_rp_ * V( 2 )
+   U( 3 ) = 0.25_rp_ * V( 3 )
    status = 0
    RETURN
    END SUBROUTINE PREC

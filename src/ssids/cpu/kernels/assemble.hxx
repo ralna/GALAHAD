@@ -15,6 +15,12 @@
 #include "ssids/cpu/SymbolicNode.hxx"
 #include "ssids/cpu/Workspace.hxx"
 
+#ifdef GALAHAD_SINGLE
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
+#else
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /** Assemble a column.
