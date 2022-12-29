@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 14/04/2021 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ P D Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -13,7 +15,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_PDQP_double
+   MODULE GALAHAD_PDQP_precision
 
 !     -------------------------------------------
 !     | Solve the convex quadratic program      |
@@ -26,12 +28,13 @@
 !     | primal-dual active-set method           |
 !     -------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_SBLS_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SBLS_precision
 
       IMPLICIT NONE
 
@@ -39,21 +42,15 @@
       PUBLIC :: PDQP_initialize, PDQP_read_specfile, PDQP_solve,               &
                 PDQP_terminate, QPT_problem_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -63,33 +60,33 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the maximum number of iterations permitted
 
-        INTEGER :: maxit = 100
+        INTEGER ( KIND = ip_ ) :: maxit = 100
 
 !   the maximum number of variables that are will initially be fixed away
 !   from their bounds (<0 says that as many as possible will be picked)
 
-        INTEGER :: temporarily_fixed = - 1
+        INTEGER ( KIND = ip_ ) :: temporarily_fixed = - 1
 
 !  variable bounds larger than infinity are infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !  primal violations and dual variable that smaller in absolute value than
 !  var_small will be set to zero
 
-        REAL ( KIND = wp ) :: var_small = ten ** ( - 15 )
+        REAL ( KIND = rp_ ) :: var_small = ten ** ( - 15 )
 
 !  use the initial status provided in X_stat and C_stat if they are present
 
@@ -112,11 +109,11 @@
       END TYPE
 
       TYPE, PUBLIC :: PDQP_inform_type
-        INTEGER :: status = 0
-        INTEGER :: alloc_status = 0
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: iter = - 1
         REAL :: time = 0.0
-        REAL ( KIND = wp ):: obj = HUGE( one )
+        REAL ( KIND = rp_ ):: obj = HUGE( one )
         CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
         TYPE ( SBLS_inform_type ) :: SBLS_inform
       END TYPE
@@ -127,18 +124,18 @@
         TYPE ( SMT_type ) :: A_free
         TYPE ( SMT_type ) :: H_free
         TYPE ( SMT_type ) :: C_null
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: STATE
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: STATE_old
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_l
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_u
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_free
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B_free
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: STATE
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: STATE_old
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_free
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_free
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
         TYPE ( SBLS_data_type ) :: SBLS_data
       END TYPE
 
@@ -224,24 +221,26 @@
 !  Dummy arguments
 
       TYPE ( PDQP_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: maxit = print_level + 1
-      INTEGER, PARAMETER :: temporarily_fixed = maxit + 1
-      INTEGER, PARAMETER :: infinity = temporarily_fixed + 1
-      INTEGER, PARAMETER :: var_small = infinity + 1
-      INTEGER, PARAMETER :: initial_status_provided = var_small + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = initial_status_provided + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: temporarily_fixed = maxit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = temporarily_fixed + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: var_small = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: initial_status_provided             &
+                                            = var_small + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                            = initial_status_provided + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 16 ), PARAMETER :: specname = 'PDQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -558,15 +557,16 @@
       TYPE ( PDQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( PDQP_control_type ), INTENT( IN ) :: control
       TYPE ( PDQP_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: X_stat, C_stat
+      INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: X_stat
+      INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: C_stat
 
 !  Local variables
 
-      INTEGER :: m, n, a_ne, h_ne, i, j, l, ii, jj, alloc_status, n_infeas
-      INTEGER :: n_orig, a_ne_orig, h_ne_orig, n_free, n_low, n_up
-      INTEGER :: n_fixed, temporarily_fixed
+      INTEGER ( KIND = ip_ ) :: m, n, a_ne, h_ne, i, j, l, ii, jj, alloc_status
+      INTEGER ( KIND = ip_ ) :: n_orig, a_ne_orig, h_ne_orig, n_free, n_infeas
+      INTEGER ( KIND = ip_ ) :: n_fixed, temporarily_fixed, n_low, n_up
       REAL :: time_start
-      REAL ( KIND = wp ) :: cl, cu, x, xl, xu, z, val, rho
+      REAL ( KIND = rp_ ) :: cl, cu, x, xl, xu, z, val, rho
       LOGICAL :: stats
       CHARACTER ( LEN =  6 ) :: st
 
@@ -1092,8 +1092,8 @@
         WRITE( control%out, "( /, '  iter    #low     #up   #free      ',      &
        & '   obj             #infeas' )" )
 
-      rho = 100.0_wp
-!     rho = 0.01_wp
+      rho = 100.0_rp_
+!     rho = 0.01_rp_
 
 !  -------------------
 !  Main iteration loop
@@ -1115,8 +1115,8 @@
           IF ( i /= j ) data%Z( j ) = data%Z( j ) + val * data%X( i )
         END DO
 
-!       inform%obj = DOT_PRODUCT( 0.5_wp * (data%Z + data%C), data%X ) + prob%f
-        inform%obj = 0.5_wp * DOT_PRODUCT( data%Z + data%C, data%X ) + prob%f
+!       inform%obj = DOT_PRODUCT( 0.5_rp_ * (data%Z + data%C), data%X ) + prob%f
+        inform%obj = 0.5_rp_ * DOT_PRODUCT( data%Z + data%C, data%X ) + prob%f
 
 !write(6,*) ' y ', data%Y( : m )
         DO l = 1, data%A%ne
@@ -1413,7 +1413,7 @@
 !  Returns the state  L, U or F depending on whether i is <0, 0 or >0
 
         CHARACTER ( LEN = 1 ) :: STATE
-        INTEGER, INTENT( IN ) :: i
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
         IF ( i < 0 ) THEN
           STATE = 'L'
         ELSE IF ( i == 0 ) THEN
@@ -1461,7 +1461,7 @@
 
 !  Deallocate arrays allocated by SBLS
 
-      CALL SBLS_terminate( data%sbls_data, control%sbls_control,             &
+      CALL SBLS_terminate( data%sbls_data, control%sbls_control,               &
                            inform%sbls_inform )
 
 !  Deallocate all other allocated arrays
@@ -1698,4 +1698,4 @@
 
 !  End of module PDQP
 
-   END MODULE GALAHAD_PDQP_double
+   END MODULE GALAHAD_PDQP_precision

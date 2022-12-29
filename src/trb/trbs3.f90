@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_TRB3_EXAMPLE  !  GALAHAD 3.3 - 29/07/2021 AT 07:45 GMT
+   PROGRAM GALAHAD_TRB3_EXAMPLE  !  GALAHAD 4.1 - 2022-12-29 AT 11:15 GMT
    USE GALAHAD_TRB_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -6,8 +6,7 @@
    TYPE ( TRB_control_type ) :: control
    TYPE ( TRB_inform_type ) :: inform
    TYPE ( TRB_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
-   EXTERNAL :: FUN, GRAD, HESS
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp

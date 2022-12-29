@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 08/12/2009 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 16:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C Q P S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_CQPS_double
+   MODULE GALAHAD_CQPS_precision
 
 !               ---------------------------------------------
 !               |                                           |
@@ -27,16 +29,17 @@
 !               |                                           |
 !               ---------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NORMS_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_SORT_double
-     USE GALAHAD_QPT_double
-     USE GALAHAD_QPD_double, ONLY: QPD_SIF
-     USE GALAHAD_BQP_double
-     USE GALAHAD_BQPB_double
-     USE GALAHAD_PSLS_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_NORMS_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_SORT_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_QPD_precision, ONLY: QPD_SIF
+     USE GALAHAD_BQP_precision
+     USE GALAHAD_BQPB_precision
+     USE GALAHAD_PSLS_precision
+     USE GALAHAD_SPECFILE_precision
 
      IMPLICIT NONE
 
@@ -46,23 +49,17 @@
                GALAHAD_userdata_type, QPT_problem_type,                        &
                SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -76,52 +73,52 @@
         
 !  unit number for error and warning diagnostics
       
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  general output unit number
 
-       INTEGER :: out  = 6
+       INTEGER ( KIND = ip_ ) :: out  = 6
 
 !  the level of output required
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  the unit number to write generated SIF file describing the current problem
 
-       INTEGER :: sif_file_device = 51
+       INTEGER ( KIND = ip_ ) :: sif_file_device = 51
 
 !  any bound larger than infinity in modulus will be regarded as infinite 
 
-       REAL ( KIND = wp ) :: infinity = ten ** 19
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !  any pair of constraint bounds (x_l,x_u) that are closer than i
 !   dentical_bounds_tol will be reset to the average of their values
 !
-       REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+       REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !  initial value of the primal penalty parameter, rho
 !
-       REAL ( KIND = wp ) :: initial_rho = one
+       REAL ( KIND = rp_ ) :: initial_rho = one
 
 !  initial value of the dual penalty parameter, eta
 !
-       REAL ( KIND = wp ) :: initial_eta = two
+       REAL ( KIND = rp_ ) :: initial_eta = two
 
 !  the required accuracy for the primal infeasibility
 
-       REAL ( KIND = wp ) :: stop_p = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_p = ten ** ( - 6 )
 
 !  the required accuracy for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_d = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_d = ten ** ( - 6 )
 
 !  the required accuracy for the complementary slackness
 
-       REAL ( KIND = wp ) :: stop_c = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_c = ten ** ( - 6 )
 
 !  the maximum CPU time allowed (-ve = no limit)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !  choose between projection (BQP) and interior-point (BQPB) BQP solvers
 
@@ -197,31 +194,31 @@
 !    -3  matrix data faulty (%n < 1, %ne < 0)
 !   -20  alegedly +ve definite matrix is not
 
-       INTEGER :: status = 1
+       INTEGER ( KIND = ip_ ) :: status = 1
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  status return from factorization
 
-       INTEGER :: factorization_status = 0
+       INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  current value of the objective function
 
-       REAL ( KIND = wp ) :: obj = infinity
+       REAL ( KIND = rp_ ) :: obj = infinity
 
 !  current value of the norm of primal infeasibility
 
-       REAL ( KIND = wp ) :: primal_infeasibility = infinity
+       REAL ( KIND = rp_ ) :: primal_infeasibility = infinity
 
 !  current value of the norm of dual infeasibility
 
-       REAL ( KIND = wp ) :: dual_infeasibility = infinity
+       REAL ( KIND = rp_ ) :: dual_infeasibility = infinity
 
 !  current value of the norm of complementary slackness
 
-       REAL ( KIND = wp ) :: complementary_slackness = infinity
+       REAL ( KIND = rp_ ) :: complementary_slackness = infinity
 
 !  name of array which provoked an allocate failure
 
@@ -243,9 +240,9 @@
 !  - - - - - - - - - - - -
 
      TYPE :: CQPS_reverse_h_type
-       INTEGER :: nz_v_start, nz_v_end, nz_prod_end
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
+       INTEGER ( KIND = ip_ ) :: nz_v_start, nz_v_end, nz_prod_end
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
      END TYPE CQPS_reverse_h_type
 
 !  - - - - - - - - - - - -
@@ -253,10 +250,10 @@
 !  - - - - - - - - - - - -
 
      TYPE :: CQPS_reverse_a_type
-       INTEGER :: nz_v_start, nz_v_end, nz_prod_end
+       INTEGER ( KIND = ip_ ) :: nz_v_start, nz_v_end, nz_prod_end
        LOGICAL :: transpose
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
      END TYPE CQPS_reverse_a_type
 
 !  - - - - - - - - - -
@@ -264,19 +261,20 @@
 !  - - - - - - - - - -
 
      TYPE :: CQPS_data_type
-       INTEGER :: out, error, print_level, start_print, stop_print, print_gap
-       INTEGER :: n_c_i, n_y_l, n_y_u, n_z_l, n_z_u
-       INTEGER :: st_c_i, st_y, st_y_l, st_y_u, st_z_l, st_z_u
-       INTEGER :: n_sub, branch
+       INTEGER ( KIND = ip_ ) :: print_level, start_print, stop_print, print_gap
+       INTEGER ( KIND = ip_ ) :: out, error, n_c_i, n_y_l, n_y_u, n_z_l, n_z_u
+       INTEGER ( KIND = ip_ ) :: st_c_i, st_y, st_y_l, st_y_u, st_z_l, st_z_u
+       INTEGER ( KIND = ip_ ) :: n_sub, branch
        REAL :: time_start
-       REAL ( KIND = wp ) :: eta, rho, norm_g_2
+       REAL ( KIND = rp_ ) :: eta, rho, norm_g_2
        LOGICAL :: printt, printi, printm, printw, printd, printe 
        LOGICAL :: reverse_h, explicit_h, use_hprod
        LOGICAL :: reverse_a, explicit_a, use_aprod
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: SUB, B_stat
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_hprod, NZ_aprod
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, PROD, HPROD, APROD
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PPROD, U, bqp_V
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SUB, B_stat
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_hprod
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_aprod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, PROD, HPROD, APROD
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PPROD, U, bqp_V
        TYPE ( CQPS_control_type ) :: control
        TYPE ( SMT_type ) :: H
        TYPE ( QPT_problem_type ) :: bqp
@@ -285,28 +283,8 @@
        TYPE ( PSLS_data_type ) :: PSLS_data
        TYPE ( GALAHAD_userdata_type ) :: bqp_userdata
        TYPE ( BQP_reverse_type ) :: bqp_reverse
-       TYPE ( BQPB_reverse_type ) :: bqpb_reverse
+!      TYPE ( BQPB_reverse_type ) :: bqpb_reverse
      END TYPE CQPS_data_type
-
-!-------------------------------
-!   I n t e r f a c e  B l o c k
-!-------------------------------
-
-!     INTERFACE TWO_NORM
-!
-!       FUNCTION SNRM2( n, X, incx )
-!       REAL :: SNRM2
-!       INTEGER, INTENT( IN ) :: n, incx
-!       REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!       END FUNCTION SNRM2
-!
-!       FUNCTION DNRM2( n, X, incx )
-!       DOUBLE PRECISION :: DNRM2
-!       INTEGER, INTENT( IN ) :: n, incx
-!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!       END FUNCTION DNRM2
-!       
-!     END INTERFACE 
 
    CONTAINS
 
@@ -333,7 +311,7 @@
      TYPE ( CQPS_control_type ), INTENT( OUT ) :: control
      TYPE ( CQPS_inform_type ), INTENT( OUT ) :: inform     
 
-     inform%status = GALAHAD_ok       
+     inform%status = GALAHAD_ready_to_solve
 
 !  initialize control parameters for BQP (see GALAHAD_BQP for details)
 
@@ -356,9 +334,9 @@
 
 !  added here to prevent for compiler bugs 
 
-     control%stop_p = epsmch ** 0.33_wp
-     control%stop_d = epsmch ** 0.33_wp
-     control%stop_c = epsmch ** 0.33_wp
+     control%stop_p = epsmch ** 0.33_rp_
+     control%stop_d = epsmch ** 0.33_rp_
+     control%stop_c = epsmch ** 0.33_rp_
 
      RETURN
 
@@ -399,33 +377,35 @@
 !  Dummy arguments
 
      TYPE ( CQPS_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: sif_file_device = print_level + 1
-     INTEGER, PARAMETER :: maxit = sif_file_device + 1
-     INTEGER, PARAMETER :: infinity = maxit + 1
-     INTEGER, PARAMETER :: identical_bounds_tol = infinity + 1
-     INTEGER, PARAMETER :: initial_rho = identical_bounds_tol + 1
-     INTEGER, PARAMETER :: initial_eta = initial_rho + 1
-     INTEGER, PARAMETER :: stop_p = initial_eta + 1
-     INTEGER, PARAMETER :: stop_d = stop_p + 1
-     INTEGER, PARAMETER :: stop_c = stop_d + 1
-     INTEGER, PARAMETER :: cpu_time_limit = stop_c + 1
-     INTEGER, PARAMETER :: use_bqp = cpu_time_limit + 1
-     INTEGER, PARAMETER :: space_critical = use_bqp + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: sif_file_name = generate_sif_file + 1
-     INTEGER, PARAMETER :: prefix = sif_file_name + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = sif_file_device + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_rho = identical_bounds_tol + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_eta = initial_rho + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_p = initial_eta + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_d = stop_p + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c = stop_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = stop_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: use_bqp = cpu_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = use_bqp + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                    &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'CQPS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -910,8 +890,8 @@
 !  Dummy arguments
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER, INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
-     INTEGER, INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
      TYPE ( CQPS_data_type ), INTENT( INOUT ) :: data
      TYPE ( CQPS_control_type ), INTENT( IN ) :: control
      TYPE ( CQPS_inform_type ), INTENT( INOUT ) :: inform
@@ -925,39 +905,38 @@
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
-       INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
-       INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_prod_end
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_prod_end
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
    
      INTERFACE
        SUBROUTINE eval_APROD( status, userdata, transpose, V, PROD )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        LOGICAL, INTENT( IN ) :: transpose
        END SUBROUTINE eval_APROD
      END INTERFACE
    
 !  Local variables
 
-     INTEGER :: i, j, k, l, nnz
-     INTEGER :: c_i, y, y_l, y_u, z_l, z_u
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, nnz
+     INTEGER ( KIND = ip_ ) :: c_i, y, y_l, y_u, z_l, z_u
      REAL :: time
-     REAL ( KIND = wp ) :: val, av_bnd, g_i, s_i, v_i, prod, rho_i
-     REAL ( KIND = wp ) :: eta_new, ratio_eta, one_minus_ratio_eta
-     REAL ( KIND = wp ) :: rho_new, ratio_rho
+     REAL ( KIND = rp_ ) :: val, av_bnd, g_i, s_i, v_i, prod, rho_i
+     REAL ( KIND = rp_ ) :: eta_new, ratio_eta, one_minus_ratio_eta
+     REAL ( KIND = rp_ ) :: rho_new, ratio_rho
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -984,7 +963,7 @@
      CASE ( 620 ) ; GO TO 620
      CASE ( 630 ) ; GO TO 630
      CASE DEFAULT
-       write( 6, * ) ' branch should not be here ... '
+       write( 6, * ) ' branch ', data%branch, ',  should not be here ... '
        stop
      END SELECT
 
@@ -2021,9 +2000,12 @@
 !  use the interior-point-based BQP solver
 
        ELSE
-         CALL BQPB_solve( data%bqp, data%B_stat, data%BQPB_data,               &
-                         data%control%BQPB_control, inform%BQPB_inform,        &
-                         data%BQP_userdata, reverse = data%BQPB_reverse )
+         CALL BQPB_solve( data%bqp, data%BQPB_data, data%control%BQPB_control, &
+                          inform%BQPB_inform, X_stat = data%B_stat )
+!        CALL BQPB_solve( data%bqp, data%B_stat, data%BQPB_data,               &
+!                        data%control%BQPB_control, inform%BQPB_inform )
+!                        data%control%BQPB_control, inform%BQPB_inform,        &
+!                        data%BQP_userdata, reverse = data%BQPB_reverse )
 
 !  successful exit with the solution
 
@@ -2139,8 +2121,8 @@
                data%BQP_reverse%V( data%BQP_reverse%NZ_v( l ) )
            END DO
          END SELECT
-       ELSE
-         data%BQP_V( : data%bqp%n ) = data%BQPB_reverse%V( : data%bqp%n )
+!      ELSE
+!        data%BQP_V( : data%bqp%n ) = data%BQPB_reverse%V( : data%bqp%n )
        END IF
 
 !  record v_x
@@ -2506,8 +2488,8 @@
              END IF
            END DO
          END IF
-       ELSE
-         data%BQPB_reverse%PROD( : data%bqp%n ) = data%PROD( : data%bqp%n )
+!      ELSE
+!        data%BQPB_reverse%PROD( : data%bqp%n ) = data%PROD( : data%bqp%n )
        END IF
        GO TO 390
 
@@ -2801,11 +2783,11 @@
      inform%BQPB_inform%status = 10
 !     IF ( .NOT. data%control%use_bqp ) inform%BQP_inform%status = 1
 !     data%control%use_bqp = .TRUE.
-data%control%BQPB_control%stop_d = 0.1_wp * data%control%BQPB_control%stop_d
-if (data%rho > ten ** 20 ) then
-write(6,*) ' eta too large. stopping'
-stop
-end if
+!data%control%BQPB_control%stop_d = 0.1_rp_ * data%control%BQPB_control%stop_d
+!if (data%rho > ten ** 20 ) then
+!write(6,*) ' eta too large. stopping'
+!stop
+!end if
      IF ( data%printi ) THEN
        WRITE( control%out,                                                     &
          "( /, A, ' primal infeasibility = ', ES11.4, /,                       &
@@ -2952,7 +2934,8 @@ end if
      END IF
 
      CALL BQPB_terminate( data%bqpb_data, control%BQPB_control,                &
-          inform%BQPB_inform, reverse = data%bqpb_reverse )
+          inform%BQPB_inform )
+!         inform%BQPB_inform, reverse = data%bqpb_reverse )
      IF ( inform%BQP_inform%status /= GALAHAD_ok ) THEN
        inform%status = GALAHAD_error_deallocate
        inform%alloc_status = inform%BQP_inform%alloc_status
@@ -3128,4 +3111,4 @@ end if
 
 !  End of module CQPS
 
-   END MODULE GALAHAD_CQPS_double
+   END MODULE GALAHAD_CQPS_precision

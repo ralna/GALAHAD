@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 03/04/2009 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 08:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ E R M O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_ERMO_double
+   MODULE GALAHAD_ERMO_precision
 
 !     -------------------------------------------------------
 !    |                                                       |
@@ -24,52 +26,47 @@
 !    |                                                       |
 !     -------------------------------------------------------
 
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_MOP_double
-     USE HSL_MI20_double
-     USE GALAHAD_GLTR_double
-     USE GALAHAD_TRU_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_MOP_precision
+     USE HSL_MI20_precision
+     USE GALAHAD_GLTR_precision
+     USE GALAHAD_TRU_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: ERMO_initialize, ERMO_read_specfile, ERMO_solve,                &
-               ERMO_terminate, NLPT_problem_type, NLPT_userdata_type,          &
+               ERMO_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
                SMT_type, SMT_put
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !--------------------------
 !  Derived type definitions
 !--------------------------
 
      TYPE, PUBLIC :: ERMO_control_type
-       INTEGER :: error, out, alive_unit, print_level, maxit
-       INTEGER :: start_print, stop_print, print_gap, model
-       INTEGER :: preconditioner, cycle, max_level_coarsest, max_coarse_dim
-       INTEGER :: max_gltr_its_for_newton
-       REAL ( KIND = wp ) :: stop_g, stop_relative_subspace_g
-       REAL ( KIND = wp ) :: obj_unbounded
-       REAL ( KIND = wp ) :: cpu_time_limit
+       INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, maxit
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap, model
+       INTEGER ( KIND = ip_ ) :: preconditioner, cycle, max_level_coarsest
+       INTEGER ( KIND = ip_ ) :: max_gltr_its_for_newton, max_coarse_dim
+       REAL ( KIND = rp_ ) :: stop_g, stop_relative_subspace_g
+       REAL ( KIND = rp_ ) :: obj_unbounded
+       REAL ( KIND = rp_ ) :: cpu_time_limit
        LOGICAL :: include_gradient_in_subspace, include_newton_like_in_subspace
        LOGICAL :: hessian_available
        LOGICAL :: space_critical, deallocate_error_fatal
@@ -84,9 +81,9 @@
      END TYPE
 
      TYPE, PUBLIC :: ERMO_inform_type
-       INTEGER :: status, alloc_status, iter, cg_iter
-       INTEGER :: f_eval, g_eval, h_eval, h_prod
-       REAL ( KIND = wp ) :: obj, norm_g
+       INTEGER ( KIND = ip_ ) :: status, alloc_status, iter, cg_iter
+       INTEGER ( KIND = ip_ ) :: f_eval, g_eval, h_eval, h_prod
+       REAL ( KIND = rp_ ) :: obj, norm_g
        CHARACTER ( LEN = 80 ) :: bad_alloc
        TYPE ( ERMO_time_type ) :: time
        TYPE ( GLTR_inform_type ) :: GLTR_inform
@@ -94,29 +91,30 @@
      END TYPE ERMO_inform_type
 
      TYPE, PUBLIC :: ERMO_cascade_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
      END TYPE ERMO_cascade_type
 
      TYPE, PUBLIC :: ERMO_data_type
-       INTEGER :: eval_status, out, start_print, stop_print
-       INTEGER :: print_level, branch, succ, ref( 1 )
-       INTEGER :: nprec, n_prolong, level_coarsest, level_coarsest_n
-       INTEGER :: level, level_n, ig, in, print_level_gltr, print_level_tru
+       INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
+       INTEGER ( KIND = ip_ ) :: print_level, branch, succ, ref( 1 )
+       INTEGER ( KIND = ip_ ) :: nprec, n_prolong, level, level_n
+       INTEGER ( KIND = ip_ ) :: level_coarsest, level_coarsest_n
+       INTEGER ( KIND = ip_ ) :: ig, in, print_level_gltr, print_level_tru
        REAL :: time, time_new, time_total
-       REAL ( KIND = wp ) :: radius, model
+       REAL ( KIND = rp_ ) :: radius, model
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
        LOGICAL :: new_h, got_f, got_g, got_h
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: row
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: P_ind
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: P_ptr
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_newton
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: row
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P_ind
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P_ptr
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_newton
        TYPE ( NLPT_problem_type ) :: TRU_nlp
        TYPE ( SMT_type ) :: A
        TYPE ( ZD11_type ) :: H_sym, P_trans, C_times_P
@@ -130,7 +128,7 @@
        TYPE ( ERMO_control_type ) :: control
        TYPE ( GLTR_data_type ) :: GLTR_data
        TYPE ( TRU_data_type ) :: TRU_data
-       TYPE ( NLPT_userdata_type ) :: TRU_userdata
+       TYPE ( GALAHAD_userdata_type ) :: TRU_userdata
      END TYPE ERMO_data_type
 
    CONTAINS
@@ -157,7 +155,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-!    INTEGER :: status, alloc_status
+!    INTEGER ( KIND = ip_ ) :: status, alloc_status
 
      inform%status = GALAHAD_ok
 
@@ -348,7 +346,7 @@
 !-----------------------------------------------
 
      TYPE ( ERMO_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -357,7 +355,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: lspec = 62
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 62
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'ERMO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -506,7 +504,7 @@
 !  For full details see the specification sheet for GALAHAD_ERMO.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_ERMO_double
+!  ** GALAHAD_ERMO_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -540,20 +538,21 @@
 !    scheme. It need not be set for any of the other three schemes.
 !
 !   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian
+!    the values of the entries of the lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
-!   H%row is a rank-one allocatable array of type default integer, that holds the
-!    row indices of the  lower triangular part of H in the sparse co-ordinate
-!    storage scheme. It need not be allocated for any of the other three schemes
+!   H%row is a rank-one allocatable array of type default integer, that holds 
+!    the row indices of the lower triangular part of H in the sparse 
+!    co-ordinate storage scheme. It need not be allocated for any of the other 
+!    three schemes
 !
 !   H%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the  lower triangular part of H in either
+!    that holds the column indices of the lower triangular part of H in either
 !    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !    be allocated when the dense or diagonal storage schemes are used.
 !
 !   H%ptr is a rank-one allocatable array of dimension n+1 and type default
-!    integer, that holds the starting position of  each row of the  lower
+!    integer, that holds the starting position of  each row of the lower
 !    triangular part of H, as well as the total number of entries plus one,
 !    in the sparse row-wise storage scheme. It need not be allocated when the
 !    other schemes are used.
@@ -717,8 +716,8 @@
 !
 !  data is a scalar variable of type ERMO_data_type used for internal data.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
-!   to pass user data to and from the eval_* subroutines (see below).
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!   used to pass user data to and from the eval_* subroutines (see below).
 !   Available coomponents which may be allocated as required are:
 !
 !    integer is a rank-one allocatable array of type default integer.
@@ -783,7 +782,7 @@
      TYPE ( ERMO_control_type ), INTENT( IN ) :: control
      TYPE ( ERMO_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( ERMO_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G, eval_H, eval_HPROD, eval_PREC
 
 !----------------------------------
@@ -792,58 +791,53 @@
 
      INTERFACE
        SUBROUTINE eval_F( status, X, userdata, f )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), INTENT( OUT ) :: f
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_G( status, X, userdata, G )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_H( status, X, userdata, Hval )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_HPROD( status, X, userdata, U, V, got_h )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_PREC( status, X, userdata, U, V )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_PREC
      END INTERFACE
 
@@ -851,7 +845,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, ic, ir, k, l, level, nnz, size_p
+     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, k, l, level, nnz, size_p
      LOGICAL :: alive, allocate_p, deallocate_p
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -928,10 +922,10 @@
      IF ( inform%status /= 0 ) GO TO 980
 
 !     array_name = 'ermo: data%P_ind'
-!     CALL SPACE_resize_array( nlp%n, data%P_ind,                               &
-!            inform%status, inform%alloc_status, array_name = array_name,       &
-!            deallocate_error_fatal = control%deallocate_error_fatal,           &
-!            exact_size = control%space_critical,                               &
+!     CALL SPACE_resize_array( nlp%n, data%P_ind,                              &
+!            inform%status, inform%alloc_status, array_name = array_name,      &
+!            deallocate_error_fatal = control%deallocate_error_fatal,          &
+!            exact_size = control%space_critical,                              &
 !            bad_alloc = inform%bad_alloc, out = control%error )
 !     IF ( inform%status /= 0 ) GO TO 980
 
@@ -1344,6 +1338,9 @@
 
            CALL mi20_setup( data%H_sym, data%mi20_coarse_data, data%mi20_keep, &
                             data%mi20_control, data%mi20_inform )
+           IF ( data%mi20_inform%flag == GALAHAD_unavailable_option ) THEN
+             inform%status = GALAHAD_unavailable_option ; GO TO 990
+           END IF
 
 !  deallocate any leftover previous cascades of prolongation matrices
 
@@ -2132,15 +2129,15 @@ write(6,*) ' level ', data%level
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: level, mc65_status
+     INTEGER ( KIND = ip_ ) :: level, mc65_status
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Deallocate all remaining allocated arrays
 
 !     array_name = 'ermo: data%P_ind'
-!     CALL SPACE_dealloc_array( data%P_ind,                                     &
-!        inform%status, inform%alloc_status, array_name = array_name,           &
+!     CALL SPACE_dealloc_array( data%P_ind,                                    &
+!        inform%status, inform%alloc_status, array_name = array_name,          &
 !        bad_alloc = inform%bad_alloc, out = control%error )
 !     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
@@ -2306,19 +2303,19 @@ write(6,*) ' level ', data%level
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: level_coarse
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: level_coarse
      TYPE ( ZD11_type ), INTENT( IN ), DIMENSION( level_coarse ) :: P
      TYPE ( ERMO_cascade_type ), INTENT( INOUT ),                              &
                                  DIMENSION( level_coarse ) :: CASCADE
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: U
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: V_new
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: V
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: U
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: V_new
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: V
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, level, rs, re
+     INTEGER ( KIND = ip_ ) :: i, level, rs, re
 
 !  When there is more than one level ...
 
@@ -2400,6 +2397,7 @@ write(6,*) ' level ', data%level
      END SUBROUTINE ERMO_prolongate
 
 !-*-*-*-  G A L A H A D -  E R M O _ r e s t r i c t  S U B R O U T I N E  -*-*-
+
      SUBROUTINE ERMO_restrict( level_coarse, P, CASCADE, V, U_new, U )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -2413,19 +2411,19 @@ write(6,*) ' level ', data%level
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: level_coarse
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: level_coarse
      TYPE ( ZD11_type ), INTENT( IN ), DIMENSION( level_coarse ) :: P
      TYPE ( ERMO_cascade_type ), INTENT( INOUT ),                              &
                                  DIMENSION( level_coarse ) :: CASCADE
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: V
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: U_new
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: U
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: V
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: U_new
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: U
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, level, rs, re
+     INTEGER ( KIND = ip_ ) :: i, level, rs, re
 
 !  When there is more than one level ...
 
@@ -2467,7 +2465,8 @@ write(6,*) ' level ', data%level
          re = P( level_coarse )%ptr( i + 1 ) - 1
          U_new( P( level_coarse )%col( rs : re ) ) =                           &
            U_new( P( level_coarse )%col( rs : re ) ) +                         &
-             P( level_coarse )%val( rs : re ) * CASCADE( level_coarse - 1 )%V(i )
+             P( level_coarse )%val( rs : re ) *                                &
+               CASCADE( level_coarse - 1 )%V(i )
        END DO
 
 !  ... and when there is only a single level ...
@@ -2519,7 +2518,7 @@ write(6,*) ' level ', data%level
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: level_coarse
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: level_coarse
      TYPE ( ZD11_type ), INTENT( IN ) :: C_0
      TYPE ( ZD11_type ), INTENT( IN ), DIMENSION( level_coarse ) :: P
      TYPE ( ZD11_type ), INTENT( INOUT ), DIMENSION( level_coarse ) :: C
@@ -2531,7 +2530,7 @@ write(6,*) ' level ', data%level
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: level, mc65_status
+     INTEGER ( KIND = ip_ ) :: level, mc65_status
 
      inform%status = 0
 
@@ -2598,5 +2597,5 @@ write(6,*) ' level ', data%level
 
 !  End of module GALAHAD_ERMO
 
-   END MODULE GALAHAD_ERMO_double
+   END MODULE GALAHAD_ERMO_precision
 

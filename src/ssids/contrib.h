@@ -13,10 +13,17 @@
 extern "C" {
 #endif
 
-void spral_ssids_contrib_get_data(const void *const contrib, int *const n,
-      const double* *const val, int *const ldval, const int* *const rlist,
-      int *const ndelay, const int* *const delay_perm,
+#ifdef GALAHAD_SINGLE
+void spral_ssids_contrib_get_data_single(const void *const contrib, 
+      int *const n, const float* *const val, int *const ldval, 
+      const int* *const rlist, int *const ndelay, const int* *const delay_perm,
+      const float* *const delay_val, int *const lddelay);
+#else
+void spral_ssids_contrib_get_data_double(const void *const contrib, 
+      int *const n, const double* *const val, int *const ldval, 
+      const int* *const rlist, int *const ndelay, const int* *const delay_perm,
       const double* *const delay_val, int *const lddelay);
+#endif
 
 void spral_ssids_contrib_free_dbl(void *const contrib);
 

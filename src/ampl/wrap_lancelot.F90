@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 11:00 GMT.
+#include "galahad_modules.h"
 !! Implements an F90 wrapper around the solvers implemented in the
 !!
 !!            G  A  L  A  H  A  D
@@ -22,7 +23,7 @@
 
 Subroutine Wrap_Use_Lancelot( setup_use_lancelot )
 
-  Use GALAHAD_USELANCELOT_double  ! Main LANCELOT B driver module
+  Use GALAHAD_USELANCELOT_precision  ! Main LANCELOT B driver module
   External setup_use_lancelot     ! Declared in galahad.c
 
   ! Pass pointer to subroutine USE_LANCELOT to calling function

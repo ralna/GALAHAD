@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 16:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P S  M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USECQPS_double
+    MODULE GALAHAD_USECQPS_precision
 
 !    ----------------------------------------------------
 !    | CUTEst/AMPL interface to CQPS, a preconditioned  |
@@ -20,21 +22,22 @@
 !    | reformuation, for convex quadratic programming   |
 !    ----------------------------------------------------
 
-      USE CUTEst_interface_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_CQPS_double
-      USE GALAHAD_PRESOLVE_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_CQPS_precision
+      USE GALAHAD_PRESOLVE_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_SCALING_double
+      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
-      USE GALAHAD_SCALE_double
+      USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
 
@@ -62,37 +65,36 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, la, lh, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: i, j, l, neh, nea
-      INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal
-      INTEGER :: alloc_stat, cutest_status, newton, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, la, lh, liw, iores, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen, mequal
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, newton
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-      REAL ( KIND = wp ) :: objf, qfval, stopr, dummy
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: objf, qfval, stopr, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
             
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 21
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 21
       CHARACTER ( LEN = 16 ) :: specname = 'RUNCQPS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNCQPS.SPC'
@@ -125,12 +127,12 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 50
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 50
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .FALSE.
@@ -144,13 +146,13 @@
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE. 
-      REAL ( KIND = wp ) :: pert_bnd = zero
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
 
@@ -173,9 +175,9 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
       CALL CPU_TIME( time )
 
@@ -1142,8 +1144,8 @@
 
      END SUBROUTINE USE_CQPS
 
-!  End of module USECQPS_double
+!  End of module USECQPS
 
-   END MODULE GALAHAD_USECQPS_double
+   END MODULE GALAHAD_USECQPS_precision
 
 

@@ -294,8 +294,8 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: BQP_arcsearch_data_type
-       INTEGER ( KIND = ip_ ) :: iterca, iter, itmax, n_freed, nbreak, nzero, branch
-       INTEGER ( KIND = ip_ ) :: arcsearch_iter
+       INTEGER ( KIND = ip_ ) :: iterca, iter, itmax, n_freed, nbreak, nzero
+       INTEGER ( KIND = ip_ ) :: branch, arcsearch_iter
        REAL ( KIND = rp_ ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
        REAL ( KIND = rp_ ) :: tbreak, deltat, epsqrt, gxtold, g0tp
        REAL ( KIND = rp_ ) :: t, tamax , ptp, gtp, flxt, t_new

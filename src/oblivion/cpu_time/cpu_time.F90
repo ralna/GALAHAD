@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 16:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   C P U _ T I M E   M O D U L E  *-*-*-*-*-*-*-
 
@@ -7,6 +9,8 @@
 !  January 27th 1995
 
     MODULE GALAHAD_CPU_time
+
+      USE GALAHAD_PRECISION
 
       IMPLICIT NONE
 
@@ -27,12 +31,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      REAL ( KIND = KIND( 1.0E0 ) ), INTENT( OUT ) :: time
+      REAL ( KIND = sp_ ) ), INTENT( OUT ) :: time
 
 ! For all machines using the NAG f90 compiler
 
 !NAG  TYPE( TMS ) BUFFER
-!NAG  INTEGER :: i
+!NAG  INTEGER ( KIND = ip_ ) :: i
 !NAG  i = TIMES( BUFFER )
 !NAG  time = REAL( BUFFER%UTIME ) / REAL( CLOCK_TICKS_PER_SECOND( ) )
 
@@ -62,12 +66,12 @@
 
 ! For IBM (AIX)
 
-!RS6  INTEGER, EXTERNAL :: MCLOCK
+!RS6  INTEGER ( KIND = ip_ ), EXTERNAL :: MCLOCK
 !RS6  time = REAL( MCLOCK( ) ) / 100.0
 
 ! For IBM (CMS)
 
-!IBM  INTEGER :: i
+!IBM  INTEGER ( KIND = ip_ ) :: i
 !IBM  REAL ( KIND = KIND = KIND( 1.0D0 ) ) :: dum8
 !IBM  CALL CPUTIME( dum8, i )
 !IBM  time = dum8 / 1000000.0

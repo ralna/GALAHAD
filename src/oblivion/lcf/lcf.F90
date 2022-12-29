@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 14:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L C F    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LCF_double
+   MODULE GALAHAD_LCF_precision
 
 !     ----------------------------------------------
 !     |                                            |
@@ -25,21 +27,21 @@
 !     |                                            |
 !     ----------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, LCF_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_double, LCF_data_type => QPD_data_type,                  &
-                              LCF_AX => QPD_AX
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
-         SORT_heapsort_smallest, SORT_inverse_permute
-      USE GALAHAD_ROOTS_double
-!     USE GALAHAD_LSQP_double, ONLY:
-      USE GALAHAD_FDC_double
       USE GALAHAD_STRING
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_QPP_precision, LCF_dims_type => QPT_dimensions_type
+      USE GALAHAD_QPD_precision, LCF_data_type => QPD_data_type,               &
+                                 LCF_AX => QPD_AX
+      USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                   &
+         SORT_heapsort_smallest, SORT_inverse_permute
+      USE GALAHAD_ROOTS_precision
+      USE GALAHAD_FDC_precision
 
       IMPLICIT NONE
 
@@ -48,66 +50,60 @@
                 LCF_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,   &
                 LCF_Ax, LCF_data_type, LCF_dims_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_sc = 200
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: tenm1 = ten ** ( - 1 )
-      REAL ( KIND = wp ), PARAMETER :: tenm2 = ten ** ( - 2 )
-      REAL ( KIND = wp ), PARAMETER :: tenm3 = ten ** ( - 3 )
-      REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: tenm5 = ten ** ( - 5 )
-      REAL ( KIND = wp ), PARAMETER :: tenm7 = ten ** ( - 7 )
-      REAL ( KIND = wp ), PARAMETER :: tenm8 = ten ** ( - 8 )
-      REAL ( KIND = wp ), PARAMETER :: tenm10 = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: ten4 = ten ** 4
-      REAL ( KIND = wp ), PARAMETER :: ten5 = ten ** 5
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: gzero = ten ** ( - 14 )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: eps_nz = 0.01_wp
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_sc = 200
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tenm1 = ten ** ( - 1 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm2 = ten ** ( - 2 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm3 = ten ** ( - 3 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm4 = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm5 = ten ** ( - 5 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm7 = ten ** ( - 7 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm8 = ten ** ( - 8 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm10 = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: ten4 = ten ** 4
+      REAL ( KIND = rp_ ), PARAMETER :: ten5 = ten ** 5
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 14 )
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: eps_nz = 0.01_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
       TYPE, PUBLIC :: LCF_control_type
-        INTEGER :: error, out, print_level, start_print, stop_print, print_gap
-        INTEGER :: maxit, initial_point
-        INTEGER :: factor, max_col, indmin, valmin, itref_max, infeas_max
-        INTEGER :: restore_problem, step_strategy
-        REAL ( KIND = wp ) :: infinity, stop_p, stop_d, stop_c, prfeas, dufeas
-        REAL ( KIND = wp ) :: reduce_infeas, weight_bound_projection, step
-        REAL ( KIND = wp ) :: pivot_tol, pivot_tol_for_dependencies, zero_pivot
-        REAL ( KIND = wp ) :: identical_bounds_tol
+        INTEGER ( KIND = ip_ ) :: error, out, print_level
+        INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
+        INTEGER ( KIND = ip_ ) :: maxit, initial_point, infeas_max
+        INTEGER ( KIND = ip_ ) :: factor, max_col, indmin, valmin, itref_max
+        INTEGER ( KIND = ip_ ) :: restore_problem, step_strategy
+        REAL ( KIND = rp_ ) :: infinity, stop_p, stop_d, stop_c, prfeas, dufeas
+        REAL ( KIND = rp_ ) :: reduce_infeas, weight_bound_projection, step
+        REAL ( KIND = rp_ ) :: pivot_tol, pivot_tol_for_dependencies, zero_pivot
+        REAL ( KIND = rp_ ) :: identical_bounds_tol
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
         LOGICAL :: remove_dependencies, treat_zero_bounds_as_general
         LOGICAL :: just_feasible, feasol, balance_initial_complentarity
@@ -121,59 +117,60 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: find_dependent = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: clock_find_dependent = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
       TYPE, PUBLIC :: LCF_inform_type
-        INTEGER :: status, alloc_status, iter, factorization_status, num_infeas
-        INTEGER ( KIND = long ) :: factorization_integer, factorization_real
-        INTEGER :: iterp1, iterp01, iterp001, iterp0001, nfacts
-        REAL ( KIND = wp ) :: obj, size_b, size_l
-        REAL ( KIND = wp ) :: non_negligible_pivot
+        INTEGER ( KIND = ip_ ) :: status, alloc_status, iter
+        INTEGER ( KIND = ip_ ) :: factorization_status, num_infeas
+        INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
+        INTEGER ( KIND = ip_ ) :: iterp1, iterp01, iterp001, iterp0001, nfacts
+        REAL ( KIND = rp_ ) :: obj, size_b, size_l
+        REAL ( KIND = rp_ ) :: non_negligible_pivot
         LOGICAL :: feasible
         CHARACTER ( LEN = 80 ) :: bad_alloc
         TYPE ( LCF_time_type ) :: time
@@ -470,14 +467,14 @@
 !  Dummy arguments
 
       TYPE ( LCF_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 47
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 47
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'LCF'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -854,10 +851,10 @@
 
 !  Local variables
 
-      INTEGER :: i, j, a_ne, n_depen, nzc
+      INTEGER ( KIND = ip_ ) :: i, j, a_ne, n_depen, nzc
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: av_bnd
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: av_bnd
       LOGICAL :: printi, remap_freed, reset_bnd
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( FDC_data_type ) :: FDC_data
@@ -1588,19 +1585,20 @@
 !  Dummy arguments
 
       TYPE ( LCF_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       REAL, INTENT( IN ) :: time_start
-      REAL ( KIND = wp ), INTENT( IN ) :: clock_start
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: C_RES
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( dims%v_e ) :: SOL
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( IN ) :: clock_start
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dims%v_e ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                       &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C
 
 !  Allocatable arrays and structures
@@ -1612,39 +1610,40 @@
 
 !  Parameters
 
-      REAL ( KIND = wp ), PARAMETER :: eta = tenm4
-      REAL ( KIND = wp ), PARAMETER :: sigma_max = point01
-      REAL ( KIND = wp ), PARAMETER :: degen_tol = tenm5
+      REAL ( KIND = rp_ ), PARAMETER :: eta = tenm4
+      REAL ( KIND = rp_ ), PARAMETER :: sigma_max = point01
+      REAL ( KIND = rp_ ), PARAMETER :: degen_tol = tenm5
 
 !  Local variables
 
-      INTEGER :: A_ne, i, j, l, start_print, stop_print
-      INTEGER :: out, error, factor, ns, n_slack, lbreak, print_gap
+      INTEGER ( KIND = ip_ ) :: A_ne, i, j, l, out, start_print, stop_print
+      INTEGER ( KIND = ip_ ) :: error, factor, ns, n_slack, lbreak, print_gap
       REAL :: time_record, time_now, time_solve
-      REAL ( KIND = wp ) :: clock_record, clock_now, clock_solve
-      REAL ( KIND = wp ) :: amax, size_r, q_0, q_1, q_2, one_minus_alpha
-      REAL ( KIND = wp ) :: lambda_b, lambda_l, alpha, one_minus_eps_nz
-      REAL ( KIND = wp ) :: size_b2, size_l2, size_p
-!     REAL ( KIND = wp ) :: pl_x_sqr, pl_c_sqr, gmax
+      REAL ( KIND = rp_ ) :: clock_record, clock_now, clock_solve
+      REAL ( KIND = rp_ ) :: amax, size_r, q_0, q_1, q_2, one_minus_alpha
+      REAL ( KIND = rp_ ) :: lambda_b, lambda_l, alpha, one_minus_eps_nz
+      REAL ( KIND = rp_ ) :: size_b2, size_l2, size_p
+!     REAL ( KIND = rp_ ) :: pl_x_sqr, pl_c_sqr, gmax
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw
       LOGICAL :: set_eq
-      INTEGER :: sif = 50
+      INTEGER ( KIND = ip_ ) :: sif = 50
 !     LOGICAL :: generate_sif = .TRUE.
       LOGICAL :: generate_sif = .FALSE.
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Automatic arrays
 
-      INTEGER, DIMENSION( n + dims%nc + dims%c_l_end - dims%c_u_start +        &
-                          dims%x_l_end - dims%x_u_start + 2 ) :: IBREAK
-      REAL ( KIND = wp ), DIMENSION( n + dims%nc + dims%c_l_end -              &
+      INTEGER ( KIND = ip_ ),                                                  &
+        DIMENSION( n + dims%nc + dims%c_l_end - dims%c_u_start +               &
+                   dims%x_l_end - dims%x_u_start + 2 ) :: IBREAK
+      REAL ( KIND = rp_ ), DIMENSION( n + dims%nc + dims%c_l_end -             &
         dims%c_u_start + dims%x_l_end - dims%x_u_start + 2 ) :: BREAKP
-      REAL ( KIND = wp ),                                                      &
+      REAL ( KIND = rp_ ),                                                     &
         DIMENSION( dims%c_l_start : dims%c_u_end ) :: Pb_c, Pl_c
-      REAL ( KIND = wp ),                                                      &
+      REAL ( KIND = rp_ ),                                                     &
         DIMENSION( dims%c_l_start : dims%c_u_end ) :: C_eq, Z_c, PZ_c
-      REAL ( KIND = wp ), DIMENSION( n ) :: Pb_x, Pl_x, X_eq, Z_x, PZ_x
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: Pb_x, Pl_x, X_eq, Z_x, PZ_x
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' entering LCF_solve_main ' )" )
@@ -1781,7 +1780,7 @@
 
       factor = control%factor
       IF ( factor < 0 .OR. factor > 2 ) THEN
-        IF ( printi ) WRITE( out,                                             &
+        IF ( printi ) WRITE( out,                                              &
           "( ' factor = ', I6, ' out of range [0,2]. Reset to 0' )" ) factor
         factor = 0
       END IF
@@ -2123,10 +2122,10 @@
             size_p = SUM( ( two * X - Pb_x - Pl_x ) ** 2 ) +                   &
                      SUM( ( two * C - Pb_c - Pl_c ) ** 2 )
             IF ( size_p /= zero ) THEN
-              alpha = 3.8_wp *                                                 &
+              alpha = 3.8_rp_ *                                                 &
                 ( inform%size_b ** 2 + inform%size_l ** 2 ) / size_p
             ELSE
-              alpha = 1.9_wp
+              alpha = 1.9_rp_
             END IF
 
             X = X + alpha * ( half * ( Pl_x + Pb_x ) - X )
@@ -2372,12 +2371,12 @@
               size_l2 = SUM( SOL( : n ) ** 2 ) +                               &
                         SUM( SOL( n + 1 : ns ) ** 2 )
               IF ( size_l2 /= zero ) THEN
-                alpha = 1.9_wp * ( size_b2 / size_l2 )
+                alpha = 1.9_rp_ * ( size_b2 / size_l2 )
               ELSE
-                alpha = 1.9_wp
+                alpha = 1.9_rp_
               END IF
             ELSE
-              alpha = 1.1_wp
+              alpha = 1.1_rp_
             END IF
             X = X_eq + alpha * SOL( : n )
             C = C_eq + alpha * SOL( n + 1 : ns )
@@ -2441,9 +2440,9 @@
           END IF
 
 !write(6,*) ' res ', &
-!           MAXVAL( ABS( C_RES( : dims%c_equality ) -                     &
+!           MAXVAL( ABS( C_RES( : dims%c_equality ) -                          &
 !                             C_l( : dims%c_equality ) ) ),                    &
-!           MAXVAL( ABS( C_RES( dims%c_l_start : dims%c_u_end ) -         &
+!           MAXVAL( ABS( C_RES( dims%c_l_start : dims%c_u_end ) -              &
 !                             C( dims%c_l_start : dims%c_u_end ) ) )
 
 !  Compute the violation of the bounds
@@ -2474,7 +2473,7 @@
                              C_u( dims%c_u_start : dims%c_u_end ) ) ** 2 ) )
 
          inform%obj = inform%size_b ** 2
-!        inform%obj = half * inform%size_b ** 2 +                             &
+!        inform%obj = half * inform%size_b ** 2 +                              &
 !                      half * inform%size_l ** 2
 
           inform%iter = inform%iter + 1
@@ -2782,29 +2781,29 @@
 !  Dummy arguments
 
       TYPE ( LCF_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, lbreak, out
-      INTEGER, INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), INTENT( IN ) ::q_0, q_1, q_2, lambda_q, lambda_b
-      REAL ( KIND = wp ), INTENT( IN ) ::too_small
-      REAL ( KIND = wp ), INTENT( OUT ) :: t_opt
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lbreak, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      REAL ( KIND = rp_ ), INTENT( IN ) ::q_0, q_1, q_2, lambda_q, lambda_b
+      REAL ( KIND = rp_ ), INTENT( IN ) ::too_small
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: t_opt
       LOGICAL, INTENT( IN ) :: print_1line, print_detail, print_debug
-      INTEGER, INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, DC
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
 
 !  Local variables
 
-      INTEGER :: i, j, nbreak, inheap, iter, ibreakp, nbreak_total
-      INTEGER :: cluster_start, cluster_end, nx, nc, enx, enc
-      REAL ( KIND = wp ) :: d, res, val, slope, slope_old, eval, eslope
-      REAL ( KIND = wp ) :: t_break, t_star, feasep, epsqrt, infeas_c, infeas_x
-      REAL ( KIND = wp ) :: fun, t_pert, t_old, gradient
-      REAL ( KIND = wp ) :: pert_val, pert_eps, curv, ecurv
-      REAL ( KIND = wp ) :: breakp_max, slope_infeas_c, slope_infeas_x
-      REAL ( KIND = wp ) :: curv_infeas_c, curv_infeas_x
+      INTEGER ( KIND = ip_ ) :: i, j, nbreak, inheap, iter, ibreakp, enx, enc
+      INTEGER ( KIND = ip_ ) :: cluster_start, cluster_end, nx, nc, nbreak_total
+      REAL ( KIND = rp_ ) :: d, res, val, slope, slope_old, eval, eslope
+      REAL ( KIND = rp_ ) :: t_break, t_star, feasep, epsqrt, infeas_c, infeas_x
+      REAL ( KIND = rp_ ) :: fun, t_pert, t_old, gradient
+      REAL ( KIND = rp_ ) :: pert_val, pert_eps, curv, ecurv
+      REAL ( KIND = rp_ ) :: breakp_max, slope_infeas_c, slope_infeas_x
+      REAL ( KIND = rp_ ) :: curv_infeas_c, curv_infeas_x
       LOGICAL :: beyond_first_breakpoint
       CHARACTER ( LEN = 14 ) :: cluster
 
@@ -2827,12 +2826,12 @@
       nx = 0 ; nc = 0
 
       IF ( print_debug ) THEN
-        WRITE( out, "( '      i,     xl           x          xu          dx' )" )
+        WRITE( out, "( '      i,     xl           x          xu          dx' )")
         DO i = dims%x_free + 1, n
           WRITE( out, "( I7, 4ES12.4 )" ) i, X_l( i ), X( i ), X_u( i ), DX( i )
         END DO
         IF ( dims%c_l_start <= dims%c_u_end )                                  &
-          WRITE( out, "( '      i,     cl           c          cu          dc')")
+          WRITE( out,"( '      i,     cl           c          cu          dc')")
         DO i = dims%c_l_start, dims%c_u_end
           WRITE( out, "( I7, 4ES12.4 )" ) i, C_l( i ), C( i ), C_u( i ), DC( i )
         END DO
@@ -2881,7 +2880,7 @@
 
 !  Find if the step will change the status of the constraint
 
-        IF ( ( d > zero .AND. res >= zero ) .OR.                              &
+        IF ( ( d > zero .AND. res >= zero ) .OR.                               &
              ( d < zero .AND. res < zero ) ) CYCLE
         nbreak = nbreak + 1
         IBREAK( nbreak ) = m + i
@@ -2907,7 +2906,7 @@
 
 !  Find if the step will change the status of the constraint
 
-        IF ( ( d > zero .AND. res >= zero ) .OR.                              &
+        IF ( ( d > zero .AND. res >= zero ) .OR.                               &
              ( d < zero .AND. res < zero ) ) CYCLE
         nbreak = nbreak + 1
         IBREAK( nbreak ) = - m - i
@@ -2933,7 +2932,7 @@
 
 !  Find if the step will change the status of the constraint
 
-        IF ( ( d > zero .AND. res >= zero ) .OR.                              &
+        IF ( ( d > zero .AND. res >= zero ) .OR.                               &
              ( d < zero .AND. res < zero ) ) CYCLE
         nbreak = nbreak + 1
         IBREAK( nbreak ) = - m - i
@@ -2959,7 +2958,7 @@
 
 !  Find if the step will change the status of the constraint
 
-        IF ( ( d > zero .AND. res >= zero ) .OR.                              &
+        IF ( ( d > zero .AND. res >= zero ) .OR.                               &
              ( d < zero .AND. res < zero ) ) CYCLE
         nbreak = nbreak + 1
         IBREAK( nbreak ) = i
@@ -2985,7 +2984,7 @@
 
 !  Find if the step will change the status of the constraint
 
-        IF ( ( d > zero .AND. res >= zero ) .OR.                              &
+        IF ( ( d > zero .AND. res >= zero ) .OR.                               &
              ( d < zero .AND. res < zero ) ) CYCLE
         nbreak = nbreak + 1
         IBREAK( nbreak ) = - i
@@ -3004,12 +3003,12 @@
 
       IF ( print_detail ) THEN
         CALL LCF_n_val_and_derivs( dims, n, m, X, C, X_l, X_u, C_l, C_u,       &
-                                   DX, DC, 0.0_wp, too_small,                  &
+                                   DX, DC, 0.0_rp_, too_small,                 &
                                    eval, eslope, ecurv, enc, enx )
         eval = lambda_q * q_0 + lambda_b * eval
         eslope = lambda_q * q_1 + lambda_b * eslope
         ecurv = lambda_q * q_2 + lambda_b * ecurv
-        WRITE( out, "( /, ' t = ', ES10.4 )" ) 0.0_wp
+        WRITE( out, "( /, ' t = ', ES10.4 )" ) 0.0_rp_
         WRITE( out, "( ' nc, enc = ', I0, 1X, I0, ', nx, enx = ',              &
        &    I0, 1X, I0 )" ) nc, enc, nx, enx
         WRITE( out, 2010 ) '  val', val, eval
@@ -3318,7 +3317,7 @@
 
       FUNCTION LCF_n_val( dims, n, m, X, C, X_l, X_u, C_l, C_u, DX, DC,        &
                           t, too_small )
-      REAL ( KIND = wp ) LCF_n_val
+      REAL ( KIND = rp_ ) LCF_n_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -3330,17 +3329,17 @@
 !  Dummy arguments
 
       TYPE ( LCF_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ),                                       &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, DC
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: d, infeas_x, infeas_c
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: d, infeas_x, infeas_c
 
       infeas_x = zero ; infeas_c = zero
 
@@ -3435,20 +3434,20 @@
 !  Dummy arguments
 
       TYPE ( LCF_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: nc, nx
-      REAL ( KIND = wp ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = wp ), INTENT( OUT ) :: val, slope, curv
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ),                                       &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nc, nx
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope, curv
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, DC
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: d, res, infeas_x, infeas_c, slope_x, slope_c
-      REAL ( KIND = wp ) :: curv_x, curv_c
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: d, res, infeas_x, infeas_c, slope_x, slope_c
+      REAL ( KIND = rp_ ) :: curv_x, curv_c
 
       infeas_x = zero ; slope_x = zero ; curv_x = zero
       infeas_c = zero ; slope_c = zero ; curv_c = zero
@@ -3567,4 +3566,4 @@
 
 !  End of module LCF
 
-   END MODULE GALAHAD_LCF_double
+   END MODULE GALAHAD_LCF_precision

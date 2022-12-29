@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_TRU3_EXAMPLE  !  GALAHAD 2.3 - 24/07/2008 AT 07:15 GMT
+   PROGRAM GALAHAD_TRU3_EXAMPLE  !  GALAHAD 4.1 - 2022-12-29 AT 11:15 GMT
    USE GALAHAD_TRU_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -6,8 +6,7 @@
    TYPE ( TRU_control_type ) :: control
    TYPE ( TRU_inform_type ) :: inform
    TYPE ( TRU_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
-   EXTERNAL :: FUN, GRAD, HESS
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp

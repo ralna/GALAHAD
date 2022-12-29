@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 17/10/2007 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 12:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-  G A L A H A D _ F U N N E L _ E Q U A L I T Y   M O D U L E -*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FUNNEL_equality_double
+   MODULE GALAHAD_FUNNEL_equality_precision
 
 !     ----------------------------------------------------------
 !    |                                                          |
@@ -26,17 +28,21 @@
 !    |                                                          |
 !     ----------------------------------------------------------
 
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
-     USE GALAHAD_LLS_double
-     USE GALAHAD_EQP_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_NORMS_double, ONLY: NORM => TWO_NORM
-     USE GALAHAD_FUNNEL_double, ONLY: FUNNEL_control_type, FUNNEL_time_type,   &
-                                      FUNNEL_inform_type, FUNNEL_data_type,    &
-                                      FUNNEL_initialize, FUNNEL_read_specfile, &
-                                      FUNNEL_terminate
+     USE GALAHAD_FUNNEL_precision, ONLY: FUNNEL_control_type,                  &
+                                         FUNNEL_time_type,                     &
+                                         FUNNEL_inform_type,                   &
+                                         FUNNEL_data_type,                     &
+                                         FUNNEL_initialize,                    &
+                                         FUNNEL_read_specfile,                 &
+                                         FUNNEL_terminate
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_LLS_precision
+     USE GALAHAD_EQP_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_NORMS_precision, ONLY: NORM => TWO_NORM
      IMPLICIT NONE
 
      PRIVATE
@@ -46,29 +52,28 @@
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     INTEGER, PARAMETER :: wsout = 0
-!    INTEGER, PARAMETER :: wsout = 78
+     INTEGER ( KIND = ip_ ), PARAMETER :: wsout = 0
+!    INTEGER ( KIND = ip_ ), PARAMETER :: wsout = 78
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: tenth = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-     REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: mu_tiny = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: y_tiny = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: z_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenth = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: mu_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: y_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: z_tiny = ten ** ( - 6 )
 
 !    LOGICAL, PARAMETER :: print_debug = .TRUE.
      LOGICAL, PARAMETER :: print_debug = .FALSE.
@@ -81,20 +86,20 @@
 !  ================================
 
      TYPE, PUBLIC :: FUNNEL_equality_data_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PROD
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_diag
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_n
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: T
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: N
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_plus
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_soc
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_plus
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_soc
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_mod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PROD
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_diag
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_n
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: T
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: N
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_plus
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_soc
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_plus
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_soc
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_mod
        TYPE ( QPT_problem_type ) :: prob
        TYPE ( LLS_data_type ) :: LLS_data
        TYPE ( EQP_data_type ) :: EQP_data
@@ -106,34 +111,34 @@
 !  ===================================
 
      TYPE, PUBLIC :: FUNNEL_equality_control_type
-       INTEGER :: error, out, alive_unit, print_level, maxit
-       INTEGER :: start_print, stop_print, print_gap
+       INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, maxit
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_p = epsmch
-       REAL ( KIND = wp ) :: stop_rel_p = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_p = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_d = epsmch
-       REAL ( KIND = wp ) :: stop_rel_d = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_d = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-       REAL ( KIND = wp ) :: stop_abs_c = epsmch
-       REAL ( KIND = wp ) :: stop_rel_c = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_c = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
 
 !   the required absolute and relative accuracies for the infeasibility
 !   The iteration will stop at a minimizer of the infeasibility if the
 !   gradient of the infeasibility (J^T c) is smaller in norm than
 !   control%stop_abs_i times the norm of c
 
-       REAL ( KIND = wp ) :: stop_abs_i = epsmch
-       REAL ( KIND = wp ) :: stop_rel_i = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_i = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_i = epsmch
 
-       REAL ( KIND = wp ) :: initial_t_model_radius, initial_n_model_radius
-       REAL ( KIND = wp ) :: eta_successful, eta_very_successful
+       REAL ( KIND = rp_ ) :: initial_t_model_radius, initial_n_model_radius
+       REAL ( KIND = rp_ ) :: eta_successful, eta_very_successful
        LOGICAL :: use_second_order_correction, fulsol, space_critical
        LOGICAL :: deallocate_error_fatal
        CHARACTER ( LEN = 30 ) :: alive_file
@@ -156,12 +161,12 @@
 !  ==================================
 
      TYPE, PUBLIC :: FUNNEL_equality_inform_type
-       INTEGER :: status, alloc_status, iter, cg_iter
-       INTEGER :: f_eval, g_eval, factorizations_normal, modifications
-       INTEGER :: factorization_status
-       INTEGER :: factorization_integer, factorization_real
-       REAL ( KIND = wp ) :: obj, primal_infeasibility
-       REAL ( KIND = wp ) :: dual_infeasibility, complementary_slackness
+       INTEGER ( KIND = ip_ ) :: status, alloc_status, iter, cg_iter
+       INTEGER ( KIND = ip_ ) :: f_eval, g_eval, factorizations_normal
+       INTEGER ( KIND = ip_ ) :: factorization_status, modifications
+       INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+       REAL ( KIND = rp_ ) :: obj, primal_infeasibility
+       REAL ( KIND = rp_ ) :: dual_infeasibility, complementary_slackness
        CHARACTER ( LEN = 80 ) :: bad_alloc
        TYPE ( LLS_inform_type ) :: LLS_inform_n
        TYPE ( LLS_inform_type ) :: LLS_inform_y
@@ -172,7 +177,7 @@
 
    CONTAINS
 
-!!-*  G A L A H A D -  F U N N E L _ I N I T I A L I Z E  S U B R O U T I N E  *-
+!!-  G A L A H A D -  F U N N E L _ I N I T I A L I Z E  S U B R O U T I N E  -
 !
 !     SUBROUTINE FUNNEL_equality_initialize( data, control, inform )
 !
@@ -194,17 +199,17 @@
 !
 !!  Intialize LLS data
 !
-!     CALL LLS_initialize( data%LLS_data, control%LLS_control_n,                &
+!     CALL LLS_initialize( data%LLS_data, control%LLS_control_n,               &
 !                          inform%LLS_inform_n )
 !     control%LLS_control_n%prefix = '" - LLS:"                     '
-!     control%LLS_control_n%SBLS_control%prefix =                               &
+!     control%LLS_control_n%SBLS_control%prefix =                              &
 !       '" -- SBLS:"                   '
 !     control%LLS_control_y = control%LLS_control_n
 !     control%LLS_control_s = control%LLS_control_n
 !
 !!  Intialize EQP data
 !
-!     CALL EQP_initialize( data%EQP_data, control%EQP_control,                  &
+!     CALL EQP_initialize( data%EQP_data, control%EQP_control,                 &
 !                          inform%EQP_inform )
 !     control%EQP_control%prefix = '" - EQP:"                     '
 !     control%EQP_control%SBLS_control%prefix = '" -- SBLS:"                   '
@@ -301,8 +306,9 @@
 !
 !     SUBROUTINE FUNNEL_equality_read_specfile( control, device, alt_specname )
 !
-!!  Reads the content of a specification file, and performs the assignment of
-!!  values associated with given keywords to the corresponding control parameters
+!!  Reads the content of a specification file, and performs the assignment
+!!  of values associated with given keywords to the corresponding control 
+!!  parameters
 !
 !!  The default values as given by FUNNEL_equality_initialize could (roughly)
 !!  have been set as:
@@ -337,7 +343,7 @@
 !!-----------------------------------------------
 !
 !     TYPE ( FUNNEL_control_type ), INTENT( INOUT ) :: control
-!     INTEGER, INTENT( IN ) :: device
+!     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
 !     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 !
 !!  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -346,7 +352,7 @@
 !!   L o c a l   V a r i a b l e s
 !!-----------------------------------------------
 !
-!     INTEGER, PARAMETER :: lspec = 62
+!     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 62
 !     CHARACTER( LEN = 16 ), PARAMETER :: specname = 'FUNNEL          '
 !     CHARACTER( LEN = 16 ), PARAMETER :: specname_n = 'LLS-normal      '
 !     CHARACTER( LEN = 16 ), PARAMETER :: specname_y = 'LLS-multiplier  '
@@ -403,66 +409,66 @@
 !
 !!  Set integer values
 !
-!     CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
+!     CALL SPECFILE_assign_integer( spec( 1 ), control%error,                  &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
+!     CALL SPECFILE_assign_integer( spec( 2 ), control%out,                    &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
+!     CALL SPECFILE_assign_integer( spec( 3 ), control%out,                    &
 !                                   control%alive_unit )
-!     CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
+!     CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,            &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
+!     CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                  &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
+!     CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,            &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
+!     CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,             &
 !                                   control%error )
-!     CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
+!     CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,              &
 !                                   control%error )
 !!  Set real values
 !
-!     CALL SPECFILE_assign_real( spec( 17 ), control%stop_abs_p,                &
+!     CALL SPECFILE_assign_real( spec( 17 ), control%stop_abs_p,               &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 18 ), control%stop_abs_d,                &
+!     CALL SPECFILE_assign_real( spec( 18 ), control%stop_abs_d,               &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 19 ), control%stop_abs_c,                &
+!     CALL SPECFILE_assign_real( spec( 19 ), control%stop_abs_c,               &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 27 ), control%stop_abs_i,                &
+!     CALL SPECFILE_assign_real( spec( 27 ), control%stop_abs_i,               &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,            &
+!     CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,           &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,       &
+!     CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,      &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 25 ), control%initial_t_model_radius,    &
+!     CALL SPECFILE_assign_real( spec( 25 ), control%initial_t_model_radius,   &
 !                                control%error )
-!     CALL SPECFILE_assign_real( spec( 26 ), control%initial_n_model_radius,    &
+!     CALL SPECFILE_assign_real( spec( 26 ), control%initial_n_model_radius,   &
 !                                control%error )
 !
 !!  Set logical values
 !
-!     CALL SPECFILE_assign_logical( spec( 31 ),                                 &
-!                                   control%use_second_order_correction,        &
+!     CALL SPECFILE_assign_logical( spec( 31 ),                                &
+!                                   control%use_second_order_correction,       &
 !                                   control%error )
-!     CALL SPECFILE_assign_logical( spec( 32 ), control%space_critical,         &
+!     CALL SPECFILE_assign_logical( spec( 32 ), control%space_critical,        &
 !                                   control%error )
-!     CALL SPECFILE_assign_logical( spec( 35 ),                                 &
-!                                   control%deallocate_error_fatal,             &
+!     CALL SPECFILE_assign_logical( spec( 35 ),                                &
+!                                   control%deallocate_error_fatal,            &
 !                                   control%error )
-!     CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                 &
+!     CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                &
 !                                   control%error )
 !
 !!  Set character values
 !
-!     CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,           &
+!     CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,          &
 !                                  control%error )
 !
 !!  Set LLS and EQP control values
 !
-!     CALL LLS_read_specfile( control%LLS_control_n, device,                    &
+!     CALL LLS_read_specfile( control%LLS_control_n, device,                   &
 !                             alt_specname = specname_n )
-!     CALL LLS_read_specfile( control%LLS_control_y, device,                    &
+!     CALL LLS_read_specfile( control%LLS_control_y, device,                   &
 !                             alt_specname = specname_y )
-!     CALL LLS_read_specfile( control%LLS_control_s, device,                    &
+!     CALL LLS_read_specfile( control%LLS_control_s, device,                   &
 !                             alt_specname = specname_s )
 !     CALL EQP_read_specfile( control%EQP_control, device )
 !
@@ -490,7 +496,7 @@
      TYPE ( FUNNEL_control_type ), INTENT( INOUT ) :: control
      TYPE ( FUNNEL_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( FUNNEL_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FC, eval_GJ, eval_HL
 
 !----------------------------------
@@ -499,35 +505,32 @@
 
      INTERFACE
        SUBROUTINE eval_FC( status, X, userdata, f, C )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: f
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: f
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_GJ( status, X, userdata, G, Jval )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, Jval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, Jval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_HL( status, X, Y, userdata, Hval, no_f )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
      END INTERFACE
@@ -536,24 +539,26 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ir, ic, j, l, out, eval_stat
-     INTEGER :: start_print, stop_print, print_level
-     INTEGER :: print_level_llsn, print_level_llsn_sbls, print_level_llsn_gltr
-     INTEGER :: print_level_llsy, print_level_llsy_sbls, print_level_llsy_gltr
-     INTEGER :: print_level_llss, print_level_llss_sbls, print_level_llss_gltr
-     INTEGER :: print_level_eqp, print_level_eqp_sbls, print_level_eqp_gltr
-     INTEGER :: dim_m, dim_n
-!    INTEGER :: iterative_solver
+     INTEGER ( KIND = ip_ ) :: i, ir, ic, j, l, out, eval_stat
+     INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level
+     INTEGER ( KIND = ip_ ) :: print_level_llsn, print_level_llsn_sbls
+     INTEGER ( KIND = ip_ ) :: print_level_llsn_gltr, print_level_llsy_gltr
+     INTEGER ( KIND = ip_ ) :: print_level_llsy, print_level_llsy_sbls
+     INTEGER ( KIND = ip_ ) :: print_level_llss, print_level_llss_sbls
+     INTEGER ( KIND = ip_ ) :: print_level_llss_gltr, print_level_eqp_gltr
+     INTEGER ( KIND = ip_ ) :: print_level_eqp, print_level_eqp_sbls
+     INTEGER ( KIND = ip_ ) :: dim_m, dim_n
+!    INTEGER ( KIND = ip_ ) :: iterative_solver
 
-     REAL ( KIND = wp ) :: f, f_plus, f_soc, max_y, val
-     REAL ( KIND = wp ) :: norm_n, norm_t, norm_r, norm_s, q_n, q_t, q_y, q_s
-     REAL ( KIND = wp ) :: theta, theta_max, theta_plus, theta_soc, ratio, pi
-     REAL ( KIND = wp ) :: delta_c, delta_f, delta_ft, m_xps, m_xpn
-     REAL ( KIND = wp ) :: radius, radius_c, radius_f, radius_within
-     REAL ( KIND = wp ) :: kappa_n, kappa_ca, kappa_cr, kappa_b
-     REAL ( KIND = wp ) :: kappa_tx1, kappa_tx2, kappa_delta
-     REAL ( KIND = wp ) :: eta_1, eta_2, eta_3, gamma_1, gamma_3
-!    REAL ( KIND = wp ) :: d1, d2, rat
+     REAL ( KIND = rp_ ) :: f, f_plus, f_soc, max_y, val
+     REAL ( KIND = rp_ ) :: norm_n, norm_t, norm_r, norm_s, q_n, q_t, q_y, q_s
+     REAL ( KIND = rp_ ) :: theta, theta_max, theta_plus, theta_soc, ratio, pi
+     REAL ( KIND = rp_ ) :: delta_c, delta_f, delta_ft, m_xps, m_xpn
+     REAL ( KIND = rp_ ) :: radius, radius_c, radius_f, radius_within
+     REAL ( KIND = rp_ ) :: kappa_n, kappa_ca, kappa_cr, kappa_b
+     REAL ( KIND = rp_ ) :: kappa_tx1, kappa_tx2, kappa_delta
+     REAL ( KIND = rp_ ) :: eta_1, eta_2, eta_3, gamma_1, gamma_3
+!    REAL ( KIND = rp_ ) :: d1, d2, rat
      LOGICAL :: set_printt, set_printi, set_printw, set_printd, print_1st_header
      LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
      LOGICAL :: print_iteration_header
@@ -565,7 +570,7 @@
 
 !  Parameters
 
-     REAL ( KIND = wp ), PARAMETER :: delta = point01
+     REAL ( KIND = rp_ ), PARAMETER :: delta = point01
 
 !  Initialize
 
@@ -655,8 +660,8 @@
 
 ! set constants
 
-     kappa_n = 100.0_wp
-     kappa_ca = 1000.0_wp
+     kappa_n = 100.0_rp_
+     kappa_ca = 1000.0_rp_
      kappa_cr = two
      kappa_b = point9
      kappa_delta = point1
@@ -670,9 +675,9 @@
 
      try_soc = control%use_second_order_correction
      IF ( try_soc ) THEN
-       gamma_1 = 0.1_wp
-       eta_2 = 0.1_wp
-       gamma_3 = 2000.0_wp
+       gamma_1 = 0.1_rp_
+       eta_2 = 0.1_rp_
+       gamma_3 = 2000.0_rp_
      END IF
 
      nlp%Z = zero
@@ -872,7 +877,8 @@
        WRITE( out, 2040 )
        print_1st_header = .FALSE.
        WRITE( out, "( I6, 6X, ES14.6, ES12.5, '     -      ', 3ES9.2, I6 )" )  &
-         0, inform%obj, inform%primal_infeasibility, radius_f, radius_c, theta_max
+         0, inform%obj, inform%primal_infeasibility, radius_f, radius_c,       &
+         theta_max
      END IF
 
      data%Y = nlp%Y
@@ -1628,9 +1634,9 @@
 
 !  Dummy arguments
 
-       REAL ( KIND = wp ) :: FORCING
-       INTEGER, INTENT( IN ) :: number
-       REAL ( KIND = wp ), INTENT( IN ) :: argument
+       REAL ( KIND = rp_ ) :: FORCING
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: number
+       REAL ( KIND = rp_ ), INTENT( IN ) :: argument
 
 !  Local variable
 
@@ -1676,7 +1682,7 @@
 !
 !!  Deallocate arrays set for EQP
 !
-!     CALL EQP_terminate( data%EQP_data, control%EQP_control,                   &
+!     CALL EQP_terminate( data%EQP_data, control%EQP_control,                  &
 !                         inform%EQP_inform )
 !     IF ( inform%EQP_inform%status /= 0 ) THEN
 !       inform%status = inform%EQP_inform%status
@@ -1688,14 +1694,14 @@
 !!  Deallocate all remaining allocated arrays
 !
 !     array_name = 'funnel: data%Y'
-!     CALL SPACE_dealloc_array( data%Y,                                         &
-!        inform%status, inform%alloc_status, array_name = array_name,           &
+!     CALL SPACE_dealloc_array( data%Y,                                        &
+!        inform%status, inform%alloc_status, array_name = array_name,          &
 !        bad_alloc = inform%bad_alloc, out = control%error )
 !     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 !
 !     array_name = 'funnel: data%H_diag'
-!     CALL SPACE_dealloc_array( data%H_diag,                                    &
-!        inform%status, inform%alloc_status, array_name = array_name,           &
+!     CALL SPACE_dealloc_array( data%H_diag,                                   &
+!        inform%status, inform%alloc_status, array_name = array_name,          &
 !        bad_alloc = inform%bad_alloc, out = control%error )
 !     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 !
@@ -1707,7 +1713,7 @@
 
 !  End of module GALAHAD_FUNNEL_equality
 
-   END MODULE GALAHAD_funnel_equality_double
+   END MODULE GALAHAD_FUNNEL_equality_precision
 
 
 

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D -  L P S Q P  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -12,8 +14,8 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-!A MODULE GALAHAD_LPSQPA_double
-   MODULE GALAHAD_LPSQP_double
+!A MODULE GALAHAD_LPSQPA_precision
+   MODULE GALAHAD_LPSQP_precision
 
 !      --------------------------------------------------
 !     |                                                  |
@@ -22,12 +24,13 @@
 !     |                                                  |
 !      --------------------------------------------------!  
 
-     USE CUTEst_interface_double
+     USE GALAHAD_PRECISION
+     USE CUTEst_interface_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
-!A   USE GALAHAD_QPA_double
-     USE GALAHAD_LPQPB_double
-     USE GALAHAD_SMT_double, ONLY: SMT_put
+     USE GALAHAD_SPECFILE_precision
+!A   USE GALAHAD_QPA_precision
+     USE GALAHAD_LPQPB_precision
+     USE GALAHAD_SMT_precision, ONLY: SMT_put
 
      IMPLICIT NONE     
 
@@ -35,20 +38,16 @@
      PUBLIC :: LPSQP_initialize, LPSQP_read_specfile, LPSQP_solve,             &
                LPSQP_terminate
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  ===================================
 !  The LPSQP_data_type derived type
@@ -58,7 +57,7 @@
 !A     TYPE ( QPA_data_type ) :: QPA_data
        TYPE ( LPQPB_data_type ) :: LPQPB_data
        TYPE ( QPT_problem_type ) :: prob
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
     END TYPE LPSQP_data_type
 
 !  ======================================
@@ -66,16 +65,17 @@
 !  ======================================
 
      TYPE, PUBLIC :: LPSQP_control_type
-       INTEGER :: error, out, alive_unit, print_level, maxit
-       INTEGER :: start_print, stop_print, print_gap, linear_solver
-       INTEGER :: icfact, semibandwidth, max_sc, io_buffer, more_toraldo
-       INTEGER :: non_monotone, first_derivatives, second_derivatives
-       REAL ( KIND = wp ) :: stopc, stopg, acccg, initial_radius, maximum_radius
-       REAL ( KIND = wp ) :: eta_successful, eta_very_successful
-       REAL ( KIND = wp ) :: eta_extremely_successful
-       REAL ( KIND = wp ) :: gamma_smallest, gamma_decrease, gamma_increase
-       REAL ( KIND = wp ) :: mu_meaningful_model, mu_meaningful_group
-       REAL ( KIND = wp ) :: initial_mu, mu_tol, firstg, firstc, infinity
+       INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, maxit
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
+       INTEGER ( KIND = ip_ ) :: linear_solver, more_toraldo, non_monotone
+       INTEGER ( KIND = ip_ ) :: icfact, semibandwidth, max_sc, io_buffer
+       INTEGER ( KIND = ip_ ) :: first_derivatives, second_derivatives
+       REAL ( KIND = rp_ ) :: stopc, stopg, acccg, initial_radius
+       REAL ( KIND = rp_ ) :: eta_successful, eta_very_successful
+       REAL ( KIND = rp_ ) :: eta_extremely_successful, maximum_radius
+       REAL ( KIND = rp_ ) :: gamma_smallest, gamma_decrease, gamma_increase
+       REAL ( KIND = rp_ ) :: mu_meaningful_model, mu_meaningful_group
+       REAL ( KIND = rp_ ) :: initial_mu, mu_tol, firstg, firstc, infinity
        LOGICAL :: quadratic_problem, two_norm_tr, exact_gcp, magical_steps
        LOGICAL :: accurate_bqp, structured_tr, print_max
        CHARACTER ( LEN = 30 ) :: alive_file
@@ -88,10 +88,11 @@
 !  =====================================
 
      TYPE, PUBLIC :: LPSQP_inform_type
-       INTEGER :: status, alloc_status, iter, itercg, itcgmx
-       INTEGER :: ncalcf, ncalcg, nvar, ngeval, iskip, ifixed, nsemib
-       REAL ( KIND = wp ) :: aug, obj, pjgnrm, pr_feas, du_feas
-       REAL ( KIND = wp ) :: ratio, mu, radius, ciccg
+       INTEGER ( KIND = ip_ ) :: status, alloc_status, iter, itercg, itcgmx
+       INTEGER ( KIND = ip_ ) :: ncalcf, ncalcg, nvar, ngeval, iskip, ifixed
+       INTEGER ( KIND = ip_ ) :: nsemib
+       REAL ( KIND = rp_ ) :: aug, obj, pjgnrm, pr_feas, du_feas
+       REAL ( KIND = rp_ ) :: ratio, mu, radius, ciccg
        LOGICAL :: newsol
        CHARACTER ( LEN = 24 ) :: bad_alloc
 !A     TYPE ( QPA_inform_type ) :: QPA_inform
@@ -117,8 +118,8 @@
      TYPE ( LPSQP_control_type ), INTENT( OUT ) :: control
      TYPE ( LPSQP_inform_type ), INTENT( OUT ) :: inform
 
-!    INTEGER, PARAMETER :: lmin = 1
-     INTEGER, PARAMETER :: lmin = 10000
+!    INTEGER ( KIND = ip_ ), PARAMETER :: lmin = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lmin = 10000
 
      inform%status = GALAHAD_ok
  
@@ -215,7 +216,7 @@
      
 !  Require a relative reduction in the resuiduals from CG of at least acccg
 
-     control%acccg = 0.01_wp
+     control%acccg = 0.01_rp_
 
 !  The initial trust-region radius - a non-positive value allows the
 !  package to choose its own
@@ -229,16 +230,16 @@
 !  Parameters that define when to decrease/increase the trust-region 
 !  (specialists only!)
 
-     control%eta_successful = 0.01_wp
-     control%eta_very_successful = 0.9_wp
-     control%eta_extremely_successful = 0.95_wp
+     control%eta_successful = 0.01_rp_
+     control%eta_very_successful = 0.9_rp_
+     control%eta_extremely_successful = 0.95_rp_
      
-     control%gamma_smallest = 0.0625_wp
-     control%gamma_decrease = 0.25_wp
-     control%gamma_increase = 2.0_wp
+     control%gamma_smallest = 0.0625_rp_
+     control%gamma_decrease = 0.25_rp_
+     control%gamma_increase = 2.0_rp_
      
-     control%mu_meaningful_model = 0.01_wp
-     control%mu_meaningful_group = 0.1_wp
+     control%mu_meaningful_model = 0.01_rp_
+     control%mu_meaningful_group = 0.1_rp_
 
 !  The initial value of the penalty parameter
 
@@ -370,14 +371,14 @@
 !  Dummy arguments
 
      TYPE ( LPSQP_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: lspec = 43
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 43
      CHARACTER( LEN = 5 ), PARAMETER :: specname = 'LPSQP'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -578,8 +579,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: input
-     REAL ( KIND = wp ), INTENT( INOUT ) :: rho
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: rho
      LOGICAL, INTENT( IN ) :: one_norm
      TYPE ( LPSQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( LPSQP_inform_type ), INTENT( INOUT ) :: inform
@@ -587,18 +588,19 @@
 
 !  Local variables
 
-     INTEGER :: m, n, H_ne, J_ne, J_len, H_len, print_level_lpqps, ir, ic, l_suc
-     INTEGER :: alloc_status, i, j, l, start_print, stop_print, print_level, out
-     INTEGER :: nfacts, nmhist, maxit_qp, prob_m, cutest_status, io_buffer
-     REAL ( KIND = wp ) :: merit, merit_trial, f_trial, step, prfeas
-     REAL ( KIND = wp ) :: ared, pred, ratio, old_radius, violation_trial
-     REAL ( KIND = wp ) :: model, ar_h, pr_h, epsmch, teneps
-     REAL ( KIND = wp ) :: merit_min, merit_ref, merit_current, sigma_r, sigma_c
-!    REAL ( KIND = wp ) :: first_radius
-     REAL ( KIND = wp ), PARAMETER :: rho_u = 0.01
-     REAL ( KIND = wp ), PARAMETER :: rho_s = 0.9
-     REAL ( KIND = wp ), PARAMETER :: step_tiny = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: stop_tiny = ten ** ( - 6 )
+     INTEGER ( KIND = ip_ ) :: m, n, H_ne, J_ne, J_len, H_len, ir, ic, l_suc
+     INTEGER ( KIND = ip_ ) :: print_level_lpqps, print_level, out, io_buffer
+     INTEGER ( KIND = ip_ ) :: alloc_status, i, j, l, start_print, stop_print
+     INTEGER ( KIND = ip_ ) :: nfacts, nmhist, maxit_qp, prob_m, cutest_status
+     REAL ( KIND = rp_ ) :: merit, merit_trial, f_trial, step, prfeas
+     REAL ( KIND = rp_ ) :: ared, pred, ratio, old_radius, violation_trial
+     REAL ( KIND = rp_ ) :: model, ar_h, pr_h, epsmch, teneps, sigma_c
+     REAL ( KIND = rp_ ) :: merit_min, merit_ref, merit_current, sigma_r
+!    REAL ( KIND = rp_ ) :: first_radius
+     REAL ( KIND = rp_ ), PARAMETER :: rho_u = 0.01
+     REAL ( KIND = rp_ ), PARAMETER :: rho_s = 0.9
+     REAL ( KIND = rp_ ), PARAMETER :: step_tiny = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: stop_tiny = ten ** ( - 6 )
 !    LOGICAL, PARAMETER :: fulsol = .TRUE.
      LOGICAL, PARAMETER :: fulsol = .FALSE.
      REAL :: time, time_new
@@ -606,8 +608,8 @@
 !    LOGICAL :: set_first_radius
      CHARACTER ( LEN = 10 ) :: pname
      CHARACTER ( LEN = 20 ) :: bad_alloc
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u, X_trial
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, C_l, C_u, C_trial, Y
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u, X_trial
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, C_l, C_u, C_trial, Y
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: X_name, C_name
 
@@ -1260,7 +1262,7 @@
 
        END IF
 
-!!A     control%QPA_control%randomize =                                        & 
+!!A     control%QPA_control%randomize =                                        &
 !!A        MAX( inform%pr_feas, inform%du_feas ) > 0.001
 
        IF ( step > step_tiny .AND.                                             &
@@ -1431,7 +1433,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-!    INTEGER :: alloc_status
+!    INTEGER ( KIND = ip_ ) :: alloc_status
 
      inform%status = 0
 
@@ -1447,7 +1449,7 @@
 !-*-*-*-*  G A L A H A D  -  L P S Q P _ m e r i t   F U N C T I O N -*-*-*-*
 
      FUNCTION LPSQP_merit( m, f, rho, one_norm, C, C_l, C_u, violation )
-     REAL ( KIND = wp ) :: LPSQP_merit
+     REAL ( KIND = rp_ ) :: LPSQP_merit
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1459,17 +1461,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: m
-     REAL ( KIND = wp ), INTENT( IN ) :: f, rho
-     REAL ( KIND = wp ), INTENT( OUT ) :: violation
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, rho
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: violation
      LOGICAL, INTENT( IN ) :: one_norm
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
      
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
 !    write(6,*) ' one norm ', one_norm
      violation = zero
@@ -1510,5 +1512,5 @@
 
 !  End of module LPSQP
 
-!A END MODULE GALAHAD_LPSQPA_double
-   END MODULE GALAHAD_LPSQP_double
+!A END MODULE GALAHAD_LPSQPA_precision
+   END MODULE GALAHAD_LPSQP_precision

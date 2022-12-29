@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 13:15 GMT.
 
 #include "spral_procedures.h"
 
@@ -22,12 +22,12 @@ module spral_ssids_contrib_precision
   type :: contrib_type
      logical :: ready = .false.
      integer(ip_) :: n ! size of block
-     real(C_DOUBLE), dimension(:), pointer :: val ! n x n lwr triangular matrix
-     integer(C_INT) :: ldval
-     integer(C_INT), dimension(:), pointer :: rlist ! row list
+     real(C_RP_), dimension(:), pointer :: val ! n x n lwr triangular matrix
+     integer(C_IP_) :: ldval
+     integer(C_IP_), dimension(:), pointer :: rlist ! row list
      integer(ip_) :: ndelay
-     integer(C_INT), dimension(:), pointer :: delay_perm
-     real(C_DOUBLE), dimension(:), pointer :: delay_val
+     integer(C_IP_), dimension(:), pointer :: delay_perm
+     real(C_RP_), dimension(:), pointer :: delay_val
      integer(ip_) :: lddelay
      integer(ip_) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
      ! Following are used by CPU to call correct cleanup routine
@@ -37,21 +37,21 @@ module spral_ssids_contrib_precision
 end module spral_ssids_contrib_precision
 
 ! C function to get interesting components
-subroutine spral_ssids_contrib_precision_get_data(ccontrib, n, val, ldval, rlist, &
-     ndelay, delay_perm, delay_val, lddelay) bind(C)
-  use, intrinsic :: iso_c_binding
+subroutine spral_ssids_contrib_get_data_precision(ccontrib, n, val, ldval, &
+     rlist, ndelay, delay_perm, delay_val, lddelay) bind(C)
+  use spral_precision
   use spral_ssids_contrib_precision
   implicit none
 
   type(C_PTR), value :: ccontrib
-  integer(C_INT), intent(out) :: n
+  integer(C_IP_), intent(out) :: n
   type(C_PTR), intent(out) :: val
-  integer(C_INT), intent(out) :: ldval
+  integer(C_IP_), intent(out) :: ldval
   type(C_PTR), intent(out) :: rlist
-  integer(C_INT), intent(out) :: ndelay
+  integer(C_IP_), intent(out) :: ndelay
   type(C_PTR), intent(out) :: delay_perm
   type(C_PTR), intent(out) :: delay_val
-  integer(C_INT), intent(out) :: lddelay
+  integer(C_IP_), intent(out) :: lddelay
 
   type(contrib_type), pointer, volatile :: fcontrib
 ! type(contrib_type), pointer :: fcontrib
@@ -78,4 +78,4 @@ subroutine spral_ssids_contrib_precision_get_data(ccontrib, n, val, ldval, rlist
      end if
      lddelay = fcontrib%lddelay
   end if
-end subroutine spral_ssids_contrib_precision_get_data
+end subroutine spral_ssids_contrib_get_data_precision
