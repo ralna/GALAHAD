@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 24/11/2014 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N F I S Q P _ S I F  *-*-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  November 24th 2014
 
    PROGRAM RUNFISQP_SIF
-   USE GALAHAD_USEFISQP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEFISQP_precision
 
 !  Main program for the SIF interface to FiSQP, a filter SQP algorithm 
 !  with unified step calculation for nonlinear programming
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

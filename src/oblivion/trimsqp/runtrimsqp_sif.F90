@@ -1,13 +1,16 @@
-  ! THIS VERSION: GALAHAD 2.1 - 22/12/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 16:10 GMT.
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N T R I M S Q P _ S I F  *-*-*-*-*-*-*-*-
+#include "galahad_modules.h"
+
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N T R I M S Q P _ S I F  -*-*-*-*-*-*-*-
 
 !  Nick Gould and Daniel Robinson, for GALAHAD productions
 !  Copyright reserved
 !  December 22nd 2007
 
    PROGRAM RUNTRIMSQP_SIF
-   USE GALAHAD_USETRIMSQP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USETRIMSQP_precision
 
 !  Main program for the SIF interface to TRIMSQP, a trust-region SQP
 !  method algorithm for nonlinear programming, in which descent is
@@ -15,10 +18,10 @@
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

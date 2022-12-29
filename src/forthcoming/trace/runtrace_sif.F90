@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 23/10/2014 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N T R A C E _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 23rd 2014
 
    PROGRAM RUNTRACE_SIF
-   USE GALAHAD_USETRACE_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USETRACE_precision
 
 !  Main program for the SIF interface to TRACE, a trust-region algorithm for
 !  unconstrained optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

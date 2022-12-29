@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 15/05/2010 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ B A R C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_BARC_double
+   MODULE GALAHAD_BARC_precision
 
 !     -------------------------------------------------
 !    |                                                 |
@@ -24,57 +26,52 @@
 !    |                                                 |
 !     -------------------------------------------------
 
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SBLS_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_GLRT_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+     USE GALAHAD_SBLS_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_GLRT_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: BARC_initialize, BARC_read_specfile, BARC_solve,                &
-               BARC_terminate, NLPT_problem_type, NLPT_userdata_type,          &
+               BARC_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
                BARC_projection
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !--------------------------
 !  Derived type definitions
 !--------------------------
 
      TYPE, PUBLIC :: BARC_data_type
-       INTEGER :: n_free
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: VAR_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: VAR_free
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PROD
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_free_save
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: O_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_plus
+       INTEGER ( KIND = ip_ ) :: n_free
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: VAR_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: VAR_free
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PROD
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_free_save
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: O_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_plus
        TYPE ( SMT_type ) :: A, C
        TYPE ( SBLS_data_type ) :: SBLS_data
        TYPE ( GLRT_data_type ) :: GLRT_data
      END TYPE BARC_data_type
 
      TYPE, PUBLIC :: BARC_control_type
-       INTEGER :: error, out, alive_unit, print_level, maxit, minor_maxit
-       INTEGER :: start_print, stop_print, print_gap
-       REAL ( KIND = wp ) :: stop_pg
-       REAL ( KIND = wp ) :: initial_sigma, gamma_reduce, gamma_increase
-       REAL ( KIND = wp ) :: delta_feas, eta_successful, eta_very_successful
+       INTEGER ( KIND = ip_ ) :: error, out, alive_unit, maxit, minor_maxit
+       INTEGER ( KIND = ip_ ) :: print_level, start_print, stop_print, print_gap
+       REAL ( KIND = rp_ ) :: stop_pg
+       REAL ( KIND = rp_ ) :: initial_sigma, gamma_reduce, gamma_increase
+       REAL ( KIND = rp_ ) :: delta_feas, eta_successful, eta_very_successful
        LOGICAL :: fulsol, space_critical, deallocate_error_fatal
        CHARACTER ( LEN = 30 ) :: alive_file
        TYPE ( SBLS_control_type ) :: SBLS_control
@@ -86,10 +83,10 @@
      END TYPE
 
      TYPE, PUBLIC :: BARC_inform_type
-       INTEGER :: status, alloc_status, iter, cg_iter, f_eval, g_eval
-       INTEGER :: factorization_status
-       INTEGER :: factorization_integer, factorization_real
-       REAL ( KIND = wp ) :: obj, norm_pg
+       INTEGER ( KIND = ip_ ) :: status, alloc_status, iter, cg_iter
+       INTEGER ( KIND = ip_ ) :: factorization_status, f_eval, g_eval
+       INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+       REAL ( KIND = rp_ ) :: obj, norm_pg
        CHARACTER ( LEN = 80 ) :: bad_alloc
        TYPE ( BARC_time_type ) :: time
        TYPE ( SBLS_inform_type ) :: SBLS_inform
@@ -100,27 +97,27 @@
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: tenth = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: third = one / three
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
-     REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenth = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: third = one / three
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = 0.00001_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
 
-!    REAL ( KIND = wp ), PARAMETER :: kap_ubs = ten ** ( - 4 )
-     REAL ( KIND = wp ), PARAMETER :: kap_ubs = point1
-     REAL ( KIND = wp ), PARAMETER :: kap_lbs = point9
-     REAL ( KIND = wp ), PARAMETER :: kap_epp = point1
-     REAL ( KIND = wp ), PARAMETER :: eps_active = teneps
+!    REAL ( KIND = rp_ ), PARAMETER :: kap_ubs = ten ** ( - 4 )
+     REAL ( KIND = rp_ ), PARAMETER :: kap_ubs = point1
+     REAL ( KIND = rp_ ), PARAMETER :: kap_lbs = point9
+     REAL ( KIND = rp_ ), PARAMETER :: kap_epp = point1
+     REAL ( KIND = rp_ ), PARAMETER :: eps_active = teneps
 
    CONTAINS
 
@@ -146,7 +143,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: status, alloc_status
+     INTEGER ( KIND = ip_ ) :: status, alloc_status
 
      inform%status = GALAHAD_ok
 
@@ -300,7 +297,7 @@
 !-----------------------------------------------
 
      TYPE ( BARC_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -309,7 +306,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: lspec = 62
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 62
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'BARC'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -445,7 +442,7 @@
      TYPE ( BARC_control_type ), INTENT( INOUT ) :: control
      TYPE ( BARC_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( BARC_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -453,34 +450,31 @@
 
      INTERFACE
        SUBROUTINE eval_F( status, X, userdata, f )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), INTENT( OUT ) :: f
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_G( status, X, userdata, G )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_H( status, X, userdata, Hval )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
@@ -488,12 +482,12 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ir, ic, j, k, l, n, out, cg_iter, eval_stat, cauchy_iter
-     INTEGER :: start_print, stop_print, print_level, print_level_glrt
-     INTEGER :: minor, n_free, nh_free
-     REAL ( KIND = wp ) :: f_plus, f_model, val, sigma, ratio, model_decrease
-     REAL ( KIND = wp ) :: t, t_min, t_max, gts, norm_PTmg, eps, q_model
-     REAL ( KIND = wp ) :: alpha, f_new, curv
+     INTEGER ( KIND = ip_ ) :: i, ir, ic, j, k, l, n, out, cg_iter, eval_stat
+     INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level_glrt
+     INTEGER ( KIND = ip_ ) :: minor, n_free, nh_free, cauchy_iter, print_level
+     REAL ( KIND = rp_ ) :: f_plus, f_model, val, sigma, ratio, model_decrease
+     REAL ( KIND = rp_ ) :: t, t_min, t_max, gts, norm_PTmg, eps, q_model
+     REAL ( KIND = rp_ ) :: alpha, f_new, curv
      LOGICAL :: set_printt, set_printi, set_printw, set_printd, print_1st_header
      LOGICAL :: printe, printi, printt, printw, printd, printm, set_printm
      LOGICAL :: print_iteration_header, firsti
@@ -1291,7 +1285,7 @@
 
 !  compute the change in the model
 
-       CALL BARC_model( n, data%S( : n ), zero, nlp%G( : n ),  nlp%H,        &
+       CALL BARC_model( n, data%S( : n ), zero, nlp%G( : n ),  nlp%H,          &
                          sigma, gts, q_model, model_decrease,  data%PROD( : n ))
 
 !  check the trial point for acceptability
@@ -1457,19 +1451,19 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: f, sigma
-     REAL ( KIND = wp ), INTENT( OUT ) :: l_model, q_model, c_model
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, X
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, sigma
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: l_model, q_model, c_model
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C, X
      TYPE ( SMT_type ), INTENT( IN ) :: H
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: W
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: W
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, l
-     REAL ( KIND = wp ) :: val
+     INTEGER ( KIND = ip_ ) :: i, j, l
+     REAL ( KIND = rp_ ) :: val
 
 !  compute the Hessian-vector product with X
 
@@ -1663,20 +1657,21 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, OPTIONAL, INTENT( OUT ) :: iter
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, X_l, X_u
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: A
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: b
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( OUT ) :: iter
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C, X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: A
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: b
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: mu, y, dy, athinva, rhs, viol8, pr_feas, du_feas,step
-     REAL ( KIND = wp ), DIMENSION( n ) :: DX, Z_l, Z_u, DZ_l, DZ_u, H
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: mu, y, dy, athinva, rhs, viol8, pr_feas, du_feas
+     REAL ( KIND = rp_ ) :: step
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: DX, Z_l, Z_u, DZ_l, DZ_u, H
 
 !  Trivial projection if the optional linear constraint is absent
 
@@ -1713,7 +1708,7 @@
 
 !  Compute the target parameter
 
-       mu = 0.05_wp * ( DOT_PRODUCT( X - X_l, Z_l ) +                          &
+       mu = 0.05_rp_ * ( DOT_PRODUCT( X - X_l, Z_l ) +                         &
                         DOT_PRODUCT( X_u - X, Z_u ) ) / FLOAT( n )
 
 !  Solve ( H   a ) ( dx ) = - ( x - c - mu ( (X-X_l)^-1 (X_u-X)^-1 ) e )
@@ -1763,7 +1758,7 @@
 
 !  Stop just short of infeasibility
 
-       step = MIN( one, 0.9999_wp * step )
+       step = MIN( one, 0.9999_rp_ * step )
 
 !  Update the primal and dual variables
 
@@ -1773,15 +1768,15 @@
        Z_u = Z_u + step * DZ_u
 
      END DO
-!    WRITE( 6, "(' primal, dual infeasibility ', 2ES12.4, 1X, I0,             &
+!    WRITE( 6, "(' primal, dual infeasibility ', 2ES12.4, 1X, I0,              &
 !   &   ' iterations' )" ) pr_feas, du_feas, iter
-     WRITE( 6, "( ' fraction active ', ES12.4 )" ) &
-     FLOAT( COUNT( X-X_l < Z_l ) + COUNT( X_U-X < Z_u ) ) / FLOAT( n )
+!    WRITE( 6, "( ' fraction active ', ES12.4 )" ) &
+!      FLOAT( COUNT( X-X_l < Z_l ) + COUNT( X_U-X < Z_u ) ) / FLOAT( n )
      RETURN
 
      END SUBROUTINE BARC_projection
 
 !  End of module GALAHAD_BARC
 
-   END MODULE GALAHAD_BARC_double
+   END MODULE GALAHAD_BARC_precision
 

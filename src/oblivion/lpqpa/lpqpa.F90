@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 14:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L P Q P A   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LPQPA_double
+   MODULE GALAHAD_LPQPA_precision
 
 !      --------------------------------------------------
 !     |                                                  |
@@ -26,12 +28,13 @@
 !     |                                                  |
 !      --------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_QPT_double
-      USE GALAHAD_QPA_double
-      USE GALAHAD_LSQP_double
-      USE GALAHAD_LPQP_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_QPA_precision
+      USE GALAHAD_LSQP_precision
+      USE GALAHAD_LPQP_precision
+      USE GALAHAD_SPECFILE_precision
   
       IMPLICIT NONE
 
@@ -39,28 +42,22 @@
       PUBLIC :: LPQPA_initialize, LPQPA_read_specfile, LPQPA_solve,            &
                 LPQPA_terminate, QPT_problem_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
       TYPE, PUBLIC :: LPQPA_control_type
-        INTEGER :: out, error, print_level
+        INTEGER ( KIND = ip_ ) :: out, error, print_level
         TYPE ( QPA_control_type ) :: QPA_control
         TYPE ( LPQP_control_type ) :: LPQP_control
       END TYPE
 
       TYPE, PUBLIC :: LPQPA_inform_type
-        INTEGER :: status
+        INTEGER ( KIND = ip_ ) :: status
         TYPE ( QPA_inform_type ) :: QPA_inform
         TYPE ( LPQP_inform_type ) :: LPQP_inform
       END TYPE
@@ -175,14 +172,14 @@
 !  Dummy arguments
 
       TYPE ( LPQPA_control_type ), INTENT( INOUT ) :: control        
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 38
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 38
       CHARACTER( LEN = 5 ), PARAMETER :: specname = 'LPQPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -469,9 +466,9 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      REAL ( KIND = wp ), INTENT( IN ) :: rho
+      REAL ( KIND = rp_ ), INTENT( IN ) :: rho
       LOGICAL, INTENT( IN ) :: one_norm
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
       TYPE ( LPQPA_data_type ), INTENT( INOUT ) :: data
       TYPE ( LPQPA_control_type ), INTENT( INOUT ) :: control
       TYPE ( LPQPA_inform_type ), INTENT( OUT ) :: inform
@@ -565,4 +562,4 @@
 
 !  End of module LPQPA
 
-   END MODULE GALAHAD_LPQPA_double
+   END MODULE GALAHAD_LPQPA_precision

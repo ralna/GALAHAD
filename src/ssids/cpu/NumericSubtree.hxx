@@ -46,7 +46,7 @@ public:
     *         (references entire matrix). No scaling applied if null.
     *  \param child_contrib array of pointers to contributions from child
     *         subtrees. Information to be extracted by call to Fortran routine
-    *         spral_ssids_contrib_get_data().
+    *         spral_ssids_contrib_get_data_double().
     *  \param options user-supplied options controlling execution.
     *  \param stats collection of statistics for return to user.
     */

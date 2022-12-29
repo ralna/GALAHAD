@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  L P S Q P  -  R U N L P S Q P  *-*-*-*-*-*-*-*-*-*-*
 
@@ -6,20 +8,17 @@
 !  Copyright reserved
 !  Started: August 15th 2002
 
-   PROGRAM RUNLPSQP_double
+   PROGRAM RUNLPSQP_precision
 
 !  This is the driver program for running LPSQP for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-!A   USE GALAHAD_LPSQPA_double
-     USE GALAHAD_LPSQP_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_PRECISION
+!A   USE GALAHAD_LPSQPA_precision
+     USE GALAHAD_LPSQP_precision
+     USE GALAHAD_SPECFILE_precision
      IMPLICIT NONE
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -35,24 +34,24 @@
 
 !  Problem input characteristics
 
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER, PARAMETER :: input = 55
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
      CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNLPSQP'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNLPSQP.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
      LOGICAL :: write_result_summary = .FALSE.
@@ -69,21 +68,21 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
-     REAL ( KIND = wp ) :: rho = 100000.0
+     INTEGER ( KIND = ip_ ) :: istore = 0
+     REAL ( KIND = rp_ ) :: rho = 100000.0
      LOGICAL :: one_norm = .FALSE.
 
 !  Output file characteristics
 
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
 
-!    INTEGER :: m, n
+!    INTEGER ( KIND = ip_ ) :: m, n
 
 !  ------------------ Open the specfile for runlpsqp ----------------
 
@@ -185,4 +184,4 @@
 
 !  End of program RUNLPSQP
 
-   END PROGRAM RUNLPSQP_double
+   END PROGRAM RUNLPSQP_precision

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ T R I M S Q P  -*-*-*-*-*-*-*-*-*-
 
@@ -6,22 +8,23 @@
 !  Copyright reserved
 !  Started: December 22th 2007
 
-   MODULE GALAHAD_USETRIMSQP_double
+   MODULE GALAHAD_USETRIMSQP_precision
 
 !  This is the driver program for running TRIMSQP for a variety of computing
 !  systems. It opens and closes all the files, allocates arrays, reads and
 !  checks data, and calls the appropriate package.
 
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_TRIMSQP_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_TRIMSQP_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
-     USE GALAHAD_SMT_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
-     USE GALAHAD_CHECK_double
-     USE CUTEST_interface_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CHECK_precision
+     USE CUTEST_interface_precision
 
      IMPLICIT NONE
 
@@ -36,13 +39,12 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     REAL ( KIND = wp ) :: one = 1.0_wp
+     REAL ( KIND = rp_ ) :: one = 1.0_rp_
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -51,7 +53,7 @@
      TYPE ( TRIMSQP_control_type )         :: control
      TYPE ( TRIMSQP_inform_type )          :: inform
      TYPE ( TRIMSQP_data_type )            :: data
-     TYPE ( NLPT_userdata_type )           :: userdata
+     TYPE ( GALAHAD_userdata_type )        :: userdata
      TYPE ( NLPT_problem_type )            :: nlp
      TYPE ( CUTEST_FUNCTIONS_inform_type )  :: cutest_inform
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
@@ -65,23 +67,23 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i
+     INTEGER ( KIND = ip_ ) :: iores, i
      LOGICAL :: filexx, is_specfile
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNTRIMSQP'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNTRIMSQP.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
 !    LOGICAL :: write_result_summary = .FALSE.
@@ -95,22 +97,22 @@
      LOGICAL :: checkJ    = .FALSE.
      LOGICAL :: checkH    = .FALSE.
      LOGICAL :: not_fatal = .FALSE.
-     INTEGER :: check_print_level  = 2
-     INTEGER :: check_verify_level = 2
+     INTEGER ( KIND = ip_ ) :: check_print_level  = 2
+     INTEGER ( KIND = ip_ ) :: check_verify_level = 2
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
      LOGICAL :: separate_linear_constraints = .FALSE.
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      !CHARACTER ( LEN =  5 ) :: solv = 'trimSQP'
 
 !  ------------------ Open the specfile for runlpsqp ----------------
@@ -280,9 +282,9 @@
      !   write(*,*) ' *** DANIEL -- unconcstrained CUTEst not yet! '
      !   write(*,*)
      !   RETURN
-        !CALL TRIMSQP_solve( nlp, control, inform, data,                   &
-        !                    eval_FC=CUTEST_eval_FC, eval_G=CUTEST_eval_G,   &
-        !                    eval_J=CUTEST_eval_J, eval_H=CUTEST_eval_H,     &
+        !CALL TRIMSQP_solve( nlp, control, inform, data,                       &
+        !                    eval_FC=CUTEST_eval_FC, eval_G=CUTEST_eval_G,     &
+        !                    eval_J=CUTEST_eval_J, eval_H=CUTEST_eval_H,       &
         !                    userdata=userdata )
 
      !END IF
@@ -294,18 +296,18 @@
 
      IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        !WRITE( rfiledevice, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )     &
-        WRITE( rfiledevice, "( A10, F24.12, 3F18.10, I5, F12.2, I4, 6I5 )" )    &
-             nlp%pname, inform%obj, min( one,inform%primal_vl),                 &
-             min( one, inform%dual_vl), min( one, inform%comp_vl),              &
-             inform%iterate, inform%time%total, inform%status,                  &
-             inform%num_f_eval, inform%num_g_eval, inform%num_c_eval,           &
+        !WRITE( rfiledevice, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )    &
+        WRITE( rfiledevice, "( A10, F24.12, 3F18.10, I5, F12.2, I4, 6I5 )" )   &
+             nlp%pname, inform%obj, min( one,inform%primal_vl),                &
+             min( one, inform%dual_vl), min( one, inform%comp_vl),             &
+             inform%iterate, inform%time%total, inform%status,                 &
+             inform%num_f_eval, inform%num_g_eval, inform%num_c_eval,          &
              inform%num_J_eval, inform%num_H_eval, inform%num_descent_active
      END IF
      !WRITE( errout, "( 'name        f               pr-feas  du-feas ',       &
      !     &                  ' cmp-slk      its        time  stat' )" )
      !WRITE( errout, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )            &
-     !     nlp%pname, inform%obj, inform%primal_vl, inform%dual_vl,               &
+     !     nlp%pname, inform%obj, inform%primal_vl, inform%dual_vl,            &
      !     inform%comp_vl, inform%iterate, inform%time%total, inform%status
 
 
@@ -370,13 +372,13 @@
                 '    Lower       Upper    Multiplier ' )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- !2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
+ !2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                 &
  !             /, ' Objective:', ES24.16 )
 
 !  End of subroutine USE_TRIMSQP
 
   END SUBROUTINE USE_TRIMSQP
 
-!  End of module USETRIMSQP_double
+!  End of module USETRIMSQP
 
-END MODULE GALAHAD_USETRIMSQP_double
+END MODULE GALAHAD_USETRIMSQP_precision

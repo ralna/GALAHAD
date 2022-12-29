@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 11:00 GMT.
+#include "galahad_modules.h"
 !! Implements an F90 wrapper around the solvers implemented in the
 !!
 !!            G  A  L  A  H  A  D
@@ -22,7 +23,7 @@
 
 Subroutine Wrap_Use_Filtrane( setup_use_filtrane )
 
-  Use GALAHAD_USEFILTRANE_double   ! Main FILTRANE driver module
+  Use GALAHAD_USEFILTRANE_precision   ! Main FILTRANE driver module
   External setup_use_filtrane      ! Declared in galahad.c
 
   ! Pass pointer to subroutine USE_FILTRANE to calling function

@@ -932,6 +932,7 @@
    END DO
 
    DEALLOCATE( nlp%X, nlp%C, nlp%G, userdata%real )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
 

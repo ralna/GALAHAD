@@ -10,9 +10,9 @@
 !
 !> \brief Provides routines for detecting and/or specifying hardware
 !>        topology for topology-aware routines
-module spral_hw_topology_precision
+module spral_hw_topology
 
-  use spral_precision
+  use spral_precision, only: ip_, C_IP_
   use, intrinsic :: iso_c_binding
   implicit none
 
@@ -35,22 +35,22 @@ module spral_hw_topology_precision
   end type numa_region
 
   interface
-     !> Interface to spral_hw_topology_precision_guess()
-     subroutine spral_hw_topology_precision_guess(nregion, regions) bind(C)
-       use spral_precision
+     !> Interface to spral_hw_topology_guess()
+     subroutine spral_hw_topology_guess(nregion, regions) bind(C)
+       use spral_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
        integer(C_IP_), intent(out) :: nregion
        type(C_PTR), intent(out) :: regions
-     end subroutine spral_hw_topology_precision_guess
-     !> Interface to spral_hw_topology_precision_free()
-     subroutine spral_hw_topology_precision_free(nregion, regions) bind(C)
-       use spral_precision
+     end subroutine spral_hw_topology_guess
+     !> Interface to spral_hw_topology_free()
+     subroutine spral_hw_topology_free(nregion, regions) bind(C)
+       use spral_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
        integer(C_IP_), value :: nregion
        type(C_PTR), value :: regions
-     end subroutine spral_hw_topology_precision_free
+     end subroutine spral_hw_topology_free
   end interface
 
 contains
@@ -73,7 +73,7 @@ contains
     integer(C_IP_), dimension(:), pointer, contiguous :: f_gpus
 
     ! Get regions from C
-    call spral_hw_topology_precision_guess(nregions, c_regions)
+    call spral_hw_topology_guess(nregions, c_regions)
     if (c_associated(c_regions)) then
        call c_f_pointer(c_regions, f_regions, shape=(/ nregions /))
 
@@ -93,7 +93,7 @@ contains
     end if
 
     ! Free C version
-    call spral_hw_topology_precision_free(nregions, c_regions)
+    call spral_hw_topology_free(nregions, c_regions)
   end subroutine guess_topology
 
-end module spral_hw_topology_precision
+end module spral_hw_topology

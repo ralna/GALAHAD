@@ -1,11 +1,11 @@
 #include "galahad_modules.h"
   PROGRAM RUNRB_sls
-    USE spral_rutherford_boeing
     USE GALAHAD_PRECISION
     USE GALAHAD_CLOCK
     USE GALAHAD_COPYRIGHT
     USE GALAHAD_SPECFILE_precision
     USE GALAHAD_SLS_precision
+    USE SPRAL_RUTHERFORD_BOEING_precision
 
     IMPLICIT none
 

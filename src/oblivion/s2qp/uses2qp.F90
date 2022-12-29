@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ S 2 Q P  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,22 +8,23 @@
 !  Copyright reserved
 !  Started: December 22th 2007
 
-   MODULE GALAHAD_USES2QP_double
+   MODULE GALAHAD_USES2QP_precision
 
 !  This is the driver program for running S2QP for a variety of computing
 !  systems. It opens and closes all the files, allocates arrays, reads and
 !  checks data, and calls the appropriate package.
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_S2QP_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_S2QP_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
-     USE GALAHAD_SMT_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
-     USE GALAHAD_CHECK_double
-     USE CUTEST_interface_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CHECK_precision
+     USE CUTEst_interface_precision
 
      IMPLICIT NONE
 
@@ -36,16 +39,12 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp    = KIND( 1.0D+0 )
-     REAL ( KIND = wp ) :: zero  = 0.0_wp
-     REAL ( KIND = wp ) :: one   = 1.0_wp
-     REAL ( KIND = wp ) :: two   = 2.0_wp
-     REAL ( KIND = wp ) :: three = 3.0_wp
+     REAL ( KIND = rp_ ) :: zero  = 0.0_rp_
+     REAL ( KIND = rp_ ) :: one   = 1.0_rp_
+     REAL ( KIND = rp_ ) :: two   = 2.0_rp_
+     REAL ( KIND = rp_ ) :: three = 3.0_rp_
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -68,26 +67,26 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i
+     INTEGER ( KIND = ip_ ) :: iores, i
      LOGICAL :: filexx, is_specfile
-     REAL( kind = wp ) :: dummy_real
-     REAL( kind = wp ), dimension(:), allocatable :: X_saved, Y_saved
+     REAL( kind = rp_ ) :: dummy_real
+     REAL( kind = rp_ ), dimension(:), allocatable :: X_saved, Y_saved
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNS2QP'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNS2QP.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: rfiledevice_full = 48
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: rfiledevice_full = 48
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
      LOGICAL :: write_result_summary = .TRUE.
@@ -99,19 +98,19 @@
      LOGICAL :: check_derivatives = .FALSE.
      LOGICAL :: derivative_fatal = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
      LOGICAL :: separate_linear_constraints = .FALSE.
 
 ! Output file characteristics
 
-  INTEGER :: out  = 6
-  INTEGER :: errout = 6
+  INTEGER ( KIND = ip_ ) :: out  = 6
+  INTEGER ( KIND = ip_ ) :: errout = 6
 
 ! ------------------ Open the specfile for runs2qp ----------------
 
@@ -175,7 +174,8 @@
      CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
      CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
      CALL SPECFILE_assign_integer( spec( 27 ), istore, errout )
-     CALL SPECFILE_assign_logical( spec( 28 ), separate_linear_constraints, errout )
+     CALL SPECFILE_assign_logical( spec( 28 ), separate_linear_constraints,    &
+                                   errout )
   END IF
 
   ! If required, open a file for the results
@@ -183,10 +183,10 @@
   IF ( write_result_summary ) THEN
      INQUIRE( FILE = rfilename, EXIST = filexx )
      IF ( filexx ) THEN
-        OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',             &
+        OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',               &
               STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
      ELSE
-        OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',             &
+        OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',               &
               STATUS = 'NEW', IOSTAT = iores )
      END IF
      IF ( iores /= 0 ) THEN
@@ -253,7 +253,8 @@
 
      CALL CHECK_initialize( CHECK_control )
 
-     IF ( is_specfile ) CALL CHECK_read_specfile( CHECK_control, input_specfile )
+     IF ( is_specfile ) CALL CHECK_read_specfile( CHECK_control,               &
+                                                  input_specfile )
 
      ! Get nontrial x and y to make the derivative check more reliable.
 
@@ -296,9 +297,9 @@
 
      CHECK_inform%status = 1
 
-     CALL CHECK_verify( nlp, CHECK_data, CHECK_control, CHECK_inform,  &
-                        eval_F=CUTEST_eval_F, eval_C=CUTEST_eval_C,      &
-                        eval_G=CUTEST_eval_G, eval_J=CUTEST_eval_J,      &
+     CALL CHECK_verify( nlp, CHECK_data, CHECK_control, CHECK_inform,          &
+                        eval_F=CUTEST_eval_F, eval_C=CUTEST_eval_C,            &
+                        eval_G=CUTEST_eval_G, eval_J=CUTEST_eval_J,            &
                         eval_HL=CUTEST_eval_HL, userdata=userdata )
 
      CALL CHECK_terminate( CHECK_data, CHECK_control, CHECK_inform )
@@ -319,7 +320,7 @@
 !  Solve the problem
 
   inform%status = 1
-  CALL S2QP_solve( nlp, control, inform, data, userdata,         &
+  CALL S2QP_solve( nlp, control, inform, data, userdata,                       &
                    CUTEST_eval_FC, CUTEST_eval_GJ, CUTEST_eval_HL )
 
  !  If required, append results to a file
@@ -345,10 +346,10 @@
 
      INQUIRE( FILE = sfilename, EXIST = filexx )
      IF ( filexx ) THEN
-        OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',             &
+        OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',               &
               STATUS = 'OLD', IOSTAT = iores )
      ELSE
-        OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',             &
+        OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',               &
               STATUS = 'NEW', IOSTAT = iores )
      END IF
      IF ( iores /= 0 ) THEN
@@ -360,7 +361,7 @@
 
      WRITE( sfiledevice, 2000 )
      DO i = 1, nlp%n
-        WRITE( sfiledevice, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ),            &
+        WRITE( sfiledevice, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ),             &
              nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
      END DO
 
@@ -424,6 +425,6 @@
 
   END SUBROUTINE USE_S2QP
 
-!  End of module USES2QP_double
+!  End of module USES2QP
 
-END MODULE GALAHAD_USES2QP_double
+END MODULE GALAHAD_USES2QP_precision

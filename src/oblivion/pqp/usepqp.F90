@@ -1,24 +1,27 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   U S E P Q P  _ m a i n  *-*-*-*-*-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
 
-    MODULE GALAHAD_USEPQP_double
+    MODULE GALAHAD_USEPQP_precision
 
 !  CUTEst/AMPL interface to PQP, an algorithm for solving parameteric 
 !  quadratic programs.
 
-      USE CUTEst_interface_double
-      USE GALAHAD_RAND_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
+      USE GALAHAD_RAND_precision
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_QPT_double
-      USE GALAHAD_PQP_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_PQP_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_SCALING_double
+      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           GENERAL               => GALAHAD_GENERAL,                            &
@@ -51,33 +54,33 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!     INTEGER, PARAMETER :: n_pass = 1
-!     INTEGER, PARAMETER :: n_pass = 2
-      INTEGER, PARAMETER :: n_pass = 3
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_pass = 1
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_pass = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: n_pass = 3
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, ifail, la, lh, liw, iores, a_ne, h_ne
-!     INTEGER :: np1, npm, nmods, newton
-      INTEGER :: i, j, l, neh, nea, factorization_integer, factorization_real
-      INTEGER :: status, mfixed, mdegen, iter, nfacts, nfixed, ndegen, mequal
-      INTEGER :: alloc_stat, cutest_status, pass
-      INTEGER :: miss_ident, s_iter( n_pass ), s_status( n_pass )
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, ifail, la, lh, liw, iores
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, a_ne, h_ne
+!     INTEGER ( KIND = ip_ ) :: np1, npm, nmods, newton
+      INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, iter, nfacts, nfixed
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, pass, ndegen, mequal
+      INTEGER ( KIND = ip_ ) :: miss_ident, s_iter( n_pass ), s_status( n_pass )
       REAL :: time, timeo, times, timet, s_timet( n_pass )
-      REAL ( KIND = wp ) :: objf, qfval, stopr, rho_g, rho_b, randm, theta_max
-      REAL ( KIND = wp ) :: s_qfval( n_pass ), theta_u, theta_end
-      REAL ( KIND = wp ) :: cl, cu, xl, xu
+      REAL ( KIND = rp_ ) :: objf, qfval, stopr, rho_g, rho_b, randm, theta_max
+      REAL ( KIND = rp_ ) :: s_qfval( n_pass ), theta_u, theta_end
+      REAL ( KIND = rp_ ) :: cl, cu, xl, xu
       LOGICAL :: filexx, is_specfile, printo, printe, random = .FALSE.
 !     LOGICAL :: print_solution = .FALSE.
       LOGICAL :: print_solution = .TRUE.
@@ -85,19 +88,19 @@
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 22
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 22
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQPA.SPC'
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
@@ -108,14 +111,14 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'PARAM_SOL.d'
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE. 
-      REAL ( KIND = wp ) :: pert = ten ** ( - 8 )
-      INTEGER :: initial_seed = 2345671
+      REAL ( KIND = rp_ ) :: pert = ten ** ( - 8 )
+      INTEGER ( KIND = ip_ ) :: initial_seed = 2345671
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state
       CHARACTER ( LEN =  9 ) :: solv
       CHARACTER ( LEN = 10 ) :: pname
@@ -133,10 +136,11 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SH, SA, X0, C, Y
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SH, SA, X0, C, Y
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat_old, B_stat_old
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat_old
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat_old
 
       CALL CPU_TIME( time )
 
@@ -589,14 +593,14 @@
               END IF
             END DO
             prob%DC_u( 1 ) = one
-            prob%DX_l( 1 ) = 0.5_wp
+            prob%DX_l( 1 ) = 0.5_rp_
             prob%DX_l( 2 ) = zero
 !           prob%DC_u( 2 ) = zero
           END IF
 
 !  Parametric bounds
 
-         theta_max = theta_max + 4.0_wp
+         theta_max = theta_max + 4.0_rp_
 !        theta_max = theta_max + one
          PQP_control%randomize = .FALSE.
          PQP_control%cold_start = 0
@@ -1055,6 +1059,6 @@
 
       END SUBROUTINE USE_PQP
 
-!  End of module USEPQP_double
+!  End of module USEPQP
 
-    END MODULE GALAHAD_USEPQP_double
+    END MODULE GALAHAD_USEPQP_precision

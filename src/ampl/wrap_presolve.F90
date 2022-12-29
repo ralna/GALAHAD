@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2017 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 11:00 GMT.
+#include "galahad_modules.h"
 !! Implements an F90 wrapper around the solvers implemented in the
 !!
 !!            G  A  L  A  H  A  D
@@ -22,7 +23,7 @@
 
 Subroutine Wrap_Use_Presolve( setup_use_presolve )
 
-  Use GALAHAD_USEPRESOLVE_double ! Main PRESOLVE driver module
+  Use GALAHAD_USEPRESOLVE_precision ! Main PRESOLVE driver module
   External setup_use_presolve    ! Declared in galahad.c
 
   ! Pass pointer to subroutine USE_PRESOLVE to calling function

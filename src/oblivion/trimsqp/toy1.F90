@@ -1,5 +1,9 @@
 !-*-*-*-*-*-*-*-*-  G A L A H A D   T O Y 1  *-*-*-*-*-*-*-*-
+
 !  Daniel Robinson, for GALAHAD productions
+
+#include "galahad_modules.h"
+
 !  Copyright reserved
 !  December 22th 2007
 !
@@ -8,11 +12,12 @@
 
    PROGRAM TOY1
 
-   USE GALAHAD_SMT_double
-   USE GALAHAD_NLPT_double
-   USE GALAHAD_TRIMSQP_double
-   USE GALAHAD_SPACE_double
-   USE GALAHAD_SMT_double
+   USE GALAHAD_USERDATA_precision
+   USE GALAHAD_SMT_precision
+   USE GALAHAD_NLPT_precision
+   USE GALAHAD_TRIMSQP_precision
+   USE GALAHAD_SPACE_precision
+   USE GALAHAD_SMT_precision
    USE GALAHAD_SYMBOLS
    !USE USER_toy1_functions
 
@@ -33,28 +38,28 @@
 
    ! Set precision.
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters.
 
-   REAL ( KIND = wp ), PARAMETER ::  zero    = 0.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  one     = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two     = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three   = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four    = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  ten     = 10.0_wp
-   REAL ( KIND = wp ), PARAMETER :: infinity = 1.0_wp * 10.0**18
+   REAL ( KIND = rp_ ), PARAMETER ::  zero    = 0.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  one     = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two     = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three   = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four    = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  ten     = 10.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 1.0_rp_ * 10.0**18
 
-   INTEGER, PARAMETER :: out   = 6
-   INTEGER, PARAMETER :: error = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: out   = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: error = 6
 
    ! Set local variables.
 
-   INTEGER :: m, n, J_ne, H_ne, status, alloc_status
-   INTEGER :: num_recursive_calls, max_num_recursive_calls
+   INTEGER ( KIND = ip_ ) :: m, n, J_ne, H_ne, status, alloc_status
+   INTEGER ( KIND = ip_ ) :: num_recursive_calls, max_num_recursive_calls
    LOGICAL :: is_specfile, solved, transpose
    CHARACTER ( LEN = 16 ) :: spec_name = "TOY1.SPC"
-   INTEGER, PARAMETER :: spec_device = 60
+   INTEGER ( KIND = ip_ ), PARAMETER :: spec_device = 60
 
    ! Derived TRIMSQP data types.
    
@@ -62,94 +67,46 @@
    TYPE ( TRIMSQP_control_type ) :: control
    TYPE ( TRIMSQP_inform_type ) :: inform
    TYPE ( TRIMSQP_data_type ) :: data
-   TYPE ( TRIMSQP_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
 
    INTERFACE
-      
       SUBROUTINE funFC_reverse(F, C, X, userdata)
-
-         USE GALAHAD_TRIMSQP_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!        TYPE :: TRIMSQP_userdata_type
-!           INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer_userdata
-!           REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real_userdata
-!           CHARACTER ( LEN = 15 ), ALLOCATABLE, DIMENSION( : ) :: character_userdata
-!           LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical_userdata
-!        END TYPE TRIMSQP_userdata_type
-!
-        REAL ( kind = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-        REAL ( kind = wp ), INTENT( OUT ) :: F
-        REAL ( kind = wp ), POINTER, DIMENSION( : ) :: C
-!!       TYPE ( TRIMSQP_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
-        TYPE ( TRIMSQP_userdata_type ), OPTIONAL :: userdata
-        
+        USE GALAHAD_USERDATA_precision
+        REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+        REAL ( kind = rp_ ), INTENT( OUT ) :: F
+        REAL ( kind = rp_ ), POINTER, DIMENSION( : ) :: C
+        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funFC_reverse
-      
    END INTERFACE
 
    INTERFACE
-      
       SUBROUTINE funG_reverse(G, X, userdata)
-        
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        
-        TYPE :: TRIMSQP_userdata_type
-           INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer_userdata
-           REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real_userdata
-           CHARACTER ( LEN = 15 ), ALLOCATABLE, DIMENSION( : ) :: character_userdata
-           LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical_userdata
-        END TYPE TRIMSQP_userdata_type
-        
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: G
-        TYPE ( TRIMSQP_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
-        
+        USE GALAHAD_USERDATA_precision
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+        REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
+        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funG_reverse
-      
    END INTERFACE
    
    INTERFACE
-      
       SUBROUTINE funJ_reverse(J_val, X, userdata)
-        
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        
-        TYPE :: TRIMSQP_userdata_type
-           INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer_userdata
-           REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real_userdata
-           CHARACTER ( LEN = 15 ), ALLOCATABLE, DIMENSION( : ) :: character_userdata
-           LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical_userdata
-        END TYPE TRIMSQP_userdata_type
-        
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: J_val
-        TYPE ( TRIMSQP_userdata_type ), INTENT( INOUT), OPTIONAL :: userdata
-        
+        USE GALAHAD_USERDATA_precision
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+        REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: J_val
+        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funJ_reverse
-      
    END INTERFACE
    
    
    INTERFACE
-      
       SUBROUTINE funH_reverse(H_val, X, Y, userdata)
-        
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        
-        TYPE :: TRIMSQP_userdata_type
-           INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer_userdata
-           REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real_userdata
-           CHARACTER ( LEN = 15 ), ALLOCATABLE, DIMENSION( : ) :: character_userdata
-           LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical_userdata
-        END TYPE TRIMSQP_userdata_type
-        
-        REAL ( kind = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-        REAL ( kind = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: Y
-        REAL ( kind = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) ::H_val
-        TYPE ( TRIMSQP_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
-        
+        USE GALAHAD_USERDATA_precision
+        REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+        REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: Y
+        REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ),                      &
+                             INTENT( INOUT ) :: H_val
+        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funH_reverse
-      
    END INTERFACE
    
 
@@ -242,13 +199,16 @@
    CALL SPACE_resize_array( 1, userdata%real_userdata, status, alloc_status )
    IF ( status /= 0 ) GO TO 990
 
-   CALL SPACE_resize_array( 1, userdata%integer_userdata , status, alloc_status )
+   CALL SPACE_resize_array( 1, userdata%integer_userdata , status,             &
+                            alloc_status )
    IF ( status /= 0 ) GO TO 990
 
-   CALL SPACE_resize_array( 1, userdata%character_userdata , status, alloc_status )
+   CALL SPACE_resize_array( 1, userdata%character_userdata , status,           &
+                            alloc_status )
    IF ( status /= 0 ) GO TO 990
 
-   CALL SPACE_resize_array( 1, userdata%logical_userdata , status, alloc_status )
+   CALL SPACE_resize_array( 1, userdata%logical_userdata , status,             &
+                            alloc_status )
    IF ( status /= 0 ) GO TO 990
 
    ! Set remaining problem data.
@@ -260,7 +220,7 @@
    nlp%C_u      = (/ two, four, infinity /)
    nlp%X_l      = (/ -infinity, -infinity, -infinity, -infinity /)
    nlp%X_u      = (/  infinity,  infinity,  infinity, infinity /)
-   nlp%X        = (/  0.1_wp, 0.125_wp, 0.666666_wp, 0.142857_wp /)
+   nlp%X        = (/  0.1_rp_, 0.125_rp_, 0.666666_rp_, 0.142857_rp_ /)
    nlp%Y        = (/ zero, zero, zero /)
    nlp%Z        = (/ zero, zero, zero, zero /)
    nlp%X_status = (/ 0, 0, 0, 0 /)
@@ -296,13 +256,12 @@
 
    IF ( is_specfile ) THEN
 
-      OPEN( spec_device, FILE = spec_name, FORM = 'FORMATTED', STATUS = 'OLD' )
+     OPEN( spec_device, FILE = spec_name, FORM = 'FORMATTED', STATUS = 'OLD' )
 
-      CALL TRIMSQP_read_specfile( control, spec_device )  ! OPTIONAL: alt_spec_name
-
-      WRITE(*,*)
-      WRITE(*,*) '** TRIMSQP_read_specfile: SUCCESSFUL **'
-      WRITE(*,*)
+     CALL TRIMSQP_read_specfile( control, spec_device ) ! OPTIONAL:alt_spec_name
+     WRITE(*,*)
+     WRITE(*,*) '** TRIMSQP_read_specfile: SUCCESSFUL **'
+     WRITE(*,*)
 
    END IF
 
@@ -312,13 +271,14 @@
    solved = .FALSE.
    num_recursive_calls = -1;     max_num_recursive_calls = 100
 
-   DO WHILE( (.NOT.solved) .OR. (num_recursive_calls >= max_num_recursive_calls) )
+   DO WHILE( (.NOT.solved) .OR. (num_recursive_calls >=                        &
+                                 max_num_recursive_calls) )
 
       !CALL TRIMSQP_solve( nlp, control, inform, data, funFC, funG, funJ, &
       !               funGJ, funH, funJv, funHv, userdata )
 
-      CALL TRIMSQP_solve( nlp, control, inform, data,       &
-                          funFC=funFC, funGJ=funGJ, funH=funH, userdata=userdata )
+      CALL TRIMSQP_solve( nlp, control, inform, data, funFC = funFC,           &
+                          funGJ = funGJ, funH = funH, userdata = userdata )
 
       WRITE(*,*) 'TRIMSQP_solve : exit with status = ', inform%status
 
@@ -406,7 +366,7 @@
 ! Abnormal return.
 
  990 CONTINUE
-     WRITE( out, "( ' TOY1: allocation error ', I0, ' status ', I0 )" )   &
+     WRITE( out, "( ' TOY1: allocation error ', I0, ' status ', I0 )" )        &
             status, alloc_status
      STOP
 
@@ -430,31 +390,32 @@
 !                  *********************************************
 !                     Explicit functions - given to TRIMSQP_sove
 !                  *********************************************
+
    SUBROUTINE funFC( F, C, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double  
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
     ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters.
 
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( TRIMSQP_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), INTENT( OUT ) :: F
-   REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: C
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: F
+   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
 
    ! local variables
    
-   REAL( KIND = wp ) :: X1, X2, X3, X4, C1, C2, C3 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3 
    
    X1 = X(1)
    X2 = X(2)
@@ -479,30 +440,30 @@
 
    SUBROUTINE funG( G, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
  
-   TYPE( TRIMSQP_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL( KIND = wp ), POINTER, DIMENSION( : ) :: G
+   REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
 
   ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
 
 
    X1 = X(1)
@@ -528,30 +489,30 @@
 
    SUBROUTINE funJ( Jval, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
  
-   TYPE( TRIMSQP_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: Jval
+   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
 
   ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
 
 
    X1 = X(1)
@@ -584,31 +545,31 @@
 
    SUBROUTINE funGJ( G, Jval, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
  
-   TYPE( TRIMSQP_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL( KIND = wp ), POINTER, DIMENSION( : ) :: G
-   REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: Jval
+   REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
+   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
 
   ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
 
 
    X1 = X(1)
@@ -650,31 +611,31 @@
 
    SUBROUTINE funH( Hval, X, Y, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
  
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  twelve = 12.0_wp   
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_   
 
-   TYPE( TRIMSQP_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
 
  ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, Y1, Y2
-   REAL( KIND = wp ) :: H11, H21, H22, H31, H32, H33
+   REAL( KIND = rp_ ) :: X1, X2, Y1, Y2
+   REAL( KIND = rp_ ) :: H11, H21, H22, H31, H32, H33
    
    !X1 = X(1)
    X2 = X(2)
@@ -711,30 +672,30 @@
 
    SUBROUTINE funFC_reverse( F, C, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double  
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
     ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters.
 
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-!  TYPE( TRIMSQP_userdata_type ), INTENT( INOUT ) :: userdata
-   TYPE( TRIMSQP_userdata_type ), OPTIONAL :: userdata
-   REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), INTENT( OUT ) :: F
-   REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: C
+!  TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( GALAHAD_userdata_type ), OPTIONAL :: userdata
+   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: F
+   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
 
    ! local variables
    
-   REAL( KIND = wp ) :: X1, X2, X3, X4, C1, C2, C3 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3 
    
    X1 = X(1)
    X2 = X(2)
@@ -759,30 +720,30 @@
 
    SUBROUTINE funG_reverse( G, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
  
-   TYPE( TRIMSQP_userdata_type ), INTENT(INOUT), OPTIONAL :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT), OPTIONAL :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL( KIND = wp ), POINTER, DIMENSION( : ) :: G
+   REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
 
   ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
 
 
    X1 = X(1)
@@ -808,30 +769,30 @@
 
    SUBROUTINE funJ_reverse( Jval, X, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
 
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
  
-   TYPE( TRIMSQP_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: Jval
+   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
 
   ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
 
 
    X1 = X(1)
@@ -863,31 +824,31 @@
 
    SUBROUTINE funH_reverse( Hval, X, Y, userdata )
 
-   USE GALAHAD_TRIMSQP_double 
+   USE GALAHAD_USERDATA_precision
  
    IMPLICIT NONE
 
    ! Set precision
 
-   INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )
+   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters
 
-   REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  twelve = 12.0_wp   
+   REAL ( KIND = rp_ ), PARAMETER ::  one    = 1.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  two    = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_   
 
-   TYPE( TRIMSQP_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
-   REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
+   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
 
  ! local variables
 
-   REAL( KIND = wp ) :: X1, X2, Y1, Y2
-   REAL( KIND = wp ) :: H11, H21, H22, H31, H32, H33
+   REAL( KIND = rp_ ) :: X1, X2, Y1, Y2
+   REAL( KIND = rp_ ) :: H11, H21, H22, H31, H32, H33
    
    !X1 = X(1)
    X2 = X(2)
