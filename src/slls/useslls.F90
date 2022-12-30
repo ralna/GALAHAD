@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,8 +21,8 @@
 !    | simplex-constrained linear least-squares minimization |
 !     -------------------------------------------------------
 
-      USE GALAHAD_PRECISION
-      USE CUTEst_interface_precision
+      USE GALAHAD_KINDS
+      USE CUTEST_INTERFACE_precision
       USE GALAHAD_QPT_precision
       USE GALAHAD_SLLS_precision
       USE GALAHAD_SPECFILE_precision

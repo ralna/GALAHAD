@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 ! -*-*- G A L A H A D  -  D U M M Y   P A S T I X F  S U B R O U T I N E S -*-*-
 
    SUBROUTINE pastixInitParam_f08( iparm, dparm )
-     USE GALAHAD_PRECISION, ONLY : rpc_
+     USE GALAHAD_KINDS, ONLY : rpc_
      USE pastixf_enums, ONLY : pastix_int_t
      IMPLICIT NONE
      INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
@@ -11,7 +11,7 @@
    END SUBROUTINE pastixInitParam_f08
 
    SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-     USE GALAHAD_PRECISION, ONLY : rpc_
+     USE GALAHAD_KINDS, ONLY : rpc_
      USE spmf_enums, ONLY : MPI_Comm
      USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
      IMPLICIT NONE
@@ -22,7 +22,7 @@
    END SUBROUTINE pastixInit_f08
 
    SUBROUTINE pastix_task_analyze_f08( pastix_data, spm, info )
-     USE GALAHAD_PRECISION, ONLY : ipc_
+     USE GALAHAD_KINDS, ONLY : ipc_
      USE spmf_enums, ONLY : spmatrix_t
      USE pastixf_enums, ONLY : pastix_data_t
      IMPLICIT NONE
@@ -33,7 +33,7 @@
    END SUBROUTINE pastix_task_analyze_f08
 
    SUBROUTINE pastix_task_numfact_f08( pastix_data, spm, info )
-     USE GALAHAD_PRECISION, ONLY : ipc_
+     USE GALAHAD_KINDS, ONLY : ipc_
      USE spmf_enums, ONLY : spmatrix_t
      USE pastixf_enums, ONLY : pastix_data_t
      IMPLICIT NONE
@@ -43,7 +43,7 @@
    END SUBROUTINE pastix_task_numfact_f08
 
    SUBROUTINE pastix_task_solve_f08( pastix_data, nrhs, B, ldb, info )
-     USE GALAHAD_PRECISION, ONLY : ipc_
+     USE GALAHAD_KINDS, ONLY : ipc_
      USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
      IMPLICIT NONE
      TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
@@ -55,7 +55,7 @@
 
    SUBROUTINE pastix_task_refine_f08( pastix_data, n, nrhs, B, ldb, X, ldx,    &
                                       info )
-     USE GALAHAD_PRECISION, ONLY : ipc_
+     USE GALAHAD_KINDS, ONLY : ipc_
      USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
      IMPLICIT NONE
      TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET   :: pastix_data

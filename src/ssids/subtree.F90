@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -7,7 +7,7 @@
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 module spral_ssids_subtree_precision
-   use spral_precision
+   use spral_kinds
    use spral_ssids_contrib_precision, only : contrib_type
    use spral_ssids_types_precision, only : ssids_options
    use spral_ssids_inform_precision, only : ssids_inform

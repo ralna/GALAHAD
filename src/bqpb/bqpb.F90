@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -29,7 +29,7 @@
 
 !  ** This is essentially a wrapper for GALAHAD_CQP with m = a_ne = 0 **
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
       USE GALAHAD_CQP_precision, BQPB_control_type => CQP_control_type,        &
                                  BQPB_time_type => CQP_time_type,              &
                                  BQPB_inform_type => CQP_inform_type

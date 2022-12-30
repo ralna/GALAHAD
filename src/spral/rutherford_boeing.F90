@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -8,7 +8,7 @@
 ! Based on modified versions of MC56 and HSL_MC56.
 module spral_rutherford_boeing_precision
 
-  use spral_precision
+  use spral_kinds
   use spral_matrix_util_precision
   use spral_random_precision, only : random_state, random_real
   implicit none

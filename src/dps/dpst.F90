@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
 PROGRAM GALAHAD_DPS_EXAMPLE
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_DPS_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_

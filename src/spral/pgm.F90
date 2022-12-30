@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 module spral_pgm
-   use spral_precision, only: ip_
+   use spral_kinds, only: ip_
    implicit none
 
    private

@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
 module spral_ssids_gpu_subtree_precision
   use, intrinsic :: iso_c_binding
   use spral_cuda_precision
-  use spral_precision
+  use spral_kinds
   use spral_ssids_gpu_smalloc_precision, only : smalloc, smfreeall, &
                                                 smalloc_setup
   use spral_ssids_contrib_precision, only : contrib_type

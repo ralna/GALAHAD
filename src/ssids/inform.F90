@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -9,8 +9,8 @@
 module spral_ssids_inform_precision
   use spral_cuda_precision, only : cudaGetErrorString
   use spral_scaling_precision, only : auction_inform
-! use spral_precision, only : ip_, long_
-  use spral_precision
+! use spral_kinds, only : ip_, long_
+  use spral_kinds
   use spral_ssids_types_precision
   implicit none
 

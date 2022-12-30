@@ -126,9 +126,9 @@ GPUDcuda = $(RLGD)(gpu_alloc.o) $(RLGD)(cpu_solve.o) \
            $(RLGD)(dense_factor.o) $(RLGD)(reorder.o) \
            $(RLGD)(solve.o) $(RLGD)(syrk.o)
 
-SPRALRBS = $(RLGS)(precision.o) $(RLGS)(matrix_util.o) $(RLGS)(random.o) \
+SPRALRBS = $(RLGS)(kinds.o) $(RLGS)(matrix_util.o) $(RLGS)(random.o) \
            $(RLGS)(rutherford_boeing.o)
-SPRALRBD = $(RLGD)(precision.o) $(RLGD)(matrix_util.o) $(RLGD)(random.o) \
+SPRALRBD = $(RLGD)(kinds.o) $(RLGD)(matrix_util.o) $(RLGD)(random.o) \
            $(RLGD)(rutherford_boeing.o)
 
 SSIDSS = $(SPRALRBS) $(CUDAS$(CUDA)) \
@@ -641,15 +641,15 @@ $(RLG)(dense_factor.o): ../ssids/dense_factor.cu
 #	$(MVMODS)
 	@printf '[ OK ]\n'
 
-precision.o: $(RLG)(precision.o)
+kinds.o: $(RLG)(kinds.o)
 
-$(RLG)(precision.o): ../spral/precision.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "precision  "
-	$(CP) ../spral/precision.F90 $(OBJ)/precision.F90
-	cd $(OBJ) ; $(FORTRAN) -o precision.o $(FFLAGSOMP) precision.F90 \
+$(RLG)(kinds.o): ../spral/kinds.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "kinds  "
+	$(CP) ../spral/kinds.F90 $(OBJ)/kinds.F90
+	cd $(OBJ) ; $(FORTRAN) -o kinds.o $(FFLAGSOMP) kinds.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o precision.o $(FFLAGSNOMP) precision.F90 )
-	cd $(OBJ) ; $(RARR) precision.o ; $(RM) precision.F90 precision.o
+                    $(FORTRAN) -o kinds.o $(FFLAGSNOMP) kinds.F90 )
+	cd $(OBJ) ; $(RARR) kinds.o ; $(RM) kinds.F90 kinds.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)

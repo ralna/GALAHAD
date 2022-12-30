@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -10,7 +10,7 @@
 !  in interface blocks)
 module spral_ssids_gpu_datatypes_precision
    use spral_cuda_precision, only : cudaFree
-   use spral_precision
+   use spral_kinds
    use, intrinsic :: iso_c_binding
    implicit none
 

@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
 PROGRAM GALAHAD_check_test
-  USE GALAHAD_PRECISION   ! double precision version
+  USE GALAHAD_KINDS   ! double precision version
   USE GALAHAD_SMT_precision
   USE GALAHAD_USERDATA_precision
   USE GALAHAD_NLPT_precision

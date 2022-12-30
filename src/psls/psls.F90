@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -17,7 +17,7 @@
 
    MODULE GALAHAD_PSLS_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
 !      --------------------------------------------------------------------
 !     | Given a symmetric matrix A, provide and apply a symmetric,         |

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,8 +21,8 @@
 !    | bound-constrained convex quadratic programming  |
 !    ---------------------------------------------------
 
-      USE GALAHAD_PRECISION
-      USE CUTEst_interface_precision
+      USE GALAHAD_KINDS
+      USE CUTEST_INTERFACE_precision
       USE GALAHAD_QPT_precision
       USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
       USE GALAHAD_BQPB_precision

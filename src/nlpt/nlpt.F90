@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -38,7 +38,7 @@
 !  M o d u l e s   u s e d
 !-------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
       USE GALAHAD_NORMS_double
       USE GALAHAD_SMT_double
       USE GALAHAD_USERDATA_double, NLPT_USERDATA_type => GALAHAD_userdata_type
