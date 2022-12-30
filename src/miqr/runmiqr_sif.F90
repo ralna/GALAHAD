@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,7 +21,7 @@
 !    | factorization algorithm by Ni and Saad    |
 !     -------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USEMIQR_precision
 
 !  Problem input characteristics

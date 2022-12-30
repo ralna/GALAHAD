@@ -3,7 +3,7 @@
 #include "galahad_modules.h"
 
   MODULE GALAHAD_NLLSRT_precision
-    USE GALAHAD_PRECISION
+    USE GALAHAD_KINDS
   CONTAINS
     SUBROUTINE NLLSRT( N, M, X, MAXIT,TOL, OUTPUT,IERR, iter, iter_int,        &
                        iter_int_tot, iprint)

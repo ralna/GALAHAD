@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -12,7 +12,7 @@
 !> As it depends on routines defined by module that use the type, it needs
 !> to be a seperate module to spral_ssids_contrib_precision.
 module spral_ssids_contrib_precision_free
-  use spral_precision
+  use spral_kinds
   use spral_ssids_contrib_precision, only : contrib_type
   use spral_ssids_cpu_subtree_precision, only : cpu_free_contrib
   use spral_ssids_gpu_subtree_precision, only : gpu_free_contrib

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 09:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 
    MODULE LANCELOT_DRCHG_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE LANCELOT_TYPES_precision, ONLY: LANCELOT_problem_type
 
      IMPLICIT NONE
@@ -71,7 +71,7 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
@@ -180,7 +180,7 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat

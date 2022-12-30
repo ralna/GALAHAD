@@ -18,7 +18,7 @@ PACKAGE = EXTEND
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_precision
+DEPENDENCIES = make_kinds
 
 #  other packages that depend on package
 

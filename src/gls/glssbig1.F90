@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_big_example
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: i, j, l, info, m, n, ne, ns, rank, dependent

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,14 +15,14 @@
 
     MODULE GALAHAD_USESLS_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
 !    -------------------------------------------------
 !    | CUTEst/AMPL interface to SLS, a method for    |
 !    | solving symmetric systems of linear equations |
 !    -------------------------------------------------
 
-      USE CUTEst_interface_precision
+      USE CUTEST_INTERFACE_precision
       USE GALAHAD_CLOCK
       USE GALAHAD_QPT_precision
       USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows

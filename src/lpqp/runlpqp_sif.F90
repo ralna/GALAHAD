@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 09:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,7 @@
 !    | to assemble an l_p QP from an input quadratic program        |
 !    ----------------------------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USELPQP_precision
 
 !  Problem input characteristics

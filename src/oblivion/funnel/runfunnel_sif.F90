@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 12:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  October 17th 2007
 
    PROGRAM RUNFUNNEL_SIF
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USEFUNNEL_precision
 
 !  Main program for the SIF interface to FUNNEL, a filter trust-funnel

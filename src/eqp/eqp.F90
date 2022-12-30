@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -29,7 +29,7 @@
 !     |                                                   |
 !      ---------------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,7 @@
 !    |  warmstart capabilities of the GALAHAD qp solver DQP |
 !    --------------------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 !$    USE omp_lib
       USE CUTEST_LQP_precision, ONLY: CUTEST_lqp_create
       USE GALAHAD_CLOCK

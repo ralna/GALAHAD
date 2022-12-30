@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -10,7 +10,7 @@
 
     MODULE GALAHAD_CPU_time
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 
       IMPLICIT NONE
 

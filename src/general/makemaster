@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for basic GALAHAD packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2022-11-19
+#  This version: 2022-12-30
 
 #  include standard GALAHAD makefile definitions
 
@@ -28,7 +28,7 @@ cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PRLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(PRLGS)(problem.o)
 problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
-BASIX =  $(LG)(precision.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
+BASIX =  $(LG)(kinds.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis4.o) \
          wsmp pastix mpi mumps \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
@@ -894,16 +894,16 @@ filterst: $(FILTERST)
 
 #  individual compilations
 
-precision.o: $(LG)(precision.o)
+kinds.o: $(LG)(kinds.o)
 
-$(LG)(precision.o): ../precision/precision.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "precision"
-	$(SED) "s/^.$(TIMER)/     /" ../precision/precision.F90 \
-            > $(OBJ)/precision.F90
-	cd $(OBJ); $(FORTRAN) -o precision.o $(FFLAGS) precision.F90 \
+$(LG)(kinds.o): ../kinds/kinds.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "kinds"
+	$(SED) "s/^.$(TIMER)/     /" ../kinds/kinds.F90 \
+            > $(OBJ)/kinds.F90
+	cd $(OBJ); $(FORTRAN) -o kinds.o $(FFLAGS) kinds.F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o precision.o $(FFLAGSN) precision.F90 )
-	cd $(OBJ); $(ARR) precision.o; $(RM) precision.F90 precision.o
+                   $(FORTRAN) -o kinds.o $(FFLAGSN) kinds.F90 )
+	cd $(OBJ); $(ARR) kinds.o; $(RM) kinds.F90 kinds.o
 	$(RMARFILE) sls.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1503,7 +1503,7 @@ $(OBJ)/buildspec: ../buildspec/buildspec.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "buildspec  "
 	$(SED) -f $(SEDS) ../buildspec/buildspec.F90 > $(OBJ)/buildspec.F90
 	cd $(OBJ) ; $(FORTRAN) -o buildspec $(RUNFFLAGS) buildspec.F90 \
-          -lgalahad -L$(OBJ)
+          -lgalahad -L$(OBJ) -I $(GALAHAD)/include
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 

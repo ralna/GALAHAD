@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  October 23rd 2014
 
    PROGRAM RUNTRACE_SIF
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USETRACE_precision
 
 !  Main program for the SIF interface to TRACE, a trust-region algorithm for

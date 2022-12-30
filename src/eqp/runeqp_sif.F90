@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  March 25th 2004
 
    PROGRAM RUNEQP_SIF
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USEEQP_precision
 
 !  Main program for the SIF/CUTEr interface to EQP, a projected

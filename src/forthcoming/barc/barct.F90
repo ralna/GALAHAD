@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
   PROGRAM BARC_test !! far from complete
-  USE GALAHAD_PRECISION
+  USE GALAHAD_KINDS
   USE GALAHAD_BARC_precision, ONLY: BARC_projection
   USE GALAHAD_RAND_precision
   IMPLICIT NONE    

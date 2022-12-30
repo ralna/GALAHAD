@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -10,7 +10,7 @@
 
       MODULE LANCELOT_EXTEND_precision
             
-         USE GALAHAD_PRECISION
+         USE GALAHAD_KINDS
 
          IMPLICIT NONE
 

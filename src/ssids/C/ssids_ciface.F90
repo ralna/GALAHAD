@@ -24,9 +24,9 @@
 !  C interface module to SPRAL_SSIDS types and interfaces
 
   MODULE SPRAL_SSIDS_precision_ciface
-    USE SPRAL_PRECISION
-    USE SPRAL_SSIDS_types_precision, only : f_ssids_options => ssids_options
-    USE SPRAL_SSIDS_inform_precision, only : f_ssids_inform => ssids_inform
+    USE SPRAL_KINDS
+    USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
+    USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
 
     IMPLICIT NONE
 

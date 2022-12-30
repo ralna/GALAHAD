@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  November 24th 2008
 
    PROGRAM RUNRQS_SIF
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USERQS_precision
 
 !  Main program for the SIF interface to RQS, a solver for the regularised

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -36,7 +36,7 @@
 !  |                                                       |
 !  |-------------------------------------------------------|
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_EXTEND_precision, ONLY: EXTEND_save_type
      USE LANCELOT_ASMBL_precision, ONLY: ASMBL_save_type
      USE LANCELOT_CAUCHY_precision, ONLY: CAUCHY_save_type

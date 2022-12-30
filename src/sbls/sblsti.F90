@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_interface_test
-   USE GALAHAD_PRECISION, C_ptr_rename => C_ptr
+   USE GALAHAD_KINDS, C_ptr_rename => C_ptr
    USE GALAHAD_SBLS_precision
    IMPLICIT NONE
    TYPE ( SBLS_full_data_type ) :: data

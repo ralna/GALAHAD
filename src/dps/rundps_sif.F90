@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  March 15th 2018
 
    PROGRAM RUNDPS_SIF
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USEDPS_precision
 
 !  Main program for the SIF interface to DPS, a solver for trust-region and

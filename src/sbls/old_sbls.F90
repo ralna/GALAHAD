@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 
    MODULE GALAHAD_SBLS_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
 !      ---------------------------------------------------------------
 !     |                                                               |

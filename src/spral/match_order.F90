@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -18,7 +18,7 @@
 
 module spral_match_order_precision
 
-  use spral_precision
+  use spral_kinds
   use spral_metis_wrapper, only : metis_order
   use spral_scaling_precision, only : hungarian_match
   implicit none
