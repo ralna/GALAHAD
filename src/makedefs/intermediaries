@@ -342,10 +342,10 @@ make_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
-make_precision:
-	( cd $(GALAHAD)/src/precision ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
+make_kinds:
+	( cd $(GALAHAD)/src/kinds ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 make_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -977,10 +977,10 @@ make_all_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
-make_all_precision:
-	( cd $(GALAHAD)/src/precision ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
+make_all_kinds:
+	( cd $(GALAHAD)/src/kinds ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 make_all_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -1630,10 +1630,10 @@ make_ciface_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
-make_ciface_precision:
-	( cd $(GALAHAD)/src/precision ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
+make_ciface_kinds:
+	( cd $(GALAHAD)/src/kinds ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 make_ciface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -2236,10 +2236,10 @@ make_pyiface_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
-make_pyiface_precision:
-	( cd $(GALAHAD)/src/precision ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
+make_pyiface_kinds:
+	( cd $(GALAHAD)/src/kinds ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 make_pyiface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \

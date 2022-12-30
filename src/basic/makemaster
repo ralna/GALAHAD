@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2022-12-06
+#  This version: 2022-12-30
 
 #  include standard GALAHAD makefile definitions
 
@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
-DUMMYS = precision_silent clock_silent extend_silent symbols_silent \
+DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent \
@@ -44,12 +44,12 @@ dummys_single: $(DUMMYS)
 dummys_double: $(DUMMYS)
 	$(RANLIB) $(LGD)
 
-#  precision package
+#  kinds package
 
-precision_silent:
-	( cd $(GALAHAD)/src/precision ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
+kinds_silent:
+	( cd $(GALAHAD)/src/kinds ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 #  clock package
 

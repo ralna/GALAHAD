@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:20 GMT.
 
-!-*-*-*-*-*-*-*-*-*- S P R A L _ P R E C I S I O N   M O D U L E -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-*-*-*- G A L A H A D _ K I N D S -*-*-*-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, GALAHAD productions
 !  Principal author: Nick Gould
@@ -8,7 +8,7 @@
 !  History -
 !   originally released, GALAHAD Version 4.1, December 6th 2022
 
-MODULE SPRAL_PRECISION
+MODULE GALAHAD_KINDS
   USE ISO_C_BINDING
   USE ISO_FORTRAN_ENV
 
@@ -45,20 +45,20 @@ MODULE SPRAL_PRECISION
  INTEGER, PARAMETER :: real_bytes_ = 4
  INTEGER, PARAMETER :: rp_ = r4_
  INTEGER, PARAMETER :: cp_ = c4_
- INTEGER, PARAMETER :: C_RP_ = C_FLOAT
+ INTEGER, PARAMETER :: rpc_ = C_FLOAT
 #else
  INTEGER, PARAMETER :: real_bytes_ = 8
  INTEGER, PARAMETER :: rp_ = r8_
  INTEGER, PARAMETER :: cp_ = c8_
- INTEGER, PARAMETER :: C_RP_ = C_DOUBLE
+ INTEGER, PARAMETER :: rpc_ = C_DOUBLE
 #endif
 
 #ifdef GALAHAD_64BIT_INTEGER
  INTEGER, PARAMETER :: ip_ = i8_
- INTEGER, PARAMETER :: C_IP_ = C_INT64_T
+ INTEGER, PARAMETER :: ipc_ = C_INT64_T
 #else
  INTEGER, PARAMETER :: ip_ = i4_
- INTEGER, PARAMETER :: C_IP_ = C_INT32_T
+ INTEGER, PARAMETER :: ipc_ = C_INT32_T
 #endif
 
-END MODULE SPRAL_PRECISION
+END MODULE GALAHAD_KINDS

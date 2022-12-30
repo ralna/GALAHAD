@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -60,7 +60,7 @@
 
    MODULE GALAHAD_QTRANS_precision
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_SPACE_precision
      USE GALAHAD_TRANS_precision, only :                                       &
        QTRANS_trans_type => TRANS_trans_type,                                  &
@@ -73,7 +73,7 @@
        QTRANS_untrans => TRANS_untrans,                                        &
        QTRANS_v_trans_inplace => TRANS_v_trans_inplace,                        &
        QTRANS_v_untrans_inplace => TRANS_v_untrans_inplace
-     USE CUTEst_interface_precision
+     USE CUTEST_INTERFACE_precision
 
      IMPLICIT NONE     
 

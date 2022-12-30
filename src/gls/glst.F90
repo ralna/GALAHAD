@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_test  ! further work needed!!
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: info, rank

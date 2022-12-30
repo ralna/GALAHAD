@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,8 +13,8 @@
 !  Main program for LPQPA, an active-set algorithm for solving l_p 
 !  quadratic programs
 
-      USE GALAHAD_PRECISION
-      USE CUTEst_interface_precision
+      USE GALAHAD_KINDS
+      USE CUTEST_INTERFACE_precision
       USE GALAHAD_QPT_precision
       USE GALAHAD_LPQPA_precision
       USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows

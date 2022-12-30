@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 ! Updated 29/11/2002: extra arguments introduced to allow changing bandwidth
 
 #include "galahad_modules.h"
@@ -11,7 +11,7 @@
 
    MODULE LANCELOT_BAND_precision
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
      IMPLICIT NONE
      

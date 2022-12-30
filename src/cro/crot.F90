@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CRO_TEST   ! ** to be improved!
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_CRO_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20

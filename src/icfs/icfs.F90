@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -50,7 +50,7 @@
 
   MODULE GALAHAD_ICFS_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
 !      --------------------------------------------------
 !     | Given a symmetric matrix A, compute and apply an |

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -217,7 +217,7 @@
 
    MODULE GALAHAD_SPECFILE_precision
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS  ! to make the symbols known for translation
 
 !-------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 !                                                                              !
 !------------------------------------------------------------------------------!
 !
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        USE LANCELOT_simple_precision
        IMPLICIT NONE
        REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
