@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 ! This file is a modified version of dsimpletest.F from MUMPS 5.5.1, 
 ! originally released on Tue Jul 12 13:17:24 UTC 2022
 
 #include "galahad_modules.h"
 
    PROGRAM MUMPS_TEST
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_MUMPS_TYPES_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: MPI_COMM_WORLD = 0

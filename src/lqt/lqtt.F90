@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LQT_test_program
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_LQT_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 100 ! problem dimension

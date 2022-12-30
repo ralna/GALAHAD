@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-26 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 !-  G A L A H A D  -  D U M M Y   S P M F _ I N T E R F A C E S   M O D U L E  -
 
@@ -45,7 +45,7 @@
 
    INTERFACE spmCheckAndCorrect
      SUBROUTINE spmCheckAndCorrect_f08( spm_in, spm_out, info )
-       USE GALAHAD_PRECISION, ONLY : ipc_
+       USE GALAHAD_KINDS, ONLY : ipc_
        USE spmf_enums, ONLY : spmatrix_t
        IMPLICIT NONE
        TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm_in
@@ -86,7 +86,7 @@
    INTERFACE spmCheckAxb
      SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,  &
                                  ldx, info )
-       USE GALAHAD_PRECISION, ONLY : ipc_, rpc_
+       USE GALAHAD_KINDS, ONLY : ipc_, rpc_
        USE spmf_enums, ONLY : spmatrix_t, spm_int_t
        IMPLICIT NONE
        REAL ( KIND = rpc_ ), INTENT( IN ) :: eps

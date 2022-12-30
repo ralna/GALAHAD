@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -22,7 +22,7 @@
 !    | convex quadratic & least-distance programming   |
 !    ---------------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USECCQP_precision
 
 !  Problem input characteristics

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -17,7 +17,7 @@
 
    MODULE LANCELOT_DRCHE_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE LANCELOT_TYPES_precision, ONLY : LANCELOT_problem_type
 
      IMPLICIT NONE
@@ -90,7 +90,7 @@
 
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ieltyp, lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
@@ -105,7 +105,7 @@
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
                           lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,      &
                           lfuval, lxvalu, lepvlu, ifflag, ifstat )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
@@ -238,7 +238,7 @@
 
        SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
@@ -253,7 +253,7 @@
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
                           lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,      &
                           lfuval, lxvalu, lepvlu, ifflag, ifstat )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
@@ -620,7 +620,7 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp

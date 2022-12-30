@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_FDC_test    !! to be expanded
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_FDC_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 4, m = 3, a_ne = 10

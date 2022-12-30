@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -12,14 +12,14 @@
 !
    MODULE GALAHAD_CUTEST_FUNCTIONS_precision
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_STRING
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SMT_precision
      USE GALAHAD_SPACE_precision
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type,  &
                                        NLPT_cleanup
-     USE CUTEst_interface_precision
+     USE CUTEST_INTERFACE_precision
 
      IMPLICIT NONE
 

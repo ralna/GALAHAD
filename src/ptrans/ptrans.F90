@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 
    MODULE GALAHAD_PTRANS_precision
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_SPACE_precision
      USE GALAHAD_TRANS_precision, ONLY :                                       &
        PTRANS_trans_type => TRANS_trans_type,                                  &

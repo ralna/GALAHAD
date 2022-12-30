@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,7 +21,7 @@
 !    | constrained linear least-squares optimization   |
 !    ---------------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_USECLLS_precision
 
 !  Problem input characteristics

@@ -4,7 +4,7 @@
 #include "galahad_modules.h"
 
 PROGRAM test_pastix
-  USE GALAHAD_PRECISION
+  USE GALAHAD_KINDS
   USE iso_c_binding
   USE spmf
   USE pastixf

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -8,7 +8,7 @@
 !> \author    Jonathan Hogg
 module spral_ssids_gpu_smalloc_precision
 !$  use omp_lib
-  use spral_precision
+  use spral_kinds
   use spral_ssids_types_precision, only : smalloc_type, stack_mem_type
   implicit none
 

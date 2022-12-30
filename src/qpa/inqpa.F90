@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,7 @@
 !    | QPA, a working-set algorithm for quadratic programming |
 !    ----------------------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
    USE GALAHAD_SMT_precision, only: SMT_put
@@ -131,7 +131,7 @@
      INTEGER ( KIND = ip_ ) :: i, j, l, n, m, ir, ic, mpn, liw, iores, iter
      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfacts, nfixed, ndegen, mequal
      INTEGER ( KIND = ip_ ) :: alloc_stat, A_ne, H_ne, smt_stat
-     INTEGER ( KIND = ip_ ) :: n_o, m_o, a_ne_o, h_ne_o, status, 
+     INTEGER ( KIND = ip_ ) :: n_o, m_o, a_ne_o, h_ne_o, status
      INTEGER ( KIND = ip_ ) :: m_ref = 1000
      INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
      REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4

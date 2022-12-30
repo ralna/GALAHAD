@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ C L O C K    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -17,7 +17,7 @@
 !   | Provides the system clock time |
 !   ----------------------------------
 
-     USE GALAHAD_PRECISION, ONLY : sp_, dp_, long_
+     USE GALAHAD_KINDS, ONLY : sp_, dp_, long_
 
      IMPLICIT NONE
  

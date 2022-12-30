@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -28,7 +28,7 @@
 !        |                                                                  |
 !        --------------------------------------------------------------------
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING
@@ -67,13 +67,13 @@
      INTERFACE SLLS_initialize
        MODULE PROCEDURE SLLS_initialize, SLLS_full_initialize
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      END INTERFACE SLLS_initialize
 
      INTERFACE SLLS_terminate
        MODULE PROCEDURE SLLS_terminate, SLLS_full_terminate
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      END INTERFACE SLLS_terminate
 
 !--------------------

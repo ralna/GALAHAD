@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,7 +15,7 @@
 !  checks data, and calls the appropriate minimizers
 
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_SYMBOLS
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_TRU_precision

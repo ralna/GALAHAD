@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,13 +8,13 @@
    END SUBROUTINE wsmp_initialize
 
    SUBROUTINE wsetmaxthrds( numthrds )
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: numthrds
    END SUBROUTINE wsetmaxthrds
 
    SUBROUTINE wssmp( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
                      AUX, naux, MRP, IPARM, DPARM )
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_SYMBOLS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ldb, nrhs, naux
    INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IA

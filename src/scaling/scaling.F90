@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -24,7 +24,7 @@
 !     | September 1999                         |
 !     ------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 
       IMPLICIT NONE
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,8 +14,8 @@
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_PRECISION
-     USE CUTEst_interface_precision
+     USE GALAHAD_KINDS
+     USE CUTEST_INTERFACE_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_GLRT_precision

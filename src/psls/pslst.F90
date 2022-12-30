@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
    PROGRAM PSLS_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-12-14 AT 13:00 GMT.
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_PSLS_precision
    IMPLICIT NONE
    TYPE ( SMT_type ) :: matrix

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -7,7 +7,6 @@
 
 !  History -
 !   originally released GALAHAD Version 3.0. October 23rd 2017
-
 
       PROGRAM BUILDSPEC
 
@@ -85,7 +84,7 @@
 !  The order of MAIN, INCLUDE and COMMENT sections defines the order that
 !  the resulting options will appear in the final specfile
 
-        USE GALAHAD_PRECISION
+        USE GALAHAD_KINDS
         USE GALAHAD_STRING, ONLY: STRING_lower_word, STRING_upper_word
 
 !  local variables
