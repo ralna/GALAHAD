@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -12,7 +12,7 @@
 !
 ! Routines originally based on HSL_MC78 v1.2.0
 module spral_core_analyse_precision
-  use spral_precision
+  use spral_kinds
   implicit none
 
   private

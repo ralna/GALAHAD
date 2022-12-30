@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -10,7 +10,7 @@
 
    MODULE LANCELOT_HSL_routines
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
 
      IMPLICIT NONE
 
@@ -22,13 +22,13 @@
 
      INTERFACE MA27_initialize
        SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 30 ) :: ICNTL
        REAL ( KIND = sp_), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA27I
 
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 30 ) :: ICNTL
        REAL ( KIND = dp_), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA27ID
@@ -37,7 +37,7 @@
      INTERFACE MA27_analyse
        SUBROUTINE MA27A( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, nsteps,         &
                          iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
@@ -53,7 +53,7 @@
 
        SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, nsteps,        &
                           iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
@@ -71,7 +71,7 @@
      INTERFACE MA27_factorize
        SUBROUTINE MA27B( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,       &
                          maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
@@ -86,7 +86,7 @@
 
        SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,      &
                           maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
@@ -103,7 +103,7 @@
      INTERFACE MA27_solve
        SUBROUTINE MA27C( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,       &
                          ICNTL, INFO )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
@@ -116,7 +116,7 @@
 
        SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,      &
                           ICNTL, INFO )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
@@ -130,13 +130,13 @@
 
      INTERFACE MA61_initialize
        SUBROUTINE MA61I( ICNTL, CNTL, KEEP )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 5 ), KEEP( 12 )
        REAL ( KIND = sp_), INTENT( OUT ) :: CNTL( 3 )
        END SUBROUTINE MA61I
 
        SUBROUTINE MA61ID( ICNTL, CNTL, KEEP )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 5 ), KEEP( 12 )
        REAL ( KIND = dp_), INTENT( OUT ) :: CNTL( 3 )
        END SUBROUTINE MA61ID
@@ -144,7 +144,7 @@
 
      INTERFACE MA61_compress
        SUBROUTINE MA61D( A, IRN, ia, n, IK, IP, row, ncp, nucl, nual )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ia, n
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ncp, nucl, nual
        LOGICAL, INTENT( IN ) :: row
@@ -155,7 +155,7 @@
        END SUBROUTINE MA61D
 
        SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp, nucl, nual )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ia, n
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ncp, nucl, nual
        LOGICAL, INTENT( IN ) :: row

@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RPD_interface_test
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_RPD_precision
    IMPLICIT NONE
    TYPE ( RPD_control_type ) :: control

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,9 +20,9 @@
 !    | (simplex) algorithm for linear programming      |
 !    ---------------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 !$    USE omp_lib
-      USE CUTEst_interface_precision
+      USE CUTEST_INTERFACE_precision
       USE GALAHAD_CLOCK
       USE GALAHAD_RAND_precision
       USE GALAHAD_QPT_precision

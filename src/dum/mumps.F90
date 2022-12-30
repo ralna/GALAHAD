@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
 !-*-*-*-  G A L A H A D  -  D U M M Y   M U M P S   S U B R O U T I N E  -*-*-*-
 
       SUBROUTINE MUMPS_precision( mumps_par )
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
       USE GALAHAD_MUMPS_TYPES_precision
       IMPLICIT NONE
       TYPE ( DMUMPS_STRUC ) :: mumps_par

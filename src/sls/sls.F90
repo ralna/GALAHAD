@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -43,7 +43,7 @@
 !     |                                           |
 !     ---------------------------------------------
 
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING, ONLY: STRING_lower_word
@@ -876,13 +876,13 @@
 
      INTERFACE MA27I
        SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27I
 
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27ID

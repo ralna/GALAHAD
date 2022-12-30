@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,7 +21,7 @@
 !    | for convex quadratic programming                 |
 !    ----------------------------------------------------
 
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
 !$ USE omp_lib
    USE GALAHAD_CLOCK
    USE GALAHAD_RAND_precision

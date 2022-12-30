@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_FIT_TEST  !! to be expanded
-   USE GALAHAD_PRECISION
+   USE GALAHAD_KINDS
    USE GALAHAD_FIT_precision
    IMPLICIT NONE
    TYPE ( FIT_data_type ) :: data

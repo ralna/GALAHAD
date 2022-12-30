@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -29,7 +29,7 @@
 !     | using an infeasible-point primal-dual method  |
 !      -----------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 !$    USE omp_lib
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS

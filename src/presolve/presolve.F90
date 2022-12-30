@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -279,7 +279,7 @@
 !   U s e d   m o d u l e s   a n d   s y m b o l s
 !-------------------------------------------------------------------------------
 
-      USE GALAHAD_PRECISION
+      USE GALAHAD_KINDS
 
       USE GALAHAD_SMT_precision      ! the matrix data type
 

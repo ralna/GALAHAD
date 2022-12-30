@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD PRECISION package
+#  Main body of the installation makefile for the GALAHAD KINDS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2022-12-06
+#  This version: 2022-12-30
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -13,8 +13,8 @@ include $(GALAHAD)/src/makedefs/defaults
 
 #  package name
 
-package = precision
-PACKAGE = PRECISION
+package = kinds
+PACKAGE = KINDS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -31,7 +31,7 @@
 
    MODULE LANCELOT_FRNTL_precision
             
-     USE GALAHAD_PRECISION
+     USE GALAHAD_KINDS
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,         &
@@ -166,7 +166,7 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       USE GALAHAD_PRECISION
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
