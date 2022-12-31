@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
 
 #ifdef GALAHAD_SINGLE
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
@@ -9,6 +9,8 @@
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
 #endif
+
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -35,56 +37,56 @@
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: ssids_options
-       INTEGER ( KIND = C_IP_ ) :: print_level
-       INTEGER ( KIND = C_IP_ ) :: unit_diagnostics
-       INTEGER ( KIND = C_IP_ ) :: unit_error
-       INTEGER ( KIND = C_IP_ ) :: unit_warning
-       INTEGER ( KIND = C_IP_ ) :: ordering
-       INTEGER ( KIND = C_IP_ ) :: nemin
+       INTEGER ( KIND = ipc_ ) :: print_level
+       INTEGER ( KIND = ipc_ ) :: unit_diagnostics
+       INTEGER ( KIND = ipc_ ) :: unit_error
+       INTEGER ( KIND = ipc_ ) :: unit_warning
+       INTEGER ( KIND = ipc_ ) :: ordering
+       INTEGER ( KIND = ipc_ ) :: nemin
        LOGICAL ( KIND = C_BOOL ) :: ignore_numa
        LOGICAL ( KIND = C_BOOL ) :: use_gpu
        LOGICAL ( KIND = C_BOOL ) :: gpu_only
-       INTEGER ( KIND = C_INT64_T ) :: min_gpu_work
-       REAL ( KIND = C_RP_ ) :: max_load_inbalance
-       REAL ( KIND = C_RP_ ) :: gpu_perf_coeff
-       INTEGER ( KIND = C_IP_ ) :: scaling
-       INTEGER ( KIND = C_INT64_T ) :: small_subtree_threshold
-       INTEGER ( KIND = C_IP_ ) :: cpu_block_size
+       INTEGER ( KIND = long_ ) :: min_gpu_work
+       REAL ( KIND = rpc_ ) :: max_load_inbalance
+       REAL ( KIND = rpc_ ) :: gpu_perf_coeff
+       INTEGER ( KIND = ipc_ ) :: scaling
+       INTEGER ( KIND = long_ ) :: small_subtree_threshold
+       INTEGER ( KIND = ipc_ ) :: cpu_block_size
        LOGICAL ( KIND = C_BOOL ) :: action
-       INTEGER ( KIND = C_IP_ ) :: pivot_method
-       REAL ( KIND = C_RP_ ) :: small
-       REAL ( KIND = C_RP_ ) :: u
-       INTEGER ( KIND = C_IP_ ) :: nstream
-       REAL ( KIND = C_RP_ ) :: multiplier
+       INTEGER ( KIND = ipc_ ) :: pivot_method
+       REAL ( KIND = rpc_ ) :: small
+       REAL ( KIND = rpc_ ) :: u
+       INTEGER ( KIND = ipc_ ) :: nstream
+       REAL ( KIND = rpc_ ) :: multiplier
 !     type(auction_options) :: auction 
-       REAL ( KIND = C_RP_ ) :: min_loadbalance
+       REAL ( KIND = rpc_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump 
-       INTEGER ( KIND = C_IP_ ) :: failed_pivot_method
+       INTEGER ( KIND = ipc_ ) :: failed_pivot_method
     END TYPE ssids_options
 
     TYPE, BIND( C ) :: ssids_inform
-       INTEGER ( KIND = C_IP_ ) :: flag
-       INTEGER ( KIND = C_IP_ ) :: matrix_dup
-       INTEGER ( KIND = C_IP_ ) :: matrix_missing_diag
-       INTEGER ( KIND = C_IP_ ) :: matrix_outrange
-       INTEGER ( KIND = C_IP_ ) :: matrix_rank
-       INTEGER ( KIND = C_IP_ ) :: maxdepth
-       INTEGER ( KIND = C_IP_ ) :: maxfront
-       INTEGER ( KIND = C_IP_ ) :: num_delay
-       INTEGER ( KIND = C_INT64_T ) :: num_factor
-       INTEGER ( KIND = C_INT64_T ) :: num_flops
-       INTEGER ( KIND = C_IP_ ) :: num_neg
-       INTEGER ( KIND = C_IP_ ) :: num_sup
-       INTEGER ( KIND = C_IP_ ) :: num_two
-       INTEGER ( KIND = C_IP_ ) :: stat
+       INTEGER ( KIND = ipc_ ) :: flag
+       INTEGER ( KIND = ipc_ ) :: matrix_dup
+       INTEGER ( KIND = ipc_ ) :: matrix_missing_diag
+       INTEGER ( KIND = ipc_ ) :: matrix_outrange
+       INTEGER ( KIND = ipc_ ) :: matrix_rank
+       INTEGER ( KIND = ipc_ ) :: maxdepth
+       INTEGER ( KIND = ipc_ ) :: maxfront
+       INTEGER ( KIND = ipc_ ) :: num_delay
+       INTEGER ( KIND = long_ ) :: num_factor
+       INTEGER ( KIND = long_ ) :: num_flops
+       INTEGER ( KIND = ipc_ ) :: num_neg
+       INTEGER ( KIND = ipc_ ) :: num_sup
+       INTEGER ( KIND = ipc_ ) :: num_two
+       INTEGER ( KIND = ipc_ ) :: stat
 !    type(auction_inform) :: auction
-       INTEGER ( KIND = C_IP_ ) :: cuda_error
-       INTEGER ( KIND = C_IP_ ) :: cublas_error
-       INTEGER ( KIND = C_IP_ ) :: not_first_pass
-       INTEGER ( KIND = C_IP_ ) :: not_second_pass
-       INTEGER ( KIND = C_IP_ ) :: nparts
-       INTEGER ( KIND = C_INT64_T ) :: cpu_flops
-       INTEGER ( KIND = C_INT64_T ) :: gpu_flops
+       INTEGER ( KIND = ipc_ ) :: cuda_error
+       INTEGER ( KIND = ipc_ ) :: cublas_error
+       INTEGER ( KIND = ipc_ ) :: not_first_pass
+       INTEGER ( KIND = ipc_ ) :: not_second_pass
+       INTEGER ( KIND = ipc_ ) :: nparts
+       INTEGER ( KIND = long_ ) :: cpu_flops
+       INTEGER ( KIND = long_ ) :: gpu_flops
     END TYPE ssids_inform
 
 !----------------------

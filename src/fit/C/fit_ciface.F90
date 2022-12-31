@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-11 AT 13:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  F I T    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_FIT_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_FIT_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_FIT_double, ONLY:                                              &
+    USE GALAHAD_FIT_precision, ONLY:                                           &
         f_fit_control_type    => FIT_control_type,                             &
         f_fit_inform_type    => FIT_inform_type,                               &
         f_fit_full_data_type => FIT_full_data_type,                            &
@@ -27,30 +30,23 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: fit_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE fit_control_type
 
     TYPE, BIND( C ) :: fit_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE fit_inform_type
 
@@ -65,8 +61,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( fit_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_fit_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -95,7 +91,7 @@
     TYPE ( f_fit_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( fit_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -124,7 +120,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( fit_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_fit_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -144,7 +140,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_fit_inform_type ), INTENT( IN ) :: finform
     TYPE ( fit_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -160,19 +156,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_FIT_double_ciface
+  END MODULE GALAHAD_FIT_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran fit_initialize
 !  -------------------------------------
 
   SUBROUTINE fit_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_FIT_double_ciface
+  USE GALAHAD_FIT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( fit_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -209,7 +205,7 @@
 !  ----------------------------------------
 
   SUBROUTINE fit_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_FIT_double_ciface
+  USE GALAHAD_FIT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -225,7 +221,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -259,7 +255,7 @@
 !  ------------------------------------
 
   SUBROUTINE fit_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_FIT_double_ciface
+  USE GALAHAD_FIT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

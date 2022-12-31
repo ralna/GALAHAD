@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:10 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  D Q P    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_DQP_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_DQP_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_DQP_double, ONLY:                                              &
+    USE GALAHAD_DQP_precision, ONLY:                                           &
         f_dqp_control_type   => DQP_control_type,                              &
         f_dqp_time_type      => DQP_time_type,                                 &
         f_dqp_inform_type    => DQP_inform_type,                               &
@@ -28,7 +31,7 @@
         f_dqp_information    => DQP_information,                               &
         f_dqp_terminate      => DQP_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
         sls_inform_type,                                                       &
         sls_control_type,                                                      &
         copy_sls_inform_in   => copy_inform_in,                                &
@@ -36,7 +39,7 @@
         copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+    USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
         copy_sbls_inform_in   => copy_inform_in,                               &
@@ -44,7 +47,7 @@
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
-    USE GALAHAD_GLTR_double_ciface, ONLY:                                      &
+    USE GALAHAD_GLTR_precision_ciface, ONLY:                                   &
          gltr_inform_type,                                                     &
          gltr_control_type,                                                    &
          copy_gltr_inform_in   => copy_inform_in,                              &
@@ -52,7 +55,7 @@
          copy_gltr_control_in  => copy_control_in,                             &
          copy_gltr_control_out => copy_control_out
 
-    USE GALAHAD_FDC_double_ciface, ONLY:                                       &
+    USE GALAHAD_FDC_precision_ciface, ONLY:                                    &
         fdc_inform_type,                                                       &
         fdc_control_type,                                                      &
         copy_fdc_inform_in   => copy_inform_in,                                &
@@ -60,7 +63,7 @@
         copy_fdc_control_in  => copy_control_in,                               &
         copy_fdc_control_out => copy_control_out
 
-    USE GALAHAD_SCU_double_ciface, ONLY:                                       &
+    USE GALAHAD_SCU_precision_ciface, ONLY:                                    &
         scu_inform_type,                                                       &
         scu_control_type,                                                      &
 !       copy_scu_control_in  => copy_control_in,                               &
@@ -68,7 +71,7 @@
         copy_scu_inform_in   => copy_inform_in,                                &
         copy_scu_inform_out  => copy_inform_out
 
-    USE GALAHAD_RPD_double_ciface, ONLY:                                       &
+    USE GALAHAD_RPD_precision_ciface, ONLY:                                    &
         rpd_inform_type,                                                       &
         rpd_control_type,                                                      &
         copy_rpd_inform_in   => copy_inform_in,                                &
@@ -78,53 +81,46 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: dqp_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: dual_starting_point
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: max_sc
-      INTEGER ( KIND = C_INT ) :: cauchy_only
-      INTEGER ( KIND = C_INT ) :: arc_search_maxit
-      INTEGER ( KIND = C_INT ) :: cg_maxit
-      INTEGER ( KIND = C_INT ) :: explore_optimal_subspace
-      INTEGER ( KIND = C_INT ) :: restore_problem
-      INTEGER ( KIND = C_INT ) :: sif_file_device
-      INTEGER ( KIND = C_INT ) :: qplib_file_device
-      REAL ( KIND = wp ) :: rho
-      REAL ( KIND = wp ) :: infinity
-      REAL ( KIND = wp ) :: stop_abs_p
-      REAL ( KIND = wp ) :: stop_rel_p
-      REAL ( KIND = wp ) :: stop_abs_d
-      REAL ( KIND = wp ) :: stop_rel_d
-      REAL ( KIND = wp ) :: stop_abs_c
-      REAL ( KIND = wp ) :: stop_rel_c
-      REAL ( KIND = wp ) :: stop_cg_relative
-      REAL ( KIND = wp ) :: stop_cg_absolute
-      REAL ( KIND = wp ) :: cg_zero_curvature
-      REAL ( KIND = wp ) :: max_growth
-      REAL ( KIND = wp ) :: identical_bounds_tol
-      REAL ( KIND = wp ) :: cpu_time_limit
-      REAL ( KIND = wp ) :: clock_time_limit
-      REAL ( KIND = wp ) :: initial_perturbation
-      REAL ( KIND = wp ) :: perturbation_reduction
-      REAL ( KIND = wp ) :: final_perturbation
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: dual_starting_point
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: max_sc
+      INTEGER ( KIND = ipc_ ) :: cauchy_only
+      INTEGER ( KIND = ipc_ ) :: arc_search_maxit
+      INTEGER ( KIND = ipc_ ) :: cg_maxit
+      INTEGER ( KIND = ipc_ ) :: explore_optimal_subspace
+      INTEGER ( KIND = ipc_ ) :: restore_problem
+      INTEGER ( KIND = ipc_ ) :: sif_file_device
+      INTEGER ( KIND = ipc_ ) :: qplib_file_device
+      REAL ( KIND = rp_ ) :: rho
+      REAL ( KIND = rp_ ) :: infinity
+      REAL ( KIND = rp_ ) :: stop_abs_p
+      REAL ( KIND = rp_ ) :: stop_rel_p
+      REAL ( KIND = rp_ ) :: stop_abs_d
+      REAL ( KIND = rp_ ) :: stop_rel_d
+      REAL ( KIND = rp_ ) :: stop_abs_c
+      REAL ( KIND = rp_ ) :: stop_rel_c
+      REAL ( KIND = rp_ ) :: stop_cg_relative
+      REAL ( KIND = rp_ ) :: stop_cg_absolute
+      REAL ( KIND = rp_ ) :: cg_zero_curvature
+      REAL ( KIND = rp_ ) :: max_growth
+      REAL ( KIND = rp_ ) :: identical_bounds_tol
+      REAL ( KIND = rp_ ) :: cpu_time_limit
+      REAL ( KIND = rp_ ) :: clock_time_limit
+      REAL ( KIND = rp_ ) :: initial_perturbation
+      REAL ( KIND = rp_ ) :: perturbation_reduction
+      REAL ( KIND = rp_ ) :: final_perturbation
       LOGICAL ( KIND = C_BOOL ) :: factor_optimal_matrix
       LOGICAL ( KIND = C_BOOL ) :: remove_dependencies
       LOGICAL ( KIND = C_BOOL ) :: treat_zero_bounds_as_general
@@ -149,47 +145,47 @@
     END TYPE dqp_control_type
 
     TYPE, BIND( C ) :: dqp_time_type
-      REAL ( KIND = wp ) :: total
-      REAL ( KIND = wp ) :: preprocess
-      REAL ( KIND = wp ) :: find_dependent
-      REAL ( KIND = wp ) :: analyse
-      REAL ( KIND = wp ) :: factorize
-      REAL ( KIND = wp ) :: solve
-      REAL ( KIND = wp ) :: search
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_preprocess
-      REAL ( KIND = wp ) :: clock_find_dependent
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
-      REAL ( KIND = wp ) :: clock_search
+      REAL ( KIND = rp_ ) :: total
+      REAL ( KIND = rp_ ) :: preprocess
+      REAL ( KIND = rp_ ) :: find_dependent
+      REAL ( KIND = rp_ ) :: analyse
+      REAL ( KIND = rp_ ) :: factorize
+      REAL ( KIND = rp_ ) :: solve
+      REAL ( KIND = rp_ ) :: search
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_preprocess
+      REAL ( KIND = rp_ ) :: clock_find_dependent
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rp_ ) :: clock_search
     END TYPE dqp_time_type
 
     TYPE, BIND( C ) :: dqp_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: cg_iter
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
-      INTEGER ( KIND = C_INT64_T ) :: factorization_real
-      INTEGER ( KIND = C_INT ) :: nfacts
-      INTEGER ( KIND = C_INT ) :: threads
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: primal_infeasibility
-      REAL ( KIND = wp ) :: dual_infeasibility
-      REAL ( KIND = wp ) :: complementary_slackness
-      REAL ( KIND = wp ) :: non_negligible_pivot
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = long_ ) :: factorization_integer
+      INTEGER ( KIND = long_ ) :: factorization_real
+      INTEGER ( KIND = ipc_ ) :: nfacts
+      INTEGER ( KIND = ipc_ ) :: threads
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: primal_infeasibility
+      REAL ( KIND = rp_ ) :: dual_infeasibility
+      REAL ( KIND = rp_ ) :: complementary_slackness
+      REAL ( KIND = rp_ ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
-      INTEGER ( KIND = C_INT ), DIMENSION( 16 ) :: checkpointsIter
-      REAL ( KIND = wp ), DIMENSION( 16 ) :: checkpointsTime
+      INTEGER ( KIND = ipc_ ), DIMENSION( 16 ) :: checkpointsIter
+      REAL ( KIND = rp_ ), DIMENSION( 16 ) :: checkpointsTime
       TYPE ( dqp_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sls_inform_type ) :: sls_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
-      INTEGER ( KIND = C_INT ) :: scu_status
+      INTEGER ( KIND = ipc_ ) :: scu_status
       TYPE ( scu_inform_type ) :: scu_inform
       TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE dqp_inform_type
@@ -205,8 +201,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( dqp_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_dqp_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -252,7 +248,8 @@
     ! Logicals
     fcontrol%factor_optimal_matrix = ccontrol%factor_optimal_matrix
     fcontrol%remove_dependencies = ccontrol%remove_dependencies
-    fcontrol%treat_zero_bounds_as_general = ccontrol%treat_zero_bounds_as_general
+    fcontrol%treat_zero_bounds_as_general                                      &
+      = ccontrol%treat_zero_bounds_as_general
     fcontrol%exact_arc_search = ccontrol%exact_arc_search
     fcontrol%subspace_direct = ccontrol%subspace_direct
     fcontrol%subspace_alternate = ccontrol%subspace_alternate
@@ -271,7 +268,8 @@
     ! Strings
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%symmetric_linear_solver( i : i ) = ccontrol%symmetric_linear_solver( i )
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%definite_linear_solver )
       IF ( ccontrol%definite_linear_solver( i ) == C_NULL_CHAR ) EXIT
@@ -305,7 +303,7 @@
     TYPE ( f_dqp_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( dqp_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -461,7 +459,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( dqp_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_dqp_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -510,7 +508,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_dqp_inform_type ), INTENT( IN ) :: finform
     TYPE ( dqp_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -555,19 +553,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_DQP_double_ciface
+  END MODULE GALAHAD_DQP_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran dqp_initialize
 !  -------------------------------------
 
   SUBROUTINE dqp_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( dqp_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -604,7 +602,7 @@
 !  ----------------------------------------
 
   SUBROUTINE dqp_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -620,7 +618,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -656,22 +654,22 @@
   SUBROUTINE dqp_import( ccontrol, cdata, status, n, m,                        &
                          chtype, hne, hrow, hcol, hptr,                        &
                          catype, ane, arow, acol, aptr ) BIND( C )
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( dqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
@@ -717,12 +715,12 @@
 !  ----------------------------------------
 
   SUBROUTINE dqp_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( dqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -757,24 +755,24 @@
 
   SUBROUTINE dqp_solve_qp( cdata, status, n, m, hne, hval, g, f, ane, aval,    &
                            cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -799,25 +797,25 @@
 
   SUBROUTINE dqp_solve_sldqp( cdata, status, n, m, w, x0, g, f, ane, aval, cl, &
                               cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: w
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: x0
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: w
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: x0
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -841,14 +839,14 @@
 !  --------------------------------------
 
   SUBROUTINE dqp_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( dqp_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -875,7 +873,7 @@
 !  ------------------------------------
 
   SUBROUTINE dqp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_DQP_double_ciface
+  USE GALAHAD_DQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

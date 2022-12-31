@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 3.3 - 29/11/2021 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:45 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S I L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,28 +14,21 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SILS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_SILS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_SILS_double, ONLY: &
-        f_sils_control => SILS_control, &
-        f_sils_ainfo => SILS_ainfo, &
-        f_sils_finfo => SILS_finfo, &
-        f_sils_sinfo => SILS_sinfo, &
-        f_sils_full_data_type => SILS_full_data_type, &
-        f_sils_initialize => SILS_initialize, &
-        f_sils_reset_control => SILS_reset_control, &
-        f_sils_information => SILS_information, &
+    USE GALAHAD_SILS_precision, ONLY:                                          &
+        f_sils_control => SILS_control,                                        &
+        f_sils_ainfo => SILS_ainfo,                                            &
+        f_sils_finfo => SILS_finfo,                                            &
+        f_sils_sinfo => SILS_sinfo,                                            &
+        f_sils_full_data_type => SILS_full_data_type,                          &
+        f_sils_initialize => SILS_initialize,                                  &
+        f_sils_reset_control => SILS_reset_control,                            &
+        f_sils_information => SILS_information,                                &
         f_sils_finalize => SILS_finalize
 
     IMPLICIT NONE
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -40,92 +36,92 @@
 
     TYPE, BIND( C ) :: sils_control
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: ICNTL( 30 )
-      INTEGER ( KIND = C_INT ) :: lp
-      INTEGER ( KIND = C_INT ) :: wp
-      INTEGER ( KIND = C_INT ) :: mp
-      INTEGER ( KIND = C_INT ) :: sp
-      INTEGER ( KIND = C_INT ) :: ldiag
-      INTEGER ( KIND = C_INT ) :: la
-      INTEGER ( KIND = C_INT ) :: liw
-      INTEGER ( KIND = C_INT ) :: maxla
-      INTEGER ( KIND = C_INT ) :: maxliw
-      INTEGER ( KIND = C_INT ) :: pivoting
-      INTEGER ( KIND = C_INT ) :: nemin
-      INTEGER ( KIND = C_INT ) :: factorblocking
-      INTEGER ( KIND = C_INT ) :: solveblocking
-      INTEGER ( KIND = C_INT ) :: thresh
-      INTEGER ( KIND = C_INT ) :: ordering
-      INTEGER ( KIND = C_INT ) :: scaling
-      REAL ( KIND = wp ) :: CNTL( 5 )
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: reduce
-      REAL ( KIND = wp ) :: u
-      REAL ( KIND = wp ) :: static_tolerance
-      REAL ( KIND = wp ) :: static_level
-      REAL ( KIND = wp ) :: tolerance
-      REAL ( KIND = wp ) :: convergence
+      INTEGER ( KIND = ipc_ ) :: ICNTL( 30 )
+      INTEGER ( KIND = ipc_ ) :: lp
+      INTEGER ( KIND = ipc_ ) :: wp
+      INTEGER ( KIND = ipc_ ) :: mp
+      INTEGER ( KIND = ipc_ ) :: sp
+      INTEGER ( KIND = ipc_ ) :: ldiag
+      INTEGER ( KIND = ipc_ ) :: la
+      INTEGER ( KIND = ipc_ ) :: liw
+      INTEGER ( KIND = ipc_ ) :: maxla
+      INTEGER ( KIND = ipc_ ) :: maxliw
+      INTEGER ( KIND = ipc_ ) :: pivoting
+      INTEGER ( KIND = ipc_ ) :: nemin
+      INTEGER ( KIND = ipc_ ) :: factorblocking
+      INTEGER ( KIND = ipc_ ) :: solveblocking
+      INTEGER ( KIND = ipc_ ) :: thresh
+      INTEGER ( KIND = ipc_ ) :: ordering
+      INTEGER ( KIND = ipc_ ) :: scaling
+      REAL ( KIND = rp_ ) :: CNTL( 5 )
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: reduce
+      REAL ( KIND = rp_ ) :: u
+      REAL ( KIND = rp_ ) :: static_tolerance
+      REAL ( KIND = rp_ ) :: static_level
+      REAL ( KIND = rp_ ) :: tolerance
+      REAL ( KIND = rp_ ) :: convergence
     END TYPE sils_control
 
     TYPE, BIND( C ) :: SILS_ainfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: more
-      INTEGER ( KIND = C_INT ) :: nsteps
-      INTEGER ( KIND = C_INT ) :: nrltot
-      INTEGER ( KIND = C_INT ) :: nirtot
-      INTEGER ( KIND = C_INT ) :: nrlnec
-      INTEGER ( KIND = C_INT ) :: nirnec
-      INTEGER ( KIND = C_INT ) :: nrladu
-      INTEGER ( KIND = C_INT ) :: niradu
-      INTEGER ( KIND = C_INT ) :: ncmpa
-      INTEGER ( KIND = C_INT ) :: oor
-      INTEGER ( KIND = C_INT ) :: dup
-      INTEGER ( KIND = C_INT ) :: maxfrt
-      INTEGER ( KIND = C_INT ) :: stat
-      INTEGER ( KIND = C_INT ) :: faulty
-      REAL ( KIND = wp ) :: opsa
-      REAL ( KIND = wp ) :: opse
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: more
+      INTEGER ( KIND = ipc_ ) :: nsteps
+      INTEGER ( KIND = ipc_ ) :: nrltot
+      INTEGER ( KIND = ipc_ ) :: nirtot
+      INTEGER ( KIND = ipc_ ) :: nrlnec
+      INTEGER ( KIND = ipc_ ) :: nirnec
+      INTEGER ( KIND = ipc_ ) :: nrladu
+      INTEGER ( KIND = ipc_ ) :: niradu
+      INTEGER ( KIND = ipc_ ) :: ncmpa
+      INTEGER ( KIND = ipc_ ) :: oor
+      INTEGER ( KIND = ipc_ ) :: dup
+      INTEGER ( KIND = ipc_ ) :: maxfrt
+      INTEGER ( KIND = ipc_ ) :: stat
+      INTEGER ( KIND = ipc_ ) :: faulty
+      REAL ( KIND = rp_ ) :: opsa
+      REAL ( KIND = rp_ ) :: opse
     END TYPE SILS_ainfo
 
     TYPE, BIND( C ) :: SILS_finfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: more
-      INTEGER ( KIND = C_INT ) :: maxfrt
-      INTEGER ( KIND = C_INT ) :: nebdu
-      INTEGER ( KIND = C_INT ) :: nrlbdu
-      INTEGER ( KIND = C_INT ) :: nirbdu
-      INTEGER ( KIND = C_INT ) :: nrltot
-      INTEGER ( KIND = C_INT ) :: nirtot
-      INTEGER ( KIND = C_INT ) :: nrlnec
-      INTEGER ( KIND = C_INT ) :: nirnec
-      INTEGER ( KIND = C_INT ) :: ncmpbr
-      INTEGER ( KIND = C_INT ) :: ncmpbi
-      INTEGER ( KIND = C_INT ) :: ntwo
-      INTEGER ( KIND = C_INT ) :: neig
-      INTEGER ( KIND = C_INT ) :: delay
-      INTEGER ( KIND = C_INT ) :: signc
-      INTEGER ( KIND = C_INT ) :: static
-      INTEGER ( KIND = C_INT ) :: modstep
-      INTEGER ( KIND = C_INT ) :: rank
-      INTEGER ( KIND = C_INT ) :: stat
-      INTEGER ( KIND = C_INT ) :: faulty
-      INTEGER ( KIND = C_INT ) :: step
-      REAL ( KIND = wp ) :: opsa
-      REAL ( KIND = wp ) :: opse
-      REAL ( KIND = wp ) :: opsb
-      REAL ( KIND = wp ) :: maxchange
-      REAL ( KIND = wp ) :: smin
-      REAL ( KIND = wp ) :: smax
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: more
+      INTEGER ( KIND = ipc_ ) :: maxfrt
+      INTEGER ( KIND = ipc_ ) :: nebdu
+      INTEGER ( KIND = ipc_ ) :: nrlbdu
+      INTEGER ( KIND = ipc_ ) :: nirbdu
+      INTEGER ( KIND = ipc_ ) :: nrltot
+      INTEGER ( KIND = ipc_ ) :: nirtot
+      INTEGER ( KIND = ipc_ ) :: nrlnec
+      INTEGER ( KIND = ipc_ ) :: nirnec
+      INTEGER ( KIND = ipc_ ) :: ncmpbr
+      INTEGER ( KIND = ipc_ ) :: ncmpbi
+      INTEGER ( KIND = ipc_ ) :: ntwo
+      INTEGER ( KIND = ipc_ ) :: neig
+      INTEGER ( KIND = ipc_ ) :: delay
+      INTEGER ( KIND = ipc_ ) :: signc
+      INTEGER ( KIND = ipc_ ) :: static
+      INTEGER ( KIND = ipc_ ) :: modstep
+      INTEGER ( KIND = ipc_ ) :: rank
+      INTEGER ( KIND = ipc_ ) :: stat
+      INTEGER ( KIND = ipc_ ) :: faulty
+      INTEGER ( KIND = ipc_ ) :: step
+      REAL ( KIND = rp_ ) :: opsa
+      REAL ( KIND = rp_ ) :: opse
+      REAL ( KIND = rp_ ) :: opsb
+      REAL ( KIND = rp_ ) :: maxchange
+      REAL ( KIND = rp_ ) :: smin
+      REAL ( KIND = rp_ ) :: smax
     END TYPE SILS_finfo
 
     TYPE, BIND( C ) :: SILS_sinfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: stat
-      REAL ( KIND = wp ) :: cond
-      REAL ( KIND = wp ) :: cond2
-      REAL ( KIND = wp ) :: berr
-      REAL ( KIND = wp ) :: berr2
-      REAL ( KIND = wp ) :: error
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: stat
+      REAL ( KIND = rp_ ) :: cond
+      REAL ( KIND = rp_ ) :: cond2
+      REAL ( KIND = rp_ ) :: berr
+      REAL ( KIND = rp_ ) :: berr2
+      REAL ( KIND = rp_ ) :: error
     END TYPE SILS_sinfo
 
 !----------------------
@@ -139,7 +135,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( sils_control ), INTENT( IN ) :: ccontrol
     TYPE ( f_sils_control ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -400,14 +396,14 @@
 
     END SUBROUTINE copy_sinfo_out
 
-  END MODULE GALAHAD_SILS_double_ciface
+  END MODULE GALAHAD_SILS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran sils_initialize
 !  -------------------------------------
 
   SUBROUTINE sils_initialize( cdata, ccontrol ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
+  USE GALAHAD_SILS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -446,12 +442,12 @@
 !  ----------------------------------------
 
   SUBROUTINE sils_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
+  USE GALAHAD_SILS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( sils_control ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -485,7 +481,7 @@
 !  --------------------------------------
 
   SUBROUTINE sils_information( cdata, cainfo, cfinfo, csinfo, status ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
+  USE GALAHAD_SILS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -494,7 +490,7 @@
   TYPE ( sils_ainfo ), INTENT( INOUT ) :: cainfo
   TYPE ( sils_finfo ), INTENT( INOUT ) :: cfinfo
   TYPE ( sils_sinfo ), INTENT( INOUT ) :: csinfo
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -525,14 +521,14 @@
 !  ------------------------------------
 
   SUBROUTINE sils_finalize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
+  USE GALAHAD_SILS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( sils_control ), INTENT( IN ) :: ccontrol
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 

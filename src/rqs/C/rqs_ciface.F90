@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  R Q S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_RQS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_RQS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_RQS_double, ONLY:                                              &
+    USE GALAHAD_RQS_precision, ONLY:                                           &
         f_rqs_control_type => RQS_control_type,                                &
         f_rqs_time_type => RQS_time_type,                                      &
         f_rqs_history_type => RQS_history_type,                                &
@@ -30,7 +33,7 @@
         f_rqs_information => RQS_information,                                  &
         f_rqs_terminate => RQS_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
         sls_inform_type,                                                       &
         sls_control_type,                                                      &
         copy_sls_inform_in => copy_inform_in,                                  &
@@ -38,7 +41,7 @@
         copy_sls_control_in => copy_control_in,                                &
         copy_sls_control_out => copy_control_out
 
-     USE GALAHAD_IR_double_ciface, ONLY:                                       &
+     USE GALAHAD_IR_precision_ciface, ONLY:                                    &
          ir_inform_type,                                                       &
          ir_control_type,                                                      &
          copy_ir_inform_in => copy_inform_in,                                  &
@@ -48,37 +51,30 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: rqs_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: problem
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: dense_factorization
-      INTEGER ( KIND = C_INT ) :: new_h
-      INTEGER ( KIND = C_INT ) :: new_m
-      INTEGER ( KIND = C_INT ) :: new_a
-      INTEGER ( KIND = C_INT ) :: max_factorizations
-      INTEGER ( KIND = C_INT ) :: inverse_itmax
-      INTEGER ( KIND = C_INT ) :: taylor_max_degree
-      REAL ( KIND = wp ) :: initial_multiplier
-      REAL ( KIND = wp ) :: lower
-      REAL ( KIND = wp ) :: upper
-      REAL ( KIND = wp ) :: stop_normal
-      REAL ( KIND = wp ) :: stop_hard
-      REAL ( KIND = wp ) :: start_invit_tol
-      REAL ( KIND = wp ) :: start_invitmax_tol
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: problem
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: dense_factorization
+      INTEGER ( KIND = ipc_ ) :: new_h
+      INTEGER ( KIND = ipc_ ) :: new_m
+      INTEGER ( KIND = ipc_ ) :: new_a
+      INTEGER ( KIND = ipc_ ) :: max_factorizations
+      INTEGER ( KIND = ipc_ ) :: inverse_itmax
+      INTEGER ( KIND = ipc_ ) :: taylor_max_degree
+      REAL ( KIND = rp_ ) :: initial_multiplier
+      REAL ( KIND = rp_ ) :: lower
+      REAL ( KIND = rp_ ) :: upper
+      REAL ( KIND = rp_ ) :: stop_normal
+      REAL ( KIND = rp_ ) :: stop_hard
+      REAL ( KIND = rp_ ) :: start_invit_tol
+      REAL ( KIND = rp_ ) :: start_invitmax_tol
       LOGICAL ( KIND = C_BOOL ) :: use_initial_multiplier
       LOGICAL ( KIND = C_BOOL ) :: initialize_approx_eigenvector
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -92,34 +88,34 @@
     END TYPE rqs_control_type
 
     TYPE, BIND( C ) :: rqs_time_type
-      REAL ( KIND = wp ) :: total
-      REAL ( KIND = wp ) :: assemble
-      REAL ( KIND = wp ) :: analyse
-      REAL ( KIND = wp ) :: factorize
-      REAL ( KIND = wp ) :: solve
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_assemble
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
+      REAL ( KIND = rp_ ) :: total
+      REAL ( KIND = rp_ ) :: assemble
+      REAL ( KIND = rp_ ) :: analyse
+      REAL ( KIND = rp_ ) :: factorize
+      REAL ( KIND = rp_ ) :: solve
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_assemble
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
     END TYPE rqs_time_type
 
     TYPE, BIND( C ) :: rqs_history_type
-      REAL ( KIND = wp ) :: lambda
-      REAL ( KIND = wp ) :: x_norm
+      REAL ( KIND = rp_ ) :: lambda
+      REAL ( KIND = rp_ ) :: x_norm
     END TYPE rqs_history_type
 
     TYPE, BIND( C ) :: rqs_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ) :: factorizations
-      INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
-      INTEGER ( KIND = C_INT ) :: len_history
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: obj_regularized
-      REAL ( KIND = wp ) :: x_norm
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: pole
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: factorizations
+      INTEGER ( KIND = long_ ) :: max_entries_factors
+      INTEGER ( KIND = ipc_ ) :: len_history
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: obj_regularized
+      REAL ( KIND = rp_ ) :: x_norm
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: pole
       LOGICAL ( KIND = C_BOOL ) :: dense_factorization
       LOGICAL ( KIND = C_BOOL ) :: hard_case
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
@@ -140,8 +136,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( rqs_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_rqs_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -208,7 +204,7 @@
     TYPE ( f_rqs_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( rqs_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -346,7 +342,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( rqs_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_rqs_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -386,7 +382,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_rqs_inform_type ), INTENT( IN ) :: finform
     TYPE ( rqs_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -422,19 +418,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_RQS_double_ciface
+  END MODULE GALAHAD_RQS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran rqs_initialize
 !  -------------------------------------
 
   SUBROUTINE rqs_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( rqs_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -471,7 +467,7 @@
 !  ----------------------------------------
 
   SUBROUTINE rqs_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -487,7 +483,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -522,18 +518,18 @@
 
   SUBROUTINE rqs_import( ccontrol, cdata, status, n,                           &
                          chtype, hne, hrow, hcol, hptr  ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( rqs_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
 
 !  local variables
@@ -577,17 +573,17 @@
 
   SUBROUTINE rqs_import_m( cdata, status, n, cmtype, mne, mrow, mcol,          &
                            mptr ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, mne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( mne ), OPTIONAL :: mrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( mne ), OPTIONAL :: mcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: mptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, mne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( mne ), OPTIONAL :: mrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( mne ), OPTIONAL :: mcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: mptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cmtype
 
 !  local variables
@@ -621,17 +617,17 @@
 
   SUBROUTINE rqs_import_a( cdata, status, m, caytpe, ane, arow, acol,          &
                            aptr ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, ane
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: caytpe
 
 !  local variables
@@ -662,12 +658,12 @@
 !  ----------------------------------------
 
   SUBROUTINE rqs_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( rqs_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -703,20 +699,20 @@
   SUBROUTINE rqs_solve_problem( cdata, status, n, power, weight,               &
                                 f, c, hne, hval, x,                            &
                                 mne, mval, m, ane, aval, y ) BIND( C )
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, mne, ane
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( mne ) :: mval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: power, weight, f
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), OPTIONAL, INTENT( INOUT ), DIMENSION( m ) :: y
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, mne, ane
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( mne ) :: mval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: power, weight, f
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -740,14 +736,14 @@
 !  --------------------------------------
 
   SUBROUTINE rqs_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( rqs_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -774,7 +770,7 @@
 !  ------------------------------------
 
   SUBROUTINE rqs_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_RQS_double_ciface
+  USE GALAHAD_RQS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

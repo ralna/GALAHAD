@@ -9,9 +9,11 @@
 #include "hw_topology/guess_topology.hxx"
 
 #include "config.h"
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
+
 #ifdef HAVE_NVCC
 #include <cuda_runtime_api.h>
 #endif /* HAVE_NVCC */

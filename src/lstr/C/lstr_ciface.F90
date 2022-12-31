@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  L S T R    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_LSTR_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_LSTR_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_LSTR_double, ONLY:                                             &
+    USE GALAHAD_LSTR_precision, ONLY:                                          &
         f_lstr_control_type => LSTR_control_type,                              &
         f_lstr_inform_type => LSTR_inform_type,                                &
         f_lstr_full_data_type => LSTR_full_data_type,                          &
@@ -27,34 +30,27 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: lstr_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: itmin
-      INTEGER ( KIND = C_INT ) :: itmax
-      INTEGER ( KIND = C_INT ) :: itmax_on_boundary
-      INTEGER ( KIND = C_INT ) :: bitmax
-      INTEGER ( KIND = C_INT ) :: extra_vectors
-      REAL ( KIND = wp ) :: stop_relative
-      REAL ( KIND = wp ) :: stop_absolute
-      REAL ( KIND = wp ) :: fraction_opt
-      REAL ( KIND = wp ) :: time_limit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: itmin
+      INTEGER ( KIND = ipc_ ) :: itmax
+      INTEGER ( KIND = ipc_ ) :: itmax_on_boundary
+      INTEGER ( KIND = ipc_ ) :: bitmax
+      INTEGER ( KIND = ipc_ ) :: extra_vectors
+      REAL ( KIND = rp_ ) :: stop_relative
+      REAL ( KIND = rp_ ) :: stop_absolute
+      REAL ( KIND = rp_ ) :: fraction_opt
+      REAL ( KIND = rp_ ) :: time_limit
       LOGICAL ( KIND = C_BOOL ) :: steihaug_toint
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -62,19 +58,19 @@
     END TYPE lstr_control_type
 
     TYPE, BIND( C ) :: lstr_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: iter_pass2
-      INTEGER ( KIND = C_INT ) :: biters
-      INTEGER ( KIND = C_INT ) :: biter_min
-      INTEGER ( KIND = C_INT ) :: biter_max
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: x_norm
-      REAL ( KIND = wp ) :: r_norm
-      REAL ( KIND = wp ) :: Atr_norm
-      REAL ( KIND = wp ) :: biter_mean
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: iter_pass2
+      INTEGER ( KIND = ipc_ ) :: biters
+      INTEGER ( KIND = ipc_ ) :: biter_min
+      INTEGER ( KIND = ipc_ ) :: biter_max
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: x_norm
+      REAL ( KIND = rp_ ) :: r_norm
+      REAL ( KIND = rp_ ) :: Atr_norm
+      REAL ( KIND = rp_ ) :: biter_mean
     END TYPE lstr_inform_type
 
 !----------------------
@@ -88,8 +84,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( lstr_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_lstr_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -133,7 +129,7 @@
     TYPE ( f_lstr_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( lstr_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -177,7 +173,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( lstr_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_lstr_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -209,7 +205,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_lstr_inform_type ), INTENT( IN ) :: finform
     TYPE ( lstr_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -237,19 +233,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_LSTR_double_ciface
+  END MODULE GALAHAD_LSTR_precision_ciface
 
 !  --------------------------------------
 !  C interface to fortran lstr_initialize
 !  --------------------------------------
 
   SUBROUTINE lstr_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( lstr_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -286,7 +282,7 @@
 !  -----------------------------------------
 
   SUBROUTINE lstr_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -302,7 +298,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -336,12 +332,12 @@
 !  ------------------------------------------
 
   SUBROUTINE lstr_import_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( lstr_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -380,17 +376,17 @@
 
   SUBROUTINE lstr_solve_problem( cdata, status, m, n, radius,                  &
                                  x, u, v ) BIND( C )
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: radius
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: u
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: v
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: radius
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: u
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: v
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -413,14 +409,14 @@
 !  ---------------------------------------
 
   SUBROUTINE lstr_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( lstr_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -447,7 +443,7 @@
 !  -------------------------------------
 
   SUBROUTINE lstr_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_LSTR_double_ciface
+  USE GALAHAD_LSTR_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

@@ -67,7 +67,7 @@ $(package).o: $(LG)($(package).o)
 
 $(LG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).F90 > $(OBJ)/$(package).F90
+	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
 	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
@@ -86,8 +86,7 @@ $(package)_ciface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o)
 
 $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
-	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.F90 \
-           > $(OBJ)/$(package)_ciface.F90
+	$(CP) ../$(package)/C/$(package)_ciface.F90 $(OBJ)/$(package)_ciface.F90
 	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
            $(package)_ciface.F90 \
@@ -102,15 +101,13 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
 
 $(package)_gcov: ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).F90 > $(package)_cov.F90
+	$(CP) ../$(package)/$(package).F90 $(package)_cov.F90
 	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
             $(package)_cov.F90 \
           || ( printf ' %-26s' "=> Disabling optimization " ; \
             $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
               $(package)_cov.F90 )
-	$(SED) -f $(SEDS) $(package)t.F90 > $(package)t_cov1.F90
-	$(SED) -f $(LSEDS) $(package)t_gcov1.F90 > $(package)t_cov.F90
-	$(RM) ./$(package)t_cov1.F90
+	$(CP) $(package)t.F90 $(package)t_cov.F90
 	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
           $(package)t_cov.F90
 	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
@@ -201,9 +198,7 @@ $(package)t.o: $(OBJ)/$(package)t.o
 
 $(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)t.F90 > $(OBJ)/$(package)t.F90
-#	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.F90 > $(OBJ)/$(package)t.F90
+	$(CP) ../$(package)/$(package)t.F90 $(OBJ)/$(package)t.F90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
@@ -212,9 +207,7 @@ $(package)ti.o: $(OBJ)/$(package)ti.o
 
 $(OBJ)/$(package)ti.o: ../$(package)/$(package)ti.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ti  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)ti.F90 > $(OBJ)/$(package)ti.F90
-#	$(SED) -f $(LSEDS) $(OBJ)/$(package)ti1.F90 > $(OBJ)/$(package)ti.F90
+	$(CP) ../$(package)/$(package)ti.F90 $(OBJ)/$(package)ti.F90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)ti.o $(FFLAGSS) $(package)ti.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
@@ -263,11 +256,7 @@ use$(package).o: $(LG)(use$(package).o)
 
 $(LG)(use$(package).o): ../$(package)/use$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
-#	$(SED) -f $(SEDS) \
-#          ../$(package)/use$(package).F90 > $(OBJ)/use$(package)1.F90
-#	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.F90 > $(OBJ)/use$(package).F90
-	$(SED) -f $(SEDS) \
-           ../$(package)/use$(package).F90 > $(OBJ)/use$(package).F90
+	$(CP) ../$(package)/use$(package).F90 $(OBJ)/use$(package).F90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -284,8 +273,7 @@ run$(package)_rb.o: $(OBJ)/run$(package)_rb.o
 
 $(OBJ)/run$(package)_rb.o: ../$(package)/run$(package)_rb.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "run$(package)_rb"
-	$(SED) -f $(SEDS) \
-           ../$(package)/run$(package)_rb.F90 > $(OBJ)/run$(package)_rb.F90
+	$(CP) ../$(package)/run$(package)_rb.F90 $(OBJ)/run$(package)_rb.F90
 	cd $(OBJ); $(FORTRAN) -o run$(package)_rb.o \
                      $(FFLAGSS) run$(package)_rb.F90
 #	rm $(OBJ)/run$(package)_rb.F90

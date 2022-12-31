@@ -51,10 +51,6 @@
        MODULE PROCEDURE ROOTS_terminate, ROOTS_full_terminate
      END INTERFACE ROOTS_terminate
 
-!--------------------
-
-      INTEGER ( KIND = ip_ ), PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
-
 !------------------------------------
 !   G e n e r i c   I n t e r f a c e
 !------------------------------------
@@ -177,7 +173,7 @@
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IG
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: P, A_mat, RHS
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, W, WORK
-        COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: CROOTS
+        COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: CROOTS
       END TYPE
 
 !  - - - - - - - - - - - -
@@ -1246,7 +1242,7 @@
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
-      COMPLEX ( KIND = wcp ), INTENT( OUT ), DIMENSION( n ) :: ROOT
+      COMPLEX ( KIND = cp_ ), INTENT( OUT ), DIMENSION( n ) :: ROOT
       REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( 0 : n ) :: E
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: data
       TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
@@ -1327,7 +1323,7 @@
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
         REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
         REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : n ) :: D
-        COMPLEX ( KIND = wcp ), INTENT( OUT ), DIMENSION( n ) :: ROOT
+        COMPLEX ( KIND = cp_ ), INTENT( OUT ), DIMENSION( n ) :: ROOT
 
 !  Local variables
 
@@ -1369,7 +1365,7 @@
         INTEGER ( KIND = ip_ ) :: i, iter, k, kk, loop, nn
         REAL ( KIND = rp_ ) :: afw, afz, afz0, afzmin, arz, blog, f2, fc, fd, g
         REAL ( KIND = rp_ ) :: pp, qq, r, r0, rr, rz, ss, tt, u, u1, u2
-        COMPLEX ( KIND = wcp ) :: dz, f1z, f1z0, fw, fz, w, z, z0, zt
+        COMPLEX ( KIND = cp_ ) :: dz, f1z, f1z0, fw, fz, w, z, z0, zt
         LOGICAL :: div2, stage1
 
 !  Compute the logarithm of the arithmetic base
@@ -1636,7 +1632,7 @@
         REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: E
         REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: CR
         REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : n ) :: W
-        COMPLEX ( KIND = wcp ), INTENT( IN ), DIMENSION( n ) :: ROOT
+        COMPLEX ( KIND = cp_ ), INTENT( IN ), DIMENSION( n ) :: ROOT
 
 !  Local variables
 
@@ -1666,7 +1662,7 @@
         INTEGER ( KIND = ip_ ) :: i, ig1, ii, j, k, l, loop, loopb, loopr, m
         REAL ( KIND = rp_ ) :: btm, dist, dmax, dmin, fact, oldr, prod, rad
         REAL ( KIND = rp_ ) :: rl, rm, rp, rr, rs, s, tb, top
-        COMPLEX ( KIND = wcp ) :: r
+        COMPLEX ( KIND = cp_ ) :: r
 
 ! Multiply out the polynomial formed from the calculated roots
 
@@ -1815,7 +1811,7 @@
         END SUBROUTINE ROOTS_polynomial_error_bound
 
 !       FUNCTION ROOTS_polynomial_val( z, n, A )
-!       COMPLEX ( KIND = wcp ) :: ROOTS_polynomial_val
+!       COMPLEX ( KIND = cp_ ) :: ROOTS_polynomial_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1830,13 +1826,13 @@
 !  Dummy arguments
 
 !       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
-!       COMPLEX ( KIND = wcp ), INTENT( IN ) :: Z
+!       COMPLEX ( KIND = cp_ ), INTENT( IN ) :: Z
 !       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 0 : n ) :: A
 
 !  Local variables
 
 !       INTEGER ( KIND = ip_ ) :: k
-!       COMPLEX ( KIND = wcp ) :: fz
+!       COMPLEX ( KIND = cp_ ) :: fz
 
 !       fz = A( 0 )
 !       DO k = 1, n
