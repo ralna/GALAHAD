@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:40 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C R O    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_CRO_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_CRO_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_CRO_double, ONLY:                                              &
+    USE GALAHAD_CRO_precision, ONLY:                                           &
         f_cro_control_type       => CRO_control_type,                          &
         f_cro_time_type          => CRO_time_type,                             &
         f_cro_inform_type        => CRO_inform_type,                           &
@@ -24,7 +27,7 @@
         f_cro_crossover_solution => CRO_crossover_solution,                    &
         f_cro_terminate          => CRO_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
         sls_inform_type,                                                       &
         sls_control_type,                                                      &
         copy_sls_inform_in   => copy_inform_in,                                &
@@ -32,7 +35,7 @@
         copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+    USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
         copy_sbls_inform_in   => copy_inform_in,                               &
@@ -40,7 +43,7 @@
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
-    USE GALAHAD_ULS_double_ciface, ONLY:                                       &
+    USE GALAHAD_ULS_precision_ciface, ONLY:                                    &
         uls_inform_type,                                                       &
         uls_control_type,                                                      &
         copy_uls_inform_in   => copy_inform_in,                                &
@@ -48,7 +51,7 @@
         copy_uls_control_in  => copy_control_in,                               &
         copy_uls_control_out => copy_control_out
 
-    USE GALAHAD_IR_double_ciface, ONLY: &
+    USE GALAHAD_IR_precision_ciface, ONLY:                                     &
         ir_inform_type,                                                        &
         ir_control_type,                                                       &
         copy_ir_inform_in   => copy_inform_in,                                 &
@@ -56,7 +59,7 @@
         copy_ir_control_in  => copy_control_in,                                &
         copy_ir_control_out => copy_control_out
 
-    USE GALAHAD_SCU_double_ciface, ONLY:                                       &
+    USE GALAHAD_SCU_precision_ciface, ONLY:                                    &
         scu_inform_type,                                                       &
         scu_control_type,                                                      &
 !       copy_scu_control_in  => copy_control_in,                               &
@@ -66,25 +69,18 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: cro_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: max_schur_complement
-      REAL ( KIND = wp ) :: infinity
-      REAL ( KIND = wp ) :: feasibility_tolerance
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: max_schur_complement
+      REAL ( KIND = rp_ ) :: infinity
+      REAL ( KIND = rp_ ) :: feasibility_tolerance
       LOGICAL ( KIND = C_BOOL ) :: check_io
       LOGICAL ( KIND = C_BOOL ) :: refine_solution
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -99,26 +95,26 @@
     END TYPE cro_control_type
 
     TYPE, BIND( C ) :: cro_time_type
-      REAL ( KIND = sp ) :: total
-      REAL ( KIND = sp ) :: analyse
-      REAL ( KIND = sp ) :: factorize
-      REAL ( KIND = sp ) :: solve
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
+      REAL ( KIND = sp_ ) :: total
+      REAL ( KIND = sp_ ) :: analyse
+      REAL ( KIND = sp_ ) :: factorize
+      REAL ( KIND = sp_ ) :: solve
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
     END TYPE cro_time_type
 
     TYPE, BIND( C ) :: cro_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: dependent
+      INTEGER ( KIND = ipc_ ) :: dependent
       TYPE ( cro_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( uls_inform_type ) :: uls_inform
-      INTEGER ( KIND = C_INT ) :: scu_status
+      INTEGER ( KIND = ipc_ ) :: scu_status
       TYPE ( scu_inform_type ) :: scu_inform
       TYPE ( ir_inform_type ) :: ir_inform
     END TYPE cro_inform_type
@@ -134,8 +130,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( cro_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_cro_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -165,11 +161,13 @@
     ! Strings
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%symmetric_linear_solver( i : i ) = ccontrol%symmetric_linear_solver( i )
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%unsymmetric_linear_solver )
       IF ( ccontrol%unsymmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%unsymmetric_linear_solver( i : i ) = ccontrol%unsymmetric_linear_solver( i )
+      fcontrol%unsymmetric_linear_solver( i : i )                              &
+        = ccontrol%unsymmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
@@ -185,7 +183,7 @@
     TYPE ( f_cro_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( cro_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -215,12 +213,14 @@
     ! Strings
     l = LEN( fcontrol%symmetric_linear_solver )
     DO i = 1, l
-      ccontrol%symmetric_linear_solver( i ) = fcontrol%symmetric_linear_solver( i : i )
+      ccontrol%symmetric_linear_solver( i )                                    &
+        = fcontrol%symmetric_linear_solver( i : i )
     END DO
     ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%unsymmetric_linear_solver )
     DO i = 1, l
-      ccontrol%unsymmetric_linear_solver( i ) = fcontrol%unsymmetric_linear_solver( i : i )
+      ccontrol%unsymmetric_linear_solver( i )                                  &
+        = fcontrol%unsymmetric_linear_solver( i : i )
     END DO
     ccontrol%unsymmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%prefix )
@@ -275,7 +275,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( cro_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_cro_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -305,7 +305,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_cro_inform_type ), INTENT( IN ) :: finform
     TYPE ( cro_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -331,19 +331,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_CRO_double_ciface
+  END MODULE GALAHAD_CRO_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran cro_initialize
 !  -------------------------------------
 
   SUBROUTINE cro_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_CRO_double_ciface
+  USE GALAHAD_CRO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( cro_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -380,7 +380,7 @@
 !  ----------------------------------------
 
   SUBROUTINE cro_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_CRO_double_ciface
+  USE GALAHAD_CRO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -396,7 +396,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -433,30 +433,30 @@
                                      n, m, mequal, hval, hcol, hptr,           &
                                      aval, acol, aptr, g, cl, cu, xl, xu,      &
                                      c, x, y, z, cstat, xstat ) BIND( C )
-  USE GALAHAD_CRO_double_ciface
+  USE GALAHAD_CRO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( cro_control_type ), INTENT( IN ) :: ccontrol
-  INTEGER ( KIND = C_INT ), INTENT( IN ) :: n, m, mequal
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ), DIMENSION( n + 1 ) :: hptr
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ),                                   &
-                            DIMENSION( hptr( n + 1 ) - 1 ) :: hcol
-  REAL ( KIND = wp ), INTENT( IN ),                                            &
-                      DIMENSION( hptr( n + 1 ) - 1 ) :: hval
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ), DIMENSION( m + 1 ) :: aptr
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ),                                   &
-                            DIMENSION( aptr( m + 1 ) - 1 ) :: acol
-  REAL ( KIND = wp ), INTENT( IN ),                                            &
-                      DIMENSION( aptr( m + 1 ) - 1 ) :: aval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c, y
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ), DIMENSION( m ) :: cstat
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ) :: n, m, mequal
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( hptr( n + 1 ) - 1 ) :: hcol
+  REAL ( KIND = rp_ ), INTENT( IN ),                                           &
+                       DIMENSION( hptr( n + 1 ) - 1 ) :: hval
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m + 1 ) :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( aptr( m + 1 ) - 1 ) :: acol
+  REAL ( KIND = rp_ ), INTENT( IN ),                                           &
+                       DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m ) :: cstat
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n ) :: xstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( cro_inform_type ), INTENT( INOUT ) :: cinform
 
@@ -501,7 +501,7 @@
 !  ------------------------------------
 
   SUBROUTINE cro_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_CRO_double_ciface
+  USE GALAHAD_CRO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

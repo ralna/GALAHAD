@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:45 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  D P S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_DPS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_DPS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_DPS_double, ONLY:                                              &
+    USE GALAHAD_DPS_precision, ONLY:                                           &
         f_dps_control_type       => DPS_control_type,                          &
         f_dps_time_type          => DPS_time_type,                             &
         f_dps_inform_type        => DPS_inform_type,                           &
@@ -30,7 +33,7 @@
         f_dps_information        => DPS_information,                           &
         f_dps_terminate          => DPS_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
         sls_inform_type,                                                       &
         sls_control_type,                                                      &
         copy_sls_inform_in   => copy_inform_in,                                &
@@ -40,30 +43,23 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: dps_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: problem
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: new_h
-      INTEGER ( KIND = C_INT ) :: taylor_max_degree
-      REAL ( KIND = wp ) :: eigen_min
-      REAL ( KIND = wp ) :: lower
-      REAL ( KIND = wp ) :: upper
-      REAL ( KIND = wp ) :: stop_normal
-      REAL ( KIND = wp ) :: stop_absolute_normal
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: problem
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: new_h
+      INTEGER ( KIND = ipc_ ) :: taylor_max_degree
+      REAL ( KIND = rp_ ) :: eigen_min
+      REAL ( KIND = rp_ ) :: lower
+      REAL ( KIND = rp_ ) :: upper
+      REAL ( KIND = rp_ ) :: stop_normal
+      REAL ( KIND = rp_ ) :: stop_absolute_normal
       LOGICAL ( KIND = C_BOOL ) :: goldfarb
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -74,26 +70,26 @@
     END TYPE dps_control_type
 
     TYPE, BIND( C ) :: dps_time_type
-      REAL ( KIND = wp ) :: total
-      REAL ( KIND = wp ) :: analyse
-      REAL ( KIND = wp ) :: factorize
-      REAL ( KIND = wp ) :: solve
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
+      REAL ( KIND = rp_ ) :: total
+      REAL ( KIND = rp_ ) :: analyse
+      REAL ( KIND = rp_ ) :: factorize
+      REAL ( KIND = rp_ ) :: solve
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
     END TYPE dps_time_type
 
     TYPE, BIND( C ) :: dps_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ) :: mod_1by1
-      INTEGER ( KIND = C_INT ) :: mod_2by2
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: obj_regularized
-      REAL ( KIND = wp ) :: x_norm
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: pole
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: mod_1by1
+      INTEGER ( KIND = ipc_ ) :: mod_2by2
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: obj_regularized
+      REAL ( KIND = rp_ ) :: x_norm
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: pole
       LOGICAL ( KIND = C_BOOL ) :: hard_case
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( dps_time_type ) :: time
@@ -111,8 +107,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( dps_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_dps_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -164,7 +160,7 @@
     TYPE ( f_dps_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( dps_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -256,7 +252,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( dps_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_dps_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -292,7 +288,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_dps_inform_type ), INTENT( IN ) :: finform
     TYPE ( dps_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -324,19 +320,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_DPS_double_ciface
+  END MODULE GALAHAD_DPS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran dps_initialize
 !  -------------------------------------
 
   SUBROUTINE dps_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( dps_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -373,7 +369,7 @@
 !  ----------------------------------------
 
   SUBROUTINE dps_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -389,7 +385,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -424,18 +420,18 @@
 
   SUBROUTINE dps_import( ccontrol, cdata, status, n,                           &
                          chtype, hne, hrow, hcol, hptr  ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( dps_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
 
 !  local variables
@@ -474,12 +470,12 @@
 !  ----------------------------------------
 
   SUBROUTINE dps_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( dps_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -514,17 +510,17 @@
 
   SUBROUTINE dps_solve_tr_problem( cdata, status, n, hne, hval, c, f,          &
                                    radius, x ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, radius
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f, radius
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -548,17 +544,17 @@
 
   SUBROUTINE dps_solve_rq_problem( cdata, status, n, hne, hval, c, f,          &
                                    weight, power, x ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, weight, power
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f, weight, power
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -582,16 +578,16 @@
 
   SUBROUTINE dps_resolve_tr_problem( cdata, status, n,                         &
                                      c, f, radius, x ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, radius
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f, radius
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -615,16 +611,16 @@
 
   SUBROUTINE dps_resolve_rq_problem( cdata, status, n, c, f,                   &
                                      weight, power, x ) BIND( C )
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, weight, power
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f, weight, power
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -647,14 +643,14 @@
 !  --------------------------------------
 
   SUBROUTINE dps_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( dps_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -681,7 +677,7 @@
 !  ------------------------------------
 
   SUBROUTINE dps_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_DPS_double_ciface
+  USE GALAHAD_DPS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

@@ -8,6 +8,7 @@
  */
 #pragma once
 #include "config.h"
+
 #ifdef HAVE_HWLOC
 
 #include <vector>

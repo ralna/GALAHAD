@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:01 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:40 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S E C    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SEC_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_SEC_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_SEC_double, ONLY: &
+    USE GALAHAD_SEC_precision, ONLY:                                           &
         f_sec_control_type   => SEC_control_type,                              &
         f_sec_inform_type    => SEC_inform_type,                               &
         f_sec_full_data_type => SEC_full_data_type,                            &
@@ -27,29 +30,22 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: sec_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      REAL ( KIND = wp ) :: h_initial
-      REAL ( KIND = wp ) :: update_skip_tol
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      REAL ( KIND = rp_ ) :: h_initial
+      REAL ( KIND = rp_ ) :: update_skip_tol
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE sec_control_type
 
     TYPE, BIND( C ) :: sec_inform_type
-      INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = ipc_ ) :: status
     END TYPE sec_inform_type
 
 !----------------------
@@ -63,8 +59,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( sec_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sec_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -93,7 +89,7 @@
     TYPE ( f_sec_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sec_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -141,19 +137,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_SEC_double_ciface
+  END MODULE GALAHAD_SEC_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran sec_initialize
 !  -------------------------------------
 
   SUBROUTINE sec_initialize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_SEC_double_ciface
+  USE GALAHAD_SEC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sec_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -190,7 +186,7 @@
 !  ----------------------------------------
 
   SUBROUTINE sec_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_SEC_double_ciface
+  USE GALAHAD_SEC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -206,7 +202,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -240,7 +236,7 @@
 !  ------------------------------------
 
   SUBROUTINE sec_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SEC_double_ciface
+  USE GALAHAD_SEC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

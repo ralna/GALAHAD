@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 3.3 - 25/07/2021 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ C O M M O N   C   I N T E R F A C E  -*-*-*-*-
 
@@ -15,7 +18,7 @@
 
   MODULE GALAHAD_common_ciface
 
-    USE iso_c_binding
+    USE GALAHAD_KINDS
 
     IMPLICIT NONE
     PUBLIC
@@ -26,7 +29,7 @@
 
     INTERFACE
       INTEGER ( KIND = C_SIZE_T ) PURE FUNCTION strlen( cstr ) BIND( C )
-        USE iso_c_binding
+        USE GALAHAD_KINDS
         IMPLICIT NONE
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: cstr
       END FUNCTION strlen 
@@ -59,7 +62,7 @@
     TYPE ( C_PTR ) :: cstr
     CHARACTER ( KIND = C_CHAR, LEN = strlen( cstr ) ) :: fchar
     
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
     CHARACTER( KIND = C_CHAR ), DIMENSION( : ), POINTER :: temp
 
     CALL c_f_pointer( cstr, temp, shape = (/ strlen( cstr ) /) )

@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:35 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  B Q P    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_BQP_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_BQP_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_BQP_double, ONLY:                                              &
+    USE GALAHAD_BQP_precision, ONLY:                                           &
         f_bqp_control_type         => BQP_control_type,                        &
         f_bqp_time_type            => BQP_time_type,                           &
         f_bqp_inform_type          => BQP_inform_type,                         &
@@ -29,7 +32,7 @@
         f_bqp_information          => BQP_information,                         &
         f_bqp_terminate            => BQP_terminate
 
-    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+    USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
         copy_sbls_inform_in   => copy_inform_in,                               &
@@ -39,40 +42,33 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: bqp_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: cold_start
-      INTEGER ( KIND = C_INT ) :: ratio_cg_vs_sd
-      INTEGER ( KIND = C_INT ) :: change_max
-      INTEGER ( KIND = C_INT ) :: cg_maxit
-      INTEGER ( KIND = C_INT ) :: sif_file_device
-      REAL ( KIND = wp ) :: infinity
-      REAL ( KIND = wp ) :: stop_p
-      REAL ( KIND = wp ) :: stop_d
-      REAL ( KIND = wp ) :: stop_c
-      REAL ( KIND = wp ) :: identical_bounds_tol
-      REAL ( KIND = wp ) :: stop_cg_relative
-      REAL ( KIND = wp ) :: stop_cg_absolute
-      REAL ( KIND = wp ) :: zero_curvature
-      REAL ( KIND = wp ) :: cpu_time_limit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: cold_start
+      INTEGER ( KIND = ipc_ ) :: ratio_cg_vs_sd
+      INTEGER ( KIND = ipc_ ) :: change_max
+      INTEGER ( KIND = ipc_ ) :: cg_maxit
+      INTEGER ( KIND = ipc_ ) :: sif_file_device
+      REAL ( KIND = rp_ ) :: infinity
+      REAL ( KIND = rp_ ) :: stop_p
+      REAL ( KIND = rp_ ) :: stop_d
+      REAL ( KIND = rp_ ) :: stop_c
+      REAL ( KIND = rp_ ) :: identical_bounds_tol
+      REAL ( KIND = rp_ ) :: stop_cg_relative
+      REAL ( KIND = rp_ ) :: stop_cg_absolute
+      REAL ( KIND = rp_ ) :: zero_curvature
+      REAL ( KIND = rp_ ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: exact_arcsearch
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -83,20 +79,20 @@
     END TYPE bqp_control_type
 
     TYPE, BIND( C ) :: bqp_time_type
-      REAL ( KIND = sp ) :: total
-      REAL ( KIND = sp ) :: analyse
-      REAL ( KIND = sp ) :: factorize
-      REAL ( KIND = sp ) :: solve
+      REAL ( KIND = sp_ ) :: total
+      REAL ( KIND = sp_ ) :: analyse
+      REAL ( KIND = sp_ ) :: factorize
+      REAL ( KIND = sp_ ) :: solve
     END TYPE bqp_time_type
 
     TYPE, BIND( C ) :: bqp_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: cg_iter
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: norm_pg
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: norm_pg
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( bqp_time_type ) :: time
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -113,8 +109,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( bqp_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_bqp_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -172,7 +168,7 @@
     TYPE ( f_bqp_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( bqp_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -261,7 +257,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( bqp_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_bqp_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -292,7 +288,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_bqp_inform_type ), INTENT( IN ) :: finform
     TYPE ( bqp_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -319,19 +315,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_BQP_double_ciface
+  END MODULE GALAHAD_BQP_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran bqp_initialize
 !  -------------------------------------
 
   SUBROUTINE bqp_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( bqp_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -368,7 +364,7 @@
 !  ----------------------------------------
 
   SUBROUTINE bqp_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -384,7 +380,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -419,18 +415,18 @@
 
   SUBROUTINE bqp_import( ccontrol, cdata, status, n,                           &
                          chtype, hne, hrow, hcol, hptr ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( bqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
 
 !  local variables
@@ -472,15 +468,15 @@
 !  -------------------------------------------
 
   SUBROUTINE bqp_import_without_h( ccontrol, cdata, status, n ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( bqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
 
 !  local variables
 
@@ -516,12 +512,12 @@
 !  ----------------------------------------
 
   SUBROUTINE bqp_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( bqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -556,20 +552,20 @@
 
   SUBROUTINE bqp_solve_given_h( cdata, status, n, hne, hval, g, f, xl, xu,     &
                                 x, z, xstat ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, hne
-  REAL ( KIND = wp ), DIMENSION( hne ), INTENT( IN ) :: hval
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  INTEGER, INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
+  REAL ( KIND = rp_ ), DIMENSION( hne ), INTENT( IN ) :: hval
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
 
 !  local variables
 
@@ -595,25 +591,25 @@
                                        xl, xu, x, z, xstat, v, prod,           &
                                        nz_v, nz_v_start, nz_v_end,             &
                                        nz_prod, nz_prod_end ) BIND( C )
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER, INTENT( INOUT ) :: status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nz_prod_end
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nz_v_start, nz_v_end
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n ) :: nz_prod
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: nz_v
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: prod
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: v
+  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_prod_end
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n ) :: nz_prod
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: nz_v
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: prod
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: v
 
 !  local variables
 
@@ -653,14 +649,14 @@
 !  --------------------------------------
 
   SUBROUTINE bqp_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( bqp_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -687,7 +683,7 @@
 !  ------------------------------------
 
   SUBROUTINE bqp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_BQP_double_ciface
+  USE GALAHAD_BQP_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:30 GMT.
 
 #include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 

@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 3.3 - 11/08/2021 AT 15:39 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  H A S H    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -12,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_HASH_ciface
-    USE iso_c_binding
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
     USE GALAHAD_HASH, ONLY:                                                    &
         f_hash_control_type => HASH_control_type,                              &
@@ -23,29 +26,22 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: HASH_control_type
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE HASH_control_type
 
     TYPE, BIND( C ) :: HASH_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE HASH_inform_type
 
@@ -60,7 +56,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
     TYPE ( hash_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_hash_control_type ), INTENT( OUT ) :: fcontrol
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
     
     ! Integers
     fcontrol%error = ccontrol%error
@@ -85,7 +81,7 @@
     SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
     TYPE ( f_hash_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( hash_control_type ), INTENT( OUT ) :: ccontrol
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! Integers
     ccontrol%error = fcontrol%error
@@ -111,7 +107,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( hash_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_hash_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -131,7 +127,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_hash_inform_type ), INTENT( IN ) :: finform
     TYPE ( hash_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -160,7 +156,7 @@
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ) :: nchar, length
+  INTEGER ( KIND = ipc_ ) :: nchar, length
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( hash_control_type ), INTENT( OUT ) :: ccontrol
   TYPE ( hash_inform_type ), INTENT( OUT ) :: cinform
