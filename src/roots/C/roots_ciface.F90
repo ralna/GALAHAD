@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-11 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _  R O O T S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_ROOTS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_ROOTS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_ROOTS_double, ONLY:                                            &
+    USE GALAHAD_ROOTS_precision, ONLY:                                         &
         f_roots_control_type   => ROOTS_control_type,                          &
         f_roots_inform_type    => ROOTS_inform_type,                           &
         f_roots_full_data_type => ROOTS_full_data_type,                        &
@@ -27,33 +30,26 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: roots_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      REAL ( KIND = wp ) :: tol
-      REAL ( KIND = wp ) :: zero_coef
-      REAL ( KIND = wp ) :: zero_f
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      REAL ( KIND = rp_ ) :: tol
+      REAL ( KIND = rp_ ) :: zero_coef
+      REAL ( KIND = rp_ ) :: zero_f
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE roots_control_type
 
     TYPE, BIND( C ) :: roots_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE roots_inform_type
 
@@ -68,8 +64,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( roots_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_roots_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -103,7 +99,7 @@
     TYPE ( f_roots_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( roots_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -137,7 +133,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( roots_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_roots_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -157,7 +153,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_roots_inform_type ), INTENT( IN ) :: finform
     TYPE ( roots_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -173,19 +169,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_ROOTS_double_ciface
+  END MODULE GALAHAD_ROOTS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran roots_initialize
 !  -------------------------------------
 
   SUBROUTINE roots_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_ROOTS_double_ciface
+  USE GALAHAD_ROOTS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( roots_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -222,7 +218,7 @@
 !  ----------------------------------------
 
   SUBROUTINE roots_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_ROOTS_double_ciface
+  USE GALAHAD_ROOTS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -238,7 +234,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -272,7 +268,7 @@
 !  ------------------------------------
 
   SUBROUTINE roots_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_ROOTS_double_ciface
+  USE GALAHAD_ROOTS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

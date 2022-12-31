@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 15:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-  G A L A H A D _  P R E S O L V E    C   I N T E R F A C E  -*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_PRESOLVE_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_PRESOLVE_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_PRESOLVE_double, ONLY:                                         &
+    USE GALAHAD_PRESOLVE_precision, ONLY:                                      &
         f_presolve_control_type => PRESOLVE_control_type,                      &
         f_presolve_inform_type => PRESOLVE_inform_type,                        &
         f_presolve_full_data_type => PRESOLVE_full_data_type,                  &
@@ -28,52 +31,45 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: presolve_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: termination
-      INTEGER ( KIND = C_INT ) :: max_nbr_transforms
-      INTEGER ( KIND = C_INT ) :: max_nbr_passes
-      REAL ( KIND = wp ) :: c_accuracy
-      REAL ( KIND = wp ) :: z_accuracy
-      REAL ( KIND = wp ) :: infinity
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: errout
-      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: termination
+      INTEGER ( KIND = ipc_ ) :: max_nbr_transforms
+      INTEGER ( KIND = ipc_ ) :: max_nbr_passes
+      REAL ( KIND = rp_ ) :: c_accuracy
+      REAL ( KIND = rp_ ) :: z_accuracy
+      REAL ( KIND = rp_ ) :: infinity
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: errout
+      INTEGER ( KIND = ipc_ ) :: print_level
       LOGICAL ( KIND = C_BOOL ) :: dual_transformations
       LOGICAL ( KIND = C_BOOL ) :: redundant_xc
-      INTEGER ( KIND = C_INT ) :: primal_constraints_freq
-      INTEGER ( KIND = C_INT ) :: dual_constraints_freq
-      INTEGER ( KIND = C_INT ) :: singleton_columns_freq
-      INTEGER ( KIND = C_INT ) :: doubleton_columns_freq
-      INTEGER ( KIND = C_INT ) :: unc_variables_freq
-      INTEGER ( KIND = C_INT ) :: dependent_variables_freq
-      INTEGER ( KIND = C_INT ) :: sparsify_rows_freq
-      INTEGER ( KIND = C_INT ) :: max_fill
-      INTEGER ( KIND = C_INT ) :: transf_file_nbr
-      INTEGER ( KIND = C_INT ) :: transf_buffer_size
-      INTEGER ( KIND = C_INT ) :: transf_file_status
+      INTEGER ( KIND = ipc_ ) :: primal_constraints_freq
+      INTEGER ( KIND = ipc_ ) :: dual_constraints_freq
+      INTEGER ( KIND = ipc_ ) :: singleton_columns_freq
+      INTEGER ( KIND = ipc_ ) :: doubleton_columns_freq
+      INTEGER ( KIND = ipc_ ) :: unc_variables_freq
+      INTEGER ( KIND = ipc_ ) :: dependent_variables_freq
+      INTEGER ( KIND = ipc_ ) :: sparsify_rows_freq
+      INTEGER ( KIND = ipc_ ) :: max_fill
+      INTEGER ( KIND = ipc_ ) :: transf_file_nbr
+      INTEGER ( KIND = ipc_ ) :: transf_buffer_size
+      INTEGER ( KIND = ipc_ ) :: transf_file_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: transf_file_name
-      INTEGER ( KIND = C_INT ) :: y_sign
-      INTEGER ( KIND = C_INT ) :: inactive_y
-      INTEGER ( KIND = C_INT ) :: z_sign
-      INTEGER ( KIND = C_INT ) :: inactive_z
-      INTEGER ( KIND = C_INT ) :: final_x_bounds
-      INTEGER ( KIND = C_INT ) :: final_z_bounds
-      INTEGER ( KIND = C_INT ) :: final_c_bounds
-      INTEGER ( KIND = C_INT ) :: final_y_bounds
-      INTEGER ( KIND = C_INT ) :: check_primal_feasibility
-      INTEGER ( KIND = C_INT ) :: check_dual_feasibility
+      INTEGER ( KIND = ipc_ ) :: y_sign
+      INTEGER ( KIND = ipc_ ) :: inactive_y
+      INTEGER ( KIND = ipc_ ) :: z_sign
+      INTEGER ( KIND = ipc_ ) :: inactive_z
+      INTEGER ( KIND = ipc_ ) :: final_x_bounds
+      INTEGER ( KIND = ipc_ ) :: final_z_bounds
+      INTEGER ( KIND = ipc_ ) :: final_c_bounds
+      INTEGER ( KIND = ipc_ ) :: final_y_bounds
+      INTEGER ( KIND = ipc_ ) :: check_primal_feasibility
+      INTEGER ( KIND = ipc_ ) :: check_dual_feasibility
 !     LOGICAL ( KIND = C_BOOL ) :: get_q
 !     LOGICAL ( KIND = C_BOOL ) :: get_f
 !     LOGICAL ( KIND = C_BOOL ) :: get_g
@@ -87,16 +83,16 @@
 !     LOGICAL ( KIND = C_BOOL ) :: get_c_bounds
 !     LOGICAL ( KIND = C_BOOL ) :: get_y
 !     LOGICAL ( KIND = C_BOOL ) :: get_y_bounds
-      REAL ( KIND = wp ) :: pivot_tol
-      REAL ( KIND = wp ) :: min_rel_improve
-      REAL ( KIND = wp ) :: max_growth_factor
+      REAL ( KIND = rp_ ) :: pivot_tol
+      REAL ( KIND = rp_ ) :: min_rel_improve
+      REAL ( KIND = rp_ ) :: max_growth_factor
     END TYPE presolve_control_type
 
     TYPE, BIND( C ) :: presolve_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: status_continue   ! ignore - doxygen fix
-      INTEGER ( KIND = C_INT ) :: status_continued  ! ignore - doxygen fix
-      INTEGER ( KIND = C_INT ) :: nbr_transforms
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: status_continue   ! ignore - doxygen fix
+      INTEGER ( KIND = ipc_ ) :: status_continued  ! ignore - doxygen fix
+      INTEGER ( KIND = ipc_ ) :: nbr_transforms
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 3, 81 ) :: message
     END TYPE presolve_inform_type
 
@@ -111,8 +107,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( presolve_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_presolve_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -186,7 +182,7 @@
     TYPE ( f_presolve_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( presolve_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -260,7 +256,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( presolve_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_presolve_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i, j
+    INTEGER ( KIND = ip_ ) :: i, j
 
     ! Integers
     finform%status = cinform%status
@@ -282,7 +278,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_presolve_inform_type ), INTENT( IN ) :: finform
     TYPE ( presolve_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, j, l
+    INTEGER ( KIND = ip_ ) :: i, j, l
 
     ! Integers
     cinform%status = finform%status
@@ -300,19 +296,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_PRESOLVE_double_ciface
+  END MODULE GALAHAD_PRESOLVE_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran presolve_initialize
 !  -------------------------------------
 
   SUBROUTINE presolve_initialize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( presolve_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -349,7 +345,7 @@
 !  ----------------------------------------
 
   SUBROUTINE presolve_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -366,7 +362,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -404,30 +400,30 @@
                                       f, catype, ane, arow, acol, aptr, aval,  &
                                       cl, cu, xl, xu, n_out, m_out,            &
                                       hne_out, ane_out ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( presolve_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: n_out, m_out, hne_out, ane_out
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: n_out, m_out, hne_out, ane_out
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
 
 
 !  local variables
@@ -478,26 +474,26 @@
                                          hne, hcol, hptr, hval, g, f,          &
                                          ane, acol, aptr, aval, cl, cu,        &
                                          xl, xu, yl, yu, zl, zu ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n + 1 ), OPTIONAL :: hptr
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( OUT ) :: f
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m + 1 ), OPTIONAL :: aptr
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( ane ) :: aval
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: g
+  REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
 
 !  local variables
 
@@ -531,17 +527,17 @@
   SUBROUTINE presolve_restore_solution( cdata, status,                         &
                                         n_in, m_in, x_in, c_in, y_in, z_in,    &
                                         n, m, x, c, y, z ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n_in, m_in, n, m
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c, y
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n_in, m_in, n, m
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c, y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -573,14 +569,14 @@
 !  -------------------------------------------
 
   SUBROUTINE presolve_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( presolve_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -607,7 +603,7 @@
 !  ------------------------------------
 
   SUBROUTINE presolve_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_PRESOLVE_double_ciface
+  USE GALAHAD_PRESOLVE_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

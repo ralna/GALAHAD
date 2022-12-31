@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 3.3 - 30/11/2021 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  G L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,28 +14,21 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_GLS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_GLS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_GLS_double, ONLY: &
-        f_gls_control => GLS_control, &
-        f_gls_ainfo => GLS_ainfo, &
-        f_gls_finfo => GLS_finfo, &
-        f_gls_sinfo => GLS_sinfo, &
-        f_gls_full_data_type => GLS_full_data_type, &
-        f_gls_initialize => GLS_initialize, &
-        f_gls_reset_control => GLS_reset_control, &
-        f_gls_information => GLS_information, &
-        f_gls_finalize => gls_finalize
+    USE GALAHAD_GLS_precision, ONLY:                                           &
+        f_gls_control => GLS_control,                                          &
+        f_gls_ainfo => GLS_ainfo,                                              &
+        f_gls_finfo => GLS_finfo,                                              &
+        f_gls_sinfo => GLS_sinfo,                                              &
+        f_gls_full_data_type => GLS_full_data_type,                            &
+        f_gls_initialize => GLS_initialize,                                    &
+        f_gls_reset_control => GLS_reset_control,                              &
+        f_gls_information => GLS_information,                                  &
+        f_gls_finalize => GLS_finalize
 
     IMPLICIT NONE
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -40,63 +36,63 @@
 
     TYPE, BIND( C ) :: gls_control
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: lp
-      INTEGER ( KIND = C_INT ) :: wp
-      INTEGER ( KIND = C_INT ) :: mp
-      INTEGER ( KIND = C_INT ) :: ldiag
-      INTEGER ( KIND = C_INT ) :: btf
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: factor_blocking
-      INTEGER ( KIND = C_INT ) :: solve_blas
-      INTEGER ( KIND = C_INT ) :: la
-      INTEGER ( KIND = C_INT ) :: la_int
-      INTEGER ( KIND = C_INT ) :: maxla
-      INTEGER ( KIND = C_INT ) :: pivoting
-      INTEGER ( KIND = C_INT ) :: fill_in
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: reduce
-      REAL ( KIND = wp ) :: u
-      REAL ( KIND = wp ) :: switch_full
-      REAL ( KIND = wp ) :: drop
-      REAL ( KIND = wp ) :: tolerance
-      REAL ( KIND = wp ) :: cgce
+      INTEGER ( KIND = ipc_ ) :: lp
+      INTEGER ( KIND = ipc_ ) :: wp
+      INTEGER ( KIND = ipc_ ) :: mp
+      INTEGER ( KIND = ipc_ ) :: ldiag
+      INTEGER ( KIND = ipc_ ) :: btf
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: factor_blocking
+      INTEGER ( KIND = ipc_ ) :: solve_blas
+      INTEGER ( KIND = ipc_ ) :: la
+      INTEGER ( KIND = ipc_ ) :: la_int
+      INTEGER ( KIND = ipc_ ) :: maxla
+      INTEGER ( KIND = ipc_ ) :: pivoting
+      INTEGER ( KIND = ipc_ ) :: fill_in
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: reduce
+      REAL ( KIND = rp_ ) :: u
+      REAL ( KIND = rp_ ) :: switch_full
+      REAL ( KIND = rp_ ) :: drop
+      REAL ( KIND = rp_ ) :: tolerance
+      REAL ( KIND = rp_ ) :: cgce
       LOGICAL ( KIND = C_BOOL ) :: diagonal_pivoting
       LOGICAL ( KIND = C_BOOL ) :: struct_abort
     END TYPE gls_control
 
     TYPE, BIND( C ) :: GLS_ainfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: more
-      INTEGER ( KIND = C_INT ) :: len_analyse
-      INTEGER ( KIND = C_INT ) :: len_factorize
-      INTEGER ( KIND = C_INT ) :: ncmpa
-      INTEGER ( KIND = C_INT ) :: rank
-      INTEGER ( KIND = C_INT ) :: drop
-      INTEGER ( KIND = C_INT ) :: struc_rank
-      INTEGER ( KIND = C_INT ) :: oor
-      INTEGER ( KIND = C_INT ) :: dup
-      INTEGER ( KIND = C_INT ) :: stat
-      INTEGER ( KIND = C_INT ) :: lblock
-      INTEGER ( KIND = C_INT ) :: sblock
-      INTEGER ( KIND = C_INT ) :: tblock
-      REAL ( KIND = wp ) :: ops
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: more
+      INTEGER ( KIND = ipc_ ) :: len_analyse
+      INTEGER ( KIND = ipc_ ) :: len_factorize
+      INTEGER ( KIND = ipc_ ) :: ncmpa
+      INTEGER ( KIND = ipc_ ) :: rank
+      INTEGER ( KIND = ipc_ ) :: drop
+      INTEGER ( KIND = ipc_ ) :: struc_rank
+      INTEGER ( KIND = ipc_ ) :: oor
+      INTEGER ( KIND = ipc_ ) :: dup
+      INTEGER ( KIND = ipc_ ) :: stat
+      INTEGER ( KIND = ipc_ ) :: lblock
+      INTEGER ( KIND = ipc_ ) :: sblock
+      INTEGER ( KIND = ipc_ ) :: tblock
+      REAL ( KIND = rp_ ) :: ops
     END TYPE GLS_ainfo
 
     TYPE, BIND( C ) :: GLS_finfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: more
-      INTEGER ( KIND = C_INT ) :: size_factor
-      INTEGER ( KIND = C_INT ) :: len_factorize
-      INTEGER ( KIND = C_INT ) :: drop
-      INTEGER ( KIND = C_INT ) :: rank
-      INTEGER ( KIND = C_INT ) :: stat
-      REAL ( KIND = wp ) :: ops
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: more
+      INTEGER ( KIND = ipc_ ) :: size_factor
+      INTEGER ( KIND = ipc_ ) :: len_factorize
+      INTEGER ( KIND = ipc_ ) :: drop
+      INTEGER ( KIND = ipc_ ) :: rank
+      INTEGER ( KIND = ipc_ ) :: stat
+      REAL ( KIND = rp_ ) :: ops
     END TYPE GLS_finfo
 
     TYPE, BIND( C ) :: GLS_sinfo
-      INTEGER ( KIND = C_INT ) :: flag
-      INTEGER ( KIND = C_INT ) :: more
-      INTEGER ( KIND = C_INT ) :: stat
+      INTEGER ( KIND = ipc_ ) :: flag
+      INTEGER ( KIND = ipc_ ) :: more
+      INTEGER ( KIND = ipc_ ) :: stat
     END TYPE GLS_sinfo
 
 !----------------------
@@ -110,7 +106,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( gls_control ), INTENT( IN ) :: ccontrol
     TYPE ( f_gls_control ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -319,14 +315,14 @@
 
     END SUBROUTINE copy_sinfo_out
 
-  END MODULE GALAHAD_GLS_double_ciface
+  END MODULE GALAHAD_GLS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran gls_initialize
 !  -------------------------------------
 
   SUBROUTINE gls_initialize( cdata, ccontrol ) BIND( C ) 
-  USE GALAHAD_GLS_double_ciface
+  USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -365,12 +361,12 @@
 !  ----------------------------------------
 
   SUBROUTINE gls_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_GLS_double_ciface
+  USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( gls_control ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -404,7 +400,7 @@
 !  --------------------------------------
 
   SUBROUTINE gls_information( cdata, cainfo, cfinfo, csinfo, status ) BIND( C )
-  USE GALAHAD_GLS_double_ciface
+  USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -413,7 +409,7 @@
   TYPE ( gls_ainfo ), INTENT( INOUT ) :: cainfo
   TYPE ( gls_finfo ), INTENT( INOUT ) :: cfinfo
   TYPE ( gls_sinfo ), INTENT( INOUT ) :: csinfo
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -444,14 +440,14 @@
 !  ------------------------------------
 
   SUBROUTINE gls_finalize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_GLS_double_ciface
+  USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( gls_control ), INTENT( IN ) :: ccontrol
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 

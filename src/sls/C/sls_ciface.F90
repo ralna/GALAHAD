@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SLS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_SLS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_SLS_double, ONLY:                                              &
+    USE GALAHAD_SLS_precision, ONLY:                                           &
         f_sls_control_type => SLS_control_type,                                &
         f_sls_time_type => SLS_time_type,                                      &
         f_sls_inform_type => SLS_inform_type,                                  &
@@ -29,7 +32,7 @@
         f_sls_information => SLS_information,                                  &
         f_sls_terminate => SLS_terminate
 
-    USE GALAHAD_SILS_double_ciface, ONLY:                                      &
+    USE GALAHAD_SILS_precision_ciface, ONLY:                                   &
         sils_control,                                                          &
         sils_ainfo,                                                            &
         sils_finfo,                                                            &
@@ -41,7 +44,7 @@
         copy_sils_finfo_out => copy_finfo_out,                                 &
         copy_sils_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA57_double_ciface, ONLY:                                          &
+    USE HSL_MA57_precision_ciface, ONLY:                                       &
         ma57_control,                                                          &
         ma57_ainfo,                                                            &
         ma57_finfo,                                                            &
@@ -50,37 +53,37 @@
         copy_ma57_finfo_out => copy_finfo_out,                                 &
         copy_ma57_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA77_double_ciface, ONLY:                                          &
+    USE HSL_MA77_precision_ciface, ONLY:                                       &
         ma77_info,                                                             &
         ma77_control,                                                          &
         copy_ma77_info_out => copy_info_out,                                   &
         copy_ma77_control_in => copy_control_in
 
-    USE HSL_MA86_double_ciface, ONLY:                                          &
+    USE HSL_MA86_precision_ciface, ONLY:                                       &
         ma86_info,                                                             &
         ma86_control,                                                          &
         copy_ma86_info_out => copy_info_out,                                   &
         copy_ma86_control_in => copy_control_in
 
-    USE HSL_MA87_double_ciface, ONLY:                                          &
+    USE HSL_MA87_precision_ciface, ONLY:                                       &
         ma87_info,                                                             &
         ma87_control,                                                          &
         copy_ma87_info_out => copy_info_out,                                   &
         copy_ma87_control_in => copy_control_in
 
-    USE HSL_MA97_double_ciface, ONLY:                                          &
+    USE HSL_MA97_precision_ciface, ONLY:                                       &
         ma97_info,                                                             &
         ma97_control,                                                          &
         copy_ma97_info_out => copy_info_out,                                   &
         copy_ma97_control_in => copy_control_in
 
-    USE SPRAL_SSIDS_double_ciface, ONLY:                                       &
+    USE SPRAL_SSIDS_precision_ciface, ONLY:                                    &
         ssids_inform,                                                          &
         ssids_options,                                                         &
         copy_ssids_inform_out => copy_inform_out,                              &
         copy_ssids_options_in => copy_options_in
 
-    USE HSL_MC64_double_ciface, ONLY:                                          &
+    USE HSL_MC64_precision_ciface, ONLY:                                       &
         mc64_info,                                                             &
         mc64_control,                                                          &
         copy_mc64_info_out => copy_info_out,                                   &
@@ -94,61 +97,54 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: sls_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: warning
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: statistics
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: print_level_solver
-      INTEGER ( KIND = C_INT ) :: bits
-      INTEGER ( KIND = C_INT ) :: block_size_kernel
-      INTEGER ( KIND = C_INT ) :: block_size_elimination
-      INTEGER ( KIND = C_INT ) :: blas_block_size_factorize
-      INTEGER ( KIND = C_INT ) :: blas_block_size_solve
-      INTEGER ( KIND = C_INT ) :: node_amalgamation
-      INTEGER ( KIND = C_INT ) :: initial_pool_size
-      INTEGER ( KIND = C_INT ) :: min_real_factor_size
-      INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_INT64_T ) :: max_real_factor_size
-      INTEGER ( KIND = C_INT64_T ) :: max_integer_factor_size
-      INTEGER ( KIND = C_INT64_T ) :: max_in_core_store
-      REAL ( KIND = wp ) :: array_increase_factor
-      REAL ( KIND = wp ) :: array_decrease_factor
-      INTEGER ( KIND = C_INT ) :: pivot_control
-      INTEGER ( KIND = C_INT ) :: ordering
-      INTEGER ( KIND = C_INT ) :: full_row_threshold
-      INTEGER ( KIND = C_INT ) :: row_search_indefinite
-      INTEGER ( KIND = C_INT ) :: scaling
-      INTEGER ( KIND = C_INT ) :: scale_maxit
-      REAL ( KIND = wp ) :: scale_thresh
-      REAL ( KIND = wp ) :: relative_pivot_tolerance
-      REAL ( KIND = wp ) :: minimum_pivot_tolerance
-      REAL ( KIND = wp ) :: absolute_pivot_tolerance
-      REAL ( KIND = wp ) :: zero_tolerance
-      REAL ( KIND = wp ) :: zero_pivot_tolerance
-      REAL ( KIND = wp ) :: negative_pivot_tolerance
-      REAL ( KIND = wp ) :: static_pivot_tolerance
-      REAL ( KIND = wp ) :: static_level_switch
-      REAL ( KIND = wp ) :: consistency_tolerance
-      INTEGER ( KIND = C_INT ) :: max_iterative_refinements
-      REAL ( KIND = wp ) :: acceptable_residual_relative
-      REAL ( KIND = wp ) :: acceptable_residual_absolute
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: warning
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: statistics
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: print_level_solver
+      INTEGER ( KIND = ipc_ ) :: bits
+      INTEGER ( KIND = ipc_ ) :: block_size_kernel
+      INTEGER ( KIND = ipc_ ) :: block_size_elimination
+      INTEGER ( KIND = ipc_ ) :: blas_block_size_factorize
+      INTEGER ( KIND = ipc_ ) :: blas_block_size_solve
+      INTEGER ( KIND = ipc_ ) :: node_amalgamation
+      INTEGER ( KIND = ipc_ ) :: initial_pool_size
+      INTEGER ( KIND = ipc_ ) :: min_real_factor_size
+      INTEGER ( KIND = ipc_ ) :: min_integer_factor_size
+      INTEGER ( KIND = long_ ) :: max_real_factor_size
+      INTEGER ( KIND = long_ ) :: max_integer_factor_size
+      INTEGER ( KIND = long_ ) :: max_in_core_store
+      REAL ( KIND = rp_ ) :: array_increase_factor
+      REAL ( KIND = rp_ ) :: array_decrease_factor
+      INTEGER ( KIND = ipc_ ) :: pivot_control
+      INTEGER ( KIND = ipc_ ) :: ordering
+      INTEGER ( KIND = ipc_ ) :: full_row_threshold
+      INTEGER ( KIND = ipc_ ) :: row_search_indefinite
+      INTEGER ( KIND = ipc_ ) :: scaling
+      INTEGER ( KIND = ipc_ ) :: scale_maxit
+      REAL ( KIND = rp_ ) :: scale_thresh
+      REAL ( KIND = rp_ ) :: relative_pivot_tolerance
+      REAL ( KIND = rp_ ) :: minimum_pivot_tolerance
+      REAL ( KIND = rp_ ) :: absolute_pivot_tolerance
+      REAL ( KIND = rp_ ) :: zero_tolerance
+      REAL ( KIND = rp_ ) :: zero_pivot_tolerance
+      REAL ( KIND = rp_ ) :: negative_pivot_tolerance
+      REAL ( KIND = rp_ ) :: static_pivot_tolerance
+      REAL ( KIND = rp_ ) :: static_level_switch
+      REAL ( KIND = rp_ ) :: consistency_tolerance
+      INTEGER ( KIND = ipc_ ) :: max_iterative_refinements
+      REAL ( KIND = rp_ ) :: acceptable_residual_relative
+      REAL ( KIND = rp_ ) :: acceptable_residual_absolute
       LOGICAL ( KIND = C_BOOL ) :: multiple_rhs
       LOGICAL ( KIND = C_BOOL ) :: generate_matrix_file
-      INTEGER ( KIND = C_INT ) :: matrix_file_device
+      INTEGER ( KIND = ipc_ ) :: matrix_file_device
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: matrix_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 401 ) :: out_of_core_directory
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 401 ) ::                         &
@@ -164,68 +160,68 @@
     END TYPE sls_control_type
 
     TYPE, BIND( C ) :: sls_time_type
-      REAL ( KIND = wp ) :: total
-      REAL ( KIND = wp ) :: analyse
-      REAL ( KIND = wp ) :: factorize
-      REAL ( KIND = wp ) :: solve
-      REAL ( KIND = wp ) :: order_external
-      REAL ( KIND = wp ) :: analyse_external
-      REAL ( KIND = wp ) :: factorize_external
-      REAL ( KIND = wp ) :: solve_external
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
-      REAL ( KIND = wp ) :: clock_order_external
-      REAL ( KIND = wp ) :: clock_analyse_external
-      REAL ( KIND = wp ) :: clock_factorize_external
-      REAL ( KIND = wp ) :: clock_solve_external
+      REAL ( KIND = rp_ ) :: total
+      REAL ( KIND = rp_ ) :: analyse
+      REAL ( KIND = rp_ ) :: factorize
+      REAL ( KIND = rp_ ) :: solve
+      REAL ( KIND = rp_ ) :: order_external
+      REAL ( KIND = rp_ ) :: analyse_external
+      REAL ( KIND = rp_ ) :: factorize_external
+      REAL ( KIND = rp_ ) :: solve_external
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rp_ ) :: clock_order_external
+      REAL ( KIND = rp_ ) :: clock_analyse_external
+      REAL ( KIND = rp_ ) :: clock_factorize_external
+      REAL ( KIND = rp_ ) :: clock_solve_external
     END TYPE sls_time_type
 
     TYPE, BIND( C ) :: sls_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: more_info
-      INTEGER ( KIND = C_INT ) :: entries
-      INTEGER ( KIND = C_INT ) :: out_of_range
-      INTEGER ( KIND = C_INT ) :: duplicates
-      INTEGER ( KIND = C_INT ) :: upper
-      INTEGER ( KIND = C_INT ) :: missing_diagonals
-      INTEGER ( KIND = C_INT ) :: max_depth_assembly_tree
-      INTEGER ( KIND = C_INT ) :: nodes_assembly_tree
-      INTEGER ( KIND = C_INT64_T ) :: real_size_desirable
-      INTEGER ( KIND = C_INT64_T ) :: integer_size_desirable
-      INTEGER ( KIND = C_INT64_T ) :: real_size_necessary
-      INTEGER ( KIND = C_INT64_T ) :: integer_size_necessary
-      INTEGER ( KIND = C_INT64_T ) :: real_size_factors
-      INTEGER ( KIND = C_INT64_T ) :: integer_size_factors
-      INTEGER ( KIND = C_INT64_T ) :: entries_in_factors
-      INTEGER ( KIND = C_INT ) :: max_task_pool_size
-      INTEGER ( KIND = C_INT ) :: max_front_size
-      INTEGER ( KIND = C_INT ) :: compresses_real
-      INTEGER ( KIND = C_INT ) :: compresses_integer
-      INTEGER ( KIND = C_INT ) :: two_by_two_pivots
-      INTEGER ( KIND = C_INT ) :: semi_bandwidth
-      INTEGER ( KIND = C_INT ) :: delayed_pivots
-      INTEGER ( KIND = C_INT ) :: pivot_sign_changes
-      INTEGER ( KIND = C_INT ) :: static_pivots
-      INTEGER ( KIND = C_INT ) :: first_modified_pivot
-      INTEGER ( KIND = C_INT ) :: rank
-      INTEGER ( KIND = C_INT ) :: negative_eigenvalues
-      INTEGER ( KIND = C_INT ) :: num_zero
-      INTEGER ( KIND = C_INT ) :: iterative_refinements
-      INTEGER ( KIND = C_INT64_T ) :: flops_assembly
-      INTEGER ( KIND = C_INT64_T ) :: flops_elimination
-      INTEGER ( KIND = C_INT64_T ) :: flops_blas
-      REAL ( KIND = wp ) :: largest_modified_pivot
-      REAL ( KIND = wp ) :: minimum_scaling_factor
-      REAL ( KIND = wp ) :: maximum_scaling_factor
-      REAL ( KIND = wp ) :: condition_number_1
-      REAL ( KIND = wp ) :: condition_number_2
-      REAL ( KIND = wp ) :: backward_error_1
-      REAL ( KIND = wp ) :: backward_error_2
-      REAL ( KIND = wp ) :: forward_error
+      INTEGER ( KIND = ipc_ ) :: more_info
+      INTEGER ( KIND = ipc_ ) :: entries
+      INTEGER ( KIND = ipc_ ) :: out_of_range
+      INTEGER ( KIND = ipc_ ) :: duplicates
+      INTEGER ( KIND = ipc_ ) :: upper
+      INTEGER ( KIND = ipc_ ) :: missing_diagonals
+      INTEGER ( KIND = ipc_ ) :: max_depth_assembly_tree
+      INTEGER ( KIND = ipc_ ) :: nodes_assembly_tree
+      INTEGER ( KIND = long_ ) :: real_size_desirable
+      INTEGER ( KIND = long_ ) :: integer_size_desirable
+      INTEGER ( KIND = long_ ) :: real_size_necessary
+      INTEGER ( KIND = long_ ) :: integer_size_necessary
+      INTEGER ( KIND = long_ ) :: real_size_factors
+      INTEGER ( KIND = long_ ) :: integer_size_factors
+      INTEGER ( KIND = long_ ) :: entries_in_factors
+      INTEGER ( KIND = ipc_ ) :: max_task_pool_size
+      INTEGER ( KIND = ipc_ ) :: max_front_size
+      INTEGER ( KIND = ipc_ ) :: compresses_real
+      INTEGER ( KIND = ipc_ ) :: compresses_integer
+      INTEGER ( KIND = ipc_ ) :: two_by_two_pivots
+      INTEGER ( KIND = ipc_ ) :: semi_bandwidth
+      INTEGER ( KIND = ipc_ ) :: delayed_pivots
+      INTEGER ( KIND = ipc_ ) :: pivot_sign_changes
+      INTEGER ( KIND = ipc_ ) :: static_pivots
+      INTEGER ( KIND = ipc_ ) :: first_modified_pivot
+      INTEGER ( KIND = ipc_ ) :: rank
+      INTEGER ( KIND = ipc_ ) :: negative_eigenvalues
+      INTEGER ( KIND = ipc_ ) :: num_zero
+      INTEGER ( KIND = ipc_ ) :: iterative_refinements
+      INTEGER ( KIND = long_ ) :: flops_assembly
+      INTEGER ( KIND = long_ ) :: flops_elimination
+      INTEGER ( KIND = long_ ) :: flops_blas
+      REAL ( KIND = rp_ ) :: largest_modified_pivot
+      REAL ( KIND = rp_ ) :: minimum_scaling_factor
+      REAL ( KIND = rp_ ) :: maximum_scaling_factor
+      REAL ( KIND = rp_ ) :: condition_number_1
+      REAL ( KIND = rp_ ) :: condition_number_2
+      REAL ( KIND = rp_ ) :: backward_error_1
+      REAL ( KIND = rp_ ) :: backward_error_2
+      REAL ( KIND = rp_ ) :: forward_error
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sls_time_type ) :: time
       TYPE ( sils_ainfo ) :: sils_ainfo
@@ -239,21 +235,21 @@
       TYPE ( ma87_info ) :: ma87_info
       TYPE ( ma97_info ) :: ma97_info
       TYPE ( ssids_inform ) :: ssids_inform
-      INTEGER ( KIND = C_INT ), DIMENSION( 10 ) :: mc61_info
-      REAL ( KIND = wp ), DIMENSION( 15 ) :: mc61_rinfo
+      INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
+      REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( mc64_info ) :: mc64_info
       TYPE ( mc68_info ) :: mc68_info
-      INTEGER ( KIND = C_INT ), DIMENSION( 10 ) :: mc77_info
-      REAL ( KIND = wp ), DIMENSION( 10 ) :: mc77_rinfo
-      INTEGER ( KIND = C_INT ) :: pardiso_error
-      INTEGER ( KIND = C_INT ), DIMENSION( 64 ) :: pardiso_IPARM
-      REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_DPARM
-      INTEGER ( KIND = C_INT ) :: mkl_pardiso_error
-      INTEGER ( KIND = C_INT ), DIMENSION( 64 ) :: mkl_pardiso_IPARM
-      INTEGER ( KIND = C_INT ) :: wsmp_error
-      INTEGER ( KIND = C_INT ), DIMENSION( 64 ) :: wsmp_iparm
-      REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_dparm
-      INTEGER ( KIND = C_INT ) :: lapack_error
+      INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc77_info
+      REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo
+      INTEGER ( KIND = ipc_ ) :: pardiso_error
+      INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: pardiso_IPARM
+      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: pardiso_DPARM
+      INTEGER ( KIND = ipc_ ) :: mkl_pardiso_error
+      INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM
+      INTEGER ( KIND = ipc_ ) :: wsmp_error
+      INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: wsmp_iparm
+      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: wsmp_dparm
+      INTEGER ( KIND = ipc_ ) :: lapack_error
     END TYPE sls_inform_type
 
 !----------------------
@@ -267,8 +263,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( sls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -372,7 +368,7 @@
     TYPE ( f_sls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -537,7 +533,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( sls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_sls_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -622,7 +618,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_sls_inform_type ), INTENT( IN ) :: finform
     TYPE ( sls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -712,19 +708,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_SLS_double_ciface
+  END MODULE GALAHAD_SLS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran sls_initialize
 !  -------------------------------------
 
   SUBROUTINE sls_initialize( csolver, cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: csolver
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sls_control_type ), INTENT( OUT ) :: ccontrol
@@ -768,7 +764,7 @@
 !  ----------------------------------------
 
   SUBROUTINE sls_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -784,7 +780,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -819,18 +815,18 @@
 
   SUBROUTINE sls_analyse_matrix( ccontrol, cdata, status, n, ctype, ne,        &
                                  row, col, ptr  ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( sls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
 
 !  local variables
@@ -873,12 +869,12 @@
 !  -----------------------------------------
 
   SUBROUTINE sls_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( sls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -912,14 +908,14 @@
 !  --------------------------------------------
 
   SUBROUTINE sls_factorize_matrix( cdata, status, ne, val ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: ne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: val
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -942,14 +938,14 @@
 !  ----------------------------------------
 
   SUBROUTINE sls_solve_system( cdata, status, n, sol ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -972,14 +968,14 @@
 !  ----------------------------------------
 
   SUBROUTINE sls_partial_solve_system( cpart, cdata, status, n, sol ) BIND( C )
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cpart
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -1008,14 +1004,14 @@
 !  --------------------------------------
 
   SUBROUTINE sls_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( sls_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -1042,7 +1038,7 @@
 !  ------------------------------------
 
   SUBROUTINE sls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_SLS_double_ciface
+  USE GALAHAD_SLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

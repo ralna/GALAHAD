@@ -36,6 +36,7 @@ MODULE GALAHAD_KINDS
  INTEGER, PARAMETER :: long_ = i8_
  INTEGER, PARAMETER :: spc_ = C_FLOAT
  INTEGER, PARAMETER :: dpc_ = C_DOUBLE
+ INTEGER, PARAMETER :: longc_ = C_INT64_T
 
 !--------------------------------
 !   P r e c i s i o n s  u s e d

@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ L H S   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -13,10 +16,10 @@
 
 !  C interface module to GALAHAD_LHS types and interfaces
 
-  MODULE GALAHAD_LHS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_LHS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_LHS_double, only:                                              &
+    USE GALAHAD_LHS_precision, ONLY:                                           &
         f_lhs_inform_type   => LHS_inform_type,                                &
         f_lhs_control_type  => LHS_control_type,                               &
         f_lhs_data_type     => LHS_data_type,                                  &
@@ -33,18 +36,18 @@
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: lhs_control_type
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: duplication
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: duplication
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), dimension( 31 ) :: prefix 
     END TYPE lhs_control_type
 
     TYPE, BIND( C ) :: lhs_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), dimension( 81 ) :: bad_alloc
     END TYPE lhs_inform_type
 
@@ -59,7 +62,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
     TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_lhs_control_type ), INTENT( OUT ) :: fcontrol
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
     
     ! integers
     fcontrol%error = ccontrol%error
@@ -85,7 +88,7 @@
     SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
     TYPE ( f_lhs_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( lhs_control_type ), INTENT( OUT ) :: ccontrol
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
     
     ! integers
     ccontrol%error = fcontrol%error
@@ -111,7 +114,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( lhs_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_lhs_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! integers
     finform%status = cinform%status
@@ -131,7 +134,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_lhs_inform_type ), INTENT( IN ) :: finform
     TYPE ( lhs_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! integers
     cinform%status = finform%status
@@ -146,14 +149,14 @@
 
     END SUBROUTINE copy_inform_out
 
-  END module GALAHAD_LHS_double_ciface
+  END module GALAHAD_LHS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran lhs_initialize
 !  -------------------------------------
 
   SUBROUTINE lhs_initialize( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_LHS_double_ciface
+  USE GALAHAD_LHS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -192,7 +195,7 @@
 !  ----------------------------------------
 
   SUBROUTINE lhs_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_LHS_double_ciface
+  USE GALAHAD_LHS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -207,7 +210,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), parameter :: device = 10
+  INTEGER ( KIND = ipc_ ), parameter :: device = 10
 
 !  convert C string to Fortran string
 
@@ -242,14 +245,14 @@
 
   SUBROUTINE lhs_ihs( n_dimen, n_points, seed, X, ccontrol, cinform,           &
                       cdata ) BIND( C )
-  USE GALAHAD_LHS_double_ciface
+  USE GALAHAD_LHS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), VALUE, INTENT( IN ) :: n_dimen, n_points
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: seed
-  INTEGER ( KIND = C_INT ), DIMENSION( n_dimen, n_points ) :: X
+  INTEGER ( KIND = ipc_ ), VALUE, INTENT( IN ) :: n_dimen, n_points
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: seed
+  INTEGER ( KIND = ipc_ ), DIMENSION( n_dimen, n_points ) :: X
   TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
   TYPE ( lhs_inform_type ), INTENT( INOUT ) :: cinform
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
@@ -284,10 +287,10 @@
 !  -----------------------------------
 
   SUBROUTINE lhs_get_seed( seed ) BIND( C )
-  USE GALAHAD_LHS_double_ciface
+  USE GALAHAD_LHS_precision_ciface
   IMPLICIT NONE
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: seed
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: seed
 
 !  get the random-number seed
 
@@ -301,7 +304,7 @@
 !  ------------------------------------
 
   SUBROUTINE lhs_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_LHS_double_ciface
+  USE GALAHAD_LHS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
