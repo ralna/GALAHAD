@@ -48,26 +48,26 @@ module spral_ssids_cpu_subtree_precision
      type(C_PTR) function c_create_symbolic_subtree(n, sa, en, sptr, sparent, &
           rptr, rlist, nptr, nlist, ncontrib, contrib_idx, options) &
           bind(C, name="spral_ssids_cpu_create_symbolic_subtree")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        import :: cpu_factor_options
        implicit none
-       integer(C_INT), value :: n
-       integer(C_INT), value :: sa
-       integer(C_INT), value :: en
-       integer(C_INT), dimension(*), intent(in) :: sptr
-       integer(C_INT), dimension(*), intent(in) :: sparent
-       integer(C_INT64_T), dimension(*), intent(in) :: rptr
-       integer(C_INT), dimension(*), intent(in) :: rlist
-       integer(C_INT64_T), dimension(*), intent(in) :: nptr
-       integer(C_INT64_T), dimension(*), intent(in) :: nlist
-       integer(C_INT), value :: ncontrib
-       integer(C_INT), dimension(*), intent(in) :: contrib_idx
+       integer(C_IP_), value :: n
+       integer(C_IP_), value :: sa
+       integer(C_IP_), value :: en
+       integer(C_IP_), dimension(*), intent(in) :: sptr
+       integer(C_IP_), dimension(*), intent(in) :: sparent
+       integer(CLONG_), dimension(*), intent(in) :: rptr
+       integer(C_IP_), dimension(*), intent(in) :: rlist
+       integer(CLONG_), dimension(*), intent(in) :: nptr
+       integer(CLONG_), dimension(*), intent(in) :: nlist
+       integer(C_IP_), value :: ncontrib
+       integer(C_IP_), dimension(*), intent(in) :: contrib_idx
        type(cpu_factor_options), intent(in) :: options
      end function c_create_symbolic_subtree
 
      subroutine c_destroy_symbolic_subtree(subtree) &
           bind(C, name="spral_ssids_cpu_destroy_symbolic_subtree")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        type(C_PTR), value :: subtree
      end subroutine c_destroy_symbolic_subtree
@@ -75,12 +75,12 @@ module spral_ssids_cpu_subtree_precision
      type(C_PTR) function c_create_numeric_subtree(posdef, symbolic_subtree, &
           aval, scaling, child_contrib, options, stats) &
           bind(C, name="spral_ssids_cpu_create_num_subtree_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        import :: cpu_factor_options, cpu_factor_stats
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: symbolic_subtree
-       real(C_DOUBLE), dimension(*), intent(in) :: aval
+       real(C_RP_), dimension(*), intent(in) :: aval
        type(C_PTR), value :: scaling
        type(C_PTR), dimension(*), intent(inout) :: child_contrib
        type(cpu_factor_options), intent(in) :: options
@@ -89,63 +89,63 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_destroy_numeric_subtree(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_destroy_num_subtree_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
      end subroutine c_destroy_numeric_subtree
 
-     integer(C_INT) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
+     integer(C_IP_) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_fwd_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       integer(C_INT), value :: nrhs
-       real(C_DOUBLE), dimension(*), intent(inout) :: x
-       integer(C_INT), value :: ldx
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
      end function c_subtree_solve_fwd
 
-     integer(C_INT) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
+     integer(C_IP_) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       integer(C_INT), value :: nrhs
-       real(C_DOUBLE), dimension(*), intent(inout) :: x
-       integer(C_INT), value :: ldx
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
      end function c_subtree_solve_diag
 
-     integer(C_INT) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
+     integer(C_IP_) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
           x, ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       integer(C_INT), value :: nrhs
-       real(C_DOUBLE), dimension(*), intent(inout) :: x
-       integer(C_INT), value :: ldx
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
      end function c_subtree_solve_diag_bwd
      
-     integer(C_INT) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
+     integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_bwd_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       integer(C_INT), value :: nrhs
-       real(C_DOUBLE), dimension(*), intent(inout) :: x
-       integer(C_INT), value :: ldx
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
      end function c_subtree_solve_bwd
 
      subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
           bind(C, name="spral_ssids_cpu_subtree_enquire_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -155,33 +155,33 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_subtree_alter(posdef, subtree, d) &
           bind(C, name="spral_ssids_cpu_subtree_alter_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       real(C_DOUBLE), dimension(*), intent(in) :: d
+       real(C_RP_), dimension(*), intent(in) :: d
      end subroutine c_subtree_alter
 
      subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
           delay_perm, delay_val, lddelay) &
           bind(C, name="spral_ssids_cpu_subtree_get_contrib_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
-       integer(C_INT) :: n
+       integer(C_IP_) :: n
        type(C_PTR) :: val
-       integer(C_INT) :: ldval
+       integer(C_IP_) :: ldval
        type(C_PTR) :: rlist
-       integer(C_INT) :: ndelay
+       integer(C_IP_) :: ndelay
        type(C_PTR) :: delay_perm
        type(C_PTR) :: delay_val
-       integer(C_INT) :: lddelay
+       integer(C_IP_) :: lddelay
      end subroutine c_get_contrib
      
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_dbl")
-       use, intrinsic :: iso_c_binding
+       use :: spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -337,7 +337,7 @@ contains
     integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
     
-    integer(C_INT) :: flag
+    integer(C_IP_) :: flag
 
     flag = c_subtree_solve_fwd(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag
@@ -351,7 +351,7 @@ contains
     integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
-    integer(C_INT) :: flag
+    integer(C_IP_) :: flag
 
     flag = c_subtree_solve_diag(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag
@@ -365,7 +365,7 @@ contains
     integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
-    integer(C_INT) :: flag
+    integer(C_IP_) :: flag
     
     flag = c_subtree_solve_diag_bwd(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag
@@ -379,7 +379,7 @@ contains
     integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
-    integer(C_INT) :: flag
+    integer(C_IP_) :: flag
     
     flag = c_subtree_solve_bwd(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag

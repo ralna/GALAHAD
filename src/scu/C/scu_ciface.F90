@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S C U    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SCU_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_SCU_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_SCU_double, ONLY:                                              &
+    USE GALAHAD_SCU_precision, ONLY:                                           &
         f_scu_control_type   => SCU_control_type,                              &
         f_scu_inform_type    => SCU_inform_type,                               &
         f_scu_full_data_type => SCU_full_data_type,                            &
@@ -27,26 +30,19 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
      TYPE, BIND( C ) :: scu_control_type
-      INTEGER ( KIND = C_INT ) :: dummy
+      INTEGER ( KIND = ipc_ ) :: dummy
 !  no components at present
      END TYPE scu_control_type
 
     TYPE, BIND( C ) :: scu_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ), DIMENSION( 3 ) :: inertia
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ), DIMENSION( 3 ) :: inertia
     END TYPE scu_inform_type
 
 !----------------------
@@ -81,14 +77,14 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_SCU_double_ciface
+  END MODULE GALAHAD_SCU_precision_ciface
 
 !  ------------------------------------
 !  C interface to fortran scu_terminate
 !  ------------------------------------
 
   SUBROUTINE scu_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_SCU_double_ciface
+  USE GALAHAD_SCU_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -100,7 +96,7 @@
 !  local variables
 
   TYPE ( f_scu_full_data_type ), pointer :: fdata
-  INTEGER ( KIND = C_INT ) :: status
+  INTEGER ( KIND = ipc_ ) :: status
   TYPE ( f_scu_inform_type ) :: finform
 ! LOGICAL :: f_indexing
 

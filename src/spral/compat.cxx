@@ -10,6 +10,18 @@
 
 #include "config.h"
 
+#ifdef GALAHAD_HAVE_HWLOC
+#define HAVE_HWLOC 1
+#else
+#undef HAVE_HWLOC
+#endif
+
+#ifdef GALAHAD_HAVE_SCHED_GETCPU
+#define HAVE_SCHED_GETCPU 1
+#else
+#undef HAVE_SCHED_GETCPU
+#endif
+
 // #ifndef HAVE_STD_ALIGN
 // Older versions of g++ (and intel that relies on equivalent -lstdc++) don't
 // define std::align, so we do it ourselves.
@@ -28,3 +40,4 @@
 // }
 // } /* namespace std */
 // #endif
+

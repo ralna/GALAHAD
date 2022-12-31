@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  N L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_NLS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_NLS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_NLS_double, ONLY: &
+    USE GALAHAD_NLS_precision, ONLY:                                           &
         f_nls_subproblem_control_type   => NLS_subproblem_control_type,        &
         f_nls_control_type              => NLS_control_type,                   &
         f_nls_time_type                 => NLS_time_type,                      &
@@ -31,10 +34,10 @@
         f_nls_solve_reverse_without_mat => NLS_solve_reverse_without_mat,      &
         f_nls_information               => NLS_information,                    &
         f_nls_terminate                 => NLS_terminate
-    USE GALAHAD_USERDATA_double, only:                                         &
+    USE GALAHAD_USERDATA_precision, ONLY:                                      &
         f_galahad_userdata_type => GALAHAD_userdata_type
 
-    USE GALAHAD_RQS_double_ciface, ONLY:                                       &
+    USE GALAHAD_RQS_precision_ciface, ONLY:                                    &
         rqs_inform_type,                                                       &
         rqs_control_type,                                                      &
         copy_rqs_inform_in   => copy_inform_in,                                &
@@ -42,7 +45,7 @@
         copy_rqs_control_in  => copy_control_in,                               &
         copy_rqs_control_out => copy_control_out
 
-    USE GALAHAD_GLRT_double_ciface, ONLY:                                      &
+    USE GALAHAD_GLRT_precision_ciface, ONLY:                                   &
         glrt_inform_type,                                                      &
         glrt_control_type,                                                     &
         copy_glrt_inform_in   => copy_inform_in,                               &
@@ -50,7 +53,7 @@
         copy_glrt_control_in  => copy_control_in,                              &
         copy_glrt_control_out => copy_control_out
 
-    USE GALAHAD_PSLS_double_ciface, ONLY:                                      &
+    USE GALAHAD_PSLS_precision_ciface, ONLY:                                   &
         psls_inform_type,                                                      &
         psls_control_type,                                                     &
         copy_psls_inform_in   => copy_inform_in,                               &
@@ -58,7 +61,7 @@
         copy_psls_control_in  => copy_control_in,                              &
         copy_psls_control_out => copy_control_out
 
-    USE GALAHAD_BSC_double_ciface, ONLY:                                       &
+    USE GALAHAD_BSC_precision_ciface, ONLY:                                    &
         bsc_inform_type,                                                       &
         bsc_control_type,                                                      &
         copy_bsc_inform_in   => copy_inform_in,                                &
@@ -66,7 +69,7 @@
         copy_bsc_control_in  => copy_control_in,                               &
         copy_bsc_control_out => copy_control_out
 
-    USE GALAHAD_ROOTS_double_ciface, ONLY:                                     &
+    USE GALAHAD_ROOTS_precision_ciface, ONLY:                                  &
         roots_inform_type,                                                     &
         roots_control_type,                                                    &
         copy_roots_inform_in   => copy_inform_in,                              &
@@ -76,55 +79,48 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: nls_subproblem_control_type
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: alive_unit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: alive_unit
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
-      INTEGER ( KIND = C_INT ) :: jacobian_available
-      INTEGER ( KIND = C_INT ) :: hessian_available
-      INTEGER ( KIND = C_INT ) :: model
-      INTEGER ( KIND = C_INT ) :: norm
-      INTEGER ( KIND = C_INT ) :: non_monotone
-      INTEGER ( KIND = C_INT ) :: weight_update_strategy
-      REAL ( KIND = wp ) :: stop_c_absolute
-      REAL ( KIND = wp ) :: stop_c_relative
-      REAL ( KIND = wp ) :: stop_g_absolute
-      REAL ( KIND = wp ) :: stop_g_relative
-      REAL ( KIND = wp ) :: stop_s
-      REAL ( KIND = wp ) :: power
-      REAL ( KIND = wp ) :: initial_weight
-      REAL ( KIND = wp ) :: minimum_weight
-      REAL ( KIND = wp ) :: initial_inner_weight
-      REAL ( KIND = wp ) :: eta_successful
-      REAL ( KIND = wp ) :: eta_very_successful
-      REAL ( KIND = wp ) :: eta_too_successful
-      REAL ( KIND = wp ) :: weight_decrease_min
-      REAL ( KIND = wp ) :: weight_decrease
-      REAL ( KIND = wp ) :: weight_increase
-      REAL ( KIND = wp ) :: weight_increase_max
-      REAL ( KIND = wp ) :: reduce_gap
-      REAL ( KIND = wp ) :: tiny_gap
-      REAL ( KIND = wp ) :: large_root
-      REAL ( KIND = wp ) :: switch_to_newton
-      REAL ( KIND = wp ) :: cpu_time_limit
-      REAL ( KIND = wp ) :: clock_time_limit
+      INTEGER ( KIND = ipc_ ) :: jacobian_available
+      INTEGER ( KIND = ipc_ ) :: hessian_available
+      INTEGER ( KIND = ipc_ ) :: model
+      INTEGER ( KIND = ipc_ ) :: norm
+      INTEGER ( KIND = ipc_ ) :: non_monotone
+      INTEGER ( KIND = ipc_ ) :: weight_update_strategy
+      REAL ( KIND = rp_ ) :: stop_c_absolute
+      REAL ( KIND = rp_ ) :: stop_c_relative
+      REAL ( KIND = rp_ ) :: stop_g_absolute
+      REAL ( KIND = rp_ ) :: stop_g_relative
+      REAL ( KIND = rp_ ) :: stop_s
+      REAL ( KIND = rp_ ) :: power
+      REAL ( KIND = rp_ ) :: initial_weight
+      REAL ( KIND = rp_ ) :: minimum_weight
+      REAL ( KIND = rp_ ) :: initial_inner_weight
+      REAL ( KIND = rp_ ) :: eta_successful
+      REAL ( KIND = rp_ ) :: eta_very_successful
+      REAL ( KIND = rp_ ) :: eta_too_successful
+      REAL ( KIND = rp_ ) :: weight_decrease_min
+      REAL ( KIND = rp_ ) :: weight_decrease
+      REAL ( KIND = rp_ ) :: weight_increase
+      REAL ( KIND = rp_ ) :: weight_increase_max
+      REAL ( KIND = rp_ ) :: reduce_gap
+      REAL ( KIND = rp_ ) :: tiny_gap
+      REAL ( KIND = rp_ ) :: large_root
+      REAL ( KIND = rp_ ) :: switch_to_newton
+      REAL ( KIND = rp_ ) :: cpu_time_limit
+      REAL ( KIND = rp_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
       LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
       LOGICAL ( KIND = C_BOOL ) :: magic_step
@@ -141,43 +137,43 @@
 
     TYPE, BIND( C ) :: nls_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: alive_unit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: alive_unit
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
-      INTEGER ( KIND = C_INT ) :: jacobian_available
-      INTEGER ( KIND = C_INT ) :: hessian_available
-      INTEGER ( KIND = C_INT ) :: model
-      INTEGER ( KIND = C_INT ) :: norm
-      INTEGER ( KIND = C_INT ) :: non_monotone
-      INTEGER ( KIND = C_INT ) :: weight_update_strategy
-      REAL ( KIND = wp ) :: stop_c_absolute
-      REAL ( KIND = wp ) :: stop_c_relative
-      REAL ( KIND = wp ) :: stop_g_absolute
-      REAL ( KIND = wp ) :: stop_g_relative
-      REAL ( KIND = wp ) :: stop_s
-      REAL ( KIND = wp ) :: power
-      REAL ( KIND = wp ) :: initial_weight
-      REAL ( KIND = wp ) :: minimum_weight
-      REAL ( KIND = wp ) :: initial_inner_weight
-      REAL ( KIND = wp ) :: eta_successful
-      REAL ( KIND = wp ) :: eta_very_successful
-      REAL ( KIND = wp ) :: eta_too_successful
-      REAL ( KIND = wp ) :: weight_decrease_min
-      REAL ( KIND = wp ) :: weight_decrease
-      REAL ( KIND = wp ) :: weight_increase
-      REAL ( KIND = wp ) :: weight_increase_max
-      REAL ( KIND = wp ) :: reduce_gap
-      REAL ( KIND = wp ) :: tiny_gap
-      REAL ( KIND = wp ) :: large_root
-      REAL ( KIND = wp ) :: switch_to_newton
-      REAL ( KIND = wp ) :: cpu_time_limit
-      REAL ( KIND = wp ) :: clock_time_limit
+      INTEGER ( KIND = ipc_ ) :: jacobian_available
+      INTEGER ( KIND = ipc_ ) :: hessian_available
+      INTEGER ( KIND = ipc_ ) :: model
+      INTEGER ( KIND = ipc_ ) :: norm
+      INTEGER ( KIND = ipc_ ) :: non_monotone
+      INTEGER ( KIND = ipc_ ) :: weight_update_strategy
+      REAL ( KIND = rp_ ) :: stop_c_absolute
+      REAL ( KIND = rp_ ) :: stop_c_relative
+      REAL ( KIND = rp_ ) :: stop_g_absolute
+      REAL ( KIND = rp_ ) :: stop_g_relative
+      REAL ( KIND = rp_ ) :: stop_s
+      REAL ( KIND = rp_ ) :: power
+      REAL ( KIND = rp_ ) :: initial_weight
+      REAL ( KIND = rp_ ) :: minimum_weight
+      REAL ( KIND = rp_ ) :: initial_inner_weight
+      REAL ( KIND = rp_ ) :: eta_successful
+      REAL ( KIND = rp_ ) :: eta_very_successful
+      REAL ( KIND = rp_ ) :: eta_too_successful
+      REAL ( KIND = rp_ ) :: weight_decrease_min
+      REAL ( KIND = rp_ ) :: weight_decrease
+      REAL ( KIND = rp_ ) :: weight_increase
+      REAL ( KIND = rp_ ) :: weight_increase_max
+      REAL ( KIND = rp_ ) :: reduce_gap
+      REAL ( KIND = rp_ ) :: tiny_gap
+      REAL ( KIND = rp_ ) :: large_root
+      REAL ( KIND = rp_ ) :: switch_to_newton
+      REAL ( KIND = rp_ ) :: cpu_time_limit
+      REAL ( KIND = rp_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
       LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
       LOGICAL ( KIND = C_BOOL ) :: magic_step
@@ -194,38 +190,38 @@
     END TYPE nls_control_type
 
     TYPE, BIND( C ) :: nls_time_type
-      REAL ( KIND = sp ) :: total
-      REAL ( KIND = sp ) :: preprocess
-      REAL ( KIND = sp ) :: analyse
-      REAL ( KIND = sp ) :: factorize
-      REAL ( KIND = sp ) :: solve
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_preprocess
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
-      REAL ( KIND = wp ) :: clock_solve
+      REAL ( KIND = sp_ ) :: total
+      REAL ( KIND = sp_ ) :: preprocess
+      REAL ( KIND = sp_ ) :: analyse
+      REAL ( KIND = sp_ ) :: factorize
+      REAL ( KIND = sp_ ) :: solve
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_preprocess
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: clock_solve
     END TYPE nls_time_type
 
     TYPE, BIND( C ) :: nls_subproblem_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 13 ) :: bad_eval
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: cg_iter
-      INTEGER ( KIND = C_INT ) :: c_eval
-      INTEGER ( KIND = C_INT ) :: j_eval
-      INTEGER ( KIND = C_INT ) :: h_eval
-      INTEGER ( KIND = C_INT ) :: factorization_max
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
-      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
-      INTEGER ( KIND = C_INT64_T ) :: factorization_real
-      REAL ( KIND = wp ) :: factorization_average
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: norm_c
-      REAL ( KIND = wp ) :: norm_g
-      REAL ( KIND = wp ) :: weight
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      INTEGER ( KIND = ipc_ ) :: c_eval
+      INTEGER ( KIND = ipc_ ) :: j_eval
+      INTEGER ( KIND = ipc_ ) :: h_eval
+      INTEGER ( KIND = ipc_ ) :: factorization_max
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = long_ ) :: max_entries_factors
+      INTEGER ( KIND = long_ ) :: factorization_integer
+      INTEGER ( KIND = long_ ) :: factorization_real
+      REAL ( KIND = rp_ ) :: factorization_average
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: norm_c
+      REAL ( KIND = rp_ ) :: norm_g
+      REAL ( KIND = rp_ ) :: weight
       TYPE ( nls_time_type ) :: time
       TYPE ( rqs_inform_type ) :: rqs_inform
       TYPE ( glrt_inform_type ) :: glrt_inform
@@ -235,25 +231,25 @@
     END TYPE nls_subproblem_inform_type
 
     TYPE, BIND( C ) :: nls_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 13 ) :: bad_eval
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: cg_iter
-      INTEGER ( KIND = C_INT ) :: c_eval
-      INTEGER ( KIND = C_INT ) :: j_eval
-      INTEGER ( KIND = C_INT ) :: h_eval
-      INTEGER ( KIND = C_INT ) :: factorization_max
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
-      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
-      INTEGER ( KIND = C_INT64_T ) :: factorization_real
-      REAL ( KIND = wp ) :: factorization_average
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: norm_c
-      REAL ( KIND = wp ) :: norm_g
-      REAL ( KIND = wp ) :: weight
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      INTEGER ( KIND = ipc_ ) :: c_eval
+      INTEGER ( KIND = ipc_ ) :: j_eval
+      INTEGER ( KIND = ipc_ ) :: h_eval
+      INTEGER ( KIND = ipc_ ) :: factorization_max
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = long_ ) :: max_entries_factors
+      INTEGER ( KIND = long_ ) :: factorization_integer
+      INTEGER ( KIND = long_ ) :: factorization_real
+      REAL ( KIND = rp_ ) :: factorization_average
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: norm_c
+      REAL ( KIND = rp_ ) :: norm_g
+      REAL ( KIND = rp_ ) :: weight
       TYPE ( nls_time_type ) :: time
       TYPE ( rqs_inform_type ) :: rqs_inform
       TYPE ( glrt_inform_type ) :: glrt_inform
@@ -269,99 +265,92 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_C( n, m, x, c, userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( n ),INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( m ),INTENT( OUT ) :: c
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rp_ ), DIMENSION( n ),INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( m ),INTENT( OUT ) :: c
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_C
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_J( n, m, jne, x, jval, userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( jne ),INTENT( OUT ) :: jval
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( jne ),INTENT( OUT ) :: jval
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_J
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_H( n, m, hne, x, y, hval,                                  &
                        userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: y
-        REAL ( KIND = wp ), DIMENSION( hne ), INTENT( OUT ) :: hval
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = rp_ ), DIMENSION( hne ), INTENT( OUT ) :: hval
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_H
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_JPROD( n, m, x, transpose, u, v, got_j,                    &
                            userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: transpose
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( MAX( n, m ) ), INTENT( INOUT ) :: u
-        REAL ( KIND = wp ), DIMENSION( MAX( n, m ) ), INTENT( IN ) :: v
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( MAX( n, m ) ), INTENT( INOUT ) :: u
+        REAL ( KIND = rp_ ), DIMENSION( MAX( n, m ) ), INTENT( IN ) :: v
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_j
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_JPROD
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_HPROD( n, m, x, y, u, v, got_h,                            &
                            userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: y
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: u
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: u
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: v
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_HPROD
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_HPRODS( n, m, pne, x, v, pval, got_h,                      &
                             userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: v
-        REAL ( KIND = wp ), DIMENSION( pne ), INTENT( INOUT ) :: pval
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: v
+        REAL ( KIND = rp_ ), DIMENSION( pne ), INTENT( INOUT ) :: pval
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_HPRODS
     END INTERFACE
 
     ABSTRACT INTERFACE
       FUNCTION eval_SCALE( n, m, x, u, v,                                      &
                            userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x, v
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: x, v
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: u
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_SCALE
     END INTERFACE
 
@@ -376,8 +365,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( nls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_nls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -573,7 +562,7 @@
     TYPE ( f_nls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( nls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
 
@@ -816,7 +805,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( nls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_nls_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -931,7 +920,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_nls_inform_type ), INTENT( IN ) :: finform
     TYPE ( nls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     cinform%status = finform%status
@@ -1043,14 +1032,14 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_NLS_double_ciface
+  END MODULE GALAHAD_NLS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran nls_initialize
 !  -------------------------------------
 
   SUBROUTINE nls_initialize( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -1095,7 +1084,7 @@
 !  ----------------------------------------
 
   SUBROUTINE nls_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -1111,7 +1100,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -1148,28 +1137,28 @@
                          cjtype, jne, jrow, jcol, jptr,                        &
                          chtype, hne, hrow, hcol, hptr,                        &
                          cptype, pne, prow, pcol, pptr, w ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( nls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: jptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: jptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cjtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: prow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: pcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: pptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: prow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: pcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: pptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cptype
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
 
 !  local variables
 
@@ -1221,12 +1210,12 @@
 !  ----------------------------------------
 
   SUBROUTINE nls_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( nls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -1262,16 +1251,16 @@
   SUBROUTINE nls_solve_with_mat( cdata, cuserdata, status, n, m, x, c, g,      &
                                  ceval_c, jne, ceval_j, hne, ceval_h,          &
                                  pne, ceval_hprods ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_j
@@ -1323,10 +1312,10 @@
 !  eval_c wrapper
 
     SUBROUTINE wrap_eval_c( status, x, userdata, c )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: c
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: c
 
 !  call C interoperable eval_c
 
@@ -1339,10 +1328,10 @@
 !  eval_j wrapper
 
     SUBROUTINE wrap_eval_j( status, x, userdata, jval )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: jval
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: jval
 
 !  Call C interoperable eval_j
     status = feval_j( n, m, jne, x, jval, cuserdata )
@@ -1353,10 +1342,10 @@
 !  eval_H wrapper
 
     SUBROUTINE wrap_eval_h( status, x, y, userdata, hval )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x, y
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: hval
 
 !  Call C interoperable eval_h
     status = feval_h( n, m, hne, x, y, hval, cuserdata )
@@ -1367,10 +1356,10 @@
 !  eval_hprods wrapper
 
     SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x, v
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: pval
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: pval
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
     LOGICAL ( KIND = C_BOOL ) :: cgot_h
 
@@ -1396,16 +1385,16 @@
   SUBROUTINE nls_solve_without_mat( cdata, cuserdata, status, n, m, x, c, g,   &
                                     ceval_c, ceval_jprod, ceval_hprod,         &
                                     pne, ceval_hprods ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_jprod
@@ -1457,10 +1446,10 @@
 !  eval_c wrapper
 
     SUBROUTINE wrap_eval_c( status, x, userdata, c )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: c
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: c
 
 !  call C interoperable eval_c
 
@@ -1472,11 +1461,11 @@
 !  eval_jprod wrapper
 
     SUBROUTINE wrap_eval_jprod( status, x, userdata, ftranspose, u, v, fgot_j )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: v
     LOGICAL, INTENT( IN ) :: ftranspose
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_j
     LOGICAL ( KIND = C_BOOL ) :: cgot_j, ctranspose
@@ -1505,11 +1494,11 @@
 !  eval_hprod wrapper
 
     SUBROUTINE wrap_eval_hprod( status, x, y, userdata, u, v, fgot_h )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x, y
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: v
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
     LOGICAL ( KIND = C_BOOL ) :: cgot_h
 
@@ -1528,10 +1517,10 @@
 !  eval_hprods wrapper
 
     SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: x, v
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: pval
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: pval
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
     LOGICAL ( KIND = C_BOOL ) :: cgot_h
 
@@ -1557,20 +1546,20 @@
   SUBROUTINE nls_solve_reverse_with_mat( cdata, status, eval_status,           &
                                          n, m, x, c, g, jne, jval, y,          &
                                          hne, hval, v, pne, pval ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( jne ) :: jval
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: y
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: v
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( jne ) :: jval
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: v
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -1596,17 +1585,17 @@
   SUBROUTINE nls_solve_reverse_without_mat( cdata, status, eval_status,        &
                                             n, m, x, c, g, ctranspose, u, v,   &
                                             y, pne, pval ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c, y
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( MAX( n, m ) ) :: u, v
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( MAX( n, m ) ) :: u, v
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( pne ) :: pval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   LOGICAL ( KIND = C_BOOL ), INTENT( INOUT )  :: ctranspose
 
@@ -1634,14 +1623,14 @@
 !  --------------------------------------
 
   SUBROUTINE nls_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( nls_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -1668,7 +1657,7 @@
 !  ------------------------------------
 
   SUBROUTINE nls_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_NLS_double_ciface
+  USE GALAHAD_NLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

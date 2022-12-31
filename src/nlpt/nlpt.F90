@@ -39,9 +39,10 @@
 !-------------------------
 
       USE GALAHAD_KINDS
-      USE GALAHAD_NORMS_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_USERDATA_double, NLPT_USERDATA_type => GALAHAD_userdata_type
+      USE GALAHAD_NORMS_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_USERDATA_precision, NLPT_USERDATA_type                       &
+                                        => GALAHAD_userdata_type
       USE GALAHAD_TOOLS
       USE GALAHAD_SYMBOLS,                                                     &
           SILENT              => GALAHAD_SILENT,                               &

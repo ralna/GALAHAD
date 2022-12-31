@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-2 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:30 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  B L L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_BLLS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_BLLS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_BLLS_double, ONLY:                                             &
+    USE GALAHAD_BLLS_precision, ONLY:                                          &
         f_blls_control_type         => BLLS_control_type,                      &
         f_blls_time_type            => BLLS_time_type,                         &
         f_blls_inform_type          => BLLS_inform_type,                       &
@@ -29,10 +32,10 @@
         f_blls_information          => BLLS_information,                       &
         f_blls_terminate            => BLLS_terminate
 
-    USE GALAHAD_USERDATA_double, ONLY:                                         &
+    USE GALAHAD_USERDATA_precision, ONLY:                                      &
         f_galahad_userdata_type => GALAHAD_userdata_type
 
-    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+    USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
         copy_sbls_inform_in   => copy_inform_in,                               &
@@ -40,7 +43,7 @@
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
-    USE GALAHAD_CONVERT_double_ciface, ONLY:                                   &
+    USE GALAHAD_CONVERT_precision_ciface, ONLY:                                &
         convert_inform_type,                                                   &
         convert_control_type,                                                  &
         copy_convert_inform_in   => copy_inform_in,                            &
@@ -50,45 +53,38 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: blls_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: cold_start
-      INTEGER ( KIND = C_INT ) :: preconditioner
-      INTEGER ( KIND = C_INT ) :: ratio_cg_vs_sd
-      INTEGER ( KIND = C_INT ) :: change_max
-      INTEGER ( KIND = C_INT ) :: cg_maxit
-      INTEGER ( KIND = C_INT ) :: arcsearch_max_steps
-      INTEGER ( KIND = C_INT ) :: sif_file_device
-      REAL ( KIND = wp ) :: weight
-      REAL ( KIND = wp ) :: infinity
-      REAL ( KIND = wp ) :: stop_d
-      REAL ( KIND = wp ) :: identical_bounds_tol
-      REAL ( KIND = wp ) :: stop_cg_relative
-      REAL ( KIND = wp ) :: stop_cg_absolute
-      REAL ( KIND = wp ) :: alpha_max
-      REAL ( KIND = wp ) :: alpha_initial
-      REAL ( KIND = wp ) :: alpha_reduction
-      REAL ( KIND = wp ) :: arcsearch_acceptance_tol
-      REAL ( KIND = wp ) :: stabilisation_weight
-      REAL ( KIND = wp ) :: cpu_time_limit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: cold_start
+      INTEGER ( KIND = ipc_ ) :: preconditioner
+      INTEGER ( KIND = ipc_ ) :: ratio_cg_vs_sd
+      INTEGER ( KIND = ipc_ ) :: change_max
+      INTEGER ( KIND = ipc_ ) :: cg_maxit
+      INTEGER ( KIND = ipc_ ) :: arcsearch_max_steps
+      INTEGER ( KIND = ipc_ ) :: sif_file_device
+      REAL ( KIND = rp_ ) :: weight
+      REAL ( KIND = rp_ ) :: infinity
+      REAL ( KIND = rp_ ) :: stop_d
+      REAL ( KIND = rp_ ) :: identical_bounds_tol
+      REAL ( KIND = rp_ ) :: stop_cg_relative
+      REAL ( KIND = rp_ ) :: stop_cg_absolute
+      REAL ( KIND = rp_ ) :: alpha_max
+      REAL ( KIND = rp_ ) :: alpha_initial
+      REAL ( KIND = rp_ ) :: alpha_reduction
+      REAL ( KIND = rp_ ) :: arcsearch_acceptance_tol
+      REAL ( KIND = rp_ ) :: stabilisation_weight
+      REAL ( KIND = rp_ ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: direct_subproblem_solve
       LOGICAL ( KIND = C_BOOL ) :: exact_arc_search
       LOGICAL ( KIND = C_BOOL ) :: advance
@@ -102,20 +98,20 @@
     END TYPE blls_control_type
 
     TYPE, BIND( C ) :: blls_time_type
-      REAL ( KIND = sp ) :: total
-      REAL ( KIND = sp ) :: analyse
-      REAL ( KIND = sp ) :: factorize
-      REAL ( KIND = sp ) :: solve
+      REAL ( KIND = sp_ ) :: total
+      REAL ( KIND = sp_ ) :: analyse
+      REAL ( KIND = sp_ ) :: factorize
+      REAL ( KIND = sp_ ) :: solve
     END TYPE blls_time_type
 
     TYPE, BIND( C ) :: blls_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: cg_iter
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: norm_pg
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: norm_pg
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( blls_time_type ) :: time
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -128,13 +124,12 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_prec( n, v, p, userdata ) RESULT( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
-        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: p
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: v
+        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: p
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_prec
     END INTERFACE
 
@@ -149,8 +144,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( blls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_blls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -217,7 +212,7 @@
     TYPE ( f_blls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( blls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -315,7 +310,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( blls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_blls_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -348,7 +343,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_blls_inform_type ), INTENT( IN ) :: finform
     TYPE ( blls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -377,19 +372,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_BLLS_double_ciface
+  END MODULE GALAHAD_BLLS_precision_ciface
 
 !  --------------------------------------
 !  C interface to fortran blls_initialize
 !  --------------------------------------
 
   SUBROUTINE blls_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( blls_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -426,7 +421,7 @@
 !  -----------------------------------------
 
   SUBROUTINE blls_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -442,7 +437,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -477,18 +472,18 @@
 
   SUBROUTINE blls_import( ccontrol, cdata, status, n, m,                       &
                           catype, ane, arow, acol, aptr ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( blls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
@@ -531,15 +526,15 @@
 !  --------------------------------------------
 
   SUBROUTINE blls_import_without_a( ccontrol, cdata, status, n, m ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( blls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
 
 !  local variables
 
@@ -573,12 +568,12 @@
 !  -----------------------------------------
 
   SUBROUTINE blls_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( blls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -614,22 +609,22 @@
   SUBROUTINE blls_solve_given_a( cdata, cuserdata, status, n, m, ane, aval,    &
                                  b, xl, xu, x, z, c, g, xstat,                 &
                                  ceval_prec ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
-  REAL ( KIND = wp ), DIMENSION( ane ), INTENT( IN ) :: aval
-  REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: b
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = wp ), DIMENSION( m ), INTENT( OUT ) :: c
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: g
-  INTEGER, INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
+  REAL ( KIND = rp_ ), DIMENSION( ane ), INTENT( IN ) :: aval
+  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: b
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: g
+  INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
 !  local variables
@@ -668,10 +663,10 @@
 !  eval_PREC wrapper
 
     SUBROUTINE wrap_eval_prec( status, userdata, v, p )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: p
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: p
 
 !  call C interoperable eval_prec
 
@@ -690,26 +685,26 @@
                                         xl, xu, x, z, c, g, xstat, v, p,       &
                                         nz_v, nz_v_start, nz_v_end,         &
                                         nz_p, nz_p_end ) BIND( C )
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-  REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: b
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = wp ), DIMENSION( m ), INTENT( OUT ) :: c
-  REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: g
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nz_p_end
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nz_v_start, nz_v_end
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m ) :: nz_p
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: b
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: g
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_p_end
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ) :: nz_p
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
+  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
 
 !  local variables
 
@@ -726,7 +721,6 @@
 
 !  solve the bound-constrained least-squares problem by reverse communication
 
-!if (status == 4 ) write(6,"( ' P ', /, ( 5ES12.4 ) )" ) P(:m)
   IF ( f_indexing ) THEN
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
                                       x, z, c, g, xstat, v, p,                 &
@@ -751,14 +745,14 @@
 !  ---------------------------------------
 
   SUBROUTINE blls_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( blls_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -785,7 +779,7 @@
 !  -------------------------------------
 
   SUBROUTINE blls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_BLLS_double_ciface
+  USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  G L R T    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_GLRT_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_GLRT_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_GLRT_double, ONLY:                                             &
+    USE GALAHAD_GLRT_precision, ONLY:                                          &
         f_glrt_control_type => GLRT_control_type,                              &
         f_glrt_inform_type => GLRT_inform_type,                                &
         f_glrt_full_data_type => GLRT_full_data_type,                          &
@@ -27,32 +30,25 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: glrt_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: itmax
-      INTEGER ( KIND = C_INT ) :: stopping_rule
-      INTEGER ( KIND = C_INT ) :: freq
-      INTEGER ( KIND = C_INT ) :: extra_vectors
-      INTEGER ( KIND = C_INT ) :: ritz_printout_device
-      REAL ( KIND = wp ) :: stop_relative
-      REAL ( KIND = wp ) :: stop_absolute
-      REAL ( KIND = wp ) :: fraction_opt
-      REAL ( KIND = wp ) :: rminvr_zero
-      REAL ( KIND = wp ) :: f_0
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: itmax
+      INTEGER ( KIND = ipc_ ) :: stopping_rule
+      INTEGER ( KIND = ipc_ ) :: freq
+      INTEGER ( KIND = ipc_ ) :: extra_vectors
+      INTEGER ( KIND = ipc_ ) :: ritz_printout_device
+      REAL ( KIND = rp_ ) :: stop_relative
+      REAL ( KIND = rp_ ) :: stop_absolute
+      REAL ( KIND = rp_ ) :: fraction_opt
+      REAL ( KIND = rp_ ) :: rminvr_zero
+      REAL ( KIND = rp_ ) :: f_0
       LOGICAL ( KIND = C_BOOL ) :: unitm
       LOGICAL ( KIND = C_BOOL ) :: impose_descent
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -63,16 +59,16 @@
     END TYPE glrt_control_type
 
     TYPE, BIND( C ) :: glrt_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: iter_pass2
-      REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: obj_regularized
-      REAL ( KIND = wp ) :: multiplier
-      REAL ( KIND = wp ) :: xpo_norm
-      REAL ( KIND = wp ) :: leftmost
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: iter_pass2
+      REAL ( KIND = rp_ ) :: obj
+      REAL ( KIND = rp_ ) :: obj_regularized
+      REAL ( KIND = rp_ ) :: multiplier
+      REAL ( KIND = rp_ ) :: xpo_norm
+      REAL ( KIND = rp_ ) :: leftmost
       LOGICAL ( KIND = C_BOOL ) :: negative_curvature
       LOGICAL ( KIND = C_BOOL ) :: hard_case
     END TYPE glrt_inform_type
@@ -88,8 +84,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( glrt_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_glrt_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -137,7 +133,7 @@
     TYPE ( f_glrt_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( glrt_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -186,7 +182,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( glrt_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_glrt_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -219,7 +215,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_glrt_inform_type ), INTENT( IN ) :: finform
     TYPE ( glrt_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -248,19 +244,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_GLRT_double_ciface
+  END MODULE GALAHAD_GLRT_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran glrt_initialize
 !  -------------------------------------
 
   SUBROUTINE glrt_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( glrt_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -297,7 +293,7 @@
 !  ----------------------------------------
 
   SUBROUTINE glrt_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -313,7 +309,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -347,12 +343,12 @@
 !  ------------------------------------------
 
   SUBROUTINE glrt_import_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( glrt_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -391,17 +387,17 @@
 
   SUBROUTINE glrt_solve_problem( cdata, status, n,power, weight, x, r,         &
                                  vector ) BIND( C )
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), VALUE :: power, weight
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: r
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: vector
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: power, weight
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: r
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: vector
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -424,14 +420,14 @@
 !  --------------------------------------
 
   SUBROUTINE glrt_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( glrt_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -458,7 +454,7 @@
 !  ------------------------------------
 
   SUBROUTINE glrt_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_GLRT_double_ciface
+  USE GALAHAD_GLRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

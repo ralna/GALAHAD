@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:01 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:40 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S H A    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SHA_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_SHA_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_SHA_double, ONLY:                                              &
+    USE GALAHAD_SHA_precision, ONLY:                                           &
         f_sha_control_type   => SHA_control_type,                              &
         f_sha_inform_type    => SHA_inform_type,                               &
         f_sha_full_data_type => SHA_full_data_type,                            &
@@ -27,36 +30,29 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: sha_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: approximation_algorithm
-      INTEGER ( KIND = C_INT ) :: dense_linear_solver
-      INTEGER ( KIND = C_INT ) :: max_sparse_degree
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: approximation_algorithm
+      INTEGER ( KIND = ipc_ ) :: dense_linear_solver
+      INTEGER ( KIND = ipc_ ) :: max_sparse_degree
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE sha_control_type
 
     TYPE, BIND( C ) :: sha_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
-      INTEGER ( KIND = C_INT ) :: max_degree
-      INTEGER ( KIND = C_INT ) :: differences_needed
-      INTEGER ( KIND = C_INT ) :: max_reduced_degree
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: max_degree
+      INTEGER ( KIND = ipc_ ) :: differences_needed
+      INTEGER ( KIND = ipc_ ) :: max_reduced_degree
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE sha_inform_type
 
@@ -71,8 +67,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( sha_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sha_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -104,7 +100,7 @@
     TYPE ( f_sha_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sha_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -136,7 +132,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( sha_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_sha_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -159,7 +155,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_sha_inform_type ), INTENT( IN ) :: finform
     TYPE ( sha_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -178,19 +174,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_SHA_double_ciface
+  END MODULE GALAHAD_SHA_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran sha_initialize
 !  -------------------------------------
 
   SUBROUTINE sha_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_SHA_double_ciface
+  USE GALAHAD_SHA_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sha_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -227,7 +223,7 @@
 !  ----------------------------------------
 
   SUBROUTINE sha_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_SHA_double_ciface
+  USE GALAHAD_SHA_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -243,7 +239,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -277,7 +273,7 @@
 !  ------------------------------------
 
   SUBROUTINE sha_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_SHA_double_ciface
+  USE GALAHAD_SHA_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
