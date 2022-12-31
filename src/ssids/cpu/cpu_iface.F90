@@ -1,9 +1,14 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:55 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 module spral_ssids_cpu_iface
-   use, intrinsic :: iso_c_binding
+   use :: GALAHAD_KINDS
    use spral_ssids_datatypes, only : ssids_options
    use spral_ssids_inform, only : ssids_inform
    implicit none
@@ -19,15 +24,15 @@ module spral_ssids_cpu_iface
    !> @sa spral_ssids_datatypes::ssids_options
    !> @sa spral::ssids::cpu::cpu_factor_options
    type, bind(C) :: cpu_factor_options
-      integer(C_INT) :: print_level
+      integer(ipc_) :: print_level
       logical(C_BOOL) :: action
-      real(C_DOUBLE) :: small
-      real(C_DOUBLE) :: u
-      real(C_DOUBLE) :: multiplier
-      integer(C_INT64_T) :: small_subtree_threshold
-      integer(C_INT) :: cpu_block_size
-      integer(C_INT) :: pivot_method
-      integer(C_INT) :: failed_pivot_method
+      real(rpc_) :: small
+      real(rpc_) :: u
+      real(rpc_) :: multiplier
+      integer(long_) :: small_subtree_threshold
+      integer(ipc_) :: cpu_block_size
+      integer(ipc_) :: pivot_method
+      integer(ipc_) :: failed_pivot_method
    end type cpu_factor_options
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -37,14 +42,14 @@ module spral_ssids_cpu_iface
    !> @sa spral_ssids_inform::ssids_inform
    !> @sa spral::ssids::cpu::ThreadStats
    type, bind(C) :: cpu_factor_stats
-      integer(C_INT) :: flag
-      integer(C_INT) :: num_delay
-      integer(C_INT) :: num_neg
-      integer(C_INT) :: num_two
-      integer(C_INT) :: num_zero
-      integer(C_INT) :: maxfront
-      integer(C_INT) :: not_first_pass
-      integer(C_INT) :: not_second_pass
+      integer(ipc_) :: flag
+      integer(ipc_) :: num_delay
+      integer(ipc_) :: num_neg
+      integer(ipc_) :: num_two
+      integer(ipc_) :: num_zero
+      integer(ipc_) :: maxfront
+      integer(ipc_) :: not_first_pass
+      integer(ipc_) :: not_second_pass
    end type cpu_factor_stats
 
 contains
@@ -94,32 +99,32 @@ subroutine spral_c_dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
 bind(C)
    use spral_blas_iface, only : dgemm
    character(C_CHAR), intent(in) :: ta, tb
-   integer(C_INT), intent(in) :: m, n, k
-   integer(C_INT), intent(in) :: lda, ldb, ldc
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(in   ), dimension(ldb, *) :: b
-   real(C_DOUBLE), intent(inout), dimension(ldc, *) :: c
+   integer(ipc_), intent(in) :: m, n, k
+   integer(ipc_), intent(in) :: lda, ldb, ldc
+   real(rpc_), intent(in) :: alpha, beta
+   real(rpc_), intent(in   ), dimension(lda, *) :: a
+   real(rpc_), intent(in   ), dimension(ldb, *) :: b
+   real(rpc_), intent(inout), dimension(ldc, *) :: c
    call dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
 end subroutine spral_c_dgemm
 
 subroutine spral_c_dpotrf(uplo, n, a, lda, info) bind(C)
    use spral_lapack_iface, only : dpotrf
    character(C_CHAR), intent(in) :: uplo
-   integer(C_INT), intent(in) :: n, lda
-   integer(C_INT), intent(out) :: info
-   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
+   integer(ipc_), intent(in) :: n, lda
+   integer(ipc_), intent(out) :: info
+   real(rpc_), intent(inout), dimension(lda, *) :: a
    call dpotrf(uplo, n, a, lda, info)
 end subroutine spral_c_dpotrf
 
 subroutine spral_c_dsytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
    use spral_lapack_iface, only : dsytrf
    character(C_CHAR), intent(in) :: uplo
-   integer(C_INT), intent(in) :: n, lda, lwork
-   integer(C_INT), intent(out), dimension(n) :: ipiv
-   integer(C_INT), intent(out) :: info
-   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(out  ), dimension(*) :: work
+   integer(ipc_), intent(in) :: n, lda, lwork
+   integer(ipc_), intent(out), dimension(n) :: ipiv
+   integer(ipc_), intent(out) :: info
+   real(rpc_), intent(inout), dimension(lda, *) :: a
+   real(rpc_), intent(out  ), dimension(*) :: work
    call dsytrf(uplo, n, a, lda, ipiv, work, lwork, info)
 end subroutine spral_c_dsytrf
 
@@ -127,29 +132,29 @@ subroutine spral_c_dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
                          ldb) bind(C)
    use spral_blas_iface, only : dtrsm
    character(C_CHAR), intent(in) :: side, uplo, transa, diag
-   integer(C_INT), intent(in) :: m, n, lda, ldb
-   real(C_DOUBLE), intent(in   ) :: alpha
-   real(C_DOUBLE), intent(in   ) :: a(lda, *)
-   real(C_DOUBLE), intent(inout) :: b(ldb, n)
+   integer(ipc_), intent(in) :: m, n, lda, ldb
+   real(rpc_), intent(in   ) :: alpha
+   real(rpc_), intent(in   ) :: a(lda, *)
+   real(rpc_), intent(inout) :: b(ldb, n)
    call dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
 end subroutine spral_c_dtrsm
 
 subroutine spral_c_dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
    use spral_blas_iface, only : dsyrk
    character(C_CHAR), intent(in) :: uplo, trans
-   integer(C_INT), intent(in) :: n, k, lda, ldc
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(inout), dimension(ldc, n) :: c
+   integer(ipc_), intent(in) :: n, k, lda, ldc
+   real(rpc_), intent(in) :: alpha, beta
+   real(rpc_), intent(in   ), dimension(lda, *) :: a
+   real(rpc_), intent(inout), dimension(ldc, n) :: c
    call dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
 end subroutine spral_c_dsyrk
 
 subroutine spral_c_dtrsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
    use spral_blas_iface, only : dtrsv
    character(C_CHAR), intent(in) :: uplo, trans, diag
-   integer(C_INT), intent(in) :: n, lda, incx
-   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
-   real(C_DOUBLE), intent(inout), dimension(*) :: x
+   integer(ipc_), intent(in) :: n, lda, incx
+   real(rpc_), intent(in   ), dimension(lda, n) :: a
+   real(rpc_), intent(inout), dimension(*) :: x
    call dtrsv(uplo, trans, diag, n, a, lda, x, incx)
 end subroutine spral_c_dtrsv
 
@@ -157,11 +162,11 @@ subroutine spral_c_dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
 bind(C)
    use spral_blas_iface, only : dgemv
    character(C_CHAR), intent(in) :: trans
-   integer(C_INT), intent(in) :: m, n, lda, incx, incy
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
-   real(C_DOUBLE), intent(in   ), dimension(*) :: x
-   real(C_DOUBLE), intent(inout), dimension(*) :: y
+   integer(ipc_), intent(in) :: m, n, lda, incx, incy
+   real(rpc_), intent(in) :: alpha, beta
+   real(rpc_), intent(in   ), dimension(lda, n) :: a
+   real(rpc_), intent(in   ), dimension(*) :: x
+   real(rpc_), intent(inout), dimension(*) :: y
    call dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
 end subroutine spral_c_dgemv
 

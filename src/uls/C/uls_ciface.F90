@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:25 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  U L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_ULS_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_ULS_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_ULS_double, ONLY:                                              &
+    USE GALAHAD_ULS_precision, ONLY:                                           &
         f_uls_control_type => ULS_control_type,                                &
         f_uls_inform_type => ULS_inform_type,                                  &
         f_uls_full_data_type => ULS_full_data_type,                            &
@@ -26,7 +29,7 @@
         f_uls_information => ULS_information,                                  &
         f_uls_terminate => ULS_terminate
 
-    USE GALAHAD_GLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_GLS_precision_ciface, ONLY:                                    &
         gls_control,                                                           &
         gls_ainfo,                                                             &
         gls_finfo,                                                             &
@@ -38,7 +41,7 @@
         copy_gls_finfo_out => copy_finfo_out,                                  &
         copy_gls_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA48_double_ciface, ONLY:                                          &
+    USE HSL_MA48_precision_ciface, ONLY:                                       &
         ma48_control,                                                          &
         ma48_ainfo,                                                            &
         ma48_finfo,                                                            &
@@ -49,61 +52,54 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: uls_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: warning
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: print_level_solver
-      INTEGER ( KIND = C_INT ) :: initial_fill_in_factor
-      INTEGER ( KIND = C_INT ) :: min_real_factor_size
-      INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_INT64_T ) :: max_factor_size
-      INTEGER ( KIND = C_INT ) :: blas_block_size_factorize
-      INTEGER ( KIND = C_INT ) :: blas_block_size_solve
-      INTEGER ( KIND = C_INT ) :: pivot_control
-      INTEGER ( KIND = C_INT ) :: pivot_search_limit
-      INTEGER ( KIND = C_INT ) :: minimum_size_for_btf
-      INTEGER ( KIND = C_INT ) :: max_iterative_refinements
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: warning
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: print_level_solver
+      INTEGER ( KIND = ipc_ ) :: initial_fill_in_factor
+      INTEGER ( KIND = ipc_ ) :: min_real_factor_size
+      INTEGER ( KIND = ipc_ ) :: min_integer_factor_size
+      INTEGER ( KIND = long_ ) :: max_factor_size
+      INTEGER ( KIND = ipc_ ) :: blas_block_size_factorize
+      INTEGER ( KIND = ipc_ ) :: blas_block_size_solve
+      INTEGER ( KIND = ipc_ ) :: pivot_control
+      INTEGER ( KIND = ipc_ ) :: pivot_search_limit
+      INTEGER ( KIND = ipc_ ) :: minimum_size_for_btf
+      INTEGER ( KIND = ipc_ ) :: max_iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: stop_if_singular
-      REAL ( KIND = wp ) :: array_increase_factor
-      REAL ( KIND = wp ) :: switch_to_full_code_density
-      REAL ( KIND = wp ) :: array_decrease_factor
-      REAL ( KIND = wp ) :: relative_pivot_tolerance
-      REAL ( KIND = wp ) :: absolute_pivot_tolerance
-      REAL ( KIND = wp ) :: zero_tolerance
-      REAL ( KIND = wp ) :: acceptable_residual_relative
-      REAL ( KIND = wp ) :: acceptable_residual_absolute
+      REAL ( KIND = rp_ ) :: array_increase_factor
+      REAL ( KIND = rp_ ) :: switch_to_full_code_density
+      REAL ( KIND = rp_ ) :: array_decrease_factor
+      REAL ( KIND = rp_ ) :: relative_pivot_tolerance
+      REAL ( KIND = rp_ ) :: absolute_pivot_tolerance
+      REAL ( KIND = rp_ ) :: zero_tolerance
+      REAL ( KIND = rp_ ) :: acceptable_residual_relative
+      REAL ( KIND = rp_ ) :: acceptable_residual_absolute
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE uls_control_type
 
     TYPE, BIND( C ) :: uls_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: more_info
-      INTEGER ( KIND = C_INT64_T ) :: out_of_range
-      INTEGER ( KIND = C_INT64_T ) :: duplicates
-      INTEGER ( KIND = C_INT64_T ) :: entries_dropped
-      INTEGER ( KIND = C_INT64_T ) :: workspace_factors
-      INTEGER ( KIND = C_INT ) :: compresses
-      INTEGER ( KIND = C_INT64_T ) :: entries_in_factors
-      INTEGER ( KIND = C_INT ) :: rank
-      INTEGER ( KIND = C_INT ) :: structural_rank
-      INTEGER ( KIND = C_INT ) :: pivot_control
-      INTEGER ( KIND = C_INT ) :: iterative_refinements
+      INTEGER ( KIND = ipc_ ) :: more_info
+      INTEGER ( KIND = long_ ) :: out_of_range
+      INTEGER ( KIND = long_ ) :: duplicates
+      INTEGER ( KIND = long_ ) :: entries_dropped
+      INTEGER ( KIND = long_ ) :: workspace_factors
+      INTEGER ( KIND = ipc_ ) :: compresses
+      INTEGER ( KIND = long_ ) :: entries_in_factors
+      INTEGER ( KIND = ipc_ ) :: rank
+      INTEGER ( KIND = ipc_ ) :: structural_rank
+      INTEGER ( KIND = ipc_ ) :: pivot_control
+      INTEGER ( KIND = ipc_ ) :: iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( gls_ainfo ) :: gls_ainfo
       TYPE ( gls_finfo ) :: gls_finfo
@@ -124,8 +120,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( uls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_uls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -177,7 +173,7 @@
     TYPE ( f_uls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( uls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -228,7 +224,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( uls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_uls_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -267,7 +263,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_uls_inform_type ), INTENT( IN ) :: finform
     TYPE ( uls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     cinform%status = finform%status
@@ -304,19 +300,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_ULS_double_ciface
+  END MODULE GALAHAD_ULS_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran uls_initialize
 !  -------------------------------------
 
   SUBROUTINE uls_initialize( csolver, cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: csolver
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( uls_control_type ), INTENT( OUT ) :: ccontrol
@@ -359,7 +355,7 @@
 !  ----------------------------------------
 
   SUBROUTINE uls_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -375,7 +371,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -410,20 +406,20 @@
 
   SUBROUTINE uls_factorize_matrix( ccontrol, cdata, status, m, n, ctype, ne,   &
                                    val, row, col, ptr  ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( uls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n, ne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n, ne
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: val
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
 
 !  local variables
 
@@ -465,12 +461,12 @@
 !  -----------------------------------------
 
   SUBROUTINE uls_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( uls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -504,15 +500,15 @@
 !  ----------------------------------------
 
   SUBROUTINE uls_solve_system( cdata, status, m, n, sol, ctrans ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n
   LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: ctrans
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( MAX( m, n ) ) :: sol
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( MAX( m, n ) ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -537,14 +533,14 @@
 !  --------------------------------------
 
   SUBROUTINE uls_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( uls_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -571,7 +567,7 @@
 !  ------------------------------------
 
   SUBROUTINE uls_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_ULS_double_ciface
+  USE GALAHAD_ULS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

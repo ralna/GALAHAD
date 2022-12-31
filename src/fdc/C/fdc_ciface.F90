@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  F D C    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -11,10 +14,10 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_FDC_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_FDC_precision_ciface
+    USE GALAHAD_KINDS
     USE GALAHAD_common_ciface
-    USE GALAHAD_FDC_double, ONLY:                                              &
+    USE GALAHAD_FDC_precision, ONLY:                                           &
         f_fdc_control_type        => FDC_control_type,                         &
         f_fdc_time_type           => FDC_time_type,                            &
         f_fdc_inform_type         => FDC_inform_type,                          &
@@ -24,7 +27,7 @@
         f_fdc_find_dependent_rows => FDC_find_dependent_rows,                  &
         f_fdc_terminate           => FDC_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
         sls_inform_type,                                                       &
         sls_control_type,                                                      &
         copy_sls_inform_in   => copy_inform_in,                                &
@@ -32,7 +35,7 @@
         copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE GALAHAD_ULS_double_ciface, ONLY:                                       &
+    USE GALAHAD_ULS_precision_ciface, ONLY:                                    &
         uls_inform_type,                                                       &
         uls_control_type,                                                      &
         copy_uls_inform_in   => copy_inform_in,                                &
@@ -42,27 +45,20 @@
 
     IMPLICIT NONE
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: fdc_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: indmin
-      INTEGER ( KIND = C_INT ) :: valmin
-      REAL ( KIND = wp ) :: pivot_tol
-      REAL ( KIND = wp ) :: zero_pivot
-      REAL ( KIND = wp ) :: max_infeas
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: indmin
+      INTEGER ( KIND = ipc_ ) :: valmin
+      REAL ( KIND = rp_ ) :: pivot_tol
+      REAL ( KIND = rp_ ) :: zero_pivot
+      REAL ( KIND = rp_ ) :: max_infeas
       LOGICAL ( KIND = C_BOOL ) :: use_sls
       LOGICAL ( KIND = C_BOOL ) :: scale
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -75,22 +71,22 @@
     END TYPE fdc_control_type
 
     TYPE, BIND( C ) :: fdc_time_type
-      REAL ( KIND = wp ) :: total
-      REAL ( KIND = wp ) :: analyse
-      REAL ( KIND = wp ) :: factorize
-      REAL ( KIND = wp ) :: clock_total
-      REAL ( KIND = wp ) :: clock_analyse
-      REAL ( KIND = wp ) :: clock_factorize
+      REAL ( KIND = rp_ ) :: total
+      REAL ( KIND = rp_ ) :: analyse
+      REAL ( KIND = rp_ ) :: factorize
+      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rp_ ) :: clock_analyse
+      REAL ( KIND = rp_ ) :: clock_factorize
     END TYPE fdc_time_type
 
     TYPE, BIND( C ) :: fdc_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
-      INTEGER ( KIND = C_INT64_T ) :: factorization_real
-      REAL ( KIND = wp ) :: non_negligible_pivot
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = long_ ) :: factorization_integer
+      INTEGER ( KIND = long_ ) :: factorization_real
+      REAL ( KIND = rp_ ) :: non_negligible_pivot
       TYPE ( fdc_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
       TYPE ( uls_inform_type ) :: uls_inform
@@ -107,8 +103,8 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( fdc_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_fdc_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -160,7 +156,7 @@
     TYPE ( f_fdc_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( fdc_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -248,7 +244,7 @@
     SUBROUTINE copy_inform_in( cinform, finform ) 
     TYPE ( fdc_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_fdc_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -279,7 +275,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_fdc_inform_type ), INTENT( IN ) :: finform
     TYPE ( fdc_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -306,19 +302,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_FDC_double_ciface
+  END MODULE GALAHAD_FDC_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran fdc_initialize
 !  -------------------------------------
 
   SUBROUTINE fdc_initialize( cdata, ccontrol, status ) BIND( C ) 
-  USE GALAHAD_FDC_double_ciface
+  USE GALAHAD_FDC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( fdc_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -355,7 +351,7 @@
 !  ----------------------------------------
 
   SUBROUTINE fdc_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_FDC_double_ciface
+  USE GALAHAD_FDC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -371,7 +367,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
 
 !  convert C string to Fortran string
 
@@ -408,23 +404,23 @@
                                       m, n, ane, acol, aptr, aval, b,          &
                                       n_depen, depen ) BIND( C )
 
-  USE GALAHAD_FDC_double_ciface
+  USE GALAHAD_FDC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( fdc_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( fdc_inform_type ), INTENT( OUT ) :: cinform
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n, ane
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: n_depen
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ) :: aptr
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ) :: acol
-! REAL ( KIND = wp ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION(  m ) :: b
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION(  m ) :: depen
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n, ane
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: n_depen
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ) :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ) :: acol
+! REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION(  m ) :: b
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION(  m ) :: depen
 
 !  local variables
 
@@ -462,7 +458,7 @@
 !  ------------------------------------
 
   SUBROUTINE fdc_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_FDC_double_ciface
+  USE GALAHAD_FDC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
