@@ -1,5 +1,5 @@
-  PROGRAM SSIDS_EXAMPLE   !  GALAHAD 2.8 - 06/09/2016 AT 12:00 GMT.
-   USE SPRAL_ssids
+  PROGRAM SSIDS_EXAMPLE   !  GALAHAD 4.1 - 2022-01-03 AT 10:30 GMT.
+   USE SPRAL_ssids_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE( ssids_inform ) :: inform

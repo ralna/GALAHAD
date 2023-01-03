@@ -149,22 +149,13 @@ $(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.F90
 	$(RANLIB) $(MPLG)
 	@printf '[ OK ]\n'
 
-mkl_pardisos.o: $(OBJ)/mkl_pardisos.o
-
-$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisos  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.F90 > $(OBJ)/mkl_pardisos.F90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.F90
-	rm $(OBJ)/*.F90
-	@printf '[ OK ]\n'
-
 #  test programs
 
 mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
 
 $(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.F90 > $(OBJ)/mkl_pardisot.F90
+	$(CP) ../mkl/mkl_pardisot.F90 $(OBJ)/mkl_pardisot.F90
 	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.F90
 	@printf '[ OK ]\n'
 

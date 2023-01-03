@@ -341,4 +341,11 @@
 #define wcp_find_wcp wcp_find_wcp_s
 #define wcp_information wcp_information_s
 #define wcp_terminate wcp_terminate_s
+#define spral_c_dgemm spral_c_sgemm
+#define spral_c_dpotrf spral_c_spotrf
+#define spral_c_dsytrf spral_c_ssytrf
+#define spral_c_dtrsm spral_c_strsm
+#define spral_c_dsyrk spral_c_ssyrk
+#define spral_c_dtrsv spral_c_strsv
+#define spral_c_dgemv spral_c_sgemv
 #endif

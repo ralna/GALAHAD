@@ -51,7 +51,7 @@ $(package).o: $(LG)($(package).o)
 
 $(LG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
-	$(SED) -f $(SEDS) ../$(package)/$(package).F90 > $(OBJ)/$(package).F90
+	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
 	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
@@ -77,8 +77,7 @@ $(package)t.o: $(OBJ)/$(package)t.o
 
 $(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)t.F90 > $(OBJ)/$(package)t.F90
+	$(CP) ../$(package)/$(package)t.F90 $(OBJ)/$(package)t.F90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'

@@ -361,18 +361,19 @@ contains
             exec_loc, st)
        if (st .ne. 0) return
        best_load_balance = min(load_balance, best_load_balance)
-       if (load_balance .lt. options%max_load_inbalance) exit ! allocation is good
+       if (load_balance .lt. options%max_load_inbalance) exit ! allocation is ok
        ! Split tree further
        call split_tree(nparts, part, size_order, is_child, sparent, flops, &
             ngpu, options%min_gpu_work, st)
        if (st .ne. 0) return
     end do
 
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,*) &
             "[find_subtree_partition] load_balance = ", best_load_balance
     end if
-    ! Consolidate adjacent non-children nodes into same part and regen exec_alloc
+    ! Consolidate adjacent non-children nodes into same part and regn exec_alloc
     !print *
     !print *, "pre merge", part(1:nparts+1)
     !print *, "exec_loc ", exec_loc(1:nparts)
@@ -404,7 +405,8 @@ contains
        part(j+1) = part(i)
        exec_loc(j+1) = exec_loc(i)
        k = sparent(part(i+1)-1)
-       if ((exec_loc(i) .ne. exec_loc(j)) .or. (has_parent .and. (k .le. nnodes))) then
+       if ((exec_loc(i) .ne. exec_loc(j)) .or. &
+           (has_parent .and. (k .le. nnodes))) then
           ! We can't merge j and i
           j = j + 1
           has_parent = .false. 
@@ -1019,7 +1021,8 @@ contains
     if (st .ne. 0) go to 100
 
     ! Sort out subtrees
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,*) "Input topology"
        do i = 1, size(akeep%topology)
          write (options%unit_diagnostics,*) &
@@ -1029,9 +1032,10 @@ contains
                  "---> gpus ", akeep%topology(i)%gpus
        end do
     end if
-    call find_subtree_partition(akeep%nnodes, akeep%sptr, akeep%sparent,           &
-         akeep%rptr, options, akeep%topology, akeep%nparts, akeep%part,            &
-         exec_loc, akeep%contrib_ptr, akeep%contrib_idx, contrib_dest, inform, st)
+    call find_subtree_partition(akeep%nnodes, akeep%sptr, akeep%sparent, &
+         akeep%rptr, options, akeep%topology, akeep%nparts, akeep%part, &
+         exec_loc, akeep%contrib_ptr, akeep%contrib_idx, contrib_dest, &
+         inform, st)
     if (st .ne. 0) go to 100
     !print *, "invp = ", akeep%invp
     !print *, "sptr = ", akeep%sptr(1:akeep%nnodes+1)
@@ -1047,6 +1051,7 @@ contains
 
     ! Generate dot file for assembly tree
     ! call print_atree(akeep%nnodes, akeep%sptr, akeep%sparent, akeep%rptr)
+    if (.false.) & ! change .true. to debug
     call print_atree_part(akeep%nnodes, akeep%sptr, akeep%sparent, akeep%rptr, &
          akeep%topology, akeep%nparts, akeep%part, exec_loc)
 
@@ -1066,7 +1071,8 @@ contains
        if (exec_loc(i) .eq. -1) then
           if (numa_region .ne. 1) cycle
           device = 0
-       else if ((mod((exec_loc(i)-1), size(akeep%topology))+1) .ne. numa_region) then
+       else if ((mod((exec_loc(i)-1), size(akeep%topology))+1) .ne. &
+                numa_region) then
           cycle
        else
           device = (exec_loc(i)-1) / size(akeep%topology)
@@ -1086,10 +1092,10 @@ contains
           device = akeep%topology(numa_region)%gpus(device)
           !print *, numa_region, "init gpu subtree ", i, akeep%part(i), &
           !   akeep%part(i+1)-1, "device", device
-          akeep%subtree(i)%ptr => construct_gpu_symbolic_subtree(device,        &
-               akeep%n, akeep%part(i), akeep%part(i+1), akeep%sptr,             &
-               akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr, akeep%nlist, &
-               options)
+          akeep%subtree(i)%ptr => construct_gpu_symbolic_subtree(device, &
+               akeep%n, akeep%part(i), akeep%part(i+1), akeep%sptr, &
+               akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr, &
+               akeep%nlist, options)
        end if
     end do
 !$omp end parallel

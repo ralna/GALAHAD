@@ -17,10 +17,6 @@ MA86D = blas lapack zd11 $(HLGD)(mc64d.o) $(HLGD)(mc21d.o) \
 MA86CS = $(MA86S) $(HCLGS)(hsl_ma86s_ciface.o)
 MA86CD = $(MA86D) $(HCLGD)(hsl_ma86d_ciface.o)
 
-#  sed scripts
-
-MA86SED = $(GALAHAD)/seds/$(MA86_VERSION).sed
-
 #  compilation agenda
 
 ma86: ma86_$(PRECIS)
@@ -147,7 +143,7 @@ hsl_ma86s.o: $(HLG)(hsl_ma86s.o)
 
 $(HLG)(hsl_ma86s.o): $(MA86)/hsl_ma86s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86s"
-	$(SED) -f $(MA86SED) $(MA86)/hsl_ma86s.f90 > $(OBJ)/hsl_ma86s.f90
+	$(CP) $(MA86)/hsl_ma86s.f90 $(OBJ)/hsl_ma86s.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86s.o $(FFLAGSOMP) hsl_ma86s.f90
 	cd $(OBJ) ; $(HARR) hsl_ma86s.o ; $(RM) hsl_ma86s.f90 hsl_ma86s.o
 	$(RMARFILES) sls.o
@@ -159,7 +155,7 @@ hsl_ma86d.o: $(HLG)(hsl_ma86d.o)
 
 $(HLG)(hsl_ma86d.o): $(MA86)/hsl_ma86d.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86d"
-	$(SED) -f $(MA86SED) $(MA86)/hsl_ma86d.f90 > $(OBJ)/hsl_ma86d.f90
+	$(CP) $(MA86)/hsl_ma86d.f90 $(OBJ)/hsl_ma86d.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86d.o $(FFLAGSOMP) hsl_ma86d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma86d.o ; $(RM) hsl_ma86d.f90 hsl_ma86d.o
 	$(RMARFILED) sls.o

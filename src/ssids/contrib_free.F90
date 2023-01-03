@@ -37,7 +37,7 @@ contains
 end module spral_ssids_contrib_precision_free
 
 ! The C prototype for the following routine is in contrib.h
-subroutine spral_ssids_contrib_free_dbl(ccontrib) bind(C)
+subroutine spral_ssids_contrib_free_precision(ccontrib) bind(C)
   use, intrinsic :: iso_c_binding
   use spral_ssids_contrib_precision_free
   implicit none
@@ -50,4 +50,4 @@ subroutine spral_ssids_contrib_free_dbl(ccontrib) bind(C)
       call c_f_pointer(ccontrib, fcontrib)
       call contrib_free(fcontrib)
    end if
-end subroutine spral_ssids_contrib_free_dbl
+end subroutine spral_ssids_contrib_free_precision

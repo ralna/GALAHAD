@@ -13,6 +13,16 @@
 #include "ssids/cpu/SmallLeafSymbolicSubtree.hxx"
 #include "ssids/cpu/ThreadStats.hxx"
 
+#ifdef SPRAL_SINGLE
+#define FAPrecisionTraits FASingleTraits
+#define factor_alloc_precision factor_alloc_single
+#define precision_ float
+#else
+#define FAPrecisionTraits FADoubleTraits
+#define factor_alloc_precision factor_alloc_double
+#define precision_ double
+#endif
+
 /* SPRAL headers */
 
 namespace spral { namespace ssids { namespace cpu {
@@ -30,12 +40,12 @@ template <typename T,
           typename PoolAllocator // Allocator for pool memory usage
           >
 class SmallLeafNumericSubtree<true, T, FactorAllocator, PoolAllocator> {
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<double> FADoubleTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<precision_> FAPrecisionTraits;
    typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<int> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
    SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_options const& options, ThreadStats& stats) 
-      : old_nodes_(old_nodes), symb_(symb), lcol_(FADoubleTraits::allocate(factor_alloc, symb.nfactor_))
+      : old_nodes_(old_nodes), symb_(symb), lcol_(FAPrecisionTraits::allocate(factor_alloc, symb.nfactor_))
    {
       Workspace& work = work_vec[omp_get_thread_num()];
       /* Initialize nodes */
@@ -60,8 +70,9 @@ public:
          int nrow = symb_.symb_[ni].nrow;
          stats.maxfront = std::max(stats.maxfront, nrow);
          // Factorization
+         precision_ one_val = 1.0;
          factor_node_posdef
-            (1.0, symb_.symb_[ni], old_nodes_[ni], options, stats);
+            (one_val, symb_.symb_[ni], old_nodes_[ni], options, stats);
          if(stats.flag<Flag::SUCCESS) return;
       }
    }
@@ -73,8 +84,8 @@ void add_a(
       T const* aval,
       T const* scaling
       ) {
-   double *lcol = lcol_ + symb_[si].lcol_offset;
-   size_t ldl = align_lda<double>(snode.nrow);
+   precision_ *lcol = lcol_ + symb_[si].lcol_offset;
+   size_t ldl = align_lda<precision_>(snode.nrow);
    if(scaling) {
       /* Scaling to apply */
       for(int i=0; i<snode.num_a; i++) {
@@ -146,7 +157,7 @@ void assemble(
                T *src = &child->contrib[i*cm];
                if(c < snode.ncol) {
                   // Contribution added to lcol
-                  int ldd = align_lda<double>(nrow);
+                  int ldd = align_lda<precision_>(nrow);
                   T *dest = &node->lcol[c*ldd];
                   for(int j=i; j<cm; j++) {
                      int r = map[ csnode.rlist[csnode.ncol+j] ];
@@ -182,7 +193,7 @@ template <typename T,
           typename PoolAllocator // Allocator for pool memory usage
           >
 class SmallLeafNumericSubtree<false, T, FactorAllocator, PoolAllocator> {
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<double> FADoubleTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<precision_> FAPrecisionTraits;
    typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<int> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
@@ -225,7 +236,7 @@ private:
          T const* scaling
          ) {
       /* Rebind allocators */
-      typename FADoubleTraits::allocator_type factor_alloc_double(factor_alloc);
+      typename FAPrecisionTraits::allocator_type factor_alloc_precision(factor_alloc);
       typename FAIntTraits::allocator_type factor_alloc_int(factor_alloc);
 
       /* Count incoming delays and determine size of node */
@@ -238,9 +249,9 @@ private:
 
       /* Get space for node now we know it size using Fortran allocator + zero it*/
       // NB L is  nrow x ncol and D is 2 x ncol (but no D if posdef)
-      size_t ldl = align_lda<double>(nrow);
+      size_t ldl = align_lda<precision_>(nrow);
       size_t len = (ldl+2) * ncol; // +2 is for D
-      node.lcol = FADoubleTraits::allocate(factor_alloc_double, len);
+      node.lcol = FAPrecisionTraits::allocate(factor_alloc_precision, len);
       memset(node.lcol, 0, len*sizeof(T));
 
       /* Get space for contribution block + (explicitly do not zero it!) */
