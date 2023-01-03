@@ -1,4 +1,2 @@
-gls_src = ['src/gls/gls.f90']
-gls_c_src = ['src/gls/C/gls_ciface.f90']
-libgalahad_src += gls_src
-libgalahad_c_src += gls_c_src
+libgalahad_src += files('gls.F90')
+libgalahad_c_src += files('C/gls_ciface.F90')

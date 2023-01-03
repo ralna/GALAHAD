@@ -1,2 +1,1 @@
-qpt_src = ['src/qpt/qpt.f90']
-libgalahad_src += qpt_src
+libgalahad_src += files('qpt.F90')
