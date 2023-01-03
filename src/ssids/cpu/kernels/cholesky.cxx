@@ -11,6 +11,12 @@
 #include "ssids/profile.hxx"
 #include "ssids/cpu/kernels/wrappers.hxx"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /** Perform Cholesky factorization of lower triangular matrix a[] in place.
@@ -29,7 +35,8 @@ namespace spral { namespace ssids { namespace cpu {
  * \param info is initialized to -1, and will be changed to the index of any
  *    column where a non-zero column is encountered.
  */
-void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd, int ldupd, int blksz, int *info) {
+void cholesky_factor(int m, int n, precision_* a, int lda, precision_ beta, 
+                     precision_* upd, int ldupd, int blksz, int *info) {
    if(n < blksz) {
       // Adjust so blocks have blksz**2 entries
       blksz = int((long(blksz)*blksz) / n);
@@ -41,6 +48,7 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
    /* FIXME: Would this be better row-wise to ensure critical path, rather than
     * its current col-wise implementation ensuring maximum work available??? */
    #pragma omp taskgroup
+
    for(int j = 0; j < n; j += blksz) {
      int blkn = std::min(blksz, n-j);
      /* Diagonal Block Factorization Task */
@@ -64,12 +72,14 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
            *info = flag-1; // flag uses Fortran indexing
          } else if (blkm > blkn) {
            // Diagonal block factored OK, handle some rectangular part of block
+           precision_ one_val = 1.0;
+           precision_ minus_one_val = - 1.0;
            host_trsm(SIDE_RIGHT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT,
-                     blkm-blkn, blkn, 1.0, &a[j*(lda+1)], lda,
+                     blkm-blkn, blkn, one_val, &a[j*(lda+1)], lda,
                      &a[j*(lda+1)+blkn], lda);
            if (upd) {
-             double rbeta = (j==0) ? beta : 1.0;
-             host_syrk(FILL_MODE_LWR, OP_N, blkm-blkn, blkn, -1.0,
+             precision_ rbeta = (j==0) ? beta : 1.0;
+             host_syrk(FILL_MODE_LWR, OP_N, blkm-blkn, blkn, minus_one_val,
                        &a[j*(lda+1)+blkn], lda, rbeta, upd, ldupd);
            }
          }
@@ -94,11 +104,13 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
 #ifdef PROFILE
            Profile::Task task("TA_CHOL_TRSM");
 #endif
-           host_trsm(SIDE_RIGHT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT,
-                     blkm, blkn, 1.0, &a[j*(lda+1)], lda, &a[j*lda+i], lda);
+           precision_ one_val = 1.0;
+           precision_ minus_one_val = - 1.0;
+           host_trsm(SIDE_RIGHT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, blkm,
+                     blkn, one_val, &a[j*(lda+1)], lda, &a[j*lda+i], lda);
            if ((blkn < blksz) && upd) {
-             double rbeta = (j==0) ? beta : 1.0;
-             host_gemm(OP_N, OP_T, blkm, blksz-blkn, blkn, -1.0,
+             precision_ rbeta = (j==0) ? beta : 1.0;
+             host_gemm(OP_N, OP_T, blkm, blksz-blkn, blkn, minus_one_val,
                        &a[j*lda+i], lda, &a[j*(lda+1)+blkn], lda,
                        rbeta, &upd[i-n], ldupd);
            }
@@ -127,18 +139,21 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
              Profile::Task task("TA_CHOL_UPD");
 #endif
              int blkm = std::min(blksz, m-i);
-             host_gemm(OP_N, OP_T, blkm, blkk, blkn, -1.0, &a[j*lda+i], lda,
-                       &a[j*lda+k], lda, 1.0, &a[k*lda+i], lda);
+             precision_ one_val = 1.0;
+             precision_ minus_one_val = - 1.0;
+             host_gemm(OP_N, OP_T, blkm, blkk, blkn, minus_one_val, 
+                       &a[j*lda+i], lda, &a[j*lda+k], lda, one_val, 
+                       &a[k*lda+i], lda);
              if ((blkk < blksz) && upd) {
-               double rbeta = (j==0) ? beta : 1.0;
+               precision_ rbeta = (j==0) ? beta : 1.0;
                int upd_width = (m<k+blksz) ? blkm - blkk : blksz - blkk;
                if ((i-n) < 0) {
                  // Special case for first block of contrib
-                 host_gemm(OP_N, OP_T, blkm+i-n, upd_width, blkn, -1.0,
+                 host_gemm(OP_N, OP_T, blkm+i-n, upd_width, blkn, minus_one_val,
                            &a[j*lda+n], lda, &a[j*lda+k+blkk], lda, rbeta,
                            upd, ldupd);
                } else {
-                 host_gemm(OP_N, OP_T, blkm, upd_width, blkn, -1.0,
+                 host_gemm(OP_N, OP_T, blkm, upd_width, blkn, minus_one_val,
                            &a[j*lda+i], lda, &a[j*lda+k+blkk], lda, rbeta,
                            &upd[i-n], ldupd);
                }
@@ -170,8 +185,9 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
                Profile::Task task("TA_CHOL_UPD");
 #endif
                int blkm = std::min(blksz, m-i);
-               double rbeta = (j==0) ? beta : 1.0;
-               host_gemm(OP_N, OP_T, blkm, blkk, blkn, -1.0,
+               precision_ rbeta = (j==0) ? beta : 1.0;
+               precision_ minus_one_val = - 1.0;
+               host_gemm(OP_N, OP_T, blkm, blkk, blkn, minus_one_val,
                          &a[j*lda+i], lda, &a[j*lda+k], lda,
                          rbeta, &upd[(k-n)*ldupd+(i-n)], ldupd);
 #ifdef PROFILE
@@ -186,28 +202,38 @@ void cholesky_factor(int m, int n, double* a, int lda, double beta, double* upd,
 }
 
 /* Forwards solve corresponding to cholesky_factor() */
-void cholesky_solve_fwd(int m, int n, double const* a, int lda, int nrhs, double* x, int ldx) {
+void cholesky_solve_fwd(int m, int n, precision_ const* a, int lda, 
+                        int nrhs, precision_* x, int ldx) {
+   precision_ one_val = 1.0;
+   precision_ minus_one_val = - 1.0;
    if(nrhs==1) {
       host_trsv(FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, a, lda, x, 1);
       if(m > n)
-         gemv(OP_N, m-n, n, -1.0, &a[n], lda, x, 1, 1.0, &x[n], 1);
+         gemv(OP_N, m-n, n, minus_one_val, &a[n], lda, x, 1, one_val, &x[n], 1);
    } else {
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, nrhs, 1.0, a, lda, x, ldx);
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, nrhs, 
+                one_val, a, lda, x, ldx);
       if(m > n)
-         host_gemm(OP_N, OP_N, m-n, nrhs, n, -1.0, &a[n], lda, x, ldx, 1.0, &x[n], ldx);
+         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &a[n], lda, x, 
+                   ldx, one_val, &x[n], ldx);
    }
 }
 
 /* Backwards solve corresponding to cholesky_factor() */
-void cholesky_solve_bwd(int m, int n, double const* a, int lda, int nrhs, double* x, int ldx) {
+void cholesky_solve_bwd(int m, int n, precision_ const* a, int lda, 
+                        int nrhs, precision_* x, int ldx) {
+   precision_ one_val = 1.0;
+   precision_ minus_one_val = - 1.0;
    if(nrhs==1) {
       if(m > n)
-         gemv(OP_T, m-n, n, -1.0, &a[n], lda, &x[n], 1, 1.0, x, 1);
+         gemv(OP_T, m-n, n, minus_one_val, &a[n], lda, &x[n], 1, one_val, x, 1);
       host_trsv(FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, a, lda, x, 1);
    } else {
       if(m > n)
-         host_gemm(OP_T, OP_N, n, nrhs, m-n, -1.0, &a[n], lda, &x[n], ldx, 1.0, x, ldx);
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, nrhs, 1.0, a, lda, x, ldx);
+         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &a[n], lda, &x[n], 
+                   ldx, one_val, x, ldx);
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, nrhs, 
+                one_val, a, lda, x, ldx);
    }
 }
 

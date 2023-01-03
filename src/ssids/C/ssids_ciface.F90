@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
 
-#ifdef GALAHAD_SINGLE
+#ifdef SPRAL_SINGLE
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single

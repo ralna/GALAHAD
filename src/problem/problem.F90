@@ -10,7 +10,6 @@
    TYPE ( GALAHAD_userdata_type ), OPTIONAL, INTENT( INOUT ) :: data
    END SUBROUTINE FUN
 
-
    SUBROUTINE GRAD( X, G, Y, J, data )
    USE GALAHAD_SMT_precision
    USE GALAHAD_USERDATA_precision
@@ -19,7 +18,6 @@
    TYPE( SMT_type ), OPTIONAL, INTENT( OUT ) :: J
    TYPE ( GALAHAD_userdata_type ), OPTIONAL, INTENT( INOUT ) :: data
    END SUBROUTINE GRAD
-
 
    SUBROUTINE HESS( X, H, Y, i, data )
    USE GALAHAD_SMT_precision

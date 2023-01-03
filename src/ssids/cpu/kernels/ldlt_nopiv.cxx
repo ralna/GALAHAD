@@ -5,6 +5,12 @@
  */
 #include "ssids/cpu/kernels/ldlt_nopiv.hxx"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /* We perform a 2x2 blocked LDL^T factorization of an m x n matrix.
@@ -23,26 +29,26 @@ namespace spral { namespace ssids { namespace cpu {
  *
  * Returns -1 on success, otherwise location of negative or zero pivot.
  * */
-int ldlt_nopiv_factor(int m, int n, double* a, int lda, double* work) {
+int ldlt_nopiv_factor(int m, int n, precision_* a, int lda, precision_* work) {
    for(int j=0; j<n-1; j+=2) {
       /* Setup shortcut pointers to make code easier to read */
-      double *a1 = &a[j*lda], *a2 = &a[(j+1)*lda];
-      double *work1 = &work[0], *work2 = &work[m];
+      precision_ *a1 = &a[j*lda], *a2 = &a[(j+1)*lda];
+      precision_ *work1 = &work[0], *work2 = &work[m];
       /* Invert 2x2 diagonal block (j,j+1) */
-      double a11 = a1[j];
-      double a21 = a1[j+1];
-      double a22 = a2[j+1];
-      double det = a11*a22 - a21*a21;
+      precision_ a11 = a1[j];
+      precision_ a21 = a1[j+1];
+      precision_ a22 = a2[j+1];
+      precision_ det = a11*a22 - a21*a21;
       if(det <= 0.0)
          return (a11 <= 0.0) ? j : j+1; /* Matrix is not +ive definite */
       det = 1/det;
-      double l11 = a22 * det;    a1[j]   = l11;
-      double l21 = -a21 * det;   a1[j+1] = l21;
-      double l22 = a11 * det;    a2[j+1] = l22;
+      precision_ l11 = a22 * det;    a1[j]   = l11;
+      precision_ l21 = -a21 * det;   a1[j+1] = l21;
+      precision_ l22 = a11 * det;    a2[j+1] = l22;
       /* Apply to block below diagonal */
       for(int i=j+2; i<m; ++i) {
-         double x1 = a1[i]; work1[i] = x1;
-         double x2 = a2[i]; work2[i] = x2;
+         precision_ x1 = a1[i]; work1[i] = x1;
+         precision_ x2 = a2[i]; work2[i] = x2;
          a1[i] = l11*x1 + l21*x2;
          a2[i] = l21*x1 + l22*x2;
       }
@@ -55,9 +61,9 @@ int ldlt_nopiv_factor(int m, int n, double* a, int lda, double* work) {
    if(n%2!=0) {
       /* n is odd, last column can't use a 2x2 pivot, so use a 1x1 */
       int j = n-1;
-      double *a1 = &a[j*lda];
+      precision_ *a1 = &a[j*lda];
       if(a1[j] <= 0.0) return j; /* matrix not posdef */
-      double l11 = 1/a1[j]; a1[j] = l11;
+      precision_ l11 = 1/a1[j]; a1[j] = l11;
       for(int i=j+1; i<m; ++i)
          a1[i] *= l11;
    }
@@ -66,7 +72,8 @@ int ldlt_nopiv_factor(int m, int n, double* a, int lda, double* work) {
 }
 
 /* Corresponding forward solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_fwd(int m, int n, double const* a, int lda, double *x) {
+void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda, 
+   precision_ *x) {
    for(int j=0; j<n-1; j+=2) {
       for(int i=j+2; i<m; ++i)
          x[i] -= a[j*lda+i]*x[j] + a[(j+1)*lda+i]*x[j+1];
@@ -80,10 +87,11 @@ void ldlt_nopiv_solve_fwd(int m, int n, double const* a, int lda, double *x) {
 }
 
 /* Corresponding diagonal solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_diag(int m, int n, double const* a, int lda, double *x) {
+void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda, 
+   precision_ *x) {
    for(int j=0; j<n-1; j+=2) {
-      double x1 = x[j];
-      double x2 = x[j+1];
+      precision_ x1 = x[j];
+      precision_ x2 = x[j+1];
       x[j]   = a[j*lda+j  ]*x1 + a[    j*lda+j+1]*x2;
       x[j+1] = a[j*lda+j+1]*x1 + a[(j+1)*lda+j+1]*x2;
    }
@@ -95,7 +103,8 @@ void ldlt_nopiv_solve_diag(int m, int n, double const* a, int lda, double *x) {
 }
 
 /* Corresponding backward solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_bwd(int m, int n, double const* a, int lda, double *x) {
+void ldlt_nopiv_solve_bwd(int m, int n, precision_ const* a, int lda, 
+  precision_ *x) {
    if(n%2!=0) {
       // n is odd, handle last column as 1x1 pivot
       int j = n-1;

@@ -46,7 +46,7 @@ public:
     *         (references entire matrix). No scaling applied if null.
     *  \param child_contrib array of pointers to contributions from child
     *         subtrees. Information to be extracted by call to Fortran routine
-    *         spral_ssids_contrib_get_data_double().
+    *         spral_ssids_contrib_get_data_double() or _single().
     *  \param options user-supplied options controlling execution.
     *  \param stats collection of statistics for return to user.
     */
@@ -277,9 +277,9 @@ public:
       delete[] small_leafs_;
    }
 
-   void solve_fwd(int nrhs, double* x, int ldx) const {
+   void solve_fwd(int nrhs, T* x, int ldx) const {
       /* Allocate memory */
-      double* xlocal = new double[nrhs*symb_.n];
+      T* xlocal = new T[nrhs*symb_.n];
       int* map_alloc = (!posdef) ? new int[symb_.n] : nullptr; // only indef
 
       /* Main loop */
@@ -333,11 +333,11 @@ public:
    }
 
    template <bool do_diag, bool do_bwd>
-   void solve_diag_bwd_inner(int nrhs, double* x, int ldx) const {
+   void solve_diag_bwd_inner(int nrhs, T* x, int ldx) const {
       if(posdef && !do_bwd) return; // diagonal solve is a no-op for posdef
 
       /* Allocate memory - map only needed for indef bwd/diag_bwd solve */
-      double* xlocal = new double[nrhs*symb_.n];
+      T* xlocal = new T[nrhs*symb_.n];
       int* map_alloc = (!posdef && do_bwd) ? new int[symb_.n]
                                            : nullptr;
 
@@ -399,15 +399,15 @@ public:
       delete[] xlocal;
    }
 
-   void solve_diag(int nrhs, double* x, int ldx) const {
+   void solve_diag(int nrhs, T* x, int ldx) const {
       solve_diag_bwd_inner<true, false>(nrhs, x, ldx);
    }
 
-   void solve_diag_bwd(int nrhs, double* x, int ldx) const {
+   void solve_diag_bwd(int nrhs, T* x, int ldx) const {
       solve_diag_bwd_inner<true, true>(nrhs, x, ldx);
    }
 
-   void solve_bwd(int nrhs, double* x, int ldx) const {
+   void solve_bwd(int nrhs, T* x, int ldx) const {
       solve_diag_bwd_inner<false, true>(nrhs, x, ldx);
    }
 
@@ -415,7 +415,7 @@ public:
     * Note that piv_order is only set in indefinite case.
     * One of piv_order or d may be null in indefinite case.
     */
-   void enquire(int *piv_order, double* d) const {
+   void enquire(int *piv_order, T* d) const {
       if(posdef) {
          for(int ni=0; ni<symb_.nnodes_; ++ni) {
             int blkm = symb_[ni].nrow;
@@ -430,7 +430,7 @@ public:
             int blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
             int ldl = align_lda<T>(blkm);
             int nelim = nodes_[ni].nelim;
-            double const* dptr = &nodes_[ni].lcol[blkn*ldl];
+            T const* dptr = &nodes_[ni].lcol[blkn*ldl];
 //            if (d) {
 //              printf("d01 = %.1f %.1f\n", dptr[0], dptr[1]);
 //              printf("d23 = %.1f %.1f\n", dptr[2], dptr[3]);
@@ -478,14 +478,14 @@ public:
    }
 
    /** Allows user to alter D values, indef case only. */
-   void alter(double const* d) {
+   void alter(T const* d) {
       for(int ni=0; ni<symb_.nnodes_; ++ni) {
          int blkm = symb_[ni].nrow + nodes_[ni].ndelay_in;
          int blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
          int ldl = align_lda<T>(blkm);
          int nelim = nodes_[ni].nelim;
-         double* dptr = &nodes_[ni].lcol[blkn*ldl];
-         double dum;
+         T* dptr = &nodes_[ni].lcol[blkn*ldl];
+         T dum;
 
          for(int i=0; i<nelim; ) {
             if(i+1==nelim || std::isfinite(dptr[2*i+2])) {

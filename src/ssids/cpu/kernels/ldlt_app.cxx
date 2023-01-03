@@ -33,6 +33,12 @@
 #include "ssids/cpu/kernels/common.hxx"
 #include "ssids/cpu/kernels/wrappers.hxx"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 namespace ldlt_app_internal {
@@ -328,14 +334,16 @@ int check_threshold(int rfrom, int rto, int cfrom, int cto, T u, T* aval, int ld
  * 1x1  ( 0 ) stored as d = [ 0.0 0.0 ]
  */
 template <enum operation op, typename T>
-void apply_pivot(int m, int n, int from, const T *diag, const T *d, const T small, T* aval, int lda) {
+void apply_pivot(int m, int n, int from, const T *diag, const T *d, 
+                 const T small, T* aval, int lda) {
    if(op==OP_N && from > m) return; // no-op
    if(op==OP_T && from > n) return; // no-op
 
+   precision_ one_val = 1.0;
    if(op==OP_N) {
       // Perform solve L_11^-T
       host_trsm<T>(SIDE_RIGHT, FILL_MODE_LWR, OP_T, DIAG_UNIT,
-            m, n, 1.0, diag, lda, aval, lda);
+            m, n, one_val, diag, lda, aval, lda);
       // Perform solve L_21 D^-1
       for(int i=0; i<n; ) {
          if(i+1==n || std::isfinite(d[2*i+2])) {
@@ -373,7 +381,7 @@ void apply_pivot(int m, int n, int from, const T *diag, const T *d, const T smal
    } else { /* op==OP_T */
       // Perform solve L_11^-1
       host_trsm<T>(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT,
-            m, n-from, 1.0, diag, lda, &aval[from*lda], lda);
+            m, n-from, one_val, diag, lda, &aval[from*lda], lda);
       // Perform solve D^-T L_21^T
       for(int i=0; i<m; ) {
          if(i+1==m || std::isfinite(d[2*i+2])) {
@@ -1079,7 +1087,7 @@ public:
     *  \param ldupd Leading dimension of upd.
     */
    void update(Block const& isrc, Block const& jsrc, Workspace& work,
-         double beta=1.0, T* upd=nullptr, int ldupd=0) {
+         precision_ beta=1.0, T* upd=nullptr, int ldupd=0) {
       if(isrc.i_ == i_ && isrc.j_ == jsrc.j_) {
          // Update to right of elim column (UpdateN)
          int elim_col = isrc.j_;
@@ -1087,6 +1095,8 @@ public:
          int rfrom = (i_ <= elim_col) ? cdata_[i_].nelim : 0;
          int cfrom = (j_ <= elim_col) ? cdata_[j_].nelim : 0;
          int ldld = align_lda<T>(block_size_);
+         precision_ one_val = 1.0;
+         precision_ minus_one_val = - 1.0;
          T* ld = work.get_ptr<T>(block_size_*ldld);
          // NB: we use ld[rfrom] below so alignment matches that of aval[rfrom]
          calcLD<OP_N>(
@@ -1095,8 +1105,8 @@ public:
                );
          host_gemm(
                OP_N, OP_T, nrow()-rfrom, ncol()-cfrom, cdata_[elim_col].nelim,
-               -1.0, &ld[rfrom], ldld, &jsrc.aval_[cfrom], lda_,
-               1.0, &aval_[cfrom*lda_+rfrom], lda_
+               minus_one_val, &ld[rfrom], ldld, &jsrc.aval_[cfrom], lda_,
+               one_val, &aval_[cfrom*lda_+rfrom], lda_
                );
          if(upd && j_==calc_nblk(n_,block_size_)-1) {
             // Handle fractional part of upd that "belongs" to this block
@@ -1106,7 +1116,7 @@ public:
                // diagonal block
                host_gemm(
                      OP_N, OP_T, u_ncol, u_ncol, cdata_[elim_col].nelim,
-                     -1.0, &ld[ncol()], ldld,
+                     minus_one_val, &ld[ncol()], ldld,
                      &jsrc.aval_[ncol()], lda_,
                      beta, upd, ldupd
                      );
@@ -1116,7 +1126,7 @@ public:
                   &upd[(i_-calc_nblk(n_,block_size_))*block_size_+u_ncol];
                host_gemm(
                      OP_N, OP_T, nrow(), u_ncol, cdata_[elim_col].nelim,
-                     -1.0, &ld[rfrom], ldld, &jsrc.aval_[ncol()], lda_,
+                     minus_one_val, &ld[rfrom], ldld, &jsrc.aval_[ncol()], lda_,
                      beta, upd_ij, ldupd
                      );
             }
@@ -1143,10 +1153,12 @@ public:
                   cdata_[elim_col].d, &ld[rfrom], ldld
                   );
          }
+         precision_ one_val = 1.0;
+         precision_ minus_one_val = - 1.0;
          host_gemm(
                OP_N, OP_N, nrow()-rfrom, ncol()-cfrom, cdata_[elim_col].nelim,
-               -1.0, &ld[rfrom], ldld, &jsrc.aval_[cfrom*lda_], lda_,
-               1.0, &aval_[cfrom*lda_+rfrom], lda_
+               minus_one_val, &ld[rfrom], ldld, &jsrc.aval_[cfrom*lda_], lda_,
+               one_val, &aval_[cfrom*lda_+rfrom], lda_
                );
       }
    }
@@ -1166,7 +1178,7 @@ public:
     *  \param upd_ij pointer to \f$ U_{ij} \f$ values to be updated.
     *  \param ldupd leading dimension of upd_ij.
     */
-   void form_contrib(Block const& isrc, Block const& jsrc, Workspace& work, double beta, T* upd_ij, int ldupd) {
+   void form_contrib(Block const& isrc, Block const& jsrc, Workspace& work, precision_ beta, T* upd_ij, int ldupd) {
       int elim_col = isrc.j_;
       int ldld = align_lda<T>(block_size_);
       T* ld = work.get_ptr<T>(block_size_*ldld);
@@ -1177,9 +1189,10 @@ public:
       // User-supplied beta only on first update; otherwise 1.0
       T rbeta = (cdata_[elim_col].first_elim) ? beta : 1.0;
       int blkn = get_nrow(j_); // nrow not ncol as we're on contrib
+      precision_ minus_one_val = - 1.0;
       host_gemm(
             OP_N, OP_T, nrow(), blkn, cdata_[elim_col].nelim,
-            -1.0, ld, ldld, jsrc.aval_, lda_,
+            minus_one_val, ld, ldld, jsrc.aval_, lda_,
             rbeta, upd_ij, ldupd
             );
    }
@@ -1320,7 +1333,8 @@ private:
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
                // Perform actual factorization
-               int nelim = dblk.template factor<Allocator>(next_elim, perm, d, options, work, alloc);
+               int nelim = dblk.template factor<Allocator>(next_elim, perm, d, 
+                                                        options, work, alloc);
                if (nelim < 0) {
                  #pragma omp atomic write
                  flag = nelim;
@@ -1387,7 +1401,8 @@ private:
                 cblk.apply_rperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                int blkpass = cblk.apply_pivot_app(dblk, options.u, options.small);
+                int blkpass = cblk.apply_pivot_app(dblk, options.u, 
+                                                   options.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
 #ifdef PROFILE
@@ -1420,7 +1435,8 @@ private:
                 rblk.apply_cperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                int blkpass = rblk.apply_pivot_app(dblk, options.u, options.small);
+                int blkpass = rblk.apply_pivot_app(dblk, options.u, 
+                                                   options.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
 #ifdef PROFILE
@@ -1551,12 +1567,13 @@ private:
 #ifdef PROFILE
                     Profile::Task task("TA_LDLT_UPDC");
 #endif
-                    if (debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
+                    if (debug) printf("FormContrib(%d,%d,%d)\n", iblk,jblk,blk);
                     int thread_num = omp_get_thread_num();
                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                     BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                     BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
-                    ublk.form_contrib(isrc, jsrc, work[thread_num], beta, upd_ij, ldupd);
+                    ublk.form_contrib(isrc, jsrc, work[thread_num], 
+                                      beta, upd_ij, ldupd);
 #ifdef PROFILE
                     task.done();
 #endif
@@ -1645,7 +1662,8 @@ private:
                rblk.apply_cperm_and_backup(backup);
                // Perform elimination and determine number of rows in block
                // passing a posteori threshold pivot test
-               int blkpass = rblk.apply_pivot_app(dblk, options.u, options.small);
+               int blkpass = rblk.apply_pivot_app(dblk, options.u, 
+                                                  options.small);
                // Update column's passed pivot count
                cdata[blk].update_passed(blkpass);
             }
@@ -1698,9 +1716,10 @@ private:
                   T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
                                     (iblk-nblk)*block_size];
                   {
-                     if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
+                     if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, 
+                                      jblk, blk);
                      int thread_num = omp_get_thread_num();
-                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
+                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda,block_size);
                      BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                      BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
                      ublk.form_contrib(
@@ -1954,7 +1973,7 @@ private:
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDC");
 #endif
-                   if (debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
+                   if (debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk,blk);
                    int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1962,7 +1981,8 @@ private:
                    // Record block state as assuming we've done up to col blk
                    up_to_date[jblk*mblk+iblk] = blk;
                    // Perform update
-                   ublk.form_contrib(isrc, jsrc, work[thread_num], beta, upd_ij, ldupd);
+                   ublk.form_contrib(isrc, jsrc, work[thread_num], beta, 
+                                     upd_ij, ldupd);
 #ifdef PROFILE
                    task.done();
 #endif
@@ -2245,7 +2265,8 @@ private:
     *  \param lda leading dimension of a
     */
    static
-   void print_mat(int m, int n, const int *perm, std::vector<bool> const& eliminated, const T *a, int lda) {
+   void print_mat(int m, int n, const int *perm, 
+                  std::vector<bool> const& eliminated, const T *a, int lda) {
       for(int row=0; row<m; row++) {
          if(row < n)
             printf("%d%s:", perm[row], eliminated[row]?"X":" ");
@@ -2401,7 +2422,8 @@ public:
             // Diagonal part
             for(int iblk=jblk, ifail=jfail, iinsert=jinsert; iblk<nblk; ++iblk) {
                copy_failed_diag(
-                     get_ncol(iblk, n, block_size), get_ncol(jblk, n, block_size),
+                     get_ncol(iblk, n, block_size), 
+                     get_ncol(jblk, n, block_size),
                      cdata[iblk], cdata[jblk],
                      &failed_diag[jinsert*nfail+ifail],
                      &failed_diag[iinsert*nfail+jfail],
@@ -2414,7 +2436,8 @@ public:
             // Rectangular part
             // (be careful with blocks that contain both diag and rect parts)
             copy_failed_rect(
-                  get_nrow(nblk-1, m, block_size), get_ncol(jblk, n, block_size),
+                  get_nrow(nblk-1, m, block_size), 
+                  get_ncol(jblk, n, block_size),
                   get_ncol(nblk-1, n, block_size), cdata[jblk],
                   &failed_rect[jfail*(m-n)+(nblk-1)*block_size-n], m-n,
                   &a[jblk*block_size*lda+(nblk-1)*block_size], lda
@@ -2502,7 +2525,9 @@ size_t ldlt_app_factor_mem_required(int m, int n, int block_size) {
 }
 
 template<typename T, typename Allocator>
-int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta, T* upd, int ldupd, struct cpu_factor_options const& options, std::vector<Workspace>& work, Allocator const& alloc) {
+int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta, 
+                    T* upd, int ldupd, struct cpu_factor_options const& options,
+                    std::vector<Workspace>& work, Allocator const& alloc) {
    // If we've got a tall and narrow node, adjust block size so each block
    // has roughly blksz**2 entries
    // FIXME: Decide if this reshape is actually useful, given it will generate
@@ -2531,21 +2556,27 @@ int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta, T* upd
             outer_block_size, beta, upd, ldupd, work, alloc
             );
 }
-template int ldlt_app_factor<double, BuddyAllocator<double,std::allocator<double>>>(int, int, int*, double*, int, double*, double, double*, int, struct cpu_factor_options const&, std::vector<Workspace>&, BuddyAllocator<double,std::allocator<double>> const& alloc);
+template int ldlt_app_factor<precision_, BuddyAllocator<precision_,std::allocator<precision_>>>(int, int, int*, precision_*, int, precision_*, precision_, precision_*, int, struct cpu_factor_options const&, std::vector<Workspace>&, BuddyAllocator<precision_,std::allocator<precision_>> const& alloc);
 
 template <typename T>
-void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x, int ldx) {
+void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x, 
+                        int ldx) {
+   precision_ one_val = 1.0;
+   precision_ minus_one_val = - 1.0;
    if(nrhs==1) {
       host_trsv(FILL_MODE_LWR, OP_N, DIAG_UNIT, n, l, ldl, x, 1);
       if(m > n)
-         gemv(OP_N, m-n, n, -1.0, &l[n], ldl, x, 1, 1.0, &x[n], 1);
+         gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, 1, one_val, &x[n], 1);
    } else {
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs, 1.0, l, ldl, x, ldx);
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs, 
+                one_val, l, ldl, x, ldx);
       if(m > n)
-         host_gemm(OP_N, OP_N, m-n, nrhs, n, -1.0, &l[n], ldl, x, ldx, 1.0, &x[n], ldx);
+         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &l[n], 
+                   ldl, x, ldx, one_val, &x[n], ldx);
    }
 }
-template void ldlt_app_solve_fwd<double>(int, int, double const*, int, int, double*, int);
+template void ldlt_app_solve_fwd<precision_>(int, int, precision_ const*, 
+                                             int, int, precision_*, int);
 
 template <typename T>
 void ldlt_app_solve_diag(int n, T const* d, int nrhs, T* x, int ldx) {
@@ -2571,20 +2602,27 @@ void ldlt_app_solve_diag(int n, T const* d, int nrhs, T* x, int ldx) {
       }
    }
 }
-template void ldlt_app_solve_diag<double>(int, double const*, int, double*, int);
+template void ldlt_app_solve_diag<precision_>(int, precision_ const*, int, 
+                                              precision_*, int);
 
 template <typename T>
-void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x, int ldx) {
+void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x, 
+                        int ldx) {
+   precision_ one_val = 1.0;
+   precision_ minus_one_val = - 1.0;
    if(nrhs==1) {
       if(m > n)
-         gemv(OP_T, m-n, n, -1.0, &l[n], ldl, &x[n], 1, 1.0, x, 1);
+         gemv(OP_T, m-n, n, minus_one_val, &l[n], ldl, &x[n], 1, one_val, x, 1);
       host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, 1);
    } else {
       if(m > n)
-         host_gemm(OP_T, OP_N, n, nrhs, m-n, -1.0, &l[n], ldl, &x[n], ldx, 1.0, x, ldx);
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs, 1.0, l, ldl, x, ldx);
+         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl, 
+                   &x[n], ldx, one_val, x, ldx);
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs, 
+                one_val, l, ldl, x, ldx);
    }
 }
-template void ldlt_app_solve_bwd<double>(int, int, double const*, int, int, double*, int);
+template void ldlt_app_solve_bwd<precision_>(int, int, precision_ const*, int, 
+                                             int, precision_*, int);
 
 }}} /* namespaces spral::ssids::cpu */

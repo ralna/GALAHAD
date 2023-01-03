@@ -74,16 +74,13 @@ $(package)_double: $($(PACKAGE)OBJECTSD)
 
 $(package).o: $(PRLG)($(package).o)
 
-$(PRLG)($(package).o): ../$(package)/$(package).f90
+$(PRLG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > \
-          $(OBJ)/$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
+	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
-              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
-	cd $(OBJ); $(PRARR) $(package).o ; $(RM) $(package).f90 \
-          $(package)1.f90 $(package).o
+              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(PRARR) $(package).o ; $(RM) $(package).F90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	@printf '[ OK ]\n'
 

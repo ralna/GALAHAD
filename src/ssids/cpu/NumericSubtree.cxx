@@ -11,6 +11,52 @@
 
 #include "omp.hxx"
 #include "ssids/cpu/AppendAlloc.hxx"
+
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#define spral_ssids_cpu_create_num_subtree \
+        spral_ssids_cpu_create_num_subtree_sgl
+#define spral_ssids_cpu_destroy_num_subtree \
+        spral_ssids_cpu_destroy_num_subtree_sgl
+#define spral_ssids_cpu_subtree_solve_fwd \
+        spral_ssids_cpu_subtree_solve_fwd_sgl
+#define spral_ssids_cpu_subtree_solve_diag \
+        spral_ssids_cpu_subtree_solve_diag_sgl
+#define spral_ssids_cpu_subtree_solve_diag_bwd \
+        spral_ssids_cpu_subtree_solve_diag_bwd_sgl
+#define spral_ssids_cpu_subtree_solve_bwd \
+        spral_ssids_cpu_subtree_solve_bwd_sgl
+#define spral_ssids_cpu_subtree_enquire \
+        spral_ssids_cpu_subtree_enquire_sgl
+#define spral_ssids_cpu_subtree_alter \
+        spral_ssids_cpu_subtree_alter_sgl
+#define spral_ssids_cpu_subtree_get_contrib \
+        spral_ssids_cpu_subtree_get_contrib_sgl
+#define spral_ssids_cpu_subtree_free_contrib \
+        spral_ssids_cpu_subtree_free_contrib_sgl
+#else
+#define precision_ double
+#define spral_ssids_cpu_create_num_subtree \
+        spral_ssids_cpu_create_num_subtree_dbl
+#define spral_ssids_cpu_destroy_num_subtree \
+        spral_ssids_cpu_destroy_num_subtree_dbl
+#define spral_ssids_cpu_subtree_solve_fwd \
+        spral_ssids_cpu_subtree_solve_fwd_dbl
+#define spral_ssids_cpu_subtree_solve_diag \
+        spral_ssids_cpu_subtree_solve_diag_dbl
+#define spral_ssids_cpu_subtree_solve_diag_bwd \
+        spral_ssids_cpu_subtree_solve_diag_bwd_dbl
+#define spral_ssids_cpu_subtree_solve_bwd \
+        spral_ssids_cpu_subtree_solve_bwd_dbl
+#define spral_ssids_cpu_subtree_enquire \
+        spral_ssids_cpu_subtree_enquire_dbl
+#define spral_ssids_cpu_subtree_alter \
+        spral_ssids_cpu_subtree_alter_dbl
+#define spral_ssids_cpu_subtree_get_contrib \
+        spral_ssids_cpu_subtree_get_contrib_dbl
+#define spral_ssids_cpu_subtree_free_contrib \
+        spral_ssids_cpu_subtree_free_contrib_dbl
+#endif
  
 using namespace spral::ssids::cpu;
 
@@ -18,7 +64,11 @@ using namespace spral::ssids::cpu;
 // anonymous namespace
 namespace {
 
+#ifdef SPRAL_SINGLE
+typedef float T;
+#else
 typedef double T;
+#endif
 const int PAGE_SIZE = 8*1024*1024; // 8MB
 typedef NumericSubtree<true, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreePosdef;
 typedef NumericSubtree<false, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreeIndef;
@@ -27,11 +77,11 @@ typedef NumericSubtree<false, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreeIndef;
 //////////////////////////////////////////////////////////////////////////
 
 extern "C"
-void* spral_ssids_cpu_create_num_subtree_dbl(
+void* spral_ssids_cpu_create_num_subtree(
       bool posdef,
       void const* symbolic_subtree_ptr,
-      const double *const aval, // Values of A
-      const double *const scaling, // Scaling vector (NULL if none)
+      const precision_ *const aval, // Values of A
+      const precision_ *const scaling, // Scaling vector (NULL if none)
       void** child_contrib, // Contributions from child subtrees
       struct cpu_factor_options const* options, // Options in
       ThreadStats* stats // Info out
@@ -59,7 +109,7 @@ void* spral_ssids_cpu_create_num_subtree_dbl(
 }
 
 extern "C"
-void spral_ssids_cpu_destroy_num_subtree_dbl(bool posdef, void* target) {
+void spral_ssids_cpu_destroy_num_subtree(bool posdef, void* target) {
    if(!target) return;
 
    if(posdef) {
@@ -71,13 +121,13 @@ void spral_ssids_cpu_destroy_num_subtree_dbl(bool posdef, void* target) {
    }
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_fwd_dbl(
+Flag spral_ssids_cpu_subtree_solve_fwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       int nrhs,         // number of right-hand sides
-      double* x,        // ldx x nrhs array of right-hand sides
+      precision_* x,        // ldx x nrhs array of right-hand sides
       int ldx           // leading dimension of x
       ) {
 
@@ -98,13 +148,13 @@ Flag spral_ssids_cpu_subtree_solve_fwd_dbl(
    return Flag::SUCCESS;
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_diag_dbl(
+Flag spral_ssids_cpu_subtree_solve_diag(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       int nrhs,         // number of right-hand sides
-      double* x,        // ldx x nrhs array of right-hand sides
+      precision_* x,        // ldx x nrhs array of right-hand sides
       int ldx           // leading dimension of x
       ) {
 
@@ -123,13 +173,13 @@ Flag spral_ssids_cpu_subtree_solve_diag_dbl(
    return Flag::SUCCESS;
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_diag_bwd_dbl(
+Flag spral_ssids_cpu_subtree_solve_diag_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       int nrhs,         // number of right-hand sides
-      double* x,        // ldx x nrhs array of right-hand sides
+      precision_* x,        // ldx x nrhs array of right-hand sides
       int ldx           // leading dimension of x
       ) {
 
@@ -150,13 +200,13 @@ Flag spral_ssids_cpu_subtree_solve_diag_bwd_dbl(
    return Flag::SUCCESS;
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_bwd_dbl(
+Flag spral_ssids_cpu_subtree_solve_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       int nrhs,         // number of right-hand sides
-      double* x,        // ldx x nrhs array of right-hand sides
+      precision_* x,        // ldx x nrhs array of right-hand sides
       int ldx           // leading dimension of x
       ) {
 
@@ -177,13 +227,13 @@ Flag spral_ssids_cpu_subtree_solve_bwd_dbl(
    return Flag::SUCCESS;
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_enquire_dbl(
+void spral_ssids_cpu_subtree_enquire(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       int* piv_order,   // pivot order, may be null, only used if indef
-      double* d         // diagonal entries, may be null
+      precision_* d         // diagonal entries, may be null
       ) {
 
    // Call method
@@ -198,12 +248,12 @@ void spral_ssids_cpu_subtree_enquire_dbl(
    }
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_alter_dbl(
+void spral_ssids_cpu_subtree_alter(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
-      double const* d   // new diagonal entries
+      precision_ const* d   // new diagonal entries
       ) {
 
    assert(!posdef); // Should never be called on positive definite matrices.
@@ -213,18 +263,18 @@ void spral_ssids_cpu_subtree_alter_dbl(
    subtree.alter(d);
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_get_contrib_dbl(
+void spral_ssids_cpu_subtree_get_contrib(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
       int* n,           // returned dimension of contribution block
-      double const** val,     // returned pointer to contribution block
+      precision_ const** val,     // returned pointer to contribution block
       int* ldval,       // leading dimension of val
       int const** rlist,      // returned pointer to row list
       int* ndelay,      // returned number of delays
       int const** delay_perm,  // returned pointer to delay values
-      double const** delay_val,  // returned pointer to delay values
+      precision_ const** delay_val,  // returned pointer to delay values
       int* lddelay      // leading dimension of delay_val
       ) {
    // Call method
@@ -243,9 +293,9 @@ void spral_ssids_cpu_subtree_get_contrib_dbl(
    }
 }
 
-/* Double precision wrapper around templated routines */
+/* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_free_contrib_dbl(
+void spral_ssids_cpu_subtree_free_contrib(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr // pointer to relevant type of NumericSubtree
       ) {

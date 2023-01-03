@@ -10,6 +10,11 @@
 #include "ssids/cpu/cpu_iface.hxx"
 #include "ssids/cpu/SymbolicNode.hxx"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
 namespace spral { namespace ssids { namespace cpu {
 
 class SymbolicSubtree;
@@ -87,7 +92,7 @@ public:
          // FIXME: subtract ncol off rlist for elim'd vars
          nodes_[ni-sa].rlist = &newrlist[rptr[part_offset+ni]-rptr[part_offset+sa]];
          nodes_[ni-sa].lcol_offset = nfactor_;
-         size_t ldl = align_lda<double>(nodes_[ni-sa].nrow);
+         size_t ldl = align_lda<precision_>(nodes_[ni-sa].nrow);
          nfactor_ += nodes_[ni-sa].ncol*ldl;
       }
       /* Construct rlist_ being offsets into parent node */
