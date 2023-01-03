@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <vector>
 
-#include "ssids/cpu/SmallLeafSymbolicSubtree.hxx"
-#include "ssids/cpu/SymbolicNode.hxx"
+#include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
+#include "ssids_cpu_SymbolicNode.hxx"
 
 #ifdef SPRAL_SINGLE
 #define precision_ float

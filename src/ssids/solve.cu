@@ -9,12 +9,12 @@
  */
 
 #include <cublas_v2.h>
-#include "cuda/cuda_check.h"
+#include "spral_cuda_cuda_check.h"
 
 //#define MIN(x,y) (((x)>(y))?(y):(x))
 #define MAX(x,y) (((x)>(y))?(x):(y))
 
-#include "ssids/gpu/kernels/dtrsv.h"
+#include "ssids_gpu_kernels_dtrsv.h"
 
 #define TRSM_TR_NBX 256
 #define TRSM_TR_NBY 32

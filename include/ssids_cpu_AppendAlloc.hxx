@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "compat.hxx" // for std::align if required
+#include "spral_compat.hxx" // for std::align if required
 
 namespace spral { namespace ssids { namespace cpu {
 
