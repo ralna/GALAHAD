@@ -1,4 +1,2 @@
-lstr_src = ['src/lstr/lstr.f90']
-lstr_c_src = ['src/lstr/C/lstr_ciface.f90']
-libgalahad_src += lstr_src
-libgalahad_c_src += lstr_c_src
+libgalahad_src += files('lstr.F90')
+libgalahad_c_src += files('C/lstr_ciface.F90')

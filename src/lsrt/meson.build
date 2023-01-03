@@ -1,4 +1,2 @@
-lsrt_src = ['src/lsrt/lsrt.f90']
-lsrt_c_src = ['src/lsrt/C/lsrt_ciface.f90']
-libgalahad_src += lsrt_src
-libgalahad_c_src += lsrt_c_src
+libgalahad_src += files('lsrt.F90')
+libgalahad_c_src += files('C/lsrt_ciface.F90')
