@@ -18,7 +18,7 @@ Base.@kwdef mutable struct ugo_control_type{T}
     next_interval_selection::Int32 = 0
     refine_with_newton::Int32 = 0
     alive_unit::Int32 = 0
-    alive_file::NTuple{31,Cchar} = ntuple(x -> Cchar(' '), 31)
+    alive_file::NTuple{31,Cchar} = ntuple(x -> Cchar('\0'), 31)
     stop_length::T = zero(T)
     small_g_for_newton::T = zero(T)
     small_g::T = zero(T)
@@ -28,9 +28,10 @@ Base.@kwdef mutable struct ugo_control_type{T}
     lipschitz_lower_bound::T = zero(T)
     cpu_time_limit::T = zero(T)
     clock_time_limit::T = zero(T)
+    second_derivative_available::Bool = false
     space_critical::Bool = false
     deallocate_error_fatal::Bool = false
-    prefix::NTuple{31,Cchar} = ntuple(x -> Cchar(' '), 31)
+    prefix::NTuple{31,Cchar} = ntuple(x -> Cchar('\0'), 31)
 end
 
 Base.@kwdef mutable struct ugo_time_type{T}
@@ -42,7 +43,7 @@ Base.@kwdef mutable struct ugo_inform_type{T}
     status::Int32 = 0
     eval_status::Int32 = 0
     alloc_status::Int32 = 0
-    bad_alloc::NTuple{81,Cchar} = ntuple(x -> Cchar(' '), 81)
+    bad_alloc::NTuple{81,Cchar} = ntuple(x -> Cchar('\0'), 81)
     iter::Int32 = 0
     f_eval::Int32 = 0
     g_eval::Int32 = 0
@@ -55,12 +56,12 @@ end
 function ugo_initialize(data, control::ugo_control_type{Float32}, status)
     @ccall libgalahad_c_single.ugo_initialize(data::Ptr{Ptr{Cvoid}},
                                             control::Ref{ugo_control_type{Float32}},
-                                            status::Ptr{Int32})::Cvoid
+                                            status::Ref{Int32})::Cvoid
 end
 
 function ugo_read_specfile(control::ugo_control_type{Float32}, specfile)
     @ccall libgalahad_c_single.ugo_read_specfile(control::Ref{ugo_control_type{Float32}},
-                                               specfile::Ptr{Cchar})::Cvoid
+                                               specfile::Cstring)::Cvoid
 end
 
 function ugo_import(control::ugo_control_type{Float32}, data, status, x_l::Float32, x_u::Float32)
@@ -110,7 +111,7 @@ end
 
 function ugo_read_specfile(control::ugo_control_type{Float64}, specfile)
     @ccall libgalahad_c_double.ugo_read_specfile(control::Ref{ugo_control_type{Float64}},
-                                               specfile::Ptr{Cchar})::Cvoid
+                                               specfile::Cstring)::Cvoid
 end
 
 function ugo_import(control::ugo_control_type{Float64}, data, status, x_l::Float64, x_u::Float64)

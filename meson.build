@@ -131,8 +131,13 @@ test('ugo_single', ugot_single, suite: 'single', is_parallel : false)
 test('ugo_double', ugot_double, suite: 'double', is_parallel : false)
 
 if build_ciface
+  ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  ugos_c_double = executable('ugos_c_double', 'src/ugo/C/ugos.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('ugos_c_single', ugos_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('ugos_c_double', ugos_c_double, suite: ['C', 'double'], is_parallel : false)
+
   ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
   ugot_c_double = executable('ugot_c_double', 'src/ugo/C/ugot.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('ugo_c_single', ugot_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('ugo_c_double', ugot_c_double, suite: ['C', 'double'], is_parallel : false)
+  test('ugot_c_single', ugot_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('ugot_c_double', ugot_c_double, suite: ['C', 'double'], is_parallel : false)
 endif
