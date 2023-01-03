@@ -1,4 +1,4 @@
-#  Main body of the installation makefile for the GALAHAD BLLS package
+#  Main body of the installation makefile for the GALAHAD LSRB package
 
 #  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-28
@@ -73,12 +73,7 @@ $(package)main.o: $(DEPENDENCIES) $(OBJ)/$(package)main.o
 
 $(OBJ)/$(package)main.o: ../$(package)/$(package)main.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)main"
-	$(SED) -f $(SEDS) ../$(package)/$(package)main.f90 \
-                              > $(OBJ)/$(package)main1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)main1.f90 \
-                         > $(OBJ)/$(package)main2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/$(package)main2.f90 \
-                          > $(OBJ)/$(package)main.f90
+	$(CP) ../$(package)/$(package)main.f90 $(OBJ)/$(package)main.f90
 	cd $(OBJ); $(FORTRAN) -o $(package)main.o \
                      $(FFLAGSS) $(package)main.f90
 	rm $(OBJ)/$(package)main.f90

@@ -137,22 +137,13 @@ $(WLG)(wsmp.o): ../../dum/wsmp.F90
 	$(RANLIB) $(WLG)
 	@printf '[ OK ]\n'
 
-wsmps.o: $(OBJ)/wsmps.o
-
-$(OBJ)/wsmps.o: ../wsmp/wsmps.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "wsmps  "
-	$(SED) -f $(SEDS) ../wsmp/wsmps.f90 > $(OBJ)/wsmps.f90
-	cd $(OBJ) ; $(FORTRAN) -o wsmps.o $(FFLAGS) wsmps.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
 #  test programs
 
 wsmpt.o: $(OBJ)/wsmpt.o
 
 $(OBJ)/wsmpt.o: ../wsmp/wsmpt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "wsmpt  "
-	$(SED) -f $(SEDS) ../wsmp/wsmpt.F90 > $(OBJ)/wsmpt.F90
+	$(CP) ../wsmp/wsmpt.F90 $(OBJ)/wsmpt.F90
 	cd $(OBJ) ; $(FORTRAN) -o wsmpt.o $(FFLAGSS) wsmpt.F90
 	@printf '[ OK ]\n'
 

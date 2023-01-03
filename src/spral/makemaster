@@ -8,21 +8,21 @@
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
+ DPREC = -DSPRAL_SINGLE
 else
- DPREC = -DGALAHAD_DOUBLE
+ DPREC = -DSPRAL_DOUBLE
 endif
 
 ifeq "$(HWLOC)" "un"
- DHWLOC = -DGALAHAD_NO_HWLOC 
+ DHWLOC = -DSPRAL_NO_HWLOC 
 else
- DHWLOC = -DGALAHAD_HAVE_HWLOC
+ DHWLOC = -DSPRAL_HAVE_HWLOC
 endif
 
 ifeq "$(GETCPU)" "un"
- DGETCPU = -DGALAHAD_NO_SCHED_GETCPU 
+ DGETCPU = -DSPRAL_NO_SCHED_GETCPU 
 else
- DGETCPU = -DGALAHAD_HAVE_SCHED_GETCPU
+ DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
 endif
 
 #  compiler flags
@@ -45,9 +45,9 @@ FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
 #  C++ compiler flags
 
 CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DHWLOC) $(DGETCPU)
+                 $(DPREC) $(DHWLOC) $(DGETCPU)
 CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DHWLOC) $(DGETCPU)
+                 $(DPREC) $(DHWLOC) $(DGETCPU)
 
 #  CUDA compiler flags
 
@@ -92,10 +92,7 @@ CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 #  sed scripts
 
-HWLOCSEDS = $(GALAHAD)/seds/have_hwloc_$(HWLOC)def.sed
-GETCPUSEDS = $(GALAHAD)/seds/have_getcpu_$(GETCPU)def.sed
 BLASLAPACKSEDS = $(GALAHAD)/seds/blaslapack_$(PRECIS).sed
-CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 
 #  strings
 
@@ -310,9 +307,6 @@ compat.o: $(RLG)(compat.o)
 
 $(RLG)(compat.o): ../spral/compat.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
-#	echo $(DHWLOC) ' and ' $(DGETCPU)
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP) ../spral/compat.cxx $(OBJ)/
 	$(CP) ../spral/compat.hxx $(OBJ)/
@@ -323,7 +317,6 @@ $(RLG)(compat.o): ../spral/compat.cxx
                       compat.cxx )
 	cd $(OBJ) ; $(RARR) compat.o ; \
           $(RM) -r compat.cxx compat.hxx compat.o config.h
-#         $(RM) -r compat.cxx compat.hxx compat.o config.h config1.h
 	@printf '[ OK ]\n'
 
 guess_topology.o: $(RLG)(guess_topology.o)
@@ -331,8 +324,6 @@ guess_topology.o: $(RLG)(guess_topology.o)
 $(RLG)(guess_topology.o): ../spral/guess_topology.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
 	$(MKDIR) -p $(OBJ)/hw_topology
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP) ../spral/compat.hxx $(OBJ)/
 	$(CP) ../spral/guess_topology.cxx $(OBJ)/
@@ -346,7 +337,6 @@ $(RLG)(guess_topology.o): ../spral/guess_topology.cxx
 	cd $(OBJ) ; $(RARR) guess_topology.o ; \
           $(RM) -r guess_topology.cxx config.h compat.hxx \
             hw_topology guess_topology.o
-#         $(RM) -r guess_topology.cxx config.h config1.h compat.hxx
 	@printf '[ OK ]\n'
 
 omp.o: $(RLG)(omp.o)
@@ -372,8 +362,6 @@ $(RLG)(NumericSubtree.o): ../ssids/NumericSubtree.cxx
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
 	$(MKDIR) -p $(OBJ)/hw_topology
 	$(CP) ../spral/guess_topology.hxx $(OBJ)/hw_topology/
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP) ../spral/compat.hxx $(OBJ)/
 	$(CP) ../spral/omp.hxx $(OBJ)/
@@ -387,7 +375,6 @@ $(RLG)(NumericSubtree.o): ../ssids/NumericSubtree.cxx
                       NumericSubtree.cxx )
 	cd $(OBJ) ; $(RARR) NumericSubtree.o ; $(RM) -r NumericSubtree.cxx \
           NumericSubtree.o omp.hxx compat.hxx config.h ssids hw_topology
-#         NumericSubtree.o omp.hxx compat.hxx config.h config1.h ssids
 	@printf '[ OK ]\n'
 
 profile.o: $(RLG)(profile.o)
@@ -398,8 +385,6 @@ $(RLG)(profile.o): ../ssids/profile.cxx
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
 	$(MKDIR) -p $(OBJ)/hw_topology
 	$(CP) ../spral/guess_topology.hxx $(OBJ)/hw_topology/
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP) ../spral/omp.hxx $(OBJ)/
 	$(CP) ../ssids/contrib.h $(OBJ)/ssids/
@@ -412,7 +397,6 @@ $(RLG)(profile.o): ../ssids/profile.cxx
                       profile.cxx )
 	cd $(OBJ) ; $(RARR) profile.o ; $(RM) -r profile.cxx \
           profile.o omp.hxx config.h ssids hw_topology
-#         profile.o omp.hxx config.h config1.h ssids hw_topology
 	@printf '[ OK ]\n'
 
 SymbolicSubtree.o: $(RLG)(SymbolicSubtree.o)
@@ -421,8 +405,6 @@ $(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "SymbolicSubtree  "
 	$(MKDIR) -p $(OBJ)/ssids
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP) ../spral/omp.hxx $(OBJ)/
 	$(CP) ../ssids/contrib.h $(OBJ)/ssids/
@@ -433,7 +415,7 @@ $(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx
                     $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSNOMP) \
                       SymbolicSubtree.cxx )
 	cd $(OBJ) ; $(RARR) SymbolicSubtree.o ; $(RM) -r SymbolicSubtree.cxx \
-          SymbolicSubtree.o omp.hxx config.h config1.h ssids
+          SymbolicSubtree.o omp.hxx config.h ssids
 	@printf '[ OK ]\n'
 
 cholesky.o: $(RLG)(cholesky.o)
@@ -444,8 +426,6 @@ $(RLG)(cholesky.o): ../ssids/cholesky.cxx
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
 	$(MKDIR) -p $(OBJ)/hw_topology
 	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
@@ -458,7 +438,6 @@ $(RLG)(cholesky.o): ../ssids/cholesky.cxx
                       cholesky.cxx )
 	cd $(OBJ) ; $(RARR) cholesky.o ; $(RM) -r cholesky.cxx \
           cholesky.o omp.hxx config.h ssids hw_topology
-#         cholesky.o omp.hxx config.h config1.h ssids hw_topology
 	@printf '[ OK ]\n'
 
 ldlt_app.o: $(RLG)(ldlt_app.o)
@@ -469,8 +448,6 @@ $(RLG)(ldlt_app.o): ../ssids/ldlt_app.cxx
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
 	$(MKDIR) -p $(OBJ)/hw_topology
 	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/compat.hxx $(OBJ)/
 	$(CP)  ../spral/omp.hxx $(OBJ)/
@@ -484,7 +461,6 @@ $(RLG)(ldlt_app.o): ../ssids/ldlt_app.cxx
                       ldlt_app.cxx )
 	cd $(OBJ) ; $(RARR) ldlt_app.o ; $(RM) -r ldlt_app.cxx \
           ldlt_app.o omp.hxx compat.hxx config.h ssids hw_topology
-#         ldlt_app.o omp.hxx compat.hxx config.h config1.h ssids hw_topology
 	@printf '[ OK ]\n'
 
 ldlt_nopiv.o: $(RLG)(ldlt_nopiv.o)
@@ -493,8 +469,6 @@ $(RLG)(ldlt_nopiv.o): ../ssids/ldlt_nopiv.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_nopiv  "
 	$(MKDIR) -p $(OBJ)/ssids
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
@@ -506,7 +480,6 @@ $(RLG)(ldlt_nopiv.o): ../ssids/ldlt_nopiv.cxx
                       ldlt_nopiv.cxx )
 	cd $(OBJ) ; $(RARR) ldlt_nopiv.o ; $(RM) -r ldlt_nopiv.cxx \
           ldlt_nopiv.o omp.hxx config.h ssids
-#          ldlt_nopiv.o omp.hxx config.h config1.h ssids
 	@printf '[ OK ]\n'
 
 ldlt_tpp.o: $(RLG)(ldlt_tpp.o)
@@ -515,8 +488,6 @@ $(RLG)(ldlt_tpp.o): ../ssids/ldlt_tpp.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_tpp  "
 	$(MKDIR) -p $(OBJ)/ssids
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
@@ -528,7 +499,6 @@ $(RLG)(ldlt_tpp.o): ../ssids/ldlt_tpp.cxx
                       ldlt_tpp.cxx )
 	cd $(OBJ) ; $(RARR) ldlt_tpp.o ; $(RM) -r ldlt_tpp.cxx \
           ldlt_tpp.o omp.hxx config.h ssids
-#         ldlt_tpp.o omp.hxx config.h config1.h ssids
 	@printf '[ OK ]\n'
 
 wrappers.o: $(RLG)(wrappers.o)
@@ -537,8 +507,6 @@ $(RLG)(wrappers.o): ../ssids/wrappers.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "wrappers  "
 	$(MKDIR) -p $(OBJ)/ssids
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
@@ -550,7 +518,6 @@ $(RLG)(wrappers.o): ../ssids/wrappers.cxx
                       wrappers.cxx )
 	cd $(OBJ) ; $(RARR) wrappers.o ; $(RM) -r wrappers.cxx \
           wrappers.o omp.hxx compat.hxx config.h ssids
-#         wrappers.o omp.hxx compat.hxx config.h config1.h ssids
 	@printf '[ OK ]\n'
 
 ThreadStats.o: $(RLG)(ThreadStats.o)
@@ -559,8 +526,6 @@ $(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ThreadStats  "
 	$(MKDIR) -p $(OBJ)/ssids
 	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
-#	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
-#	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP) ../spral/config.h $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
@@ -572,7 +537,6 @@ $(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx
                       ThreadStats.cxx )
 	cd $(OBJ) ; $(RARR) ThreadStats.o ; $(RM) -r ThreadStats.cxx \
           ThreadStats.o omp.hxx compat.hxx config.h ssids
-#         ThreadStats.o omp.hxx compat.hxx config.h config1.h ssids
 	@printf '[ OK ]\n'
 
 api_wrappers.o: $(RLG)(api_wrappers.o)
@@ -587,8 +551,6 @@ $(RLG)(api_wrappers.o): ../spral/api_wrappers.cu
 	cd $(OBJ) ; $(RARR) api_wrappers.o ; \
           $(RM) api_wrappers.cu api_wrappers.o
 	$(RRMARFILE) cuda.o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
 	@printf '[ OK ]\n'
 
 kinds.o: $(RLG)(kinds.o)
@@ -1215,7 +1177,7 @@ $(OBJ)/ssidst.o: ../ssids/ssidst.F90
 #  book keeping
 
 clean:
-	@printf ' %-9s\t\t' "Cleaning"
+	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision spral"
 	$(RM) $(LGS) $(LGD) $(OBJ)/ssids*.o $(OBJ)/libgalahad_spral.a \
                             $(MOD)/spral*
 	@printf '[ OK ]\n'

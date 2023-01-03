@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 14:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*- S P R A L _ K I N D S   M O D U L E -*-*-*-*-*-*-*-*-*-*-
 
@@ -42,7 +42,7 @@ MODULE SPRAL_KINDS
 !   P r e c i s i o n s  u s e d
 !--------------------------------
 
-#ifdef GALAHAD_SINGLE
+#ifdef SPRAL_SINGLE
  INTEGER, PARAMETER :: real_bytes_ = 4
  INTEGER, PARAMETER :: rp_ = r4_
  INTEGER, PARAMETER :: cp_ = c4_
@@ -54,7 +54,7 @@ MODULE SPRAL_KINDS
  INTEGER, PARAMETER :: rpc_ = C_DOUBLE
 #endif
 
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef SPRAL_64BIT_INTEGER
  INTEGER, PARAMETER :: ip_ = i8_
  INTEGER, PARAMETER :: ipc_ = C_INT64_T
 #else

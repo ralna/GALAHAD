@@ -137,22 +137,13 @@ $(ULG)(umfpack.o): ../../dum/umfpack.F90
 	$(RANLIB) $(ULG)
 	@printf '[ OK ]\n'
 
-umfpacks.o: $(OBJ)/umfpacks.o
-
-$(OBJ)/umfpacks.o: ../umfpack/umfpacks.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "umfpacks  "
-	$(SED) -f $(SEDS) ../umfpack/umfpacks.f90 > $(OBJ)/umfpacks.f90
-	cd $(OBJ) ; $(FORTRAN) -o umfpacks.o $(FFLAGS) umfpacks.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
 #  test programs
 
 umfpackt.o: $(OBJ)/umfpackt.o
 
 $(OBJ)/umfpackt.o: ../umfpack/umfpackt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "umfpackt  "
-	$(SED) -f $(SEDS) ../umfpack/umfpackt.F90 > $(OBJ)/umfpackt.F90
+	$(CP) ../umfpack/umfpackt.F90 $(OBJ)/umfpackt.F90
 	cd $(OBJ) ; $(FORTRAN) -o umfpackt.o $(FFLAGSS) umfpackt.F90
 	@printf '[ OK ]\n'
 

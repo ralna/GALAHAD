@@ -17,7 +17,7 @@
 /* Define if you have hwloc library */
 /* #undef HAVE_HWLOC */
 /* #define HAVE_HWLOC 1 */
-#ifdef GALAHAD_NO_HWLOC
+#ifdef SPRAL_NO_HWLOC
 #undef HAVE_HWLOC
 #else
 #define HAVE_HWLOC 1
@@ -41,7 +41,7 @@
 /* Define to 1 if you have sched_getcpu(). */
 /* #define HAVE_SCHED_GETCPU 1 */
 /* #undef HAVE_SCHED_GETCPU */
-#ifdef GALAHAD_NO_SCHED_GETCPU
+#ifdef SPRAL_NO_SCHED_GETCPU
 #undef HAVE_SCHED_GETCPU
 #else
 #define HAVE_SCHED_GETCPU 1

@@ -774,8 +774,7 @@ run$(package)_sif.o: $(OBJ)/run$(package)_sif.o
 
 $(OBJ)/run$(package)_sif.o: ../$(package)/run$(package)_sif.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "run$(package)_sif"
-	$(SED) -f $(SEDS) \
-           ../$(package)/run$(package)_sif.F90 > $(OBJ)/run$(package)_sif.F90
+	$(CP) ../$(package)/run$(package)_sif.F90 $(OBJ)/run$(package)_sif.F90
 	cd $(OBJ); $(FORTRAN) -o run$(package)_sif.o \
                      $(FFLAGSS) run$(package)_sif.F90
 	rm $(OBJ)/run$(package)_sif.F90
@@ -787,11 +786,9 @@ in$(package).o: $(OBJ)/in$(package).o
 
 $(OBJ)/in$(package).o: ../$(package)/in$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "in$(package)"
-	$(SED) -f $(SEDS) ../$(package)/in$(package).F90 \
-           > $(OBJ)/in$(package)1.F90
-	$(SED) -f $(LSEDS) $(OBJ)/in$(package)1.F90 > $(OBJ)/in$(package).F90
+	$(CP) ../$(package)/in$(package).F90 $(OBJ)/in$(package).F90
 	cd $(OBJ); $(FORTRAN) -o in$(package).o $(FFLAGSOMP) in$(package).F90
-	rm $(OBJ)/in$(package).F90 $(OBJ)/in$(package)1.F90
+	rm $(OBJ)/in$(package).F90
 	@printf '[ OK ]\n'
 
 #  book keeping

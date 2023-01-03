@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
       USE GALAHAD_KINDS
       USE GALAHAD_MUMPS_TYPES_precision
       IMPLICIT NONE
-      TYPE ( DMUMPS_STRUC ) :: mumps_par
+      TYPE ( MUMPS_STRUC ) :: mumps_par
       mumps_par%INFOG( 1 ) = - 999  ! error code
       RETURN
       END SUBROUTINE MUMPS_precision

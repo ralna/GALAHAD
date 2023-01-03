@@ -52,8 +52,7 @@ $(package)_ciface.o: $(CLG)($(package)_ciface.o)
 
 $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
-	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.F90 \
-           > $(OBJ)/$(package)_ciface.F90
+	$(CP) ../$(package)/C/$(package)_ciface.F90 $(OBJ)/$(package)_ciface.F90
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
            $(package)_ciface.F90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \

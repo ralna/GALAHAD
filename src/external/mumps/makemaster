@@ -139,7 +139,7 @@ mumps_types.o: $(LG)(mumps_types.o)
 
 $(LG)(mumps_types.o): ../mumps/mumps_types.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumps_types  "
-	$(SED) -f $(SEDS) ../mumps/mumps_types.F90 > $(OBJ)/mumps_types.F90
+	$(CP) ../mumps/mumps_types.F90 $(OBJ)/mumps_types.F90
 	cd $(OBJ); $(FORTRAN) -o mumps_types.o $(FFLAGS) mumps_types.F90 \
                      -I $(MUMPSINCLUDE)
 	cd $(OBJ); $(ARR) mumps_types.o ; $(RM) mumps_types.F90 mumps_types.o
@@ -151,19 +151,10 @@ mumps.o: $(MLG)(mumps.o)
 
 $(MLG)(mumps.o): ../../dum/mumps.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumps  "
-	$(SED) -f $(SEDS) ../../dum/mumps.F90 > $(OBJ)/mumps.F90
+	$(CP) ../../dum/mumps.F90 $(OBJ)/mumps.F90
 	cd $(OBJ); $(FORTRAN) -o mumps.o $(FFLAGS) mumps.F90
 	cd $(OBJ); $(MARR) mumps.o ; $(RM) mumps.F90 mumps.o
 	$(RANLIB) $(MLG)
-	@printf '[ OK ]\n'
-
-mumpss.o: $(OBJ)/mumpss.o
-
-$(OBJ)/mumpss.o: ../mumps/mumpss.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mumpss  "
-	$(SED) -f $(SEDS) ../mumps/mumpss.f90 > $(OBJ)/mumpss.f90
-	cd $(OBJ) ; $(FORTRAN) -o mumpss.o $(FFLAGS) mumpss.f90
-	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
 #  test programs
@@ -172,7 +163,7 @@ mumpst.o: $(OBJ)/mumpst.o
 
 $(OBJ)/mumpst.o: ../mumps/mumpst.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumpst  "
-	$(SED) -f $(SEDS) ../mumps/mumpst.F90 > $(OBJ)/mumpst.F90
+	$(CP) ../mumps/mumpst.F90 $(OBJ)/mumpst.F90
 	cd $(OBJ) ; $(FORTRAN) -o mumpst.o $(FFLAGSS) mumpst.F90
 	@printf '[ OK ]\n'
 
