@@ -15,10 +15,18 @@
 #include "ssids/cpu/SymbolicNode.hxx"
 #include "ssids/cpu/Workspace.hxx"
 
-#ifdef GALAHAD_SINGLE
+#ifdef SPRAL_SINGLE
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
+#define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
+#define FAPrecisionTraits FASingleTraits
+#define factor_alloc_precision factor_alloc_single
+#define precision float
 #else
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double
+#define spral_ssids_contrib_free spral_ssids_contrib_free_dbl
+#define FAPrecisionTraits FADoubleTraits
+#define factor_alloc_precision factor_alloc_double
+#define precision double
 #endif
 
 namespace spral { namespace ssids { namespace cpu {
@@ -161,8 +169,8 @@ void assemble_pre(
    Profile::Task task_asm_pre("TA_ASM_PRE");
 #endif
    /* Rebind allocators */
-   typedef typename std::allocator_traits<FactorAlloc>::template rebind_traits<double> FADoubleTraits;
-   typename FADoubleTraits::allocator_type factor_alloc_double(factor_alloc);
+   typedef typename std::allocator_traits<FactorAlloc>::template rebind_traits<precision> FAPrecisionTraits;
+   typename FAPrecisionTraits::allocator_type factor_alloc_precision(factor_alloc);
    typedef typename std::allocator_traits<FactorAlloc>::template rebind_traits<int> FAIntTraits;
    typename FAIntTraits::allocator_type factor_alloc_int(factor_alloc);
    typedef typename std::allocator_traits<PoolAlloc>::template rebind_alloc<int> PoolAllocInt;
@@ -174,7 +182,7 @@ void assemble_pre(
    }
    for(int contrib_idx : snode.contrib) {
       int cn, ldcontrib, ndelay, lddelay;
-      double const *cval, *delay_val;
+      precision const *cval, *delay_val;
       int const *crlist, *delay_perm;
       spral_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
@@ -187,10 +195,10 @@ void assemble_pre(
 
    /* Get space for node now we know it size using Fortran allocator + zero it*/
    // NB L is  nrow x ncol and D is 2 x ncol (but no D if posdef)
-   size_t ldl = align_lda<double>(nrow);
+   size_t ldl = align_lda<precision>(nrow);
    size_t len = posdef ?  ldl    * ncol  // posdef
                        : (ldl+2) * ncol; // indef (includes D)
-   node.lcol = FADoubleTraits::allocate(factor_alloc_double, len);
+   node.lcol = FAPrecisionTraits::allocate(factor_alloc_precision, len);
    //memset(node.lcol, 0, len*sizeof(T)); NOT REQUIRED as PoolAlloc is
    // required to ensure it is zero for us (i.e. uses calloc)
 
@@ -307,7 +315,7 @@ void assemble_pre(
    /* Add any contribution block from other subtrees */
    for(int contrib_idx : snode.contrib) {
       int cn, ldcontrib, ndelay, lddelay;
-      double const *cval, *delay_val;
+      precision const *cval, *delay_val;
       int const *crlist, *delay_perm;
       spral_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
@@ -418,7 +426,7 @@ void assemble_post(
    /* Add any contribution block from other subtrees */
    for(int contrib_idx : snode.contrib) {
       int cn, ldcontrib, ndelay, lddelay;
-      double const *cval, *delay_val;
+      precision const *cval, *delay_val;
       int const *crlist, *delay_perm;
       spral_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
@@ -440,7 +448,7 @@ void assemble_post(
          }
       }
       /* Free memory from child contribution block */
-      spral_ssids_contrib_free_dbl(child_contrib[contrib_idx]);
+      spral_ssids_contrib_free(child_contrib[contrib_idx]);
    }
    if(map) PAIntTraits::deallocate(pool_alloc_int, map, n+1);
 }

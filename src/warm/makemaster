@@ -64,8 +64,7 @@ use$(package).o: $(LG)(use$(package).o)
 
 $(LG)(use$(package).o): ../$(package)/use$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
-	$(SED) -f $(SEDS) \
-           ../$(package)/use$(package).F90 > $(OBJ)/use$(package).F90
+	$(CP) ../$(package)/use$(package).F90 $(OBJ)/use$(package).F90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \

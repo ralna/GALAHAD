@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 14:50 GMT.
 
-#ifdef GALAHAD_SINGLE
+#ifdef SPRAL_SINGLE
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single

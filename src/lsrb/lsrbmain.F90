@@ -1,7 +1,8 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
-  PROGRAM LSRB_main
 
 #include "galahad_modules.h"
+
+  PROGRAM LSRB_main
 
 !  read a Rutherford-Boeing matrix A and store it in csc scheme
 !  and then solve the least-squares problem 

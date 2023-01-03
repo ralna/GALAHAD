@@ -137,15 +137,6 @@ $(PLG)(pardiso.o): ../../dum/pardiso.F90
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
-pardisos.o: $(OBJ)/pardisos.o
-
-$(OBJ)/pardisos.o: ../pardiso/pardisos.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "pardisos  "
-	$(SED) -f $(SEDS) ../pardiso/pardisos.f90 > $(OBJ)/pardisos.f90
-	cd $(OBJ) ; $(FORTRAN) -o pardisos.o $(FFLAGS) pardisos.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
 #  test programs
 
 pardisot.o: $(OBJ)/pardisot.o

@@ -80,8 +80,7 @@ $(package)_gcov: ../$(package)/$(package).F90
           || ( printf ' %-26s' "=> Disabling optimization " ; \
             $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
               $(package)_cov.F90 )
-	$(SED) -f $(SEDS) $(package)t.F90 > $(package)t_cov1.F90
-	$(SED) -f $(LSEDS) $(package)t_gcov1.F90 > $(package)t_cov.F90
+	$(CP) $(package)t.F90 $(package)t_cov.F90
 	$(RM) ./$(package)t_cov1.F90
 	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
           $(package)t_cov.F90

@@ -56,8 +56,9 @@ void factor_node_indef(
    //Verify<T> verifier(m, n, perm, lcol, ldl);
    if(options.pivot_method != PivotMethod::tpp) {
       // Use an APP based pivot method
+      T zero_val = 0.0;
       node.nelim = ldlt_app_factor(
-            m, n, perm, lcol, ldl, d, 0.0, contrib, m-n, options, work,
+            m, n, perm, lcol, ldl, d, zero_val, contrib, m-n, options, work,
             pool_alloc
             );
       if(node.nelim < 0) {
@@ -171,7 +172,8 @@ void factor_node(
       std::vector<Workspace>& work,
       PoolAlloc& pool_alloc
       ) {
-   if(posdef) factor_node_posdef(0.0, snode, node, options, stats);
+   T zero_val = 0.0;
+   if(posdef) factor_node_posdef(zero_val, snode, node, options, stats);
    else       factor_node_indef(ni, snode, node, options, stats, work, pool_alloc);
 }
 

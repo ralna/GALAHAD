@@ -196,24 +196,13 @@ $(PLG)(pastixf.o): ../../dum/pastixf.F90
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
-#  documentaion example
-
-pastixs.o: $(OBJ)/pastixs.o
-
-$(OBJ)/pastixs.o: ../pastix/pastixs.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "pastixs  "
-	$(SED) -f $(SEDS) ../pastix/pastixs.f90 > $(OBJ)/pastixs.f90
-	cd $(OBJ) ; $(FORTRAN) -o pastixs.o $(FFLAGS) pastixs.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
 #  test programs
 
 pastixt.o: $(OBJ)/pastixt.o
 
 $(OBJ)/pastixt.o: ../pastix/pastixt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixt  "
-	$(SED) -f $(SEDS) ../pastix/pastixt.F90 > $(OBJ)/pastixt.F90
+	$(CP) ../pastix/pastixt.F90 $(OBJ)/pastixt.F90
 	cd $(OBJ) ; $(FORTRAN) -o pastixt.o $(FFLAGSS) pastixt.F90
 	@printf '[ OK ]\n'
 
