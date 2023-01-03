@@ -1,10 +1,10 @@
-libgalahad_blas_src = ['src/lapack/blas.f']
-libgalahad_src += ['src/lapack/blas_interface.f90']
+libgalahad_blas_src = files('blas.f')
+libgalahad_lapack_src = files('lapack.f')
 
-libgalahad_lapack_src = ['src/lapack/lapack.f']
 if fc.get_id() == 'nagfor'
-  libgalahad_lapack_src += ['src/lapack/noieeeck.f']
+  libgalahad_lapack_src += files('noieeeck.f')
 else
-  libgalahad_lapack_src += ['src/lapack/ieeeck.f']
+  libgalahad_lapack_src += files('ieeeck.f')
 endif
-libgalahad_src += ['src/lapack/lapack_interface.f90']
+
+libgalahad_src += files('blas_interface.F90', 'lapack_interface.F90')
