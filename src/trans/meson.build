@@ -1,2 +1,1 @@
-trans_src = ['src/trans/trans.f90']
-libgalahad_src += trans_src
+libgalahad_src += files('trans.F90')

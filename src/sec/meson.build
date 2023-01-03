@@ -1,4 +1,2 @@
-sec_src = ['src/sec/sec.f90']
-sec_c_src = ['src/sec/C/sec_ciface.f90']
-libgalahad_src += sec_src
-libgalahad_c_src += sec_c_src
+libgalahad_src += files('sec.F90')
+libgalahad_c_src += files('C/sec_ciface.F90')

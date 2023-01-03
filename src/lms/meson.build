@@ -1,4 +1,2 @@
-lms_src = ['src/lms/lms.f90']
-lms_c_src = ['src/lms/C/lms_ciface.f90']
-libgalahad_src += lms_src
-libgalahad_c_src += lms_c_src
+libgalahad_src += files('lms.F90')
+libgalahad_c_src += files('C/lms_ciface.F90')

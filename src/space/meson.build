@@ -1,2 +1,1 @@
-space_src = ['src/space/space.f90']
-libgalahad_src += space_src
+libgalahad_src += files('space.F90')
