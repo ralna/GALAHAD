@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "ssids/cpu/Workspace.hxx"
+#include "ssids_cpu_Workspace.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 

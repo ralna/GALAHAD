@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "ssids/cpu/cpu_iface.hxx"
-#include "ssids/cpu/factor.hxx"
-#include "ssids/cpu/NumericNode.hxx"
-#include "ssids/cpu/SmallLeafSymbolicSubtree.hxx"
-#include "ssids/cpu/ThreadStats.hxx"
+#include "ssids_cpu_cpu_iface.hxx"
+#include "ssids_cpu_factor.hxx"
+#include "ssids_cpu_NumericNode.hxx"
+#include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
+#include "ssids_cpu_ThreadStats.hxx"
 
 #ifdef SPRAL_SINGLE
 #define FAPrecisionTraits FASingleTraits

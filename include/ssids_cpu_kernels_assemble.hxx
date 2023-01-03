@@ -9,11 +9,11 @@
 #include<memory>
 #include<vector>
 
-#include "ssids/contrib.h"
-#include "ssids/profile.hxx"
-#include "ssids/cpu/NumericNode.hxx"
-#include "ssids/cpu/SymbolicNode.hxx"
-#include "ssids/cpu/Workspace.hxx"
+#include "ssids_contrib.h"
+#include "ssids_profile.hxx"
+#include "ssids_cpu_NumericNode.hxx"
+#include "ssids_cpu_SymbolicNode.hxx"
+#include "ssids_cpu_Workspace.hxx"
 
 #ifdef SPRAL_SINGLE
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single

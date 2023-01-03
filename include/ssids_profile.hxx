@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "config.h"
+#include "spral_config.h"
 #include <time.h>
 
 //#define PROFILE
@@ -25,8 +25,8 @@ extern "C" {
 #include <sched.h>
 #endif /* HAVE_SCHED_GETCPU */
 
-#include "hw_topology/guess_topology.hxx"
-#include "omp.hxx"
+#include "spral_guess_topology.hxx"
+#include "spral_omp.hxx"
 
 namespace spral { namespace ssids {
 

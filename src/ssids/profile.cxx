@@ -4,7 +4,8 @@
  *  \author    Jonathan Hogg
  *  \author    Florent Lopez
  */
-#include "ssids/profile.hxx"
+
+#include "ssids_profile.hxx"
 
 #ifdef PROFILE
 struct timespec spral::ssids::Profile::tstart;

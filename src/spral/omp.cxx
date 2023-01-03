@@ -6,7 +6,7 @@
  *  \brief
  *  Additional support functions and wrappers for OpenMP.
  */
-#include "omp.hxx"
+#include "spral_omp.hxx"
 
 #include <cstdio>
 
