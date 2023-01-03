@@ -16,19 +16,19 @@
 #endif /* _OPENMP */
 
 /* SPRAL headers */
-#include "ssids/profile.hxx"
-#include "ssids/cpu/cpu_iface.hxx"
-#include "ssids/cpu/SymbolicNode.hxx"
-#include "ssids/cpu/ThreadStats.hxx"
-#include "ssids/cpu/Workspace.hxx"
-#include "ssids/cpu/kernels/assemble.hxx"
-#include "ssids/cpu/kernels/calc_ld.hxx"
-#include "ssids/cpu/kernels/cholesky.hxx"
-#include "ssids/cpu/kernels/ldlt_app.hxx"
-#include "ssids/cpu/kernels/ldlt_tpp.hxx"
-#include "ssids/cpu/kernels/wrappers.hxx"
+#include "ssids_profile.hxx"
+#include "ssids_cpu_cpu_iface.hxx"
+#include "ssids_cpu_SymbolicNode.hxx"
+#include "ssids_cpu_ThreadStats.hxx"
+#include "ssids_cpu_Workspace.hxx"
+#include "ssids_cpu_kernels_assemble.hxx"
+#include "ssids_cpu_kernels_calc_ld.hxx"
+#include "ssids_cpu_kernels_cholesky.hxx"
+#include "ssids_cpu_kernels_ldlt_app.hxx"
+#include "ssids_cpu_kernels_ldlt_tpp.hxx"
+#include "ssids_cpu_kernels_wrappers.hxx"
 
-//#include "ssids/cpu/kernels/verify.hxx" // FIXME: remove debug
+//#include "ssids_cpu_kernels_verify.hxx" // FIXME: remove debug
 
 namespace spral { namespace ssids { namespace cpu {
 

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ssids/cpu/cpu_iface.hxx"
-#include "ssids/cpu/SymbolicNode.hxx"
+#include "ssids_cpu_cpu_iface.hxx"
+#include "ssids_cpu_SymbolicNode.hxx"
 
 #ifdef SPRAL_SINGLE
 #define precision_ float

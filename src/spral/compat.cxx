@@ -6,9 +6,9 @@
  * \brief
  * Implements compatability functions depending on the value of autoconf macros.
  */
-#include "compat.hxx"
+#include "spral_compat.hxx"
 
-#include "config.h"
+#include "spral_config.h"
 
 #ifdef GALAHAD_HAVE_HWLOC
 #define HAVE_HWLOC 1
