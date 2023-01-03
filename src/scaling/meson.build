@@ -1,2 +1,1 @@
-scaling_src = ['src/scaling/scaling.f90']
-libgalahad_src += scaling_src
+libgalahad_src += files('scaling.F90')
