@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "compat.hxx" // in case std::align not defined
+#include "spral_compat.hxx" // in case std::align not defined
 
 namespace spral { namespace ssids { namespace cpu {
 

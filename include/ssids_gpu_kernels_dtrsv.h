@@ -21,7 +21,7 @@ __inline__ __device__ T_ELEM loadVolatile(const volatile T_ELEM *const vptr)
   return *vptr;
 }
 
-#include "cuda/cuda_check.h"
+#include "spral_cuda_cuda_check.h"
 #include <cuComplex.h>
 
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))

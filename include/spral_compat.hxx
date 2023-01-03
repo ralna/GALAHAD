@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "config.h"
+#include "spral_config.h"
 
 // #ifndef HAVE_STD_ALIGN
 // // Older versions of g++ (and intel that relies on equivalent -lstdc++) don't

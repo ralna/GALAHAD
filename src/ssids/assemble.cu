@@ -8,8 +8,8 @@
 #include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
 
-#include "cuda/cuda_check.h"
-#include "ssids/gpu/kernels/datatypes.h"
+#include "spral_cuda_cuda_check.h"
+#include "ssids_gpu_kernels_datatypes.h"
 
 #define HOGG_ASSEMBLE_TX 128  // Block height
 #define HOGG_ASSEMBLE_TY 8    // Block width
