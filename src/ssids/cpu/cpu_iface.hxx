@@ -7,6 +7,14 @@
 
 #include <cstddef>
 
+
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
+
+
 namespace spral { namespace ssids { namespace cpu {
 
 enum struct PivotMethod : int {
@@ -23,9 +31,9 @@ enum struct FailedPivotMethod : int {
 struct cpu_factor_options {
    int print_level;
    bool action;
-   double small;
-   double u;
-   double multiplier;
+   precision_ small;
+   precision_ u;
+   precision_ multiplier;
    long small_subtree_threshold;
    int cpu_block_size;
    PivotMethod pivot_method;

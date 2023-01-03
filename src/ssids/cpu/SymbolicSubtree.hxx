@@ -11,6 +11,12 @@
 #include "ssids/cpu/SmallLeafSymbolicSubtree.hxx"
 #include "ssids/cpu/SymbolicNode.hxx"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#else
+#define precision_ double
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /** Symbolic factorization of a subtree to be factored on the CPU */
@@ -86,13 +92,13 @@ public:
    SymbolicNode const& operator[](int idx) const {
       return nodes_[idx];
    }
-   size_t get_factor_mem_est(double multiplier) const {
-      size_t mem = n*sizeof(int) + (2*n+nfactor_)*sizeof(double);
+   size_t get_factor_mem_est(precision_ multiplier) const {
+      size_t mem = n*sizeof(int) + (2*n+nfactor_)*sizeof(precision_);
       return std::max(mem, static_cast<size_t>(mem*multiplier));
    }
    template <typename T>
    size_t get_pool_size() const {
-      return maxfront_*align_lda<double>(maxfront_);
+      return maxfront_*align_lda<precision_>(maxfront_);
    }
 public:
    int const n; //< Maximum row index

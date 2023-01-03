@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 15:50 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 6    M O D U L E  -*-*-*-
 
@@ -233,7 +233,7 @@ module hsl_MA86_double
          ! Printing is suppressed if unit_error  <  0.
       integer :: unit_warning     = 6    ! unit for warning messages
          ! Printing is suppressed if unit_warning  <  0.
-!86V2 integer :: scaling          = 1    ! scaling routine to use
+      integer :: scaling          = 1    ! scaling routine to use
          ! 0 = none or user defined (user iff scale is present)
          ! 1 = mc64
       integer :: cache_tq_sz     = 100    ! Size of local task stack
