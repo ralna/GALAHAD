@@ -1,10 +1,12 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 12:00 GMT.
 
 #ifdef SPRAL_SINGLE
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
 #else
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
@@ -25,8 +27,10 @@
 
   MODULE SPRAL_SSIDS_precision_ciface
     USE SPRAL_KINDS
-    USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
-    USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
+!   USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
+!   USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
+    USE SPRAL_SSIDS_precision, ONLY : f_ssids_options => ssids_options,        &
+                                      f_ssids_inform => ssids_inform
 
     IMPLICIT NONE
 
