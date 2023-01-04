@@ -1,13 +1,14 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 13:40 GMT.
 
-#ifdef SPRAL_SINGLE
-#define SPRAL_SSIDS_precision SPRAL_SSIDS_single
+!! #ifdef SPRAL_SINGLE
+#ifdef GALAHAD_SINGLE
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
 #else
-#define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
 #endif
@@ -26,9 +27,10 @@
 !  C interface module to SPRAL_SSIDS types and interfaces
 
   MODULE SPRAL_SSIDS_precision_ciface
-    USE SPRAL_KINDS
+!   USE SPRAL_KINDS
 !   USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
 !   USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
+    USE GALAHAD_KINDS
     USE SPRAL_SSIDS_precision, ONLY : f_ssids_options => ssids_options,        &
                                       f_ssids_inform => ssids_inform
 
@@ -60,9 +62,9 @@
        REAL ( KIND = rp_ ) :: u
        INTEGER ( KIND = ipc_ ) :: nstream
        REAL ( KIND = rp_ ) :: multiplier
-!     type(auction_options) :: auction 
+!     type(auction_options) :: auction
        REAL ( KIND = rp_ ) :: min_loadbalance
-!    character(len=:), allocatable :: rb_dump 
+!    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = ipc_ ) :: failed_pivot_method
     END TYPE ssids_options
 
@@ -132,7 +134,7 @@
 
 !  copy fortran information parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_ssids_inform ), INTENT( IN ) :: finform
     TYPE ( ssids_inform ), INTENT( OUT ) :: cinform
 
