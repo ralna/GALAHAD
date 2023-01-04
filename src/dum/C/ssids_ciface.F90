@@ -1,7 +1,14 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 11:40 GMT.
 
-#include "galahad_modules.h"
-#include "galahad_cfunctions.h"
+#ifdef SPRAL_SINGLE
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
+#define SPRAL_SSIDS_types_precision spral_ssids_types_single
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
+#else
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
+#define SPRAL_SSIDS_types_precision spral_ssids_types_double
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
+#endif
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -17,9 +24,9 @@
 !  C interface module to SPRAL_SSIDS types and interfaces
 
   MODULE SPRAL_SSIDS_precision_ciface
-    USE :: GALAHAD_KINDS
-    USE SPRAL_SSIDS, only : f_ssids_options => ssids_options,                  &
-                            f_ssids_inform => ssids_inform
+    USE SPRAL_KINDS
+    USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
+    USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
 
     IMPLICIT NONE
 
