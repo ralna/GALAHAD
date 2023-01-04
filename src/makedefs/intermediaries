@@ -17,25 +17,20 @@ make_arc:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
-make_basic:
-	( cd $(GALAHAD)/src/basic ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
-
 make_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_blas_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_blas:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_bls:
 	( cd $(GALAHAD)/src/bls ; \
@@ -158,9 +153,9 @@ make_dqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
 
 make_dummy:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -228,18 +223,13 @@ make_l2rt:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 make_lapack:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_lapack_interface:
-	( cd $(GALAHAD)/src/basic ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
-
-make_linearsolver:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) linearsolver.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_lhs:
@@ -688,9 +678,9 @@ make_lancelot_psls:
 #########################################
 
 make_all_basic:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_amd:
 	( cd $(GALAHAD)/src/amd ; \
@@ -708,9 +698,9 @@ make_all_bgo:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_all_blas_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_bls:
 	( cd $(GALAHAD)/src/bls ; \
@@ -828,9 +818,9 @@ make_all_dqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
 
 make_all_dummy:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummy_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -888,9 +878,9 @@ make_all_l2rt:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 make_all_lapack_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_linearsolver:
 	( cd $(GALAHAD)/src/general ; \
@@ -1306,9 +1296,9 @@ make_ciface_arc:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_ciface_basic:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
@@ -1316,14 +1306,14 @@ make_ciface_bgo:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_ciface_blas_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_blas:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_bls:
 	( cd $(GALAHAD)/src/bls ; \
@@ -1446,9 +1436,9 @@ make_ciface_dqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
 
 make_ciface_dummy:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -1516,14 +1506,14 @@ make_ciface_l2rt:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 make_ciface_lapack:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_lapack_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_linearsolver:
 	( cd $(GALAHAD)/src/general ; \
@@ -1911,9 +1901,9 @@ make_pyiface_arc:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_pyiface_basic:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
@@ -1921,14 +1911,14 @@ make_pyiface_bgo:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_pyiface_blas_interface:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_blas:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_bls:
 	( cd $(GALAHAD)/src/bls ; \
@@ -2052,9 +2042,9 @@ make_pyiface_dqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
 
 make_pyiface_dummy:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -2122,14 +2112,15 @@ make_pyiface_l2rt:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 make_pyiface_lapack:
-	( cd $(GALAHAD)/src/basic ; \
+	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_lapack_interface:
-	( cd $(GALAHAD)/src/basic ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+          lapack_interface_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_linearsolver:
 	( cd $(GALAHAD)/src/general ; \
