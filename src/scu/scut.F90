@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SCU_testdeck
    USE GALAHAD_KINDS
-   USE GALAHAD_SCU_DOUBLE
+   USE GALAHAD_SCU_precision
    IMPLICIT NONE 
    TYPE ( SCU_matrix_type ) :: mat, mat2 
    TYPE ( SCU_data_type ) :: data
@@ -29,11 +29,11 @@
    mat%CD_row_start = (/ 1, 6, 10, 11 /)
    mat%CD_col = (/ 1, 2, 3, 4, 5, 1, 3, 5, 6, 1 /)
    mat%CD_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,       &
-                    1.0_rp_, 1.0_rp_, 2.0_rp_, 1.0_wp/)
+                    1.0_rp_, 1.0_rp_, 2.0_rp_, 1.0_rp_/)
    RHS1 = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 7.0_rp_, 16.0_rp_, 6.0_rp_ /)
    RHS2 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 7.0_rp_, 16.0_rp_, 6.0_rp_,  &
              13.0_rp_ /)
-   RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_,  13.0_wp/)
+   RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_,  13.0_rp_/)
 
    epsqrt = SQRT( EPSILON( 1.0_rp_ ) )
 
@@ -205,9 +205,9 @@
      IF ( class == 0 ) mat%class = 1
      WRITE ( 6, 2200 ) mat%class
      IF ( class == 0 )                                                         &
-       RHS3 = (/ 1.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 8.0_rp_, 13.0_wp/)
+       RHS3 = (/ 1.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 8.0_rp_, 13.0_rp_/)
      IF ( class == 1 )                                                         &
-       RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_, 13.0_wp/)
+       RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_, 13.0_rp_/)
      IF ( mat%class == 2 ) THEN
        mat%BD_val( 8 ) = 2.0_rp_
        RHS1( 6 ) = 15.0_rp_
