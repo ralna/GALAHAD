@@ -9,7 +9,7 @@
 !  April 10th 2013
 
    MODULE GALAHAD_USESHA_precision
-            
+
 !  This is the driver program for running SHA for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
@@ -62,6 +62,8 @@
      CHARACTER ( LEN =  1 ) :: ptype
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
+!    LOGICAL :: multiple_tests = .FALSE.
+     LOGICAL :: multiple_tests = .TRUE.
 
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, RD
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_COUNT
@@ -369,6 +371,7 @@
 !  |                                                                           |
 !  v                                                                           v
      IF ( .FALSE. ) THEN
+!    IF ( multiple_tests ) THEN
 
 ! approximate the Hessian ignoring symmetry
 

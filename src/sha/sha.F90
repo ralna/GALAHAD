@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SHA_precision
-            
+
 !    ------------------------------------------------
 !   |                                                |
 !   | SHA: find an approximation to a sparse Hessian |
@@ -1057,6 +1057,7 @@
       INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, nn, rank, status
       INTEGER ( KIND = ip_ ) :: liwork, lwork, mu, nu, min_mn, max_mn
       REAL ( KIND = rp_ ) :: rcond
+      LOGICAL :: debug_residuals = .TRUE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       CHARACTER ( LEN = 80 ) :: array_name
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1312,6 +1313,31 @@
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
+
+          IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
+
+!  loop over the known entries
+
+            DO k = data%PK( i ), data%PK( i + 1 ) - 1
+              kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+              j = COL( kk )
+              IF ( j == i ) j = ROW( kk )
+
+!  subtract B_{ij} s_{jl} from b
+
+              data%B( 1 : mu, 1 )                                              &
+                = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
+            END DO
+            write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
+              MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+          END IF
         END DO
 
 !  ---------------------------------------
