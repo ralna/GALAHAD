@@ -379,26 +379,26 @@ ulinearsolver_single: $($(ULINEARSOLVERS))
 ulinearsolver_double: $($(ULINEARSOLVERD))
 	$(RANLIB) $(LGD)
 
-SSIDSS = symbols $(RLGS)(ssidss.o)
-SSIDSD = symbols $(RLGD)(ssidsd.o)
+SSIDSS = symbols_silent $(RLGS)(ssidss.o)
+SSIDSD = symbols_silent $(RLGD)(ssidsd.o)
 
-PARDISOS = symbols $(PLGS)(pardiso.o)
-PARDISOD = symbols $(PLGD)(pardiso.o)
+PARDISOS = symbols_silent $(PLGS)(pardiso.o)
+PARDISOD = symbols_silent $(PLGD)(pardiso.o)
 
-METISS = symbols $(MLGS)(metis4.o)
-METISD = symbols $(MLGD)(metis4.o)
+METISS = symbols_silent $(MLGS)(metis4.o)
+METISD = symbols_silent $(MLGD)(metis4.o)
 
-WSMPS = symbols $(WLGS)(wsmp.o)
-WSMPD = symbols $(WLGD)(wsmp.o)
+WSMPS = symbols_silent $(WLGS)(wsmp.o)
+WSMPD = symbols_silent $(WLGD)(wsmp.o)
 
-UMFPACKS = symbols $(ULGS)(umfpack.o)
-UMFPACKD = symbols $(ULGD)(umfpack.o)
+UMFPACKS = symbols_silent $(ULGS)(umfpack.o)
+UMFPACKD = symbols_silent $(ULGD)(umfpack.o)
 
-MUMPSS = symbols $(MULGS)(mumps.o)
-MUMPSD = symbols $(MULGD)(mumps.o)
+MUMPSS = symbols_silent $(MULGS)(mumps.o)
+MUMPSD = symbols_silent $(MULGD)(mumps.o)
 
-PASTIXS = symbols $(PXLGS)(spmf.o) $(PXLGS)(pastixf.o)
-PASTIXD = symbols $(PXLGD)(spmf.o) $(PXLGD)(pastixf.o)
+PASTIXS = symbols_silent $(PXLGS)(spmf.o) $(PXLGS)(pastixf.o)
+PASTIXD = symbols_silent $(PXLGD)(spmf.o) $(PXLGD)(pastixf.o)
 
 #  ssids
 
@@ -421,6 +421,43 @@ ssids_silent:
 ssids:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
+
+ssidss.o: $(RLG)(ssidss.o)
+
+$(RLG)(ssidss.o): ../dum/ssidss.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
+	$(CP) ../dum/ssidss.F90 $(OBJ)/ssidss.F90
+	cd $(OBJ); $(FORTRAN) -o ssidss.o $(FFLAGS) ssidss.F90
+	cd $(OBJ); $(RARR) ssidss.o ; $(RM) ssidss.F90 ssidss.o
+	$(MVMODS)
+	$(RMARFILE) sls.o
+	$(RANLIB) $(RLG)
+	@printf '[ OK ]\n'
+
+ssidsd.o: $(RLG)(ssidsd.o)
+
+$(RLG)(ssidsd.o): ../dum/ssidsd.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
+	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssidsd.F90
+	cd $(OBJ); $(FORTRAN) -o ssidsd.o $(FFLAGS) ssidsd.F90
+	cd $(OBJ); $(RARR) ssidsd.o ; $(RM) ssidsd.F90 ssidsd.o
+	$(MVMODS)
+	$(RMARFILE) sls.o
+	$(RANLIB) $(RLG)
+	@printf '[ OK ]\n'
+
+ssids_ciface.o: $(CLG)(ssids_ciface.o)
+
+$(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
+	$(CP) ../dum/C/ssids_ciface.F90 $(OBJ)/ssids_ciface.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGS) \
+                      ssids_ciface.F90
+	cd $(OBJ) ; $(RARR) ssids_ciface.o ; \
+                    $(RM) ssids_ciface.F90 ssids_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
 
 #  book keeping
 
