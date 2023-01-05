@@ -3,7 +3,7 @@
    PROGRAM GALAHAD_SEC_test
    USE GALAHAD_KINDS
    USE GALAHAD_SEC_precision
-   USE GALAHAD_rand_precision
+   USE GALAHAD_RAND_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
    TYPE ( SEC_control_type ) :: control
