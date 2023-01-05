@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_test  ! further work needed!!
    USE GALAHAD_KINDS
-   USE GALAHAD_GLS_DOUBLE
+   USE GALAHAD_GLS_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: info, rank
    INTEGER ( KIND = ip_ ), PARAMETER :: m = 3
