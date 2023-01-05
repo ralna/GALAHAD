@@ -71,7 +71,7 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
 
 #  compilation agenda
 
-OBJECTSBASICS = extend basics $(LGS)(bndsl.o)  $(LGS)(others.o) \
+OBJECTSBASICS = extend basics scu $(LGS)(bndsl.o)  $(LGS)(others.o) \
          icfs ma61 linearsolver ma57 sils ad02 \
          $(LGS)(cauchy.o) $(LGS)(cg.o)     $(LGS)(hslint.o) $(LGS)(asmbl.o) \
          $(LGS)(hsprd.o)  $(LGS)(initw.o)  $(LGS)(mdchl.o)  $(LGS)(precn.o) \
@@ -364,19 +364,22 @@ extend:
             extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent scu.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 linearsolver:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 sils:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sils )
+scu:
+	( cd ../scu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            scu_silent  PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scu )
 rand:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            rand.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../rand ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            rand.o PRECIS=$(PRECIS) PWD=$(PWD)/../rand )
 copyright:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../copyright ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../copyright )
 ma57:
 	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ma57_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
