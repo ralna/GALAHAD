@@ -5,7 +5,7 @@
    TYPE ( ARC_control_type ) :: control
    TYPE ( ARC_inform_type ) :: inform
    TYPE ( ARC_full_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    REAL ( KIND = wp ) :: f
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V

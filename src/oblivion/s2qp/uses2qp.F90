@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,8 @@
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_SMT_precision
      USE GALAHAD_CUTEST_FUNCTIONS_precision
      USE GALAHAD_CHECK_precision
@@ -50,16 +51,16 @@
 !   D e r i v e d   T y p e s
 !-------------------------------
 
-     TYPE ( S2QP_control_type )            :: control
-     TYPE ( S2QP_inform_type )             :: inform
-     TYPE ( S2QP_data_type )               :: data
-     TYPE ( NLPT_userdata_type )           :: userdata
-     TYPE ( NLPT_problem_type )            :: nlp
+     TYPE ( S2QP_control_type )             :: control
+     TYPE ( S2QP_inform_type )              :: inform
+     TYPE ( S2QP_data_type )                :: data
+     TYPE ( GALAHAD_userdata_type )         :: userdata
+     TYPE ( NLPT_problem_type )             :: nlp
      TYPE ( CUTEST_FUNCTIONS_inform_type )  :: cutest_inform
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
-     TYPE ( CHECK_control_type )           :: CHECK_control
-     TYPE ( CHECK_inform_type )            :: CHECK_inform
-     TYPE ( CHECK_data_type )              :: CHECK_data
+     TYPE ( CHECK_control_type )            :: CHECK_control
+     TYPE ( CHECK_inform_type )             :: CHECK_inform
+     TYPE ( CHECK_data_type )               :: CHECK_data
 
 !-----------------------------------------------
 !   L o c a l   P a r a m e t e r s

@@ -187,6 +187,7 @@ cutest_dummy.o: $(CDLG)(cutest_dummy.o)
 
 $(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_dummy"
+	$(CUARR) ../dum/empty
 	$(CP) ../dum/cutest_dummy.F90 $(OBJ)/cutest_dummy.F90
 	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.F90
 	cd $(OBJ); $(CDARR) cutest_dummy.o ; \

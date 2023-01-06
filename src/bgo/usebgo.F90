@@ -21,6 +21,8 @@
      USE GALAHAD_BGO_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SPACE_precision
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 

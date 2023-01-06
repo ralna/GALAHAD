@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_TRAL3_EXAMPLE  !  GALAHAD 2.6 - 26/06/2013 AT 08:15 GMT
+   PROGRAM GALAHAD_TRAL3_EXAMPLE  !  GALAHAD 4.1 - 2023-10-06 AT 00:05 GMT
    USE GALAHAD_TRAL_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -6,7 +6,7 @@
    TYPE ( TRAL_control_type ) :: control
    TYPE ( TRAL_inform_type ) :: inform
    TYPE ( TRAL_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
@@ -50,7 +50,7 @@
      END SELECT
    END DO
    IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' TRAL: ', I0, ' iterations -',                               &
+     WRITE( 6, "( ' TRAL: ', I0, ' iterations -',                              &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X

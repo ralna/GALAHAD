@@ -63,7 +63,7 @@ $(LG)($(package).o): ../$(package)/$(package).F90
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
 	cd $(OBJ); $(ARR) $(package).o ; $(RM) $(package).F90 $(package).o
 	$(RMARFILES) $(DEPENDS)
-	$(RMARFILE) use$(package).o
+	$(CURMARFILE) use$(package).o
 	$(RMOBFILE) in$(package).o
 	$(RMOBFILE) $(package)s.o
 	$(RMOBFILE) $(package)t.o
@@ -116,16 +116,16 @@ $(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
 
 #  CUTEst/AMPL interfaces
 
-use$(package).o: $(LG)(use$(package).o)
+use$(package).o: $(CULG)(use$(package).o)
 
-$(LG)(use$(package).o): ../$(package)/use$(package).F90
+$(CULG)(use$(package).o): ../$(package)/use$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
 	$(CP) ../$(package)/use$(package).F90 $(OBJ)/use$(package).F90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).F90 )
-	cd $(OBJ); $(ARR) use$(package).o ; \
+	cd $(OBJ); $(CUARR) use$(package).o ; \
                    $(RM) use$(package).F90 use$(package).o
 	$(RMOBFILE) run$(package)_sif.o
 	$(MVMODS)

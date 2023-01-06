@@ -1297,6 +1297,19 @@
 
 !  solve A x = b
 
+if ( i == 615 ) then
+write(6,"( ' i = ', I0, ' m, n = ', I0, 1X, I0 )" ) i, mu, nu
+          DO k = data%PU( i ), data%PK( i + 1 ) - 1
+            kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+            j = COL( kk )
+            IF ( j == i ) j = ROW( kk )
+            write(6,"(' var =', I0 )" ) j
+         END DO
+
+end if
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i, info )
@@ -1338,6 +1351,7 @@
             write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
               MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
           END IF
+if ( i == 615 ) stop
         END DO
 
 !  ---------------------------------------

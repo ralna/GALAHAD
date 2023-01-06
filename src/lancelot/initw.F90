@@ -18,9 +18,6 @@
        PRIVATE
        PUBLIC :: INITW_initialize_workspace
        
-!  Set precision
-
-
 !  Set other parameters
 
        REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_

@@ -743,11 +743,12 @@
 
 !  Local variables
 
-     INTEGER ( KIND = ip_ ) :: i, kw, nblks, ncols, nrows, stat, la, liw, block, la_extra
+     INTEGER ( KIND = ip_ ) :: i, kw, nblks, ncols, nrows, stat, la, liw
+     INTEGER ( KIND = ip_ ) :: block, la_extra
      INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
      REAL ( KIND = rp_ ) :: CNTL( 5 )
-     INTEGER ( KIND = ip_ ), ALLOCATABLE :: flag( : ) ! Workarray for completing the
-                                       ! permutation in the rank-deficient case
+     INTEGER ( KIND = ip_ ), ALLOCATABLE :: flag( : ) ! Workarray for completing
+                                   ! the permutation in the rank-deficient case
      INTEGER ( KIND = ip_ ) :: FACTORS_iw1( MATRIX%n )
 
      IF ( FACTORS%n /= MATRIX%n ) THEN
@@ -1272,8 +1273,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER ( KIND = ip_ ) :: k, iold, inew, jold, ia, jnew, j2, j1, iiw, jj, ii
-       INTEGER ( KIND = ip_ ) :: ich, i, ipos, jpos
+       INTEGER ( KIND = ip_ ) :: k, iold, inew, jold, ia, jnew, j2, j1, iiw
+       INTEGER ( KIND = ip_ ) :: ich, i, ipos, jpos, jj, ii
        REAL ( KIND = rp_ ) :: anext, anow, machep, maxdag
 
 ! ** Obtain machep

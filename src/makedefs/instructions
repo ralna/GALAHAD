@@ -22,9 +22,9 @@ D$(PACKAGE)PY = $(D$(PACKAGE)C) $(PYDEPENDENCIES) $(PYLGD)($(package)_pyiface.o)
 
 #  additional run agenda
 
-SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGS)(use$(package).o) \
+SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package).o) \
                  $(OBJS)/run$(package)_sif.o
-DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGD)(use$(package).o) \
+DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package).o) \
                  $(OBJD)/run$(package)_sif.o
 SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJS)/in$(package).o
 DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
@@ -250,16 +250,16 @@ $(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
 #  process package add-ons for CUTEst
 
 $(package)_cutest_addon: $(package)_cutest_addon_$(PRECIS)
-$(package)_cutest_addon_single: $(LGS)(use$(package).o) \
+$(package)_cutest_addon_single: $(CULGS)(use$(package).o) \
                                 $(OBJS)/run$(package)_sif.o
-$(package)_cutest_addon_double: $(LGD)(use$(package).o) \
+$(package)_cutest_addon_double: $(CULGD)(use$(package).o) \
                                 $(OBJD)/run$(package)_sif.o
 
 #  process package add-ons for AMPL
 
 $(package)_ampl_addon: $(package)_ampl_addon_$(PRECIS)
-$(package)_ampl_addon_single: $(LGS)(use$(package).o)
-$(package)_ampl_addon_double: $(LGD)(use$(package).o)
+$(package)_ampl_addon_single: $(CULGS)(use$(package).o)
+$(package)_ampl_addon_double: $(CULGD)(use$(package).o)
 
 #  process package for QPLIB
 
