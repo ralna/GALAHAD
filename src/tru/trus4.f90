@@ -1,11 +1,11 @@
-   PROGRAM GALAHAD_TRU4_EXAMPLE  !  GALAHAD 3.3 - 25/07/2021 AT 09:15 GMT
+   PROGRAM GALAHAD_TRU4_EXAMPLE  !  GALAHAD 4.1 - 2023-10-06 AT 08:15 GMT
    USE GALAHAD_TRU_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( TRU_control_type ) :: control
    TYPE ( TRU_inform_type ) :: inform
    TYPE ( TRU_full_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    REAL ( KIND = wp ) :: f
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V

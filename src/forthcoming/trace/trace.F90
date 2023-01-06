@@ -27,10 +27,10 @@
 !    |                                                        |
 !     --------------------------------------------------------
 
-     USE GALAHAD_USERDATA_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_PSLS_precision
      USE GALAHAD_GLTR_precision
@@ -1298,7 +1298,7 @@
 !
 !  data is a scalar variable of type TRACE_data_type used for internal data.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used 
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !

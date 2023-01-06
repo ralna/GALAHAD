@@ -41,10 +41,9 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
+!  Set parameters
 
-!  Set precision
-
-     REAL ( KIND = rp_ ) :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
 !-------------------------------
 !   D e r i v e d   T y p e s

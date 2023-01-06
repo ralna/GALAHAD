@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 08:45 GMT.
    PROGRAM GALAHAD_BQPB_THIRD_EXAMPLE
    USE GALAHAD_BQPB_double         ! double precision version
    IMPLICIT NONE
@@ -60,10 +60,10 @@
 
      SUBROUTINE HPROD( status, userdata, V, PROD )
 ! compute the matrix-vector product H * v
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
      INTEGER :: i, j, k, l, n, nflag, st_flag, st_ptr, st_row, st_val
@@ -78,7 +78,7 @@
      PROD = 0.0_wp
      DO j = 1, n
        v_j = V( j )
-       DO k = userdata%integer( st_ptr + j ),                                &
+       DO k = userdata%integer( st_ptr + j ),                                  &
               userdata%integer( st_ptr + j + 1 ) - 1
          i = userdata%integer( st_row + k )
          PROD( i ) = PROD( i ) + userdata%real( st_val + k ) * v_j

@@ -49,9 +49,6 @@ MODULE GALAHAD_TRIMSQP_precision
   PUBLIC :: TRIMSQP_initialize, TRIMSQP_read_specfile,                         &
             TRIMSQP_solve, TRIMSQP_terminate
 
-!  Set precision
-
-
 !  Set other parameters
 
   REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_

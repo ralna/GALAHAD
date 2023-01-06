@@ -22,6 +22,7 @@
      USE GALAHAD_RAND_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_USERDATA_precision
      USE CUTEST_INTERFACE_precision
 
      USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
@@ -63,7 +64,7 @@
      CHARACTER ( LEN =  1 ) :: ptype
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
 
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_lower

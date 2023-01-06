@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -46,10 +46,10 @@
 !    |                                                                   |
 !     ------------------------------------------------------------------
 
-     USE GALAHAD_USERDATA_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SLS_precision, ONLY: SLS_coord_to_extended_csr
      USE GALAHAD_PSLS_precision

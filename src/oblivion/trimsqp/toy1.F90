@@ -9,9 +9,9 @@
 !
 !  Simple problem created for testing purposes.
 
-
    PROGRAM TOY1
 
+   USE GALAHAD_KINDS
    USE GALAHAD_USERDATA_precision
    USE GALAHAD_SMT_precision
    USE GALAHAD_NLPT_precision
@@ -19,7 +19,7 @@
    USE GALAHAD_SPACE_precision
    USE GALAHAD_SMT_precision
    USE GALAHAD_SYMBOLS
-   !USE USER_toy1_functions
+!  USE USER_toy1_functions
 
    IMPLICIT NONE
 
@@ -35,10 +35,6 @@
 !                2*x1 + 4*x2       >= 0.          !
 !                                                 !
 !*************************************************!
-
-   ! Set precision.
-
-   INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND(  1.0D+0 )
 
    ! Set parameters.
 
