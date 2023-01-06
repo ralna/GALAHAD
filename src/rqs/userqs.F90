@@ -36,9 +36,6 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
-!  Set precision
-
-
 !-------------------------------
 !   D e r i v e d   T y p e s
 !-------------------------------

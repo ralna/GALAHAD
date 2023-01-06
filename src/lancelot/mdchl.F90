@@ -27,9 +27,6 @@
      PUBLIC :: MDCHL_mcfa, MDCHL_syprc, MDCHL_gmps, MDCHL_iccga, MDCHL_iccgb,  &
                MDCHL_block_type, MDCHL_get_singular_direction, MDCHL_get_donc
 
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: zero = 0.0_rp_

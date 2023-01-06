@@ -1,7 +1,8 @@
-! THIS VERSION: GALAHAD 2.4 - 4/02/2008 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 09:10 GMT.
 PROGRAM S2QP_example
   USE GALAHAD_SMT_double
   USE GALAHAD_NLPT_double
+  USE GALAHAD_USERDATA_double
   USE GALAHAD_S2QP_double
   USE GALAHAD_SPACE_double
   USE GALAHAD_SMT_double
@@ -40,7 +41,7 @@ PROGRAM S2QP_example
   TYPE ( S2QP_control_type ) :: control
   TYPE ( S2QP_inform_type ) :: inform
   TYPE ( S2QP_data_type ) :: data
-  TYPE ( NLPT_userdata_type ) :: userdata
+  TYPE ( GALAHAD_userdata_type ) :: userdata
   EXTERNAL fun_FC, fun_GJ, fun_H
   
   ! Set problem dimensions.
@@ -168,7 +169,8 @@ PROGRAM S2QP_example
 
    ! Solve the optimization problem.
 
-   CALL S2QP_solve( nlp, control, inform, data, userdata, fun_FC, fun_GJ, fun_H )
+   CALL S2QP_solve( nlp, control, inform, data, userdata, fun_FC, fun_GJ,      &
+                    fun_H )
 
    !  Termination
 
@@ -192,7 +194,7 @@ PROGRAM S2QP_example
  ! ------------------------   EXTERNAL FUNCTIONS   --------------------------
 
  SUBROUTINE fun_FC( status, X, userdata, F, C )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_double 
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 ) ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
@@ -203,7 +205,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
    INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
    
@@ -230,7 +232,7 @@ PROGRAM S2QP_example
 !-*-*-*-*-*-*-*-*-   f u n G J   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_GJ( status, X, userdata, G, Jval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_double 
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
@@ -242,7 +244,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: G
    REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: Jval
    INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
 
    ! local variables
 
@@ -283,7 +285,7 @@ PROGRAM S2QP_example
 !-*-*-*-*-*-*-*-*-   f u n H   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_H( status, X, Y, userdata, Hval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_USERDATA_double 
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
@@ -295,7 +297,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
    INTEGER, INTENT( OUT ) :: status
-   TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 

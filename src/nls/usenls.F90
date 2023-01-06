@@ -19,11 +19,13 @@
 !    USE GALAHAD_CLOCK
      USE GALAHAD_NLS_precision
      USE GALAHAD_SYMBOLS
+     USE GALAHAD_STRING
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_CUTEST_FUNCTIONS_precision
-     USE GALAHAD_STRING
 
      IMPLICIT NONE
 
@@ -39,9 +41,6 @@
 !  Dummy argument
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
-
-!  Set precision
-
 
 !-------------------------------
 !   D e r i v e d   T y p e s

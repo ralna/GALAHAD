@@ -21,6 +21,8 @@
      USE GALAHAD_DGO_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_precision
      USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 
@@ -37,9 +39,6 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
-!  Set precision
-
-
 !-------------------------------
 !   D e r i v e d   T y p e s
 !-------------------------------
@@ -48,7 +47,7 @@
      TYPE ( DGO_inform_type ) :: inform
      TYPE ( DGO_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
      TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
 

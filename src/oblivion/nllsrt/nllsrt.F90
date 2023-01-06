@@ -284,8 +284,8 @@
 
  SUBROUTINE    ABSV(N,V,AV)
 
-   INTEGER ( KIND = ip_ ), PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
    !Dummy arguments
+
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: N
    REAL (KIND = rp_), INTENT( IN ) :: V(N)
    REAL (KIND = rp_), INTENT( OUT ) :: AV(N)

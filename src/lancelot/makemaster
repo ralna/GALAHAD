@@ -41,6 +41,10 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
+CULG  = $(OBJ)/libgalahad_cutest.a
+CULGS = $(OBJS)/libgalahad_cutest.a
+CULGD = $(OBJD)/libgalahad_cutest.a
+
 HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
@@ -59,6 +63,9 @@ ARR = $(AR) $(ARREPFLAGS) $(LG)
 
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
 BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+CUARR = $(AR) $(ARREPFLAGS) $(CULG)
+CURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CULG)
 
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
 HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
@@ -84,11 +91,11 @@ OBJECTSFILTRANES = extend $(LGS)(bndsl.o)
 OBJECTSPSLSS = $(OBJECTSFILTRANES) ma61 $(LGS)(hslint.o) $(LGS)(mdchl.o)
 
 USEOBJECTSS=$(OBJECTSS)   $(LGS)(scaln.o)  $(LGS)(drchg.o) \
-         $(LGS)(drche.o) rand copyright    $(LGS)(uselancelot.o)
+         $(LGS)(drche.o) rand copyright    $(CULGS)(uselancelot.o)
 USEOBJECTSSTEERINGS=$(OBJECTSSTEERINGS)    $(LGS)(scaln.o) $(LGS)(drchg.o) \
-         $(LGS)(drche.o) rand copyright    $(LGS)(uselancelot_steering.o)
+         $(LGS)(drche.o) rand copyright    $(CULGS)(uselancelot_steering.o)
 
-OBJECTSBASICD = extend basics $(LGD)(bndsl.o)  $(LGD)(others.o) \
+OBJECTSBASICD = extend basics scu $(LGD)(bndsl.o)  $(LGD)(others.o) \
          icfs ma61 linearsolver ma57 sils ad02 \
          $(LGD)(cauchy.o) $(LGD)(cg.o)     $(LGD)(hslint.o) $(LGD)(asmbl.o) \
          $(LGD)(hsprd.o)  $(LGD)(initw.o)  $(LGD)(mdchl.o)  $(LGD)(precn.o) \
@@ -101,9 +108,9 @@ OBJECTSFILTRANED = extend $(LGD)(bndsl.o)
 OBJECTSPSLSD = $(OBJECTSFILTRANED) ma61 $(LGD)(hslint.o) $(LGD)(mdchl.o)
 
 USEOBJECTSD=$(OBJECTSD) $(LGD)(scaln.o) $(LGD)(drchg.o) \
-         $(LGD)(drche.o) rand copyright $(LGD)(uselancelot.o)
+         $(LGD)(drche.o) rand copyright $(CULGD)(uselancelot.o)
 USEOBJECTSSTEERINGD=$(OBJECTSSTEERINGD) $(LGD)(scaln.o) $(LGD)(drchg.o) \
-         $(LGD)(drche.o) rand copyright $(LGD)(uselancelot_steering.o)
+         $(LGD)(drche.o) rand copyright $(CULGD)(uselancelot_steering.o)
 
 SUCC = precision version) compiled successfully
 SUCC_SIF = precision version) for SIF compiled successfully
@@ -497,8 +504,8 @@ $(LG)(drchg.o): ../lancelot/drchg.F90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o drchg.o $(FFLAGSN) drchg.F90 )
 	cd $(OBJ); $(ARR) drchg.o; $(RM) drchg.F90 drchg.o
-	$(RMARFILE) uselancelot.o
-	$(RMARFILE) uselancelot_steering.o
+	$(CURMARFILE) uselancelot.o
+	$(CURMARFILE) uselancelot_steering.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -511,8 +518,8 @@ $(LG)(drche.o): ../lancelot/drche.F90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o drche.o $(FFLAGSN) drche.F90 )
 	cd $(OBJ); $(ARR) drche.o; $(RM) drche.F90 drche.o
-	$(RMARFILE) uselancelot.o
-	$(RMARFILE) uselancelot_steering.o
+	$(CURMARFILE) uselancelot.o
+	$(CURMARFILE) uselancelot_steering.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -551,8 +558,8 @@ $(LG)(scaln.o): ../lancelot/scaln.F90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o scaln.o $(FFLAGSN) scaln.F90 )
 	cd $(OBJ); $(ARR) scaln.o; $(RM) scaln.F90 scaln.o
-	$(RMARFILE) uselancelot.o
-	$(RMARFILE) uselancelot_steering.o
+	$(CURMARFILE) uselancelot.o
+	$(CURMARFILE) uselancelot_steering.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -678,23 +685,23 @@ $(LG)(lancelot_simple.o): ../lancelot_simple/lancelot_simple.F90
 
 #  SIF interfaces
 
-uselancelot.o: $(LG)(uselancelot.o)
+uselancelot.o: $(CULG)(uselancelot.o)
 
-$(LG)(uselancelot.o): ../lancelot/uselancelot.F90
+$(CULG)(uselancelot.o): ../lancelot/uselancelot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "uselancelot "
 	$(CP) ../lancelot/uselancelot.F90 $(OBJ)/uselancelot.F90
 	cd $(OBJ); $(FORTRAN) -o uselancelot.o $(FFLAGSS) uselancelot.F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o uselancelot.o $(FFLAGSN) uselancelot.F90 )
-	cd $(OBJ); $(ARR) uselancelot.o; \
+	cd $(OBJ); $(CUARR) uselancelot.o; \
           $(RM) uselancelot.F90 uselancelot.o
 	$(RMOBFILE) runlancelot_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-uselancelot_steering.o: $(LG)(uselancelot_steering.o)
+uselancelot_steering.o: $(CULG)(uselancelot_steering.o)
 
-$(LG)(uselancelot_steering.o): ../lancelot/uselancelot_steering.F90
+$(CULG)(uselancelot_steering.o): ../lancelot/uselancelot_steering.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "uselancelot_steering "
 	$(CP) ../lancelot/uselancelot_steering.F90 \
           $(OBJ)/uselancelot_steering.F90
@@ -703,7 +710,7 @@ $(LG)(uselancelot_steering.o): ../lancelot/uselancelot_steering.F90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o uselancelot_steering.o $(FFLAGSN) \
                      uselancelot_steering.F90 )
-	cd $(OBJ); $(ARR) uselancelot_steering.o; \
+	cd $(OBJ); $(CUARR) uselancelot_steering.o; \
           $(RM) uselancelot_steering.F90 uselancelot_steering.o
 	$(RMOBFILE) runlancelot_steering_sif.o
 	$(MVMODS)

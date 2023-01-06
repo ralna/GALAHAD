@@ -28,9 +28,6 @@
                OTHERS_gauss_elim, OTHERS_gauss_solve, OTHERS_symmh,            &
                OTHERS_time, OTHERS_iter, OTHERS_time6, OTHERS_iter5
 
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
