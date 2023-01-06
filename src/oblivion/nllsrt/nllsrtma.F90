@@ -3,9 +3,8 @@
 #include "galahad_modules.h"
 
 Program NLLSRTMA
-
   ! Version 9 July 2008
-
+  USE GALAHAD_KINDS
   Implicit None
   Integer :: N, M
   Integer, Parameter :: INSPEC = 46, INPUT = 47, IOUT = 6

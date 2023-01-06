@@ -73,9 +73,6 @@
  PRIVATE
  PUBLIC :: S2QP_initialize, S2QP_read_specfile, S2QP_solve, S2QP_terminate
 
- !  Set precision
-
-
  !  Set other parameters
 
  REAL ( KIND = rp_ ), PARAMETER :: zero    = 0.0_rp_

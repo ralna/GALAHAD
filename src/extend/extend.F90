@@ -27,9 +27,6 @@
         PRIVATE
         PUBLIC :: EXTEND_save_type, EXTEND_arrays
 
-!  Set precision
-
-
 !  Define generic interfaces to routines for extending allocatable arrays
 
         INTERFACE EXTEND_arrays

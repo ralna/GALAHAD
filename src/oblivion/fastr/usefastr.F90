@@ -20,6 +20,8 @@
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
      USE GALAHAD_SYMBOLS
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 
@@ -44,7 +46,7 @@
      TYPE ( FASTR_inform_type ) :: inform
      TYPE ( FASTR_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
      TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
 

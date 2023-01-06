@@ -44,8 +44,8 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(PRLGS)($(package).o)
-D$(PACKAGE) = $(DEPENDENCIES) $(PRLGD)($(package).o)
+S$(PACKAGE) = $(DEPENDENCIES) $(CULGS)($(package).o)
+D$(PACKAGE) = $(DEPENDENCIES) $(CULGD)($(package).o)
 
 #  compilation and run agenda
 
@@ -67,21 +67,21 @@ $(package)_silent_double: $($(PACKAGE)OBJECTSD)
 $(package): $(package)_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
 $(package)_single: $($(PACKAGE)OBJECTSS)
-	$(RANLIB) $(PRLGS)
+	$(RANLIB) $(CULGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
-	$(RANLIB) $(PRLGD)
+	$(RANLIB) $(CULGD)
 
 #  non-standard package compilation instructions
 
-$(package).o: $(PRLG)($(package).o)
+$(package).o: $(CULG)($(package).o)
 
-$(PRLG)($(package).o): ../$(package)/$(package).F90
+$(CULG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
 	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
               $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
-	cd $(OBJ); $(PRARR) $(package).o ; $(RM) $(package).F90 $(package).o
+	cd $(OBJ); $(CUARR) $(package).o ; $(RM) $(package).F90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	@printf '[ OK ]\n'
 

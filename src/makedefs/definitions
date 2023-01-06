@@ -62,6 +62,14 @@ CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
 
+CULG  = $(OBJ)/libgalahad_cutest.a
+CULGS = $(OBJS)/libgalahad_cutest.a
+CULGD = $(OBJD)/libgalahad_cutest.a
+
+CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
+CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
+CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
+
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
 DLGD = $(OBJD)/libgalahad_dummy.a
@@ -97,10 +105,6 @@ MULGD = $(OBJD)/libgalahad_mumps.a
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
-
-CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
-CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
-CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
 
 PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
@@ -140,6 +144,12 @@ CARR = $(AR) $(ARREPFLAGS) $(CLG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG)
 
+CUARR = $(AR) $(ARREPFLAGS) $(CULG)
+CURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CULG)
+
+CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
+CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
+
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 DRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DLG)
 
@@ -166,9 +176,6 @@ MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MULG)
 
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
-
-CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
-CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
 
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
@@ -224,6 +231,7 @@ RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
 
 CUTEST_TESTS = make_copyright make_userdata make_tools make_norms \
                make_nlpt make_cutest_functions
+#CUTEST_TESTS = make_cutest_functions
 
 #  packages that are needed for QPLIB tests
 
@@ -235,6 +243,6 @@ RB_TESTS = make_copyright
 
 #  valgrind options if needed
 
-VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
 #VALGRIND = --tool=memcheck --leak-check=full --show-reachable=yes \
+VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
 --track-origins=yes

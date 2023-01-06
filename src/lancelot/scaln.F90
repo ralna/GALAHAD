@@ -21,9 +21,6 @@
      PRIVATE
      PUBLIC :: SCALN_save_type, SCALN_get_scalings
      
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_

@@ -1,6 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 15:30 GMT.
 
 #include "galahad_modules.h"
+
+#ifdef GALAHAD_SINGLE
+#define MC13ED MC13E
+#define MC21BD MC21B
+#endif
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ G L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -51,9 +56,6 @@
      INTERFACE GLS_finalize
        MODULE PROCEDURE GLS_finalize, GLS_full_finalize
      END INTERFACE GLS_finalize
-
-!--------------------
-
 
 !  Set other parameters
 
@@ -258,6 +260,7 @@
 ! Number of operations in elimination
 
        REAL ( KIND = rp_ ) :: ops = 0.0_rp_
+
      END TYPE GLS_finfo
 
      TYPE, PUBLIC :: GLS_sinfo
@@ -1255,17 +1258,19 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 2 ) :: IDISP
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 10 ) :: INFO
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 10 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IP, IQ, LENOFF, IW11, IW12
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1, IW2, IW3, IW4
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IP, IQ, LENOFF
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW11, IW12
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1, IW2
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW3, IW4
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: LENR
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( licn ) :: ICN
        REAL( KIND = rp_ ), INTENT( INOUT ), DIMENSION( licn ) :: A
 
 !  Local variables
 
-       INTEGER ( KIND = ip_ ) :: i, i1, i2, ibeg, iblock, iend, ii, ilend, inew, iold, irowb, &
-                  irowe, j, jj, jnew, jnpos, jold, k, leni, nz, large, lp,     &
-                  num, numnz
+       INTEGER ( KIND = ip_ ) :: i, i1, i2, ibeg, iblock, iend, ii, ilend,     &
+                  inew, iold, irowb, irowe, j, jj, jnew, jnpos, jold, k,       &
+                  leni, nz, large, lp, num, numnz
        LOGICAL :: abort
        EXTERNAL :: MC13ED, MC21BD
 
@@ -1306,7 +1311,7 @@
        END IF
 
 !  IW12 and LENR are permutations of IW11 and LENR/LENOFF suitable for entry
-!  to MC13ED since matrix with these row pointer and length arrays has maximum
+!  to MC13E since matrix with these row pointer and length arrays has maximum
 !  number of non-zeros on the diagonal
 
        DO ii = 1, n

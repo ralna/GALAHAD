@@ -67,9 +67,6 @@
                LANCELOT_terminate, LANCELOT_problem_type, LANCELOT_save_type,  &
                LANCELOT_control_type, LANCELOT_inform_type, LANCELOT_data_type
 
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_

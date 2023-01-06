@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.8 - 03/06/2016 AT 07:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N U G O _ S I F  *-*-*-*-*-*-*-*-
 
@@ -6,18 +8,19 @@
 !  Copyright reserved
 !  June 3rd 2016
 
-   PROGRAM RUNUGO_SIF
-   USE GALAHAD_USEUGO_double
+   PROGRAM RUNUGO_SIF  
+   USE GALAHAD_KINDS
+   USE GALAHAD_USEUGO_precision
 
 !  Main program for the SIF interface to UGO, a univariate global
 !  optimization algorithm
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 
