@@ -25,9 +25,6 @@
      PRIVATE
      PUBLIC :: DRCHE_save_type, DRCHE_check_element_derivatives
 
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_

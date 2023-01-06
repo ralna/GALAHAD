@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,7 +31,6 @@
  USE GALAHAD_SPECFILE_precision
  USE GALAHAD_SYMBOLS
  USE GALAHAD_BLAS_interface, ONLY : IAMAX, NRM2
-
 
  IMPLICIT NONE
 
@@ -398,7 +397,7 @@
 !            That is, given a vector V the subroutine returns the product
 !            of the Jacobian matrix with V.  The form is given
 !            by eval_Jv(status, userdata, transpose,U,V,X) where userdata is
-!            of type NLPT_userdata_type.  If transpose is set .true., then
+!            of type GALAHAD_userdata_type.  If transpose is set .true., then
 !            it returns of the product of the transpose of the Jacobian with
 !            the vector V.
 !                 transpose = .false.      U <-- U + J(X) V
@@ -413,7 +412,7 @@
 !            the subroutine returns the product of the Hessian matrix with V.
 !            The structure of the subroutine is given by
 !            eval_Hv( status, userdata, U, V, X, Y )  where userdata is
-!            of type NLPT_userdata_type: U <-- U + H(X,Y) V.
+!            of type GALAHAD_userdata_type: U <-- U + H(X,Y) V.
 !
 !   userdata (optional) is a scalar variable of type GALAHAD_userdata_type.
 !            Intended for the sole use of the "user" if needed.

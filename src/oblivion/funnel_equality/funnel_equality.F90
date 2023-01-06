@@ -50,9 +50,6 @@
                FUNNEL_equality_solve, FUNNEL_terminate,                        &
                NLPT_problem_type
 
-!  Set precision
-
-
 !  Set other parameters
 
      INTEGER ( KIND = ip_ ), PARAMETER :: wsout = 0

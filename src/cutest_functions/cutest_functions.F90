@@ -17,8 +17,8 @@
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SMT_precision
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type,  &
-                                       NLPT_cleanup
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_cleanup
      USE CUTEST_INTERFACE_precision
 
      IMPLICIT NONE
@@ -35,7 +35,7 @@
                CUTEst_eval_HLC, CUTEst_eval_HLPROD, CUTEst_eval_SHLPROD,       &
                CUTEst_eval_HLCPROD, CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS, &
                CUTEst_start_timing, CUTEst_timing,                             &
-               CUTEst_terminate, NLPT_problem_type, NLPT_userdata_type
+               CUTEst_terminate, NLPT_problem_type, GALAHAD_userdata_type
 
 !------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n
@@ -80,18 +80,6 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpind = 13
      INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpptr = 14
 
-!---------------------------------
-!   I n t e r f a c e  b l o c k s
-!---------------------------------
-
-!    INTERFACE CUTEst_eval_H
-!      MODULE PROCEDURE CUTEst_eval_H, CUTEst_eval_HL
-!    END INTERFACE
-
-!    INTERFACE CUTEst_eval_HPROD
-!      MODULE PROCEDURE CUTEst_eval_HPROD, CUTEst_eval_HLPROD
-!    END INTERFACE
-
    CONTAINS
 
 !-*-*-  C U T E R _ i n i t i a l i z e   S U B R O U T I N E  -*-*-*-*
@@ -100,7 +88,7 @@
                                    no_hessian, no_jacobian, hessian_products )
 
      TYPE ( NLPT_problem_type ), INTENT( OUT ) :: nlp
-     TYPE ( NLPT_userdata_type ), INTENT( OUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( OUT ) :: userdata
      TYPE ( CUTEst_FUNCTIONS_control_type ), INTENT( IN ) :: control
      TYPE ( CUTEst_FUNCTIONS_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_hessian, no_jacobian
@@ -912,7 +900,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), INTENT( OUT ) :: f
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
@@ -942,7 +930,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
@@ -973,7 +961,7 @@
      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: f
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
@@ -1005,7 +993,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
@@ -1057,7 +1045,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
@@ -1110,7 +1098,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
@@ -1169,7 +1157,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
@@ -1205,7 +1193,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
 
 ! Local variables
@@ -1259,7 +1247,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
@@ -1304,7 +1292,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
 
 ! Local variables
@@ -1380,7 +1368,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
 
 ! Local variables
@@ -1433,7 +1421,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
@@ -1480,7 +1468,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
@@ -1523,7 +1511,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
@@ -1599,7 +1587,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
@@ -1664,7 +1652,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
@@ -1720,7 +1708,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
@@ -1766,7 +1754,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
@@ -1815,7 +1803,7 @@
 !  Dummy arguments
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( CUTEst_FUNCTIONS_inform_type ), INTENT( OUT ) :: inform
 
      CALL NLPT_cleanup( nlp )
@@ -1868,7 +1856,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: name
      REAL ( KIND = rp_ ), INTENT( out ) :: time
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
 !  local variables
 

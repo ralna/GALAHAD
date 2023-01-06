@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.8 - 03/06/2016 AT 07:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 09:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ U G O  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,22 @@
 !  Copyright reserved
 !  June 3rd 2016
 
-   MODULE GALAHAD_USEUGO_double
+   MODULE GALAHAD_USEUGO_precision
 
 !  This is the driver program for running UGO for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
+     USE GALAHAD_KINDS
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_UGO_double
+     USE GALAHAD_UGO_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -34,10 +39,6 @@
 
      INTEGER, INTENT( IN ) :: input
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !-------------------------------
 !   D e r i v e d   T y p e s
 !-------------------------------
@@ -46,7 +47,7 @@
      TYPE ( UGO_inform_type ) :: inform
      TYPE ( UGO_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
      TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
 
@@ -56,12 +57,12 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i, status
+     INTEGER  ( KIND = ip_ ) :: iores, i, status
      LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
-!    REAL ( KIND = wp ) :: clocko, clockt
-     REAL ( KIND = wp ) :: x, f, g, h
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, V
+!    REAL ( KIND = rp_ ) :: clocko, clockt
+     REAL ( KIND = rp_ ) :: x, f, g, h
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, V
 
 !  Functions
 
@@ -77,9 +78,9 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -96,13 +97,13 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
 
-     REAL ( KIND = wp ) :: x_l = - 1.0_wp
-     REAL ( KIND = wp ) :: x_u = 1.0_wp
+     REAL ( KIND = rp_ ) :: x_l = - 1.0_rp_
+     REAL ( KIND = rp_ ) :: x_u = 1.0_rp_
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
 
 !  ------------------ Open the specfile for ugo ----------------
 
@@ -204,7 +205,7 @@
 !  Solve the problem: min f( x * S ), -x_l <= x <= x_l
 !  ===================================================
 
-     S = 1.0_wp
+     S = 1.0_rp_
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      DO
@@ -286,6 +287,6 @@
 
      END SUBROUTINE USE_UGO
 
-!  End of module USEUGO_double
+!  End of module USEUGO_precision
 
-   END MODULE GALAHAD_USEUGO_double
+   END MODULE GALAHAD_USEUGO_precision

@@ -39,9 +39,6 @@
      PRIVATE
      PUBLIC :: TRTN_initialize, TRTN_read_specfile, TRTN_solve
 
-!  Set precision
-
-
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
