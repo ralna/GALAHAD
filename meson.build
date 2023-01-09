@@ -364,13 +364,19 @@ subdir('src/uls')
 subdir('src/sbls')
 subdir('src/lls')
 subdir('src/ir')
-# subdir('bgo')
+subdir('src/trs')
+
+# BGO requires TRB
+# subdir('src/bgo')
 
 # PSLS requires LANCELOT
 # subdir('src/psls')
 
 # ARC requires PSLS
 # subdir('src/arc')
+
+# TRB require PSLS
+# subdir('src/trb')
 
 # FILTRANE requires LANCELOT
 # subdir('src/filtrane')
@@ -659,6 +665,15 @@ irt_double = executable('irt_double', 'src/ir/irt.F90', fortran_args : extra_arg
 test('ir_single', irt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('ir_double', irt_double, suite: ['fortran', 'double'], is_parallel : false)
 
+trst_single = executable('trst_single', 'src/trs/trst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+trst_double = executable('trst_double', 'src/trs/trst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+trsti_single = executable('trsti_single', 'src/trs/trsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+trsti_double = executable('trsti_double', 'src/trs/trsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('trs1_single', trst_single, suite: ['fortran', 'single'], is_parallel : false)
+test('trs1_double', trst_double, suite: ['fortran', 'double'], is_parallel : false)
+test('trs2_single', trsti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('trs2_double', trsti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 # pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 # pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -740,6 +755,16 @@ if build_ciface
   pslstf_c_double = executable('pslstf_c_double', 'src/psls/C/pslstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
   test('psls2_c_single', pslst_c_single, suite: ['C', 'single'], is_parallel : false)
   test('psls2_c_double', pslst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  trst_c_single = executable('trst_c_single', 'src/trs/C/trst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  trst_c_double = executable('trst_c_double', 'src/trs/C/trst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('trs_c_single', trst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('trs_c_double', trst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  trstf_c_single = executable('trstf_c_single', 'src/trs/C/trstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  trstf_c_double = executable('trstf_c_double', 'src/trs/C/trstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('trs2_c_single', trst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('trs2_c_double', trst_c_double, suite: ['C', 'double'], is_parallel : false)
 endif
 
 #if build_ciface
@@ -800,6 +825,8 @@ executable('uls', 'src/uls/ulss.f90', link_with : libgalahad_double, install : t
 executable('sbls', 'src/sbls/sblss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('ir', 'src/ir/irs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('psls', 'src/psls/pslss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trs', 'src/trs/trss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trs2', 'src/trs/trss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   # ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
