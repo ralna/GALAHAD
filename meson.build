@@ -358,12 +358,19 @@ subdir('src/scaling')
 subdir('src/gls')
 subdir('src/sils')
 
-# ir  => needs SLS
 # TODO: ssids
 subdir('src/sls')
 subdir('src/uls')
 subdir('src/sbls')
 subdir('src/lls')
+subdir('src/ir')
+# subdir('bgo')
+
+# PSLS requires LANCELOT
+# subdir('src/psls')
+
+# ARC requires PSLS
+# subdir('src/arc')
 
 # FILTRANE requires LANCELOT
 # subdir('src/filtrane')
@@ -647,6 +654,20 @@ test('uls1_double', ulst_double, suite: ['fortran', 'double'], is_parallel : fal
 test('uls2_single', ulsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('uls2_double', ulsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+irt_single = executable('irt_single', 'src/ir/irt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+irt_double = executable('irt_double', 'src/ir/irt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('ir_single', irt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('ir_double', irt_double, suite: ['fortran', 'double'], is_parallel : false)
+
+# pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# pslsti_double = executable('pslsti_double', 'src/psls/pslsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('psls1_single', pslst_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : false)
+# test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # Issue 43
 sblst_single = executable('sblst_single', 'src/sbls/sblst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 sblst_double = executable('sblst_double', 'src/sbls/sblst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -709,6 +730,16 @@ if build_ciface
   sblstf_c_double = executable('sblstf_c_double', 'src/sbls/C/sblstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
   test('sbls2_c_single', sblst_c_single, suite: ['C', 'single'], is_parallel : false)
   test('sbls2_c_double', sblst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  pslst_c_single = executable('pslst_c_single', 'src/psls/C/pslst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  pslst_c_double = executable('pslst_c_double', 'src/psls/C/pslst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('psls_c_single', pslst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('psls_c_double', pslst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  pslstf_c_single = executable('pslstf_c_single', 'src/psls/C/pslstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  pslstf_c_double = executable('pslstf_c_double', 'src/psls/C/pslstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('psls2_c_single', pslst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('psls2_c_double', pslst_c_double, suite: ['C', 'double'], is_parallel : false)
 endif
 
 #if build_ciface
@@ -767,6 +798,8 @@ executable('ugos2', 'src/ugo/ugos2.f90', link_with : libgalahad_double, install 
 executable('sls', 'src/sls/slss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('uls', 'src/uls/ulss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('sbls', 'src/sbls/sblss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('ir', 'src/ir/irs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('psls', 'src/psls/pslss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   # ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
