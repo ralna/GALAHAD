@@ -362,7 +362,7 @@ subdir('src/sils')
 # TODO: ssids
 subdir('src/sls')
 subdir('src/uls')
-# subdir('src/sbls')
+subdir('src/sbls')
 
 # FILTRANE requires LANCELOT
 # subdir('src/filtrane')
@@ -649,6 +649,16 @@ test('uls1_double', ulst_double, suite: ['fortran', 'double'], is_parallel : fal
 test('uls2_single', ulsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('uls2_double', ulsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+# Issue 43
+sblst_single = executable('sblst_single', 'src/sbls/sblst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+sblst_double = executable('sblst_double', 'src/sbls/sblst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# sblsti_single = executable('sblsti_single', 'src/sbls/sblsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# sblsti_double = executable('sblsti_double', 'src/sbls/sblsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('sbls1_single', sblst_single, suite: ['fortran', 'single'], is_parallel : false)
+test('sbls1_double', sblst_double, suite: ['fortran', 'double'], is_parallel : false)
+# test('sbls2_single', sblsti_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('sbls2_double', sblsti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # Issue 42
 # wsmpt_single = executable('wsmpt_single', 'src/external/wsmp/wsmpt.F90', fortran_args : extra_args_single, link_with : libwsmp, include_directories: libgalahad_include)
 # wsmpt_double = executable('wsmpt_double', 'src/external/wsmp/wsmpt.F90', fortran_args : extra_args_double, link_with : libwsmp, include_directories: libgalahad_include)
@@ -691,6 +701,16 @@ if build_ciface
   ulstf_c_double = executable('ulstf_c_double', 'src/uls/C/ulstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
   test('uls2_c_single', ulst_c_single, suite: ['C', 'single'], is_parallel : false)
   test('uls2_c_double', ulst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  sblst_c_single = executable('sblst_c_single', 'src/sbls/C/sblst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  sblst_c_double = executable('sblst_c_double', 'src/sbls/C/sblst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('sbls_c_single', sblst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('sbls_c_double', sblst_c_double, suite: ['C', 'double'], is_parallel : false)
+
+  sblstf_c_single = executable('sblstf_c_single', 'src/sbls/C/sblstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
+  sblstf_c_double = executable('sblstf_c_double', 'src/sbls/C/sblstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
+  test('sbls2_c_single', sblst_c_single, suite: ['C', 'single'], is_parallel : false)
+  test('sbls2_c_double', sblst_c_double, suite: ['C', 'double'], is_parallel : false)
 endif
 
 #if build_ciface
@@ -748,6 +768,7 @@ executable('ugos', 'src/ugo/ugos.f90', link_with : libgalahad_double, install : 
 executable('ugos2', 'src/ugo/ugos2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('sls', 'src/sls/slss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('uls', 'src/uls/ulss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('sbls', 'src/sbls/sblss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   # ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
