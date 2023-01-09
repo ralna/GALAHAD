@@ -337,6 +337,7 @@
 !  allocate space for the differences
 
      difs_max = MIN( inform%differences_needed, max_sy )
+     difs_max = difs_max + 1
      ALLOCATE( S( n, difs_max ), Y( n, difs_max ), RD( difs_max ),             &
                STAT = alloc_stat )
      IF ( alloc_stat /= 0 ) THEN
