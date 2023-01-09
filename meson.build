@@ -363,12 +363,10 @@ subdir('src/sils')
 subdir('src/sls')
 subdir('src/uls')
 subdir('src/sbls')
+subdir('src/lls')
 
 # FILTRANE requires LANCELOT
 # subdir('src/filtrane')
-
-# LLS requires SBLS
-# subdir('src/lls')
 
 libgalahad_single = library('galahad_single',
                     sources : libgalahad_src,
