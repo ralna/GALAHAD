@@ -51,6 +51,7 @@
 !----------------------
 
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: eps_singular = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -90,7 +91,7 @@
 !    3 : singular-value decomposition
 !    4 : singular-value decomposition with divide-and-conquer
 
-       INTEGER ( KIND = ip_ ) :: dense_linear_solver = 1
+       INTEGER ( KIND = ip_ ) :: dense_linear_solver = 3
 
 !  the maximum sparse degree if the combined version is used
 
@@ -151,16 +152,11 @@
      TYPE, PUBLIC :: SHA_solve_system_data_type
 
        INTEGER ( KIND = ip_ ) :: out = 0
-       INTEGER ( KIND = ip_ ) :: la_save1 = - 1
-       INTEGER ( KIND = ip_ ) :: la_save2 = - 1
-       INTEGER ( KIND = ip_ ) :: lb_save = - 1
        INTEGER ( KIND = ip_ ) :: lwork = - 1
        INTEGER ( KIND = ip_ ) :: liwork = - 1
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, WORK
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_save
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: U, VT
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
      END TYPE SHA_solve_system_data_type
 
 !  - - - - - - - - - -
@@ -180,6 +176,9 @@
        INTEGER ( KIND = ip_ ) :: la1 = - 1
        INTEGER ( KIND = ip_ ) :: la2 = - 1
        INTEGER ( KIND = ip_ ) :: lb1 = - 1
+       INTEGER ( KIND = ip_ ) :: la_save1 = - 1
+       INTEGER ( KIND = ip_ ) :: la_save2 = - 1
+       INTEGER ( KIND = ip_ ) :: lb_save = - 1
        INTEGER ( KIND = ip_ ) :: ls = - 1
 
 !  SHA_analyse_called is true once SHA_analyse has been called
@@ -200,7 +199,9 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PU
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PK
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B_save
        TYPE ( SHA_solve_system_data_type ) :: solve_system_data
      END TYPE SHA_data_type
 
@@ -416,12 +417,12 @@
 
       SUBROUTINE SHA_analyse( n, nz, ROW, COL, data, control, inform )
 !
-!  ***************************************************************
-!  *                                                             *
-!  *   Compute a permutation of a symmetric matrix to try to     *
-!  *   minimize the number of super-diagonal entries in each row *
-!  *                                                             *
-!  ***************************************************************
+!  ****************************************************************
+!  *                                                              *
+!  *   Compute a permutation of a symmetric matrix to try to      *
+!  *   minimize the number of super-diagonal entries in each row  *
+!  *                                                              *
+!  ****************************************************************
 !
 !  the Hessian stucture is given by n, nz, ROW and COL, where
 
@@ -690,7 +691,6 @@
 !  ----------------------------------
 
       IF ( control%approximation_algorithm <= 2 ) THEN
-
         DO l = 1, n
 
 !  find a row with the lowest count
@@ -1055,9 +1055,9 @@
 !---------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, nn, rank, status
-      INTEGER ( KIND = ip_ ) :: liwork, lwork, mu, nu, min_mn, max_mn
-      REAL ( KIND = rp_ ) :: rcond
-      LOGICAL :: debug_residuals = .TRUE.
+      INTEGER ( KIND = ip_ ) :: ld, liwork, lwork, mu, nu, min_mn
+!     LOGICAL :: debug_residuals = .TRUE.
+      LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       CHARACTER ( LEN = 80 ) :: array_name
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1086,12 +1086,13 @@
 !  allocate workspace
 
       nn = inform%differences_needed
-      min_mn = MIN( m_max, nn ) ; max_mn = MAX( m_max, n, 1 )
+      ld = MIN( m_max + 1, m )  ! add one to accommodate singularity precaution
+      min_mn = MIN( ld, nn )
 
 !  generic solver workspace
 
-      IF ( data%la1  < m .OR. data%la2  < nn ) THEN
-        data%la1 = m_max ; data%la2 = nn
+      IF ( data%la1 < ld .OR. data%la2 < nn ) THEN
+        data%la1 = ld ; data%la2 = nn
         array_name = 'SHA: data%A'
         CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1101,8 +1102,8 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
       END IF
 
-      IF ( data%lb1 < max_mn ) THEN
-        data%lb1 = max_mn
+      IF ( data%lb1 < ld ) THEN
+        data%lb1 = ld
         array_name = 'SHA: data%B'
         CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1119,67 +1120,76 @@
 
 !  allocate space to hold a copy of A if needed
 
-        IF ( control%dense_linear_solver <= 2 ) THEN
-          IF ( data%solve_system_data%la_save1 < m_max .OR.                    &
-               data%solve_system_data%la_save2 < nn + 1 ) THEN
-            data%solve_system_data%la_save1 = m_max
-            data%solve_system_data%la_save2 = nn + 1
-            array_name = 'SHA: data%A_save'
-            CALL SPACE_resize_array( data%solve_system_data%la_save1,          &
-               data%solve_system_data%la_save2, data%solve_system_data%A_save, &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-            IF ( inform%status /= GALAHAD_ok ) GO TO 900
-          END IF
+        IF ( data%la_save1 < m_max .OR. data%la_save2 < nn + 1 ) THEN
+          data%la_save1 = ld ; data%la_save2 = nn
+          array_name = 'SHA: data%A_save'
+          CALL SPACE_resize_array( data%la_save1, data%la_save2,               &
+             data%A_save, inform%status, inform%alloc_status,                  &
+             array_name = array_name,                                          &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )            
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900                      
+        END IF                                                              
+                                                                            
+!  allocate space to hold a copy of b if needed                             
+                                                                            
+        IF ( data%lb_save < m_max ) THEN
+          data%lb_save = ld
+          array_name = 'SHA: data%B_save'
+          CALL SPACE_resize_array( data%lb_save, 1,                            &
+                 data%B_save, inform%status, inform%alloc_status,              &
+                 array_name = array_name,                                      &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )         
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900                       
+        END IF                                                               
+                                                                             
+!  discover how much additional temporary real storage may be needed by LU / LQ
+                                                                             
+        IF ( control%dense_linear_solver == 1 ) THEN
+          liwork = min_mn
+        ELSE IF ( control%dense_linear_solver == 2 ) THEN
+          CALL GELSY( m_max, n, 1, data%A, data%la1, data%B, data%lb1,         &
+                      data%solve_system_data%IWORK, eps_singular, rank,        &
+                      data%WORK_1, - 1, status )
+          lwork = MAX( lwork, INT( data%WORK_1( 1 ) ) ) ; liwork = nn
 
-!  allocate space to hold a copy of b if needed
+!  allocate space to hold the singular values if needed
 
-          IF ( data%solve_system_data%lb_save < m_max ) THEN
-            data%solve_system_data%lb_save = m_max
-            array_name = 'SHA: data%B_save'
-            CALL SPACE_resize_array( data%solve_system_data%lb_save,           &
-                   data%solve_system_data%B_save, inform%status,               &
-                   inform%alloc_status, array_name = array_name,               &
+        ELSE
+          IF ( data%ls < min_mn ) THEN
+            data%ls = min_mn
+            array_name = 'SHA: data%solve_syetem_data%S'
+            CALL SPACE_resize_array( data%ls, data%solve_system_data%S,        &
+                   inform%status, inform%alloc_status,                         &
+                   array_name = array_name,                                    &
                    deallocate_error_fatal = control%deallocate_error_fatal,    &
                    exact_size = control%space_critical,                        &
                    bad_alloc = inform%bad_alloc, out = control%error )
             IF ( inform%status /= GALAHAD_ok ) GO TO 900
           END IF
-        END IF
 
-!  allocate space to hold the singular values if needed
+!  discover how much temporary integer and real storage may be needed by SVD
 
-        IF ( data%ls < min_mn ) THEN
-          data%ls = min_mn
-          array_name = 'SHA: data%solve_syetem_data%S'
-          CALL SPACE_resize_array( data%ls, data%solve_system_data%S,          &
-                 inform%status, inform%alloc_status, array_name = array_name,  &
-                 deallocate_error_fatal = control%deallocate_error_fatal,      &
-                 exact_size = control%space_critical,                          &
-                 bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        END IF
-
-!  discover how much temporary integer and real storage may be needed
-
-        IF ( control%dense_linear_solver == 4 ) THEN
-          CALL GELSD( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,        &
-                      data%solve_system_data%S, rcond, rank,                   &
-                      data%WORK_1, - 1, data%IWORK_1, status )
-          lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
-        ELSE
-          CALL GELSS( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,        &
-                      data%solve_system_data%S, rcond, rank, data%WORK_1, - 1, &
-                      status )
-          lwork = INT( data%WORK_1( 1 ) ) ; liwork = nn
+          IF ( control%dense_linear_solver == 4 ) THEN
+            CALL GELSD( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,      &
+                        data%solve_system_data%S, eps_singular, rank,          &
+                        data%WORK_1, - 1, data%IWORK_1, status )
+            lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
+          ELSE
+            CALL GELSS( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,      &
+                        data%solve_system_data%S, eps_singular, rank,          &
+                        data%WORK_1, - 1, status )
+            lwork = INT( data%WORK_1( 1 ) ) ; liwork = nn
+          END IF
         END IF
 
 !  allocate temporary integer storage
 
         IF ( control%dense_linear_solver /= 3 ) THEN
-          IF ( data%solve_system_data%liwork  < liwork ) THEN
+          IF ( data%solve_system_data%liwork < liwork ) THEN
             data%solve_system_data%liwork = liwork
             array_name = 'SHA: data%solve_system_data%IWORK'
             CALL SPACE_resize_array( data%solve_system_data%liwork,            &
@@ -1192,27 +1202,20 @@
           END IF
         END IF
 
-!  discover how much additional temporary real storage may be needed
-
-        IF ( control%dense_linear_solver == 2 ) THEN
-          CALL GELSY( m_max, n, 1, data%A, data%la1, data%B, data%lb1,         &
-                      data%solve_system_data%IWORK, rcond, rank,               &
-                      data%WORK_1, - 1, status )
-          lwork = MAX( lwork, INT( data%WORK_1( 1 ) ) )
-        END IF
-
 !  allocate temporary real storage
 
-        IF ( data%solve_system_data%lwork  < lwork ) THEN
-          data%solve_system_data%lwork = lwork
-          array_name = 'SHA: data%solve_system_data%WORK'
-          CALL SPACE_resize_array( data%solve_system_data%lwork,               &
-                 data%solve_system_data%WORK,                                  &
-                 inform%status, inform%alloc_status, array_name = array_name,  &
-                 deallocate_error_fatal = control%deallocate_error_fatal,      &
-                 exact_size = control%space_critical,                          &
-                 bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        IF ( control%dense_linear_solver /= 1 ) THEN
+          IF ( data%solve_system_data%lwork < lwork ) THEN
+            data%solve_system_data%lwork = lwork
+            array_name = 'SHA: data%solve_system_data%WORK'
+            CALL SPACE_resize_array( data%solve_system_data%lwork,             &
+                   data%solve_system_data%WORK, inform%status,                 &
+                   inform%alloc_status, array_name = array_name,               &
+                   deallocate_error_fatal = control%deallocate_error_fatal,    &
+                   exact_size = control%space_critical,                        &
+                   bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+          END IF
         END IF
       END IF
       inform%status = GALAHAD_ok
@@ -1222,8 +1225,8 @@
 !     - ----------- ------------------ -
 ! PTR  | known     |  unknown         | .    (ROW(kk),COL(kk),VAL(kk)),
 !     - ----------- ------------------ -      kk=PTR(k) gives entries in row(i)
-!       ^           ^                  ^      for k=PK(i),..,P(i+1)-1
-!       |           |                  |      with those for k=PU(i),..,P(i+1)-1
+!       ^           ^                  ^      for k=PK(i),..,P(i+1)-1 with
+!       |           |                  |      those for k=PU(i),..,P(i+1)-1
 !     PK(i)        PU(i)            PK(i+1)   still to be determined
 
 !  -----------------------------
@@ -1295,26 +1298,70 @@
             jj = jj + 1
           END DO
 
+! make a copy of A and b as a precaution for possible use later
+
+          data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+          data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+
 !  solve A x = b
 
-if ( i == 615 ) then
-write(6,"( ' i = ', I0, ' m, n = ', I0, 1X, I0 )" ) i, mu, nu
-          DO k = data%PU( i ), data%PK( i + 1 ) - 1
-            kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-            j = COL( kk )
-            IF ( j == i ) j = ROW( kk )
-            write(6,"(' var =', I0 )" ) j
-         END DO
-
-end if
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i, info )
-!write(6,*) ' ii, i, info ', ii, i, info
-          IF ( info /= 0 ) THEN
+
+!  if A appears to be singular, add an extra row, and solve as a least-squares
+!  problem
+
+          IF ( info == MAX( nu, mu ) + 1 ) THEN
+
+!  initialize b to Y(i,l)
+
+            data%B( mu + 1, 1 ) = Y( i, RD( mu + 1 ) )
+
+!  loop over the known entries
+
+            DO k = data%PK( i ), data%PU( i ) - 1
+              kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+              j = COL( kk )
+              IF ( j == i ) j = ROW( kk )
+
+!  subtract B_{ij} s_{jl} from b
+
+              data%B( mu + 1, 1 )                                              &
+                = data%B( mu + 1, 1 ) - VAL( kk ) * S( j, RD( mu + 1 ) )
+            END DO
+
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
+
+            jj = 1
+            DO k = data%PU( i ), data%PK( i + 1 ) - 1
+              kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+              j = COL( kk )
+              IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
+              jj = jj + 1
+            END DO
+
+!  solve A x = b
+
+            CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
+                                   data%A, data%la1, data%B, data%lb1,         &
+                                   data%solve_system_data, i, info )
+
+  write(6,*) ' info is now ', info
+
+
+          ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
 !write(6,*) ' pass ', inform%status
@@ -1326,6 +1373,8 @@ end if
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
+
+!  if required, compute and print the residuals
 
           IF ( debug_residuals ) THEN
 
@@ -1351,7 +1400,6 @@ end if
             write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
               MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
           END IF
-if ( i == 615 ) stop
         END DO
 
 !  ---------------------------------------
@@ -1626,48 +1674,48 @@ if ( i == 615 ) stop
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: rank
-      REAL ( KIND = rp_ ) :: rcond
-
-      rcond = - one
+      INTEGER ( KIND = ip_ ) :: i, rank
 
 !  solve A x = b using Gaussian elimination; A is copied to A_save as a
 !  precaution
 
       IF ( dense_linear_solver == 1 ) THEN
         IF ( m == n ) THEN
-          data%A_save( : m, : n ) = A( : m, : n )
-          CALL GETRF( m, n, data%A_save, data%la_save1, data%IWORK, status )
+          CALL GETRF( m, n, A, la1, data%IWORK, status )
           IF ( status == 0 ) THEN
-            data%B_save( : m ) = B( : m, 1 )
-            CALL GETRS( 'N', n, 1, data%A_save, data%la_save1, data%IWORK,     &
-                        B, lb1, status )
+            CALL GETRS( 'N', n, 1, A, la1, data%IWORK, B, lb1, status )
             IF ( status == 0 ) RETURN
-            B( : m, 1 ) = data%B_save( : m )
           END IF
         END IF
 
 !  solve A x = b using a QR factorization; A is copied to A_save as a precaution
 
       ELSE IF ( dense_linear_solver == 2 ) THEN
-        data%A_save( : m, : n ) = A( : m, : n )
-        data%B_save( : m ) = B( : m, 1 )
-        CALL GELSY( m, n, 1, data%A_save, data%la_save1, B, lb1, data%IWORK,   &
-                    rcond, rank, data%WORK, data%lwork, status )
+        CALL GELSY( m, n, 1, A, la1, B, lb1, data%IWORK, eps_singular, rank,   &
+                    data%WORK, data%lwork, status )
         IF ( status == 0 ) RETURN
-        B( : m, 1 ) = data%B_save( : m )
-      END IF
 
 !  solve A x = b using a singular-value decomposition
 
-      IF ( dense_linear_solver == 4 ) THEN
-        CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, rcond, rank,              &
-                    data%WORK, data%lwork, data%IWORK, status )
       ELSE
-        CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, rcond, rank,              &
-                    data%WORK, data%lwork, status )
+        IF ( dense_linear_solver == 4 ) THEN
+          CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
+                      data%WORK, data%lwork, data%IWORK, status )
+        ELSE ! dense_linear_solver == 3
+          CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
+                      data%WORK, data%lwork, status )
+        END IF
+        IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
+          WRITE( 6, "( ' matrix singular, sigma_min/sigma_1 = ', ES11.4 )" )   &
+            data%S( MIN( m, n ) ) / data%S( 1 )
+          WRITE( 6, "( ' row ', I0, ', solver status = ', I0 )" ) i, status
+          WRITE( 6, "( ' matrix =' )" )
+          DO i = 1, n
+            WRITE( 6, "( 'column ', I4, ' = ', ( 5ES12.4 ) )" ) i, A( : m, i )
+          END DO
+          status = MAX( m, n ) + 1
+        END IF
       END IF
-
       IF ( data%out > 0 ) THEN
         IF ( rank > 0 ) THEN
           write( 6, "( ' row ', I8, ' m ', I8, ' n ', I8, ' rank ', I8,        &
@@ -1788,13 +1836,13 @@ if ( i == 615 ) stop
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
       array_name = 'SHA: data%solve_system_data%A_save'
-      CALL SPACE_dealloc_array( data%solve_system_data%A_save,                 &
+      CALL SPACE_dealloc_array( data%A_save,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
       array_name = 'SHA: data%solve_system_data%B_save'
-      CALL SPACE_dealloc_array( data%solve_system_data%B_save,                 &
+      CALL SPACE_dealloc_array( data%B_save,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1806,9 +1854,9 @@ if ( i == 615 ) stop
       data%la2 = - 1
       data%lb1 = - 1
       data%ls = - 1
-      data%solve_system_data%la_save1 = - 1
-      data%solve_system_data%la_save2 = - 1
-      data%solve_system_data%lb_save = - 1
+      data%la_save1 = - 1
+      data%la_save2 = - 1
+      data%lb_save = - 1
       data%solve_system_data%lwork = - 1
       data%solve_system_data%liwork = - 1
       data%dense_linear_solver = - 1
