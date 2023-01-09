@@ -868,10 +868,10 @@
 !--------------------------------
 
      INTERFACE
-       SUBROUTINE DMUMPS( mumps_par )
+       SUBROUTINE MUMPS_precision( mumps_par )
        USE GALAHAD_MUMPS_TYPES_precision
        TYPE ( MUMPS_STRUC ) :: mumps_par
-       END SUBROUTINE DMUMPS
+       END SUBROUTINE MUMPS_precision
      END INTERFACE
 
      INTERFACE MA27I
@@ -1336,7 +1336,7 @@
          data%mumps_par%JOB = - 1
          data%mumps_par%SYM = 2 ! symmetric
          data%mumps_par%PAR = 1 ! parallel solve
-         CALL DMUMPS( data%mumps_par )
+         CALL MUMPS_precision( data%mumps_par )
          data%no_mumps = data%mumps_par%INFOG( 1 ) == - 999
        END IF
 
@@ -3989,7 +3989,7 @@
                                        data%mumps_par%CNTL )
 
        data%mumps_par%JOB = 1
-       CALL DMUMPS( data%mumps_par )
+       CALL MUMPS_precision( data%mumps_par )
        inform%mumps_info = data%mumps_par%INFOG
        inform%mumps_rinfo = data%mumps_par%RINFOG
        inform%mumps_error = data%mumps_par%INFOG( 1 )
@@ -5132,7 +5132,7 @@
 !write(6, "( ' icntl ', /, ( 10I6 ) )" ) data%mumps_par%ICNTL
 !write(6, "( ' cntl ', /, ( 5ES10.2 ) )" ) data%mumps_par%CNTL
        data%mumps_par%JOB = 2
-       CALL DMUMPS( data%mumps_par )
+       CALL MUMPS_precision( data%mumps_par )
        inform%mumps_info = data%mumps_par%INFOG
        inform%mumps_rinfo = data%mumps_par%RINFOG
        inform%mumps_error = data%mumps_par%INFOG( 1 )
@@ -6365,7 +6365,7 @@
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 
        data%mumps_par%JOB = 3
-       CALL DMUMPS( data%mumps_par )
+       CALL MUMPS_precision( data%mumps_par )
        inform%mumps_info = data%mumps_par%INFOG
        inform%mumps_rinfo = data%mumps_par%RINFOG
        inform%mumps_error = data%mumps_par%INFOG( 1 )
@@ -6779,7 +6779,7 @@
        END IF
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        data%mumps_par%JOB = 3
-       CALL DMUMPS( data%mumps_par )
+       CALL MUMPS_precision( data%mumps_par )
        inform%mumps_info = data%mumps_par%INFOG
        inform%mumps_rinfo = data%mumps_par%RINFOG
        inform%mumps_error = data%mumps_par%INFOG( 1 )
@@ -7073,7 +7073,7 @@
        END IF
        IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
        data%mumps_par%JOB = - 2
-       CALL DMUMPS( data%mumps_par )
+       CALL MUMPS_precision( data%mumps_par )
        data%no_mumps = .FALSE. ; data%no_mpi = .FALSE. 
 
 !  = POTR =
