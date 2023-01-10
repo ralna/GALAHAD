@@ -87,7 +87,6 @@ $(package)_ciface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o)
 $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
 	$(CP) ../$(package)/C/$(package)_ciface.F90 $(OBJ)/$(package)_ciface.F90
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
            $(package)_ciface.F90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -148,7 +147,6 @@ $(OBJ)/$(package)cs.o: ../$(package)/C/$(package)s.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)s.c > $(OBJ)/$(package)cs.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -160,7 +158,6 @@ $(OBJ)/$(package)cs2.o: ../$(package)/C/$(package)s2.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs2  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)s2.c > $(OBJ)/$(package)cs2.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)cs2.o $(CFLAGS) $(package)cs2.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -172,7 +169,6 @@ $(OBJ)/$(package)cs3.o: ../$(package)/C/$(package)s3.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs3  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)s3.c > $(OBJ)/$(package)cs3.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)cs3.o $(CFLAGS) $(package)cs3.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -184,7 +180,6 @@ $(OBJ)/$(package)cs4.o: ../$(package)/C/$(package)s4.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs4  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)s4.c > $(OBJ)/$(package)cs4.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)cs4.o $(CFLAGS) $(package)cs4.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -216,9 +211,7 @@ $(package)ct.o: $(OBJ)/$(package)ct.o
 
 $(OBJ)/$(package)ct.o: ../$(package)/C/$(package)t.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct  "
-	$(SED) -f $(CSEDS) \
-           ../$(package)/C/$(package)t.c > $(OBJ)/$(package)ct.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	$(CP) ../$(package)/C/$(package)t.c $(OBJ)/$(package)ct.c
 	cd $(OBJ) ; $(CC) -o $(package)ct.o $(CFLAGS) $(package)ct.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -228,9 +221,7 @@ $(package)cti.o: $(OBJ)/$(package)cti.o
 
 $(OBJ)/$(package)cti.o: ../$(package)/C/$(package)ti.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cti  "
-	$(SED) -f $(CSEDS) \
-           ../$(package)/C/$(package)ti.c > $(OBJ)/$(package)cti.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	$(CP) ../$(package)/C/$(package)ti.c $(OBJ)/$(package)cti.c
 	cd $(OBJ) ; $(CC) -o $(package)cti.o $(CFLAGS) $(package)cti.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
@@ -240,9 +231,7 @@ $(package)ctf.o: $(OBJ)/$(package)ctf.o
 
 $(OBJ)/$(package)ctf.o: ../$(package)/C/$(package)tf.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ctf  "
-	$(SED) -f $(CSEDS) \
-           ../$(package)/C/$(package)tf.c > $(OBJ)/$(package)ctf.c
-	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	$(CP) ../$(package)/C/$(package)tf.c $(OBJ)/$(package)ctf.c
 	cd $(OBJ) ; $(CC) -o $(package)ctf.o $(CFLAGS) $(package)ctf.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c

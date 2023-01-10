@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_gltr.h"
 
 int main(void) {
@@ -16,11 +18,11 @@ int main(void) {
     int n = 100; // dimension
 
     int status;
-    double radius;
-    double x[n];
-    double r[n];
-    double vector[n];
-    double h_vector[n];
+    real_wp_ radius;
+    real_wp_ x[n];
+    real_wp_ r[n];
+    real_wp_ vector[n];
+    real_wp_ h_vector[n];
 
     // Initialize gltr
     gltr_initialize( &data, &control, &status );

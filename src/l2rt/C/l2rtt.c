@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_l2rt.h"
 
 int main(void) {
@@ -17,12 +19,12 @@ int main(void) {
     int m = 2 * n;
 
     int status;
-    double power = 3.0;
-    double weight = 1.0;
-    double shift = 1.0;
-    double x[n];
-    double u[m];
-    double v[n];
+    real_wp_ power = 3.0;
+    real_wp_ weight = 1.0;
+    real_wp_ shift = 1.0;
+    real_wp_ x[n];
+    real_wp_ u[m];
+    real_wp_ v[n];
 
     // Initialize l2rt
     l2rt_initialize( &data, &control, &status );
