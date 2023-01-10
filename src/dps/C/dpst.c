@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_dps.h"
 
 int main(void) {
@@ -21,16 +23,16 @@ int main(void) {
     int H_row[] = {0, 1, 2, 2}; // row indices, NB lower triangle
     int H_col[] = {0, 1, 2, 0};
     int H_ptr[] = {0, 1, 2, 4};
-    double H_val[] = {1.0, 2.0, 3.0, 4.0};
-    double H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
-    double f = 0.96;
-    double radius = 1.0;
-    double half_radius = 0.5;
-    double c[] = {0.0, 2.0, 0.0};
+    real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
+    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
+    real_wp_ f = 0.96;
+    real_wp_ radius = 1.0;
+    real_wp_ half_radius = 0.5;
+    real_wp_ c[] = {0.0, 2.0, 0.0};
 
     char st;
     int status;
-    double x[n];
+    real_wp_ x[n];
 
     printf(" C sparse matrix indexing\n\n");
 
