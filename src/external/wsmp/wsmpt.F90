@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-10 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -7,10 +7,6 @@ PROGRAM TEST_WSMP
   USE GALAHAD_KINDS
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
-
-!  precision
-
-  INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND( 1.0D0 )
 
 !  variables
 

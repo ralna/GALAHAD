@@ -124,7 +124,7 @@
        CALL SBLS_information( data, inform, status )
        WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
          control%preconditioner, control%factorization, inform%status
-       CYCLE
+       GO TO 90
      END IF
 
 !  factorize the block matrix
@@ -134,7 +134,7 @@
        CALL SBLS_information( data, inform, status )
        WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
          control%preconditioner, control%factorization, inform%status
-       CYCLE
+       GO TO 90
      END IF
 
 !  solve the block linear system
@@ -151,6 +151,7 @@
        WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
          control%preconditioner, control%factorization, inform%status
      END IF
+ 90  CONTINUE
      CALL SBLS_terminate( data, control, inform )
      DEALLOCATE( H_val, H_row, H_col, A_val, A_row, A_col, C_val, C_row, C_col )
    END DO
