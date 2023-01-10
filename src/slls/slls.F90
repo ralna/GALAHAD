@@ -72,9 +72,6 @@
        MODULE PROCEDURE SLLS_terminate, SLLS_full_terminate
      END INTERFACE SLLS_terminate
 
-!--------------------
-
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
