@@ -3,7 +3,6 @@
    USE GALAHAD_SLLS_double             ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( SLLS_data_type ) :: data
    TYPE ( SLLS_control_type ) :: control
