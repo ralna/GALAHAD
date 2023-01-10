@@ -888,6 +888,70 @@
        END SUBROUTINE MA27ID
      END INTERFACE MA27I
 
+     INTERFACE MC61A
+       SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,           &
+                         ICNTL, CNTL, INFO, RINFO )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
+       INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
+       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
+       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+       REAL ( KIND = sp_ ), DIMENSION( n ), INTENT( OUT ) :: W
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+       REAL ( KIND = sp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+       REAL ( KIND = sp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
+       END SUBROUTINE MC61A
+
+       SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
+                          ICNTL, CNTL, INFO, RINFO )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
+       INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
+       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
+       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+       REAL ( KIND = dp_ ), DIMENSION( n ), INTENT( OUT ) :: W
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+       REAL ( KIND = dp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+       REAL ( KIND = dp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
+       END SUBROUTINE MC61AD
+     END INTERFACE MC61A
+
+     INTERFACE MC77A
+       SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,       &
+                         ICNTL, CNTL, INFO, RINFO )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
+       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
+       INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+       REAL ( KIND = sp_ ), DIMENSION( nnz ), INTENT( IN ) :: A
+       REAL ( KIND = sp_ ), DIMENSION( ldw ), INTENT( OUT ) :: DW
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+       REAL ( KIND = sp_ ), DIMENSION( 10 ), INTENT( IN ) :: CNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+       REAL ( KIND = sp_ ), DIMENSION( 10 ), INTENT( OUT ) :: RINFO
+       END SUBROUTINE MC77A
+
+       SUBROUTINE MC77AD( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,      &
+                          ICNTL, CNTL, INFO, RINFO )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
+       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
+       INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+       REAL ( KIND = dp_ ), DIMENSION( nnz ), INTENT( IN ) :: A
+       REAL ( KIND = dp_ ), DIMENSION( ldw ), INTENT( OUT ) :: DW
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+       REAL ( KIND = dp_ ), DIMENSION( 10 ), INTENT( IN ) :: CNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+       REAL ( KIND = dp_ ), DIMENSION( 10 ), INTENT( OUT ) :: RINFO
+       END SUBROUTINE MC77AD
+     END INTERFACE MC77A
+
    CONTAINS
 
 !-*-*-*-*-*-   S L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -2976,10 +3040,10 @@
          IF ( control%print_level <= 0 .OR. control%out <= 0 )                 &
            data%mc61_ICNTL( 1 : 2 ) = - 1
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL MC61AD( ordering - 4, data%matrix%n, data%mc61_lirn, data%MRP,   &
-                      data%INVP, data%ORDER, data%mc61_liw, data%mc61_IW,      &
-                      data%WORK, data%mc61_ICNTL, data%mc61_CNTL,              &
-                      inform%mc61_info, inform%mc61_rinfo )
+         CALL MC61A( ordering - 4, data%matrix%n, data%mc61_lirn, data%MRP,    &
+                     data%INVP, data%ORDER, data%mc61_liw, data%mc61_IW,       &
+                     data%WORK, data%mc61_ICNTL, data%mc61_CNTL,               &
+                     inform%mc61_info, inform%mc61_rinfo )
          CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
          inform%time%order_external = time_now - time
          inform%time%clock_order_external = clock_now - clock
@@ -4488,13 +4552,13 @@
          END IF
          IF ( control%print_level <= 0 .OR. control%out <= 0 )                 &
            data%mc77_ICNTL( 1 ) = - 1
-         CALL MC77AD( job, data%matrix_scale%n, data%matrix_scale%n,           &
-                      data%matrix_scale%ne, data%matrix_scale%PTR,             &
-!                     data%matrix_scale%COL, data%matrix_scale%VAL,            &
-                      data%matrix_scale%ROW, data%matrix_scale%VAL,            &
-                      data%mc77_IW, data%mc77_liw, data%SCALE,                 &
-                      data%mc77_ldw, data%mc77_ICNTL, data%mc77_CNTL,          &
-                      inform%mc77_info, inform%mc77_rinfo )
+         CALL MC77A( job, data%matrix_scale%n, data%matrix_scale%n,            &
+                     data%matrix_scale%ne, data%matrix_scale%PTR,              &
+!                    data%matrix_scale%COL, data%matrix_scale%VAL,             &
+                     data%matrix_scale%ROW, data%matrix_scale%VAL,             &
+                     data%mc77_IW, data%mc77_liw, data%SCALE,                  &
+                     data%mc77_ldw, data%mc77_ICNTL, data%mc77_CNTL,           &
+                     inform%mc77_info, inform%mc77_rinfo )
          IF ( inform%mc77_info( 1 ) /= 0 ) THEN
            inform%status = GALAHAD_error_mc77 ; GO TO 900
          END IF

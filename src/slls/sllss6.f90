@@ -12,7 +12,6 @@
    USE GALAHAD_NORMS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p_u, p_v, p_x, p_y
    TYPE ( SLLS_data_type ) :: data_u, data_v, data_x, data_y
    TYPE ( SLLS_control_type ) :: control_u, control_v, control_x, control_y
@@ -133,7 +132,6 @@
 ! problem data complete. Initialze data and control parameters
 
    CALL SLLS_initialize( data_u, control_u, inform_u )
-   control_u%infinity = infinity
    IF ( prints ) THEN
      control_u%print_level = 1
    ELSE
@@ -143,7 +141,6 @@
 !  control_u%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_v, control_v, inform_v )
-   control_v%infinity = infinity
    IF ( prints ) THEN
      control_v%print_level = 1
    ELSE
@@ -153,7 +150,6 @@
 !  control_v%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_x, control_x, inform_x )
-   control_x%infinity = infinity
    IF ( prints ) THEN
      control_x%print_level = 1
    ELSE
@@ -163,7 +159,6 @@
 !  control_x%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_y, control_y, inform_y )
-   control_y%infinity = infinity
    IF ( prints ) THEN
      control_y%print_level = 1
    ELSE

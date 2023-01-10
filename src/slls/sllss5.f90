@@ -11,7 +11,6 @@
    USE GALAHAD_NORMS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p_r
    TYPE ( SLLS_data_type ) :: data_r
    TYPE ( SLLS_control_type ) :: control_r
@@ -76,7 +75,6 @@
 ! problem data complete. Initialze data and control parameters
 
    CALL SLLS_initialize( data_r, control_r, inform_r )
-   control_r%infinity = infinity
    control_r%print_level = 1
 !  control_r%exact_arc_search = .FALSE.
    control_r%exact_arc_search = .TRUE.
