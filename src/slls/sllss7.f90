@@ -15,7 +15,6 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-   REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 20
    TYPE ( QPT_problem_type ) :: p_l, p_r, p_t, p_p
    TYPE ( SLLS_data_type ) :: data_l, data_r, data_t, data_p
    TYPE ( SLLS_control_type ) :: control_l, control_r, control_t, control_p
@@ -314,7 +313,6 @@
 ! problem data complete. Initialze data and control parameters
 
    CALL SLLS_initialize( data_l, control_l, inform_l )
-   control_l%infinity = infinity
    IF ( printi ) THEN
      control_l%print_level = 1
    ELSE
@@ -325,7 +323,6 @@
    control_l%stop_d = ten ** ( - 10 )
 
    CALL SLLS_initialize( data_r, control_r, inform_r )
-   control_r%infinity = infinity
    IF ( printi ) THEN
      control_r%print_level = 1
    ELSE
@@ -336,7 +333,6 @@
    control_r%stop_d = ten ** ( - 10 )
 
    CALL SLLS_initialize( data_t, control_t, inform_t )
-   control_t%infinity = infinity
    IF ( printi ) THEN
      control_t%print_level = 1
    ELSE
@@ -347,7 +343,6 @@
    control_t%stop_d = ten ** ( - 10 )
 
    CALL SLLS_initialize( data_p, control_p, inform_p )
-   control_p%infinity = infinity
    IF ( printi ) THEN
      control_p%print_level = 1
    ELSE
