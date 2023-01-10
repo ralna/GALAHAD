@@ -1768,6 +1768,8 @@
                                 A_ptr( 1 : m + 1 ) + 1, B, n_depen,            &
                                 data%DEPEN, data%fdc_data, control, inform )
      END IF
+     status = inform%status
+     IF ( status /= GALAHAD_ok ) RETURN
 
      IF ( n_depen > 0 ) THEN
        IF ( data%f_indexing ) THEN
@@ -1776,7 +1778,7 @@
          DEPEN( : n_depen ) = data%DEPEN( : n_depen ) - 1
        END IF
      END IF
-     status = inform%status
+
      RETURN
 
 !  End of subroutine FDC_find_dependent_rows
