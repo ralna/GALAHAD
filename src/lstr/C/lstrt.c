@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_lstr.h"
 
 int main(void) {
@@ -17,10 +19,10 @@ int main(void) {
     int m = 2 * n;
 
     int status;
-    double radius;
-    double x[n];
-    double u[m];
-    double v[n];
+    real_wp_ radius;
+    real_wp_ x[n];
+    real_wp_ u[m];
+    real_wp_ v[n];
 
     // Initialize lstr
     lstr_initialize( &data, &control, &status );

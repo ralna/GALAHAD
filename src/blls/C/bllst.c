@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_blls.h"
 
 // define max
@@ -17,11 +19,11 @@
 
 // Custom userdata struct
 struct userdata_type {
-   double scale;
+   real_wp_ scale;
 };
 
 // Function prototypes
-int prec( int n, const double v[], double p[], const void * );
+int prec( int n, const real_wp_ v[], real_wp_ p[], const void * );
 
 int main(void) {
 
@@ -43,20 +45,20 @@ int main(void) {
     int A_row[A_ne]; // row indices, 
     int A_col[A_ne]; // column indices
     int A_ptr[m+1];  // row pointers
-    double A_val[A_ne]; // values
-    double A_dense[A_dense_ne]; // dense values
+    real_wp_ A_val[A_ne]; // values
+    real_wp_ A_dense[A_dense_ne]; // dense values
     // column-wise storage
     int A_by_col_row[A_ne]; // row indices, 
     int A_by_col_ptr[n+1];  // column pointers
-    double A_by_col_val[A_ne]; // values
-    double A_by_col_dense[A_dense_ne]; // dense values
-    double b[m];  // linear term in the objective
-    double x_l[n]; // variable lower bound
-    double x_u[n]; // variable upper bound
-    double x[n]; // variables
-    double z[n]; // dual variables
-    double c[m]; // residual
-    double g[n]; // gradient
+    real_wp_ A_by_col_val[A_ne]; // values
+    real_wp_ A_by_col_dense[A_dense_ne]; // dense values
+    real_wp_ b[m];  // linear term in the objective
+    real_wp_ x_l[n]; // variable lower bound
+    real_wp_ x_u[n]; // variable upper bound
+    real_wp_ x[n]; // variables
+    real_wp_ z[n]; // dual variables
+    real_wp_ c[m]; // residual
+    real_wp_ g[n]; // gradient
 
     // Set output storage
     int x_stat[n]; // variable status
@@ -222,7 +224,7 @@ int main(void) {
     nm = max( n, m );
     int eval_status, nz_v_start, nz_v_end, nz_p_end;
     int nz_v[nm], nz_p[m], mask[m];
-    double v[nm], p[nm];
+    real_wp_ v[nm], p[nm];
 
     nz_p_end = 0;
 
@@ -321,9 +323,9 @@ int main(void) {
 }
 
 // Apply preconditioner
-int prec( int n, const double v[], double p[], const void *userdata ){
+int prec( int n, const real_wp_ v[], real_wp_ p[], const void *userdata ){
   struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-  double scale = myuserdata->scale;
+  real_wp_ scale = myuserdata->scale;
   for( int i = 0; i < n; i++) p[i] = scale * v[i];
    return 0;
 }

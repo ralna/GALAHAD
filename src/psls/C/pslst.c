@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_psls.h"
 
 int main(void) {
@@ -21,8 +23,8 @@ int main(void) {
     int row[] = {0, 1, 1, 2, 2, 3, 4}; // A indices & values, NB lower triangle
     int col[] = {0, 0, 4, 1, 2, 2, 4};
     int ptr[] = {0, 1, 3, 5, 6, 7}; 
-    double val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0};
-    double dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
+    real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0};
+    real_wp_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                       0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0};
     char st;
     int status;
@@ -66,7 +68,7 @@ int main(void) {
             }
 
         // Set right-hand side b in x
-        double x[] = {8.0, 45.0, 31.0, 15.0, 17.0};   // values
+        real_wp_ x[] = {8.0, 45.0, 31.0, 15.0, 17.0};   // values
 
         if(status == 0){
           psls_information( &data, &inform, &status );

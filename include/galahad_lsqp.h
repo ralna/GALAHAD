@@ -317,6 +317,7 @@ extern "C" {
 
 // precision
 #include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 
 // required packages
 #include "galahad_fdc.h"
