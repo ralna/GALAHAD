@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_bqp.h"
 
 int main(void) {
@@ -19,15 +21,15 @@ int main(void) {
     int H_row[H_ne]; // row indices, 
     int H_col[H_ne]; // column indices
     int H_ptr[n+1];  // row pointers
-    double H_val[H_ne]; // values
-    double H_dense[H_dense_ne]; // dense values
-    double H_diag[n];   // diagonal values
-    double g[n];  // linear term in the objective
-    double f = 1.0;  // constant term in the objective
-    double x_l[n]; // variable lower bound
-    double x_u[n]; // variable upper bound
-    double x[n]; // variables
-    double z[n]; // dual variables
+    real_wp_ H_val[H_ne]; // values
+    real_wp_ H_dense[H_dense_ne]; // dense values
+    real_wp_ H_diag[n];   // diagonal values
+    real_wp_ g[n];  // linear term in the objective
+    real_wp_ f = 1.0;  // constant term in the objective
+    real_wp_ x_l[n]; // variable lower bound
+    real_wp_ x_u[n]; // variable upper bound
+    real_wp_ x[n]; // variables
+    real_wp_ z[n]; // dual variables
 
     // Set output storage
     int x_stat[n]; // variable status
@@ -147,7 +149,7 @@ int main(void) {
     // reverse-communication input/output
     int nz_v_start, nz_v_end, nz_prod_end;
     int nz_v[n], nz_prod[n], mask[n];
-    double v[n], prod[n];
+    real_wp_ v[n], prod[n];
 
     nz_prod_end = 0;
 

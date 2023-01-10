@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_glrt.h"
 
 int main(void) {
@@ -16,12 +18,12 @@ int main(void) {
     int n = 100; // dimension
 
     int status;
-    double weight;
-    double power = 3.0;
-    double x[n];
-    double r[n];
-    double vector[n];
-    double h_vector[n];
+    real_wp_ weight;
+    real_wp_ power = 3.0;
+    real_wp_ x[n];
+    real_wp_ r[n];
+    real_wp_ vector[n];
+    real_wp_ h_vector[n];
 
     // Initialize glrt
     glrt_initialize( &data, &control, &status );

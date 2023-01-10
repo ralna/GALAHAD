@@ -3,34 +3,36 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_bgo.h"
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
-   double freq;
-   double mag;
+   real_wp_ p;
+   real_wp_ freq;
+   real_wp_ mag;
 };
 
 // Function prototypes
-int fun( int n, const double x[], double *f, const void * );
-int grad( int n, const double x[], double g[], const void * );
-int hess( int n, int ne, const double x[], double hval[], const void * );
-int hess_dense( int n, int ne, const double x[], double hval[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[], 
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
+int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
               bool got_h, const void * );
-int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
-               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[], 
+               const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[], 
                bool got_h, const void * );
-int prec(int n, const double x[], double u[], const double v[], const void * );
-int fun_diag(int n, const double x[], double *f, const void * );
-int grad_diag(int n, const double x[], double g[], const void * );
-int hess_diag(int n, int ne, const double x[], double hval[], const void * );
-int hessprod_diag( int n, const double x[], double u[], const double v[], 
+int prec(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], const void * );
+int fun_diag(int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad_diag(int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess_diag(int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
                    bool got_h, const void * );
-int shessprod_diag( int n, const double x[], int nnz_v, const int index_nz_v[],
-                    const double v[], int *nnz_u, int index_nz_u[], 
-                    double u[], bool got_h, const void * );
+int shessprod_diag( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
+                    const real_wp_ v[], int *nnz_u, int index_nz_u[], 
+                    real_wp_ u[], bool got_h, const void * );
 
 int main(void) {
 
@@ -48,14 +50,14 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x_l[] = {-10,-10,-10}; 
-    double x_u[] = {0.5,0.5,0.5};
+    real_wp_ x_l[] = {-10,-10,-10}; 
+    real_wp_ x_u[] = {0.5,0.5,0.5};
     int H_row[] = {0, 1, 2, 2, 2}; // Hessian H
     int H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
     int H_ptr[] = {0, 1, 2, 5};    // row pointers
 
     // Set storage
-    double g[n]; // gradient
+    real_wp_ g[n]; // gradient
     char st;
     int status;
 
@@ -77,7 +79,7 @@ int main(void) {
         //control.print_level = 1;
 
         // Start from 0
-        double x[] = {0,0,0};
+        real_wp_ x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -142,10 +144,10 @@ int main(void) {
 
     // reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
-    double f = 0.0;
-    double u[n], v[n];
+    real_wp_ f = 0.0;
+    real_wp_ u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
-    double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
+    real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
  
     for(int d=1; d <= 5; d++){
 
@@ -161,7 +163,7 @@ int main(void) {
         //control.print_level = 1;
 
         // Start from 0
-        double x[] = {0,0,0};
+        real_wp_ x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -405,13 +407,13 @@ int main(void) {
 
 // Objective function 
 int fun( int n, 
-         const double x[], 
-         double *f, 
+         const real_wp_ x[], 
+         real_wp_ *f, 
          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + mag * cos(freq*x[0])
          + x[0] + x[1] + x[2];
@@ -420,13 +422,13 @@ int fun( int n,
 
 // Gradient of the objective
 int grad( int n, 
-          const double x[], 
-          double g[], 
+          const real_wp_ x[], 
+          real_wp_ g[], 
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - mag * freq * sin(freq*x[0]) + 1;
     g[1] = 2.0 * ( x[1] + x[2] ) + 1;
@@ -437,12 +439,12 @@ int grad( int n,
 // Hessian of the objective
 int hess( int n, 
           int ne, 
-          const double x[], 
-          double hval[], 
+          const real_wp_ x[], 
+          real_wp_ hval[], 
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
     
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
@@ -455,12 +457,12 @@ int hess( int n,
 // Dense Hessian
 int hess_dense( int n, 
                 int ne, 
-                const double x[], 
-                double hval[], 
+                const real_wp_ x[], 
+                real_wp_ hval[], 
                 const void *userdata ){ 
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
     
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 0.0;
@@ -473,14 +475,14 @@ int hess_dense( int n,
 
 // Hessian-vector product
 int hessprod( int n, 
-              const double x[], 
-              double u[], 
-              const double v[], 
+              const real_wp_ x[], 
+              real_wp_ u[], 
+              const real_wp_ v[], 
               bool got_h, 
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
     
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
            - mag * freq * freq * cos(freq*x[0]) * v[0];
@@ -491,20 +493,20 @@ int hessprod( int n,
 
 // Sparse Hessian-vector product
 int shessprod( int n, 
-               const double x[], 
+               const real_wp_ x[], 
                int nnz_v, 
                const int index_nz_v[], 
-               const double v[], 
+               const real_wp_ v[], 
                int *nnz_u, 
                int index_nz_u[], 
-               double u[], 
+               real_wp_ u[], 
                bool got_h, 
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
-    double p[] = {0., 0., 0.};
+    real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];
@@ -544,9 +546,9 @@ int shessprod( int n,
 
 // Apply preconditioner
 int prec( int n, 
-          const double x[], 
-          double u[], 
-          const double v[], 
+          const real_wp_ x[], 
+          real_wp_ u[], 
+          const real_wp_ v[], 
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -556,13 +558,13 @@ int prec( int n,
 
 // Objective function 
 int fun_diag( int n, 
-              const double x[], 
-              double *f, 
+              const real_wp_ x[], 
+              real_wp_ *f, 
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     *f = pow(x[2] + p, 2) + pow(x[1], 2) + mag * cos(freq*x[0])
          + x[0] + x[1] + x[2];
@@ -571,13 +573,13 @@ int fun_diag( int n,
 
 // Gradient of the objective
 int grad_diag( int n, 
-               const double x[], 
-               double g[], 
+               const real_wp_ x[], 
+               real_wp_ g[], 
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     g[0] = -mag * freq * sin(freq*x[0]) + 1;
     g[1] = 2.0 * x[1] + 1;
@@ -588,12 +590,12 @@ int grad_diag( int n,
 // Hessian of the objective
 int hess_diag( int n, 
                int ne, 
-               const double x[], 
-               double hval[], 
+               const real_wp_ x[], 
+               real_wp_ hval[], 
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     hval[0] = -mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
@@ -603,14 +605,14 @@ int hess_diag( int n,
 
 // Hessian-vector product
 int hessprod_diag( int n, 
-                   const double x[], 
-                   double u[], 
-                   const double v[], 
+                   const real_wp_ x[], 
+                   real_wp_ u[], 
+                   const real_wp_ v[], 
                    bool got_h, 
                    const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
     u[0] = u[0] + -mag * freq * freq * cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];
@@ -620,20 +622,20 @@ int hessprod_diag( int n,
 
 // Sparse Hessian-vector product
 int shessprod_diag( int n, 
-                    const double x[], 
+                    const real_wp_ x[], 
                     int nnz_v, 
                     const int index_nz_v[], 
-                    const double v[], 
+                    const real_wp_ v[], 
                     int *nnz_u, 
                     int index_nz_u[], 
-                    double u[], 
+                    real_wp_ u[], 
                     bool got_h, 
                     const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
+    real_wp_ freq = myuserdata->freq;
+    real_wp_ mag = myuserdata->mag;
 
-    double p[] = {0., 0., 0.};
+    real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];

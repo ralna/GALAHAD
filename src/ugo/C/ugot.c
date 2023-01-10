@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_ugo.h"
 
 // Test problem objective
