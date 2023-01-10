@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_rpd.h"
 #define BUFSIZE 1000
 
@@ -66,18 +68,18 @@ int main(void) {
             n, m, h_ne, a_ne, h_c_ne );
 
     // Recover g
-    double g[n];
+    real_wp_ g[n];
     rpd_get_g( &data, &status, n, g );
     printf( " g = %.1f %.1f %.1f %.1f %.1f\n",g[0], g[1], g[2], g[3], g[4]);
 
     // Recover f
-    double f;
+    real_wp_ f;
     rpd_get_f( &data, &status, &f );
     printf( " f = %.1f\n", f );
 
     // Recover xlu
-    double x_l[n];
-    double x_u[n];
+    real_wp_ x_l[n];
+    real_wp_ x_u[n];
     rpd_get_xlu( &data, &status, n, x_l, x_u );
     printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", x_l[0], x_l[1], x_l[2], 
              x_l[3], x_l[4]);
@@ -85,8 +87,8 @@ int main(void) {
              x_u[3], x_u[4]);
 
     // Recover clu
-    double c_l[m];
-    double c_u[m];
+    real_wp_ c_l[m];
+    real_wp_ c_u[m];
     rpd_get_clu( &data, &status, m, c_l, c_u );
     printf( " c_l = %.1f %.1f\n", c_l[0], c_l[1] );
     printf( " c_u = %.1f %.1f\n", c_u[0], c_u[1] );
@@ -94,7 +96,7 @@ int main(void) {
     // Recover H
     int h_row[h_ne];
     int h_col[h_ne];
-    double h_val[h_ne];
+    real_wp_ h_val[h_ne];
     rpd_get_h( &data, &status, h_ne, h_row, h_col, h_val );
     printf( " h_row, h_col, h_val =\n");
     for( int i = 0; i < h_ne; i++) printf("   %i %i %.1f\n", 
@@ -103,7 +105,7 @@ int main(void) {
     // Recover A
     int a_row[a_ne];
     int a_col[a_ne];
-    double a_val[a_ne];
+    real_wp_ a_val[a_ne];
     rpd_get_a( &data, &status, a_ne, a_row, a_col, a_val );
     printf( " a_row, a_col, a_val =\n");
     for( int i = 0; i < a_ne; i++) printf("   %i %i %.1f\n", 
@@ -113,7 +115,7 @@ int main(void) {
     int h_c_ptr[h_c_ne];
     int h_c_row[h_c_ne];
     int h_c_col[h_c_ne];
-    double h_c_val[h_c_ne];
+    real_wp_ h_c_val[h_c_ne];
     rpd_get_h_c( &data, &status, h_c_ne, h_c_ptr, h_c_row, h_c_col, h_c_val );
     printf( " h_c_row, h_c_col, h_c_val =\n");
     for( int i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n", 
@@ -126,17 +128,17 @@ int main(void) {
             x_type[3], x_type[4] );
 
     // Recover x
-    double x[n];
+    real_wp_ x[n];
     rpd_get_x( &data, &status, n, x );
     printf( " x = %.1f %.1f %.1f %.1f %.1f\n",x[0], x[1], x[2], x[3], x[4]);
 
     // Recover y
-    double y[m];
+    real_wp_ y[m];
     rpd_get_y( &data, &status, m, y );
     printf( " y = %.1f %.1f\n",y[0], y[1]);
 
     // Recover z
-    double z[n];
+    real_wp_ z[n];
     rpd_get_z( &data, &status, n, z );
     printf( " z = %.1f %.1f %.1f %.1f %.1f\n",z[0], z[1], z[2], z[3], z[4]);
 

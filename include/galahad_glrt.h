@@ -172,6 +172,7 @@ extern "C" {
 
 // precision
 #include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 
 /**
  * control derived type as a C struct

@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_sbls.h"
 
 int main(void) {
@@ -30,16 +32,16 @@ int main(void) {
     int C_row[] = {0, 1, 1}; // row indices, NB lower triangle
     int C_col[] = {0, 0, 1};
     int C_ptr[] = {0, 1, 3};
-    double H_val[] = {1.0, 2.0, 3.0, 1.0};
-    double A_val[] = {2.0, 1.0, 1.0};
-    double C_val[] = {4.0, 1.0, 2.0};
-    double H_dense[] = {1.0, 0.0, 2.0, 1.0, 0.0, 3.0};
-    double A_dense[] = {2.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-    double C_dense[] = {4.0, 1.0, 2.0};
-    double H_diag[] = {1.0, 1.0, 2.0};
-    double C_diag[] = {4.0, 2.0};
-    double H_scid[] = {2.0};
-    double C_scid[] = {2.0};
+    real_wp_ H_val[] = {1.0, 2.0, 3.0, 1.0};
+    real_wp_ A_val[] = {2.0, 1.0, 1.0};
+    real_wp_ C_val[] = {4.0, 1.0, 2.0};
+    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 1.0, 0.0, 3.0};
+    real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+    real_wp_ C_dense[] = {4.0, 1.0, 2.0};
+    real_wp_ H_diag[] = {1.0, 1.0, 2.0};
+    real_wp_ C_diag[] = {4.0, 2.0};
+    real_wp_ H_scid[] = {2.0};
+    real_wp_ C_scid[] = {2.0};
 
     char st;
     int status;
@@ -145,7 +147,7 @@ int main(void) {
             }
 
         // Set right-hand side ( a, b )
-        double sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
+        real_wp_ sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
 
         sbls_solve_system( &data, &status, n, m, sol );
 
