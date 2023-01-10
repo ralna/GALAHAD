@@ -375,6 +375,7 @@ subdir('src/fdc')
 subdir('src/cro')
 subdir('src/qpd')
 subdir('src/slls')
+subdir('src/wcp')
 
 # BGO requires TRB
 # subdir('src/bgo')
@@ -720,6 +721,15 @@ test('trs1_double', trst_double, suite: ['fortran', 'double'], is_parallel : fal
 test('trs2_single', trsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('trs2_double', trsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+wcpt_single = executable('wcpt_single', 'src/wcp/wcpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+wcpt_double = executable('wcpt_double', 'src/wcp/wcpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+wcpti_single = executable('wcpti_single', 'src/wcp/wcpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+wcpti_double = executable('wcpti_double', 'src/wcp/wcpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('wcp1_single', wcpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('wcp1_double', wcpt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('wcp2_single', wcpti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('wcp2_double', wcpti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 # pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 # pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -886,6 +896,7 @@ executable('cros', 'src/cro/cros.f90', link_with : libgalahad_double, install : 
 executable('cros2', 'src/cro/cros2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('cros3', 'src/cro/cros3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('fdcs', 'src/fdc/fdcs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('wcps', 'src/wcp/wcps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   # ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
