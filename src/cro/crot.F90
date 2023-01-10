@@ -18,7 +18,7 @@
    INTEGER ( KIND = ip_ ), DIMENSION( m + 1 ) :: A_ptr
    REAL ( KIND = rp_ ), DIMENSION( a_ne ) :: A_val
    REAL ( KIND = rp_ ), DIMENSION( n ) :: G, X_l, X_u, X, Z
-   REAL ( KIND = rp_ ), DIMENSION( m ) :: C_l, C_u, C, Y1
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: C_l, C_u, C, Y
    INTEGER ( KIND = ip_ ), DIMENSION( m ) :: C_stat
    INTEGER ( KIND = ip_ ), DIMENSION( n ) :: X_stat
 ! start problem data
