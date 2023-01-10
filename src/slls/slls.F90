@@ -66,14 +66,10 @@
 
      INTERFACE SLLS_initialize
        MODULE PROCEDURE SLLS_initialize, SLLS_full_initialize
-            
-     USE GALAHAD_KINDS
      END INTERFACE SLLS_initialize
 
      INTERFACE SLLS_terminate
        MODULE PROCEDURE SLLS_terminate, SLLS_full_terminate
-            
-     USE GALAHAD_KINDS
      END INTERFACE SLLS_terminate
 
 !--------------------
