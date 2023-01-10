@@ -370,6 +370,11 @@ subdir('src/lls')
 subdir('src/ir')
 subdir('src/trs')
 subdir('src/icfs')
+subdir('src/lpqp')
+subdir('src/fdc')
+subdir('src/cro')
+subdir('src/qpd')
+subdir('src/slls')
 
 # BGO requires TRB
 # subdir('src/bgo')
@@ -480,6 +485,12 @@ glst_double = executable('glst_double', 'src/gls/glst.F90', fortran_args : extra
 test('gls_single', glst_single, suite: ['fortran', 'single'], is_parallel : false)
 test('gls_double', glst_double, suite: ['fortran', 'double'], is_parallel : false)
 
+# Issue 48
+# crot_single = executable('crot_single', 'src/cro/crot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# crot_double = executable('crot_double', 'src/cro/crot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('cro_single', crot_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('cro_double', crot_double, suite: ['fortran', 'double'], is_parallel : false)
+
 hasht_single = executable('hasht_single', 'src/hash/hasht.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 hasht_double = executable('hasht_double', 'src/hash/hasht.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 test('hash_single', hasht_single, suite: ['fortran', 'single'], is_parallel : false)
@@ -512,6 +523,15 @@ test('lstr1_single', lstrt_single, suite: ['fortran', 'single'], is_parallel : f
 test('lstr1_double', lstrt_double, suite: ['fortran', 'double'], is_parallel : false)
 test('lstr2_single', lstrti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('lstr2_double', lstrti_double, suite: ['fortran', 'double'], is_parallel : false)
+
+fdct_single = executable('fdct_single', 'src/fdc/fdct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+fdct_double = executable('fdct_double', 'src/fdc/fdct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+fdcti_single = executable('fdcti_single', 'src/fdc/fdcti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+fdcti_double = executable('fdcti_double', 'src/fdc/fdcti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('fdc1_single', fdct_single, suite: ['fortran', 'single'], is_parallel : false)
+test('fdc1_double', fdct_double, suite: ['fortran', 'double'], is_parallel : false)
+test('fdc2_single', fdcti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('fdc2_double', fdcti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 lsrtt_single = executable('lsrtt_single', 'src/lsrt/lsrtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 lsrtt_double = executable('lsrtt_double', 'src/lsrt/lsrtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -551,6 +571,15 @@ test('miqr_double', miqrt_double, suite: ['fortran', 'double'], is_parallel : fa
 # mopt_double = executable('mopt_double', 'src/mop/mopt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 # test('mop_single', mopt_single, suite: ['fortran', 'single'], is_parallel : false)
 # test('mop_double', mopt_double, suite: ['fortran', 'double'], is_parallel : false)
+
+sllst_single = executable('sllst_single', 'src/slls/sllst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+sllst_double = executable('sllst_double', 'src/slls/sllst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+sllsti_single = executable('sllsti_single', 'src/slls/sllsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+sllsti_double = executable('sllsti_double', 'src/slls/sllsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('slls1_single', sllst_single, suite: ['fortran', 'single'], is_parallel : false)
+test('slls1_double', sllst_double, suite: ['fortran', 'double'], is_parallel : false)
+test('slls2_single', sllsti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('slls2_double', sllsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 nlptt_single = executable('nlptt_single', 'src/nlpt/nlptt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 nlptt_double = executable('nlptt_double', 'src/nlpt/nlptt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -845,6 +874,18 @@ executable('ir', 'src/ir/irs.f90', link_with : libgalahad_double, install : true
 executable('trs', 'src/trs/trss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trs2', 'src/trs/trss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('icfs', 'src/icfs/icfss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('sllss', 'src/slls/sllss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('sllss2', 'src/slls/sllss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('sllss3', 'src/slls/sllss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 49
+# executable('sllss4', 'src/slls/sllss4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('sllss5', 'src/slls/sllss5.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('sllss6', 'src/slls/sllss6.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('sllss7', 'src/slls/sllss7.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cros', 'src/cro/cros.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cros2', 'src/cro/cros2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cros3', 'src/cro/cros3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('fdcs', 'src/fdc/fdcs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   # ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
