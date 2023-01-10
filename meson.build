@@ -581,11 +581,14 @@ randt_double = executable('randt_double', 'src/rand/randt.F90', fortran_args : e
 test('rand_single', randt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('rand_double', randt_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# FIXME: install data files
-# rpdt = executable('rpdt', 'src/rpd/rpdt.F90', link_with : libgalahad_double)
-# rpdti = executable('rpdti', 'src/rpd/rpdti.F90', link_with : libgalahad_double)
-# test('rpd', rpdt)
-# test('rpdi', rpdti)
+rpdt_single = executable('rpdt_single', 'src/rpd/rpdt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+rpdt_double = executable('rpdt_double', 'src/rpd/rpdt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+rpdti_single = executable('rpdti_single', 'src/rpd/rpdti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+rpdti_double = executable('rpdti_double', 'src/rpd/rpdti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('rpd1_single', rpdt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('rpd1_double', rpdt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('rpd2_single', rpdti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('rpd2_double', rpdti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 rootst_single = executable('rootst_single', 'src/roots/rootst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 rootst_double = executable('rootst_double', 'src/roots/rootst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -629,8 +632,12 @@ test('sort_double', sortt_double, suite: ['fortran', 'double'], is_parallel : fa
 
 ugot_single = executable('ugot_single', 'src/ugo/ugot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 ugot_double = executable('ugot_double', 'src/ugo/ugot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-test('ugo_single', ugot_single, suite: ['fortran', 'single'], is_parallel : false)
-test('ugo_double', ugot_double, suite: ['fortran', 'double'], is_parallel : false)
+# ugot2_single = executable('ugot2_single', 'src/ugo/ugot2.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# ugot2_double = executable('ugot2_double', 'src/ugo/ugot2.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('ugo1_single', ugot_single, suite: ['fortran', 'single'], is_parallel : false)
+test('ugo1_double', ugot_double, suite: ['fortran', 'double'], is_parallel : false)
+# test('ugo2_single', ugot2_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('ugo2_double', ugot2_double, suite: ['fortran', 'double'], is_parallel : false)
 
 mkl_pardisot_single = executable('mkl_pardisot_single', 'src/external/mkl/mkl_pardisot.F90', fortran_args : extra_args_single, link_with : libmkl_pardiso, include_directories: libgalahad_include)
 mkl_pardisot_double = executable('mkl_pardisot_double', 'src/external/mkl/mkl_pardisot.F90', fortran_args : extra_args_double, link_with : libmkl_pardiso, include_directories: libgalahad_include)
