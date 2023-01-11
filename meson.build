@@ -384,6 +384,7 @@ subdir('src/cqp')
 subdir('src/dqp')
 subdir('src/dlp')
 subdir('src/dps')
+subdir('src/eqp')
 
 # subdir('src/cutest_functions')
 
@@ -841,6 +842,15 @@ test('dqp1_double', dqpt_double, suite: ['fortran', 'double'], is_parallel : fal
 test('dqp2_single', dqpti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('dqp2_double', dqpti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+eqpt_single = executable('eqpt_single', 'src/eqp/eqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+eqpt_double = executable('eqpt_double', 'src/eqp/eqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+eqpti_single = executable('eqpti_single', 'src/eqp/eqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+eqpti_double = executable('eqpti_double', 'src/eqp/eqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('eqp1_single', eqpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('eqp1_double', eqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('eqp2_single', eqpti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('eqp2_double', eqpti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 # nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 # nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1007,6 +1017,8 @@ executable('dlps', 'src/dlp/dlps.f90', link_with : libgalahad_double, install : 
 executable('dqps', 'src/dqp/dqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dqps2', 'src/dqp/dqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dqps3', 'src/dqp/dqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('eqps', 'src/eqp/eqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('eqps2', 'src/eqp/eqps.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 
 # Issue 55
 # executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
