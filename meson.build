@@ -380,6 +380,9 @@ subdir('src/problem')
 subdir('src/rqs')
 subdir('src/blls')
 subdir('src/bqp')
+subdir('src/cqp')
+
+# subdir('src/cutest_functions')
 
 # subdir('src/lancelot')
 
@@ -791,6 +794,15 @@ test('sbls1_double', sblst_double, suite: ['fortran', 'double'], is_parallel : f
 test('sbls2_single', sblsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('sbls2_double', sblsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+cqpt_single = executable('cqpt_single', 'src/cqp/cqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+cqpt_double = executable('cqpt_double', 'src/cqp/cqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+cqpti_single = executable('cqpti_single', 'src/cqp/cqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+cqpti_double = executable('cqpti_double', 'src/cqp/cqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('cqp1_single', cqpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('cqp1_double', cqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('cqp2_single', cqpti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('cqp2_double', cqpti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 bqpt_single = executable('bqpt_single', 'src/bqp/bqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 bqpt_double = executable('bqpt_double', 'src/bqp/bqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 bqpti_single = executable('bqpti_single', 'src/bqp/bqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -964,6 +976,9 @@ executable('bllss3', 'src/blls/bllss3.f90', link_with : libgalahad_double, insta
 executable('bqps', 'src/bqp/bqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('bqps2', 'src/bqp/bqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('bqps3', 'src/bqp/bqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cqps', 'src/cqp/cqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cqps2', 'src/cqp/cqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('cqps3', 'src/cqp/cqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
