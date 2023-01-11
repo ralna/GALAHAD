@@ -686,12 +686,8 @@ test('scu_double', scut_double, suite: ['fortran', 'double'], is_parallel : fals
 
 scalet_single = executable('scalet_single', 'src/scale/scalet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 scalet_double = executable('scalet_double', 'src/scale/scalet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# scale_test_single = executable('scale_test_single', 'src/scale/scale_test.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# scale_test_double = executable('scale_test_double', 'src/scale/scale_test.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 test('scale1_single', scalet_single, suite: ['fortran', 'single'], is_parallel : false)
 test('scale1_double', scalet_double, suite: ['fortran', 'double'], is_parallel : false)
-# test('scale2_single', scale_test_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('scale2_double', scale_test_double, suite: ['fortran', 'double'], is_parallel : false)
 
 sect_single = executable('sect_single', 'src/sec/sect.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 sect_double = executable('sect_double', 'src/sec/sect.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -981,7 +977,6 @@ executable('rands', 'src/rand/rands.f90', link_with : libgalahad_double, install
 executable('rpds', 'src/rpd/rpds.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('rootss', 'src/roots/rootss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('scales', 'src/scale/scales.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('scale_spec', 'src/scale/scale_spec.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('scus', 'src/scu/scus.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('secs', 'src/sec/secs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('shas', 'src/sha/shas.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
