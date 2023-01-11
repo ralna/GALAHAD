@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -79,8 +79,8 @@
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
       INTEGER ( KIND = ipc_ ) :: max_schur_complement
-      REAL ( KIND = rp_ ) :: infinity
-      REAL ( KIND = rp_ ) :: feasibility_tolerance
+      REAL ( KIND = rpc_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: feasibility_tolerance
       LOGICAL ( KIND = C_BOOL ) :: check_io
       LOGICAL ( KIND = C_BOOL ) :: refine_solution
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -95,14 +95,14 @@
     END TYPE cro_control_type
 
     TYPE, BIND( C ) :: cro_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: analyse
-      REAL ( KIND = sp_ ) :: factorize
-      REAL ( KIND = sp_ ) :: solve
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE cro_time_type
 
     TYPE, BIND( C ) :: cro_inform_type
@@ -443,18 +443,18 @@
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: hptr
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
                            DIMENSION( hptr( n + 1 ) - 1 ) :: hcol
-  REAL ( KIND = rp_ ), INTENT( IN ),                                           &
+  REAL ( KIND = rpc_ ), INTENT( IN ),                                           &
                        DIMENSION( hptr( n + 1 ) - 1 ) :: hval
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m + 1 ) :: aptr
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
                            DIMENSION( aptr( m + 1 ) - 1 ) :: acol
-  REAL ( KIND = rp_ ), INTENT( IN ),                                           &
+  REAL ( KIND = rpc_ ), INTENT( IN ),                                           &
                        DIMENSION( aptr( m + 1 ) - 1 ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m ) :: cstat
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n ) :: xstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata

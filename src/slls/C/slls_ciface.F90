@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -73,16 +73,16 @@
       INTEGER ( KIND = ipc_ ) :: cg_maxit
       INTEGER ( KIND = ipc_ ) :: arcsearch_max_steps
       INTEGER ( KIND = ipc_ ) :: sif_file_device
-      REAL ( KIND = rp_ ) :: weight
-      REAL ( KIND = rp_ ) :: stop_d
-      REAL ( KIND = rp_ ) :: stop_cg_relative
-      REAL ( KIND = rp_ ) :: stop_cg_absolute
-      REAL ( KIND = rp_ ) :: alpha_max
-      REAL ( KIND = rp_ ) :: alpha_initial
-      REAL ( KIND = rp_ ) :: alpha_reduction
-      REAL ( KIND = rp_ ) :: arcsearch_acceptance_tol
-      REAL ( KIND = rp_ ) :: stabilisation_weight
-      REAL ( KIND = rp_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: weight
+      REAL ( KIND = rpc_ ) :: stop_d
+      REAL ( KIND = rpc_ ) :: stop_cg_relative
+      REAL ( KIND = rpc_ ) :: stop_cg_absolute
+      REAL ( KIND = rpc_ ) :: alpha_max
+      REAL ( KIND = rpc_ ) :: alpha_initial
+      REAL ( KIND = rpc_ ) :: alpha_reduction
+      REAL ( KIND = rpc_ ) :: arcsearch_acceptance_tol
+      REAL ( KIND = rpc_ ) :: stabilisation_weight
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: direct_subproblem_solve
       LOGICAL ( KIND = C_BOOL ) :: exact_arc_search
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -95,10 +95,10 @@
     END TYPE slls_control_type
 
     TYPE, BIND( C ) :: slls_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: analyse
-      REAL ( KIND = sp_ ) :: factorize
-      REAL ( KIND = sp_ ) :: solve
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
     END TYPE slls_time_type
 
     TYPE, BIND( C ) :: slls_inform_type
@@ -107,8 +107,8 @@
       INTEGER ( KIND = ipc_ ) :: factorization_status
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: cg_iter
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: norm_pg
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: norm_pg
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( slls_time_type ) :: time
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -123,8 +123,8 @@
       FUNCTION eval_prec( n, v, p, userdata ) RESULT( status ) BIND( C )
         USE GALAHAD_KINDS
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
-        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: v
-        REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: p
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: v
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: p
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_prec
@@ -608,11 +608,11 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
-  REAL ( KIND = rp_ ), DIMENSION( ane ), INTENT( IN ) :: aval
-  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: b
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( OUT ) :: c
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: g
+  REAL ( KIND = rpc_ ), DIMENSION( ane ), INTENT( IN ) :: aval
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: b
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
@@ -654,8 +654,8 @@
     SUBROUTINE wrap_eval_prec( status, userdata, v, p )
     INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: p
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
 
 !  call C interoperable eval_prec
 
@@ -682,17 +682,17 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
-  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( IN ) :: b
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = rp_ ), DIMENSION( m ), INTENT( OUT ) :: c
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: g
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: b
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_p_end
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ) :: nz_p
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
 
 !  local variables
 

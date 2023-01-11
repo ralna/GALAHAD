@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -49,13 +49,13 @@
       INTEGER ( KIND = ipc_ ) :: maxla
       INTEGER ( KIND = ipc_ ) :: pivoting
       INTEGER ( KIND = ipc_ ) :: fill_in
-      REAL ( KIND = rp_ ) :: multiplier
-      REAL ( KIND = rp_ ) :: reduce
-      REAL ( KIND = rp_ ) :: u
-      REAL ( KIND = rp_ ) :: switch_full
-      REAL ( KIND = rp_ ) :: drop
-      REAL ( KIND = rp_ ) :: tolerance
-      REAL ( KIND = rp_ ) :: cgce
+      REAL ( KIND = rpc_ ) :: multiplier
+      REAL ( KIND = rpc_ ) :: reduce
+      REAL ( KIND = rpc_ ) :: u
+      REAL ( KIND = rpc_ ) :: switch_full
+      REAL ( KIND = rpc_ ) :: drop
+      REAL ( KIND = rpc_ ) :: tolerance
+      REAL ( KIND = rpc_ ) :: cgce
       LOGICAL ( KIND = C_BOOL ) :: diagonal_pivoting
       LOGICAL ( KIND = C_BOOL ) :: struct_abort
     END TYPE gls_control
@@ -75,7 +75,7 @@
       INTEGER ( KIND = ipc_ ) :: lblock
       INTEGER ( KIND = ipc_ ) :: sblock
       INTEGER ( KIND = ipc_ ) :: tblock
-      REAL ( KIND = rp_ ) :: ops
+      REAL ( KIND = rpc_ ) :: ops
     END TYPE GLS_ainfo
 
     TYPE, BIND( C ) :: GLS_finfo
@@ -86,7 +86,7 @@
       INTEGER ( KIND = ipc_ ) :: drop
       INTEGER ( KIND = ipc_ ) :: rank
       INTEGER ( KIND = ipc_ ) :: stat
-      REAL ( KIND = rp_ ) :: ops
+      REAL ( KIND = rpc_ ) :: ops
     END TYPE GLS_finfo
 
     TYPE, BIND( C ) :: GLS_sinfo

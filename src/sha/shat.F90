@@ -23,13 +23,14 @@
    ROW = (/ 1, 1, 1, 1, 1, 2, 3, 4, 5 /)
    COL = (/ 1, 2, 3, 4, 5, 2, 3, 4, 5 /)
    VAL = (/ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 /)
+write(6,*) ' rp, rpc = ', rp_, rpc_
    CALL SHA_initialize( data, control, inform )               ! initialize
    CALL SHA_analyse( n, nz, ROW, COL, data, control, inform ) ! analyse sparsity
    IF ( inform%status /= 0 ) THEN             ! Failure
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_analyse' )" ) &
        inform%status ; STOP
    END IF
-   m = inform%differences_needed
+   m = inform%differences_needed + 1
    ALLOCATE( S( n, m ), Y( n, m ), RD( m) )
    CALL RAND_initialize( seed )
    DO k = 1, m
@@ -46,7 +47,7 @@
        IF ( i /= j ) Y( j, k ) = Y( j, k ) + v * S( i, k )
      END DO
    END DO
-   CALL SHA_estimate( n, nz, ROW, COL, m + 1, m, RD, n, m, S, n, m,            &
+   CALL SHA_estimate( n, nz, ROW, COL, m, m, RD, n, m, S, n, m,                &
                       Y, VAL_est, data, control, inform )     ! approximate H
    IF ( inform%status /= 0 ) THEN             ! Failure
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_estimate' )" )&

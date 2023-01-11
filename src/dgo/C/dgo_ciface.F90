@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -100,9 +100,9 @@
     END TYPE dgo_control_type
 
     TYPE, BIND( C ) :: dgo_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: univariate_global
-      REAL ( KIND = sp_ ) :: multivariate_local
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: univariate_global
+      REAL ( KIND = spc_ ) :: multivariate_local
       REAL ( KIND = rpc_ ) :: clock_total
       REAL ( KIND = rpc_ ) :: clock_univariate_global
       REAL ( KIND = rpc_ ) :: clock_multivariate_local

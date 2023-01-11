@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -56,9 +56,9 @@
       INTEGER ( KIND = ipc_ ) :: print_level
       INTEGER ( KIND = ipc_ ) :: indmin
       INTEGER ( KIND = ipc_ ) :: valmin
-      REAL ( KIND = rp_ ) :: pivot_tol
-      REAL ( KIND = rp_ ) :: zero_pivot
-      REAL ( KIND = rp_ ) :: max_infeas
+      REAL ( KIND = rpc_ ) :: pivot_tol
+      REAL ( KIND = rpc_ ) :: zero_pivot
+      REAL ( KIND = rpc_ ) :: max_infeas
       LOGICAL ( KIND = C_BOOL ) :: use_sls
       LOGICAL ( KIND = C_BOOL ) :: scale
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -71,12 +71,12 @@
     END TYPE fdc_control_type
 
     TYPE, BIND( C ) :: fdc_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: analyse
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
     END TYPE fdc_time_type
 
     TYPE, BIND( C ) :: fdc_inform_type
@@ -84,9 +84,9 @@
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: factorization_status
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
-      REAL ( KIND = rp_ ) :: non_negligible_pivot
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
+      REAL ( KIND = rpc_ ) :: non_negligible_pivot
       TYPE ( fdc_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
       TYPE ( uls_inform_type ) :: uls_inform
@@ -417,9 +417,9 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: n_depen
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ) :: aptr
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ) :: acol
-! REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION(  m ) :: b
+! REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION(  m ) :: b
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION(  m ) :: depen
 
 !  local variables

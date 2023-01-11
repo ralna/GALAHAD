@@ -42,7 +42,7 @@
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
-                                       STRING_ies, STRING_are, STRING_ordinal
+                                STRING_ies, STRING_are, STRING_ordinal
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SMT_precision
       USE GALAHAD_QPT_precision

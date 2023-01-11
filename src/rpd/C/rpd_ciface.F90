@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -291,7 +291,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -320,7 +320,7 @@
 !  dummy arguments
 
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+  REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -351,7 +351,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: x_l, x_u
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: x_l, x_u
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -381,7 +381,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c_l, c_u
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c_l, c_u
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -412,7 +412,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: h_ne
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( h_ne ) :: h_row, h_col
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( h_ne ) :: h_val
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( h_ne ) :: h_val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -451,7 +451,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: a_ne
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( a_ne ) :: a_row, a_col
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( a_ne ) :: a_val
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( a_ne ) :: a_val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -493,7 +493,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( h_c_ne ) :: h_c_ptr
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( h_c_ne ) :: h_c_row
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( h_c_ne ) :: h_c_col
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( h_c_ne ) :: h_c_val
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( h_c_ne ) :: h_c_val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -563,7 +563,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: x
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -593,7 +593,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -623,7 +623,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: z
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: z
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

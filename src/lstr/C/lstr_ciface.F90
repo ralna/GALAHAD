@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -47,10 +47,10 @@
       INTEGER ( KIND = ipc_ ) :: itmax_on_boundary
       INTEGER ( KIND = ipc_ ) :: bitmax
       INTEGER ( KIND = ipc_ ) :: extra_vectors
-      REAL ( KIND = rp_ ) :: stop_relative
-      REAL ( KIND = rp_ ) :: stop_absolute
-      REAL ( KIND = rp_ ) :: fraction_opt
-      REAL ( KIND = rp_ ) :: time_limit
+      REAL ( KIND = rpc_ ) :: stop_relative
+      REAL ( KIND = rpc_ ) :: stop_absolute
+      REAL ( KIND = rpc_ ) :: fraction_opt
+      REAL ( KIND = rpc_ ) :: time_limit
       LOGICAL ( KIND = C_BOOL ) :: steihaug_toint
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -66,11 +66,11 @@
       INTEGER ( KIND = ipc_ ) :: biters
       INTEGER ( KIND = ipc_ ) :: biter_min
       INTEGER ( KIND = ipc_ ) :: biter_max
-      REAL ( KIND = rp_ ) :: multiplier
-      REAL ( KIND = rp_ ) :: x_norm
-      REAL ( KIND = rp_ ) :: r_norm
-      REAL ( KIND = rp_ ) :: Atr_norm
-      REAL ( KIND = rp_ ) :: biter_mean
+      REAL ( KIND = rpc_ ) :: multiplier
+      REAL ( KIND = rpc_ ) :: x_norm
+      REAL ( KIND = rpc_ ) :: r_norm
+      REAL ( KIND = rpc_ ) :: Atr_norm
+      REAL ( KIND = rpc_ ) :: biter_mean
     END TYPE lstr_inform_type
 
 !----------------------
@@ -383,10 +383,10 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: radius
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: u
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: v
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: radius
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: u
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: v
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
