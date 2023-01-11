@@ -1028,10 +1028,8 @@ executable('dqps3', 'src/dqp/dqps3.f90', link_with : libgalahad_double, install 
 executable('eqps', 'src/eqp/eqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('eqps2', 'src/eqp/eqps.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('l1qp', 'src/l1qp/l1qps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-
-# Issue 55
-# executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
