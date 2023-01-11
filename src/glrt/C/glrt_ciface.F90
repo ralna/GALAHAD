@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -44,11 +44,11 @@
       INTEGER ( KIND = ipc_ ) :: freq
       INTEGER ( KIND = ipc_ ) :: extra_vectors
       INTEGER ( KIND = ipc_ ) :: ritz_printout_device
-      REAL ( KIND = rp_ ) :: stop_relative
-      REAL ( KIND = rp_ ) :: stop_absolute
-      REAL ( KIND = rp_ ) :: fraction_opt
-      REAL ( KIND = rp_ ) :: rminvr_zero
-      REAL ( KIND = rp_ ) :: f_0
+      REAL ( KIND = rpc_ ) :: stop_relative
+      REAL ( KIND = rpc_ ) :: stop_absolute
+      REAL ( KIND = rpc_ ) :: fraction_opt
+      REAL ( KIND = rpc_ ) :: rminvr_zero
+      REAL ( KIND = rpc_ ) :: f_0
       LOGICAL ( KIND = C_BOOL ) :: unitm
       LOGICAL ( KIND = C_BOOL ) :: impose_descent
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -64,11 +64,11 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: iter_pass2
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: obj_regularized
-      REAL ( KIND = rp_ ) :: multiplier
-      REAL ( KIND = rp_ ) :: xpo_norm
-      REAL ( KIND = rp_ ) :: leftmost
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: obj_regularized
+      REAL ( KIND = rpc_ ) :: multiplier
+      REAL ( KIND = rpc_ ) :: xpo_norm
+      REAL ( KIND = rpc_ ) :: leftmost
       LOGICAL ( KIND = C_BOOL ) :: negative_curvature
       LOGICAL ( KIND = C_BOOL ) :: hard_case
     END TYPE glrt_inform_type
@@ -394,10 +394,10 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: power, weight
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: r
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: vector
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: power, weight
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: r
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: vector
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

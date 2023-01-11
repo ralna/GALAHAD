@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -54,8 +54,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: max_col_a
       INTEGER ( KIND = ipc_ ) :: exceeds_max_col
-      REAL ( KIND = rp_ ) :: time
-      REAL ( KIND = rp_ ) :: clock_time
+      REAL ( KIND = rpc_ ) :: time
+      REAL ( KIND = rpc_ ) :: clock_time
     END TYPE bsc_inform_type
 
 !----------------------

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -53,14 +53,14 @@
       INTEGER ( KIND = ipc_ ) :: thresh
       INTEGER ( KIND = ipc_ ) :: ordering
       INTEGER ( KIND = ipc_ ) :: scaling
-      REAL ( KIND = rp_ ) :: CNTL( 5 )
-      REAL ( KIND = rp_ ) :: multiplier
-      REAL ( KIND = rp_ ) :: reduce
-      REAL ( KIND = rp_ ) :: u
-      REAL ( KIND = rp_ ) :: static_tolerance
-      REAL ( KIND = rp_ ) :: static_level
-      REAL ( KIND = rp_ ) :: tolerance
-      REAL ( KIND = rp_ ) :: convergence
+      REAL ( KIND = rpc_ ) :: CNTL( 5 )
+      REAL ( KIND = rpc_ ) :: multiplier
+      REAL ( KIND = rpc_ ) :: reduce
+      REAL ( KIND = rpc_ ) :: u
+      REAL ( KIND = rpc_ ) :: static_tolerance
+      REAL ( KIND = rpc_ ) :: static_level
+      REAL ( KIND = rpc_ ) :: tolerance
+      REAL ( KIND = rpc_ ) :: convergence
     END TYPE sils_control
 
     TYPE, BIND( C ) :: SILS_ainfo
@@ -79,8 +79,8 @@
       INTEGER ( KIND = ipc_ ) :: maxfrt
       INTEGER ( KIND = ipc_ ) :: stat
       INTEGER ( KIND = ipc_ ) :: faulty
-      REAL ( KIND = rp_ ) :: opsa
-      REAL ( KIND = rp_ ) :: opse
+      REAL ( KIND = rpc_ ) :: opsa
+      REAL ( KIND = rpc_ ) :: opse
     END TYPE SILS_ainfo
 
     TYPE, BIND( C ) :: SILS_finfo
@@ -106,22 +106,22 @@
       INTEGER ( KIND = ipc_ ) :: stat
       INTEGER ( KIND = ipc_ ) :: faulty
       INTEGER ( KIND = ipc_ ) :: step
-      REAL ( KIND = rp_ ) :: opsa
-      REAL ( KIND = rp_ ) :: opse
-      REAL ( KIND = rp_ ) :: opsb
-      REAL ( KIND = rp_ ) :: maxchange
-      REAL ( KIND = rp_ ) :: smin
-      REAL ( KIND = rp_ ) :: smax
+      REAL ( KIND = rpc_ ) :: opsa
+      REAL ( KIND = rpc_ ) :: opse
+      REAL ( KIND = rpc_ ) :: opsb
+      REAL ( KIND = rpc_ ) :: maxchange
+      REAL ( KIND = rpc_ ) :: smin
+      REAL ( KIND = rpc_ ) :: smax
     END TYPE SILS_finfo
 
     TYPE, BIND( C ) :: SILS_sinfo
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: stat
-      REAL ( KIND = rp_ ) :: cond
-      REAL ( KIND = rp_ ) :: cond2
-      REAL ( KIND = rp_ ) :: berr
-      REAL ( KIND = rp_ ) :: berr2
-      REAL ( KIND = rp_ ) :: error
+      REAL ( KIND = rpc_ ) :: cond
+      REAL ( KIND = rpc_ ) :: cond2
+      REAL ( KIND = rpc_ ) :: berr
+      REAL ( KIND = rpc_ ) :: berr2
+      REAL ( KIND = rpc_ ) :: error
     END TYPE SILS_sinfo
 
 !----------------------

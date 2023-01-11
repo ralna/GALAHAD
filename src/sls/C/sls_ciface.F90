@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -118,30 +118,30 @@
       INTEGER ( KIND = ipc_ ) :: initial_pool_size
       INTEGER ( KIND = ipc_ ) :: min_real_factor_size
       INTEGER ( KIND = ipc_ ) :: min_integer_factor_size
-      INTEGER ( KIND = long_ ) :: max_real_factor_size
-      INTEGER ( KIND = long_ ) :: max_integer_factor_size
-      INTEGER ( KIND = long_ ) :: max_in_core_store
-      REAL ( KIND = rp_ ) :: array_increase_factor
-      REAL ( KIND = rp_ ) :: array_decrease_factor
+      INTEGER ( KIND = longc_ ) :: max_real_factor_size
+      INTEGER ( KIND = longc_ ) :: max_integer_factor_size
+      INTEGER ( KIND = longc_ ) :: max_in_core_store
+      REAL ( KIND = rpc_ ) :: array_increase_factor
+      REAL ( KIND = rpc_ ) :: array_decrease_factor
       INTEGER ( KIND = ipc_ ) :: pivot_control
       INTEGER ( KIND = ipc_ ) :: ordering
       INTEGER ( KIND = ipc_ ) :: full_row_threshold
       INTEGER ( KIND = ipc_ ) :: row_search_indefinite
       INTEGER ( KIND = ipc_ ) :: scaling
       INTEGER ( KIND = ipc_ ) :: scale_maxit
-      REAL ( KIND = rp_ ) :: scale_thresh
-      REAL ( KIND = rp_ ) :: relative_pivot_tolerance
-      REAL ( KIND = rp_ ) :: minimum_pivot_tolerance
-      REAL ( KIND = rp_ ) :: absolute_pivot_tolerance
-      REAL ( KIND = rp_ ) :: zero_tolerance
-      REAL ( KIND = rp_ ) :: zero_pivot_tolerance
-      REAL ( KIND = rp_ ) :: negative_pivot_tolerance
-      REAL ( KIND = rp_ ) :: static_pivot_tolerance
-      REAL ( KIND = rp_ ) :: static_level_switch
-      REAL ( KIND = rp_ ) :: consistency_tolerance
+      REAL ( KIND = rpc_ ) :: scale_thresh
+      REAL ( KIND = rpc_ ) :: relative_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: minimum_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: absolute_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: zero_tolerance
+      REAL ( KIND = rpc_ ) :: zero_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: negative_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: static_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: static_level_switch
+      REAL ( KIND = rpc_ ) :: consistency_tolerance
       INTEGER ( KIND = ipc_ ) :: max_iterative_refinements
-      REAL ( KIND = rp_ ) :: acceptable_residual_relative
-      REAL ( KIND = rp_ ) :: acceptable_residual_absolute
+      REAL ( KIND = rpc_ ) :: acceptable_residual_relative
+      REAL ( KIND = rpc_ ) :: acceptable_residual_absolute
       LOGICAL ( KIND = C_BOOL ) :: multiple_rhs
       LOGICAL ( KIND = C_BOOL ) :: generate_matrix_file
       INTEGER ( KIND = ipc_ ) :: matrix_file_device
@@ -160,22 +160,22 @@
     END TYPE sls_control_type
 
     TYPE, BIND( C ) :: sls_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: analyse
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: solve
-      REAL ( KIND = rp_ ) :: order_external
-      REAL ( KIND = rp_ ) :: analyse_external
-      REAL ( KIND = rp_ ) :: factorize_external
-      REAL ( KIND = rp_ ) :: solve_external
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
-      REAL ( KIND = rp_ ) :: clock_order_external
-      REAL ( KIND = rp_ ) :: clock_analyse_external
-      REAL ( KIND = rp_ ) :: clock_factorize_external
-      REAL ( KIND = rp_ ) :: clock_solve_external
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: order_external
+      REAL ( KIND = rpc_ ) :: analyse_external
+      REAL ( KIND = rpc_ ) :: factorize_external
+      REAL ( KIND = rpc_ ) :: solve_external
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: clock_order_external
+      REAL ( KIND = rpc_ ) :: clock_analyse_external
+      REAL ( KIND = rpc_ ) :: clock_factorize_external
+      REAL ( KIND = rpc_ ) :: clock_solve_external
     END TYPE sls_time_type
 
     TYPE, BIND( C ) :: sls_inform_type
@@ -190,13 +190,13 @@
       INTEGER ( KIND = ipc_ ) :: missing_diagonals
       INTEGER ( KIND = ipc_ ) :: max_depth_assembly_tree
       INTEGER ( KIND = ipc_ ) :: nodes_assembly_tree
-      INTEGER ( KIND = long_ ) :: real_size_desirable
-      INTEGER ( KIND = long_ ) :: integer_size_desirable
-      INTEGER ( KIND = long_ ) :: real_size_necessary
-      INTEGER ( KIND = long_ ) :: integer_size_necessary
-      INTEGER ( KIND = long_ ) :: real_size_factors
-      INTEGER ( KIND = long_ ) :: integer_size_factors
-      INTEGER ( KIND = long_ ) :: entries_in_factors
+      INTEGER ( KIND = longc_ ) :: real_size_desirable
+      INTEGER ( KIND = longc_ ) :: integer_size_desirable
+      INTEGER ( KIND = longc_ ) :: real_size_necessary
+      INTEGER ( KIND = longc_ ) :: integer_size_necessary
+      INTEGER ( KIND = longc_ ) :: real_size_factors
+      INTEGER ( KIND = longc_ ) :: integer_size_factors
+      INTEGER ( KIND = longc_ ) :: entries_in_factors
       INTEGER ( KIND = ipc_ ) :: max_task_pool_size
       INTEGER ( KIND = ipc_ ) :: max_front_size
       INTEGER ( KIND = ipc_ ) :: compresses_real
@@ -211,17 +211,17 @@
       INTEGER ( KIND = ipc_ ) :: negative_eigenvalues
       INTEGER ( KIND = ipc_ ) :: num_zero
       INTEGER ( KIND = ipc_ ) :: iterative_refinements
-      INTEGER ( KIND = long_ ) :: flops_assembly
-      INTEGER ( KIND = long_ ) :: flops_elimination
-      INTEGER ( KIND = long_ ) :: flops_blas
-      REAL ( KIND = rp_ ) :: largest_modified_pivot
-      REAL ( KIND = rp_ ) :: minimum_scaling_factor
-      REAL ( KIND = rp_ ) :: maximum_scaling_factor
-      REAL ( KIND = rp_ ) :: condition_number_1
-      REAL ( KIND = rp_ ) :: condition_number_2
-      REAL ( KIND = rp_ ) :: backward_error_1
-      REAL ( KIND = rp_ ) :: backward_error_2
-      REAL ( KIND = rp_ ) :: forward_error
+      INTEGER ( KIND = longc_ ) :: flops_assembly
+      INTEGER ( KIND = longc_ ) :: flops_elimination
+      INTEGER ( KIND = longc_ ) :: flops_blas
+      REAL ( KIND = rpc_ ) :: largest_modified_pivot
+      REAL ( KIND = rpc_ ) :: minimum_scaling_factor
+      REAL ( KIND = rpc_ ) :: maximum_scaling_factor
+      REAL ( KIND = rpc_ ) :: condition_number_1
+      REAL ( KIND = rpc_ ) :: condition_number_2
+      REAL ( KIND = rpc_ ) :: backward_error_1
+      REAL ( KIND = rpc_ ) :: backward_error_2
+      REAL ( KIND = rpc_ ) :: forward_error
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sls_time_type ) :: time
       TYPE ( sils_ainfo ) :: sils_ainfo
@@ -236,19 +236,19 @@
       TYPE ( ma97_info ) :: ma97_info
       TYPE ( ssids_inform ) :: ssids_inform
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
-      REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
+      REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( mc64_info ) :: mc64_info
       TYPE ( mc68_info ) :: mc68_info
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc77_info
-      REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo
+      REAL ( KIND = rpc_ ), DIMENSION( 10 ) :: mc77_rinfo
       INTEGER ( KIND = ipc_ ) :: pardiso_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: pardiso_IPARM
-      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: pardiso_DPARM
+      REAL ( KIND = rpc_ ), DIMENSION( 64 ) :: pardiso_DPARM
       INTEGER ( KIND = ipc_ ) :: mkl_pardiso_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM
       INTEGER ( KIND = ipc_ ) :: wsmp_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: wsmp_iparm
-      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: wsmp_dparm
+      REAL ( KIND = rpc_ ), DIMENSION( 64 ) :: wsmp_dparm
       INTEGER ( KIND = ipc_ ) :: lapack_error
     END TYPE sls_inform_type
 
@@ -915,7 +915,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ne ) :: val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -945,7 +945,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -975,7 +975,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cpart
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 

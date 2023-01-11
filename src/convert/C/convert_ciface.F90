@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -49,8 +49,8 @@
     END TYPE convert_control_type
 
     TYPE, BIND( C ) :: convert_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: clock_total
     END TYPE convert_time_type
 
     TYPE, BIND( C ) :: convert_inform_type

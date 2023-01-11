@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -72,14 +72,14 @@
       INTEGER ( KIND = ipc_ ) :: max_col
       INTEGER ( KIND = ipc_ ) :: scaling
       INTEGER ( KIND = ipc_ ) :: ordering
-      REAL ( KIND = rp_ ) :: pivot_tol
-      REAL ( KIND = rp_ ) :: pivot_tol_for_basis
-      REAL ( KIND = rp_ ) :: zero_pivot
-      REAL ( KIND = rp_ ) :: static_tolerance
-      REAL ( KIND = rp_ ) :: static_level
-      REAL ( KIND = rp_ ) :: min_diagonal
-      REAL ( KIND = rp_ ) :: stop_absolute
-      REAL ( KIND = rp_ ) :: stop_relative
+      REAL ( KIND = rpc_ ) :: pivot_tol
+      REAL ( KIND = rpc_ ) :: pivot_tol_for_basis
+      REAL ( KIND = rpc_ ) :: zero_pivot
+      REAL ( KIND = rpc_ ) :: static_tolerance
+      REAL ( KIND = rpc_ ) :: static_level
+      REAL ( KIND = rpc_ ) :: min_diagonal
+      REAL ( KIND = rpc_ ) :: stop_absolute
+      REAL ( KIND = rpc_ ) :: stop_relative
       LOGICAL ( KIND = C_BOOL ) :: remove_dependencies
       LOGICAL ( KIND = C_BOOL ) :: find_basis_by_transpose
       LOGICAL ( KIND = C_BOOL ) :: affine
@@ -98,14 +98,14 @@
     END TYPE sbls_control_type
 
     TYPE, BIND( C ) :: sbls_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: form
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: apply
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_form
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_apply
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: form
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: apply
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_form
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_apply
     END TYPE sbls_time_type
 
     TYPE, BIND( C ) :: sbls_inform_type
@@ -122,8 +122,8 @@
       INTEGER ( KIND = ipc_ ) :: uls_factorize_status
       INTEGER ( KIND = ipc_ ) :: uls_solve_status
       INTEGER ( KIND = ipc_ ) :: sort_status
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
       INTEGER ( KIND = ipc_ ) :: preconditioner
       INTEGER ( KIND = ipc_ ) :: factorization
       INTEGER ( KIND = ipc_ ) :: d_plus
@@ -131,7 +131,7 @@
       LOGICAL ( KIND = C_BOOL ) :: rank_def
       LOGICAL ( KIND = C_BOOL ) :: perturbed
       INTEGER ( KIND = ipc_ ) :: iter_pcg
-      REAL ( KIND = rp_ ) :: norm_residual
+      REAL ( KIND = rpc_ ) :: norm_residual
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sbls_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
@@ -663,10 +663,10 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ane, hne, cne
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( cne ) :: cval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: d
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( cne ) :: cval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: d
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -696,7 +696,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: sol
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n + m ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

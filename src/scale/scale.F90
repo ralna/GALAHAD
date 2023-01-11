@@ -43,9 +43,6 @@
                 SCALE_get, SCALE_apply, SCALE_recover, SCALE_trans_type,       &
                 QPT_problem_type
 
-!--------------------
-
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
