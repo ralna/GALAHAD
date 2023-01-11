@@ -1091,6 +1091,7 @@
 
 !  generic solver workspace
 
+write(6,*) data%la1 < ld, data%la2 < nn
       IF ( data%la1 < ld .OR. data%la2 < nn ) THEN
         data%la1 = ld ; data%la2 = nn
         array_name = 'SHA: data%A'
@@ -1179,6 +1180,7 @@
                         data%WORK_1, - 1, data%IWORK_1, status )
             lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
           ELSE
+write(6,*) data%la1, m_max
             CALL GELSS( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,      &
                         data%solve_system_data%S, eps_singular, rank,          &
                         data%WORK_1, - 1, status )
@@ -1702,6 +1704,7 @@
           CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, data%IWORK, status )
         ELSE ! dense_linear_solver == 3
+write(6,*) la1, m
           CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, status )
         END IF

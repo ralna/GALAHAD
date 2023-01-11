@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -58,16 +58,16 @@
       INTEGER ( KIND = ipc_ ) :: random_number_seed
       INTEGER ( KIND = ipc_ ) :: sif_file_device
       INTEGER ( KIND = ipc_ ) :: qplib_file_device
-      REAL ( KIND = rp_ ) :: infinity
-      REAL ( KIND = rp_ ) :: tol_data
-      REAL ( KIND = rp_ ) :: feas_tol
-      REAL ( KIND = rp_ ) :: relative_pivot_tolerance
-      REAL ( KIND = rp_ ) :: growth_limit
-      REAL ( KIND = rp_ ) :: zero_tolerance
-      REAL ( KIND = rp_ ) :: change_tolerance
-      REAL ( KIND = rp_ ) :: identical_bounds_tol
-      REAL ( KIND = rp_ ) :: cpu_time_limit
-      REAL ( KIND = rp_ ) :: clock_time_limit
+      REAL ( KIND = rpc_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: tol_data
+      REAL ( KIND = rpc_ ) :: feas_tol
+      REAL ( KIND = rpc_ ) :: relative_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: growth_limit
+      REAL ( KIND = rpc_ ) :: zero_tolerance
+      REAL ( KIND = rpc_ ) :: change_tolerance
+      REAL ( KIND = rpc_ ) :: identical_bounds_tol
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: scale
       LOGICAL ( KIND = C_BOOL ) :: dual
       LOGICAL ( KIND = C_BOOL ) :: warm_start
@@ -82,10 +82,10 @@
     END TYPE lpa_control_type
 
     TYPE, BIND( C ) :: lpa_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: preprocess
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_preprocess
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: preprocess
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_preprocess
     END TYPE lpa_time_type
 
     TYPE, BIND( C ) :: lpa_inform_type
@@ -95,10 +95,10 @@
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: la04_job
       INTEGER ( KIND = ipc_ ) :: la04_job_info
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: primal_infeasibility
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: primal_infeasibility
       LOGICAL ( KIND = C_BOOL ) :: feasible
-      REAL ( KIND = rp_ ), DIMENSION( 40 ) :: RINFO
+      REAL ( KIND = rpc_ ), DIMENSION( 40 ) :: RINFO
       TYPE ( lpa_time_type ) :: time
       TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE lpa_inform_type
@@ -542,14 +542,14 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata

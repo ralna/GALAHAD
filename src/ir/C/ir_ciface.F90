@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -33,9 +33,9 @@
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
       INTEGER ( KIND = ipc_ ) :: itref_max
-      REAL ( KIND = rp_ ) :: acceptable_residual_relative
-      REAL ( KIND = rp_ ) :: acceptable_residual_absolute
-      REAL ( KIND = rp_ ) :: required_residual_relative
+      REAL ( KIND = rpc_ ) :: acceptable_residual_relative
+      REAL ( KIND = rpc_ ) :: acceptable_residual_absolute
+      REAL ( KIND = rpc_ ) :: required_residual_relative
       LOGICAL ( KIND = C_BOOL ) :: record_residuals
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -46,8 +46,8 @@
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      REAL ( KIND = rp_ ) :: norm_initial_residual
-      REAL ( KIND = rp_ ) :: norm_final_residual
+      REAL ( KIND = rpc_ ) :: norm_initial_residual
+      REAL ( KIND = rpc_ ) :: norm_final_residual
     END TYPE ir_inform_type
 
 !----------------------

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -67,7 +67,7 @@
       INTEGER ( KIND = ipc_ ) :: icfs_vectors
       INTEGER ( KIND = ipc_ ) :: mi28_lsize
       INTEGER ( KIND = ipc_ ) :: mi28_rsize
-      REAL ( KIND = rp_ ) :: min_diagonal
+      REAL ( KIND = rpc_ ) :: min_diagonal
       LOGICAL ( KIND = C_BOOL ) :: new_structure
       LOGICAL ( KIND = C_BOOL ) :: get_semi_bandwidth
       LOGICAL ( KIND = C_BOOL ) :: get_norm_residual
@@ -80,18 +80,18 @@
     END TYPE psls_control_type
 
     TYPE, BIND( C ) :: psls_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: assemble
-      REAL ( KIND = sp_ ) :: analyse
-      REAL ( KIND = sp_ ) :: factorize
-      REAL ( KIND = sp_ ) :: solve
-      REAL ( KIND = sp_ ) :: update
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_assemble
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
-      REAL ( KIND = rp_ ) :: clock_update
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: assemble
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
+      REAL ( KIND = spc_ ) :: update
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_assemble
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: clock_update
     END TYPE psls_time_type
 
     TYPE, BIND( C ) :: psls_inform_type
@@ -100,8 +100,8 @@
       INTEGER ( KIND = ipc_ ) :: analyse_status
       INTEGER ( KIND = ipc_ ) :: factorize_status
       INTEGER ( KIND = ipc_ ) :: solve_status
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
       INTEGER ( KIND = ipc_ ) :: preconditioner
       INTEGER ( KIND = ipc_ ) :: semi_bandwidth
       INTEGER ( KIND = ipc_ ) :: reordered_semi_bandwidth
@@ -113,11 +113,11 @@
       INTEGER ( KIND = ipc_ ) :: neg1
       INTEGER ( KIND = ipc_ ) :: neg2
       LOGICAL ( KIND = C_BOOL ) :: perturbed
-      REAL ( KIND = rp_ ) :: fill_in_ratio
-      REAL ( KIND = rp_ ) :: norm_residual
+      REAL ( KIND = rpc_ ) :: fill_in_ratio
+      REAL ( KIND = rpc_ ) :: norm_residual
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
-      REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
+      REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( psls_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
       TYPE ( mi28_info ) :: mi28_info
@@ -137,7 +137,7 @@
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
 
     ! local variables
-    INTEGER ( KIND = ip_ ) :: i
+    INTEGER ( KIND = ipc_ ) :: i
     LOGICAL :: f_indexing_mi28
 
     ! C or Fortran sparse matrix indexing
@@ -191,7 +191,7 @@
     TYPE ( f_psls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( psls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER ( KIND = ip_ ) :: i, l
+    INTEGER ( KIND = ipc_ ) :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -290,7 +290,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( psls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_psls_inform_type ), INTENT( OUT ) :: finform
-    INTEGER ( KIND = ip_ ) :: i
+    INTEGER ( KIND = ipc_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -339,7 +339,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_psls_inform_type ), INTENT( IN ) :: finform
     TYPE ( psls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER ( KIND = ip_ ) :: i, l
+    INTEGER ( KIND = ipc_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -585,7 +585,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ne ) :: val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -616,8 +616,8 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne, n_sub
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
-  INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n_sub ) :: sub
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ne ) :: val
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n_sub ) :: sub
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -647,7 +647,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n_fix
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n_fix ) :: fix
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n_fix ) :: fix
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -678,7 +678,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

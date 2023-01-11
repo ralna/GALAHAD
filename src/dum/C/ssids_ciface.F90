@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-04 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 !! #ifdef SPRAL_SINGLE
 #ifdef GALAHAD_SINGLE
@@ -50,20 +50,20 @@
        LOGICAL ( KIND = C_BOOL ) :: ignore_numa
        LOGICAL ( KIND = C_BOOL ) :: use_gpu
        LOGICAL ( KIND = C_BOOL ) :: gpu_only
-       INTEGER ( KIND = long_ ) :: min_gpu_work
+       INTEGER ( KIND = longc_ ) :: min_gpu_work
        REAL :: max_load_inbalance
        REAL :: gpu_perf_coeff
        INTEGER ( KIND = ipc_ ) :: scaling
-       INTEGER ( KIND = long_ ) :: small_subtree_threshold
+       INTEGER ( KIND = longc_ ) :: small_subtree_threshold
        INTEGER ( KIND = ipc_ ) :: cpu_block_size
        LOGICAL ( KIND = C_BOOL ) :: action
        INTEGER ( KIND = ipc_ ) :: pivot_method
-       REAL ( KIND = rp_ ) :: small
-       REAL ( KIND = rp_ ) :: u
+       REAL ( KIND = rpc_ ) :: small
+       REAL ( KIND = rpc_ ) :: u
        INTEGER ( KIND = ipc_ ) :: nstream
-       REAL ( KIND = rp_ ) :: multiplier
+       REAL ( KIND = rpc_ ) :: multiplier
 !     type(auction_options) :: auction
-       REAL ( KIND = rp_ ) :: min_loadbalance
+       REAL ( KIND = rpc_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = ipc_ ) :: failed_pivot_method
     END TYPE ssids_options
@@ -77,8 +77,8 @@
        INTEGER ( KIND = ipc_ ) :: maxdepth
        INTEGER ( KIND = ipc_ ) :: maxfront
        INTEGER ( KIND = ipc_ ) :: num_delay
-       INTEGER ( KIND = long_ ) :: num_factor
-       INTEGER ( KIND = long_ ) :: num_flops
+       INTEGER ( KIND = longc_ ) :: num_factor
+       INTEGER ( KIND = longc_ ) :: num_flops
        INTEGER ( KIND = ipc_ ) :: num_neg
        INTEGER ( KIND = ipc_ ) :: num_sup
        INTEGER ( KIND = ipc_ ) :: num_two
@@ -89,8 +89,8 @@
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
-       INTEGER ( KIND = long_ ) :: cpu_flops
-       INTEGER ( KIND = long_ ) :: gpu_flops
+       INTEGER ( KIND = longc_ ) :: cpu_flops
+       INTEGER ( KIND = longc_ ) :: gpu_flops
     END TYPE ssids_inform
 
 !----------------------

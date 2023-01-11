@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -46,14 +46,14 @@
     END TYPE lms_control_type
 
     TYPE, BIND( C ) :: lms_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: setup
-      REAL ( KIND = rp_ ) :: form
-      REAL ( KIND = rp_ ) :: apply
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_setup
-      REAL ( KIND = rp_ ) :: clock_form
-      REAL ( KIND = rp_ ) :: clock_apply
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: setup
+      REAL ( KIND = rpc_ ) :: form
+      REAL ( KIND = rpc_ ) :: apply
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_setup
+      REAL ( KIND = rpc_ ) :: clock_form
+      REAL ( KIND = rpc_ ) :: clock_apply
     END TYPE lms_time_type
 
     TYPE, BIND( C ) :: lms_inform_type

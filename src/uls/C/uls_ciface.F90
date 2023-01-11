@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -66,7 +66,7 @@
       INTEGER ( KIND = ipc_ ) :: initial_fill_in_factor
       INTEGER ( KIND = ipc_ ) :: min_real_factor_size
       INTEGER ( KIND = ipc_ ) :: min_integer_factor_size
-      INTEGER ( KIND = long_ ) :: max_factor_size
+      INTEGER ( KIND = longc_ ) :: max_factor_size
       INTEGER ( KIND = ipc_ ) :: blas_block_size_factorize
       INTEGER ( KIND = ipc_ ) :: blas_block_size_solve
       INTEGER ( KIND = ipc_ ) :: pivot_control
@@ -74,14 +74,14 @@
       INTEGER ( KIND = ipc_ ) :: minimum_size_for_btf
       INTEGER ( KIND = ipc_ ) :: max_iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: stop_if_singular
-      REAL ( KIND = rp_ ) :: array_increase_factor
-      REAL ( KIND = rp_ ) :: switch_to_full_code_density
-      REAL ( KIND = rp_ ) :: array_decrease_factor
-      REAL ( KIND = rp_ ) :: relative_pivot_tolerance
-      REAL ( KIND = rp_ ) :: absolute_pivot_tolerance
-      REAL ( KIND = rp_ ) :: zero_tolerance
-      REAL ( KIND = rp_ ) :: acceptable_residual_relative
-      REAL ( KIND = rp_ ) :: acceptable_residual_absolute
+      REAL ( KIND = rpc_ ) :: array_increase_factor
+      REAL ( KIND = rpc_ ) :: switch_to_full_code_density
+      REAL ( KIND = rpc_ ) :: array_decrease_factor
+      REAL ( KIND = rpc_ ) :: relative_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: absolute_pivot_tolerance
+      REAL ( KIND = rpc_ ) :: zero_tolerance
+      REAL ( KIND = rpc_ ) :: acceptable_residual_relative
+      REAL ( KIND = rpc_ ) :: acceptable_residual_absolute
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE uls_control_type
 
@@ -90,12 +90,12 @@
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: more_info
-      INTEGER ( KIND = long_ ) :: out_of_range
-      INTEGER ( KIND = long_ ) :: duplicates
-      INTEGER ( KIND = long_ ) :: entries_dropped
-      INTEGER ( KIND = long_ ) :: workspace_factors
+      INTEGER ( KIND = longc_ ) :: out_of_range
+      INTEGER ( KIND = longc_ ) :: duplicates
+      INTEGER ( KIND = longc_ ) :: entries_dropped
+      INTEGER ( KIND = longc_ ) :: workspace_factors
       INTEGER ( KIND = ipc_ ) :: compresses
-      INTEGER ( KIND = long_ ) :: entries_in_factors
+      INTEGER ( KIND = longc_ ) :: entries_in_factors
       INTEGER ( KIND = ipc_ ) :: rank
       INTEGER ( KIND = ipc_ ) :: structural_rank
       INTEGER ( KIND = ipc_ ) :: pivot_control
@@ -416,7 +416,7 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n, ne
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: val
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ne ) :: val
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
@@ -508,7 +508,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: m, n
   LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: ctrans
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( MAX( m, n ) ) :: sol
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( MAX( m, n ) ) :: sol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

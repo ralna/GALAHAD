@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -40,9 +40,9 @@
       INTEGER ( KIND = ipc_ ) :: termination
       INTEGER ( KIND = ipc_ ) :: max_nbr_transforms
       INTEGER ( KIND = ipc_ ) :: max_nbr_passes
-      REAL ( KIND = rp_ ) :: c_accuracy
-      REAL ( KIND = rp_ ) :: z_accuracy
-      REAL ( KIND = rp_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: c_accuracy
+      REAL ( KIND = rpc_ ) :: z_accuracy
+      REAL ( KIND = rpc_ ) :: infinity
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: errout
       INTEGER ( KIND = ipc_ ) :: print_level
@@ -83,9 +83,9 @@
 !     LOGICAL ( KIND = C_BOOL ) :: get_c_bounds
 !     LOGICAL ( KIND = C_BOOL ) :: get_y
 !     LOGICAL ( KIND = C_BOOL ) :: get_y_bounds
-      REAL ( KIND = rp_ ) :: pivot_tol
-      REAL ( KIND = rp_ ) :: min_rel_improve
-      REAL ( KIND = rp_ ) :: max_growth_factor
+      REAL ( KIND = rpc_ ) :: pivot_tol
+      REAL ( KIND = rpc_ ) :: min_rel_improve
+      REAL ( KIND = rpc_ ) :: max_growth_factor
     END TYPE presolve_control_type
 
     TYPE, BIND( C ) :: presolve_inform_type
@@ -413,17 +413,17 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( hne ) :: hval
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
 
 
 !  local variables
@@ -484,16 +484,16 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, ane
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( hne ), OPTIONAL :: hcol
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n + 1 ), OPTIONAL :: hptr
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( hne ) :: hval
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( ane ), OPTIONAL :: acol
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m + 1 ), OPTIONAL :: aptr
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
 
 !  local variables
 
@@ -534,10 +534,10 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n_in, m_in, n, m
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c, y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

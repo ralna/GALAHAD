@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -148,11 +148,11 @@
     END TYPE arc_control_type
 
     TYPE, BIND( C ) :: arc_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: preprocess
-      REAL ( KIND = sp_ ) :: analyse
-      REAL ( KIND = sp_ ) :: factorize
-      REAL ( KIND = sp_ ) :: solve
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: preprocess
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
       REAL ( KIND = rpc_ ) :: clock_total
       REAL ( KIND = rpc_ ) :: clock_preprocess
       REAL ( KIND = rpc_ ) :: clock_analyse
@@ -171,9 +171,9 @@
       INTEGER ( KIND = ipc_ ) :: h_eval
       INTEGER ( KIND = ipc_ ) :: factorization_max
       INTEGER ( KIND = ipc_ ) :: factorization_status
-      INTEGER ( KIND = long_ ) :: max_entries_factors
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
+      INTEGER ( KIND = longc_ ) :: max_entries_factors
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
       REAL ( KIND = rpc_ ) :: factorization_average
       REAL ( KIND = rpc_ ) :: obj
       REAL ( KIND = rpc_ ) :: norm_g
