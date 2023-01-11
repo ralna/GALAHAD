@@ -385,6 +385,7 @@ subdir('src/dqp')
 subdir('src/dlp')
 subdir('src/dps')
 subdir('src/eqp')
+subdir('src/demo')
 
 # subdir('src/cutest_functions')
 
