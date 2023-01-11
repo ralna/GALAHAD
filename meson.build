@@ -386,6 +386,7 @@ subdir('src/dlp')
 subdir('src/dps')
 subdir('src/eqp')
 subdir('src/demo')
+subdir('src/l1qp')
 
 # subdir('src/cutest_functions')
 
@@ -828,6 +829,12 @@ wsmpt_double = executable('wsmpt_double', 'src/external/wsmp/wsmpt.F90', fortran
 test('wsmp_single', wsmpt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('wsmp_double', wsmpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
+# Issue 56
+# l1qpt_single = executable('l1qpt_single', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('l1qp_single', l1qpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('l1qp_double', l1qpt_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # Issue 54
 # dlpt_single = executable('dlpt_c_single', 'src/dlp/dlpt.F90', c_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 dlpt_double = executable('dlpt_c_double', 'src/dlp/dlpt.F90', c_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1020,6 +1027,7 @@ executable('dqps2', 'src/dqp/dqps2.f90', link_with : libgalahad_double, install 
 executable('dqps3', 'src/dqp/dqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('eqps', 'src/eqp/eqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('eqps2', 'src/eqp/eqps.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
+executable('l1qp', 'src/l1qp/l1qps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 # Issue 55
 # executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
