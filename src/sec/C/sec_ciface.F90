@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -39,8 +39,8 @@
       INTEGER ( KIND = ipc_ ) :: error
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
-      REAL ( KIND = rp_ ) :: h_initial
-      REAL ( KIND = rp_ ) :: update_skip_tol
+      REAL ( KIND = rpc_ ) :: h_initial
+      REAL ( KIND = rpc_ ) :: update_skip_tol
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE sec_control_type
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -79,17 +79,17 @@
       INTEGER ( KIND = ipc_ ) :: new_a
       INTEGER ( KIND = ipc_ ) :: new_h
       INTEGER ( KIND = ipc_ ) :: sif_file_device
-      REAL ( KIND = rp_ ) :: pivot_tol
-      REAL ( KIND = rp_ ) :: pivot_tol_for_basis
-      REAL ( KIND = rp_ ) :: zero_pivot
-      REAL ( KIND = rp_ ) :: inner_fraction_opt
-      REAL ( KIND = rp_ ) :: radius
-      REAL ( KIND = rp_ ) :: min_diagonal
-      REAL ( KIND = rp_ ) :: max_infeasibility_relative
-      REAL ( KIND = rp_ ) :: max_infeasibility_absolute
-      REAL ( KIND = rp_ ) :: inner_stop_relative
-      REAL ( KIND = rp_ ) :: inner_stop_absolute
-      REAL ( KIND = rp_ ) :: inner_stop_inter
+      REAL ( KIND = rpc_ ) :: pivot_tol
+      REAL ( KIND = rpc_ ) :: pivot_tol_for_basis
+      REAL ( KIND = rpc_ ) :: zero_pivot
+      REAL ( KIND = rpc_ ) :: inner_fraction_opt
+      REAL ( KIND = rpc_ ) :: radius
+      REAL ( KIND = rpc_ ) :: min_diagonal
+      REAL ( KIND = rpc_ ) :: max_infeasibility_relative
+      REAL ( KIND = rpc_ ) :: max_infeasibility_absolute
+      REAL ( KIND = rpc_ ) :: inner_stop_relative
+      REAL ( KIND = rpc_ ) :: inner_stop_absolute
+      REAL ( KIND = rpc_ ) :: inner_stop_inter
       LOGICAL ( KIND = C_BOOL ) :: find_basis_by_transpose
       LOGICAL ( KIND = C_BOOL ) :: remove_dependencies
       LOGICAL ( KIND = C_BOOL ) :: space_critical
@@ -103,15 +103,15 @@
     END TYPE eqp_control_type
 
     TYPE, BIND( C ) :: eqp_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: find_dependent
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: solve
-      REAL ( KIND = rp_ ) :: solve_inter
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_find_dependent
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: find_dependent
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: solve_inter
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_find_dependent
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE eqp_time_type
 
     TYPE, BIND( C ) :: eqp_inform_type
@@ -120,9 +120,9 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: cg_iter
       INTEGER ( KIND = ipc_ ) :: cg_iter_inter
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
-      REAL ( KIND = rp_ ) :: obj
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
+      REAL ( KIND = rpc_ ) :: obj
       TYPE ( eqp_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -586,13 +586,13 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane, hne
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: c
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -623,14 +623,14 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: w
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: x0
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: c
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: x0
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -660,11 +660,11 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: c
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
