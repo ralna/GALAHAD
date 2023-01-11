@@ -383,6 +383,7 @@ subdir('src/bqp')
 subdir('src/cqp')
 subdir('src/dqp')
 subdir('src/dlp')
+subdir('src/dps')
 
 # subdir('src/cutest_functions')
 
@@ -598,6 +599,12 @@ mopt_single = executable('mopt_single', 'src/mop/mopt.F90', fortran_args : extra
 mopt_double = executable('mopt_double', 'src/mop/mopt.F90', fortran_args : extra_args_double, link_with : [libgalahad_double, libgalahad_blas], include_directories: libgalahad_include)
 test('mop_single', mopt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('mop_double', mopt_double, suite: ['fortran', 'double'], is_parallel : false)
+
+# Issue 55
+# dpst_single = executable('dpst_single', 'src/dps/dpst.F90', fortran_args : extra_args_single, link_with : [libgalahad_single, libgalahad_blas], include_directories: libgalahad_include)
+# dpst_double = executable('dpst_double', 'src/dps/dpst.F90', fortran_args : extra_args_double, link_with : [libgalahad_double, libgalahad_blas], include_directories: libgalahad_include)
+# test('dps_single', dpst_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('dps_double', dpst_double, suite: ['fortran', 'double'], is_parallel : false)
 
 sllst_single = executable('sllst_single', 'src/slls/sllst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 sllst_double = executable('sllst_double', 'src/slls/sllst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1000,6 +1007,11 @@ executable('dlps', 'src/dlp/dlps.f90', link_with : libgalahad_double, install : 
 executable('dqps', 'src/dqp/dqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dqps2', 'src/dqp/dqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dqps3', 'src/dqp/dqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+
+# Issue 55
+# executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
