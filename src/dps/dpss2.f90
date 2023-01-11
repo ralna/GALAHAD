@@ -1,5 +1,5 @@
    PROGRAM GALAHAD_DPS_EXAMPLE2  !  GALAHAD 3.0 - 23/03/2018 AT 07:30 GMT.
-   USE GALAHAD_DPS_DOUBLE                       ! double precision version
+   USE GALAHAD_DPS_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    INTEGER, PARAMETER :: n = 10                 ! problem dimension

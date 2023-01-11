@@ -23,7 +23,7 @@
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_single
 #define GALAHAD_DGO_precision GALAHAD_DGO_single
 #define GALAHAD_DLP_precision GALAHAD_DLP_single
-#define GALAHAD_DPS_PRECISION GALAHAD_DPS_single
+#define GALAHAD_DPS_precision GALAHAD_DPS_single
 #define GALAHAD_DQP_precision GALAHAD_DQP_single
 #define GALAHAD_EQP_precision GALAHAD_EQP_single
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_single
@@ -323,7 +323,7 @@
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_double
 #define GALAHAD_DGO_precision GALAHAD_DGO_double
 #define GALAHAD_DLP_precision GALAHAD_DLP_double
-#define GALAHAD_DPS_PRECISION GALAHAD_DPS_double
+#define GALAHAD_DPS_precision GALAHAD_DPS_double
 #define GALAHAD_DQP_precision GALAHAD_DQP_double
 #define GALAHAD_EQP_precision GALAHAD_EQP_double
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_double

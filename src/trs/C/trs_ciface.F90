@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -68,14 +68,14 @@
       INTEGER ( KIND = ipc_ ) :: max_factorizations
       INTEGER ( KIND = ipc_ ) :: inverse_itmax
       INTEGER ( KIND = ipc_ ) :: taylor_max_degree
-      REAL ( KIND = rp_ ) :: initial_multiplier
-      REAL ( KIND = rp_ ) :: lower
-      REAL ( KIND = rp_ ) :: upper
-      REAL ( KIND = rp_ ) :: stop_normal
-      REAL ( KIND = rp_ ) :: stop_absolute_normal
-      REAL ( KIND = rp_ ) :: stop_hard
-      REAL ( KIND = rp_ ) :: start_invit_tol
-      REAL ( KIND = rp_ ) :: start_invitmax_tol
+      REAL ( KIND = rpc_ ) :: initial_multiplier
+      REAL ( KIND = rpc_ ) :: lower
+      REAL ( KIND = rpc_ ) :: upper
+      REAL ( KIND = rpc_ ) :: stop_normal
+      REAL ( KIND = rpc_ ) :: stop_absolute_normal
+      REAL ( KIND = rpc_ ) :: stop_hard
+      REAL ( KIND = rpc_ ) :: start_invit_tol
+      REAL ( KIND = rpc_ ) :: start_invitmax_tol
       LOGICAL ( KIND = C_BOOL ) :: equality_problem
       LOGICAL ( KIND = C_BOOL ) :: use_initial_multiplier
       LOGICAL ( KIND = C_BOOL ) :: initialize_approx_eigenvector
@@ -91,33 +91,33 @@
     END TYPE trs_control_type
 
     TYPE, BIND( C ) :: trs_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: assemble
-      REAL ( KIND = rp_ ) :: analyse
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: solve
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_assemble
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: assemble
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_assemble
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE trs_time_type
 
     TYPE, BIND( C ) :: trs_history_type
-      REAL ( KIND = rp_ ) :: lambda
-      REAL ( KIND = rp_ ) :: x_norm
+      REAL ( KIND = rpc_ ) :: lambda
+      REAL ( KIND = rpc_ ) :: x_norm
     END TYPE trs_history_type
 
     TYPE, BIND( C ) :: trs_inform_type
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       INTEGER ( KIND = ipc_ ) :: factorizations
-      INTEGER ( KIND = long_ ) :: max_entries_factors
+      INTEGER ( KIND = longc_ ) :: max_entries_factors
       INTEGER ( KIND = ipc_ ) :: len_history
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: x_norm
-      REAL ( KIND = rp_ ) :: multiplier
-      REAL ( KIND = rp_ ) :: pole
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: x_norm
+      REAL ( KIND = rpc_ ) :: multiplier
+      REAL ( KIND = rpc_ ) :: pole
       LOGICAL ( KIND = C_BOOL ) :: dense_factorization
       LOGICAL ( KIND = C_BOOL ) :: hard_case
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
@@ -713,13 +713,13 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne, mne, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( mne ) :: mval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: radius, f
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), OPTIONAL, INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), OPTIONAL, INTENT( IN ), DIMENSION( mne ) :: mval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: radius, f
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( m ) :: y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -100,29 +100,29 @@
       INTEGER ( KIND = ipc_ ) :: series_order
       INTEGER ( KIND = ipc_ ) :: sif_file_device
       INTEGER ( KIND = ipc_ ) :: qplib_file_device
-      REAL ( KIND = rp_ ) :: infinity
-      REAL ( KIND = rp_ ) :: stop_abs_p
-      REAL ( KIND = rp_ ) :: stop_rel_p
-      REAL ( KIND = rp_ ) :: stop_abs_d
-      REAL ( KIND = rp_ ) :: stop_rel_d
-      REAL ( KIND = rp_ ) :: stop_abs_c
-      REAL ( KIND = rp_ ) :: stop_rel_c
-      REAL ( KIND = rp_ ) :: prfeas
-      REAL ( KIND = rp_ ) :: dufeas
-      REAL ( KIND = rp_ ) :: muzero
-      REAL ( KIND = rp_ ) :: tau
-      REAL ( KIND = rp_ ) :: gamma_c
-      REAL ( KIND = rp_ ) :: gamma_f
-      REAL ( KIND = rp_ ) :: reduce_infeas
-      REAL ( KIND = rp_ ) :: obj_unbounded
-      REAL ( KIND = rp_ ) :: potential_unbounded
-      REAL ( KIND = rp_ ) :: identical_bounds_tol
-      REAL ( KIND = rp_ ) :: mu_lunge
-      REAL ( KIND = rp_ ) :: indicator_tol_p
-      REAL ( KIND = rp_ ) :: indicator_tol_pd
-      REAL ( KIND = rp_ ) :: indicator_tol_tapia
-      REAL ( KIND = rp_ ) :: cpu_time_limit
-      REAL ( KIND = rp_ ) :: clock_time_limit
+      REAL ( KIND = rpc_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: stop_abs_p
+      REAL ( KIND = rpc_ ) :: stop_rel_p
+      REAL ( KIND = rpc_ ) :: stop_abs_d
+      REAL ( KIND = rpc_ ) :: stop_rel_d
+      REAL ( KIND = rpc_ ) :: stop_abs_c
+      REAL ( KIND = rpc_ ) :: stop_rel_c
+      REAL ( KIND = rpc_ ) :: prfeas
+      REAL ( KIND = rpc_ ) :: dufeas
+      REAL ( KIND = rpc_ ) :: muzero
+      REAL ( KIND = rpc_ ) :: tau
+      REAL ( KIND = rpc_ ) :: gamma_c
+      REAL ( KIND = rpc_ ) :: gamma_f
+      REAL ( KIND = rpc_ ) :: reduce_infeas
+      REAL ( KIND = rpc_ ) :: obj_unbounded
+      REAL ( KIND = rpc_ ) :: potential_unbounded
+      REAL ( KIND = rpc_ ) :: identical_bounds_tol
+      REAL ( KIND = rpc_ ) :: mu_lunge
+      REAL ( KIND = rpc_ ) :: indicator_tol_p
+      REAL ( KIND = rpc_ ) :: indicator_tol_pd
+      REAL ( KIND = rpc_ ) :: indicator_tol_tapia
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: remove_dependencies
       LOGICAL ( KIND = C_BOOL ) :: treat_zero_bounds_as_general
       LOGICAL ( KIND = C_BOOL ) :: just_feasible
@@ -147,18 +147,18 @@
     END TYPE lpb_control_type
 
     TYPE, BIND( C ) :: lpb_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: preprocess
-      REAL ( KIND = rp_ ) :: find_dependent
-      REAL ( KIND = rp_ ) :: analyse
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: solve
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_preprocess
-      REAL ( KIND = rp_ ) :: clock_find_dependent
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: preprocess
+      REAL ( KIND = rpc_ ) :: find_dependent
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_preprocess
+      REAL ( KIND = rpc_ ) :: clock_find_dependent
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE lpb_time_type
 
     TYPE, BIND( C ) :: lpb_inform_type
@@ -167,23 +167,23 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: factorization_status
-      INTEGER ( KIND = long_ ) :: factorization_integer
-      INTEGER ( KIND = long_ ) :: factorization_real
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
       INTEGER ( KIND = ipc_ ) :: nfacts
       INTEGER ( KIND = ipc_ ) :: nbacts
       INTEGER ( KIND = ipc_ ) :: threads
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: primal_infeasibility
-      REAL ( KIND = rp_ ) :: dual_infeasibility
-      REAL ( KIND = rp_ ) :: complementary_slackness
-      REAL ( KIND = rp_ ) :: init_primal_infeasibility
-      REAL ( KIND = rp_ ) :: init_dual_infeasibility
-      REAL ( KIND = rp_ ) :: init_complementary_slackness
-      REAL ( KIND = rp_ ) :: potential
-      REAL ( KIND = rp_ ) :: non_negligible_pivot
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: primal_infeasibility
+      REAL ( KIND = rpc_ ) :: dual_infeasibility
+      REAL ( KIND = rpc_ ) :: complementary_slackness
+      REAL ( KIND = rpc_ ) :: init_primal_infeasibility
+      REAL ( KIND = rpc_ ) :: init_dual_infeasibility
+      REAL ( KIND = rpc_ ) :: init_complementary_slackness
+      REAL ( KIND = rpc_ ) :: potential
+      REAL ( KIND = rpc_ ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       INTEGER ( KIND = ipc_ ), DIMENSION( 16 ) :: checkpointsIter
-      REAL ( KIND = rp_ ), DIMENSION( 16 ) :: checkpointsTime
+      REAL ( KIND = rpc_ ), DIMENSION( 16 ) :: checkpointsTime
       TYPE ( lpb_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -740,14 +740,14 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: y
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata

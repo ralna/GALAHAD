@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 07:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -60,15 +60,15 @@
       INTEGER ( KIND = ipc_ ) :: change_max
       INTEGER ( KIND = ipc_ ) :: cg_maxit
       INTEGER ( KIND = ipc_ ) :: sif_file_device
-      REAL ( KIND = rp_ ) :: infinity
-      REAL ( KIND = rp_ ) :: stop_p
-      REAL ( KIND = rp_ ) :: stop_d
-      REAL ( KIND = rp_ ) :: stop_c
-      REAL ( KIND = rp_ ) :: identical_bounds_tol
-      REAL ( KIND = rp_ ) :: stop_cg_relative
-      REAL ( KIND = rp_ ) :: stop_cg_absolute
-      REAL ( KIND = rp_ ) :: zero_curvature
-      REAL ( KIND = rp_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: stop_p
+      REAL ( KIND = rpc_ ) :: stop_d
+      REAL ( KIND = rpc_ ) :: stop_c
+      REAL ( KIND = rpc_ ) :: identical_bounds_tol
+      REAL ( KIND = rpc_ ) :: stop_cg_relative
+      REAL ( KIND = rpc_ ) :: stop_cg_absolute
+      REAL ( KIND = rpc_ ) :: zero_curvature
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: exact_arcsearch
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
@@ -79,10 +79,10 @@
     END TYPE bqp_control_type
 
     TYPE, BIND( C ) :: bqp_time_type
-      REAL ( KIND = sp_ ) :: total
-      REAL ( KIND = sp_ ) :: analyse
-      REAL ( KIND = sp_ ) :: factorize
-      REAL ( KIND = sp_ ) :: solve
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
     END TYPE bqp_time_type
 
     TYPE, BIND( C ) :: bqp_inform_type
@@ -91,8 +91,8 @@
       INTEGER ( KIND = ipc_ ) :: factorization_status
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: cg_iter
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: norm_pg
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: norm_pg
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( bqp_time_type ) :: time
       TYPE ( sbls_inform_type ) :: sbls_inform
@@ -560,11 +560,11 @@
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, hne
-  REAL ( KIND = rp_ ), DIMENSION( hne ), INTENT( IN ) :: hval
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rpc_ ), DIMENSION( hne ), INTENT( IN ) :: hval
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
 
 !  local variables
@@ -599,17 +599,17 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
-  REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
+  REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_prod_end
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n ) :: nz_prod
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: nz_v
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: prod
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: v
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: prod
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: v
 
 !  local variables
 

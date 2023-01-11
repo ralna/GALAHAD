@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -69,29 +69,29 @@
       INTEGER ( KIND = ipc_ ) :: infeas_max
       INTEGER ( KIND = ipc_ ) :: perturbation_strategy
       INTEGER ( KIND = ipc_ ) :: restore_problem
-      REAL ( KIND = rp_ ) :: infinity
-      REAL ( KIND = rp_ ) :: stop_p
-      REAL ( KIND = rp_ ) :: stop_d
-      REAL ( KIND = rp_ ) :: stop_c
-      REAL ( KIND = rp_ ) :: prfeas
-      REAL ( KIND = rp_ ) :: dufeas
-      REAL ( KIND = rp_ ) :: mu_target
-      REAL ( KIND = rp_ ) :: mu_accept_fraction
-      REAL ( KIND = rp_ ) :: mu_increase_factor
-      REAL ( KIND = rp_ ) :: required_infeas_reduction
-      REAL ( KIND = rp_ ) :: implicit_tol
-      REAL ( KIND = rp_ ) :: pivot_tol
-      REAL ( KIND = rp_ ) :: pivot_tol_for_dependencies
-      REAL ( KIND = rp_ ) :: zero_pivot
-      REAL ( KIND = rp_ ) :: perturb_start
-      REAL ( KIND = rp_ ) :: alpha_scale
-      REAL ( KIND = rp_ ) :: identical_bounds_tol
-      REAL ( KIND = rp_ ) :: reduce_perturb_factor
-      REAL ( KIND = rp_ ) :: reduce_perturb_multiplier
-      REAL ( KIND = rp_ ) :: insufficiently_feasible
-      REAL ( KIND = rp_ ) :: perturbation_small
-      REAL ( KIND = rp_ ) :: cpu_time_limit
-      REAL ( KIND = rp_ ) :: clock_time_limit
+      REAL ( KIND = rpc_ ) :: infinity
+      REAL ( KIND = rpc_ ) :: stop_p
+      REAL ( KIND = rpc_ ) :: stop_d
+      REAL ( KIND = rpc_ ) :: stop_c
+      REAL ( KIND = rpc_ ) :: prfeas
+      REAL ( KIND = rpc_ ) :: dufeas
+      REAL ( KIND = rpc_ ) :: mu_target
+      REAL ( KIND = rpc_ ) :: mu_accept_fraction
+      REAL ( KIND = rpc_ ) :: mu_increase_factor
+      REAL ( KIND = rpc_ ) :: required_infeas_reduction
+      REAL ( KIND = rpc_ ) :: implicit_tol
+      REAL ( KIND = rpc_ ) :: pivot_tol
+      REAL ( KIND = rpc_ ) :: pivot_tol_for_dependencies
+      REAL ( KIND = rpc_ ) :: zero_pivot
+      REAL ( KIND = rpc_ ) :: perturb_start
+      REAL ( KIND = rpc_ ) :: alpha_scale
+      REAL ( KIND = rpc_ ) :: identical_bounds_tol
+      REAL ( KIND = rpc_ ) :: reduce_perturb_factor
+      REAL ( KIND = rpc_ ) :: reduce_perturb_multiplier
+      REAL ( KIND = rpc_ ) :: insufficiently_feasible
+      REAL ( KIND = rpc_ ) :: perturbation_small
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: remove_dependencies
       LOGICAL ( KIND = C_BOOL ) :: treat_zero_bounds_as_general
       LOGICAL ( KIND = C_BOOL ) :: just_feasible
@@ -107,18 +107,18 @@
     END TYPE wcp_control_type
 
     TYPE, BIND( C ) :: wcp_time_type
-      REAL ( KIND = rp_ ) :: total
-      REAL ( KIND = rp_ ) :: preprocess
-      REAL ( KIND = rp_ ) :: find_dependent
-      REAL ( KIND = rp_ ) :: analyse
-      REAL ( KIND = rp_ ) :: factorize
-      REAL ( KIND = rp_ ) :: solve
-      REAL ( KIND = rp_ ) :: clock_total
-      REAL ( KIND = rp_ ) :: clock_preprocess
-      REAL ( KIND = rp_ ) :: clock_find_dependent
-      REAL ( KIND = rp_ ) :: clock_analyse
-      REAL ( KIND = rp_ ) :: clock_factorize
-      REAL ( KIND = rp_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: preprocess
+      REAL ( KIND = rpc_ ) :: find_dependent
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_preprocess
+      REAL ( KIND = rpc_ ) :: clock_find_dependent
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE wcp_time_type
 
     TYPE, BIND( C ) :: wcp_inform_type
@@ -134,9 +134,9 @@
       INTEGER ( KIND = ipc_ ) :: x_implicit
       INTEGER ( KIND = ipc_ ) :: y_implicit
       INTEGER ( KIND = ipc_ ) :: z_implicit
-      REAL ( KIND = rp_ ) :: obj
-      REAL ( KIND = rp_ ) :: mu_final_target_max
-      REAL ( KIND = rp_ ) :: non_negligible_pivot
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: mu_final_target_max
+      REAL ( KIND = rpc_ ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       TYPE ( wcp_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
@@ -641,13 +641,13 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
-  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x, zl, zu
-  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: yl, yu
-  REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, zl, zu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: yl, yu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata

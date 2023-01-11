@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 09:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -39,9 +39,9 @@
       INTEGER ( KIND = ipc_ ) :: error
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
-      REAL ( KIND = rp_ ) :: tol
-      REAL ( KIND = rp_ ) :: zero_coef
-      REAL ( KIND = rp_ ) :: zero_f
+      REAL ( KIND = rpc_ ) :: tol
+      REAL ( KIND = rpc_ ) :: zero_coef
+      REAL ( KIND = rpc_ ) :: zero_f
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
