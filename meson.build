@@ -836,10 +836,10 @@ l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : e
 test('l1qp_double', l1qpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
 # Issue 54
-# dlpt_single = executable('dlpt_c_single', 'src/dlp/dlpt.F90', c_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-dlpt_double = executable('dlpt_c_double', 'src/dlp/dlpt.F90', c_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('dlp_single', dlpt_single, suite: ['Fortran', 'single'], is_parallel : false)
-test('dlp_double', dlpt_double, suite: ['Fortran', 'double'], is_parallel : false)
+dlpt_single = executable('dlpt_c_single', 'src/dlp/dlpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+dlpt_double = executable('dlpt_c_double', 'src/dlp/dlpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('dlp_single', dlpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('dlp_double', dlpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
 dqpt_single = executable('dqpt_single', 'src/dqp/dqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 dqpt_double = executable('dqpt_double', 'src/dqp/dqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
