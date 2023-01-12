@@ -97,7 +97,7 @@
 
        INTEGER ( KIND = ip_ ) :: max_sparse_degree = 50
 
-!  if available use an addition extra_differences differences 
+!  if available use an addition extra_differences differences
 
        INTEGER ( KIND = ip_ ) :: extra_differences = 0
 
@@ -1029,9 +1029,9 @@
 !   SHA_analyse and should not have been changed since the last call to
 !   SHA_analyse. Additional arguments are
 
-!     m_available is the number of differences provided; ideally this should 
+!     m_available is the number of differences provided; ideally this should
 !       be as large as inform%differences_needed computed by sha_analyse
-!     RD(i), i=1:m gives the index of the column of S and Y of the i-th 
+!     RD(i), i=1:m gives the index of the column of S and Y of the i-th
 !       most recent differences
 !     ls1, ls2 are the declared leading and trailing dimensions of S
 !     S(i,j) (i=1:n,j=RD(1:m_avaiable)) are the steps
@@ -1151,12 +1151,12 @@
              array_name = array_name,                                          &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )            
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900                      
-        END IF                                                              
-                                                                            
-!  allocate space to hold a copy of b if needed                             
-                                                                            
+             bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+
+!  allocate space to hold a copy of b if needed
+
         IF ( data%lb_save < m_needed ) THEN
           data%lb_save = m_max
           array_name = 'SHA: data%B_save'
@@ -1165,12 +1165,12 @@
                  array_name = array_name,                                      &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
                  exact_size = control%space_critical,                          &
-                 bad_alloc = inform%bad_alloc, out = control%error )         
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900                       
-        END IF                                                               
-                                                                             
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+
 !  discover how much additional temporary real storage may be needed by LU / LQ
-                                                                             
+
         IF ( control%dense_linear_solver == 1 ) THEN
           liwork = min_mn
         ELSE IF ( control%dense_linear_solver == 2 ) THEN
@@ -1336,7 +1336,7 @@
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i, info )
 
-!  if A appears to be singular, add an extra row if there is one, and 
+!  if A appears to be singular, add an extra row if there is one, and
 !  solve the system as a least-squares problem
 
           IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
