@@ -357,7 +357,6 @@ subdir('src/lsp')
 subdir('src/miqr')
 subdir('src/opt')
 subdir('src/trans')
-# subdir('src/ptrans') # needs CUTEst interface
 subdir('src/qpp')
 subdir('src/scale')
 subdir('src/scaling')
@@ -366,7 +365,6 @@ subdir('src/scaling')
 subdir('src/gls')
 subdir('src/sils')
 
-# TODO: ssids
 subdir('src/sls')
 subdir('src/uls')
 subdir('src/sbls')
@@ -392,11 +390,14 @@ subdir('src/eqp')
 subdir('src/demo')
 subdir('src/l1qp')
 
+# needs CUTEst interface
+# subdir('src/ptrans')
 # subdir('src/cutest_functions')
 
 subdir('src/lancelot')
 subdir('src/lancelot_simple')
 subdir('src/filtrane')
+subdir('src/psls')
 
 # subdir('src/ssids')
 
@@ -405,9 +406,6 @@ subdir('src/filtrane')
 
 # BGO requires TRB
 # subdir('src/bgo')
-
-# PSLS requires LANCELOT
-# subdir('src/psls')
 
 # ARC requires PSLS
 # subdir('src/arc')
@@ -420,7 +418,7 @@ subdir('src/filtrane')
 
 libgalahad_single = library('galahad_single',
                     sources : libgalahad_src,
-                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
+                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single, libgalahad_hsl_double,
                                  libpardiso, libmkl_pardiso, libspral_ssids_single, libmumps_single,
                                  libspmf, libwsmp, libpastix_single, libgalahad_metis],
                     dependencies : libgalahad_deps,
@@ -793,14 +791,14 @@ test('wcp1_double', wcpt_double, suite: ['fortran', 'double'], is_parallel : fal
 test('wcp2_single', wcpti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('wcp2_double', wcpti_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# pslsti_double = executable('pslsti_double', 'src/psls/pslsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('psls1_single', pslst_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : false)
-# test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
+pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+pslsti_double = executable('pslsti_double', 'src/psls/pslsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('psls1_single', pslst_single, suite: ['fortran', 'single'], is_parallel : false)
+test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : false)
+test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 sblst_single = executable('sblst_single', 'src/sbls/sblst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 sblst_double = executable('sblst_double', 'src/sbls/sblst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1008,7 +1006,7 @@ executable('sls', 'src/sls/slss.f90', link_with : libgalahad_double, install : t
 executable('uls', 'src/uls/ulss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('sbls', 'src/sbls/sblss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('ir', 'src/ir/irs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('psls', 'src/psls/pslss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('psls', 'src/psls/pslss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trs', 'src/trs/trss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trs2', 'src/trs/trss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('icfs', 'src/icfs/icfss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
