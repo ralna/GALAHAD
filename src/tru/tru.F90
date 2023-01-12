@@ -2363,7 +2363,7 @@
 !  compute the new Hessian estimates
 
              CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,         &
-                                data%max_diffs, data%total_diffs, data%PAST,   &
+                                data%total_diffs, data%PAST,                   &
                                 nlp%n, data%total_diffs, data%DX_past,         &
                                 nlp%n, data%total_diffs, data%DG_past,         &
                                 data%VAL_est, data%SHA_data,                   &
@@ -2382,7 +2382,7 @@
                  ELSE
                    WRITE(6,*) ' diff ', MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) - &
                                                 data%VAL_est( : nlp%H%ne ) ) / &
-                                 MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) )
+                                 MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ))
                  END IF
                END IF
                nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
