@@ -380,8 +380,8 @@ ulinearsolver_single: $($(ULINEARSOLVERS))
 ulinearsolver_double: $($(ULINEARSOLVERD))
 	$(RANLIB) $(LGD)
 
-SSIDSS = symbols_silent $(RLGS)(ssidss.o)
-SSIDSD = symbols_silent $(RLGD)(ssidsd.o)
+SSIDSS = symbols_silent $(RLGS)(ssids.o)
+SSIDSD = symbols_silent $(RLGD)(ssids.o)
 
 PARDISOS = symbols_silent $(PLGS)(pardiso.o)
 PARDISOD = symbols_silent $(PLGD)(pardiso.o)
@@ -423,28 +423,28 @@ ssids:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
 
-ssidss.o: $(RLG)(ssidss.o)
+ssidss.o: $(RLGS)(ssids.o)
 
-$(RLG)(ssidss.o): ../dum/ssidss.F90
+$(RLGS)(ssids.o): ../dum/ssidss.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
-	$(CP) ../dum/ssidss.F90 $(OBJ)/ssidss.F90
-	cd $(OBJ); $(FORTRAN) -o ssidss.o $(FFLAGS) ssidss.F90
-	cd $(OBJ); $(RARR) ssidss.o ; $(RM) ssidss.F90 ssidss.o
+	$(CP) ../dum/ssidss.F90 $(OBJ)/ssids.F90
+	cd $(OBJ); $(FORTRAN) -o ssids.o $(FFLAGS) ssids.F90
+	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
 	$(MVMODS)
 	$(RMARFILE) sls.o
-	$(RANLIB) $(RLG)
+	$(RANLIB) $(RLGS)
 	@printf '[ OK ]\n'
 
-ssidsd.o: $(RLG)(ssidsd.o)
+ssidsd.o: $(RLGD)(ssids.o)
 
-$(RLG)(ssidsd.o): ../dum/ssidsd.F90
+$(RLGD)(ssids.o): ../dum/ssidsd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
-	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssidsd.F90
-	cd $(OBJ); $(FORTRAN) -o ssidsd.o $(FFLAGS) ssidsd.F90
-	cd $(OBJ); $(RARR) ssidsd.o ; $(RM) ssidsd.F90 ssidsd.o
+	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssids.F90
+	cd $(OBJ); $(FORTRAN) -o ssidd.o $(FFLAGS) ssids.F90
+	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
 	$(MVMODS)
 	$(RMARFILE) sls.o
-	$(RANLIB) $(RLG)
+	$(RANLIB) $(RLGD)
 	@printf '[ OK ]\n'
 
 ssids_ciface.o: $(CLG)(ssids_ciface.o)

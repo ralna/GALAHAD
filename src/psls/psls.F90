@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 08:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -437,6 +437,42 @@
         INTEGER ( KIND = ip_ ) :: INFO_iccg( 10 )
         REAL ( KIND = rp_ ) :: CNTL_iccg( 3 )
       END TYPE PSLS_save_type
+
+!--------------------------------
+!   I n t e r f a c e  B l o c k
+!--------------------------------
+
+      INTERFACE MC61A
+        SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
+                          ICNTL, CNTL, INFO, RINFO )
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
+        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
+        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
+        INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
+        INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+        REAL ( KIND = sp_ ), DIMENSION( n ), INTENT( OUT ) :: W
+        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+        REAL ( KIND = sp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
+        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+        REAL ( KIND = sp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
+        END SUBROUTINE MC61A
+
+        SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,         &
+                           ICNTL, CNTL, INFO, RINFO )
+        USE GALAHAD_KINDS
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
+        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
+        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
+        INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
+        INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
+        REAL ( KIND = dp_ ), DIMENSION( n ), INTENT( OUT ) :: W
+        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
+        REAL ( KIND = dp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
+        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
+        REAL ( KIND = dp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
+        END SUBROUTINE MC61AD
+      END INTERFACE MC61A
 
    CONTAINS
 
@@ -1632,10 +1668,10 @@
 
           IF ( control%print_level <= 0 .OR. control%out <= 0 )                &
             data%mc61_ICNTL( 1 : 2 ) = - 1
-            CALL MC61AD( 2, data%n_sub, data%mc61_lirn,                        &
-                         data%P_row, data%P_colptr, data%PERM, data%mc61_liw,  &
-                         data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,     &
-                         inform%mc61_info, inform%mc61_rinfo )
+            CALL MC61A( 2, data%n_sub, data%mc61_lirn,                         &
+                        data%P_row, data%P_colptr, data%PERM, data%mc61_liw,   &
+                        data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,      &
+                        inform%mc61_info, inform%mc61_rinfo )
 
           IF ( inform%mc61_info( 1 ) == GALAHAD_unavailable_option ) THEN
             IF ( control%print_level > 0 .AND. control%out > 0 )               &
@@ -3493,10 +3529,10 @@
 
           IF ( control%print_level <= 0 .OR. control%out <= 0 )                &
             data%mc61_ICNTL( 1 : 2 ) = - 1
-          CALL MC61AD( 2, data%n_sub, data%mc61_lirn,                          &
-                       data%P_row, data%P_colptr, data%PERM, data%mc61_liw,    &
-                       data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,       &
-                       inform%mc61_info, inform%mc61_rinfo )
+          CALL MC61A( 2, data%n_sub, data%mc61_lirn,                           &
+                      data%P_row, data%P_colptr, data%PERM, data%mc61_liw,     &
+                      data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,        &
+                      inform%mc61_info, inform%mc61_rinfo )
 
 !write(6,*) ' perm ', data%PERM
           IF ( inform%mc61_info( 1 ) == GALAHAD_unavailable_option ) THEN
