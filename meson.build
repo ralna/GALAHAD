@@ -397,9 +397,7 @@ subdir('src/filtrane')
 subdir('src/psls')
 subdir('src/trb')
 subdir('src/tru')
-
-# BGO requires TRB
-# subdir('src/bgo')
+subdir('src/bgo')
 
 # ARC requires PSLS
 # subdir('src/arc')
@@ -875,6 +873,15 @@ test('eqp1_double', eqpt_double, suite: ['fortran', 'double'], is_parallel : fal
 test('eqp2_single', eqpti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('eqp2_double', eqpti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+bgot_single = executable('bgot_single', 'src/bgo/bgot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+bgot_double = executable('bgot_double', 'src/bgo/bgot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+bgoti_single = executable('bgoti_single', 'src/bgo/bgoti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+bgoti_double = executable('bgoti_double', 'src/bgo/bgoti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('bgo1_single', bgot_single, suite: ['fortran', 'single'], is_parallel : false)
+test('bgo1_double', bgot_double, suite: ['fortran', 'double'], is_parallel : false)
+test('bgo2_single', bgoti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('bgo2_double', bgoti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 # nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 # nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1062,6 +1069,8 @@ executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install 
 executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # Issue 61
 # executable('trus4', 'src/tru/trus4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('bgos', 'src/bgo/bgos.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('bgos2', 'src/bgo/bgos2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
