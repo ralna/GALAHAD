@@ -149,20 +149,21 @@
 !...............................................................................
 !
        SUBROUTINE FUN ( X, F, i )
+       USE GALAHAD_KINDS
        REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT )  :: F
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
        IF ( .NOT. PRESENT( i ) ) THEN
 !         the objective function value (user defined)
 !===============================================================================
-          F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                     !
+          F = 100.0_rp_*(X(2)-X(1)**2)**2 +(1.0_rp_-X(1))**2                   !
 !===============================================================================
        ELSE
           SELECT CASE ( i )
           CASE ( 1 )
 !             the equality constraint value (user defined)
 !===============================================================================
-              F = X(1)+3.0_wp*X(2)-3.0_rp_                                     !
+              F = X(1)+3.0_rp_*X(2)-3.0_rp_                                    !
 !===============================================================================
           CASE ( 2 )
 !             the inequality constraint value (user defined)
@@ -177,14 +178,15 @@
 !...............................................................................
 !
        SUBROUTINE GRAD( X, G, i )
+       USE GALAHAD_KINDS
        REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT ) :: G( : )
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i
        IF ( .NOT. PRESENT( i ) ) THEN
 !          the objective functions's gradient components (user defined)
 !===============================================================================
-           G( 1 ) = -400.0_wp*(X(2)-X(1)**2)*X(1)-2.0_wp*(1.0_wp-X(1))         !
-           G( 2 ) =  200.0_wp*(X(2)-X(1)**2)                                   !
+           G( 1 ) = -400.0_rp_*(X(2)-X(1)**2)*X(1)-2.0_rp_*(1.0_rp_-X(1))      !
+           G( 2 ) =  200.0_rp_*(X(2)-X(1)**2)                                  !
 !===============================================================================
        ELSE
           SELECT CASE ( i )
@@ -197,8 +199,8 @@
           CASE ( 2 )
 !            the inequality constraint's gradient components (user defined)
 !===============================================================================
-              G( 1 ) =  2.0_wp*X(1)                                            !
-              G( 2 ) =  2.0_wp*X(2)                                            !
+              G( 1 ) =  2.0_rp_*X(1)                                           !
+              G( 2 ) =  2.0_rp_*X(2)                                           !
 !===============================================================================
           END SELECT
        END IF
@@ -208,6 +210,7 @@
 !...............................................................................
 !
        SUBROUTINE HESS( X, H, i )
+       USE GALAHAD_KINDS
        REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT ) :: H( : )
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i
@@ -215,8 +218,8 @@
 !        the entries of the upper triangle of the objective function's
 !        Hessian  matrix, stored by columns (user defined)
 !===============================================================================
-          H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_rp_                     !
-          H( 2 ) = -400.0_wp*X(1)                                              !
+          H( 1 ) = -400.0_rp_*(X(2)-3.0_rp_*X(1)**2)+2.0_rp_                   !
+          H( 2 ) = -400.0_rp_*X(1)                                             !
           H( 3 ) =  200.0_rp_                                                  !
 !===============================================================================
        ELSE
