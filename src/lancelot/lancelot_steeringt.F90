@@ -27,7 +27,7 @@
    END SELECT
    RETURN
    END SUBROUTINE RANGE1
-  
+
    SUBROUTINE ELFUN1( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,          &
                       IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,          &
                       lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,          &
@@ -49,7 +49,7 @@
    REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3, cs, sn
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -93,12 +93,12 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN1
-   
+
    SUBROUTINE ELFUN1_flexible( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
                                IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
                                lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
                                lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
-                               ifstat ) 
+                               ifstat )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
@@ -118,7 +118,7 @@
    REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3, cs, sn
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -166,19 +166,19 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN1_flexible
-   
+
    SUBROUTINE GROUP1( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs                                          
+   LOGICAL, INTENT( IN ) :: derivs
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
    INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
@@ -234,10 +234,10 @@
    SELECT CASE ( ieltyp )
    CASE ( 2 ) ! Element type 2 has a non-trivial transformation
      IF ( TRANSP ) THEN
-       W2( 1 ) =   W1( 1 ) 
-       W2( 2 ) =   W1( 1 ) 
+       W2( 1 ) =   W1( 1 )
+       W2( 2 ) =   W1( 1 )
      ELSE
-       W2( 1 ) =   W1( 1 ) + W1( 2 ) 
+       W2( 1 ) =   W1( 1 ) + W1( 2 )
      END IF
    CASE DEFAULT ! Other elements have trivial transformations - no action needed
    END SELECT
@@ -261,10 +261,10 @@
    REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
    INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
    INTEGER ( KIND = ip_ ) :: jcalcf
-   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy    
+   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy
    ifstat = 0
    DO JCALCF = 1, NCALCF
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -274,47 +274,47 @@
      CASE ( 1 )
        x = XVALUE( IELVAR( ilstrt + 1 ) )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = x * x                                    
+         FUVALS( ielemn ) = x * x
        ELSE
-         FUVALS( igstrt + 1 ) = x + x                                    
+         FUVALS( igstrt + 1 ) = x + x
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0
        END IF
      CASE ( 2 )
        y = XVALUE( IELVAR( ilstrt + 1 ) )
        z = XVALUE( IELVAR( ilstrt + 2 ) )
        p = EPVALU( ipstrt + 1 )
-       x = y + z     
+       x = y + z
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn )= p * x * x                                
+         FUVALS( ielemn )= p * x * x
        ELSE
-         FUVALS( igstrt + 1 ) = p * ( x + x )                            
+         FUVALS( igstrt + 1 ) = p * ( x + x )
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0 * p
         END IF
      CASE ( 3 )
        x    = XVALUE( IELVAR( ilstrt + 1 ) )
-       sinx = SIN( x )                                 
-       cosx = COS( x )                                 
+       sinx = SIN( x )
+       cosx = COS( x )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = sinx * sinx                              
+         FUVALS( ielemn ) = sinx * sinx
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx                        
+         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx
          IF ( ifflag == 3 )                                                    &
-           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )      
+           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )
         END IF
      CASE ( 4 )
        x  = XVALUE( IELVAR( ilstrt + 1 ) )
        y  = XVALUE( IELVAR( ilstrt + 2 ) )
-       xx = x * x                                    
-       yy = y * y                                    
+       xx = x * x
+       yy = y * y
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = xx * yy                                  
+         FUVALS( ielemn ) = xx * yy
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * x * yy                             
-         FUVALS( igstrt + 2 ) = 2.0 * xx * y                             
+         FUVALS( igstrt + 1 ) = 2.0 * x * yy
+         FUVALS( igstrt + 2 ) = 2.0 * xx * y
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 2.0 * yy                                 
-           FUVALS( ihstrt + 2 ) = 4.0 * x * y                              
-           FUVALS( ihstrt + 3 ) = 2.0 * xx                                 
+           FUVALS( ihstrt + 1 ) = 2.0 * yy
+           FUVALS( ihstrt + 2 ) = 4.0 * x * y
+           FUVALS( ihstrt + 3 ) = 2.0 * xx
          END IF
        END IF
      END SELECT
@@ -340,10 +340,10 @@
    REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
    INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
    INTEGER ( KIND = ip_ ) :: jcalcf
-   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy    
+   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy
    ifstat = 0
    DO JCALCF = 1, NCALCF
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -353,47 +353,47 @@
      CASE ( 1 )
        x = XVALUE( IELVAR( ilstrt + 1 ) )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = x * x                                    
+         FUVALS( ielemn ) = x * x
        ELSE
-         FUVALS( igstrt + 1 ) = x + x                                    
+         FUVALS( igstrt + 1 ) = x + x
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0
        END IF
      CASE ( 2 )
        y = XVALUE( IELVAR( ilstrt + 1 ) )
        z = XVALUE( IELVAR( ilstrt + 2 ) )
        p = EPVALU( ipstrt + 1 )
-       x = y + z     
+       x = y + z
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn )= p * x * x                                
+         FUVALS( ielemn )= p * x * x
        ELSE
-         FUVALS( igstrt + 1 ) = p * ( x + x )                            
+         FUVALS( igstrt + 1 ) = p * ( x + x )
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0 * p
         END IF
      CASE ( 3 )
        x    = XVALUE( IELVAR( ilstrt + 1 ) )
-       sinx = SIN( x )                                 
-       cosx = COS( x )                                 
+       sinx = SIN( x )
+       cosx = COS( x )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = sinx * sinx                              
+         FUVALS( ielemn ) = sinx * sinx
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx                        
+         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx
          IF ( ifflag == 3 )                                                    &
-           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )      
+           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )
         END IF
      CASE ( 4 )
        x  = XVALUE( IELVAR( ilstrt + 1 ) )
        y  = XVALUE( IELVAR( ilstrt + 2 ) )
-       xx = x * x                                    
-       yy = y * y                                    
+       xx = x * x
+       yy = y * y
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = xx * yy                                  
+         FUVALS( ielemn ) = xx * yy
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * x * yy                             
-         FUVALS( igstrt + 2 ) = 2.0 * xx * y                             
+         FUVALS( igstrt + 1 ) = 2.0 * x * yy
+         FUVALS( igstrt + 2 ) = 2.0 * xx * y
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 2.0 * yy                                 
-           FUVALS( ihstrt + 2 ) = 4.0 * x * y                              
-           FUVALS( ihstrt + 3 ) = 2.0 * xx                                 
+           FUVALS( ihstrt + 1 ) = 2.0 * yy
+           FUVALS( ihstrt + 2 ) = 4.0 * x * y
+           FUVALS( ihstrt + 3 ) = 2.0 * xx
          END IF
        END IF
      END SELECT
@@ -404,20 +404,20 @@
 
    SUBROUTINE GROUP2( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs                                          
+   LOGICAL, INTENT( IN ) :: derivs
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
    INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = rp_ ) :: gvar  , p     
+   REAL ( KIND = rp_ ) :: gvar  , p
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -428,19 +428,19 @@
      CASE ( 1 )
        gvar  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = gvar                                     
+        GVALUE( igroup, 1 ) = gvar
        ELSE
-        GVALUE( igroup, 2 ) = 1.0                                      
-        GVALUE( igroup, 3 ) = 0.0                                      
+        GVALUE( igroup, 2 ) = 1.0
+        GVALUE( igroup, 3 ) = 0.0
        END IF
      CASE ( 2 )
        gvar = FVALUE( igroup )
        p    = GPVALU( ipstrt + 1 )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = p * gvar * gvar                          
+        GVALUE( igroup, 1 ) = p * gvar * gvar
        ELSE
-        GVALUE( igroup, 2 ) = p * ( gvar + gvar )                      
-        GVALUE( igroup, 3 ) = 2.0 * p                                  
+        GVALUE( igroup, 2 ) = p * ( gvar + gvar )
+        GVALUE( igroup, 3 ) = 2.0 * p
        END IF
      END SELECT
    END DO
@@ -449,20 +449,20 @@
 
    SUBROUTINE GROUP2E( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                 &
                        ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                 &
-                       lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+                       lcalcg, lfvalu, lgpvlu, derivs, igstat )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs                                          
+   LOGICAL, INTENT( IN ) :: derivs
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
    INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = rp_ ) :: gvar  , p     
+   REAL ( KIND = rp_ ) :: gvar  , p
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -473,19 +473,19 @@
      CASE ( 1 )
        gvar  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = gvar                                     
+        GVALUE( igroup, 1 ) = gvar
        ELSE
         GVALUE( igroup, 2 ) = 0.5
-        GVALUE( igroup, 3 ) = 0.0                                      
+        GVALUE( igroup, 3 ) = 0.0
        END IF
      CASE ( 2 )
        gvar = FVALUE( igroup )
        p    = GPVALU( ipstrt + 1 )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = p * gvar * gvar                          
+        GVALUE( igroup, 1 ) = p * gvar * gvar
        ELSE
-        GVALUE( igroup, 2 ) = - p * ( gvar + gvar )                      
-        GVALUE( igroup, 3 ) = 2.0 * p                                  
+        GVALUE( igroup, 2 ) = - p * ( gvar + gvar )
+        GVALUE( igroup, 3 ) = 2.0 * p
        END IF
      END SELECT
    END DO
@@ -517,7 +517,7 @@
    END SELECT
    RETURN
    END SUBROUTINE RANGE3
-  
+
    SUBROUTINE ELFUN3( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,          &
                       IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,          &
                       lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,          &
@@ -539,7 +539,7 @@
    REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -581,7 +581,7 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN3
-   
+
    SUBROUTINE ELFUN3_flexible( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
                                IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
                                lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
@@ -606,7 +606,7 @@
    REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf ) 
+     ielemn = ICALCF( jcalcf )
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -652,19 +652,19 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN3_flexible
-   
+
    SUBROUTINE GROUP3( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs                                          
+   LOGICAL, INTENT( IN ) :: derivs
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
-   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
    INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
@@ -797,7 +797,7 @@
 
 !  Test error returns
 
-   WRITE( 6, "( /, ' Testing error retuns ...', / )" ) 
+   WRITE( 6, "( /, ' Testing error retuns ...', / )" )
 
 !  DO run = 1, 0
    DO run = 1, 17
@@ -873,7 +873,7 @@
            prob, RANGE2, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG,   &
           IVAR, Q, DGRAD, control, info, data, ELFUN = ELFUN2E, GROUP = GROUP2)
      ELSE IF ( run == 14 ) THEN
-       DO 
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE2, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data, ELFUN = ELFUN2 )
@@ -886,13 +886,13 @@
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
            CALL GROUP2( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
      ELSE IF ( run == 16 ) THEN
        ELDERS( 1, : ) = - 1 ; ELDERS( 2, : ) = - 1
@@ -937,7 +937,7 @@
 
 !  Test general options
 
-   WRITE( 6, "( /, ' Testing general options ...', / )" ) 
+   WRITE( 6, "( /, ' Testing general options ...', / )" )
 
 !  DO run = 1, 0
    DO run = 1, 26
@@ -1038,7 +1038,7 @@
 
 !  solve the problem
 
- 100 CONTINUE 
+ 100 CONTINUE
      CALL LANCELOT_solve(                                                      &
          prob, RANGE2, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG,     &
          IVAR, Q, DGRAD, control, info, data, ELFUN = ELFUN2, GROUP = GROUP2 )
@@ -1049,7 +1049,7 @@
          Q( IVAR( : info%nvar ) ) = DGRAD( : info%nvar )
          GO TO 100
        END IF
-     ENDIF 
+     ENDIF
 
 ! act on return status
 
@@ -1075,7 +1075,7 @@
 
 ! make space for problem data
 
-   prob%n = n1 ; prob%ng = ng1 ; prob%nel = nel1 
+   prob%n = n1 ; prob%ng = ng1 ; prob%nel = nel1
    ALLOCATE( prob%ISTADG( prob%ng + 1 ), prob%ISTGPA( prob%ng + 1 ) )
    ALLOCATE( prob%ISTADA( prob%ng + 1 ), prob%ISTAEV( prob%nel + 1 ) )
    ALLOCATE( prob%ISTEPA( prob%nel + 1 ), prob%ITYPEG( prob%ng ) )
@@ -1099,7 +1099,7 @@
 !  set general problem data
 
    prob%ISTADG = (/ 1, 1, 2, 3, 3, 4, 4 /)
-   prob%IELVAR = (/ 2, 1, 3, 2, 3, 1, 2 /) ; prob%ISTAEV = (/ 1, 4, 6, 8 /) 
+   prob%IELVAR = (/ 2, 1, 3, 2, 3, 1, 2 /) ; prob%ISTAEV = (/ 1, 4, 6, 8 /)
    prob%IELING = (/ 1, 2, 3 /) ; prob%KNDOFG = (/ 1, 1, 1, 1, 1, 2 /)
    prob%ISTADA = (/ 1, 2, 2, 2, 3, 3, 5 /) ; prob%ICNA = (/ 1, 2, 1, 2 /)
    prob%ITYPEG = (/ 1, 0, 2, 0, 1, 3 /) ; prob%ITYPEE = (/ 1, 2, 2 /)
@@ -1123,20 +1123,20 @@
 
    IF ( class == 1 ) THEN
      WRITE( 6, "( /,                                                           &
-    &  ' Testing optional arguments (general problems) ...', / )" ) 
+    &  ' Testing optional arguments (general problems) ...', / )" )
    ELSE IF ( class == 2 ) THEN
      WRITE( 6, "( /,                                                           &
-    &  ' Testing optional arguments (unconstrained problems) ...', / )" ) 
+    &  ' Testing optional arguments (unconstrained problems) ...', / )" )
      prob%KNDOFG( 6 ) = 1
    ELSE IF ( class == 3 ) THEN
      WRITE( 6, "( /,                                                           &
-    &  ' Testing optional arguments (subset problems) ...', / )" ) 
+    &  ' Testing optional arguments (subset problems) ...', / )" )
      prob%KNDOFG( 1 ) = 0
      prob%KNDOFG( 6 ) = 2
    ELSE
      stop
      WRITE( 6, "( /,                                                           &
-    &  ' Testing optional arguments (least-squares problems) ...', / )" ) 
+    &  ' Testing optional arguments (least-squares problems) ...', / )" )
      prob%ng = 1
      IF ( .NOT. ALLOCATED( prob%KNDOFG ) ) ALLOCATE( prob%KNDOFG( prob%ng ) )
      IF ( ALLOCATED( GVALUE ) ) DEALLOCATE( GVALUE )
@@ -1192,7 +1192,7 @@
 
 !  internal evaluation of elements and groups
 
-     IF ( run == 1 ) THEN 
+     IF ( run == 1 ) THEN
        CALL LANCELOT_solve(                                                    &
 !          prob, RANGE3, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG,   &
 !          IVAR, Q, DGRAD, control, info, data, ELFUN = ELFUN3, GROUP = GROUP3 )
@@ -1201,8 +1201,8 @@
 
 !  internal evaluation of elements, external of groups
 
-     ELSE IF ( run == 2 ) THEN 
-       DO 
+     ELSE IF ( run == 2 ) THEN
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data, ELFUN = ELFUN1 )
@@ -1212,19 +1212,19 @@
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
 
 !  internal evaluation of groups, external for elements
 
-     ELSE IF ( run == 3 ) THEN 
-       DO 
+     ELSE IF ( run == 3 ) THEN
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data, GROUP = GROUP1 )
@@ -1237,7 +1237,7 @@
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
               info%status == - 6 ) THEN
            CALL ELFUN1( FUVALS, XT, prob%EPVALU, info%ncalcf, prob%ITYPEE,     &
@@ -1246,13 +1246,13 @@
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
 
 !  external evaluation of elements and groups
 
-     ELSE IF ( run == 4 ) THEN 
-       DO 
+     ELSE IF ( run == 4 ) THEN
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data )
@@ -1265,7 +1265,7 @@
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
               info%status == - 6 ) THEN
            CALL ELFUN1( FUVALS, XT, prob%EPVALU, info%ncalcf, prob%ITYPEE,     &
@@ -1274,24 +1274,24 @@
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 4 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
 
 !  internal evaluation of elements and groups
 
-     ELSE IF ( run == 5 ) THEN 
+     ELSE IF ( run == 5 ) THEN
        ELDERS( 2, : ) = (/ 0, 1, 2 /)
        CALL LANCELOT_solve(                                                    &
            prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG,   &
@@ -1300,9 +1300,9 @@
 
 !  internal evaluation of elements, external of groups
 
-     ELSE IF ( run == 6 ) THEN 
+     ELSE IF ( run == 6 ) THEN
        ELDERS( 2, : ) = (/ 0, 3, 4 /)
-       DO 
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data,                             &
@@ -1313,20 +1313,20 @@
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
 
 !  internal evaluation of groups, external for elements
 
-     ELSE IF ( run == 7 ) THEN 
+     ELSE IF ( run == 7 ) THEN
        ELDERS( 2, : ) = (/ 0, 1, 2 /)
-       DO 
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data, GROUP = GROUP1,             &
@@ -1342,7 +1342,7 @@
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1,           &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
               info%status == - 6 ) THEN
            CALL ELFUN1_flexible(                                               &
@@ -1353,14 +1353,14 @@
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3,           &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
 
 !  external evaluation of elements and groups
 
-     ELSE IF ( run == 8 ) THEN 
+     ELSE IF ( run == 8 ) THEN
        ELDERS( 2, : ) = (/ 0, 3, 4 /)
-       DO 
+       DO
          CALL LANCELOT_solve(                                                  &
              prob, RANGE1, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
              IVAR, Q, DGRAD , control, info, data,                             &
@@ -1376,7 +1376,7 @@
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1,           &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
               info%status == - 6 ) THEN
            CALL ELFUN1_flexible(                                               &
@@ -1387,19 +1387,19 @@
                prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3,           &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 4 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
          IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
            CALL GROUP1( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,     &
                prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng,&
                prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
-         END IF  
+         END IF
        END DO
      END IF
 
@@ -1419,4 +1419,3 @@
    END DO
 
    END PROGRAM LANCELOT_test_examples
-
