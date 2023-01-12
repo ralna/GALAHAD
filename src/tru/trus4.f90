@@ -5,12 +5,11 @@
    TYPE ( TRU_control_type ) :: control
    TYPE ( TRU_inform_type ) :: inform
    TYPE ( TRU_full_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
    REAL ( KIND = wp ) :: f
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V
    EXTERNAL :: FUN, GRAD, HESS
-   INTEGER :: s, status, eval_status, ne
+   INTEGER :: status, eval_status, ne
    INTEGER, PARAMETER :: n = 3
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
 ! start problem data
