@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 08/04/2013 AT 13:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 13:25 GMT.
    PROGRAM GALAHAD_SHA_EXAMPLE
    USE GALAHAD_SHA_double         ! double precision version
    USE GALAHAD_RAND_double
@@ -28,7 +28,9 @@
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_analyse' )" ) &
        inform%status ; STOP
    END IF
-   m = inform%differences_needed
+   WRITE( 6, "( 1X, I0, ' differences are needed, one extra might help' )" )   &
+     inform%differences_needed
+   m = inform%differences_needed + 1  ! use as many differences as required + 1
    ALLOCATE( S( n, m ), Y( n, m ), RD( m) )
    CALL RAND_initialize( seed )
    DO k = 1, m
@@ -45,13 +47,14 @@
        IF ( i /= j ) Y( j, k ) = Y( j, k ) + v * S( i, k )
      END DO
    END DO
-   CALL SHA_estimate( n, nz, ROW, COL, m + 1, m, RD, n, m, S, n, m,            &
+   CALL SHA_estimate( n, nz, ROW, COL, m, RD, n, m, S, n, m,                   &
                       Y, VAL_est, data, control, inform )     ! approximate H
    IF ( inform%status /= 0 ) THEN             ! Failure
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_estimate' )" )&
        inform%status ; STOP
    ELSE
-     WRITE( 6, "( ' Successful run, estimated matrix:' )" )
+     WRITE( 6, "( /, ' Successful run with ', I0,                              &
+    &             ' differences, estimated matrix:' )" ) m
      DO l = 1, nz
        WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" )   &
         ROW( l ), COL( l ), VAL_est( l )

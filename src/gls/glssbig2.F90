@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM HSL_MA48_big_example
    USE GALAHAD_KINDS
-   USE HSL_MA48_DOUBLE
+   USE HSL_MA48_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: i, j, l, info, m, n, ne, ns, rank, dependent
    TYPE ( ZD01_TYPE ) :: MATRIX, SUBMATRIX
