@@ -3,7 +3,7 @@
 #include "galahad_modules.h"
 
       PROGRAM LANCELOT_simplet
-            
+
 !-------------------------------------------------------------------------------
 !                                                                              !
 !    This programs provides a test for lancelot_simple.f90                     !
