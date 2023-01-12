@@ -247,7 +247,7 @@
 CONTAINS
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
@@ -259,7 +259,7 @@ CONTAINS
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
@@ -273,7 +273,7 @@ CONTAINS
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, H_Val ) ! Hessian of the objective
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
@@ -288,7 +288,7 @@ CONTAINS
    END SUBROUTINE HESS
 
    SUBROUTINE HESS_dense( status, X, userdata, H_val ) ! Dense Hessian
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
@@ -304,7 +304,7 @@ CONTAINS
    END SUBROUTINE HESS_dense
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
@@ -318,7 +318,7 @@ CONTAINS
    END SUBROUTINE HESSPROD
 
    SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
@@ -331,7 +331,7 @@ CONTAINS
    END SUBROUTINE PREC
 
    SUBROUTINE FUN_diag( status, X, userdata, f )    ! Objective function
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
@@ -342,7 +342,7 @@ CONTAINS
    END SUBROUTINE FUN_diag
 
    SUBROUTINE GRAD_diag( status, X, userdata, G )   ! gradient of the objective
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
@@ -355,7 +355,7 @@ CONTAINS
    END SUBROUTINE GRAD_diag
 
    SUBROUTINE HESS_diag( status, X, userdata, H_val ) ! Hessian of the objective
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
@@ -368,7 +368,7 @@ CONTAINS
    END SUBROUTINE HESS_diag
 
    SUBROUTINE HESSPROD_diag( status, X, userdata, U, V, got_h ) ! Hess-vect prod
-   USE GALAHAD_USERDATA_double
+   USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
