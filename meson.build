@@ -829,6 +829,17 @@ wsmpt_double = executable('wsmpt_double', 'src/external/wsmp/wsmpt.F90', fortran
 test('wsmp_single', wsmpt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('wsmp_double', wsmpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
+lancelott_single = executable('lancelott_single', 'src/lancelot/lancelott.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+lancelott_double = executable('lancelott_double', 'src/lancelot/lancelott.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('lancelot_single', lancelott_single, suite: ['fortran', 'single'], is_parallel : false)
+test('lancelot_double', lancelott_double, suite: ['fortran', 'double'], is_parallel : false)
+
+# Issue 57
+# lancelot_steeringt_single = executable('lancelot_steeringt_single', 'src/lancelot/lancelot_steeringt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# lancelot_steeringt_double = executable('lancelot_steeringt_double', 'src/lancelot/lancelot_steeringt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('lancelot_steering_single', lancelot_steeringt_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('lancelot_steering_double', lancelot_steeringt_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # Issue 56
 # l1qpt_single = executable('l1qpt_single', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1029,7 +1040,8 @@ executable('eqps', 'src/eqp/eqps.f90', link_with : libgalahad_double, install : 
 executable('l1qp', 'src/l1qp/l1qps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-
+executable('lancelot', 'src/lancelot/lancelots.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('lancelot_steering', 'src/lancelot/lancelot_steerings.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
