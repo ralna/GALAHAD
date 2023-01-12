@@ -112,6 +112,7 @@ libgalahad_hsl_single_src += files('src/symbols/symbols.F90')
 libgalahad_hsl_double_src += files('src/symbols/symbols.F90')
 
 # FIXME
+ma61_path = 'src/dum'
 mc13_path = 'src/dum'
 mc21_path = 'src/dum'
 mc23_path = 'src/dum'
@@ -130,6 +131,9 @@ hsl_ma77_path = 'src/dum'
 hsl_ma86_path = 'src/dum'
 hsl_ma87_path = 'src/dum'
 hsl_ma97_path = 'src/dum'
+
+libgalahad_hsl_single_src += files(ma61_path / 'ma61s.f')
+libgalahad_hsl_double_src += files(ma61_path / 'ma61d.f')
 
 libgalahad_hsl_single_src += files(mc13_path / 'mc13s.f')
 libgalahad_hsl_double_src += files(mc13_path / 'mc13d.f')
@@ -390,7 +394,7 @@ subdir('src/l1qp')
 
 # subdir('src/cutest_functions')
 
-# subdir('src/lancelot')
+subdir('src/lancelot')
 
 # subdir('src/ssids')
 
