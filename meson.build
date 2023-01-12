@@ -360,11 +360,8 @@ subdir('src/trans')
 subdir('src/qpp')
 subdir('src/scale')
 subdir('src/scaling')
-
-# packages that require hslarchive_galahad to be nontrivial
 subdir('src/gls')
 subdir('src/sils')
-
 subdir('src/sls')
 subdir('src/uls')
 subdir('src/sbls')
@@ -399,11 +396,7 @@ subdir('src/lancelot_simple')
 subdir('src/filtrane')
 subdir('src/psls')
 subdir('src/trb')
-
-# subdir('src/ssids')
-
-# TRU requires PSLS
-# subdir('src/tru')
+subdir('src/tru')
 
 # BGO requires TRB
 # subdir('src/bgo')
@@ -413,6 +406,9 @@ subdir('src/trb')
 
 # NLS requires PSLS
 # subdir('src/nls')
+
+# needs c++ files
+# subdir('src/ssids')
 
 libgalahad_single = library('galahad_single',
                     sources : libgalahad_src,
@@ -670,14 +666,14 @@ test('blls1_double', bllst_double, suite: ['fortran', 'double'], is_parallel : f
 test('blls2_single', bllsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('blls2_double', bllsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# trut_single = executable('trut_single', 'src/tru/trut.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# trut_double = executable('trut_double', 'src/tru/trut.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# truti_single = executable('truti_single', 'src/tru/truti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# truti_double = executable('truti_double', 'src/tru/truti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('tru1_single', trut_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('tru1_double', trut_double, suite: ['fortran', 'double'], is_parallel : false)
-# test('tru2_single', truti_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('tru2_double', truti_double, suite: ['fortran', 'double'], is_parallel : false)
+trut_single = executable('trut_single', 'src/tru/trut.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+trut_double = executable('trut_double', 'src/tru/trut.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+truti_single = executable('truti_single', 'src/tru/truti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+truti_double = executable('truti_double', 'src/tru/truti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('tru1_single', trut_single, suite: ['fortran', 'single'], is_parallel : false)
+test('tru1_double', trut_double, suite: ['fortran', 'double'], is_parallel : false)
+test('tru2_single', truti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('tru2_double', truti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 rootst_single = executable('rootst_single', 'src/roots/rootst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 rootst_double = executable('rootst_double', 'src/roots/rootst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1061,9 +1057,10 @@ executable('trbs3', 'src/trb/trbs3.f90', link_with : libgalahad_double, install 
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('ssids', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('trus', 'src/tru/trus.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trus', 'src/tru/trus.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 61
 # executable('trus4', 'src/tru/trus4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
