@@ -401,11 +401,11 @@ subdir('src/bgo')
 subdir('src/nls')
 subdir('src/arc')
 subdir('src/dgo')
+subdir('src/bqpb')
+subdir('src/ccqp')
 
 # Issue 64
 # subdir('src/clls')
-
-subdir('src/bqpb')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -928,6 +928,15 @@ test('bqpb1_double', bqpbt_double, suite: ['fortran', 'double'], is_parallel : f
 test('bqpb2_single', bqpbti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('bqpb2_double', bqpbti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+ccqpt_single = executable('ccqpt_single', 'src/ccqp/ccqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+ccqpt_double = executable('ccqpt_double', 'src/ccqp/ccqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+ccqpti_single = executable('ccqpti_single', 'src/ccqp/ccqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+ccqpti_double = executable('ccqpti_double', 'src/ccqp/ccqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('ccqp1_single', ccqpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('ccqp1_double', ccqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('ccqp2_single', ccqpti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('ccqp2_double', ccqpti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # See issue #40 on GitHub
 # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
 # pastixt_double = executable('pastixt_double', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_double, link_with : [libspmf, libpastix_double], include_directories: libgalahad_include)
@@ -1124,6 +1133,9 @@ if build_examples
   executable('bqpbs2', 'src/bqpb/bqpbs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   # Issue 65
   # executable('bqpbs3', 'src/bqpb/bqpbs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('ccqps', 'src/ccqp/ccqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('ccqps2', 'src/ccqp/ccqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('ccqps3', 'src/ccqp/ccqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
