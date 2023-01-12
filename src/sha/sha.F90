@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 13:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -131,7 +131,7 @@
 
        INTEGER ( KIND = ip_ ) :: max_degree = - 1
 
-!  the number of differences that will be needed
+!  the number of differences that will be needed (more may be helpful)
 
        INTEGER ( KIND = ip_ ) :: differences_needed = - 1
 
@@ -170,6 +170,7 @@
        INTEGER ( KIND = ip_ ) :: n, nz, nb, unsym_rows
        INTEGER ( KIND = ip_ ) :: approximation_algorithm_used
        INTEGER ( KIND = ip_ ) :: dense_linear_solver = - 1
+       INTEGER ( KIND = ip_ ) :: differences_needed = - 1
 
 !  initial array sizes
 
@@ -796,34 +797,34 @@
 !END DO
 
         IF ( control%approximation_algorithm == 1 ) THEN
-          inform%differences_needed                                            &
+          data%differences_needed                                              &
             = MAXVAL( data%PK( 2 : n + 1 ) -  data%PU( 1 : n ) )
         ELSE IF ( control%approximation_algorithm == 2 ) THEN
-          inform%differences_needed = 0
+          data%differences_needed = 0
           DO i = 1, n
             IF ( data%PK( i + 1 ) - data%PK( i ) <=                            &
                  control%max_sparse_degree ) THEN
-              inform%differences_needed = MAX( inform%differences_needed,      &
+              data%differences_needed = MAX( data%differences_needed,          &
                                                data%PK( i + 1 ) - data%PK( i ) )
             ELSE
-              inform%differences_needed = MAX( inform%differences_needed,      &
+              data%differences_needed = MAX( data%differences_needed,          &
                                                data%PK( i + 1 ) - data%PU( i ) )
             END IF
           END DO
         ELSE
-          inform%differences_needed                                            &
+          data%differences_needed                                              &
             = MAXVAL( data%PK( 2 : n + 1 ) -  data%PK( 1 : n ) )
         END IF
 
 !  report the numbers of each block size
 
-        data%LAST( 0 : inform%differences_needed ) = 0
+        data%LAST( 0 : data%differences_needed ) = 0
         DO i = 1, n
           l = data%PK( i + 1 ) - data%PU( i )
           data%LAST( l ) = data%LAST( l ) + 1
         END DO
         WRITE( control%out, "( ' (block size, # with this size):' )" )
-        CALL SHA_write_nonzero_list( control%out, inform%differences_needed,   &
+        CALL SHA_write_nonzero_list( control%out, data%differences_needed,     &
                                      data%LAST )
 
 !  -----------------------------
@@ -880,13 +881,13 @@
         END DO
 
         inform%max_reduced_degree = 0
-        inform%differences_needed = 0
+        data%differences_needed = 0
         j = data%unsym_rows
         DO i = 1, n
           IF (  data%COUNT( i ) == n + 1 ) THEN
             data%PU( i ) = data%PK( i )
-            inform%differences_needed =                                        &
-              MAX( inform%differences_needed, data%PK( i + 1 ) -  data%PU( i ) )
+            data%differences_needed =                                          &
+              MAX( data%differences_needed, data%PK( i + 1 ) -  data%PU( i ) )
           ELSE
             inform%max_reduced_degree =                                        &
               MAX( inform%max_reduced_degree, data%PK( i + 1 ) -  data%PU( i ) )
@@ -895,15 +896,16 @@
           END IF
         END DO
 
-        inform%differences_needed                                              &
-          = MAX( inform%differences_needed, inform%max_reduced_degree )
+        data%differences_needed                                                &
+          = MAX( data%differences_needed, inform%max_reduced_degree )
 
 !       WRITE( 6, "( ' maximum degree in the connectivity graph = ', I0 )" )   &
 !          inform%max_degree
 !       WRITE( 6, "( 1X, I0, ' symmetric differences required ' )" )           &
-!          inform%differences_needed
+!          data%differences_needed
 !       WRITE( 6, "( ' max reduced degree = ', I0 )" ) inform%max_reduced_degree
       END IF
+      inform%differences_needed = data%differences_needed
 
 !  prepare to return
 
@@ -1000,8 +1002,9 @@
 
 !-*-*-*-  G A L A H A D -  S H A _ e s t i m a t e  S U B R O U T I N E -*-*-*-
 
-      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_max, m, RD, ls1, ls2, S,     &
-                               ly1, ly2, Y, VAL, data, control, inform )
+      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available,                   &
+                               RD, ls1, ls2, S, ly1, ly2, Y, VAL,              &
+                               data, control, inform )
 
 !     ********************************************************
 !     *                                                      *
@@ -1014,13 +1017,14 @@
 !   SHA_analyse and should not have been changed since the last call to
 !   SHA_analyse. Additional arguments are
 
-!     m_max is the maximum number of differences that might arise
-!     m is the number of differences provided
-!     RD(i), i=1:m gives the columns of S and Y of the ith most recent diffs
-!     ls1,ls2 are the declared leading and trailing dimensions of S
-!     S(i,j) (i=1:n,j=RD(1:m)) are the steps
-!     ly1,ly2 are the declared leading and trailing dimensions of Y
-!     Y(i,j) (i=1:n,j=RD(1:m)) are the differences in gradients
+!     m_available is the number of differences provided; ideally this should 
+!       be as large as inform%differences_needed computed by sha_analyse
+!     RD(i), i=1:m gives the index of the column of S and Y of the i-th 
+!       most recent differences
+!     ls1, ls2 are the declared leading and trailing dimensions of S
+!     S(i,j) (i=1:n,j=RD(1:m_avaiable)) are the steps
+!     ly1, ly2 are the declared leading and trailing dimensions of Y
+!     Y(i,j) (i=1:n,j=RD(1:m_available)) are the differences in gradients
 !     VAL(i) is the i-th nonzero in the estimated Hessian matrix.(i=1,nz)
 
 !   The analysed and permuted structure and the groups are stored in the
@@ -1039,10 +1043,10 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, m_max, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, m_available
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: RD
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_available ) :: RD
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1 , ls2 ) :: S
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1 , ly2 ) :: Y
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( nz ) :: VAL
@@ -1054,8 +1058,9 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, nn, rank, status
-      INTEGER ( KIND = ip_ ) :: ld, liwork, lwork, mu, nu, min_mn
+      INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank, status
+      INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
+      INTEGER ( KIND = ip_ ) :: m_needed, m_used
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -1083,17 +1088,21 @@
         data%solve_system_data%out = 0
       END IF
 
-!  allocate workspace
+!  recall the number of differences needed to reproduce a fixed Hessian
 
-      nn = inform%differences_needed
-      ld = MIN( m_max + 1, m )  ! add one to accommodate singularity precaution
-      min_mn = MIN( ld, nn )
+      m_needed = data%differences_needed
+
+! add one to accommodate singularity precaution if possible
+
+      m_max = MIN( m_needed + 1, m_available ) ; n_max = m_needed
+      min_mn = MIN( m_max, n_max )
+
+!  allocate workspace
 
 !  generic solver workspace
 
-write(6,*) data%la1 < ld, data%la2 < nn
-      IF ( data%la1 < ld .OR. data%la2 < nn ) THEN
-        data%la1 = ld ; data%la2 = nn
+      IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
+        data%la1 = m_max ; data%la2 = n_max
         array_name = 'SHA: data%A'
         CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1103,8 +1112,8 @@ write(6,*) data%la1 < ld, data%la2 < nn
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
       END IF
 
-      IF ( data%lb1 < ld ) THEN
-        data%lb1 = ld
+      IF ( data%lb1 < m_max ) THEN
+        data%lb1 = m_max
         array_name = 'SHA: data%B'
         CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1121,8 +1130,8 @@ write(6,*) data%la1 < ld, data%la2 < nn
 
 !  allocate space to hold a copy of A if needed
 
-        IF ( data%la_save1 < m_max .OR. data%la_save2 < nn + 1 ) THEN
-          data%la_save1 = ld ; data%la_save2 = nn
+        IF ( data%la_save1 < m_max .OR. data%la_save2 < n_max ) THEN
+          data%la_save1 = m_max ; data%la_save2 = n_max
           array_name = 'SHA: data%A_save'
           CALL SPACE_resize_array( data%la_save1, data%la_save2,               &
              data%A_save, inform%status, inform%alloc_status,                  &
@@ -1135,8 +1144,8 @@ write(6,*) data%la1 < ld, data%la2 < nn
                                                                             
 !  allocate space to hold a copy of b if needed                             
                                                                             
-        IF ( data%lb_save < m_max ) THEN
-          data%lb_save = ld
+        IF ( data%lb_save < m_needed ) THEN
+          data%lb_save = m_max
           array_name = 'SHA: data%B_save'
           CALL SPACE_resize_array( data%lb_save, 1,                            &
                  data%B_save, inform%status, inform%alloc_status,              &
@@ -1152,10 +1161,11 @@ write(6,*) data%la1 < ld, data%la2 < nn
         IF ( control%dense_linear_solver == 1 ) THEN
           liwork = min_mn
         ELSE IF ( control%dense_linear_solver == 2 ) THEN
-          CALL GELSY( m_max, n, 1, data%A, data%la1, data%B, data%lb1,         &
+          m_used = m_needed
+          CALL GELSY( m_used, n, 1, data%A, data%la1, data%B, data%lb1,        &
                       data%solve_system_data%IWORK, eps_singular, rank,        &
                       data%WORK_1, - 1, status )
-          lwork = MAX( lwork, INT( data%WORK_1( 1 ) ) ) ; liwork = nn
+          lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
 
 !  allocate space to hold the singular values if needed
 
@@ -1174,17 +1184,17 @@ write(6,*) data%la1 < ld, data%la2 < nn
 
 !  discover how much temporary integer and real storage may be needed by SVD
 
+          m_used = m_needed
           IF ( control%dense_linear_solver == 4 ) THEN
-            CALL GELSD( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,      &
+            CALL GELSD( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
                         data%solve_system_data%S, eps_singular, rank,          &
                         data%WORK_1, - 1, data%IWORK_1, status )
             lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
           ELSE
-write(6,*) data%la1, m_max
-            CALL GELSS( m_max, nn, 1, data%A, data%la1, data%B, data%lb1,      &
+            CALL GELSS( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
                         data%solve_system_data%S, eps_singular, rank,          &
                         data%WORK_1, - 1, status )
-            lwork = INT( data%WORK_1( 1 ) ) ; liwork = nn
+            lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
           END IF
         END IF
 
@@ -1244,7 +1254,7 @@ write(6,*) data%la1, m_max
           i = data%PERM_inv( ii )
           nu = data%PK( i + 1 ) - data%PU( i )
           IF ( nu == 0 ) CYCLE
-          mu = MIN( m, nu )
+          mu = MIN( m_available, nu )
 !         IF ( nu > m ) THEN
 !           IF ( control%out > 0 .AND. control%print_level >= 1 )              &
 !             WRITE( control%out, "( I0, ' entries to be found in row ', I0,   &
@@ -1302,8 +1312,10 @@ write(6,*) data%la1, m_max
 
 ! make a copy of A and b as a precaution for possible use later
 
-          data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
-          data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+          IF ( mu + 1 <= m_max ) THEN
+            data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+            data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+          END IF
 
 !  solve A x = b
 
@@ -1311,10 +1323,10 @@ write(6,*) data%la1, m_max
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i, info )
 
-!  if A appears to be singular, add an extra row, and solve as a least-squares
-!  problem
+!  if A appears to be singular, add an extra row if there is one, and 
+!  solve the system as a least-squares problem
 
-          IF ( info == MAX( nu, mu ) + 1 ) THEN
+          IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
 
 !  initialize b to Y(i,l)
 
@@ -1359,10 +1371,6 @@ write(6,*) data%la1, m_max
             CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i, info )
-
-  write(6,*) ' info is now ', info
-
-
           ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
@@ -1420,7 +1428,7 @@ write(6,*) data%la1, m_max
 
 !  if there is sufficient data, compute all of the entries in the row afresh
 
-          IF ( nu <= m ) THEN
+          IF ( nu <= m_available ) THEN
             mu = nu
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
@@ -1478,7 +1486,7 @@ write(6,*) data%la1, m_max
 !write(6,*) nu, m
             nu = data%PK( i + 1 ) - data%PU( i )
             IF ( nu == 0 ) CYCLE
-            mu = MIN( m, nu )
+            mu = MIN( m_available, nu )
 !           IF ( nu > m ) THEN
 !             IF ( control%out > 0 .AND. control%print_level >= 1 )            &
 !               WRITE( control%out, "( I0, ' entries to be found in row ', I0, &
@@ -1566,7 +1574,7 @@ write(6,*) data%la1, m_max
           i = data%PERM_inv( ii )
           nu = data%PK( i + 1 ) - data%PK( i )
           IF ( nu == 0 ) CYCLE
-          mu = MIN( m, nu )
+          mu = MIN( m_available, nu )
 !         IF ( nu > m ) THEN
 !           IF ( control%out > 0 .AND. control%print_level >= 1 )              &
 !             WRITE( control%out, "( I0, ' entries to be found in row ', I0,   &
@@ -1704,7 +1712,6 @@ write(6,*) data%la1, m_max
           CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, data%IWORK, status )
         ELSE ! dense_linear_solver == 3
-write(6,*) la1, m
           CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, status )
         END IF
@@ -1853,16 +1860,12 @@ write(6,*) la1, m
 !  re-initial private data
 
       data%SHA_analyse_called = .FALSE.
-      data%la1 = - 1
-      data%la2 = - 1
-      data%lb1 = - 1
-      data%ls = - 1
-      data%la_save1 = - 1
-      data%la_save2 = - 1
-      data%lb_save = - 1
+      data%la1 = - 1 ; data%la2 = - 1 ; data%lb1 = - 1 ; data%ls = - 1
+      data%la_save1 = - 1 ; data%la_save2 = - 1 ; data%lb_save = - 1
       data%solve_system_data%lwork = - 1
       data%solve_system_data%liwork = - 1
       data%dense_linear_solver = - 1
+      data%differences_needed = - 1
 
       RETURN
 
