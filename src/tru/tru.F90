@@ -50,7 +50,7 @@
 
      PRIVATE
      PUBLIC :: TRU_initialize, TRU_read_specfile, TRU_solve,                   &
-               TRU_terminate, NLPT_problem_type, GALAHAD_userdata_type,           &
+               TRU_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
                SMT_type, SMT_put,                                              &
                TRU_import, TRU_solve_with_mat, TRU_solve_without_mat,          &
                TRU_solve_reverse_with_mat, TRU_solve_reverse_without_mat,      &
