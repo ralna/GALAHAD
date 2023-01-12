@@ -65,6 +65,55 @@
        MODULE PROCEDURE LPA_terminate, LPA_full_terminate
      END INTERFACE LPA_terminate
 
+     INTERFACE LA04A
+       SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL,   &
+                         IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: IRN
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: IX
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( kb ) :: JX
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 2, kb ) :: BND
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: X
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: G
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
+       END SUBROUTINE LA04A
+
+       SUBROUTINE LA04AD( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL,  &
+                          IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: IRN
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: IX
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( kb ) :: JX
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 2, kb ) :: BND
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: X
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: G
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
+       END SUBROUTINE LA04AD
+     END INTERFACE LA04A
+
+
+
+
 !----------------------
 !   P a r a m e t e r s
 !----------------------
@@ -1343,11 +1392,11 @@
 
       IF ( control%scale ) THEN
         inform%la04_job = 0
-        CALL LA04AD( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,         &
-                     data%n, data%B, data%C, data%BND, data%kb, data%lb,       &
-                     inform%la04_job, data%CNTL, data%IX, data%JX,             &
-                     data%X, data%Z, data%G, inform%RINFO,                     &
-                     data%WS, data%lws, data%IWS, data%liws )
+        CALL LA04D( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
+                    data%n, data%B, data%C, data%BND, data%kb, data%lb,        &
+                    inform%la04_job, data%CNTL, data%IX, data%JX,              &
+                    data%X, data%Z, data%G, inform%RINFO,                      &
+                    data%WS, data%lws, data%IWS, data%liws )
 
 !  check return conditions
 
@@ -1402,9 +1451,9 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
-             ( control%clock_time_limit >= zero .AND.                          &
-               clock_now - clock_start > control%clock_time_limit ) ) THEN
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit )     &
+             .OR. ( control%clock_time_limit >= zero .AND.                     &
+                    clock_now - clock_start > control%clock_time_limit ) ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( A, ' LPA time limit reached' )" ) prefix
           inform%status = GALAHAD_error_time_limit ; GO TO 900
@@ -1412,11 +1461,11 @@
 
 !  perform another simplex iteration
 
-        CALL LA04AD( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,         &
-                     data%n, data%B, data%C, data%BND, data%kb, data%lb,       &
-                     inform%la04_job, data%CNTL, data%IX, data%JX,             &
-                     data%X, data%Z, data%G, inform%RINFO,                     &
-                     data%WS, data%lws, data%IWS, data%liws )
+        CALL LA04A( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
+                    data%n, data%B, data%C, data%BND, data%kb, data%lb,        &
+                    inform%la04_job, data%CNTL, data%IX, data%JX,              &
+                    data%X, data%Z, data%G, inform%RINFO,                      &
+                    data%WS, data%lws, data%IWS, data%liws )
 !       WRITE(6,"( '   IX', 11I5, /, ( 12I5 ) )" )  data%IX
 
 !  successful termination of the simplex method
