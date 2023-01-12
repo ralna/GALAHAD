@@ -8,6 +8,11 @@ option('pythoniface',
        value : false,
        description : 'whether to build the Python interface in double precision')
 
+option('examples',
+       type : 'boolean',
+       value : true,
+       description : 'whether to generate the examples')
+
 option('hslarchive-galahad',
        type : 'string',
        value : '',
