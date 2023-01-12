@@ -76,7 +76,6 @@
    SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
    USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval

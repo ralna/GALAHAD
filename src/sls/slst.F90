@@ -277,6 +277,7 @@
                  <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '   ok  ' )", advance = 'no' )
          ELSE
+!write(6,*) MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )
            WRITE( 6, "( '  fail ' )", advance = 'no' )
          END IF
 ! Perform one refinement
