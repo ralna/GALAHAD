@@ -26,8 +26,8 @@
                     'absent', ne, H_row, H_col, H_ptr )
    status = 1                                   ! Set for initial entry
    DO                                           ! Loop to solve problem
-     CALL TRU_solve_reverse_without_h( data, status, eval_status,              &
-                                       X, f, G, U, V )
+     CALL TRU_solve_reverse_without_mat( data, status, eval_status,            &
+                                         X, f, G, U, V )
      SELECT CASE ( status )                     ! reverse communication
      CASE ( 2 )                                 ! Obtain the objective function
        f = ( X( 1 ) + X( 3 ) + p ) ** 2 + ( X( 2 ) + X( 3 ) ) ** 2             &
@@ -55,8 +55,8 @@
    CALL TRU_information( data, inform, status )
    IF ( inform%status == 0 ) THEN          ! Successful return
      WRITE( 6, "( ' TRU: ', I0, ' iterations -',                               &
-    &     ' optimal objective value =',                                        &
-    &       ES12.4, ', ||g|| =', ES11.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
+    &     ' optimal objective value =', ES12.4,                                &
+    &       ', ||g|| =', ES11.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )   &
      inform%iter, inform%obj, inform%norm_g, X
    ELSE                                    ! Error returns
      WRITE( 6, "( ' TRU_solve exit status = ', I6 ) " ) inform%status

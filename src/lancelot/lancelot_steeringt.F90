@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+
 #include "galahad_modules.h"
+
 !  =============================================================================
 !  --------------------------- TEST PROBLEM 1 ----------------------------------
 !  =============================================================================
@@ -97,6 +99,7 @@
                                lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
                                lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
                                ifstat ) 
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
@@ -106,6 +109,7 @@
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 2, llders ) :: ELDERS
    REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
    REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
    REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
@@ -166,6 +170,7 @@
    SUBROUTINE GROUP1( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
                       lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
@@ -400,6 +405,7 @@
    SUBROUTINE GROUP2( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
                       lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
@@ -444,6 +450,7 @@
    SUBROUTINE GROUP2E( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                 &
                        ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                 &
                        lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
@@ -580,6 +587,7 @@
                                lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
                                lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
                                ifstat )
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
@@ -589,6 +597,7 @@
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 2, llders ) :: ELDERS
    REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
    REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
    REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
@@ -647,6 +656,7 @@
    SUBROUTINE GROUP3( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
                       lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_KINDS
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
