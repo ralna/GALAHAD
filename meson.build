@@ -395,6 +395,7 @@ subdir('src/l1qp')
 # subdir('src/cutest_functions')
 
 subdir('src/lancelot')
+subdir('src/lancelot_simple')
 
 # subdir('src/ssids')
 
@@ -527,6 +528,12 @@ lqrt_single = executable('lqrt_single', 'src/lqr/lqrt.F90', fortran_args : extra
 lqrt_double = executable('lqrt_double', 'src/lqr/lqrt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 test('lqr_single', lqrt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('lqr_double', lqrt_double, suite: ['fortran', 'double'], is_parallel : false)
+
+# Issue 58
+# lancelot_simplet_single = executable('lancelot_simplet_single', 'src/lancelot_simple/lancelot_simplet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# lancelot_simplet_double = executable('lancelot_simplet_double', 'src/lancelot_simple/lancelot_simplet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('lancelot_simple_single', lancelot_simplet_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('lancelot_simple_double', lancelot_simplet_double, suite: ['fortran', 'double'], is_parallel : false)
 
 lqtt_single = executable('lqtt_single', 'src/lqt/lqtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 lqtt_double = executable('lqtt_double', 'src/lqt/lqtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -846,9 +853,8 @@ l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : e
 # test('l1qp_single', l1qpt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('l1qp_double', l1qpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# Issue 54
-dlpt_single = executable('dlpt_c_single', 'src/dlp/dlpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-dlpt_double = executable('dlpt_c_double', 'src/dlp/dlpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+dlpt_single = executable('dlpt_single', 'src/dlp/dlpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+dlpt_double = executable('dlpt_double', 'src/dlp/dlpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 test('dlp_single', dlpt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('dlp_double', dlpt_double, suite: ['fortran', 'double'], is_parallel : false)
 
@@ -1042,6 +1048,7 @@ executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : 
 executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('lancelot', 'src/lancelot/lancelots.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('lancelot_steering', 'src/lancelot/lancelot_steerings.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
+executable('lancelot_simple', 'src/lancelot_simple/lancelot_simples.f90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
