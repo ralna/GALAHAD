@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LLST_test_program
    USE GALAHAD_KINDS
-   USE GALAHAD_LLST_DOUBLE
+   USE GALAHAD_LLST_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, zero = 0.0_rp_
    INTEGER ( KIND = ip_ ), PARAMETER :: m = 5000, n = 2 * m + 1
