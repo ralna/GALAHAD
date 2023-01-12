@@ -2280,7 +2280,7 @@
 !  compute the new Hessian estimates
 
            CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,           &
-                              data%max_diffs, data%total_diffs, data%PAST,     &
+                              data%total_diffs, data%PAST,                     &
                               nlp%n, data%total_diffs, data%DX_past,           &
                               nlp%n, data%total_diffs, data%DG_past,           &
                               data%VAL_est, data%SHA_data,                     &
