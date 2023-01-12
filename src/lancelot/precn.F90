@@ -422,7 +422,7 @@
 !  Record the relative fill-in
 
          IF ( nnzh > 0 ) THEN
-           ratio = DBLE( FLOAT( S%liccgg ) ) / DBLE( FLOAT( nnzh ) )
+           ratio = REAL( S%liccgg, KIND = rp_ ) / REAL( nnzh, KIND = rp_ )
          ELSE
            ratio = one
          END IF
@@ -728,7 +728,8 @@
 !  Record the relative fill-in
 
            IF ( nnzh > 0 ) THEN
-              ratio = DBLE( FLOAT( SILS_infof%nrlbdu ) ) / DBLE( FLOAT( nnzh ) )
+              ratio = REAL( SILS_infof%nrlbdu, KIND = rp_ ) /                  &
+                      REAL( nnzh, KIND = rp_ )
            ELSE
               ratio = one
            END IF
