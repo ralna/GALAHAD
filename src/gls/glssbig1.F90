@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_big_example
    USE GALAHAD_KINDS
-   USE GALAHAD_GLS_DOUBLE
+   USE GALAHAD_GLS_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: i, j, l, info, m, n, ne, ns, rank, dependent
    TYPE ( SMT_TYPE ) :: MATRIX, SUBMATRIX
