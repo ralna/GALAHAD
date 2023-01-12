@@ -402,6 +402,11 @@ subdir('src/nls')
 subdir('src/arc')
 subdir('src/dgo')
 
+# Issue 64
+# subdir('src/clls')
+
+subdir('src/bqpb')
+
 # needs c++ files
 # subdir('src/ssids')
 
@@ -894,6 +899,16 @@ test('bgo1_double', bgot_double, suite: ['fortran', 'double'], is_parallel : fal
 test('bgo2_single', bgoti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('bgo2_double', bgoti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+# Issue 64
+# cllst_single = executable('cllst_single', 'src/clls/cllst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# cllst_double = executable('cllst_double', 'src/clls/cllst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# cllsti_single = executable('cllsti_single', 'src/clls/cllsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# cllsti_double = executable('cllsti_double', 'src/clls/cllsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('clls1_single', cllst_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('clls1_double', cllst_double, suite: ['fortran', 'double'], is_parallel : false)
+# test('clls2_single', cllsti_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('clls2_double', cllsti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -902,6 +917,15 @@ test('nls1_single', nlst_single, suite: ['fortran', 'single'], is_parallel : fal
 test('nls1_double', nlst_double, suite: ['fortran', 'double'], is_parallel : false)
 test('nls2_single', nlsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('nls2_double', nlsti_double, suite: ['fortran', 'double'], is_parallel : false)
+
+bqpbt_single = executable('bqpbt_single', 'src/bqpb/bqpbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+bqpbt_double = executable('bqpbt_double', 'src/bqpb/bqpbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+bqpbti_single = executable('bqpbti_single', 'src/bqpb/bqpbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+bqpbti_double = executable('bqpbti_double', 'src/bqpb/bqpbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('bqpb1_single', bqpbt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('bqpb1_double', bqpbt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('bqpb2_single', bqpbti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('bqpb2_double', bqpbti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 # See issue #40 on GitHub
 # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
@@ -1088,6 +1112,14 @@ executable('arcs3', 'src/arc/arcs3.f90', link_with : libgalahad_double, install 
 # executable('arcs4', 'src/arc/arcs4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dgo', 'src/dgo/dgos.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('dgo2', 'src/dgo/dgos2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 64
+# executable('cllss', 'src/clls/cllss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('cllss2', 'src/clls/cllss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# executable('cllss3', 'src/clls/cllss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('bqpbs', 'src/bqpb/bqpbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('bqpbs2', 'src/bqpb/bqpbs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 65
+# executable('bqpbs3', 'src/bqpb/bqpbs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
