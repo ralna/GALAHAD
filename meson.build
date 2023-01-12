@@ -396,6 +396,7 @@ subdir('src/l1qp')
 
 subdir('src/lancelot')
 subdir('src/lancelot_simple')
+subdir('src/filtrane')
 
 # subdir('src/ssids')
 
@@ -413,9 +414,6 @@ subdir('src/lancelot_simple')
 
 # TRB require PSLS
 # subdir('src/trb')
-
-# FILTRANE requires LANCELOT
-# subdir('src/filtrane')
 
 # NLS requires PSLS
 # subdir('src/nls')
@@ -891,10 +889,10 @@ test('eqp2_double', eqpti_double, suite: ['fortran', 'double'], is_parallel : fa
 # test('pastix_single', pastixt_single, suite: ['fortran', 'single'], is_parallel : false)
 # test('pastix_double', pastixt_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# filtranet_single = executable('filtranet_single', 'src/filtrane/filtranet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# filtranet_double = executable('filtranet_double', 'src/filtrane/filtranet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('filtrane_single', filtranet_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('filtrane_double', filtranet_double, suite: ['fortran', 'double'], is_parallel : false)
+filtranet_single = executable('filtranet_single', 'src/filtrane/filtranet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+filtranet_double = executable('filtranet_double', 'src/filtrane/filtranet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('filtrane_single', filtranet_single, suite: ['fortran', 'single'], is_parallel : false)
+test('filtrane_double', filtranet_double, suite: ['fortran', 'double'], is_parallel : false)
 
 if build_ciface
   ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
@@ -1044,11 +1042,12 @@ executable('dqps3', 'src/dqp/dqps3.f90', link_with : libgalahad_double, install 
 executable('eqps', 'src/eqp/eqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('eqps2', 'src/eqp/eqps.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('l1qp', 'src/l1qp/l1qps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dps', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dps2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('lancelot', 'src/lancelot/lancelots.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('lancelot_steering', 'src/lancelot/lancelot_steerings.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('lancelot_simple', 'src/lancelot_simple/lancelot_simples.f90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
+executable('filtrane', 'src/filtrane/filtranes.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
