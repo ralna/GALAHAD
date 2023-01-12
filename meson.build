@@ -112,6 +112,7 @@ libgalahad_hsl_single_src += files('src/symbols/symbols.F90')
 libgalahad_hsl_double_src += files('src/symbols/symbols.F90')
 
 # FIXME
+la04_path = 'src/dum'
 ma61_path = 'src/dum'
 mc13_path = 'src/dum'
 mc21_path = 'src/dum'
@@ -131,6 +132,9 @@ hsl_ma77_path = 'src/dum'
 hsl_ma86_path = 'src/dum'
 hsl_ma87_path = 'src/dum'
 hsl_ma97_path = 'src/dum'
+
+libgalahad_hsl_single_src += files(la04_path / 'la04s.f')
+libgalahad_hsl_double_src += files(la04_path / 'la04d.f')
 
 libgalahad_hsl_single_src += files(ma61_path / 'ma61s.f')
 libgalahad_hsl_double_src += files(ma61_path / 'ma61d.f')
@@ -405,6 +409,7 @@ subdir('src/bqpb')
 subdir('src/ccqp')
 subdir('src/cdqp')
 subdir('src/llst')
+subdir('src/lpa')
 
 # Issue 64
 # subdir('src/clls')
@@ -414,7 +419,7 @@ subdir('src/llst')
 
 libgalahad_single = library('galahad_single',
                     sources : libgalahad_src,
-                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
+                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single, libgalahad_hsl_double,
                                  libpardiso, libmkl_pardiso, libspral_ssids_single, libmumps_single,
                                  libspmf, libwsmp, libpastix_single, libgalahad_metis],
                     dependencies : libgalahad_deps,
@@ -813,6 +818,15 @@ test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : f
 test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+lpat_single = executable('lpat_single', 'src/lpa/lpat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+lpat_double = executable('lpat_double', 'src/lpa/lpat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+lpati_single = executable('lpati_single', 'src/lpa/lpati.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+lpati_double = executable('lpati_double', 'src/lpa/lpati.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('lpa1_single', lpat_single, suite: ['fortran', 'single'], is_parallel : false)
+test('lpa1_double', lpat_double, suite: ['fortran', 'double'], is_parallel : false)
+test('lpa2_single', lpati_single, suite: ['fortran', 'single'], is_parallel : false)
+test('lpa2_double', lpati_double, suite: ['fortran', 'double'], is_parallel : false)
+
 arct_single = executable('arct_single', 'src/arc/arct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 arct_double = executable('arct_double', 'src/arc/arct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 arcti_single = executable('arcti_single', 'src/arc/arcti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1152,6 +1166,7 @@ if build_examples
   executable('llst', 'src/llst/llsts.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('llst2', 'src/llst/llsts2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('llst3', 'src/llst/llsts3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('lpa', 'src/lpa/lpas.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
