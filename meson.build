@@ -400,6 +400,7 @@ subdir('src/tru')
 subdir('src/bgo')
 subdir('src/nls')
 subdir('src/arc')
+subdir('src/dgo')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -487,6 +488,15 @@ test('gltr1_single', gltrt_single, suite: ['fortran', 'single'], is_parallel : f
 test('gltr1_double', gltrt_double, suite: ['fortran', 'double'], is_parallel : false)
 test('gltr2_single', gltrti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('gltr2_double', gltrti_double, suite: ['fortran', 'double'], is_parallel : false)
+
+dgot_single = executable('dgot_single', 'src/dgo/dgot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+dgot_double = executable('dgot_double', 'src/dgo/dgot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+dgoti_single = executable('dgoti_single', 'src/dgo/dgoti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+dgoti_double = executable('dgoti_double', 'src/dgo/dgoti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('dgo1_single', dgot_single, suite: ['fortran', 'single'], is_parallel : false)
+test('dgo1_double', dgot_double, suite: ['fortran', 'double'], is_parallel : false)
+test('dgo2_single', dgoti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('dgo2_double', dgoti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 glrtt_single = executable('glrtt_single', 'src/glrt/glrtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 glrtt_double = executable('glrtt_double', 'src/glrt/glrtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1076,6 +1086,8 @@ executable('arcs2', 'src/arc/arcs2.f90', link_with : libgalahad_double, install 
 executable('arcs3', 'src/arc/arcs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # Issue 62
 # executable('arcs4', 'src/arc/arcs4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dgo', 'src/dgo/dgos.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('dgo2', 'src/dgo/dgos2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
