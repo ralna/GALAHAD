@@ -6,7 +6,7 @@
    USE GALAHAD_RAND_precision
    IMPLICIT NONE
    TYPE ( SHA_data_type ) :: data
-   TYPE ( SHA_control_type ) :: control        
+   TYPE ( SHA_control_type ) :: control
    TYPE ( SHA_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, j, k, l, m
    REAL ( KIND = rp_ ) ::  v
@@ -40,7 +40,7 @@
        CALL RAND_random_real( seed, .FALSE., S( i, k ) )
        CALL RAND_random_real( seed, .FALSE., Y( i, k ) )
        Y( i, k ) = Y( i, k ) * 0.001
-     END DO   
+     END DO
      Y( : n, k ) = 0.0_rp_                                     ! form Y = H * S
      DO l = 1, nz
        i = ROW( l ) ; j = COL( l ) ; v = VAL( l )
@@ -65,4 +65,3 @@
    CALL SHA_terminate( data, control, inform ) ! Delete internal workspace
 
    END PROGRAM GALAHAD_SHA_test_deck
-
