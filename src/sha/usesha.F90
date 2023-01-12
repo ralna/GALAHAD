@@ -381,7 +381,7 @@
          control%approximation_algorithm = 0
 
          CALL CLOCK_time( clocks )
-         CALL SHA_estimate( n, nnzh, ROW, COL, difs, difs, RD, n, difs, S,     &
+         CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
                             n, difs, Y, VAL_est, data, control, inform )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
@@ -417,7 +417,7 @@
          control%approximation_algorithm = 1
 
          CALL CLOCK_time( clocks )
-         CALL SHA_estimate( n, nnzh, ROW, COL, difs, difs, RD, n, difs, S,     &
+         CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
                             n, difs, Y, VAL_est, data, control, inform )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
@@ -462,10 +462,9 @@
 !    IF ( inform%differences_needed <= max_sy ) THEN
 !      control%approximation_algorithm = 0
 !      difs = inform%differences_needed
-       difs = difs_max
 
        CALL CLOCK_time( clocks )
-       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, difs, RD, n, difs, S,   &
+       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, RD, n, difs, S,         &
                           n, difs, Y, VAL_est, data, control, inform )
        CALL CLOCK_time( clocke )
        IF ( inform%status /= 0 ) THEN
