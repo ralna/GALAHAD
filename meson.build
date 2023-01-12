@@ -399,9 +399,7 @@ subdir('src/trb')
 subdir('src/tru')
 subdir('src/bgo')
 subdir('src/nls')
-
-# ARC requires PSLS
-# subdir('src/arc')
+subdir('src/arc')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -799,6 +797,15 @@ test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : f
 test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+arct_single = executable('arct_single', 'src/arc/arct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+arct_double = executable('arct_double', 'src/arc/arct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+arcti_single = executable('arcti_single', 'src/arc/arcti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+arcti_double = executable('arcti_double', 'src/arc/arcti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('arc1_single', arct_single, suite: ['fortran', 'single'], is_parallel : false)
+test('arc1_double', arct_double, suite: ['fortran', 'double'], is_parallel : false)
+test('arc2_single', arcti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('arc2_double', arcti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 sblst_single = executable('sblst_single', 'src/sbls/sblst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 sblst_double = executable('sblst_double', 'src/sbls/sblst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 sblsti_single = executable('sblsti_single', 'src/sbls/sblsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1069,6 +1076,11 @@ executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install 
 # executable('trus4', 'src/tru/trus4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('bgos', 'src/bgo/bgos.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('bgos2', 'src/bgo/bgos2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('arcs', 'src/arc/arcs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('arcs2', 'src/arc/arcs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('arcs3', 'src/arc/arcs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 62
+# executable('arcs4', 'src/arc/arcs4.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 
 if build_ciface
   ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
