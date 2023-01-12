@@ -398,6 +398,7 @@ subdir('src/lancelot')
 subdir('src/lancelot_simple')
 subdir('src/filtrane')
 subdir('src/psls')
+subdir('src/trb')
 
 # subdir('src/ssids')
 
@@ -409,9 +410,6 @@ subdir('src/psls')
 
 # ARC requires PSLS
 # subdir('src/arc')
-
-# TRB require PSLS
-# subdir('src/trb')
 
 # NLS requires PSLS
 # subdir('src/nls')
@@ -782,6 +780,15 @@ test('trs1_double', trst_double, suite: ['fortran', 'double'], is_parallel : fal
 test('trs2_single', trsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('trs2_double', trsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+trbt_single = executable('trbt_single', 'src/trb/trbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+trbt_double = executable('trbt_double', 'src/trb/trbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+trbti_single = executable('trbti_single', 'src/trb/trbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+trbti_double = executable('trbti_double', 'src/trb/trbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('trb1_single', trbt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('trb1_double', trbt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('trb2_single', trbti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('trb2_double', trbti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 wcpt_single = executable('wcpt_single', 'src/wcp/wcpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 wcpt_double = executable('wcpt_double', 'src/wcp/wcpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 wcpti_single = executable('wcpti_single', 'src/wcp/wcpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1046,6 +1053,10 @@ executable('lancelot', 'src/lancelot/lancelots.f90', link_with : libgalahad_doub
 executable('lancelot_steering', 'src/lancelot/lancelot_steerings.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('lancelot_simple', 'src/lancelot_simple/lancelot_simples.f90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 executable('filtrane', 'src/filtrane/filtranes.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+# Issue 60
+# executable('trbs', 'src/trb/trbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trbs2', 'src/trb/trbs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('trbs3', 'src/trb/trbs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
