@@ -403,6 +403,7 @@ subdir('src/arc')
 subdir('src/dgo')
 subdir('src/bqpb')
 subdir('src/ccqp')
+subdir('src/cdqp')
 
 # Issue 64
 # subdir('src/clls')
@@ -948,6 +949,11 @@ filtranet_double = executable('filtranet_double', 'src/filtrane/filtranet.F90', 
 test('filtrane_single', filtranet_single, suite: ['fortran', 'single'], is_parallel : false)
 test('filtrane_double', filtranet_double, suite: ['fortran', 'double'], is_parallel : false)
 
+cdqpt_single = executable('cdqpt_single', 'src/cdqp/cdqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+cdqpt_double = executable('cdqpt_double', 'src/cdqp/cdqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('cdqp_single', cdqpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('cdqp_double', cdqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+
 if build_ciface
   ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
   ugot_c_double = executable('ugot_c_double', 'src/ugo/C/ugot.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
@@ -1136,6 +1142,7 @@ if build_examples
   executable('ccqps', 'src/ccqp/ccqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('ccqps2', 'src/ccqp/ccqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('ccqps3', 'src/ccqp/ccqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('cdqps', 'src/cdqp/cdqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
