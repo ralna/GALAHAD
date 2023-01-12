@@ -398,12 +398,10 @@ subdir('src/psls')
 subdir('src/trb')
 subdir('src/tru')
 subdir('src/bgo')
+subdir('src/nls')
 
 # ARC requires PSLS
 # subdir('src/arc')
-
-# NLS requires PSLS
-# subdir('src/nls')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -882,14 +880,14 @@ test('bgo1_double', bgot_double, suite: ['fortran', 'double'], is_parallel : fal
 test('bgo2_single', bgoti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('bgo2_double', bgoti_double, suite: ['fortran', 'double'], is_parallel : false)
 
-# nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# nlsti_double = executable('nlsti_double', 'src/nls/nlsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('nls1_single', nlst_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('nls1_double', nlst_double, suite: ['fortran', 'double'], is_parallel : false)
-# test('nls2_single', nlsti_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('nls2_double', nlsti_double, suite: ['fortran', 'double'], is_parallel : false)
+nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+nlsti_double = executable('nlsti_double', 'src/nls/nlsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('nls1_single', nlst_single, suite: ['fortran', 'single'], is_parallel : false)
+test('nls1_double', nlst_double, suite: ['fortran', 'double'], is_parallel : false)
+test('nls2_single', nlsti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('nls2_double', nlsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
 # See issue #40 on GitHub
 # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
@@ -1060,9 +1058,9 @@ executable('filtrane', 'src/filtrane/filtranes.f90', link_with : libgalahad_doub
 # executable('trbs', 'src/trb/trbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trbs2', 'src/trb/trbs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trbs3', 'src/trb/trbs3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-# executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 # executable('ssids', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trus', 'src/tru/trus.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
