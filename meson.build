@@ -404,6 +404,7 @@ subdir('src/dgo')
 subdir('src/bqpb')
 subdir('src/ccqp')
 subdir('src/cdqp')
+subdir('src/llst')
 
 # Issue 64
 # subdir('src/clls')
@@ -863,6 +864,11 @@ lancelot_steeringt_double = executable('lancelot_steeringt_double', 'src/lancelo
 test('lancelot_steering_single', lancelot_steeringt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('lancelot_steering_double', lancelot_steeringt_double, suite: ['fortran', 'double'], is_parallel : false)
 
+llstt_single = executable('llstt_single', 'src/llst/llstt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+llstt_double = executable('llstt_double', 'src/llst/llstt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('llst_single', llstt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('llst_double', llstt_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # Issue 56
 # l1qpt_single = executable('l1qpt_single', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
@@ -1143,6 +1149,9 @@ if build_examples
   executable('ccqps2', 'src/ccqp/ccqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('ccqps3', 'src/ccqp/ccqps3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('cdqps', 'src/cdqp/cdqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('llst', 'src/llst/llsts.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('llst2', 'src/llst/llsts2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('llst3', 'src/llst/llsts3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
