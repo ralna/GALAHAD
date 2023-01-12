@@ -3,6 +3,11 @@ option('ciface',
        value : false,
        description : 'whether to build the C interfaces')
 
+option('pythoniface',
+       type : 'boolean',
+       value : false,
+       description : 'whether to build the Python interface in double precision')
+
 option('hslarchive-galahad',
        type : 'string',
        value : '',
