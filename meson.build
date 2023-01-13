@@ -409,7 +409,7 @@ subdir('src/bqpb')
 subdir('src/ccqp')
 subdir('src/cdqp')
 subdir('src/llst')
-subdir('src/lpa')
+# subdir('src/lpa')
 subdir('src/lpb')
 subdir('src/lsqp')
 subdir('src/qpa')
@@ -466,614 +466,365 @@ buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90',
 
 # Unit tests
 
+fortran_tests = [
+    ['single', extra_args_single, libgalahad_single, libmumps_single, libpastix_single],
+    ['double', extra_args_double, libgalahad_double, libmumps_double, libpastix_double]
+]
+
 build_tests = get_option('tests')
 
 if build_tests
-  amdt_single = executable('amdt_single', 'src/amd/amdt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  amdt_double = executable('admt_double', 'src/amd/amdt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('amd_single', amdt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('amd_double', amdt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  bsct_single = executable('bsct_single', 'src/bsc/bsct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bsct_double = executable('bsct_double', 'src/bsc/bsct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('bsc_single', bsct_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bsc_double', bsct_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  checkt_single = executable('checkt_single', 'src/check/checkt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  checkt_double = executable('checkt_double', 'src/check/checkt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('check_single', checkt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('check_double', checkt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  convertt_single = executable('convertt_single', 'src/convert/convertt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  convertt_double = executable('convertt_double', 'src/convert/convertt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('convert_single', convertt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('convert_double', convertt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  fdht_single = executable('fdht_single', 'src/fdh/fdht.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  fdht_double = executable('fdht_double', 'src/fdh/fdht.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('fdh_single', fdht_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('fdh_double', fdht_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  fitt_single = executable('fitt_single', 'src/fit/fitt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  fitt_double = executable('fitt_double', 'src/fit/fitt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('fit_single', fitt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('fit_double', fitt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  gltrt_single = executable('gltrt_single', 'src/gltr/gltrt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  gltrt_double = executable('gltrt_double', 'src/gltr/gltrt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  gltrti_single = executable('gltrti_single', 'src/gltr/gltrti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  gltrti_double = executable('gltrti_double', 'src/gltr/gltrti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('gltr1_single', gltrt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('gltr1_double', gltrt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('gltr2_single', gltrti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('gltr2_double', gltrti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  dgot_single = executable('dgot_single', 'src/dgo/dgot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  dgot_double = executable('dgot_double', 'src/dgo/dgot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  dgoti_single = executable('dgoti_single', 'src/dgo/dgoti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  dgoti_double = executable('dgoti_double', 'src/dgo/dgoti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('dgo1_single', dgot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dgo1_double', dgot_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('dgo2_single', dgoti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dgo2_double', dgoti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  glrtt_single = executable('glrtt_single', 'src/glrt/glrtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  glrtt_double = executable('glrtt_double', 'src/glrt/glrtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('glrt_single', glrtt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('glrt_double', glrtt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  glst_single = executable('glst_single', 'src/gls/glst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  glst_double = executable('glst_double', 'src/gls/glst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('gls_single', glst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('gls_double', glst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  crot_single = executable('crot_single', 'src/cro/crot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  crot_double = executable('crot_double', 'src/cro/crot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('cro_single', crot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('cro_double', crot_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  hasht_single = executable('hasht_single', 'src/hash/hasht.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  hasht_double = executable('hasht_double', 'src/hash/hasht.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('hash_single', hasht_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('hash_double', hasht_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lqrt_single = executable('lqrt_single', 'src/lqr/lqrt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lqrt_double = executable('lqrt_double', 'src/lqr/lqrt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lqr_single', lqrt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lqr_double', lqrt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lancelot_simplet_single = executable('lancelot_simplet_single', 'src/lancelot_simple/lancelot_simplet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lancelot_simplet_double = executable('lancelot_simplet_double', 'src/lancelot_simple/lancelot_simplet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lancelot_simple_single', lancelot_simplet_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lancelot_simple_double', lancelot_simplet_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lqtt_single = executable('lqtt_single', 'src/lqt/lqtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lqtt_double = executable('lqtt_double', 'src/lqt/lqtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lqtt2_single = executable('lqtt2_single', 'src/lqt/lqtt2.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lqtt2_double = executable('lqtt2_double', 'src/lqt/lqtt2.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lqt_single', lqtt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lqt_double', lqtt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lqt2_single', lqtt2_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lqt2_double', lqtt2_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lspt_single = executable('lspt_single', 'src/lsp/lspt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lspt_double = executable('lspt_double', 'src/lsp/lspt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lsp_single', lspt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lsp_double', lspt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lstrt_single = executable('lstrt_single', 'src/lstr/lstrt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lstrt_double = executable('lstrt_double', 'src/lstr/lstrt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lstrti_single = executable('lstrti_single', 'src/lstr/lstrti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lstrti_double = executable('lstrti_double', 'src/lstr/lstrti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lstr1_single', lstrt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lstr1_double', lstrt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lstr2_single', lstrti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lstr2_double', lstrti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  fdct_single = executable('fdct_single', 'src/fdc/fdct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  fdct_double = executable('fdct_double', 'src/fdc/fdct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  fdcti_single = executable('fdcti_single', 'src/fdc/fdcti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  fdcti_double = executable('fdcti_double', 'src/fdc/fdcti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('fdc1_single', fdct_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('fdc1_double', fdct_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('fdc2_single', fdcti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('fdc2_double', fdcti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lsrtt_single = executable('lsrtt_single', 'src/lsrt/lsrtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lsrtt_double = executable('lsrtt_double', 'src/lsrt/lsrtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lsrtti_single = executable('lsrtti_single', 'src/lsrt/lsrtti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lsrtti_double = executable('lsrtti_double', 'src/lsrt/lsrtti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lsrt1_single', lsrtt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lsrt1_double', lsrtt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lsrt2_single', lsrtti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lsrt2_double', lsrtti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  l2rtt_single  = executable('l2rtt_single' , 'src/l2rt/l2rtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  l2rtt_double  = executable('l2rtt_double' , 'src/l2rt/l2rtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  l2rtti_single = executable('l2rtti_single', 'src/l2rt/l2rtti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  l2rtti_double = executable('l2rtti_double', 'src/l2rt/l2rtti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('l2rt1_single', l2rtt_single , suite: ['fortran', 'single'], is_parallel : false)
-  test('l2rt1_double', l2rtt_double , suite: ['fortran', 'double'], is_parallel : false)
-  test('l2rt2_single', l2rtti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('l2rt2_double', l2rtti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  rqst_single  = executable('rqst_single' , 'src/rqs/rqst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  rqst_double  = executable('rqst_double' , 'src/rqs/rqst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  rqsti_single = executable('rqsti_single', 'src/rqs/rqsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  rqsti_double = executable('rqsti_double', 'src/rqs/rqsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('rqs1_single', rqst_single , suite: ['fortran', 'single'], is_parallel : false)
-  test('rqs1_double', rqst_double , suite: ['fortran', 'double'], is_parallel : false)
-  test('rqs2_single', rqsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('rqs2_double', rqsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lhst_single = executable('lhst_single', 'src/lhs/lhst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lhst_double = executable('lhst_double', 'src/lhs/lhst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lhs_single', lhst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lhs_double', lhst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lmst_single = executable('lmst_single', 'src/lms/lmst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lmst_double = executable('lmst_double', 'src/lms/lmst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lms_single', lmst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lms_double', lmst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  miqrt_single = executable('miqrt_single', 'src/miqr/miqrt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  miqrt_double = executable('miqrt_double', 'src/miqr/miqrt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('miqr_single', miqrt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('miqr_double', miqrt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  mopt_single = executable('mopt_single', 'src/mop/mopt.F90', fortran_args : extra_args_single, link_with : [libgalahad_single, libgalahad_blas], include_directories: libgalahad_include)
-  mopt_double = executable('mopt_double', 'src/mop/mopt.F90', fortran_args : extra_args_double, link_with : [libgalahad_double, libgalahad_blas], include_directories: libgalahad_include)
-  test('mop_single', mopt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('mop_double', mopt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  dpst_single = executable('dpst_single', 'src/dps/dpst.F90', fortran_args : extra_args_single, link_with : [libgalahad_single, libgalahad_blas], include_directories: libgalahad_include)
-  dpst_double = executable('dpst_double', 'src/dps/dpst.F90', fortran_args : extra_args_double, link_with : [libgalahad_double, libgalahad_blas], include_directories: libgalahad_include)
-  test('dps_single', dpst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dps_double', dpst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  sllst_single = executable('sllst_single', 'src/slls/sllst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sllst_double = executable('sllst_double', 'src/slls/sllst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  sllsti_single = executable('sllsti_single', 'src/slls/sllsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sllsti_double = executable('sllsti_double', 'src/slls/sllsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('slls1_single', sllst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('slls1_double', sllst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('slls2_single', sllsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('slls2_double', sllsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  nlptt_single = executable('nlptt_single', 'src/nlpt/nlptt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  nlptt_double = executable('nlptt_double', 'src/nlpt/nlptt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('nlpt_single', nlptt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('nlpt_double', nlptt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  presolvet_single = executable('presolvet_single', 'src/presolve/presolvet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  presolvet_double = executable('presolvet_double', 'src/presolve/presolvet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  presolveti_single = executable('presolveti_single', 'src/presolve/presolveti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  presolveti_double = executable('presolveti_double', 'src/presolve/presolveti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('presolve1_single', presolvet_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('presolve1_double', presolvet_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('presolve2_single', presolveti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('presolve2_double', presolveti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  qppt_single = executable('qppt_single', 'src/qpp/qppt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qppt_double = executable('qppt_double', 'src/qpp/qppt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('qpp_single', qppt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qpp_double', qppt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  qptt_single = executable('qptt_single', 'src/qpt/qptt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qptt_double = executable('qptt_double', 'src/qpt/qptt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('qpt_single', qptt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qpt_double', qptt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  randt_single = executable('randt_single', 'src/rand/randt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  randt_double = executable('randt_double', 'src/rand/randt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('rand_single', randt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('rand_double', randt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  rpdt_single = executable('rpdt_single', 'src/rpd/rpdt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  rpdt_double = executable('rpdt_double', 'src/rpd/rpdt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  rpdti_single = executable('rpdti_single', 'src/rpd/rpdti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  rpdti_double = executable('rpdti_double', 'src/rpd/rpdti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('rpd1_single', rpdt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('rpd1_double', rpdt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('rpd2_single', rpdti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('rpd2_double', rpdti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  bllst_single = executable('bllst_single', 'src/blls/bllst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bllst_double = executable('bllst_double', 'src/blls/bllst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  bllsti_single = executable('bllsti_single', 'src/blls/bllsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bllsti_double = executable('bllsti_double', 'src/blls/bllsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('blls1_single', bllst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('blls1_double', bllst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('blls2_single', bllsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('blls2_double', bllsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  trut_single = executable('trut_single', 'src/tru/trut.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  trut_double = executable('trut_double', 'src/tru/trut.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  truti_single = executable('truti_single', 'src/tru/truti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  truti_double = executable('truti_double', 'src/tru/truti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('tru1_single', trut_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('tru1_double', trut_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('tru2_single', truti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('tru2_double', truti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  rootst_single = executable('rootst_single', 'src/roots/rootst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  rootst_double = executable('rootst_double', 'src/roots/rootst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('roots_single', rootst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('roots_double', rootst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  scut_single = executable('scut_single', 'src/scu/scut.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  scut_double = executable('scut_double', 'src/scu/scut.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('scu_single', scut_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('scu_double', scut_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  scalet_single = executable('scalet_single', 'src/scale/scalet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  scalet_double = executable('scalet_double', 'src/scale/scalet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('scale1_single', scalet_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('scale1_double', scalet_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  sect_single = executable('sect_single', 'src/sec/sect.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sect_double = executable('sect_double', 'src/sec/sect.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sec_single', sect_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sec_double', sect_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  shat_single = executable('shat_single', 'src/sha/shat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  shat_double = executable('shat_double', 'src/sha/shat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sha_single', shat_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sha_double', shat_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  silst_single = executable('silst_single', 'src/sils/silst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  silst_double = executable('silst_double', 'src/sils/silst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sils_single', silst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sils_double', silst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  smtt_single = executable('smtt_single', 'src/smt/smtt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  smtt_double = executable('smtt_double', 'src/smt/smtt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('smt_single', smtt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('smt_double', smtt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  sortt_single = executable('sortt_single', 'src/sort/sortt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sortt_double = executable('sortt_double', 'src/sort/sortt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sort_single', sortt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sort_double', sortt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  ugot_single = executable('ugot_single', 'src/ugo/ugot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  ugot_double = executable('ugot_double', 'src/ugo/ugot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  # ugot2_single = executable('ugot2_single', 'src/ugo/ugot2.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  # ugot2_double = executable('ugot2_double', 'src/ugo/ugot2.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('ugo1_single', ugot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('ugo1_double', ugot_double, suite: ['fortran', 'double'], is_parallel : false)
-  # test('ugo2_single', ugot2_single, suite: ['fortran', 'single'], is_parallel : false)
-  # test('ugo2_double', ugot2_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  mkl_pardisot_single = executable('mkl_pardisot_single', 'src/external/mkl/mkl_pardisot.F90', fortran_args : extra_args_single, link_with : libmkl_pardiso, include_directories: libgalahad_include)
-  mkl_pardisot_double = executable('mkl_pardisot_double', 'src/external/mkl/mkl_pardisot.F90', fortran_args : extra_args_double, link_with : libmkl_pardiso, include_directories: libgalahad_include)
-  test('mkl_pardiso_single', mkl_pardisot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('mkl_pardiso_double', mkl_pardisot_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  mumpst_single = executable('mumpst_single', 'src/external/mumps/mumpst.F90', fortran_args : extra_args_single, link_with : libmumps_single, include_directories: libgalahad_include)
-  mumpst_double = executable('mumpst_double', 'src/external/mumps/mumpst.F90', fortran_args : extra_args_double, link_with : libmumps_double, include_directories: libgalahad_include)
-  test('mumps_single', mumpst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('mumps_double', mumpst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  pardisot_single = executable('pardisot_single', 'src/external/pardiso/pardisot.F90', fortran_args : extra_args_single, link_with : libpardiso, include_directories: libgalahad_include)
-  pardisot_double = executable('pardisot_double', 'src/external/pardiso/pardisot.F90', fortran_args : extra_args_double, link_with : libpardiso, include_directories: libgalahad_include)
-  test('pardiso_single', pardisot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('pardiso_double', pardisot_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  slst_single = executable('slst_single', ['src/sls/slst.F90', 'src/dum/mpi.F90'], fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  slst_double = executable('slst_double', ['src/sls/slst.F90', 'src/dum/mpi.F90'], fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  slsti_single = executable('slsti_single', 'src/sls/slsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  slsti_double = executable('slsti_double', 'src/sls/slsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sls1_single', slst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sls1_double', slst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('sls2_single', slsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sls2_double', slsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  ulst_single = executable('ulst_single', 'src/uls/ulst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  ulst_double = executable('ulst_double', 'src/uls/ulst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  ulsti_single = executable('ulsti_single', 'src/uls/ulsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  ulsti_double = executable('ulsti_double', 'src/uls/ulsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('uls1_single', ulst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('uls1_double', ulst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('uls2_single', ulsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('uls2_double', ulsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  irt_single = executable('irt_single', 'src/ir/irt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  irt_double = executable('irt_double', 'src/ir/irt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('ir_single', irt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('ir_double', irt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  icfst_single = executable('icfst_single', 'src/icfs/icfst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  icfst_double = executable('icfst_double', 'src/icfs/icfst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('icfs_single', icfst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('icfs_double', icfst_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  trst_single = executable('trst_single', 'src/trs/trst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  trst_double = executable('trst_double', 'src/trs/trst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  trsti_single = executable('trsti_single', 'src/trs/trsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  trsti_double = executable('trsti_double', 'src/trs/trsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('trs1_single', trst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('trs1_double', trst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('trs2_single', trsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('trs2_double', trsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  trbt_single = executable('trbt_single', 'src/trb/trbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  trbt_double = executable('trbt_double', 'src/trb/trbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  trbti_single = executable('trbti_single', 'src/trb/trbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  trbti_double = executable('trbti_double', 'src/trb/trbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('trb1_single', trbt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('trb1_double', trbt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('trb2_single', trbti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('trb2_double', trbti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  wcpt_single = executable('wcpt_single', 'src/wcp/wcpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  wcpt_double = executable('wcpt_double', 'src/wcp/wcpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  wcpti_single = executable('wcpti_single', 'src/wcp/wcpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  wcpti_double = executable('wcpti_double', 'src/wcp/wcpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('wcp1_single', wcpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('wcp1_double', wcpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('wcp2_single', wcpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('wcp2_double', wcpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  pslst_single = executable('pslst_single', 'src/psls/pslst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  pslst_double = executable('pslst_double', 'src/psls/pslst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  pslsti_single = executable('pslsti_single', 'src/psls/pslsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  pslsti_double = executable('pslsti_double', 'src/psls/pslsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('psls1_single', pslst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lsqpt_single = executable('lsqpt_single', 'src/lsqp/lsqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lsqpt_double = executable('lsqpt_double', 'src/lsqp/lsqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lsqpti_single = executable('lsqpti_single', 'src/lsqp/lsqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lsqpti_double = executable('lsqpti_double', 'src/lsqp/lsqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lsqp1_single', lsqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lsqp1_double', lsqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lsqp2_single', lsqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lsqp2_double', lsqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lpat_single = executable('lpat_single', 'src/lpa/lpat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lpat_double = executable('lpat_double', 'src/lpa/lpat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lpati_single = executable('lpati_single', 'src/lpa/lpati.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lpati_double = executable('lpati_double', 'src/lpa/lpati.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lpa1_single', lpat_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lpa1_double', lpat_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lpa2_single', lpati_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lpa2_double', lpati_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lpbt_single = executable('lpbt_single', 'src/lpb/lpbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lpbt_double = executable('lpbt_double', 'src/lpb/lpbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  lpbti_single = executable('lpbti_single', 'src/lpb/lpbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lpbti_double = executable('lpbti_double', 'src/lpb/lpbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lpb1_single', lpbt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lpb1_double', lpbt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('lpb2_single', lpbti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lpb2_double', lpbti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  arct_single = executable('arct_single', 'src/arc/arct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  arct_double = executable('arct_double', 'src/arc/arct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  arcti_single = executable('arcti_single', 'src/arc/arcti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  arcti_double = executable('arcti_double', 'src/arc/arcti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('arc1_single', arct_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('arc1_double', arct_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('arc2_single', arcti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('arc2_double', arcti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  sblst_single = executable('sblst_single', 'src/sbls/sblst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sblst_double = executable('sblst_double', 'src/sbls/sblst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  sblsti_single = executable('sblsti_single', 'src/sbls/sblsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  sblsti_double = executable('sblsti_double', 'src/sbls/sblsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('sbls1_single', sblst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sbls1_double', sblst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('sbls2_single', sblsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('sbls2_double', sblsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  cqpt_single = executable('cqpt_single', 'src/cqp/cqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  cqpt_double = executable('cqpt_double', 'src/cqp/cqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  cqpti_single = executable('cqpti_single', 'src/cqp/cqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  cqpti_double = executable('cqpti_double', 'src/cqp/cqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('cqp1_single', cqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('cqp1_double', cqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('cqp2_single', cqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('cqp2_double', cqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  bqpt_single = executable('bqpt_single', 'src/bqp/bqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bqpt_double = executable('bqpt_double', 'src/bqp/bqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  bqpti_single = executable('bqpti_single', 'src/bqp/bqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bqpti_double = executable('bqpti_double', 'src/bqp/bqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('bqp1_single', bqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bqp1_double', bqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('bqp2_single', bqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bqp2_double', bqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  wsmpt_single = executable('wsmpt_single', 'src/external/wsmp/wsmpt.F90', fortran_args : extra_args_single, link_with : libwsmp, include_directories: libgalahad_include)
-  wsmpt_double = executable('wsmpt_double', 'src/external/wsmp/wsmpt.F90', fortran_args : extra_args_double, link_with : libwsmp, include_directories: libgalahad_include)
-  test('wsmp_single', wsmpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('wsmp_double', wsmpt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lancelott_single = executable('lancelott_single', 'src/lancelot/lancelott.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lancelott_double = executable('lancelott_double', 'src/lancelot/lancelott.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lancelot_single', lancelott_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lancelot_double', lancelott_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  lancelot_steeringt_single = executable('lancelot_steeringt_single', 'src/lancelot/lancelot_steeringt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  lancelot_steeringt_double = executable('lancelot_steeringt_double', 'src/lancelot/lancelot_steeringt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('lancelot_steering_single', lancelot_steeringt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('lancelot_steering_double', lancelot_steeringt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  llstt_single = executable('llstt_single', 'src/llst/llstt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  llstt_double = executable('llstt_double', 'src/llst/llstt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('llst_single', llstt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('llst_double', llstt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  # Issue 56
-  # l1qpt_single = executable('l1qpt_single', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  l1qpt_double = executable('l1qpt_double', 'src/l1qp/l1qpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  # test('l1qp_single', l1qpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('l1qp_double', l1qpt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  dlpt_single = executable('dlpt_single', 'src/dlp/dlpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  dlpt_double = executable('dlpt_double', 'src/dlp/dlpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('dlp_single', dlpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dlp_double', dlpt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  dqpt_single = executable('dqpt_single', 'src/dqp/dqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  dqpt_double = executable('dqpt_double', 'src/dqp/dqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  dqpti_single = executable('dqpti_single', 'src/dqp/dqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  dqpti_double = executable('dqpti_double', 'src/dqp/dqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('dqp1_single', dqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dqp1_double', dqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('dqp2_single', dqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('dqp2_double', dqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  eqpt_single = executable('eqpt_single', 'src/eqp/eqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  eqpt_double = executable('eqpt_double', 'src/eqp/eqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  eqpti_single = executable('eqpti_single', 'src/eqp/eqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  eqpti_double = executable('eqpti_double', 'src/eqp/eqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('eqp1_single', eqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('eqp1_double', eqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('eqp2_single', eqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('eqp2_double', eqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  bgot_single = executable('bgot_single', 'src/bgo/bgot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bgot_double = executable('bgot_double', 'src/bgo/bgot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  bgoti_single = executable('bgoti_single', 'src/bgo/bgoti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bgoti_double = executable('bgoti_double', 'src/bgo/bgoti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('bgo1_single', bgot_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bgo1_double', bgot_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('bgo2_single', bgoti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bgo2_double', bgoti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  nlst_single = executable('nlst_single', 'src/nls/nlst.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  nlst_double = executable('nlst_double', 'src/nls/nlst.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  nlsti_single = executable('nlsti_single', 'src/nls/nlsti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  nlsti_double = executable('nlsti_double', 'src/nls/nlsti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('nls1_single', nlst_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('nls1_double', nlst_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('nls2_single', nlsti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('nls2_double', nlsti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  bqpbt_single = executable('bqpbt_single', 'src/bqpb/bqpbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bqpbt_double = executable('bqpbt_double', 'src/bqpb/bqpbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  bqpbti_single = executable('bqpbti_single', 'src/bqpb/bqpbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  bqpbti_double = executable('bqpbti_double', 'src/bqpb/bqpbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('bqpb1_single', bqpbt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bqpb1_double', bqpbt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('bqpb2_single', bqpbti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('bqpb2_double', bqpbti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  ccqpt_single = executable('ccqpt_single', 'src/ccqp/ccqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  ccqpt_double = executable('ccqpt_double', 'src/ccqp/ccqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  ccqpti_single = executable('ccqpti_single', 'src/ccqp/ccqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  ccqpti_double = executable('ccqpti_double', 'src/ccqp/ccqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('ccqp1_single', ccqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('ccqp1_double', ccqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('ccqp2_single', ccqpti_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('ccqp2_double', ccqpti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  qpat_single = executable('qpat_single', 'src/qpa/qpat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qpat_double = executable('qpat_double', 'src/qpa/qpat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  qpati_single = executable('qpati_single', 'src/qpa/qpati.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qpati_double = executable('qpati_double', 'src/qpa/qpati.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('qpa1_single', qpat_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qpa1_double', qpat_double, suite: ['fortran', 'double'], is_parallel : false)
-  test('qpa2_single', qpati_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qpa2_double', qpati_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  # Issue 71
-  qpbt_single = executable('qpbt_single', 'src/qpb/qpbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qpbt_double = executable('qpbt_double', 'src/qpb/qpbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  # qpbti_single = executable('qpbti_single', 'src/qpb/qpbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  # qpbti_double = executable('qpbti_double', 'src/qpb/qpbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('qpb1_single', qpbt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qpb1_double', qpbt_double, suite: ['fortran', 'double'], is_parallel : false)
-  # test('qpb2_single', qpbti_single, suite: ['fortran', 'single'], is_parallel : false)
-  # test('qpb2_double', qpbti_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  # See issue #40 on GitHub
-  # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
-  # pastixt_double = executable('pastixt_double', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_double, link_with : [libspmf, libpastix_double], include_directories: libgalahad_include)
-  # test('pastix_single', pastixt_single, suite: ['fortran', 'single'], is_parallel : false)
-  # test('pastix_double', pastixt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  filtranet_single = executable('filtranet_single', 'src/filtrane/filtranet.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  filtranet_double = executable('filtranet_double', 'src/filtrane/filtranet.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('filtrane_single', filtranet_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('filtrane_double', filtranet_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  cdqpt_single = executable('cdqpt_single', 'src/cdqp/cdqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  cdqpt_double = executable('cdqpt_double', 'src/cdqp/cdqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('cdqp_single', cdqpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('cdqp_double', cdqpt_double, suite: ['fortran', 'double'], is_parallel : false)
-
-  qpt_single = executable('qpt_single', 'src/qp/qpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-  qpt_double = executable('qpt_double', 'src/qp/qpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-  test('qp_single', qpt_single, suite: ['fortran', 'single'], is_parallel : false)
-  test('qp_double', qpt_double, suite: ['fortran', 'double'], is_parallel : false)
+  fortran_tests_folder = 'share/tests/fortran'
+  foreach val: fortran_tests
+    amdt = executable('amdt_'+val[0], 'src/amd/amdt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('amdt_'+val[0], amdt, suite: ['amd', 'fortran', val[0]], is_parallel : false)
+
+    bsct = executable('bsct_'+val[0], 'src/bsc/bsct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('bsct_'+val[0], bsct, suite: ['bsc', 'fortran', val[0]], is_parallel : false)
+
+    checkt = executable('checkt_'+val[0], 'src/check/checkt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('checkt_'+val[0], checkt, suite: ['check', 'fortran', val[0]], is_parallel : false)
+
+    convertt = executable('convertt_'+val[0], 'src/convert/convertt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('convertt_'+val[0], convertt, suite: ['convert', 'fortran', val[0]], is_parallel : false)
+
+    fdht = executable('fdht_'+val[0], 'src/fdh/fdht.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('fdht_'+val[0], fdht, suite: ['fdh', 'fortran', val[0]], is_parallel : false)
+
+    fitt = executable('fitt_'+val[0], 'src/fit/fitt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('fitt_'+val[0], fitt, suite: ['fit', 'fortran', val[0]], is_parallel : false)
+
+    gltrt = executable('gltrt_'+val[0], 'src/gltr/gltrt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    gltrti = executable('gltrti_'+val[0], 'src/gltr/gltrti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('gltrt_'+val[0], gltrt, suite: ['gltr', 'fortran', val[0]], is_parallel : false)
+    test('gltrti_'+val[0], gltrti, suite: ['gltr', 'fortran', val[0]], is_parallel : false)
+
+    dgot = executable('dgot_'+val[0], 'src/dgo/dgot.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    dgoti = executable('dgoti_'+val[0], 'src/dgo/dgoti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('dgot_'+val[0], dgot, suite: ['dgo', 'fortran', val[0]], is_parallel : false)
+    test('dgoti_'+val[0], dgoti, suite: ['dgo', 'fortran', val[0]], is_parallel : false)
+
+    glrtt = executable('glrtt_'+val[0], 'src/glrt/glrtt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('glrtt_'+val[0], glrtt, suite: ['glrt', 'fortran', val[0]], is_parallel : false)
+
+    glst = executable('glst_'+val[0], 'src/gls/glst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('glst_'+val[0], glst, suite: ['gls', 'fortran', val[0]], is_parallel : false)
+
+    crot = executable('crot_'+val[0], 'src/cro/crot.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('crot_'+val[0], crot, suite: ['cro', 'fortran', val[0]], is_parallel : false)
+
+    hasht = executable('hasht_'+val[0], 'src/hash/hasht.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('hasht_'+val[0], hasht, suite: ['hash', 'fortran', val[0]], is_parallel : false)
+
+    lqrt = executable('lqrt_'+val[0], 'src/lqr/lqrt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lqrt_'+val[0], lqrt, suite: ['lqr', 'fortran', val[0]], is_parallel : false)
+
+    lancelot_simplet = executable('lancelot_simplet_'+val[0], 'src/lancelot_simple/lancelot_simplet.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lancelot_simplet_'+val[0], lancelot_simplet, suite: ['lancelot_simple', 'fortran', val[0]], is_parallel : false)
+
+    lqtt = executable('lqtt_'+val[0], 'src/lqt/lqtt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lqtt2 = executable('lqtt2_'+val[0], 'src/lqt/lqtt2.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lqtt_'+val[0], lqtt, suite: ['lqt', 'fortran', val[0]], is_parallel : false)
+    test('lqtt2_'+val[0], lqtt2, suite: ['lqt', 'fortran', val[0]], is_parallel : false)
+
+    lspt = executable('lspt_'+val[0], 'src/lsp/lspt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lspt_'+val[0], lspt, suite: ['lsp', 'fortran', val[0]], is_parallel : false)
+
+    lstrt = executable('lstrt_'+val[0], 'src/lstr/lstrt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lstrti = executable('lstrti_'+val[0], 'src/lstr/lstrti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lstrt_'+val[0], lstrt, suite: ['lstr', 'fortran', val[0]], is_parallel : false)
+    test('lstrti_'+val[0], lstrti, suite: ['lstr', 'fortran', val[0]], is_parallel : false)
+
+    fdct = executable('fdct_'+val[0], 'src/fdc/fdct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    fdcti = executable('fdcti_'+val[0], 'src/fdc/fdcti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('fdct_'+val[0], fdct, suite: ['fdc', 'fortran', val[0]], is_parallel : false)
+    test('fdcti_'+val[0], fdcti, suite: ['fdc', 'fortran', val[0]], is_parallel : false)
+
+    lsrtt = executable('lsrtt_'+val[0], 'src/lsrt/lsrtt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lsrtti = executable('lsrtti_'+val[0], 'src/lsrt/lsrtti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lsrtt_'+val[0], lsrtt, suite: ['lsrt', 'fortran', val[0]], is_parallel : false)
+    test('lsrtti_'+val[0], lsrtti, suite: ['lsrt', 'fortran', val[0]], is_parallel : false)
+
+    l2rtt  = executable('l2rtt_'+val[0] , 'src/l2rt/l2rtt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    l2rtti = executable('l2rtti_'+val[0], 'src/l2rt/l2rtti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('l2rtt_'+val[0], l2rtt, suite: ['l2rt', 'fortran', val[0]], is_parallel : false)
+    test('l2rtti_'+val[0], l2rtti, suite: ['l2rt', 'fortran', val[0]], is_parallel : false)
+
+    rqst  = executable('rqst_'+val[0] , 'src/rqs/rqst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    rqsti = executable('rqsti_'+val[0], 'src/rqs/rqsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('rqst_'+val[0], rqst, suite: ['rqs', 'fortran', val[0]], is_parallel : false)
+    test('rqsti_'+val[0], rqsti, suite: ['rqs', 'fortran', val[0]], is_parallel : false)
+
+    lhst = executable('lhst_'+val[0], 'src/lhs/lhst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lhst_'+val[0], lhst, suite: ['lhs', 'fortran', val[0]], is_parallel : false)
+
+    lmst = executable('lmst_'+val[0], 'src/lms/lmst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lmst_'+val[0], lmst, suite: ['lms', 'fortran', val[0]], is_parallel : false)
+
+    miqrt = executable('miqrt_'+val[0], 'src/miqr/miqrt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('miqrt_'+val[0], miqrt, suite: ['miqr', 'fortran', val[0]], is_parallel : false)
+
+    mopt = executable('mopt_'+val[0], 'src/mop/mopt.F90', fortran_args : val[1], link_with : [val[2], libgalahad_blas], include_directories: libgalahad_include)
+    test('mopt_'+val[0], mopt, suite: ['mop', 'fortran', val[0]], is_parallel : false)
+
+    dpst = executable('dpst_'+val[0], 'src/dps/dpst.F90', fortran_args : val[1], link_with : [val[2], libgalahad_blas], include_directories: libgalahad_include)
+    test('dpst_'+val[0], dpst, suite: ['dps', 'fortran', val[0]], is_parallel : false)
+
+    sllst = executable('sllst_'+val[0], 'src/slls/sllst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    sllsti = executable('sllsti_'+val[0], 'src/slls/sllsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sllst_'+val[0], sllst, suite: ['slls', 'fortran', val[0]], is_parallel : false)
+    test('sllsti_'+val[0], sllsti, suite: ['slls', 'fortran', val[0]], is_parallel : false)
+
+    nlptt = executable('nlptt_'+val[0], 'src/nlpt/nlptt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('nlptt_'+val[0], nlptt, suite: ['nlpt', 'fortran', val[0]], is_parallel : false)
+
+    presolvet = executable('presolvet_'+val[0], 'src/presolve/presolvet.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    presolveti = executable('presolveti_'+val[0], 'src/presolve/presolveti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('presolvet_'+val[0], presolvet, suite: ['presolve', 'fortran', val[0]], is_parallel : false)
+    test('presolveti_'+val[0], presolveti, suite: ['presolve', 'fortran', val[0]], is_parallel : false)
+
+    qppt = executable('qppt_'+val[0], 'src/qpp/qppt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qppt_'+val[0], qppt, suite: ['qpp', 'fortran', val[0]], is_parallel : false)
+
+    qptt = executable('qptt_'+val[0], 'src/qpt/qptt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qptt_'+val[0], qptt, suite: ['qpt', 'fortran', val[0]], is_parallel : false)
+
+    randt = executable('randt_'+val[0], 'src/rand/randt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('randt_'+val[0], randt, suite: ['rand', 'fortran', val[0]], is_parallel : false)
+
+    rpdt = executable('rpdt_'+val[0], 'src/rpd/rpdt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    rpdti = executable('rpdti_'+val[0], 'src/rpd/rpdti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('rpdt_'+val[0], rpdt, suite: ['rpd', 'fortran', val[0]], is_parallel : false)
+    test('rpdti_'+val[0], rpdti, suite: ['rpd', 'fortran', val[0]], is_parallel : false)
+
+    bllst = executable('bllst_'+val[0], 'src/blls/bllst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    bllsti = executable('bllsti_'+val[0], 'src/blls/bllsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('bllst_'+val[0], bllst, suite: ['blls', 'fortran', val[0]], is_parallel : false)
+    test('bllsti_'+val[0], bllsti, suite: ['blls', 'fortran', val[0]], is_parallel : false)
+
+    trut = executable('trut_'+val[0], 'src/tru/trut.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    truti = executable('truti_'+val[0], 'src/tru/truti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('trut_'+val[0], trut, suite: ['tru', 'fortran', val[0]], is_parallel : false)
+    test('truti_'+val[0], truti, suite: ['tru', 'fortran', val[0]], is_parallel : false)
+
+    rootst = executable('rootst_'+val[0], 'src/roots/rootst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('rootst_'+val[0], rootst, suite: ['roots', 'fortran', val[0]], is_parallel : false)
+
+    scut = executable('scut_'+val[0], 'src/scu/scut.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('scut_'+val[0], scut, suite: ['scu', 'fortran', val[0]], is_parallel : false)
+
+    scalet = executable('scalet_'+val[0], 'src/scale/scalet.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('scalet_'+val[0], scalet, suite: ['scale', 'fortran', val[0]], is_parallel : false)
+
+    sect = executable('sect_'+val[0], 'src/sec/sect.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sect_'+val[0], sect, suite: ['sec', 'fortran', val[0]], is_parallel : false)
+
+    shat = executable('shat_'+val[0], 'src/sha/shat.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('shat_'+val[0], shat, suite: ['sha', 'fortran', val[0]], is_parallel : false)
+
+    silst = executable('silst_'+val[0], 'src/sils/silst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('silst_'+val[0], silst, suite: ['sils', 'fortran', val[0]], is_parallel : false)
+
+    smtt = executable('smtt_'+val[0], 'src/smt/smtt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('smtt_'+val[0], smtt, suite: ['smt', 'fortran', val[0]], is_parallel : false)
+
+    sortt = executable('sortt_'+val[0], 'src/sort/sortt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sortt_'+val[0], sortt, suite: ['sort', 'fortran', val[0]], is_parallel : false)
+
+    ugot = executable('ugot_'+val[0], 'src/ugo/ugot.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # ugot2 = executable('ugot2_'+val[0], 'src/ugo/ugot2.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ugot_'+val[0], ugot, suite: ['ugo', 'fortran', val[0]], is_parallel : false)
+    # test('ugot2_'+val[0], ugot2, suite: ['ugo', fortran', val[0]], is_parallel : false)
+
+    mkl_pardisot = executable('mkl_pardisot_'+val[0], 'src/external/mkl/mkl_pardisot.F90', fortran_args : val[1], link_with : libmkl_pardiso, include_directories: libgalahad_include)
+    test('mkl_pardisot_'+val[0], mkl_pardisot, suite: ['mkl_pardiso', 'fortran', val[0]], is_parallel : false)
+
+    mumpst = executable('mumpst_'+val[0], 'src/external/mumps/mumpst.F90', fortran_args : val[1], link_with : val[3], include_directories: libgalahad_include)
+    test('mumpst_'+val[0], mumpst, suite: ['mumps', 'fortran', val[0]], is_parallel : false)
+
+    pardisot = executable('pardisot_'+val[0], 'src/external/pardiso/pardisot.F90', fortran_args : val[1], link_with : libpardiso, include_directories: libgalahad_include)
+    test('pardisot_'+val[0], pardisot, suite: ['pardiso', 'fortran', val[0]], is_parallel : false)
+
+    slst = executable('slst_'+val[0], ['src/sls/slst.F90', 'src/dum/mpi.F90'], fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    slsti = executable('slsti_'+val[0], 'src/sls/slsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('slst_'+val[0], slst, suite: ['sls', 'fortran', val[0]], is_parallel : false)
+    test('slsti_'+val[0], slsti, suite: ['sls', 'fortran', val[0]], is_parallel : false)
+
+    ulst = executable('ulst_'+val[0], 'src/uls/ulst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    ulsti = executable('ulsti_'+val[0], 'src/uls/ulsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ulst_'+val[0], ulst, suite: ['uls', 'fortran', val[0]], is_parallel : false)
+    test('ulsti_'+val[0], ulsti, suite: ['uls', 'fortran', val[0]], is_parallel : false)
+
+    irt = executable('irt_'+val[0], 'src/ir/irt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ir_'+val[0], irt, suite: ['ir', 'fortran', val[0]], is_parallel : false)
+
+    icfst = executable('icfst_'+val[0], 'src/icfs/icfst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('icfst_'+val[0], icfst, suite: ['icfs', 'fortran', val[0]], is_parallel : false)
+
+    trst = executable('trst_'+val[0], 'src/trs/trst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    trsti = executable('trsti_'+val[0], 'src/trs/trsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('trst_'+val[0], trst, suite: ['trs', 'fortran', val[0]], is_parallel : false)
+    test('trsti_'+val[0], trsti, suite: ['trs', 'fortran', val[0]], is_parallel : false)
+
+    trbt = executable('trbt_'+val[0], 'src/trb/trbt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    trbti = executable('trbti_'+val[0], 'src/trb/trbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('trbt_'+val[0], trbt, suite: ['trb', 'fortran', val[0]], is_parallel : false)
+    test('trbti_'+val[0], trbti, suite: ['trb', 'fortran', val[0]], is_parallel : false)
+
+    wcpt = executable('wcpt_'+val[0], 'src/wcp/wcpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    wcpti = executable('wcpti_'+val[0], 'src/wcp/wcpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('wcpt_'+val[0], wcpt, suite: ['wcp', 'fortran', val[0]], is_parallel : false)
+    test('wcpti_'+val[0], wcpti, suite: ['wcp', 'fortran', val[0]], is_parallel : false)
+
+    pslst = executable('pslst_'+val[0], 'src/psls/pslst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    pslsti = executable('pslsti_'+val[0], 'src/psls/pslsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('pslst_'+val[0], pslst, suite: ['psls', 'fortran', val[0]], is_parallel : false)
+    test('pslsti_'+val[0], pslsti, suite: ['psls', 'fortran', val[0]], is_parallel : false)
+
+    lsqpt = executable('lsqpt_'+val[0], 'src/lsqp/lsqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lsqpti = executable('lsqpti_'+val[0], 'src/lsqp/lsqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lsqpt_'+val[0], lsqpt, suite: ['lsqp', 'fortran', val[0]], is_parallel : false)
+    test('lsqpti_'+val[0], lsqpti, suite: ['lsqp', 'fortran', val[0]], is_parallel : false)
+
+    # lpat = executable('lpat_'+val[0], 'src/lpa/lpat.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # lpati = executable('lpati_'+val[0], 'src/lpa/lpati.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # test('lpat_'+val[0], lpat, suite: ['lpa', 'fortran', val[0]], is_parallel : false)
+    # test('lpati_'+val[0], lpati, suite: ['lpa', 'fortran', val[0]], is_parallel : false)
+
+    lpbt = executable('lpbt_'+val[0], 'src/lpb/lpbt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lpbti = executable('lpbti_'+val[0], 'src/lpb/lpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lpbt_'+val[0], lpbt, suite: ['lpb', 'fortran', val[0]], is_parallel : false)
+    test('lpbti_'+val[0], lpbti, suite: ['lpb', 'fortran', val[0]], is_parallel : false)
+
+    arct = executable('arct_'+val[0], 'src/arc/arct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    arcti = executable('arcti_'+val[0], 'src/arc/arcti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('arct_'+val[0], arct, suite: ['arc', 'fortran', val[0]], is_parallel : false)
+    test('arcti_'+val[0], arcti, suite: ['arc', 'fortran', val[0]], is_parallel : false)
+
+    sblst = executable('sblst_'+val[0], 'src/sbls/sblst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    sblsti = executable('sblsti_'+val[0], 'src/sbls/sblsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sblst_'+val[0], sblst, suite: ['sbls', 'fortran', val[0]], is_parallel : false)
+    test('sblsti_'+val[0], sblsti, suite: ['sbls', 'fortran', val[0]], is_parallel : false)
+
+    cqpt = executable('cqpt_'+val[0], 'src/cqp/cqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    cqpti = executable('cqpti_'+val[0], 'src/cqp/cqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('cqpt_'+val[0], cqpt, suite: ['cqp', 'fortran', val[0]], is_parallel : false)
+    test('cqpti_'+val[0], cqpti, suite: ['cqp', 'fortran', val[0]], is_parallel : false)
+
+    bqpt = executable('bqpt_'+val[0], 'src/bqp/bqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    bqpti = executable('bqpti_'+val[0], 'src/bqp/bqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('bqpt_'+val[0], bqpt, suite: ['bqp', 'fortran', val[0]], is_parallel : false)
+    test('bqpti_'+val[0], bqpti, suite: ['bqp', 'fortran', val[0]], is_parallel : false)
+
+    wsmpt = executable('wsmpt_'+val[0], 'src/external/wsmp/wsmpt.F90', fortran_args : val[1], link_with : libwsmp, include_directories: libgalahad_include)
+    test('wsmpt_'+val[0], wsmpt, suite: ['wsmp', 'fortran', val[0]], is_parallel : false)
+
+    lancelott = executable('lancelott_'+val[0], 'src/lancelot/lancelott.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    lancelot_steeringt = executable('lancelot_steeringt_'+val[0], 'src/lancelot/lancelot_steeringt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('lancelott_'+val[0], lancelott, suite: ['lancelot', 'fortran', val[0]], is_parallel : false)
+    test('lancelot_steeringt_'+val[0], lancelot_steeringt, suite: ['lancelot', 'fortran', val[0]], is_parallel : false)
+
+    llstt = executable('llstt_'+val[0], 'src/llst/llstt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('llstt_'+val[0], llstt, suite: ['llst', 'fortran', val[0]], is_parallel : false)
+
+    # Issue #56
+    # l1qpt = executable('l1qpt_'+val[0], 'src/l1qp/l1qpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # test('l1qpt_'+val[0], l1qpt, suite: ['llqp', 'fortran', val[0]], is_parallel : false)
+
+    dlpt = executable('dlpt_'+val[0], 'src/dlp/dlpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('dlpt_'+val[0], dlpt, suite: ['qlp', 'fortran', val[0]], is_parallel : false)
+
+    dqpt = executable('dqpt_'+val[0], 'src/dqp/dqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    dqpti = executable('dqpti_'+val[0], 'src/dqp/dqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('dqpt_'+val[0], dqpt, suite: ['dqp', 'fortran', val[0]], is_parallel : false)
+    test('dqpti_'+val[0], dqpti, suite: ['dqp', 'fortran', val[0]], is_parallel : false)
+
+    eqpt = executable('eqpt_'+val[0], 'src/eqp/eqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    eqpti = executable('eqpti_'+val[0], 'src/eqp/eqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('eqpt_'+val[0], eqpt, suite: ['eqp', 'fortran', val[0]], is_parallel : false)
+    test('eqpti_'+val[0], eqpti, suite: ['eqp', 'fortran', val[0]], is_parallel : false)
+
+    bgot = executable('bgot_'+val[0], 'src/bgo/bgot.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    bgoti = executable('bgoti_'+val[0], 'src/bgo/bgoti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('bgot_'+val[0], bgot, suite: ['bgo', 'fortran', val[0]], is_parallel : false)
+    test('bgoti_'+val[0], bgoti, suite: ['bgo', 'fortran', val[0]], is_parallel : false)
+
+    nlst = executable('nlst_'+val[0], 'src/nls/nlst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    nlsti = executable('nlsti_'+val[0], 'src/nls/nlsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('nlst_'+val[0], nlst, suite: ['nls', 'fortran', val[0]], is_parallel : false)
+    test('nlsti_'+val[0], nlsti, suite: ['nls', 'fortran', val[0]], is_parallel : false)
+
+    bqpbt = executable('bqpbt_'+val[0], 'src/bqpb/bqpbt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    bqpbti = executable('bqpbti_'+val[0], 'src/bqpb/bqpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('bqpbt_'+val[0], bqpbt, suite: ['bqpb', 'fortran', val[0]], is_parallel : false)
+    test('bqpbti_'+val[0], bqpbti, suite: ['bqpb', 'fortran', val[0]], is_parallel : false)
+
+    ccqpt = executable('ccqpt_'+val[0], 'src/ccqp/ccqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    ccqpti = executable('ccqpti_'+val[0], 'src/ccqp/ccqpti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ccqpt_'+val[0], ccqpt, suite: ['ccqp', 'fortran', val[0]], is_parallel : false)
+    test('ccqpti_'+val[0], ccqpti, suite: ['ccqp', 'fortran', val[0]], is_parallel : false)
+
+    qpat = executable('qpat_'+val[0], 'src/qpa/qpat.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    qpati = executable('qpati_'+val[0], 'src/qpa/qpati.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qpat_'+val[0], qpat, suite: ['qpa', 'fortran', val[0]], is_parallel : false)
+    test('qpati_'+val[0], qpati, suite: ['qpa', 'fortran', val[0]], is_parallel : false)
+
+    # Issue #71
+    qpbt = executable('qpbt_'+val[0], 'src/qpb/qpbt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # qpbti = executable('qpbti_'+val[0], 'src/qpb/qpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qpbt_'+val[0], qpbt, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
+    # test('qpbti_'+val[0], qpbti, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
+
+    # Issue #40
+    # pastixt = executable('pastixt_'+val[0], 'src/external/pastix/pastixt.F90', fortran_args : val[1], link_with : [val[4], libspmf], include_directories: libgalahad_include)
+    # test('pastixt_'+val[0], pastixt, suite: ['pastix', 'fortran', val[0]], is_parallel : false)
+
+    filtranet = executable('filtranet_'+val[0], 'src/filtrane/filtranet.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('filtranet_'+val[0], filtranet, suite: ['filtrane', 'fortran', val[0]], is_parallel : false)
+
+    cdqpt = executable('cdqpt_'+val[0], 'src/cdqp/cdqpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('cdqpt_'+val[0], cdqpt, suite: ['cdqp', 'fortran', val[0]], is_parallel : false)
+
+    qpt = executable('qpt_'+val[0], 'src/qp/qpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qpt_'+val[0], qpt, suite: ['qp', 'fortran', val[0]], is_parallel : false)
+
+    # Issue #71
+    # qpct = executable('qpct_'+val[0], 'src/qpc/qpct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    # test('qpct_'+val[0], qpct, suite: ['qpc', 'fortran', val[0]], is_parallel : false)
+  endforeach
 endif
 
-# Issue 71
-# qpct_single = executable('qpct_single', 'src/qpc/qpct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
-# qpct_double = executable('qpct_double', 'src/qpc/qpct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-# test('qpc_single', qpct_single, suite: ['fortran', 'single'], is_parallel : false)
-# test('qpc_double', qpct_double, suite: ['fortran', 'double'], is_parallel : false)
+if build_tests and build_ciface
+  c_tests_folder = 'share/tests/C'
+  c_tests = [
+    ['single', extra_args_single, libgalahad_c_single],
+    ['double', extra_args_double, libgalahad_c_double]
+  ]
+  foreach val: c_tests 
+    ugot_c = executable('ugot_c_'+val[0], 'src/ugo/C/ugot.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ugo_c_'+val[0], ugot_c, suite: ['C', val[0]], is_parallel : false)
 
-if build_ciface
-  ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  ugot_c_double = executable('ugot_c_double', 'src/ugo/C/ugot.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('ugo_c_single', ugot_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('ugo_c_double', ugot_c_double, suite: ['C', 'double'], is_parallel : false)
+    slst_c = executable('slst_c_'+val[0], 'src/sls/C/slst.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sls_c_'+val[0], slst_c, suite: ['C', val[0]], is_parallel : false)
 
-  slst_c_single = executable('slst_c_single', 'src/sls/C/slst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  slst_c_double = executable('slst_c_double', 'src/sls/C/slst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('sls_c_single', slst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('sls_c_double', slst_c_double, suite: ['C', 'double'], is_parallel : false)
+    slstf_c = executable('slstf_c_'+val[0], 'src/sls/C/slstf.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sls2_c_'+val[0], slst_c, suite: ['C', val[0]], is_parallel : false)
 
-  slstf_c_single = executable('slstf_c_single', 'src/sls/C/slstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  slstf_c_double = executable('slstf_c_double', 'src/sls/C/slstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('sls2_c_single', slst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('sls2_c_double', slst_c_double, suite: ['C', 'double'], is_parallel : false)
+    ulst_c = executable('ulst_c_'+val[0], 'src/uls/C/ulst.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('uls_c_'+val[0], ulst_c, suite: ['C', val[0]], is_parallel : false)
 
-  ulst_c_single = executable('ulst_c_single', 'src/uls/C/ulst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  ulst_c_double = executable('ulst_c_double', 'src/uls/C/ulst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('uls_c_single', ulst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('uls_c_double', ulst_c_double, suite: ['C', 'double'], is_parallel : false)
+    ulstf_c = executable('ulstf_c_'+val[0], 'src/uls/C/ulstf.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('uls2_c_'+val[0], ulst_c, suite: ['C', val[0]], is_parallel : false)
 
-  ulstf_c_single = executable('ulstf_c_single', 'src/uls/C/ulstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  ulstf_c_double = executable('ulstf_c_double', 'src/uls/C/ulstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('uls2_c_single', ulst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('uls2_c_double', ulst_c_double, suite: ['C', 'double'], is_parallel : false)
+    sblst_c = executable('sblst_c_'+val[0], 'src/sbls/C/sblst.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sbls_c_'+val[0], sblst_c, suite: ['C', val[0]], is_parallel : false)
 
-  sblst_c_single = executable('sblst_c_single', 'src/sbls/C/sblst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  sblst_c_double = executable('sblst_c_double', 'src/sbls/C/sblst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('sbls_c_single', sblst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('sbls_c_double', sblst_c_double, suite: ['C', 'double'], is_parallel : false)
+    sblstf_c = executable('sblstf_c_'+val[0], 'src/sbls/C/sblstf.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('sbls2_c_'+val[0], sblst_c, suite: ['C', val[0]], is_parallel : false)
 
-  sblstf_c_single = executable('sblstf_c_single', 'src/sbls/C/sblstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  sblstf_c_double = executable('sblstf_c_double', 'src/sbls/C/sblstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('sbls2_c_single', sblst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('sbls2_c_double', sblst_c_double, suite: ['C', 'double'], is_parallel : false)
-
-  pslst_c_single = executable('pslst_c_single', 'src/psls/C/pslst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  pslst_c_double = executable('pslst_c_double', 'src/psls/C/pslst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('psls_c_single', pslst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('psls_c_double', pslst_c_double, suite: ['C', 'double'], is_parallel : false)
-
-  pslstf_c_single = executable('pslstf_c_single', 'src/psls/C/pslstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  pslstf_c_double = executable('pslstf_c_double', 'src/psls/C/pslstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('psls2_c_single', pslst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('psls2_c_double', pslst_c_double, suite: ['C', 'double'], is_parallel : false)
-
-  trst_c_single = executable('trst_c_single', 'src/trs/C/trst.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  trst_c_double = executable('trst_c_double', 'src/trs/C/trst.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('trs_c_single', trst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('trs_c_double', trst_c_double, suite: ['C', 'double'], is_parallel : false)
-
-  trstf_c_single = executable('trstf_c_single', 'src/trs/C/trstf.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
-  trstf_c_double = executable('trstf_c_double', 'src/trs/C/trstf.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('trs2_c_single', trst_c_single, suite: ['C', 'single'], is_parallel : false)
-  test('trs2_c_double', trst_c_double, suite: ['C', 'double'], is_parallel : false)
+    pslst_c = executable('pslst_c_'+val[0], 'src/psls/C/pslst.c', c_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('psls_c_'+val[0], pslst_c, suite: ['C', val[0]], is_parallel : false)
+  endforeach
 endif
 
 #if build_ciface
@@ -1173,7 +924,7 @@ if build_examples
   executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lancelots', 'src/lancelot/lancelots.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  executable('lancelot_steerings', 'src/lancelot/lancelot_steerings.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
+  # executable('lancelot_steerings', 'src/lancelot/lancelot_steerings.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
   executable('lancelot_simples', 'src/lancelot_simple/lancelot_simples.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
   executable('filtranes', 'src/filtrane/filtranes.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trbs', 'src/trb/trbs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
@@ -1204,7 +955,7 @@ if build_examples
   executable('llsts', 'src/llst/llsts.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('llsts2', 'src/llst/llsts2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('llsts3', 'src/llst/llsts3.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  executable('lpas', 'src/lpa/lpas.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
+  # executable('lpas', 'src/lpa/lpas.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lpbs', 'src/lpb/lpbs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lsqps', 'src/lsqp/lsqps.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lsqps2', 'src/lsqp/lsqps2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
@@ -1215,7 +966,9 @@ if build_examples
   executable('qps', 'src/qp/qps.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
 endif
 
-if build_ciface
+if build_examples and build_ciface
+  c_examples_folder = 'share/examples/C'
+
   ugos_c_single = executable('ugos_c_single', 'src/ugo/C/ugos.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
   ugos_c_double = executable('ugos_c_double', 'src/ugo/C/ugos.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
   test('ugos_c_single', ugos_c_single, suite: ['C', 'single'], is_parallel : false)
