@@ -13,6 +13,11 @@ option('examples',
        value : true,
        description : 'whether to generate the examples')
 
+option('tests',
+       type : 'boolean',
+       value : true,
+       description : 'whether to generate the tests')
+
 option('hslarchive-galahad',
        type : 'string',
        value : '',
@@ -22,6 +27,7 @@ option('libblas',
        type : 'array',
        value : [],
        description : 'array [path, libname] with a path to search for BLAS library named libname')
+
 option('liblapack',
        type : 'array',
        value : [],
