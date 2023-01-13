@@ -1064,7 +1064,7 @@ if build_examples
   executable('checks', 'src/check/checks.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('converts', 'src/convert/converts.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('fdhs', 'src/fdh/fdhs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-  # executable('fdhs2', 'src/fdh/fdhs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)  # FIXME
+  executable('fdhs2', 'src/fdh/fdhs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)  # FIXME
   executable('fits', 'src/fit/fits.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('gltrs', 'src/gltr/gltrs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('gltrs2', 'src/gltr/gltrs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
@@ -1082,7 +1082,8 @@ if build_examples
   executable('lsrts', 'src/lsrt/lsrts.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lsrts2', 'src/lsrt/lsrts2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('l2rts', 'src/l2rt/l2rts.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
-  # executable('l2rts2', 'src/l2rt/l2rts2.f90', link_with : libgalahad, install : true, install_dir : share_examples)  # FIXME
+  # Issue 69
+  # executable('l2rts2', 'src/l2rt/l2rts2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)  # FIXME
   executable('lhss', 'src/lhs/lhss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lmss', 'src/lms/lmss.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('miqrs', 'src/miqr/miqrs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
