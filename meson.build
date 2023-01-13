@@ -413,6 +413,8 @@ subdir('src/lpa')
 subdir('src/lpb')
 subdir('src/lsqp')
 subdir('src/qpa')
+subdir('src/qpb')
+subdir('src/qpc')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -975,6 +977,16 @@ test('qpa1_double', qpat_double, suite: ['fortran', 'double'], is_parallel : fal
 test('qpa2_single', qpati_single, suite: ['fortran', 'single'], is_parallel : false)
 test('qpa2_double', qpati_double, suite: ['fortran', 'double'], is_parallel : false)
 
+# Issue 71
+qpbt_single = executable('qpbt_single', 'src/qpb/qpbt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+qpbt_double = executable('qpbt_double', 'src/qpb/qpbt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# qpbti_single = executable('qpbti_single', 'src/qpb/qpbti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# qpbti_double = executable('qpbti_double', 'src/qpb/qpbti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('qpb1_single', qpbt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('qpb1_double', qpbt_double, suite: ['fortran', 'double'], is_parallel : false)
+# test('qpb2_single', qpbti_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('qpb2_double', qpbti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # See issue #40 on GitHub
 # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
 # pastixt_double = executable('pastixt_double', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_double, link_with : [libspmf, libpastix_double], include_directories: libgalahad_include)
@@ -990,6 +1002,12 @@ cdqpt_single = executable('cdqpt_single', 'src/cdqp/cdqpt.F90', fortran_args : e
 cdqpt_double = executable('cdqpt_double', 'src/cdqp/cdqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 test('cdqp_single', cdqpt_single, suite: ['fortran', 'single'], is_parallel : false)
 test('cdqp_double', cdqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+
+# Issue 71
+# qpct_single = executable('qpct_single', 'src/qpc/qpct.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+# qpct_double = executable('qpct_double', 'src/qpc/qpct.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+# test('qpc_single', qpct_single, suite: ['fortran', 'single'], is_parallel : false)
+# test('qpc_double', qpct_double, suite: ['fortran', 'double'], is_parallel : false)
 
 if build_ciface
   ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
@@ -1183,6 +1201,9 @@ if build_examples
   executable('lsqp2', 'src/lsqp/lsqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('qpas', 'src/qpa/qpas.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   # executable('qpas2', 'src/qpa/qpas.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
+  executable('qpb', 'src/qpb/qpbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('qpb2', 'src/qpb/qpbs2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('qpc', 'src/qpc/qpcs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
