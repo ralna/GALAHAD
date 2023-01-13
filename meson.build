@@ -411,6 +411,7 @@ subdir('src/cdqp')
 subdir('src/llst')
 subdir('src/lpa')
 subdir('src/lpb')
+subdir('src/lsqp')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -816,6 +817,15 @@ test('psls1_double', pslst_double, suite: ['fortran', 'double'], is_parallel : f
 test('psls2_single', pslsti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('psls2_double', pslsti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+lsqpt_single = executable('lsqpt_single', 'src/lsqp/lsqpt.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+lsqpt_double = executable('lsqpt_double', 'src/lsqp/lsqpt.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+lsqpti_single = executable('lsqpti_single', 'src/lsqp/lsqpti.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+lsqpti_double = executable('lsqpti_double', 'src/lsqp/lsqpti.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('lsqp1_single', lsqpt_single, suite: ['fortran', 'single'], is_parallel : false)
+test('lsqp1_double', lsqpt_double, suite: ['fortran', 'double'], is_parallel : false)
+test('lsqp2_single', lsqpti_single, suite: ['fortran', 'single'], is_parallel : false)
+test('lsqp2_double', lsqpti_double, suite: ['fortran', 'double'], is_parallel : false)
+
 lpat_single = executable('lpat_single', 'src/lpa/lpat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 lpat_double = executable('lpat_double', 'src/lpa/lpat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
 lpati_single = executable('lpati_single', 'src/lpa/lpati.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
@@ -1158,6 +1168,8 @@ if build_examples
   executable('llst3', 'src/llst/llsts3.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lpa', 'src/lpa/lpas.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lpb', 'src/lpb/lpbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('lsqp', 'src/lsqp/lsqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('lsqp2', 'src/lsqp/lsqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
 endif
 
 if build_ciface
