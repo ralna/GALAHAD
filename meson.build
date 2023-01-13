@@ -412,6 +412,7 @@ subdir('src/llst')
 subdir('src/lpa')
 subdir('src/lpb')
 subdir('src/lsqp')
+subdir('src/qpa')
 
 # needs c++ files
 # subdir('src/ssids')
@@ -965,6 +966,15 @@ test('ccqp1_double', ccqpt_double, suite: ['fortran', 'double'], is_parallel : f
 test('ccqp2_single', ccqpti_single, suite: ['fortran', 'single'], is_parallel : false)
 test('ccqp2_double', ccqpti_double, suite: ['fortran', 'double'], is_parallel : false)
 
+qpat_single = executable('qpat_single', 'src/qpa/qpat.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+qpat_double = executable('qpat_double', 'src/qpa/qpat.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+qpati_single = executable('qpati_single', 'src/qpa/qpati.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
+qpati_double = executable('qpati_double', 'src/qpa/qpati.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
+test('qpa1_single', qpat_single, suite: ['fortran', 'single'], is_parallel : false)
+test('qpa1_double', qpat_double, suite: ['fortran', 'double'], is_parallel : false)
+test('qpa2_single', qpati_single, suite: ['fortran', 'single'], is_parallel : false)
+test('qpa2_double', qpati_double, suite: ['fortran', 'double'], is_parallel : false)
+
 # See issue #40 on GitHub
 # pastixt_single = executable('pastixt_single', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_single, link_with : [libspmf, libpastix_single], include_directories: libgalahad_include)
 # pastixt_double = executable('pastixt_double', 'src/external/pastix/pastixt.F90', fortran_args : extra_args_double, link_with : [libspmf, libpastix_double], include_directories: libgalahad_include)
@@ -1170,6 +1180,8 @@ if build_examples
   executable('lpb', 'src/lpb/lpbs.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lsqp', 'src/lsqp/lsqps.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
   executable('lsqp2', 'src/lsqp/lsqps2.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  executable('qpas', 'src/qpa/qpas.f90', link_with : libgalahad_double, install : true, install_dir : share_examples)
+  # executable('qpas2', 'src/qpa/qpas.options.F90', link_with : libgalahad_double, install : true, install_dir : share_examples, include_directories: libgalahad_include)
 endif
 
 if build_ciface
