@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 13:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 16:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -96,6 +96,10 @@
 !  the maximum sparse degree if the combined version is used
 
        INTEGER ( KIND = ip_ ) :: max_sparse_degree = 50
+
+!  if available use an addition extra_differences differences 
+
+       INTEGER ( KIND = ip_ ) :: extra_differences = 0
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -304,6 +308,7 @@
 !  approximation-algorithm                         1
 !  dense-linear-solver                             1
 !  maximum-degree-considered-sparse                50
+!  extra-differences                               0
 !  space-critical                                  F
 !  deallocate-error-fatal                          F
 !  output-line-prefix                              ""
@@ -332,7 +337,10 @@
                                             = approximation_algorithm + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_sparse_degree                    &
                                             = dense_linear_solver + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = max_sparse_degree + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: extra_differences                    &
+                                            = max_sparse_degree + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = extra_differences + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
@@ -352,6 +360,7 @@
      spec( approximation_algorithm )%keyword = 'approximation-algorithm'
      spec( dense_linear_solver )%keyword = 'dense-linear-solver'
      spec( max_sparse_degree )%keyword = 'maximum-degree-considered-sparse'
+     spec( extra_differences )%keyword = 'extra-differences'
 
 !  Logical key-words
 
@@ -391,6 +400,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( max_sparse_degree ),                    &
                                  control%max_sparse_degree,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( extra_differences ),                    &
+                                 control%extra_differences,                    &
                                  control%error )
 
 !  Set logical values
@@ -1092,9 +1104,10 @@
 
       m_needed = data%differences_needed
 
-! add one to accommodate singularity precaution if possible
+! add %extra_differences to accommodate a singularity precaution if possible
 
-      m_max = MIN( m_needed + 1, m_available ) ; n_max = m_needed
+      m_max = MIN( m_needed + control%extra_differences, m_available )
+      n_max = m_needed
       min_mn = MIN( m_max, n_max )
 
 !  allocate workspace
@@ -1254,7 +1267,7 @@
           i = data%PERM_inv( ii )
           nu = data%PK( i + 1 ) - data%PU( i )
           IF ( nu == 0 ) CYCLE
-          mu = MIN( m_available, nu )
+          mu = MIN( nu + control%extra_differences, m_available )
 !         IF ( nu > m ) THEN
 !           IF ( control%out > 0 .AND. control%print_level >= 1 )              &
 !             WRITE( control%out, "( I0, ' entries to be found in row ', I0,   &

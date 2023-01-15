@@ -105,7 +105,7 @@ SUCC = precision version) compiled successfully
 SSIDSSS = $(SSIDSS) $(OBJS)/ssidss.o
 SSIDSST = $(SSIDSS) $(OBJS)/ssidst.o
 SSIDSDS = $(SSIDSD) $(OBJD)/ssidss.o
-SSIDSDT = $(SSIDSD) $(OBJD)/slst.o
+SSIDSDT = $(SSIDSD) $(OBJD)/ssidst.o
 
 RSSIDSSS = $(OBJS)/ssidss.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSST = $(OBJS)/ssidst.o -L$(OBJS) $(SPRAL) $(LIBS)

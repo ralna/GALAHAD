@@ -4,6 +4,7 @@
 ! approximation-algorithm                           3
 ! dense-linear-solver                               1
 ! maximum-degree-considered-sparse                  50
+! extra-differences                                 0
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
 ! output-line-prefix                                ""

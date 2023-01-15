@@ -1301,7 +1301,7 @@ contains
 ! actually used.
 ! also the entries of D^{-1} are returned using array d.
 !
-  subroutine ssids_enquire_indef_precision(akeep, fkeep, options, inform,         &
+  subroutine ssids_enquire_indef_precision(akeep, fkeep, options, inform,      &
        piv_order, d)
     implicit none
     type(ssids_akeep), intent(in) :: akeep
