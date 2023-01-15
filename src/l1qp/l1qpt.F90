@@ -28,6 +28,7 @@
    definite_linear_solver = 'sytr'
 !  definite_linear_solver = 'ma97'
 
+!go to 77
 !go to 111
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -424,12 +425,12 @@
    CALL L1QP_initialize( data, control, info )
    control%infinity = infty
    control%restore_problem = 2
-    control%out = 6 ; control%print_level = 1
-    control%CQP_control%print_level = 1
-    control%CQP_control%FDC_control%print_level = 1
-    control%CQP_control%SBLS_control%print_level = 1
-    control%DQP_control%print_level = 1
-    control%DQP_control%SBLS_control%print_level = 1
+!    control%out = 6 ; control%print_level = 1
+!    control%CQP_control%print_level = 5
+!    control%CQP_control%FDC_control%print_level = 1
+!    control%CQP_control%SBLS_control%print_level = 1
+!    control%DQP_control%print_level = 1
+!    control%DQP_control%SBLS_control%print_level = 1
    control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
      symmetric_linear_solver
    control%CQP_control%SBLS_control%definite_linear_solver =                   &
@@ -845,6 +846,7 @@
 
 !  Fourth and Fifth problems
 
+!77 continue
    n = 14 ; m = 10 ; h_ne = 21 ; a_ne = 32
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -881,8 +883,8 @@
                 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10  /)
-   p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
-                8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13 /)
+   p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 5,                &
+                8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 12 /)
    p%C_l = 0.0_rp_
    DO i = 1, p%A%ne
      p%C_l( p%A%row( i ) ) = p%C_l( p%A%row( i ) ) + p%A%val( i )
@@ -897,6 +899,10 @@
      symmetric_linear_solver
    control%CQP_control%SBLS_control%definite_linear_solver =                   &
      definite_linear_solver
+!  control%out = 6 ; control%print_level = 1
+!  control%CQP_control%print_level = 5
+!  control%CQP_control%FDC_control%print_level = 1
+!  control%CQP_control%SBLS_control%print_level = 1
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    X_stat = 0 ; C_stat = 0
    X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
