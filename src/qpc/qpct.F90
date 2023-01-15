@@ -861,8 +861,8 @@ stop
    p%X_u  = (/ infty, infty, infty, infty, infty, infty,                       &
              infty, infty, infty, infty, infty /) ! upper bound
    p%C_l = (/  -infty, 9.0_rp_, - infty, 2.0_rp_, 1.0_rp_ /)  ! lower bound
-   p%C_u = (/  1.0D+1, infty, 1.0D+1, infty, infty /)   ! upper bound
-   p%C = (/ 1.0D+1, 9.0_rp_, 1.0D+1, 2.0_rp_, 1.0_rp_ /) ! optimal constrnt val
+   p%C_u = (/  10.0_rp_, infty, 10.0_rp_, infty, infty /)   ! upper bound
+   p%C = (/ 10.0_rp_, 9.0_rp_, 10.0_rp_, 2.0_rp_, 1.0_rp_ /) ! optimal const val
    p%X = (/ 0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,              &
             1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! optimal variables
    p%Y = (/  -1.0_rp_, 3.5_rp_, -2.0_rp_, 0.1_rp_, 0.1_rp_ /) ! optimal Lag mult
