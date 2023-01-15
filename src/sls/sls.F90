@@ -55,7 +55,7 @@
      USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,   &
-                                          PBTRS
+                                          PBTRS ! , SYEV
      USE HSL_ZD11_precision
      USE HSL_MA57_precision
      USE HSL_MA77_precision
@@ -4271,6 +4271,7 @@
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
 !    CHARACTER :: dumc( 20 )
+!    REAL ( KIND = rp_ ) :: eigenvalues( 25 )
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -5356,11 +5357,13 @@
 !  = SYTR =
 
        CASE ( 'sytr' )
-
+!        CALL SYEV( 'N', 'L',  data%n, data%matrix_dense, data%n, &
+!                     eigenvalues, data%WORK, data%sytr_lwork,                 &
+!                     inform%lapack_error )
+!         WRITE( 6, "( 'eigenvalues', /, (5ES12.4 ) )" ) eigenvalues( : data%n )
          CALL SYTRF( 'L', data%n, data%matrix_dense, data%n,                   &
                       data%PIVOTS, data%WORK, data%sytr_lwork,                 &
                       inform%lapack_error )
-
          IF ( inform%lapack_error < 0 .AND. control%print_level > 0 .AND.      &
               control%out > 0 ) WRITE( control%out, "( A,                      &
         &  ' LAPACK SYTRF error code = ', I0 )" ) prefix, inform%lapack_error
