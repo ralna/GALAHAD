@@ -746,7 +746,7 @@ lancelots.o: $(OBJ)/lancelots.o
 
 $(OBJ)/lancelots.o: ../lancelot/lancelots.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lancelots"
-	$(CP) ../lancelot/lancelots.f90 $(OBJ)/lancelots.f90
+	$(SED) -f $(SEDS) ../lancelot/lancelots.f90 > $(OBJ)/lancelots.f90
 	cd $(OBJ); $(FORTRAN) -o lancelots.o $(FFLAGSS) lancelots.f90
 	$(RM) $(OBJ)/lancelots.f90
 	@printf '[ OK ]\n'
@@ -755,7 +755,7 @@ lancelot_steerings.o: $(OBJ)/lancelot_steerings.o
 
 $(OBJ)/lancelot_steerings.o: ../lancelot/lancelot_steerings.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lancelot_steerings"
-	$(CP) ../lancelot/lancelot_steerings.f90 \
+	$(SED) -f $(SEDS) ../lancelot/lancelot_steerings.f90 > \
           $(OBJ)/lancelot_steerings.f90
 	cd $(OBJ); $(FORTRAN) -o lancelot_steerings.o $(FFLAGSS) \
            lancelot_steerings.f90
@@ -766,8 +766,8 @@ lancelot_simples.o: $(OBJ)/lancelot_simples.o
 
 $(OBJ)/lancelot_simples.o: ../lancelot_simple/lancelot_simples.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lancelot_simples"
-	$(CP) ../lancelot_simple/lancelot_simples.f90 \
-          $(OBJ)/lancelot_simples.f90
+	$(SED) -f $(SEDS) \
+          ../lancelot_simple/lancelot_simples.f90 > $(OBJ)/lancelot_simples.f90
 	cd $(OBJ); $(FORTRAN) -o lancelot_simples.o $(FFLAGSS) \
            lancelot_simples.f90
 	$(RM) $(OBJ)/lancelot_simples.f90
