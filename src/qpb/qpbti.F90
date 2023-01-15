@@ -12,7 +12,7 @@
    INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne
    INTEGER ( KIND = ip_ ) :: data_storage_type, status
    REAL ( KIND = rp_ ) :: f
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
@@ -120,37 +120,7 @@
      CALL QPB_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
-
-!  shifted least-distance example
-
-   ALLOCATE( W( n ), X_0( n ) )
-   W = 1.0_rp_    ! weights
-   X_0 = 0.0_rp_  ! shifts
-
-   DO data_storage_type = 1, 1
-     CALL QPB_initialize( data, control, inform )
-!    control%print_level = 1
-     X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
-     SELECT CASE ( data_storage_type )
-     CASE ( 1 ) ! sparse co-ordinate storage
-       st = ' W'
-       CALL QPB_import( control, data, status, n, m,                           &
-                        'shifted_least_distance', H_ne, H_row, H_col, H_ptr,   &
-                        'coordinate', A_ne, A_row, A_col, A_ptr )
-       CALL QPB_solve_sldqp( data, status, W, X_0, G, f, A_val, C_l, C_u,      &
-                             X_l, X_u, X, C, Y, Z, X_stat, C_stat )
-
-     END SELECT
-     CALL QPB_information( data, inform, status )
-     IF ( inform%status == 0 ) THEN
-       WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
-     ELSE
-       WRITE( 6, "( A2, ': QPB_solve exit status = ', I0 ) " ) st, inform%status
-     END IF
-     CALL QPB_terminate( data, control, inform )  ! delete internal workspace
-   END DO
-   DEALLOCATE( X, C, G, Y, Z, W, X_0, x_l, X_u, C_l, C_u, X_stat, C_stat )
+   DEALLOCATE( X, C, G, Y, Z, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
 

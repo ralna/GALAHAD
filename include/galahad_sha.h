@@ -1,7 +1,7 @@
 //* \file galahad_sha.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:01 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 15:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SHA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -98,6 +98,10 @@ struct sha_control_type {
     /// \brief
     /// the maximum sparse degree if the combined version is used
     int max_sparse_degree;
+
+    /// \brief
+    /// if available use an addition extra_differences differences
+    int extra_differences;
 
     /// \brief
     /// if space is critical, ensure allocated arrays are no bigger than needed
