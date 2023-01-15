@@ -425,12 +425,12 @@
    CALL L1QP_initialize( data, control, info )
    control%infinity = infty
    control%restore_problem = 2
-    control%out = 6 ; control%print_level = 1
-    control%CQP_control%print_level = 1
-    control%CQP_control%FDC_control%print_level = 1
-    control%CQP_control%SBLS_control%print_level = 1
-    control%DQP_control%print_level = 1
-    control%DQP_control%SBLS_control%print_level = 1
+!    control%out = 6 ; control%print_level = 1
+!    control%CQP_control%print_level = 5
+!    control%CQP_control%FDC_control%print_level = 1
+!    control%CQP_control%SBLS_control%print_level = 1
+!    control%DQP_control%print_level = 1
+!    control%DQP_control%SBLS_control%print_level = 1
    control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
      symmetric_linear_solver
    control%CQP_control%SBLS_control%definite_linear_solver =                   &
