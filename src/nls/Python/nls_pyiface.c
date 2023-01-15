@@ -176,7 +176,6 @@ static int eval_hprods(int n, int m, int pne, const double x[],
     npy_intp vdim[] = {m};
     PyArrayObject *py_v = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, vdim, NPY_DOUBLE, (void *) v);
-
     // Build Python argument list
     PyObject *arglist = Py_BuildValue("(OOp)", py_x, py_v, got_h);
 
