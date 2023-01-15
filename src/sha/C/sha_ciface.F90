@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 15:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -42,6 +42,7 @@
       INTEGER ( KIND = ipc_ ) :: approximation_algorithm
       INTEGER ( KIND = ipc_ ) :: dense_linear_solver
       INTEGER ( KIND = ipc_ ) :: max_sparse_degree
+      INTEGER ( KIND = ipc_ ) :: extra_differences
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
@@ -80,6 +81,7 @@
     fcontrol%approximation_algorithm = ccontrol%approximation_algorithm
     fcontrol%dense_linear_solver = ccontrol%dense_linear_solver
     fcontrol%max_sparse_degree = ccontrol%max_sparse_degree
+    fcontrol%extra_differences = ccontrol%extra_differences
 
     ! Logicals
     fcontrol%space_critical = ccontrol%space_critical
@@ -112,6 +114,7 @@
     ccontrol%approximation_algorithm = fcontrol%approximation_algorithm
     ccontrol%dense_linear_solver = fcontrol%dense_linear_solver
     ccontrol%max_sparse_degree = fcontrol%max_sparse_degree
+    ccontrol%extra_differences = fcontrol%extra_differences
 
     ! Logicals
     ccontrol%space_critical = fcontrol%space_critical

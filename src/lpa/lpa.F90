@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-13 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -110,9 +110,6 @@
        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
        END SUBROUTINE LA04AD
      END INTERFACE LA04A
-
-
-
 
 !----------------------
 !   P a r a m e t e r s
@@ -1392,7 +1389,7 @@
 
       IF ( control%scale ) THEN
         inform%la04_job = 0
-        CALL LA04D( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
+        CALL LA04( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
                     data%n, data%B, data%C, data%BND, data%kb, data%lb,        &
                     inform%la04_job, data%CNTL, data%IX, data%JX,              &
                     data%X, data%Z, data%G, inform%RINFO,                      &
