@@ -2,6 +2,7 @@ project(
   'GALAHAD',
   'fortran',
   'c',
+  'cpp',
   version: '5.0.0',
   license: 'BSD-3',
   meson_version: '>= 0.61.0',
@@ -24,6 +25,7 @@ libgalahad_link_with = []
 libgalahad_include = ['include']
 libgalahad_src = []
 libgalahad_c_src = []
+libgalahad_cpp_src = []
 libgalahad_blas_src = []
 libgalahad_lapack_src = []
 subdir('src/lapack')  # libgalahad_blas/lapack only contain the.F90 interfaces
@@ -31,8 +33,8 @@ libgalahad_deps = []
 blas_dep = []
 lapack_dep = []
 
-extra_args_single = ['-DGALAHAD_SINGLE']
-extra_args_double = ['-DGALAHAD_DOUBLE']
+extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
+extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
 # libgalahad_blas
 
@@ -418,13 +420,30 @@ subdir('src/qpc')
 subdir('src/qp')
 
 # needs c++ files
+# subdir('src/spral')
 # subdir('src/ssids')
+
+# libgalahad_cpp_single = library('galahad_cpp_single',
+#                                  sources : libgalahad_cpp_src,
+#                                  link_with : [libgalahad_blas, libgalahad_lapack],
+#                                  dependencies : blas_dep + lapack_dep,
+#                                  cpp_args : extra_args_single,
+#                                  include_directories: libgalahad_include,
+#                                  install : true)
+
+# libgalahad_cpp_double = library('galahad_cpp_double',
+#                                 sources : libgalahad_cpp_src,
+#                                 link_with : [libgalahad_blas, libgalahad_lapack],
+#                                 dependencies : blas_dep + lapack_dep,
+#                                 cpp_args : extra_args_double,
+#                                 include_directories: libgalahad_include,
+#                                 install : true)
 
 libgalahad_single = library('galahad_single',
                     sources : libgalahad_src,
-                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single, libgalahad_hsl_double,
+                    link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
                                  libpardiso, libmkl_pardiso, libspral_ssids_single, libmumps_single,
-                                 libspmf, libwsmp, libpastix_single, libgalahad_metis],
+                                 libspmf, libwsmp, libpastix_single, libgalahad_metis], # libgalahad_cpp_single],
                     dependencies : libgalahad_deps,
                     fortran_args : extra_args_single,
                     include_directories: libgalahad_include,
@@ -434,7 +453,7 @@ libgalahad_double = library('galahad_double',
                     sources : libgalahad_src,
                     link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_double,
                                  libpardiso, libmkl_pardiso, libspral_ssids_double, libmumps_double,
-                                 libspmf, libwsmp, libpastix_double, libgalahad_metis],
+                                 libspmf, libwsmp, libpastix_double, libgalahad_metis], # libgalahad_cpp_double],
                     dependencies : libgalahad_deps,
                     fortran_args : extra_args_double,
                     include_directories: libgalahad_include,
@@ -727,9 +746,8 @@ if build_tests
     llstt = executable('llstt_'+val[0], 'src/llst/llstt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('llstt_'+val[0], llstt, suite: ['llst', 'fortran', val[0]], is_parallel : false)
 
-    # Issue #56
-    # l1qpt = executable('l1qpt_'+val[0], 'src/l1qp/l1qpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
-    # test('l1qpt_'+val[0], l1qpt, suite: ['llqp', 'fortran', val[0]], is_parallel : false)
+    l1qpt = executable('l1qpt_'+val[0], 'src/l1qp/l1qpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('l1qpt_'+val[0], l1qpt, suite: ['llqp', 'fortran', val[0]], is_parallel : false)
 
     dlpt = executable('dlpt_'+val[0], 'src/dlp/dlpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('dlpt_'+val[0], dlpt, suite: ['qlp', 'fortran', val[0]], is_parallel : false)
@@ -769,11 +787,10 @@ if build_tests
     test('qpat_'+val[0], qpat, suite: ['qpa', 'fortran', val[0]], is_parallel : false)
     test('qpati_'+val[0], qpati, suite: ['qpa', 'fortran', val[0]], is_parallel : false)
 
-    # Issue #71
     qpbt = executable('qpbt_'+val[0], 'src/qpb/qpbt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
-    # qpbti = executable('qpbti_'+val[0], 'src/qpb/qpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    qpbti = executable('qpbti_'+val[0], 'src/qpb/qpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('qpbt_'+val[0], qpbt, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
-    # test('qpbti_'+val[0], qpbti, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
+    test('qpbti_'+val[0], qpbti, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
 
     # Issue #40
     # pastixt = executable('pastixt_'+val[0], 'src/external/pastix/pastixt.F90', fortran_args : val[1], link_with : [val[4], libspmf], include_directories: libgalahad_include)
@@ -788,9 +805,8 @@ if build_tests
     qpt = executable('qpt_'+val[0], 'src/qp/qpt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('qpt_'+val[0], qpt, suite: ['qp', 'fortran', val[0]], is_parallel : false)
 
-    # Issue #71
-    # qpct = executable('qpct_'+val[0], 'src/qpc/qpct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
-    # test('qpct_'+val[0], qpct, suite: ['qpc', 'fortran', val[0]], is_parallel : false)
+    qpct = executable('qpct_'+val[0], 'src/qpc/qpct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('qpct_'+val[0], qpct, suite: ['qpc', 'fortran', val[0]], is_parallel : false)
   endforeach
 endif
 
@@ -843,7 +859,7 @@ if build_examples
   executable('checks', 'src/check/checks.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('converts', 'src/convert/converts.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('fdhs', 'src/fdh/fdhs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  executable('fdhs2', 'src/fdh/fdhs2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)  # FIXME
+  executable('fdhs2', 'src/fdh/fdhs2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('fits', 'src/fit/fits.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('gltrs', 'src/gltr/gltrs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('gltrs2', 'src/gltr/gltrs2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
@@ -861,8 +877,7 @@ if build_examples
   executable('lsrts', 'src/lsrt/lsrts.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lsrts2', 'src/lsrt/lsrts2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('l2rts', 'src/l2rt/l2rts.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  # Issue 69
-  # executable('l2rts2', 'src/l2rt/l2rts2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)  # FIXME
+  executable('l2rts2', 'src/l2rt/l2rts2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lhss', 'src/lhs/lhss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lmss', 'src/lms/lmss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('miqrs', 'src/miqr/miqrs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
@@ -924,7 +939,7 @@ if build_examples
   executable('dpss', 'src/dps/dpss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('dpss2', 'src/dps/dpss2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('lancelots', 'src/lancelot/lancelots.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  # executable('lancelot_steerings', 'src/lancelot/lancelot_steerings.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
+  executable('lancelot_steerings', 'src/lancelot/lancelot_steerings.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
   executable('lancelot_simples', 'src/lancelot_simple/lancelot_simples.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder, include_directories: libgalahad_include)
   executable('filtranes', 'src/filtrane/filtranes.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trbs', 'src/trb/trbs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
