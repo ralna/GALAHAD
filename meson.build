@@ -653,7 +653,7 @@ if build_tests
     ugot = executable('ugot_'+val[0], 'src/ugo/ugot.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     # ugot2 = executable('ugot2_'+val[0], 'src/ugo/ugot2.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('ugot_'+val[0], ugot, suite: ['ugo', 'fortran', val[0]], is_parallel : false)
-    # test('ugot2_'+val[0], ugot2, suite: ['ugo', fortran', val[0]], is_parallel : false)
+    # test('ugot2_'+val[0], ugot2, suite: ['ugo', 'fortran', val[0]], is_parallel : false)
 
     mkl_pardisot = executable('mkl_pardisot_'+val[0], 'src/external/mkl/mkl_pardisot.F90', fortran_args : val[1], link_with : libmkl_pardiso, include_directories: libgalahad_include)
     test('mkl_pardisot_'+val[0], mkl_pardisot, suite: ['mkl_pardiso', 'fortran', val[0]], is_parallel : false)
@@ -663,6 +663,13 @@ if build_tests
 
     pardisot = executable('pardisot_'+val[0], 'src/external/pardiso/pardisot.F90', fortran_args : val[1], link_with : libpardiso, include_directories: libgalahad_include)
     test('pardisot_'+val[0], pardisot, suite: ['pardiso', 'fortran', val[0]], is_parallel : false)
+
+    wsmpt = executable('wsmpt_'+val[0], 'src/external/wsmp/wsmpt.F90', fortran_args : val[1], link_with : libwsmp, include_directories: libgalahad_include)
+    test('wsmpt_'+val[0], wsmpt, suite: ['wsmp', 'fortran', val[0]], is_parallel : false)
+
+    # Issue #40
+    # pastixt = executable('pastixt_'+val[0], 'src/external/pastix/pastixt.F90', fortran_args : val[1], link_with : [val[4], libspmf], include_directories: libgalahad_include)
+    # test('pastixt_'+val[0], pastixt, suite: ['pastix', 'fortran', val[0]], is_parallel : false)
 
     slst = executable('slst_'+val[0], ['src/sls/slst.F90', 'src/dum/mpi.F90'], fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     slsti = executable('slsti_'+val[0], 'src/sls/slsti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
@@ -735,9 +742,6 @@ if build_tests
     test('bqpt_'+val[0], bqpt, suite: ['bqp', 'fortran', val[0]], is_parallel : false)
     test('bqpti_'+val[0], bqpti, suite: ['bqp', 'fortran', val[0]], is_parallel : false)
 
-    wsmpt = executable('wsmpt_'+val[0], 'src/external/wsmp/wsmpt.F90', fortran_args : val[1], link_with : libwsmp, include_directories: libgalahad_include)
-    test('wsmpt_'+val[0], wsmpt, suite: ['wsmp', 'fortran', val[0]], is_parallel : false)
-
     lancelott = executable('lancelott_'+val[0], 'src/lancelot/lancelott.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     lancelot_steeringt = executable('lancelot_steeringt_'+val[0], 'src/lancelot/lancelot_steeringt.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('lancelott_'+val[0], lancelott, suite: ['lancelot', 'fortran', val[0]], is_parallel : false)
@@ -791,10 +795,6 @@ if build_tests
     qpbti = executable('qpbti_'+val[0], 'src/qpb/qpbti.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('qpbt_'+val[0], qpbt, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
     test('qpbti_'+val[0], qpbti, suite: ['qpb', 'fortran', val[0]], is_parallel : false)
-
-    # Issue #40
-    # pastixt = executable('pastixt_'+val[0], 'src/external/pastix/pastixt.F90', fortran_args : val[1], link_with : [val[4], libspmf], include_directories: libgalahad_include)
-    # test('pastixt_'+val[0], pastixt, suite: ['pastix', 'fortran', val[0]], is_parallel : false)
 
     filtranet = executable('filtranet_'+val[0], 'src/filtrane/filtranet.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('filtranet_'+val[0], filtranet, suite: ['filtrane', 'fortran', val[0]], is_parallel : false)
