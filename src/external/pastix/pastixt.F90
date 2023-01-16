@@ -6,8 +6,12 @@
 PROGRAM test_pastix
   USE GALAHAD_KINDS
   USE iso_c_binding
-  USE spmf
-  USE pastixf
+  USE spmf_enums
+  USE spmf_interfaces
+  USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
+  USE pastixf_interfaces
+! USE spmf
+! USE pastixf
   IMPLICIT NONE
   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
   INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
@@ -17,12 +21,11 @@ PROGRAM test_pastix
   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: x0, x, b
   TYPE( pastix_data_t ), POINTER :: pastix_data
   TYPE( spmatrix_t ), POINTER :: spm, spm2
-  INTEGER ( KIND = ip_ ) ( kind = pastix_int_t ), target :: iparm( iparm_size )
+  INTEGER ( kind = pastix_int_t ), target :: iparm( iparm_size )
   REAL ( kind = c_precision ), target :: dparm( dparm_size )
   INTEGER ( KIND = ip_ ) :: nrhs, store
   INTEGER( c_int ) :: info
-  INTEGER ( KIND = ip_ ) ( kind = pastix_int_t ), DIMENSION( : ),              &
-                                                  POINTER :: permtab
+  INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 
   DO store = 1, 3
@@ -61,7 +64,11 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
+#ifdef GALAHAD_SINGLE
+      CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
+#else
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
+#endif
 
 !   set the matrix
 
@@ -91,7 +98,11 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
+#ifdef GALAHAD_SINGLE
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
+#else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
+#endif
 
 !   set the matrix
 
@@ -123,7 +134,11 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
+#ifdef GALAHAD_SINGLE
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
+#else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
+#endif
 
 !   set the matrix
 
