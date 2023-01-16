@@ -227,7 +227,7 @@
 !      REAL ( KIND = rp_ ) :: change_tolerance = epsmch ** ( 2.0_rp_ / 3.0_rp_ )
        REAL ( KIND = rp_ ) :: change_tolerance = ten ** ( - 10 )
 
-!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer 
+!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer
 !    than identical_bounds_tol will be reset to the average of their values
 
        REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
@@ -1389,7 +1389,7 @@
 
       IF ( control%scale ) THEN
         inform%la04_job = 0
-        CALL LA04( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
+        CALL LA04A( data%A_val, a_ne, data%A_row, data%A_ptr, data%m,          &
                     data%n, data%B, data%C, data%BND, data%kb, data%lb,        &
                     inform%la04_job, data%CNTL, data%IX, data%JX,              &
                     data%X, data%Z, data%G, inform%RINFO,                      &
