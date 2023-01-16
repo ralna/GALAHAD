@@ -58,8 +58,8 @@ SUCC = precision version) compiled successfully
 la04: la04_$(PRECIS)
 	@printf ' %-21s\n' "HSL LA04 routines ($(PRECIS) $(SUCC)"
 la04_silent: la04_$(PRECIS)
-la04_single: $(HLGS)(fa14d.o) $(HLGS)(fd15d.o) $(HLGS)(mc29d.o) \
-               $(HLGS)(mc59d.o) $(HLGS)(la15d.o) $(HLGS)(la04d.o)
+la04_single: $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(mc29s.o) \
+               $(HLGS)(mc59s.o) $(HLGS)(la15s.o) $(HLGS)(la04s.o)
 la04_double: $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(mc29d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
 
