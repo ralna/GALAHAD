@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-16 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -132,8 +132,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: factorization_status
-      INTEGER ( KIND = ip_ ) ( KIND = C_INT64_T ) :: factorization_integer
-      INTEGER ( KIND = ip_ ) ( KIND = C_INT64_T ) :: factorization_real
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
       INTEGER ( KIND = ipc_ ) :: nfacts
       INTEGER ( KIND = ipc_ ) :: nbacts
       REAL ( KIND = rpc_ ) :: obj
