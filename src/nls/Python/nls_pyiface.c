@@ -50,7 +50,7 @@ static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
 
 /* C eval_* function wrappers */
-static int eval_c(int n, int m, const double x[], double c[], 
+static int eval_c(int n, int m, const double x[], double c[],
                   const void *userdata){
 
     // Wrap input array as NumPy array
@@ -87,7 +87,7 @@ static int eval_c(int n, int m, const double x[], double c[],
     return 0;
 }
 
-static int eval_j(int n, int m, int jne, const double x[], double jval[], 
+static int eval_j(int n, int m, int jne, const double x[], double jval[],
                   const void *userdata){
 
     // Wrap input array as NumPy array
@@ -108,7 +108,7 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
         return -1;
 
     // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_j return value", 
+    if(!check_array_double("eval_j return value",
                            (PyArrayObject*) result, jne)){
         Py_DECREF(result); // Free result memory
         return -1;
@@ -126,7 +126,7 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
     return 0;
 }
 
-static int eval_h(int n, int m, int hne, const double x[], double hval[], 
+static int eval_h(int n, int m, int hne, const double x[], double hval[],
                   const void *userdata){
 
     // Wrap input array as NumPy array
@@ -147,7 +147,7 @@ static int eval_h(int n, int m, int hne, const double x[], double hval[],
         return -1;
 
     // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_h return value", 
+    if(!check_array_double("eval_h return value",
                            (PyArrayObject*) result, hne)){
         Py_DECREF(result); // Free result memory
         return -1;
@@ -165,7 +165,7 @@ static int eval_h(int n, int m, int hne, const double x[], double hval[],
     return 0;
 }
 
-static int eval_hprods(int n, int m, int pne, const double x[], 
+static int eval_hprods(int n, int m, int pne, const double x[],
                        const double v[], double pval[], bool got_h,
                        const void *userdata){
 
@@ -176,10 +176,9 @@ static int eval_hprods(int n, int m, int pne, const double x[],
     npy_intp vdim[] = {m};
     PyArrayObject *py_v = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, vdim, NPY_DOUBLE, (void *) v);
-    *py_got_h = ?? ;
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(OOO)", py_x, py_v, py_got_h);
+    PyObject *arglist = Py_BuildValue("(OOp)", py_x, py_v, got_h);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_hprods, arglist);
@@ -192,7 +191,7 @@ static int eval_hprods(int n, int m, int pne, const double x[],
         return -1;
 
     // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_h return value", 
+    if(!check_array_double("eval_h return value",
                            (PyArrayObject*) result, hne)){
         Py_DECREF(result); // Free result memory
         return -1;
@@ -212,7 +211,7 @@ static int eval_hprods(int n, int m, int pne, const double x[],
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE SUBPROBLEM CONTROL    -*-*-*-*-*-*-*-*-*-*
 
-/* Update the subproblem control options: use C defaults but update any 
+/* Update the subproblem control options: use C defaults but update any
    passed via Python*/
 static bool nls_update_subproblem_control(
                                struct nls_subrproblem_control_type *control,
@@ -818,7 +817,7 @@ static bool nls_update_control(struct nls_control_type *control,
             continue;
         }
         if(strcmp(key_name, "subproblem_options") == 0){
-            if(!nls_update_subproblem_control(&control->subproblem_control, 
+            if(!nls_update_subproblem_control(&control->subproblem_control,
                                               value))
                 return false;
             continue;
