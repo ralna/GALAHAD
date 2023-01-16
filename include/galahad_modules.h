@@ -298,6 +298,7 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_single
+#define c_precision c_float
 #else
 #define CUTEst_interface_precision CUTEST_interface_double
 #define CUTEST_interface_precision CUTEST_interface_double
@@ -598,4 +599,5 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double
+#define c_precision c_double
 #endif
