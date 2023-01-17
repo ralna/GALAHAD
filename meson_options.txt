@@ -18,6 +18,16 @@ option('tests',
        value : true,
        description : 'whether to generate the tests')
 
+option('single',
+       type : 'boolean',
+       value : true,
+       description : 'whether to generate the single precision libraries, tests and examples')
+
+option('double',
+       type : 'boolean',
+       value : true,
+       description : 'whether to generate the double precision libraries, tests and examples')
+
 option('hslarchive-galahad',
        type : 'string',
        value : '',
