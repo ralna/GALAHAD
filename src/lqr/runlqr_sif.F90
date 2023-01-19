@@ -12,7 +12,7 @@
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USELQR_precision
 
-!  Main program for the SIF interface to LQR, an approximate solver for the 
+!  Main program for the SIF interface to LQR, an approximate solver for the
 !  quadratic trust-region subproblem
 
 !  Problem insif characteristics

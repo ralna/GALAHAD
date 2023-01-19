@@ -37,7 +37,7 @@
 
    CALL USE_TRAL( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif )
    STOP
