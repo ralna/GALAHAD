@@ -63,7 +63,7 @@
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
 !    LOGICAL :: multiple_tests = .FALSE.
-     LOGICAL :: multiple_tests = .TRUE.
+!    LOGICAL :: multiple_tests = .TRUE.
 
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, RD
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_COUNT

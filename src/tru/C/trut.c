@@ -138,7 +138,8 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
+        // control.print_level = 1;
+        // control.maxit = 1;
 
         // Start from 1.5
         real_wp_ x[] = {1.5,1.5,1.5}; 

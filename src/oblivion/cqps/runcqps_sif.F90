@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNCQPS_SIF
+   PROGRAM RUNCQPS_SIF_precision
 
 !    -----------------------------------------------------------
 !    | Main program for the SIF/CUTEr interface to CQPS,       |
@@ -44,6 +44,6 @@
    CLOSE( input  )
    STOP
 
-!  End of RUNCQPS_SIF
+!  End of RUNCQPS_SIF_precision
 
-   END PROGRAM RUNCQPS_SIF
+   END PROGRAM RUNCQPS_SIF_precision

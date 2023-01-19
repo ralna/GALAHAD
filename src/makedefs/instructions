@@ -23,13 +23,15 @@ D$(PACKAGE)PY = $(D$(PACKAGE)C) $(PYDEPENDENCIES) $(PYLGD)($(package)_pyiface.o)
 #  additional run agenda
 
 SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package).o) \
-                 $(OBJS)/run$(package)_sif.o
+                 $(OBJS)/run$(package)_sif_single.o
 DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package).o) \
-                 $(OBJD)/run$(package)_sif.o
-SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJS)/in$(package).o
-DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
-SRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJS)/run$(package)_rb.o
-DRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJD)/run$(package)_rb.o
+                 $(OBJD)/run$(package)_sif_double.o
+SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
+                   $(OBJS)/in$(package)_single.o
+DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
+                   $(OBJD)/in$(package)_double.o
+SRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJS)/run$(package)_rb_single.o
+DRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJD)/run$(package)_rb_double.o
 
 #  libraries used when linking for tests
 
@@ -108,10 +110,14 @@ $(PACKAGE)CDS7 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs7.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
 $(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti.o
 $(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf.o
+
 $(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
 $(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
 $(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
 $(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4.o
+$(PACKAGE)CSS5 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs5.o
+$(PACKAGE)CSS6 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs6.o
+$(PACKAGE)CSS7 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs7.o
 $(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
 $(PACKAGE)CSTI = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)cti.o
 $(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf.o
@@ -126,13 +132,18 @@ R$(PACKAGE)CDS7 = $(OBJD)/$(package)cs7.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf.o -L$(OBJD) $(CLIBS)
+
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS5 = $(OBJS)/$(package)cs5.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS6 = $(OBJS)/$(package)cs6.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS7 = $(OBJS)/$(package)cs7.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CTI = $(OBJS)/$(package)cti.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CTF = $(OBJS)/$(package)ctf.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSTI = $(OBJS)/$(package)cti.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSTF = $(OBJS)/$(package)ctf.o -L$(OBJS) $(CLIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -251,9 +262,9 @@ $(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
 
 $(package)_cutest_addon: $(package)_cutest_addon_$(PRECIS)
 $(package)_cutest_addon_single: $(CULGS)(use$(package).o) \
-                                $(OBJS)/run$(package)_sif.o
+                                $(OBJS)/run$(package)_sif_single.o
 $(package)_cutest_addon_double: $(CULGD)(use$(package).o) \
-                                $(OBJD)/run$(package)_sif.o
+                                $(OBJD)/run$(package)_sif_double.o
 
 #  process package add-ons for AMPL
 
@@ -279,8 +290,8 @@ $(package)_qplib_silent_double: $($(PACKAGE)OBJECTSD_QPLIB)
 #  process package add-ons for QPLIB
 
 $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
-$(package)_qplib_addon_single: $(OBJS)/in$(package).o
-$(package)_qplib_addon_double: $(OBJD)/in$(package).o
+$(package)_qplib_addon_single: $(OBJS)/in$(package)_single.o
+$(package)_qplib_addon_double: $(OBJD)/in$(package)_double.o
 
 #  process package for RB
 
@@ -298,8 +309,8 @@ $(package)_rb_silent_double: $($(PACKAGE)OBJECTSD_RB)
 #  process package add-ons for RB
 
 $(package)_rb_addon: $(package)_rb_addon_$(PRECIS)
-$(package)_rb_addon_single: $(OBJS)/in$(package).o
-$(package)_rb_addon_double: $(OBJD)/in$(package).o
+$(package)_rb_addon_single: $(OBJS)/in$(package)_single.o
+$(package)_rb_addon_double: $(OBJD)/in$(package)_double.o
 
 #  run independent package tests
 
@@ -310,8 +321,8 @@ $(package)runall: $(package)drunall $(package)srunall
 #  run qp data format package
 
 in$(package): in$(package)_$(PRECIS)
-in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package).o
-in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package).o
+in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package)_single.o
+in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package)_double.o
 
 #  exhaustive test package without CUTEst
 
@@ -770,24 +781,25 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 
 #  main program
 
-run$(package)_sif.o: $(OBJ)/run$(package)_sif.o
+run$(package)_sif.o: $(OBJ)/run$(package)_sif_$(PRECIS).o
 
-$(OBJ)/run$(package)_sif.o: ../$(package)/run$(package)_sif.F90
+$(OBJ)/run$(package)_sif_$(PRECIS).o: ../$(package)/run$(package)_sif.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "run$(package)_sif"
 	$(CP) ../$(package)/run$(package)_sif.F90 $(OBJ)/run$(package)_sif.F90
-	cd $(OBJ); $(FORTRAN) -o run$(package)_sif.o \
+	cd $(OBJ); $(FORTRAN) -o run$(package)_sif_$(PRECIS).o \
                      $(FFLAGSS) run$(package)_sif.F90
 	rm $(OBJ)/run$(package)_sif.F90
 	@printf '[ OK ]\n'
 
 # main progarms for data-file interface
 
-in$(package).o: $(OBJ)/in$(package).o
+in$(package).o: $(OBJ)/in$(package)_$(PRECIS).o
 
-$(OBJ)/in$(package).o: ../$(package)/in$(package).F90
+$(OBJ)/in$(package)_$(PRECIS).o: ../$(package)/in$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "in$(package)"
 	$(CP) ../$(package)/in$(package).F90 $(OBJ)/in$(package).F90
-	cd $(OBJ); $(FORTRAN) -o in$(package).o $(FFLAGSOMP) in$(package).F90
+	cd $(OBJ); $(FORTRAN) -o in$(package)_$(PRECIS).o \
+                     $(FFLAGSOMP) in$(package).F90
 	rm $(OBJ)/in$(package).F90
 	@printf '[ OK ]\n'
 

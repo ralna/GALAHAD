@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_trs.h"
 
 int main(void) {
@@ -30,20 +32,20 @@ int main(void) {
     int A_row[] = {1, 1, 1} ;
     int A_col[] = {1, 2, 3};
     int A_ptr[] = {1, 4};
-    double H_val[] = {1.0, 2.0, 3.0, 4.0};
-    double M_val[] = {1.0, 2.0, 1.0};
-    double A_val[] = {1.0, 1.0, 1.0};
-    double H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
-    double M_dense[] = {1.0, 0.0, 2.0, 0.0, 0.0, 1.0};
-    double H_diag[] = {1.0, 0.0, 2.0};
-    double M_diag[] = {1.0, 2.0, 1.0};
-    double f = 0.96;
-    double radius = 1.0;
-    double c[] = {0.0, 2.0, 0.0};
+    real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
+    real_wp_ M_val[] = {1.0, 2.0, 1.0};
+    real_wp_ A_val[] = {1.0, 1.0, 1.0};
+    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
+    real_wp_ M_dense[] = {1.0, 0.0, 2.0, 0.0, 0.0, 1.0};
+    real_wp_ H_diag[] = {1.0, 0.0, 2.0};
+    real_wp_ M_diag[] = {1.0, 2.0, 1.0};
+    real_wp_ f = 0.96;
+    real_wp_ radius = 1.0;
+    real_wp_ c[] = {0.0, 2.0, 0.0};
 
     char st;
     int status;
-    double x[n];
+    real_wp_ x[n];
     char ma[3];
 
     printf(" Fortran sparse matrix indexing\n\n");
