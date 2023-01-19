@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  March 15th 2018
 
-   PROGRAM RUNDPS_SIF
+   PROGRAM RUNDPS_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USEDPS_precision
 
@@ -42,6 +42,6 @@
    CLOSE( insif )
    STOP
 
-!  End of RUNDPS_SIF
+!  End of RUNDPS_SIF_precision
 
-   END PROGRAM RUNDPS_SIF
+   END PROGRAM RUNDPS_SIF_precision

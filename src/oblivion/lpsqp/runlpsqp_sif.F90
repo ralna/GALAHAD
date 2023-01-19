@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  Started: August 15th 2002
 
-   PROGRAM RUNLPSQP_precision
+   PROGRAM RUNLPSQP_SIF_precision
 
 !  This is the driver program for running LPSQP for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
@@ -182,6 +182,6 @@
 
      STOP
 
-!  End of program RUNLPSQP
+!  End of program RUNLPSQP_SIF_precision
 
-   END PROGRAM RUNLPSQP_precision
+   END PROGRAM RUNLPSQP_SIF_precision

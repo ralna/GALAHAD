@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  December 22nd 2007
 
-   PROGRAM RUNS2QP_SIF
+   PROGRAM RUNS2QP_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USES2QP_precision
 
@@ -43,6 +43,6 @@
    CLOSE( insif  )
    STOP
 
-!  End of RUNS2QP_SIF
+!  End of RUNS2QP_SIF_precision
 
-   END PROGRAM RUNS2QP_SIF
+   END PROGRAM RUNS2QP_SIF_precision

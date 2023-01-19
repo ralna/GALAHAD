@@ -1,5 +1,5 @@
 #include "galahad_modules.h"
-  PROGRAM RUNRB_sls
+  PROGRAM RUNSLS_RB_precision
     USE GALAHAD_KINDS
     USE GALAHAD_CLOCK
     USE GALAHAD_COPYRIGHT
@@ -390,4 +390,4 @@
 
  2000 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A, '. Stopping ' )
 
-  END PROGRAM RUNRB_sls
+  END PROGRAM RUNSLS_RB_precision

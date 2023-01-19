@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNCCQP_SIF
+   PROGRAM RUNCCQP_SIF_precision
 
 !    ---------------------------------------------------
 !    | Main program for the SIF/CUTEst interface to    |
@@ -40,6 +40,6 @@
    CALL USE_CCQP( input, close_input = .TRUE. )
    STOP
 
-!  End of RUNCCQP_SIF
+!  End of RUNCCQP_SIF_precision
 
-   END PROGRAM RUNCCQP_SIF
+   END PROGRAM RUNCCQP_SIF_precision

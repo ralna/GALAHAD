@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPB_DATA
+   PROGRAM RUNQPB_DATA_precision
 
 !    -----------------------------------------------------------
 !    | Main program for the problem-data-file interface to QPB,|
@@ -1217,6 +1217,6 @@
  2250 FORMAT( /, ' Problem:    ', A, /, ' Solver :   ', A,                     &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNQPB_DATA
+!  End of RUNQPB_DATA_precision
 
-   END PROGRAM RUNQPB_DATA
+   END PROGRAM RUNQPB_DATA_precision
