@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  March 25th 2004
 
-   PROGRAM RUNEQP_SIF
+   PROGRAM RUNEQP_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USEEQP_precision
 
@@ -35,6 +35,6 @@
    CLOSE( input  )
    STOP
 
-!  End of RUNEQP_SIF
+!  End of RUNEQP_SIF_precision
 
-   END PROGRAM RUNEQP_SIF
+   END PROGRAM RUNEQP_SIF_precision

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPB_SIF
+   PROGRAM RUNQPB_SIF_precision
 
 !    ----------------------------------------------------------
 !    | Main program for the SIF/CUTEr interface to QPB,       |
@@ -43,6 +43,6 @@
    CLOSE( input  )
    STOP
 
-!  End of RUNQPB_SIF
+!  End of RUNQPB_SIF_precision
 
-   END PROGRAM RUNQPB_SIF
+   END PROGRAM RUNQPB_SIF_precision

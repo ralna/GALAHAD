@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_presolve.h"
 
 int main(void) {
@@ -19,18 +21,18 @@ int main(void) {
     int H_row[] = {1};   // row indices, NB lower triangle
     int H_col[] = {1};    // column indices, NB lower triangle
     int H_ptr[] = {1, 2, 2, 2, 2, 2, 2}; // row pointers
-    double H_val[] = {1.0};   // values
-    double g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
-    double f = 1.0;  // constant term in the objective
+    real_wp_ H_val[] = {1.0};   // values
+    real_wp_ g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
+    real_wp_ f = 1.0;  // constant term in the objective
     int A_ne = 8; // Jacobian elements
     int A_row[] = {3, 3, 3, 4, 4, 5, 5, 5}; // row indices
     int A_col[] = {3, 4, 5, 3, 6, 4, 5, 6}; // column indices
     int A_ptr[] = {1, 1, 1, 4, 6, 9}; // row pointers
-    double A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
-    double c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
-    double c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
-    double x_l[] = {-3.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // variable lower bound
-    double x_u[] = {3.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // variable upper bound
+    real_wp_ A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
+    real_wp_ c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
+    real_wp_ c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
+    real_wp_ x_l[] = {-3.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // variable lower bound
+    real_wp_ x_u[] = {3.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // variable upper bound
 
     // Set output storage
     char st;
@@ -72,13 +74,13 @@ int main(void) {
                 st = 'D';
                 int H_dense_ne = n*(n+1)/2; // number of elements of H
                 int A_dense_ne = m*n; // number of elements of A
-                double H_dense[] = {1.0,
+                real_wp_ H_dense[] = {1.0,
                                     0.0, 0.0,
                                     0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-                double A_dense[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                real_wp_ A_dense[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 1.0, 1.0, 1.0, 0.0,
                                     0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
@@ -126,22 +128,22 @@ int main(void) {
 
         //printf("%c: n, m, h_ne, a_ne = %2i, %2i, %2i, %2i\n",
         //           st, n_trans, m_trans, H_ne_trans, A_ne_trans);
-        double f_trans;  // transformed constant term in the objective
+        real_wp_ f_trans;  // transformed constant term in the objective
         int H_ptr_trans[n_trans+1]; // transformed Hessian row pointers
         int H_col_trans[H_ne_trans]; // transformed Hessian column indices
-        double H_val_trans[H_ne_trans]; // transformed Hessian values
-        double g_trans[n_trans]; // transformed gradient
+        real_wp_ H_val_trans[H_ne_trans]; // transformed Hessian values
+        real_wp_ g_trans[n_trans]; // transformed gradient
         int A_ptr_trans[m_trans+1]; // transformed Jacobian row pointers
         int A_col_trans[A_ne_trans]; // transformed Jacobian column indices
-        double A_val_trans[A_ne_trans]; // transformed Jacobian values
-        double x_l_trans[n_trans]; // transformed lower variable bounds
-        double x_u_trans[n_trans]; // transformed upper variable bounds
-        double c_l_trans[m_trans]; // transformed lower constraint bounds
-        double c_u_trans[m_trans]; // transformed upper constraint bounds
-        double y_l_trans[m_trans]; // transformed lower multiplier bounds
-        double y_u_trans[m_trans]; // transformed upper multiplier bounds
-        double z_l_trans[n_trans]; // transformed lower dual variable bounds
-        double z_u_trans[n_trans]; // transformed upper dual variable bounds
+        real_wp_ A_val_trans[A_ne_trans]; // transformed Jacobian values
+        real_wp_ x_l_trans[n_trans]; // transformed lower variable bounds
+        real_wp_ x_u_trans[n_trans]; // transformed upper variable bounds
+        real_wp_ c_l_trans[m_trans]; // transformed lower constraint bounds
+        real_wp_ c_u_trans[m_trans]; // transformed upper constraint bounds
+        real_wp_ y_l_trans[m_trans]; // transformed lower multiplier bounds
+        real_wp_ y_u_trans[m_trans]; // transformed upper multiplier bounds
+        real_wp_ z_l_trans[n_trans]; // transformed lower dual variable bounds
+        real_wp_ z_u_trans[n_trans]; // transformed upper dual variable bounds
 
         presolve_transform_problem( &data, &status, n_trans, m_trans,
                                H_ne_trans, H_col_trans, H_ptr_trans,
@@ -150,19 +152,19 @@ int main(void) {
                                c_l_trans, c_u_trans, x_l_trans, x_u_trans,
                                y_l_trans, y_u_trans, z_l_trans, z_u_trans );
 
-        double x_trans[n_trans]; // transformed variables
+        real_wp_ x_trans[n_trans]; // transformed variables
         for( int i = 0; i < n_trans; i++) x_trans[i] = 0.0;
-        double c_trans[m_trans]; // transformed constraints
+        real_wp_ c_trans[m_trans]; // transformed constraints
         for( int i = 0; i < m_trans; i++) c_trans[i] = 0.0;
-        double y_trans[m_trans]; // transformed Lagrange multipliers
+        real_wp_ y_trans[m_trans]; // transformed Lagrange multipliers
         for( int i = 0; i < m_trans; i++) y_trans[i] = 0.0;
-        double z_trans[n_trans]; // transformed dual variables
+        real_wp_ z_trans[n_trans]; // transformed dual variables
         for( int i = 0; i < n_trans; i++) z_trans[i] = 0.0;
 
-        double x[n]; // primal variables
-        double c[m]; // constraint values
-        double y[m]; // Lagrange multipliers
-        double z[n]; // dual variables
+        real_wp_ x[n]; // primal variables
+        real_wp_ c[m]; // constraint values
+        real_wp_ y[m]; // Lagrange multipliers
+        real_wp_ z[n]; // dual variables
 
         //printf("%c: n_trans, m_trans, n, m = %2i, %2i, %2i, %2i\n",
         //           st, n_trans, m_trans, n, m );

@@ -447,7 +447,7 @@ fi
 # qp
 
 if [[ $2 == 'qp' ]]; then
-  RUNMAIN=$GALOBJ/inqp.o
+  RUNMAIN=$GALOBJ/inqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNQP.SPC ]] && $GALOBJ/buildspec qp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qp update
   [[ ! -L RUNQP.SPC ]] && ln -s ~/.galahad/specs/RUNQP.SPC RUNQP.SPC
@@ -455,7 +455,7 @@ if [[ $2 == 'qp' ]]; then
 # qpa
 
 elif [[ $2 == 'qpa' ]]; then
-  RUNMAIN=$GALOBJ/inqpa.o
+  RUNMAIN=$GALOBJ/inqpa_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNQPA.SPC ]] && $GALOBJ/buildspec qpa
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpa update
   [[ ! -L RUNQPA.SPC ]] && ln -s ~/.galahad/specs/RUNQPA.SPC RUNQPA.SPC
@@ -463,7 +463,7 @@ elif [[ $2 == 'qpa' ]]; then
 # qpb
 
 elif [[ $2 == 'qpb' ]]; then
-  RUNMAIN=$GALOBJ/inqpb.o
+  RUNMAIN=$GALOBJ/inqpb_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNQPB.SPC ]] && $GALOBJ/buildspec qpb
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpb update
   [[ ! -L RUNQPB.SPC ]] && ln -s ~/.galahad/specs/RUNQPB.SPC RUNQPB.SPC
@@ -471,7 +471,7 @@ elif [[ $2 == 'qpb' ]]; then
 # qpc
 
 elif [[ $2 == 'qpc' ]]; then
-  RUNMAIN=$GALOBJ/inqpc.o
+  RUNMAIN=$GALOBJ/inqpc_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNQPC.SPC ]] && $GALOBJ/buildspec qpc
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpc update
   [[ ! -L RUNQPC.SPC ]] && ln -s ~/.galahad/specs/RUNQPC.SPC RUNQPC.SPC
@@ -479,7 +479,7 @@ elif [[ $2 == 'qpc' ]]; then
 # cqp
 
 elif [[ $2 == 'cqp' ]]; then
-  RUNMAIN=$GALOBJ/incqp.o
+  RUNMAIN=$GALOBJ/incqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNCQP.SPC ]] && $GALOBJ/buildspec cqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqp update
   [[ ! -L RUNCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCQP.SPC RUNCQP.SPC
@@ -487,7 +487,7 @@ elif [[ $2 == 'cqp' ]]; then
 # cqps
 
 elif [[ $2 == 'cqps' ]]; then
-  RUNMAIN=$GALOBJ/incqps.o
+  RUNMAIN=$GALOBJ/incqps_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNCQPS.SPC ]] && $GALOBJ/buildspec cqps
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqps update
   [[ ! -L RUNCQPS.SPC ]] && ln -s ~/.galahad/specs/RUNCQPS.SPC RUNCQPS.SPC
@@ -495,7 +495,7 @@ elif [[ $2 == 'cqps' ]]; then
 # dqp
 
 elif [[ $2 == 'dqp' ]]; then
-  RUNMAIN=$GALOBJ/indqp.o
+  RUNMAIN=$GALOBJ/indqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNDQP.SPC ]] && $GALOBJ/buildspec dqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dqp update
   [[ ! -L RUNDQP.SPC ]] && ln -s ~/.galahad/specs/RUNDQP.SPC RUNDQP.SPC
@@ -503,7 +503,7 @@ elif [[ $2 == 'dqp' ]]; then
 # l1qp
 
 elif [[ $2 == 'l1qp' ]]; then
-  RUNMAIN=$GALOBJ/inl1qp.o
+  RUNMAIN=$GALOBJ/inl1qp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNL1QP.SPC ]] && $GALOBJ/buildspec l1qp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec l1qp update
   [[ ! -L RUNL1QP.SPC ]] && ln -s ~/.galahad/specs/RUNL1QP.SPC RUNL1QP.SPC
@@ -511,7 +511,7 @@ elif [[ $2 == 'l1qp' ]]; then
 # bqp
 
 elif [[ $2 == 'bqp' ]]; then
-  RUNMAIN=$GALOBJ/inbqp.o
+  RUNMAIN=$GALOBJ/inbqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNBQP.SPC ]] && $GALOBJ/buildspec bqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqp update
   [[ ! -L RUNBQP.SPC ]] && ln -s ~/.galahad/specs/RUNBQP.SPC RUNBQP.SPC
@@ -519,7 +519,7 @@ elif [[ $2 == 'bqp' ]]; then
 # bqpb
 
 elif [[ $2 == 'bqpb' ]]; then
-  RUNMAIN=$GALOBJ/inbqpb.o
+  RUNMAIN=$GALOBJ/inbqpb_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNBQPB.SPC ]] && $GALOBJ/buildspec bqpb
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqpb update
   [[ ! -L RUNBQPB.SPC ]] && ln -s ~/.galahad/specs/RUNBQPB.SPC RUNBQPB.SPC
@@ -527,7 +527,7 @@ elif [[ $2 == 'bqpb' ]]; then
 # dlp
 
 elif [[ $2 == 'dlp' ]]; then
-  RUNMAIN=$GALOBJ/indlp.o
+  RUNMAIN=$GALOBJ/indlp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNDLP.SPC ]] && $GALOBJ/buildspec dlp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dlp update
   [[ ! -L RUNDLP.SPC ]] && ln -s ~/.galahad/specs/RUNDLP.SPC RUNDLP.SPC
@@ -535,7 +535,7 @@ elif [[ $2 == 'dlp' ]]; then
 # ccqp
 
 elif [[ $2 == 'ccqp' ]]; then
-  RUNMAIN=$GALOBJ/inccqp.o
+  RUNMAIN=$GALOBJ/inccqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNCCQP.SPC ]] && $GALOBJ/buildspec ccqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ccqp update
   [[ ! -L RUNCCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCCQP.SPC RUNCCQP.SPC
@@ -543,7 +543,7 @@ elif [[ $2 == 'ccqp' ]]; then
 # pdqp
 
 elif [[ $2 == 'pdqp' ]]; then
-  RUNMAIN=$GALOBJ/inpdqp.o
+  RUNMAIN=$GALOBJ/inpdqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNPDQP.SPC ]] && $GALOBJ/buildspec pdqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pdqp update
   [[ ! -L RUNPDQP.SPC ]] && ln -s ~/.galahad/specs/RUNPDQP.SPC RUNPDQP.SPC
@@ -551,7 +551,7 @@ elif [[ $2 == 'pdqp' ]]; then
 # cdqp
 
 elif [[ $2 == 'cdqp' ]]; then
-  RUNMAIN=$GALOBJ/incdqp.o
+  RUNMAIN=$GALOBJ/incdqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNCDQP.SPC ]] && $GALOBJ/buildspec cdqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cdqp update
   [[ ! -L RUNCDQP.SPC ]] && ln -s ~/.galahad/specs/RUNCDQP.SPC RUNCDQP.SPC
@@ -559,7 +559,7 @@ elif [[ $2 == 'cdqp' ]]; then
 # lpa
 
 elif [[ $2 == 'lpa' ]]; then
-  RUNMAIN=$GALOBJ/inlpa.o
+  RUNMAIN=$GALOBJ/inlpa_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNLPA.SPC ]] && $GALOBJ/buildspec lpa
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpa update
   [[ ! -L RUNLPA.SPC ]] && ln -s ~/.galahad/specs/RUNLPA.SPC RUNLPA.SPC
@@ -567,7 +567,7 @@ elif [[ $2 == 'lpa' ]]; then
 # lpb
 
 elif [[ $2 == 'lpb' ]]; then
-  RUNMAIN=$GALOBJ/inlpb.o
+  RUNMAIN=$GALOBJ/inlpb_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNLPB.SPC ]] && $GALOBJ/buildspec lpb
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpb update
   [[ ! -L RUNLPB.SPC ]] && ln -s ~/.galahad/specs/RUNLPB.SPC RUNLPB.SPC
@@ -575,7 +575,7 @@ elif [[ $2 == 'lpb' ]]; then
 # lpqp
 
 elif [[ $2 == 'lpqp' ]]; then
-  RUNMAIN=$GALOBJ/inlpqp.o
+  RUNMAIN=$GALOBJ/inlpqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNLPQP.SPC ]] && $GALOBJ/buildspec lpqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqp update
   [[ ! -L RUNLPQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPQP.SPC RUNLPQP.SPC
@@ -583,7 +583,7 @@ elif [[ $2 == 'lpqp' ]]; then
 # eqp
 
 elif [[ $2 == 'eqp' ]]; then
-  RUNMAIN=$GALOBJ/ineqp.o
+  RUNMAIN=$GALOBJ/ineqp_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNEQP.SPC ]] && $GALOBJ/buildspec eqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec eqp update
   [[ ! -L RUNEQP.SPC ]] && ln -s ~/.galahad/specs/RUNEQP.SPC RUNEQP.SPC
@@ -591,7 +591,7 @@ elif [[ $2 == 'eqp' ]]; then
 # lls
 
 elif [[ $2 == 'lls' ]]; then
-  RUNMAIN=$GALOBJ/inlls.o
+  RUNMAIN=$GALOBJ/inlls_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNLLS.SPC ]] && $GALOBJ/buildspec lls
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lls update
   [[ ! -L RUNLLS.SPC ]] && ln -s ~/.galahad/specs/RUNLLS.SPC RUNLLS.SPC

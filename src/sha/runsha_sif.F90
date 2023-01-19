@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-01-17 AT 14:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  April 10th 2013
 
-   PROGRAM RUNSHA_SIF
+   PROGRAM RUNSHA_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USESHA_precision
 
@@ -42,6 +42,6 @@
    CLOSE( insif )
    STOP
 
-!  End of RUNSHA_SIF
+!  End of RUNSHA_SIF_precision
 
-   END PROGRAM RUNSHA_SIF
+   END PROGRAM RUNSHA_SIF_precision

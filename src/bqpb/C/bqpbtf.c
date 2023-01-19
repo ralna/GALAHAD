@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_bqpb.h"
 
 int main(void) {
@@ -18,11 +20,11 @@ int main(void) {
     int H_row[] = {1, 2, 3 };   // row indices, NB lower triangle
     int H_col[] = {1, 2, 3};    // column indices, NB lower triangle
     int H_ptr[] = {1, 2, 3, 4}; // row pointers
-    double H_val[] = {1.0, 1.0, 1.0 };   // values
-    double g[] = {2.0, 0.0, 0.0};   // linear term in the objective
-    double f = 1.0;  // constant term in the objective
-    double x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
-    double x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
+    real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
+    real_wp_ g[] = {2.0, 0.0, 0.0};   // linear term in the objective
+    real_wp_ f = 1.0;  // constant term in the objective
+    real_wp_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
+    real_wp_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
 
     // Set output storage
     int x_stat[n]; // variable status
@@ -42,8 +44,8 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // Start from 0
-        double x[] = {0.0,0.0,0.0};
-        double z[] = {0.0,0.0,0.0};
+        real_wp_ x[] = {0.0,0.0,0.0};
+        real_wp_ z[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -64,7 +66,7 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 int H_dense_ne = 6; // number of elements of H
-                double H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+                real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 bqpb_import( &control, &data, &status, n,
                              "dense", H_ne, NULL, NULL, NULL );
                 bqpb_solve_qp( &data, &status, n, H_dense_ne, H_dense, g, f, 
@@ -132,13 +134,13 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // Start from 0
-        double x[] = {0.0,0.0,0.0};
-        double z[] = {0.0,0.0,0.0};
+        real_wp_ x[] = {0.0,0.0,0.0};
+        real_wp_ z[] = {0.0,0.0,0.0};
 
         // Set shifted least-distance data
 
-        double w[] = {1.0,1.0,1.0};
-        double x_0[] = {0.0,0.0,0.0};
+        real_wp_ w[] = {1.0,1.0,1.0};
+        real_wp_ x_0[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage

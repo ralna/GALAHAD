@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_fdc.h"
 
 int main(void) {
@@ -18,8 +20,8 @@ int main(void) {
     int A_ne = 10; // number of nonzeros
     int A_col[] = {1, 2, 3, 4, 1, 2, 3, 4, 2, 4}; // column indices
     int A_ptr[] = {1, 5, 9, 11}; // row pointers
-    double A_val[] = {1.0, 2.0, 3.0, 4.0, 2.0, -4.0, 6.0, -8.0, 5.0, 10.0};
-    double b[] = {5.0, 10.0, 0.0};
+    real_wp_ A_val[] = {1.0, 2.0, 3.0, 4.0, 2.0, -4.0, 6.0, -8.0, 5.0, 10.0};
+    real_wp_ b[] = {5.0, 10.0, 0.0};
 
     // Set output storage
     int depen[m]; // dependencies, if any

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQP_DATA
+   PROGRAM RUNQP_DATA_precision
 
 !    -----------------------------------------------------------------
 !    | Main program for the problem-data-file interface to QP,       |
@@ -753,6 +753,6 @@
  2050 FORMAT( ' Allocation error, variable ', A8, ' status = ', I0 )
  2060 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
 
-!  End of RUNQP_DATA
+!  End of RUNQP_DATA_precision
 
-   END PROGRAM RUNQP_DATA
+   END PROGRAM RUNQP_DATA_precision

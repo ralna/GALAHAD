@@ -1,42 +1,17 @@
+ C sparse matrix indexing
 
- error exit tests
- 3: TRU_solve exit status =     -3
- 7: TRU_solve exit status =     -7
-15: TRU_solve exit status =    -15
-18: TRU_solve exit status =    -18
-19: TRU_solve exit status =    -19
+ tests options for all-in-one storage format
 
- test of availible options
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0
 
- 1: TRU_solve exit status =     -9
- 2:     5 iterations. Optimal objective value =   -1.0 status =      0
+ tests reverse-communication options
 
- Error return from TRU_solve -
-   the requested solver is not known
- 
- 3: TRU_solve exit status =    -26
-
- Error return from TRU_solve -
-   the factorization failed
- 
- 4: TRU_solve exit status =    -10
- 5:     6 iterations. Optimal objective value =   -1.0 status =      0
- 6:    80 iterations. Optimal objective value =   -1.0 status =      0
- 7:   148 iterations. Optimal objective value =   -1.0 status =      0
-
- full test of generic problems
-
-
- Error return from TRU_solve -
-   the analysis phase failed
- 
- 1: TRU_solve exit status =     -9
- 2:     6 iterations. Optimal objective value =   -1.0 status =      0
- 3:    10 iterations. Optimal objective value =   -1.0 status =      0
-
- Error return from TRU_solve -
-   the analysis phase failed
- 
- 4: TRU_solve exit status =     -9
- 5:     6 iterations. Optimal objective value =   -1.0 status =      0
- 6:    10 iterations. Optimal objective value =   -1.0 status =      0
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0
