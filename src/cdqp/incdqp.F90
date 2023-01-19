@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNCDQP_DATA
+   PROGRAM RUNCDQP_DATA_precision
 
 !     -------------------------------------------------------------------
 !    | Main program for the problem-data-file interface to CDQP, an      |
@@ -1247,6 +1247,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNCDQP_DATA
+!  End of RUNCDQP_DATA_precision
 
-   END PROGRAM RUNCDQP_DATA
+   END PROGRAM RUNCDQP_DATA_precision

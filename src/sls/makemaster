@@ -256,14 +256,14 @@ $(CULG)(use$(package).o): ../$(package)/use$(package).F90
 
 #  Rutherford-Boeing interfaces
 
-run$(package)_rb.o: $(OBJ)/run$(package)_rb.o
+run$(package)_rb.o: $(OBJ)/run$(package)_rb_$(PRECIS).o
 
-$(OBJ)/run$(package)_rb.o: ../$(package)/run$(package)_rb.F90
+$(OBJ)/run$(package)_rb_$(PRECIS).o: ../$(package)/run$(package)_rb.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "run$(package)_rb"
 	$(CP) ../$(package)/run$(package)_rb.F90 $(OBJ)/run$(package)_rb.F90
-	cd $(OBJ); $(FORTRAN) -o run$(package)_rb.o \
+	cd $(OBJ); $(FORTRAN) -o run$(package)_rb_$(PRECIS).o \
                      $(FFLAGSS) run$(package)_rb.F90
-#	rm $(OBJ)/run$(package)_rb.F90
+	rm $(OBJ)/run$(package)_rb.F90
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries

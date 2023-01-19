@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  June 25th 2012
 
-   PROGRAM RUNTRAL_SIF
+   PROGRAM RUNTRAL_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USETRAL_precision
 
@@ -42,6 +42,6 @@
    CLOSE( insif )
    STOP
 
-!  End of RUNTRAL_SIF
+!  End of RUNTRAL_SIF_precision
 
-   END PROGRAM RUNTRAL_SIF
+   END PROGRAM RUNTRAL_SIF_precision

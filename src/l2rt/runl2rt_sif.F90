@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNL2RT_SIF
+   PROGRAM RUNL2RT_SIF_precision
 
 !     -----------------------------------------------------------------
 !    | Main program for the SIF/CUTEst interface to L2RT, an iterative |
@@ -42,6 +42,6 @@
    CLOSE( input  )
    STOP
 
-!  End of RUNL2RT_SIF
+!  End of RUNL2RT_SIF_precision
 
-   END PROGRAM RUNL2RT_SIF
+   END PROGRAM RUNL2RT_SIF_precision

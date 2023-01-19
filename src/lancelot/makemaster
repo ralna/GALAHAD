@@ -128,10 +128,10 @@ all: lancelotb_sif
 lancelotb_sif: lancelotb_sif_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC_SIF)"
 
-lancelotb_sif_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif.o
+lancelotb_sif_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif_single.o
 	$(RANLIB) $(LGS)
 
-lancelotb_sif_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
+lancelotb_sif_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif_double.o
 	$(RANLIB) $(LGD)
 
 lancelotb_silent: lancelotb_silent_$(PRECIS)
@@ -161,11 +161,11 @@ lancelotb_steering_sif: lancelotb_steering_sif_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B STEERING ($(PRECIS) $(SUCC_SIF)"
 
 lancelotb_steering_sif_single: $(USEOBJECTSSTEERINGS) \
-           $(OBJS)/runlancelot_steering_sif.o
+           $(OBJS)/runlancelot_steering_sif_single.o
 	$(RANLIB) $(LGS)
 
 lancelotb_steering_sif_double: $(USEOBJECTSSTEERINGD) \
-          $(OBJD)/runlancelot_steering_sif.o
+           $(OBJD)/runlancelot_steering_sif_double.o
 	$(RANLIB) $(LGD)
 
 lancelotb_steering_silent: lancelotb_steering_silent_$(PRECIS)
@@ -227,13 +227,13 @@ test_double: lancelotdt
 
 test_sif: test_cutest
 test_cutest: test_cutest_$(PRECIS)
-test_cutest_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif.o
+test_cutest_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif_single.o
 	echo ""
 	echo " Testing SIF interface to LANCELOT B"
 	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot -s ALLINITC
 	echo ""
 	echo " Tests for LANCELOT B complete"
-test_cutest_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
+test_cutest_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif_double.o
 	echo ""
 	echo " Testing SIF interface to LANCELOT B"
 	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot ALLINITC
@@ -695,7 +695,7 @@ $(CULG)(uselancelot.o): ../lancelot/uselancelot.F90
                    $(FORTRAN) -o uselancelot.o $(FFLAGSN) uselancelot.F90 )
 	cd $(OBJ); $(CUARR) uselancelot.o; \
           $(RM) uselancelot.F90 uselancelot.o
-	$(RMOBFILE) runlancelot_sif.o
+	$(RMOBFILE) runlancelot_sif_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -712,31 +712,31 @@ $(CULG)(uselancelot_steering.o): ../lancelot/uselancelot_steering.F90
                      uselancelot_steering.F90 )
 	cd $(OBJ); $(CUARR) uselancelot_steering.o; \
           $(RM) uselancelot_steering.F90 uselancelot_steering.o
-	$(RMOBFILE) runlancelot_steering_sif.o
+	$(RMOBFILE) runlancelot_steering_sif_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  main program
 
-runlancelot_sif.o: $(OBJ)/runlancelot_sif.o
+runlancelot_sif.o: $(OBJ)/runlancelot_sif_$(PRECIS).o
 
-$(OBJ)/runlancelot_sif.o: ../lancelot/runlancelot_sif.F90
+$(OBJ)/runlancelot_sif_$(PRECIS).o: ../lancelot/runlancelot_sif.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "runlancelot_sif"
 	$(CP) ../lancelot/runlancelot_sif.F90 \
           $(OBJ)/runlancelot_sif.F90
-	cd $(OBJ); $(FORTRAN) -o runlancelot_sif.o $(FFLAGSS) \
+	cd $(OBJ); $(FORTRAN) -o runlancelot_sif_$(PRECIS).o $(FFLAGSS) \
            runlancelot_sif.F90
 	$(RM) $(OBJ)/runlancelot_sif.F90
 	@printf '[ OK ]\n'
 
-runlancelot_steering_sif.o: $(OBJ)/runlancelot_steering_sif.o
+runlancelot_steering_sif.o: $(OBJ)/runlancelot_steering_sif_$(PRECIS).o
 
-$(OBJ)/runlancelot_steering_sif.o: ../lancelot/runlancelot_steering_sif.F90
+$(OBJ)/runlancelot_steering_sif_$(PRECIS).o: ../lancelot/runlancelot_steering_sif.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "runlancelot_steering_sif"
 	$(CP) ../lancelot/runlancelot_steering_sif.F90 \
           $(OBJ)/runlancelot_steering_sif.F90
-	cd $(OBJ); $(FORTRAN) -o runlancelot_steering_sif.o $(FFLAGSS) \
-          runlancelot_steering_sif.F90
+	cd $(OBJ); $(FORTRAN) -o runlancelot_steering_sif_$(PRECIS).o \
+          $(FFLAGSS) runlancelot_steering_sif.F90
 	$(RM) $(OBJ)/runlancelot_steering_sif.F90
 	@printf '[ OK ]\n'
 

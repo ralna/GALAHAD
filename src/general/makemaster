@@ -440,7 +440,7 @@ ssidsd.o: $(RLGD)(ssids.o)
 $(RLGD)(ssids.o): ../dum/ssidsd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
 	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssids.F90
-	cd $(OBJ); $(FORTRAN) -o ssidd.o $(FFLAGS) ssids.F90
+	cd $(OBJ); $(FORTRAN) -o ssids.o $(FFLAGS) ssids.F90
 	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
 	$(MVMODS)
 	$(RMARFILE) sls.o

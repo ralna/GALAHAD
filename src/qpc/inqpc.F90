@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPC_DATA
+   PROGRAM RUNQPC_DATA_precision
      USE GALAHAD_KINDS
 
 !    ----------------------------------------------------
@@ -1153,6 +1153,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNQPC_DATA
+!  End of RUNQPC_DATA_precision
 
-   END PROGRAM RUNQPC_DATA
+   END PROGRAM RUNQPC_DATA_precision

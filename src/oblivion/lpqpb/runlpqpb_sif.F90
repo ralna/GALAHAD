@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  July 29th 2002
 
-     PROGRAM RUNLPQPB
+     PROGRAM RUNLPQPB_SIF_precision
 
 !  Main program for LPQPB, an interior point algorithm for solving l_p 
 !  quadratic programs
@@ -871,8 +871,8 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of program RUNLPQPB
+!  End of program RUNLPQPB_SIF_precision
 
-      END PROGRAM RUNLPQPB
+      END PROGRAM RUNLPQPB_SIF_precision
 
 
