@@ -33,8 +33,10 @@ libgalahad_deps = []
 blas_dep = []
 lapack_dep = []
 
-extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
-extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
+# -DSPRAL_HAVE_HWLOC
+# -DSPRAL_NO_SCHED_GETCPU
+extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_HAVE_SCHED_GETCPU']
+extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_HAVE_SCHED_GETCPU']
 
 # libgalahad_blas
 
@@ -430,24 +432,26 @@ subdir('src/qpc')
 subdir('src/qp')
 
 # needs c++ files
-# subdir('src/spral')
+subdir('src/spral')
+# Add an option ssids for dummy / not dummy version
+# Add an option gpu
 # subdir('src/ssids')
 
-# libgalahad_cpp_single = library('galahad_cpp_single',
-#                                  sources : libgalahad_cpp_src,
-#                                  link_with : [libgalahad_blas, libgalahad_lapack],
-#                                  dependencies : blas_dep + lapack_dep,
-#                                  cpp_args : extra_args_single,
-#                                  include_directories: libgalahad_include,
-#                                  install : true)
+libgalahad_cpp_single = library('galahad_cpp_single',
+                                 sources : libgalahad_cpp_src,
+                                 link_with : [libgalahad_blas, libgalahad_lapack],
+                                 dependencies : blas_dep + lapack_dep,
+                                 cpp_args : extra_args_single,
+                                 include_directories: libgalahad_include,
+                                 install : true)
 
-# libgalahad_cpp_double = library('galahad_cpp_double',
-#                                 sources : libgalahad_cpp_src,
-#                                 link_with : [libgalahad_blas, libgalahad_lapack],
-#                                 dependencies : blas_dep + lapack_dep,
-#                                 cpp_args : extra_args_double,
-#                                 include_directories: libgalahad_include,
-#                                 install : true)
+libgalahad_cpp_double = library('galahad_cpp_double',
+                                sources : libgalahad_cpp_src,
+                                link_with : [libgalahad_blas, libgalahad_lapack],
+                                dependencies : blas_dep + lapack_dep,
+                                cpp_args : extra_args_double,
+                                include_directories: libgalahad_include,
+                                install : true)
 
 # Options
 build_ciface = get_option('ciface')
@@ -461,8 +465,9 @@ if build_single
   libgalahad_single = library('galahad_single',
                       sources : libgalahad_src,
                       link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
-                                   libpardiso, libmkl_pardiso, libspral_ssids_single, libmumps_single,
-                                   libspmf_single, libwsmp, libpastix_single, libgalahad_metis], # libgalahad_cpp_single],
+                                   libpardiso, libmkl_pardiso, # libspral_ssids_single,
+                                   libmumps_single, libspmf_single, libwsmp, libpastix_single,
+                                   libgalahad_metis, libgalahad_cpp_single],
                       dependencies : libgalahad_deps,
                       fortran_args : extra_args_single,
                       include_directories: libgalahad_include,
@@ -482,8 +487,9 @@ if build_double
   libgalahad_double = library('galahad_double',
                       sources : libgalahad_src,
                       link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_double,
-                                   libpardiso, libmkl_pardiso, libspral_ssids_double, libmumps_double,
-                                   libspmf_double, libwsmp, libpastix_double, libgalahad_metis], # libgalahad_cpp_double],
+                                   libpardiso, libmkl_pardiso, # libspral_ssids_double,
+                                   libmumps_double, libspmf_double, libwsmp, libpastix_double,
+                                   libgalahad_metis, libgalahad_cpp_double],
                       dependencies : libgalahad_deps,
                       fortran_args : extra_args_double,
                       include_directories: libgalahad_include,
@@ -827,6 +833,9 @@ if build_tests
 
     qpct = executable('qpct_'+val[0], 'src/qpc/qpct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('qpct_'+val[0], qpct, suite: ['qpc', 'fortran', val[0]], is_parallel : false)
+
+    ssidst = executable('ssidst_'+val[0], 'src/ssids/ssidst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+    test('ssidst_'+val[0], ssidst, suite: ['ssids', 'fortran', val[0]], is_parallel : false)
   endforeach
 endif
 
@@ -1114,7 +1123,7 @@ if build_examples
   executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  # executable('ssidss', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
+  executable('ssidss', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trus', 'src/tru/trus.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
