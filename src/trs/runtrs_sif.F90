@@ -12,7 +12,7 @@
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USETRS_precision
 
-!  Main program for the SIF interface to TRS, a solver for the trsst-region 
+!  Main program for the SIF interface to TRS, a solver for the trsst-region
 !  subproblem
 
 !  Problem insif characteristics
@@ -37,7 +37,7 @@
 
    CALL USE_TRS( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif )
    STOP
