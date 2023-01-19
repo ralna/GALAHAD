@@ -472,7 +472,7 @@ fi
 # sls
 
 if [[ $2 == 'sls' ]]; then
-  RUNMAIN=$GALOBJ/runsls_rb.o
+  RUNMAIN=$GALOBJ/runsls_rb_$PRECIS.o
   [[ ! -e ~/.galahad/specs/RUNSLS.SPC ]] && $GALOBJ/buildspec sls
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sls update
   [[ ! -e RUNSLS.SPC ]] && ln -s ~/.galahad/specs/RUNSLS.SPC RUNSLS.SPC

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  June 20th 2016
 
-   PROGRAM RUNBGO_SIF
+   PROGRAM RUNBGO_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USEBGO_precision
 
@@ -42,6 +42,6 @@
    CLOSE( insif )
    STOP
 
-!  End of RUNBGO_SIF
+!  End of RUNBGO_SIF_precision
 
-   END PROGRAM RUNBGO_SIF
+   END PROGRAM RUNBGO_SIF_precision

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPA_DATA
+   PROGRAM RUNQPA_DATA_precision
 
 !    ----------------------------------------------------------
 !    | Main program for the problem-data-file interface to    |
@@ -986,4 +986,4 @@
 
 !  End of RUNQPA_DATA
 
-   END PROGRAM RUNQPA_DATA
+   END PROGRAM RUNQPA_DATA_precision

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNLPA_SIF
+   PROGRAM RUNLPA_SIF_precision
 
 !    ---------------------------------------------------------
 !    | Main program for the SIF/CUTEr interface to LPA, an   |
@@ -38,6 +38,6 @@
    CALL USE_LPA( input, close_input = .TRUE. )
    STOP
 
-!  End of RUNLPA_SIF
+!  End of RUNLPA_SIF_precision
 
-   END PROGRAM RUNLPA_SIF
+   END PROGRAM RUNLPA_SIF_precision

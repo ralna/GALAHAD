@@ -1,4 +1,3 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +7,7 @@
 !  Copyright reserved
 !  November 24th 2008
 
-   PROGRAM RUNRQS_SIF
+   PROGRAM RUNRQS_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USERQS_precision
 
@@ -42,6 +41,6 @@
    CLOSE( insif )
    STOP
 
-!  End of RUNRQS_SIF
+!  End of RUNRQS_SIF_precision
 
-   END PROGRAM RUNRQS_SIF
+   END PROGRAM RUNRQS_SIF_precision
