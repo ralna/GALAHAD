@@ -38,7 +38,7 @@
 
    CALL USE_S2QP( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif  )
    STOP
