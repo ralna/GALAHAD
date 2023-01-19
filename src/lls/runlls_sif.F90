@@ -12,7 +12,7 @@
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USELLS_precision
 
-!  Main program for the SIF/CUTEr interface to LLS, a conjugate-gradient 
+!  Main program for the SIF/CUTEr interface to LLS, a conjugate-gradient
 !  algorithm for solving linear least-squares problems
 
 !  Problem input characteristics
@@ -29,7 +29,7 @@
 
    CALL USE_LLS( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

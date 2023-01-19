@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  June 3rd 2016
 
-   PROGRAM RUNUGO_SIF_precision  
+   PROGRAM RUNUGO_SIF_precision
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USEUGO_precision
 
