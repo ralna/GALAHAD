@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_nls.h"
 
 #define max(a,b)  \
@@ -13,29 +15,30 @@
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   real_wp_ p;
 };
 
 // Function prototypes
 
-int res( int n, int m, const double x[], double c[], const void * );
-int jac( int n, int m, int jne, const double x[], double jval[], const void * );
-int hess( int n, int m, int hne, const double x[], const double y[], 
-          double hval[], const void * );
-int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
-             const double v[], bool got_j, const void * );
-int hessprod( int n, int m, const double x[], const double y[], double u[], 
-              const double v[], bool got_h, const void * );
-int rhessprods( int n, int m, int pne, const double x[], const double v[],
-                double pval[], bool got_h, const void * );
-int scale( int n, int m, const double x[], double u[], 
-           const double v[], const void * );
-int jac_dense( int n, int m, int jne, const double x[], double jval[], 
+int res( int n, int m, const real_wp_ x[], real_wp_ c[], const void * );
+int jac( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[], 
+         const void * );
+int hess( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[], 
+          real_wp_ hval[], const void * );
+int jacprod( int n, int m, const real_wp_ x[], const bool transpose, 
+             real_wp_ u[], const real_wp_ v[], bool got_j, const void * );
+int hessprod( int n, int m, const real_wp_ x[], const real_wp_ y[], 
+              real_wp_ u[], const real_wp_ v[], bool got_h, const void * );
+int rhessprods( int n, int m, int pne, const real_wp_ x[], const real_wp_ v[],
+                real_wp_ pval[], bool got_h, const void * );
+int scale( int n, int m, const real_wp_ x[], real_wp_ u[], 
+           const real_wp_ v[], const void * );
+int jac_dense( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[], 
                const void * );
-int hess_dense( int n, int m, int hne, const double x[], const double y[],
-                double hval[], const void * );
-int rhessprods_dense( int n, int m, int pne, const double x[], 
-                      const double v[], double pval[], bool got_h,
+int hess_dense( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
+                real_wp_ hval[], const void * );
+int rhessprods_dense( int n, int m, int pne, const real_wp_ x[], 
+                      const real_wp_ v[], real_wp_ pval[], bool got_h,
                       const void * );
 
 int main(void) {
@@ -65,10 +68,10 @@ int main(void) {
     int P_ptr[] = {1, 2, 3, 3};    // column pointers
 
     // Set storage
-    double g[n]; // gradient
-    double c[m]; // residual
-    double y[m]; // multipliers
-    double W[] = {1.0, 1.0, 1.0}; // weights
+    real_wp_ g[n]; // gradient
+    real_wp_ c[m]; // residual
+    real_wp_ y[m]; // multipliers
+    real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
     char st;
     int status;
 
@@ -84,12 +87,12 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
-        //control.print_level = 1;
+        // control.print_level = 1;
         control.jacobian_available = 2; 
         control.hessian_available = 2;
-        control.model = 6; // tensor Gauss-Newton
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        control.model = 6;
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -161,10 +164,10 @@ int main(void) {
 
     // reverse-communication input/output
     int eval_status;
-    double u[max(m,n)], v[max(m,n)];
-    double J_val[j_ne], J_dense[m*n];
-    double H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
-    double P_val[p_ne], P_dense[m*n];
+    real_wp_ u[max(m,n)], v[max(m,n)];
+    real_wp_ J_val[j_ne], J_dense[m*n];
+    real_wp_ H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
+    real_wp_ P_val[p_ne], P_dense[m*n];
     bool transpose;
     bool got_j = false;
     bool got_h = false;
@@ -181,8 +184,8 @@ int main(void) {
         control.jacobian_available = 2; 
         control.hessian_available = 2;
         control.model = 6;
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -369,8 +372,8 @@ int main(void) {
         control.jacobian_available = 2; 
         control.hessian_available = 2;
         control.model = model;
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         nls_import( &control, &data, &status, n, m, 
                     "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
@@ -406,8 +409,8 @@ int main(void) {
         control.jacobian_available = 2; 
         control.hessian_available = 2;
         control.model = model;
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         nls_import( &control, &data, &status, n, m, 
                     "absent", j_ne, NULL, NULL, NULL,
@@ -442,8 +445,8 @@ int main(void) {
         control.jacobian_available = 2; 
         control.hessian_available = 2;
         control.model = model;
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         nls_import( &control, &data, &status, n, m, 
                     "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
@@ -499,8 +502,8 @@ int main(void) {
         control.jacobian_available = 2; 
         control.hessian_available = 2;
         control.model = model;
-        double x[] = {1.5,1.5}; // starting point
-        double W[] = {1.0, 1.0, 1.0}; // weights
+        real_wp_ x[] = {1.5,1.5}; // starting point
+        real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
 
         nls_import( &control, &data, &status, n, m, 
                     "absent", j_ne, NULL, NULL, NULL,
@@ -547,9 +550,9 @@ int main(void) {
 }
 
 // compute the residuals
-int res( int n, int m, const double x[], double c[], const void *userdata ){
+int res( int n, int m, const real_wp_ x[], real_wp_ c[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
     c[0] = pow(x[0],2.0) + p;
     c[1] = x[0] + pow(x[1],2.0);
     c[2] = x[0] - x[1];
@@ -557,7 +560,7 @@ int res( int n, int m, const double x[], double c[], const void *userdata ){
 }
 
 // compute the Jacobian
-int jac( int n, int m, int jne, const double x[], double jval[], 
+int jac( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[], 
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     jval[0] = 2.0 * x[0];
@@ -569,8 +572,8 @@ int jac( int n, int m, int jne, const double x[], double jval[],
 }
 
 // compute the Hessian
-int hess( int n, int m, int hne, const double x[], const double y[], 
-           double hval[], const void *userdata ){
+int hess( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[], 
+           real_wp_ hval[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     hval[0] = 2.0 * y[0];
     hval[1] = 2.0 * y[1];
@@ -578,8 +581,8 @@ int hess( int n, int m, int hne, const double x[], const double y[],
 }
 
 // compute Jacobian-vector products
-int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
-             const double v[], bool got_j, const void *userdata ){
+int jacprod( int n, int m, const real_wp_ x[], const bool transpose, real_wp_ u[], 
+             const real_wp_ v[], bool got_j, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     if (transpose) {
       u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
@@ -593,8 +596,8 @@ int jacprod( int n, int m, const double x[], const bool transpose, double u[],
 }
 
 // compute Hessian-vector products
-int hessprod( int n, int m, const double x[], const double y[], double u[], 
-              const double v[], bool got_h, const void *userdata ){
+int hessprod( int n, int m, const real_wp_ x[], const real_wp_ y[], real_wp_ u[], 
+              const real_wp_ v[], bool got_h, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     u[0] = u[0] + 2.0 * y[0] * v[0];
     u[1] = u[1] + 2.0 * y[1] * v[1];
@@ -602,8 +605,8 @@ int hessprod( int n, int m, const double x[], const double y[], double u[],
 }
 
 // compute residual-Hessians-vector products
-int rhessprods( int n, int m, int pne, const double x[], const double v[],
-                double pval[], bool got_h, const void *userdata ){
+int rhessprods( int n, int m, int pne, const real_wp_ x[], const real_wp_ v[],
+                real_wp_ pval[], bool got_h, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     pval[0] = 2.0 * v[0];
     pval[1] = 2.0 * v[1];
@@ -611,8 +614,8 @@ int rhessprods( int n, int m, int pne, const double x[], const double v[],
 }
 
 // scale v
-int scale( int n, int m, const double x[], double u[], 
-           const double v[], const void *userdata ){
+int scale( int n, int m, const real_wp_ x[], real_wp_ u[], 
+           const real_wp_ v[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     u[0] = v[0];
     u[1] = v[1];
@@ -620,7 +623,7 @@ int scale( int n, int m, const double x[], double u[],
 }
 
 // compute the dense Jacobian
-int jac_dense( int n, int m, int jne, const double x[], double jval[], 
+int jac_dense( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[], 
                const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     jval[0] = 2.0 * x[0];
@@ -633,8 +636,8 @@ int jac_dense( int n, int m, int jne, const double x[], double jval[],
 }
 
 // compute the dense Hessian
-int hess_dense( int n, int m, int hne, const double x[], const double y[],
-                double hval[], const void *userdata ){
+int hess_dense( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
+                real_wp_ hval[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     hval[0] = 2.0 * y[0];
     hval[1] = 0.0;
@@ -643,8 +646,8 @@ int hess_dense( int n, int m, int hne, const double x[], const double y[],
 }
 
 // compute dense residual-Hessians-vector products
-int rhessprods_dense( int n, int m, int pne, const double x[], 
-                      const double v[], double pval[], bool got_h,
+int rhessprods_dense( int n, int m, int pne, const real_wp_ x[], 
+                      const real_wp_ v[], real_wp_ pval[], bool got_h,
                       const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     pval[0] = 2.0 * v[0];
@@ -655,26 +658,3 @@ int rhessprods_dense( int n, int m, int pne, const double x[],
     pval[5] = 0.0;
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

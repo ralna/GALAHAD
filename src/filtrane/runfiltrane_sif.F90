@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,7 +8,7 @@
 !  Copyright reserved
 !  June 9th 2003
 
-   PROGRAM RUNFILTRANE_SIF
+   PROGRAM RUNFILTRANE_SIF_precision
    USE GALAHAD_KINDS
    USE GALAHAD_USEFILTRANE_precision
 
@@ -44,6 +44,6 @@
    CLOSE( insif  )
    STOP
 
-!  End of RUNFILTRANE_SIF
+!  End of RUNFILTRANE_SIF_precision
 
-   END PROGRAM RUNFILTRANE_SIF
+   END PROGRAM RUNFILTRANE_SIF_precision
