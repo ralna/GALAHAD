@@ -3,25 +3,30 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_arc.h"
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   real_wp_ p;
 };
 
 // Function prototypes
-int fun( int n, const double x[], double *f, const void * );
-int grad( int n, const double x[], double g[], const void * );
-int hess( int n, int ne, const double x[], double hval[], const void * );
-int hess_dense( int n, int ne, const double x[], double hval[], const void *);
-int hessprod( int n, const double x[], double u[], const double v[], bool got_h,
-              const void * );
-int prec( int n, const double x[], double u[], const double v[], const void * );
-int fun_diag( int n, const double x[], double *f, const void * );
-int grad_diag( int n, const double x[], double g[], const void * );
-int hess_diag( int n, int ne, const double x[], double hval[], const void * );
-int hessprod_diag( int n, const double x[], double u[], const double v[], 
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
+int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+                const void * );
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+              bool got_h, const void * );
+int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+          const void * );
+int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+               const void * );
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
                    bool got_h, const void * );
 
 int main(void) {
@@ -43,7 +48,7 @@ int main(void) {
     int H_ptr[] = {1, 2, 3, 6};    // row pointers
 
     // Set storage
-    double g[n]; // gradient
+    real_wp_ g[n]; // gradient
     char st;
     int status;
 
@@ -51,17 +56,18 @@ int main(void) {
 
     printf(" tests options for all-in-one storage format\n\n");
 
-    for(int d=1; d <= 5; d++){
+    for( int d=1; d <= 5; d++){
 
         // Initialize ARC
         arc_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
+
         //control.print_level = 1;
 
         // Start from 1.5
-        double x[] = {1.5,1.5,1.5}; 
+        real_wp_ x[] = {1.5,1.5,1.5}; 
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -69,38 +75,38 @@ int main(void) {
                 arc_import( &control, &data, &status, n, "coordinate", 
                             ne, H_row, H_col, NULL );
                 arc_solve_with_mat( &data, &userdata, &status,
-                                  n, x, g, ne, fun, grad, hess, prec );
+                                    n, x, g, ne, fun, grad, hess, prec );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
                 arc_import( &control, &data, &status, n, "sparse_by_rows", 
-                            ne, NULL, H_col, H_ptr);
+                           ne, NULL, H_col, H_ptr);
                 arc_solve_with_mat( &data, &userdata, &status,
-                                  n, x, g, ne, fun, grad, hess, prec );
+                                    n, x, g, ne, fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                arc_import(&control, &data, &status, n, "dense", 
+                arc_import( &control, &data, &status, n, "dense", 
                            ne, NULL, NULL, NULL );
                 arc_solve_with_mat( &data, &userdata, &status,
-                                  n, x, g, ne, fun, grad, hess_dense, prec );
+                                    n, x, g, ne, fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
                 arc_import( &control, &data, &status, n, "diagonal", 
                            ne, NULL, NULL, NULL );
                 arc_solve_with_mat( &data, &userdata, &status, n, x, g, 
-                                  ne, fun_diag, grad_diag, hess_diag, prec );
+                                    ne, fun_diag, grad_diag, hess_diag, prec) ;
                 break;
             case 5: // access by products
                 st = 'P';
                 arc_import( &control, &data, &status, n, "absent", 
                            ne, NULL, NULL, NULL );
                 arc_solve_without_mat( &data, &userdata, &status,
-                                     n, x, g, fun, grad, hessprod, prec );
+                                       n, x, g, fun, grad, hessprod, prec );
                 break;
         }
-        arc_information( &data, &inform, &status );
+        arc_information( &data, &inform, &status);
 
         if(inform.status == 0){
             printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
@@ -109,10 +115,10 @@ int main(void) {
             printf("%c: ARC_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -123,43 +129,43 @@ int main(void) {
 
     // reverse-communication input/output
     int eval_status;
-    double f = 0.0;
-    double u[n], v[n];
+    real_wp_ f = 0.0;
+    real_wp_ u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
-    double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
+    real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
  
-    for(int d=1; d <= 5; d++){
+    for( int d=1; d <= 5; d++){
 
         // Initialize ARC
-        arc_initialize(&data, &control, &status );
+        arc_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
         //control.print_level = 1;
 
         // Start from 1.5
-        double x[] = {1.5,1.5,1.5}; 
+        real_wp_ x[] = {1.5,1.5,1.5}; 
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
                 arc_import( &control, &data, &status, n, "coordinate", 
-                            ne, H_row, H_col, NULL );
+                           ne, H_row, H_col, NULL );
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_with_mat( &data, &status, &eval_status, 
-                                              n, x, f, g, ne, H_val, u, v );
+                                                n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
                         break;
                     }else if(status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = fun( n, x, &f, &userdata );
                     }else if(status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
+                        eval_status = hess( n, ne, x, H_val, &userdata ); 
                     }else if(status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
                         printf(" the value %1i of status should not occur\n", 
                           status);
@@ -170,22 +176,22 @@ int main(void) {
             case 2: // sparse by rows  
                 st = 'R';
                 arc_import( &control, &data, &status, n, "sparse_by_rows", ne, 
-                            NULL, H_col, H_ptr );
+                           NULL, H_col, H_ptr);
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_with_mat( &data, &status, &eval_status, 
-                                              n, x, f, g, ne, H_val, u, v );
+                                                n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
                         break;
                     }else if(status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = fun( n, x, &f, &userdata );
                     }else if(status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
+                        eval_status = hess( n, ne, x, H_val, &userdata ); 
                     }else if(status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
                         printf(" the value %1i of status should not occur\n", 
                           status);
@@ -205,14 +211,14 @@ int main(void) {
                     }else if(status < 0){ // error exit
                         break;
                     }else if(status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = fun( n, x, &f, &userdata );
                     }else if(status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_dense(n, n*(n+1)/2, x, H_dense, 
-                                                 &userdata); 
+                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, 
+                                                 &userdata ); 
                     }else if(status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
                         printf(" the value %1i of status should not occur\n", 
                           status);
@@ -223,22 +229,22 @@ int main(void) {
             case 4: // diagonal
                 st = 'I';
                 arc_import( &control, &data, &status, n, "diagonal", 
-                            ne, NULL, NULL, NULL );
+                           ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_with_mat( &data, &status, &eval_status, 
-                                              n, x, f, g, n, H_diag, u, v );
+                                                n, x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
                         break;
                     }else if(status == 2){ // evaluate f
-                        eval_status = fun_diag(n, x, &f, &userdata);
+                        eval_status = fun_diag( n, x, &f, &userdata );
                     }else if(status == 3){ // evaluate g
-                        eval_status = grad_diag(n, x, g, &userdata);
+                        eval_status = grad_diag( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_diag(n, n, x, H_diag, &userdata); 
+                        eval_status = hess_diag( n, n, x, H_diag, &userdata ); 
                     }else if(status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
                         printf(" the value %1i of status should not occur\n", 
                           status);
@@ -252,19 +258,19 @@ int main(void) {
                            ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_without_mat( &data, &status, &eval_status,
-                                                n, x, f, g, u, v );
+                                                   n, x, f, g, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
                         break;
                     }else if(status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = fun( n, x, &f, &userdata );
                     }else if(status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = grad( n, x, g, &userdata );
                     }else if(status == 5){ // evaluate H
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else if(status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
                         printf(" the value %1i of status should not occur\n", 
                           status);
@@ -282,10 +288,10 @@ int main(void) {
             printf("%c: ARC_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -295,18 +301,18 @@ int main(void) {
 }
 
 // Objective function 
-int fun( int n, const double x[], double *f, const void *userdata ){
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
     return 0;
 }
 
 // Gradient of the objective
-int grad( int n, const double x[], double g[], const void *userdata ){
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
@@ -315,8 +321,8 @@ int grad( int n, const double x[], double g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const double x[], double hval[], 
-          const void *userdata ){
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+         const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -326,7 +332,7 @@ int hess( int n, int ne, const double x[], double hval[],
 }
 
 // Dense Hessian
-int hess_dense( int n, int ne, const double x[], double hval[], 
+int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
                 const void *userdata ){ 
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 0.0;
@@ -338,7 +344,7 @@ int hess_dense( int n, int ne, const double x[], double hval[],
 }
 
 // Hessian-vector product
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
               bool got_h, const void *userdata ){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
@@ -347,8 +353,8 @@ int hessprod( int n, const double x[], double u[], const double v[],
 }
 
 // Apply preconditioner
-int prec( int n, const double x[], double u[], const double v[], 
-         const void *userdata ){
+int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+          const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
    u[2] = 0.25 * v[2];
@@ -356,18 +362,18 @@ int prec( int n, const double x[], double u[], const double v[],
 }
 
  // Objective function 
-int fun_diag( int n, const double x[], double *f, const void *userdata ){
+int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     *f = pow(x[2] + p, 2) + pow(x[1], 2) + cos(x[0]);
     return 0;
 }
 
 // Gradient of the objective
-int grad_diag( int n, const double x[], double g[], const void *userdata ){
+int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     g[0] = -sin(x[0]);
     g[1] = 2.0 * x[1];
@@ -376,7 +382,7 @@ int grad_diag( int n, const double x[], double g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess_diag( int n, int ne, const double x[], double hval[], 
+int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
                const void *userdata ){
     hval[0] = -cos(x[0]);
     hval[1] = 2.0;
@@ -385,7 +391,7 @@ int hess_diag( int n, int ne, const double x[], double hval[],
 }  
 
 // Hessian-vector product
-int hessprod_diag( int n, const double x[], double u[], const double v[], 
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
                    bool got_h, const void *userdata ){
     u[0] = u[0] + - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];

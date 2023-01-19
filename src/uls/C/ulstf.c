@@ -5,9 +5,11 @@
 #include <math.h>
 #include <stdlib.h>
 #include <float.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
 #include "galahad_uls.h"
 
-int maxabsarray(double a[],int n, double *maxabs);
+int maxabsarray( real_wp_ a[],int n, real_wp_ *maxabs);
 
 int main(void) {
 
@@ -24,20 +26,20 @@ int main(void) {
     int row[] = {1, 2, 2, 3, 3, 4, 5}; // row indices
     int col[] = {1, 1, 5, 2, 3, 3, 4}; // column indices
     int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
-    double val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
-    double dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0, 
+    real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
+    real_wp_ dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0, 
                       0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 
                       0.0, 0.0, 0.0, 1.0, 0.0};
-    double rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
-    double rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
-    double sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    real_wp_ rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
+    real_wp_ rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
+    real_wp_ sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
     int i, status;
-    double x[n];
-    double error[n];
+    real_wp_ x[n];
+    real_wp_ error[n];
     _Bool trans;
 
-    double norm_residual;
-    double good_x = pow( DBL_EPSILON, 0.3333 );
+    real_wp_ norm_residual;
+    real_wp_ good_x = pow( DBL_EPSILON, 0.3333 );
 
     printf(" Fortran sparse matrix indexing\n\n");
 
@@ -154,10 +156,10 @@ int main(void) {
     }
 }
 
-int maxabsarray(double a[],int n, double *maxabs)
+int maxabsarray( real_wp_ a[],int n, real_wp_ *maxabs)
  {
     int i;
-    double b,max;
+    real_wp_ b,max;
     max=abs(a[0]);
     for(i=1; i<n; i++)
     {
