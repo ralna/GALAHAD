@@ -42,3 +42,8 @@ option('liblapack',
        type : 'array',
        value : [],
        description : 'array [path, libname] with a path to search for LAPACK library named libname')
+
+option('ssids',
+       type : 'boolean',
+       value : false,
+       description : 'whether to build ssids as well as the related tests and examples')
