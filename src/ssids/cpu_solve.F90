@@ -425,7 +425,7 @@ contains
              ! 1x1 pivot
              if (d(2*j-1) .eq. 0.0_rp_) then
                 ! Zero pivot column
-                xlocal(j) = 0.0_wp
+                xlocal(j) = 0.0_rp_
              else
                 ! Proper pivot
                 rp1 = map(j)
@@ -562,7 +562,7 @@ contains
                 ! 1x1 pivot
                 if (d(2*j-1) .eq. 0.0_rp_) then
                    ! Zero pivot column
-                   xlocal(j,r) = 0.0_wp
+                   xlocal(j,r) = 0.0_rp_
                 else
                    ! Proper pivot
                    rp1 = map(j)

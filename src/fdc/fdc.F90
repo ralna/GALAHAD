@@ -634,6 +634,7 @@
 
       REAL :: time_start, time_now
       REAL ( KIND = rp_ ) :: clock_start, clock_now
+      LOGICAL :: print_now
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -654,7 +655,8 @@
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
-      IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
+      print_now = control%out > 0 .AND. control%print_level >= 5 !stop ifort bug
+      IF ( print_now )                                                         &
         WRITE( control%out, "( A, ' leaving FDC_find_dependent ' )" ) prefix
       RETURN
 
