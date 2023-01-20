@@ -2519,12 +2519,12 @@
 
 !     Local variables
 
-      INTEGER ( KIND = ip_ ) :: iostat, dim, i, k, SORT_exitcode, j, BAND_status,             &
-                 n_Newton, n_votes, n_bounded, nxt, ig, n_free,                &
+      INTEGER ( KIND = ip_ ) :: iostat, dim, i, k, SORT_exitcode, j,           &
+                 BAND_status, n_Newton, n_votes, n_bounded, nxt, ig, n_free,   &
                  n_fixed, n_lower, n_upper, n_range
 
 !     REAL( KIND = rp_ ) :: f
-      REAL( KIND = rp_ ) :: prered, sqrtn, rp, gs, gam, Nprered, GNprered,      &
+      REAL( KIND = rp_ ) :: prered, sqrtn, rp, gs, gam, Nprered, GNprered,     &
                  delta_model, rhoGN, rhoN, ci, cli, cui, t, d2phi, twoeps,     &
                  violation, xj, xlj, xuj, fwp
       CHARACTER( LEN =  1 ) mult
