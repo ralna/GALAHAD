@@ -156,7 +156,7 @@
 !     INTEGER               :: spec_device, errout, print_level, out_device
 !     CHARACTER( LEN = 16 ) :: algo_name
 !     CHARACTER( LEN = 30 ) :: out_filename
-!     REAL( KIND = wp )     :: accuracy
+!     REAL( KIND = rp_ )     :: accuracy
 !     TYPE( SPECFILE_item_type ), DIMENSION( 4 ) :: specs
 !
 !  then initialize it:
