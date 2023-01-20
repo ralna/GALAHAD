@@ -21,6 +21,15 @@ if fc.get_id() == 'nagfor'
   extra_args += '-dcfuns'
 endif
 
+# Options
+build_ciface = get_option('ciface')
+build_pythoniface = get_option('pythoniface')
+build_single = get_option('single')
+build_double = get_option('double')
+build_tests = get_option('tests')
+build_examples = get_option('examples')
+build_ssids = get_option('ssids')
+
 libgalahad_link_with = []
 libgalahad_include = ['include']
 libgalahad_src = []
@@ -241,21 +250,6 @@ libpardiso = library('pardiso',
                      include_directories: libgalahad_include,
                      install : true)
 
-libspral_ssids_single_src += files('src/dum/ssidss.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
-libspral_ssids_double_src += files('src/dum/ssidsd.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
-
-libspral_ssids_single = library('spral_ssids_single',
-                                sources : libspral_ssids_single_src,
-                                link_with : [libgalahad_blas, libgalahad_lapack],
-                                dependencies : blas_dep + lapack_dep,
-                                install : true)
-
-libspral_ssids_double = library('spral_ssids_double',
-                                sources : libspral_ssids_double_src,
-                                link_with : [libgalahad_blas, libgalahad_lapack],
-                                dependencies : blas_dep + lapack_dep,
-                                install : true)
-
 libmumps_src += files('src/dum/mumps.F90', 'src/dum/mpi.F90', 'src/kinds/kinds.F90')
 
 libmumps_single = library('mumps_single',
@@ -433,9 +427,8 @@ subdir('src/qp')
 
 # needs c++ files
 subdir('src/spral')
-# Add an option ssids for dummy / not dummy version
+subdir('src/ssids')
 # Add an option gpu
-# subdir('src/ssids')
 
 libgalahad_cpp_single = library('galahad_cpp_single',
                                  sources : libgalahad_cpp_src,
@@ -453,30 +446,40 @@ libgalahad_cpp_double = library('galahad_cpp_double',
                                 include_directories: libgalahad_include,
                                 install : true)
 
-# Options
-build_ciface = get_option('ciface')
-build_pythoniface = get_option('pythoniface')
-build_single = get_option('single')
-build_double = get_option('double')
-build_tests = get_option('tests')
-build_examples = get_option('examples')
-
 if build_single
+
+  libgalahad_single_link_with = [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
+                                 libpardiso, libmkl_pardiso, libmumps_single, libspmf_single,
+                                 libwsmp, libpastix_single, libgalahad_metis, libgalahad_cpp_single]
+
+  if not build_ssids
+    libspral_ssids_single = library('spral_ssids_single',
+                                    sources : libspral_ssids_single_src,
+                                    link_with : [libgalahad_blas, libgalahad_lapack],
+                                    dependencies : blas_dep + lapack_dep,
+                                    install : true)
+
+    libgalahad_single_link_with += libspral_ssids_single
+  endif
+
   libgalahad_single = library('galahad_single',
                       sources : libgalahad_src,
-                      link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
-                                   libpardiso, libmkl_pardiso, # libspral_ssids_single,
-                                   libmumps_single, libspmf_single, libwsmp, libpastix_single,
-                                   libgalahad_metis, libgalahad_cpp_single],
+                      link_with : libgalahad_single_link_with,
                       dependencies : libgalahad_deps,
                       fortran_args : extra_args_single,
                       include_directories: libgalahad_include,
                       install : true)
 
   if build_ciface
+
+    libgalahad_single_c_link_with = [libgalahad_single, libgalahad_hsl_single]
+    if not build_ssids
+      libgalahad_single_c_link_with += libspral_ssids_single
+    endif
+
     libgalahad_c_single = library('galahad_c_single',
                           sources : dum_single_c_src + libgalahad_c_src,
-                          link_with : [libgalahad_single, libgalahad_hsl_single, libspral_ssids_single],
+                          link_with : libgalahad_single_c_link_with,
                           fortran_args : extra_args_single,
                           include_directories: libgalahad_include,
                           install : true)
@@ -484,21 +487,39 @@ if build_single
 endif
 
 if build_double
+
+  libgalahad_double_link_with = [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_double,
+                                 libpardiso, libmkl_pardiso, libmumps_double, libspmf_double,
+                                 libwsmp, libpastix_double, libgalahad_metis, libgalahad_cpp_double]
+
+  if not build_ssids
+    libspral_ssids_double = library('spral_ssids_double',
+                                    sources : libspral_ssids_double_src,
+                                    link_with : [libgalahad_blas, libgalahad_lapack],
+                                    dependencies : blas_dep + lapack_dep,
+                                    install : true)
+
+    libgalahad_double_link_with += libspral_ssids_double
+  endif
+
   libgalahad_double = library('galahad_double',
                       sources : libgalahad_src,
-                      link_with : [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_double,
-                                   libpardiso, libmkl_pardiso, # libspral_ssids_double,
-                                   libmumps_double, libspmf_double, libwsmp, libpastix_double,
-                                   libgalahad_metis, libgalahad_cpp_double],
+                      link_with : libgalahad_double_link_with,
                       dependencies : libgalahad_deps,
                       fortran_args : extra_args_double,
                       include_directories: libgalahad_include,
                       install : true)
 
   if build_ciface
+
+    libgalahad_double_c_link_with = [libgalahad_double, libgalahad_hsl_double]
+    if not build_ssids
+      libgalahad_double_c_link_with += libspral_ssids_double
+    endif
+
     libgalahad_c_double = library('galahad_c_double',
                           sources : dum_double_c_src  + libgalahad_c_src,
-                          link_with : [libgalahad_double, libgalahad_hsl_double, libspral_ssids_double],
+                          link_with : libgalahad_double_c_link_with,
                           fortran_args : extra_args_double,
                           include_directories: libgalahad_include,
                           install : true)
@@ -506,9 +527,12 @@ if build_double
 endif
 
 # Executables
-
-buildspec_single = executable('buildspec_single', 'src/buildspec/buildspec.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include, install : true)
-buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include, install : true)
+if build_single
+  buildspec_single = executable('buildspec_single', 'src/buildspec/buildspec.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include, install : true)
+endif
+if build_double
+  buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include, install : true)
+endif
 
 # Unit tests
 
@@ -834,8 +858,10 @@ if build_tests
     qpct = executable('qpct_'+val[0], 'src/qpc/qpct.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
     test('qpct_'+val[0], qpct, suite: ['qpc', 'fortran', val[0]], is_parallel : false)
 
-    ssidst = executable('ssidst_'+val[0], 'src/ssids/ssidst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
-    test('ssidst_'+val[0], ssidst, suite: ['ssids', 'fortran', val[0]], is_parallel : false)
+    if build_ssids
+      ssidst = executable('ssidst_'+val[0], 'src/ssids/ssidst.F90', fortran_args : val[1], link_with : val[2], include_directories: libgalahad_include)
+      test('ssidst_'+val[0], ssidst, suite: ['ssids', 'fortran', val[0]], is_parallel : false)
+    endif
   endforeach
 endif
 
@@ -1123,7 +1149,9 @@ if build_examples
   executable('nlss', 'src/nls/nlss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('nlss2', 'src/nls/nlss2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('nlss3', 'src/nls/nlss3.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
-  executable('ssidss', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
+  if build_ssids
+    executable('ssidss', 'src/ssids/ssidss.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
+  endif
   executable('trus', 'src/tru/trus.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trus2', 'src/tru/trus2.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('trus3', 'src/tru/trus3.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
