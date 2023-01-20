@@ -430,7 +430,8 @@
 !  = GLS =
 
 !     CASE ( 'gls', 'ma28' )
-       CALL GLS_initialize( data%gls_factors, data%gls_control )
+       CALL GLS_initialize( factors = data%gls_factors,                        &
+                            control = data%gls_control )
 !      control%print_level = data%gls_control%ldiag
        control%relative_pivot_tolerance = data%gls_control%u
 
