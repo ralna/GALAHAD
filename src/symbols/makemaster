@@ -44,9 +44,19 @@ include $(GALAHAD)/src/makedefs/definitions
  
 include $(GALAHAD)/src/makedefs/instructions
 
-#  include standard package compilation instructions
+#  non-standard package compilation
 
-include $(GALAHAD)/src/makedefs/compile
+$(package).o: $(LG)($(package).o)
+
+$(LG)($(package).o): ../$(package)/$(package).F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
+	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).F90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).F90 $(package).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
 
 #  galahad error codes program
 
