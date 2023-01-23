@@ -6,4 +6,4 @@ libgalahad_src += files('core_analyse.F90', 'cuda_nocuda.F90',
 	                    'matrix_util.F90', 'metis4_wrapper.F90', # 'metis5_wrapper.F90' ?
 	                    'pgm.F90', 'random.F90',
 	                    'rutherford_boeing.F90', 'scaling.F90')
-# GPU: 'cuda.F90' and 'api_wrappers.cu'
+# GPU: 'cuda.F90', 'api_wrappers.cu'
