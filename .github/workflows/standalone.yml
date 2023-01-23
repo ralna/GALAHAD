@@ -52,15 +52,20 @@ jobs:
         if: matrix.compiler == 'intel'
         run: |
           .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
-          source /opt/intel/oneapi/setvars.sh
       - name: Setup GALAHAD build
         run: |
+          if [[ "${{ matrix.compiler }}" == "intel" ]]; then
+            source /opt/intel/oneapi/setvars.sh
+          fi
           meson setup builddir -Dciface=true
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
       - name: Build GALAHAD
         run: |
+          if [[ "${{ matrix.compiler }}" == "intel" ]]; then
+            source /opt/intel/oneapi/setvars.sh
+          fi
           meson compile -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
@@ -69,6 +74,9 @@ jobs:
           path: builddir/meson-logs/testlog.txt
       - name: Test GALAHAD
         run: |
+          if [[ "${{ matrix.compiler }}" == "intel" ]]; then
+            source /opt/intel/oneapi/setvars.sh
+          fi
           meson test -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
