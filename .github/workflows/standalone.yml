@@ -22,8 +22,8 @@ jobs:
             fc_cmd: gfortran
           - os: macos-latest
             compiler: gnu
-            cc_cmd: gcc-12
-            fc_cmd: gfortran-12
+            cc_cmd: gcc
+            fc_cmd: gfortran
           - os: ubuntu-latest
             compiler: intel
             hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18975/l_HPCKit_p_2022.3.1.16997_offline.sh'
@@ -49,21 +49,14 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install GNU C and Fortran compilers
-        if: matrix.compiler == 'gnu' && matrix.os == 'macos-latest'
-        run: |
-          brew update
-          eval $(brew shellenv)
-          brew install gcc
+        uses: modflowpy/install-gfortran-action@v1
       - name: Install Intel OpenAPI C and Fortran compilers
         if: matrix.compiler == 'intel'
         run: |
           .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
       - name: Setup GALAHAD build
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson setup builddir -Dciface=true
         env:
           CC: ${{ matrix.cc_cmd }}
@@ -71,9 +64,8 @@ jobs:
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson compile -C builddir
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.os }}_meson_log
@@ -81,9 +73,8 @@ jobs:
       - name: Test GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson test -C builddir
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.os }}_meson_log
