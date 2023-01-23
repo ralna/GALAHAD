@@ -12,6 +12,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: windows-latest
+            compiler: gnu
+            cc_cmd: gcc
+            fc_cmd: gfortran
           - os: ubuntu-latest
             compiler: gnu
             cc_cmd: gcc
