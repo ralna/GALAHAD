@@ -46,8 +46,6 @@ jobs:
           python-version: '3.11'
       - name: Install Meson and Ninja
         run: pip install meson ninja
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
       - name: Install GNU C and Fortran compilers
         uses: modflowpy/install-gfortran-action@v1
       - name: Install Intel OpenAPI C and Fortran compilers
