@@ -463,12 +463,13 @@ if build_single
   endif
 
   libgalahad_single = library('galahad_single',
-                      sources : libgalahad_src,
-                      link_with : libgalahad_single_link_with,
-                      dependencies : libgalahad_deps,
-                      fortran_args : extra_args_single,
-                      include_directories: libgalahad_include,
-                      install : true)
+                              sources : libgalahad_src,
+                              link_with : libgalahad_single_link_with,
+                              dependencies : libgalahad_deps,
+                              fortran_args : extra_args_single,
+                              cpp_args : extra_args_single,
+                              include_directories: libgalahad_include,
+                              install : true)
 
   if build_ciface
 
@@ -478,11 +479,11 @@ if build_single
     endif
 
     libgalahad_c_single = library('galahad_c_single',
-                          sources : dum_single_c_src + libgalahad_c_src,
-                          link_with : libgalahad_single_c_link_with,
-                          fortran_args : extra_args_single,
-                          include_directories: libgalahad_include,
-                          install : true)
+                                  sources : dum_single_c_src + libgalahad_c_src,
+                                  link_with : libgalahad_single_c_link_with,
+                                  fortran_args : extra_args_single,
+                                  include_directories: libgalahad_include,
+                                  install : true)
   endif
 endif
 
@@ -503,12 +504,13 @@ if build_double
   endif
 
   libgalahad_double = library('galahad_double',
-                      sources : libgalahad_src,
-                      link_with : libgalahad_double_link_with,
-                      dependencies : libgalahad_deps,
-                      fortran_args : extra_args_double,
-                      include_directories: libgalahad_include,
-                      install : true)
+                              sources : libgalahad_src,
+                              link_with : libgalahad_double_link_with,
+                              dependencies : libgalahad_deps,
+                              fortran_args : extra_args_double,
+                              cpp_args : extra_args_double,
+                              include_directories: libgalahad_include,
+                              install : true)
 
   if build_ciface
 
@@ -518,11 +520,11 @@ if build_double
     endif
 
     libgalahad_c_double = library('galahad_c_double',
-                          sources : dum_double_c_src  + libgalahad_c_src,
-                          link_with : libgalahad_double_c_link_with,
-                          fortran_args : extra_args_double,
-                          include_directories: libgalahad_include,
-                          install : true)
+                                  sources : dum_double_c_src  + libgalahad_c_src,
+                                  link_with : libgalahad_double_c_link_with,
+                                  fortran_args : extra_args_double,
+                                  include_directories: libgalahad_include,
+                                  install : true)
   endif
 endif
 
@@ -1052,7 +1054,7 @@ endif
 
 # Example programs
 
-if build_examples
+if build_examples and build_double
   fortran_examples_folder = 'share/examples'
   executable('amds', 'src/amd/amds.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
   executable('bscs', 'src/bsc/bscs.f90', link_with : libgalahad_double, install : true, install_dir : fortran_examples_folder)
