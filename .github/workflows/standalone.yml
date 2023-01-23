@@ -2,7 +2,7 @@ name: standalone
 on:
   push:
     branches:
-      - meson-build
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -52,18 +52,15 @@ jobs:
         if: matrix.compiler == 'intel'
         run: |
           .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
-      - name: Setup GALAHAD build
-        if: matrix.compiler == 'intel'
-        run: |
           source /opt/intel/oneapi/setvars.sh
+      - name: Setup GALAHAD build
+        run: |
           meson setup builddir -Dciface=true
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
       - name: Build GALAHAD
-        if: matrix.compiler == 'intel'
         run: |
-          source /opt/intel/oneapi/setvars.sh
           meson compile -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
@@ -71,9 +68,7 @@ jobs:
           name: ${{ matrix.os }}_meson_log
           path: builddir/meson-logs/testlog.txt
       - name: Test GALAHAD
-        if: matrix.compiler == 'intel'
         run: |
-          source /opt/intel/oneapi/setvars.sh
           meson test -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
