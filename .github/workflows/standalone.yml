@@ -40,6 +40,12 @@ jobs:
     steps:
       - name: Check out GALAHAD
         uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Meson and Ninja
+        run: pip install meson ninja
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install GNU C and Fortran compilers
@@ -52,17 +58,12 @@ jobs:
         if: matrix.compiler == 'intel'
         run: |
           .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
-      - name: Install Meson
-        run: |
-          # brew install meson ninja  # Python3 broken on the GHA VMs
-          brew install ninja
-          pip3 install --user meson  # installs in $HOME/.local on linux and $HOME/Library/Python/3.11 on macOS
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
       - name: Setup GALAHAD build
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson setup builddir -Dciface=true
         env:
           CC: ${{ matrix.cc_cmd }}
@@ -70,7 +71,7 @@ jobs:
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson compile -C builddir
       - uses: actions/upload-artifact@v1
         if: failure()
@@ -80,7 +81,7 @@ jobs:
       - name: Test GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          # export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson test -C builddir
       - uses: actions/upload-artifact@v1
         if: failure()
