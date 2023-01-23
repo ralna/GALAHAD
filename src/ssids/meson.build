@@ -1,4 +1,8 @@
 if build_ssids
+  libgalahad_src += files('cholesky.cxx', 'ldlt_app.cxx', 'ldlt_nopiv.cxx',
+                              'ldlt_tpp.cxx', 'NumericSubtree.cxx', 'profile.cxx',
+                              'SymbolicSubtree.cxx', 'ThreadStats.cxx', 'wrappers.cxx')
+
   libgalahad_src += files('akeep.F90', 'anal.F90', 'blas_iface.F90',
                           'contrib.F90', 'contrib_free.F90', 'cpu_iface.F90',
                           'cpu_solve.F90', 'cpu_subtree.F90', 'datatypes.F90',
@@ -13,8 +17,4 @@ if build_ssids
   libgalahad_c_src += files('C/ssids_ciface.F90')
 endif
 
-# TO DO: Fix Fortran errors and after add cxx files
- 
-# assemble.cu, cholesky.cxx, dense_factor.cu, ldlt.app.cxx, ldlt_nopiv.cxx,
-# ldlt_tpp.cxx, NumericSubtree.cxx, profile.cxx, reorder.cu, solve.cu,
-# SymbolicSubtree.cxx, syrk.cu, ThreadStats.cxx, wrappers.cxx ?
+# GPU: 'assemble.cu', 'dense_factor.cu', 'reorder.cu', 'solve.cu', 'syrk.cu'
