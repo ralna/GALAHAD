@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define GALAHAD_SILS_precision HSL_MA57_precision 
@@ -19,7 +19,7 @@
 
    MODULE LANCELOT_MDCHL_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
      IMPLICIT NONE
 

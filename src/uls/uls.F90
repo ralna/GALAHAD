@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,7 +15,7 @@
 
    MODULE GALAHAD_ULS_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
 !     ---------------------------------------
 !     |                                     |
@@ -381,13 +381,13 @@
 
      INTERFACE MA33I
        SUBROUTINE MA33I( ICNTL, CNTL )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
        REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA33I
 
        SUBROUTINE MA33ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
        REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA33ID

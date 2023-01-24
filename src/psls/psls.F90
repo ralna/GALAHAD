@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -17,7 +17,7 @@
 
    MODULE GALAHAD_PSLS_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
 !      --------------------------------------------------------------------
 !     | Given a symmetric matrix A, provide and apply a symmetric,         |
@@ -445,7 +445,7 @@
       INTERFACE MC61A
         SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
                           ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
         INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
         INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
@@ -460,7 +460,7 @@
 
         SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,         &
                            ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
         INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
         INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
@@ -2356,7 +2356,8 @@
 
 !  Record the relative fill-in
 
-        df = inform%SLS_inform%entries_in_factors ; de = data%P%ne
+        df = REAL( inform%SLS_inform%entries_in_factors, KIND = rp_ )
+        de = REAL( data%P%ne, KIND = rp_ )
         IF ( data%P%ne > 0 ) inform%fill_in_ratio = df / de
 
 !  The full matrix will be factorized with GMPS modifications
@@ -2455,7 +2456,8 @@
 
 !  Record the relative fill-in
 
-        df = inform%SLS_inform%entries_in_factors ; de = data%P%ne
+        df = REAL( inform%SLS_inform%entries_in_factors, KIND = rp_ )
+        de = REAL( data%P%ne, KIND = rp_ )
         IF ( data%P%ne > 0 ) inform%fill_in_ratio = df / de
 
 !  The Lin-More' incomplete factorization of the full matrix will be used

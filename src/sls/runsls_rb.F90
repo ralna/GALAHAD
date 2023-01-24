@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
   PROGRAM RUNSLS_RB_precision
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_CLOCK
     USE GALAHAD_COPYRIGHT
     USE GALAHAD_SPECFILE_precision

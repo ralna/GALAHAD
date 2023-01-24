@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-06 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -22,7 +22,7 @@
 
    MODULE GALAHAD_GLS_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
 !     -----------------------------------------
 !     |                                       |
@@ -328,7 +328,7 @@
        SUBROUTINE MA33A( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ, IRN,     &
                          lirn, LENC, IFIRST, LASTR, NEXTR, LASTC, NEXTC,       &
                          IPTR, IPC, u, iflag, ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, lirn
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iflag
        REAL ( KIND = sp_ ), INTENT( INOUT ) :: u
@@ -352,7 +352,7 @@
        SUBROUTINE MA33AD( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ, IRN,    &
                           lirn, LENC, IFIRST, LASTR, NEXTR, LASTC, NEXTC,      &
                           IPTR, IPC, u, iflag, ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, lirn
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iflag
        REAL ( KIND = dp_ ), INTENT( INOUT ) :: u
@@ -377,7 +377,7 @@
      INTERFACE MA33C
        SUBROUTINE MA33C( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,          &
                          IP, IQ, X, W, mtype, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, mtype
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( licn ) :: ICN
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENR, LENRL
@@ -392,7 +392,7 @@
 
        SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,         &
                           IP, IQ, X, W, mtype, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, mtype
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( licn ) :: ICN
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENR, LENRL
@@ -408,7 +408,7 @@
 
      INTERFACE MC20A
        SUBROUTINE MC20A( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: nc, maxa, jdisp
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM, JNUM
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nc ) :: JPTR
@@ -416,7 +416,7 @@
        END SUBROUTINE MC20A
 
        SUBROUTINE MC20AD( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: nc, maxa, jdisp
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM, JNUM
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nc ) :: JPTR

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 15:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -18,7 +18,7 @@
 
   MODULE GALAHAD_common_ciface
 
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
 
     IMPLICIT NONE
     PUBLIC
@@ -29,7 +29,7 @@
 
     INTERFACE
       INTEGER ( KIND = C_SIZE_T ) PURE FUNCTION strlen( cstr ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         IMPLICIT NONE
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: cstr
       END FUNCTION strlen 
