@@ -3,6 +3,7 @@
 #define CUTEST_interface_precision CUTEST_interface_single
 #define CUTEST_INTERFACE_precision CUTEST_interface_single
 #define CUTEST_LQP_precision CUTEST_LQP_single
+#define GALAHAD_AMD_precision GALAHAD_AMD_single
 #define GALAHAD_ARC_precision GALAHAD_ARC_single
 #define GALAHAD_BARC_precision GALAHAD_BARC_single
 #define GALAHAD_BGO_precision GALAHAD_BGO_single
@@ -43,6 +44,7 @@
 #define GALAHAD_ICFS_precision GALAHAD_ICFS_single
 #define GALAHAD_IR_precision GALAHAD_IR_single
 #define GALAHAD_ISM_precision GALAHAD_ISM_single
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
 #define GALAHAD_L1QP_precision GALAHAD_L1QP_single
 #define GALAHAD_L2RT_precision GALAHAD_L2RT_single
 #define GALAHAD_LCF_precision GALAHAD_LCF_single
@@ -391,6 +393,7 @@
 #define CUTEST_interface_precision CUTEST_interface_double
 #define CUTEST_INTERFACE_precision CUTEST_interface_double
 #define CUTEST_LQP_precision CUTEST_LQP_double
+#define GALAHAD_AMD_precision GALAHAD_AMD_double
 #define GALAHAD_ARC_precision GALAHAD_ARC_double
 #define GALAHAD_BARC_precision GALAHAD_BARC_double
 #define GALAHAD_BGO_precision GALAHAD_BGO_double
@@ -431,6 +434,7 @@
 #define GALAHAD_ICFS_precision GALAHAD_ICFS_double
 #define GALAHAD_IR_precision GALAHAD_IR_double
 #define GALAHAD_ISM_precision GALAHAD_ISM_double
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
 #define GALAHAD_L1QP_precision GALAHAD_L1QP_double
 #define GALAHAD_L2RT_precision GALAHAD_L2RT_double
 #define GALAHAD_LCF_precision GALAHAD_LCF_double

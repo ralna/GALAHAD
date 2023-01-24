@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -10,7 +10,7 @@
 
    MODULE GALAHAD_USENLS_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
 !  This is the driver program for running NLS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and

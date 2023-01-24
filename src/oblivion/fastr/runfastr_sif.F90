@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  March 14th 2003
 
    PROGRAM RUNFASTR_SIF_precision
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USEFASTR_precision
 
 !  Main program for the SIF interface to FASTR, a filter active-set trust-region

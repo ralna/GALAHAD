@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-13 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,7 +31,7 @@
 !     |                                              |
 !     ------------------------------------------------
 
-      USE GALAHAD_KINDS
+      USE GALAHAD_KINDS_precision
 !$    USE omp_lib
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
@@ -68,7 +68,7 @@
      INTERFACE LA04A
        SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL,   &
                          IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
@@ -90,7 +90,7 @@
 
        SUBROUTINE LA04AD( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL,  &
                           IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP

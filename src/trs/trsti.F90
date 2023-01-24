@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRS_interface_test
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_TRS_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_

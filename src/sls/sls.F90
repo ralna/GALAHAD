@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -43,11 +43,11 @@
 !     |                                           |
 !     ---------------------------------------------
 
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING, ONLY: STRING_lower_word
-     USE GALAHAD_AMD
+     USE GALAHAD_AMD_precision
      USE GALAHAD_SORT_precision
      USE GALAHAD_SPACE_precision
      USE GALAHAD_SPECFILE_precision
@@ -876,13 +876,13 @@
 
      INTERFACE MA27I
        SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27I
 
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27ID
@@ -891,7 +891,7 @@
      INTERFACE MC61A
        SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,           &
                          ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
@@ -906,7 +906,7 @@
 
        SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
                           ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
@@ -923,7 +923,7 @@
      INTERFACE MC77A
        SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,       &
                          ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
        INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN
@@ -938,7 +938,7 @@
 
        SUBROUTINE MC77AD( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,      &
                           ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
        INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN

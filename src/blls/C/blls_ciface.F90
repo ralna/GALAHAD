@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_BLLS_precision_ciface
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_BLLS_precision, ONLY:                                          &
         f_blls_control_type         => BLLS_control_type,                      &
@@ -124,7 +124,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_prec( n, v, p, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: v
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: p
