@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
    PROGRAM ICFS_TEST_PROGRAM   !  GALAHAD 4.1 - 2022-12-14 AT 10:00 GMT.
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_ICFS_precision
    IMPLICIT NONE
    TYPE ( ICFS_data_type ) :: data

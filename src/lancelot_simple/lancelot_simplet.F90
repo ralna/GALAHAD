@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 !                                                                              !
 !------------------------------------------------------------------------------!
 !
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        USE LANCELOT_simple_precision
        IMPLICIT NONE
        REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
@@ -149,7 +149,7 @@
 !...............................................................................
 !
        SUBROUTINE FUN ( X, F, i )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT )  :: F
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
@@ -178,7 +178,7 @@
 !...............................................................................
 !
        SUBROUTINE GRAD( X, G, i )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT ) :: G( : )
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i
@@ -210,7 +210,7 @@
 !...............................................................................
 !
        SUBROUTINE HESS( X, H, i )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
        REAL( KIND = rp_ ), INTENT( OUT ) :: H( : )
        INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -17,7 +17,7 @@
 !  C interface module to GALAHAD_LHS types and interfaces
 
   MODULE GALAHAD_LHS_precision_ciface
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_LHS_precision, ONLY:                                           &
         f_lhs_inform_type   => LHS_inform_type,                                &

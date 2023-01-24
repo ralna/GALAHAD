@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-31 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -16,7 +16,7 @@
 
   MODULE GALAHAD_UGO_precision_ciface
 !   USE ISO_C_BINDING
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_UGO_precision, ONLY:                                           &
         f_ugo_time_type      => UGO_time_type,                                 &
@@ -95,7 +95,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_fgh( x, f, g, h, userdata ) result( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         REAL ( KIND = rpc_ ), INTENT( IN ), value :: x
         REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
         TYPE ( C_PTR ), INTENT( IN ), value :: userdata

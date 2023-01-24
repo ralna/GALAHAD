@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 ! G A L A H A D  -  D U M M Y   P A S T I X F _ I N T E R F A C E S  M O D U L E
 
@@ -20,24 +20,32 @@
 
    INTERFACE pastixInitParam
      SUBROUTINE pastixInitParam_f08( iparm, dparm )
-       USE GALAHAD_KINDS, ONLY : rpc_
+       USE GALAHAD_KINDS, ONLY : spc_, dpc_
        USE pastixf_enums, ONLY : pastix_int_t
        IMPLICIT NONE
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
-       REAL ( KIND = rpc_ ), INTENT( INOUT ), target :: dparm( : )
+#ifdef GALAHAD_SINGLE
+       REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
+#else
+       REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )
+#endif
      END SUBROUTINE pastixInitParam_f08
    END INTERFACE pastixInitParam
 
    INTERFACE pastixInit
      SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-       USE GALAHAD_KINDS, ONLY : rpc_
+       USE GALAHAD_KINDS, ONLY : spc_, dpc_
        USE spmf_enums, ONLY : MPI_Comm
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), pointer :: pastix_data
        TYPE ( MPI_Comm ), INTENT( IN ) :: pastix_comm
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target  :: iparm( : )
-       REAL ( KIND = rpc_ ), INTENT( INOUT ), target  :: dparm( : )
+#ifdef GALAHAD_SINGLE
+       REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
+#else
+       REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )
+#endif
      END SUBROUTINE pastixInit_f08
    END INTERFACE pastixInit
 

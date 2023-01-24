@@ -1,7 +1,7 @@
 #include "galahad_modules.h"
 
    PROGRAM SILS_EXAMPLE  !  GALAHAD 3.3 - 05/05/2021 AT 16:30 GMT.
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_SMT_precision
    USE GALAHAD_SILS_precision
    IMPLICIT NONE

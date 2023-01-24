@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SAS_EXAMPLE
 
@@ -8,7 +8,7 @@
 ! where l, r, theta and phi lie in regular simplexes {z : e^T z = 1, z >= 0},
 ! using alternating solves with l free and r, theta, phi fixed etc.
 
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_SLLS_precision
    USE GALAHAD_SLS_precision
    USE GALAHAD_RAND_precision

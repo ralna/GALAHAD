@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,7 +21,7 @@
 !    | crossover method for convex quadratic programming                 |
 !     -------------------------------------------------------------------
 
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USEL1QP_precision
 
 !  Problem input characteristics

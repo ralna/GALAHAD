@@ -1,6 +1,6 @@
    PROGRAM GALAHAD_TRS_EXAMPLE  !  GALAHAD 4.1 - 2022-12-16 AT 14:10 GMT.
 #include "galahad_modules.h"
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_TRS_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
