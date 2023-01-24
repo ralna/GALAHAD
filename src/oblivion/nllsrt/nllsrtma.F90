@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
 Program NLLSRTMA
   ! Version 9 July 2008
-  USE GALAHAD_KINDS
+  USE GALAHAD_KINDS_precision
   Implicit None
   Integer :: N, M
   Integer, Parameter :: INSPEC = 46, INPUT = 47, IOUT = 6
