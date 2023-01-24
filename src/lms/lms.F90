@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -24,7 +24,7 @@
 !   |                                                                      |
 !    ----------------------------------------------------------------------
 
-      USE GALAHAD_KINDS
+      USE GALAHAD_KINDS_precision
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
@@ -1820,7 +1820,7 @@
 !          The number of right hand sides, i.e., the number of columns
 !          of the matrix B.  nrhs >= 0.
 
-!  A       (input) DOUBLE PRECISION array, dimension (lda,n)
+!  A       (input) REAL/DOUBLE PRECISION array, dimension (lda,n)
 !          The block diagonal matrix D and the multipliers used to
 !          obtain the factor U or L as computed by DSYTRF.
 
@@ -1831,7 +1831,7 @@
 !          Details of the interchanges and the block structure of D
 !          as determined by DSYTRF.
 
-!  B       (input/output) DOUBLE PRECISION array, dimension (ldb,nrhs)
+!  B       (input/output) REAL/DOUBLE PRECISION array, dimension (ldb,nrhs)
 !          On entry, the right hand side matrix B.
 !          On exit, the solution matrix X.
 
@@ -1848,11 +1848,9 @@
 
       LOGICAL :: upper
       INTEGER ( KIND = ip_ ) :: j, k, kp
-      DOUBLE PRECISION   ak, akm1, akm1k, bk, bkm1, denom
+      REAL ( KIND = rp_ ) :: ak, akm1, akm1k, bk, bkm1, denom
       LOGICAL :: LSAME
-      EXTERNAL :: LSAME
-!     EXTERNAL :: DGEMV, DGER, DSCAL, XERBLA
-      EXTERNAL :: XERBLA
+      EXTERNAL :: LSAME, XERBLA
 
       info = 0
       upper = LSAME( uplo, 'U' )

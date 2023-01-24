@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  December 22nd 2007
 
    PROGRAM RUNS2QP_SIF_precision
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USES2QP_precision
 
 !  Main program for the SIF interface to S2QP, a trust-region SQP

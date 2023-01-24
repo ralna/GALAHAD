@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-01-17 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  April 10th 2013
 
    PROGRAM RUNSHA_SIF_precision
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USESHA_precision
 
 !  Main program for the SIF interface to SHA, a method for estimating

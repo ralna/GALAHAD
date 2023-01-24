@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_NLS_precision_ciface
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_NLS_precision, ONLY:                                           &
         f_nls_subproblem_control_type   => NLS_subproblem_control_type,        &
@@ -265,7 +265,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_C( n, m, x, c, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
         REAL ( KIND = rpc_ ), DIMENSION( n ),INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( m ),INTENT( OUT ) :: c
@@ -276,7 +276,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_J( n, m, jne, x, jval, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( jne ),INTENT( OUT ) :: jval
@@ -288,7 +288,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_H( n, m, hne, x, y, hval,                                  &
                        userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: y
@@ -301,7 +301,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_JPROD( n, m, x, transpose, u, v, got_j,                    &
                            userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: transpose
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
@@ -316,7 +316,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_HPROD( n, m, x, y, u, v, got_h,                            &
                            userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: y
@@ -331,7 +331,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_HPRODS( n, m, pne, x, v, pval, got_h,                      &
                             userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: v
@@ -345,7 +345,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_SCALE( n, m, x, u, v,                                      &
                            userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x, v
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: u

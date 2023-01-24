@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 
    MODULE GALAHAD_SILS_precision
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
 !     ---------------------------------------------
 !     |                                           |
@@ -186,7 +186,7 @@
      INTERFACE SILS_solve
        MODULE PROCEDURE SILS_solve, SILS_solve_multiple,                       &
             
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
                         SILS_solve_refine, SILS_solve_refine_multiple
      END INTERFACE 
      

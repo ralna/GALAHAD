@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,7 @@
 !    | QPA, a working-set algorithm for quadratic programming |
 !    ----------------------------------------------------------
 
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
    USE GALAHAD_SMT_precision, only: SMT_put

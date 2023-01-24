@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    PROGRAM RUNCQPS_DATA
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
 
 !    ----------------------------------------------------------------
 !    | Main program for the problem-data-file interface             |
