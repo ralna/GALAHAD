@@ -24,6 +24,13 @@ jobs:
             compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
+          - os: windows-latest
+            compiler: intel
+            hpckit: https://registrationcenter-download.intel.com/akdlm/irc_nas/19085/w_HPCKit_p_2023.0.0.25931_offline.ex
+            # hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/xxx/w_HPCKit_p_2022.3.1.19755_offline.exe'
+            script: 'install_windows.bat'
+            cc_cmd: icc
+            fc_cmd: ifort
           - os: ubuntu-latest
             compiler: intel
             hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18975/l_HPCKit_p_2022.3.1.16997_offline.sh'
