@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,14 +15,14 @@
 
    MODULE GALAHAD_STRING
             
-     USE GALAHAD_KINDS
-
 !     ----------------------------
 !    |  Set strings appropriate   |
 !    !  for singular and plural   |
 !    |  forms of words along with |
 !    |  other useful strings      |
 !     ----------------------------
+
+     USE GALAHAD_KINDS, ONLY : ip_, sp_, dp_
 
      IMPLICIT NONE
 
@@ -36,13 +36,10 @@
                STRING_trim_integer_16, STRING_es, STRING_es12,                 &
                STRING_exponent, STRING_ordinal
 
-!  Set precision
+!  Set parameters
 
-     INTEGER ( KIND = ip_ ), PARAMETER :: sp = KIND( 1.0E+0 )
-     INTEGER ( KIND = ip_ ), PARAMETER :: dp = KIND( 1.0D+0 )
-
-     REAL( KIND = sp ), PARAMETER :: teneps_s = 10.0_sp * EPSILON( 1.0_sp )
-     REAL( KIND = dp ), PARAMETER :: teneps_d = 10.0_dp * EPSILON( 1.0_dp )
+     REAL ( KIND = sp_ ), PARAMETER :: teneps_s = 10.0_sp_ * EPSILON( 1.0_sp_ )
+     REAL ( KIND = dp_ ), PARAMETER :: teneps_d = 10.0_dp_ * EPSILON( 1.0_dp_ )
 
 !---------------------------------
 !   I n t e r f a c e  B l o c k s
@@ -283,10 +280,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = sp ), INTENT( IN ) :: val
+     REAL ( KIND = sp_ ), INTENT( IN ) :: val
      LOGICAL, INTENT( IN ) :: show_plus
 
-     IF ( val < 0.0_sp ) THEN
+     IF ( val < 0.0_sp_ ) THEN
        STRING_sign_single = "-"
      ELSE
        IF ( show_plus ) THEN
@@ -315,10 +312,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = dp ), INTENT( IN ) :: val
+     REAL ( KIND = dp_ ), INTENT( IN ) :: val
      LOGICAL, INTENT( IN ) :: show_plus
 
-     IF ( val < 0.0_dp ) THEN
+     IF ( val < 0.0_dp_ ) THEN
        STRING_sign_precision = "-"
      ELSE
        IF ( show_plus ) THEN
@@ -715,41 +712,41 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = sp ), INTENT( IN ) :: re
+     REAL ( KIND = sp_ ), INTENT( IN ) :: re
 
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: ir
-     REAL ( KIND = sp ) :: r, rm, rh, rd
+     REAL ( KIND = sp_ ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
      STRING_real_7_single( 1 : 7 ) = REPEAT( ' ', 7 )
      r = re
-     rm = re / 60.0_sp
-     rh = rm / 60.0_sp
-     rd = rh / 24.0_sp
-     IF ( r <= 9999.9_sp ) THEN
+     rm = re / 60.0_sp_
+     rh = rm / 60.0_sp_
+     rd = rh / 24.0_sp_
+     IF ( r <= 9999.9_sp_ ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
        STRING_real_7_single = cr
-     ELSE IF ( r <= 99999.9_sp ) THEN
+     ELSE IF ( r <= 99999.9_sp_ ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
        STRING_real_7_single( 1 : 1 ) = ' '
        STRING_real_7_single( 2 : 7 ) = cr( 1 : 6 )
-     ELSE IF ( r <= 999999.0_sp ) THEN
+     ELSE IF ( r <= 999999.0_sp_ ) THEN
        ir = INT(re)
        WRITE( UNIT = cr, FMT = "( I7 )" ) ir
        STRING_real_7_single = cr
-     ELSE IF ( rm <= 99999.9_sp ) THEN
+     ELSE IF ( rm <= 99999.9_sp_ ) THEN
        ir = INT( rm )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_single = cr( 1 : 6 ) // 'm'
-     ELSE IF ( rh <= 99999.9_sp ) THEN
+     ELSE IF ( rh <= 99999.9_sp_ ) THEN
        ir = INT( rh )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_single = cr( 1 : 6 ) // 'h'
-     ELSE IF ( rd <= 99999.9_sp ) THEN
+     ELSE IF ( rd <= 99999.9_sp_ ) THEN
        ir = INT( rd )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_single = cr( 1 : 6 ) // 'd'
@@ -775,41 +772,41 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = dp ), INTENT( IN ) :: re
+     REAL ( KIND = dp_ ), INTENT( IN ) :: re
 
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: ir
-     REAL ( KIND = dp ) :: r, rm, rh, rd
+     REAL ( KIND = dp_ ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
      STRING_real_7_precision( 1 : 7 ) = REPEAT( ' ', 7 )
      r = re
-     rm = re / 60.0_dp
-     rh = rm / 60.0_dp
-     rd = rh / 24.0_dp
-     IF ( r <= 9999.9_dp ) THEN
+     rm = re / 60.0_dp_
+     rh = rm / 60.0_dp_
+     rd = rh / 24.0_dp_
+     IF ( r <= 9999.9_dp_ ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
        STRING_real_7_precision = cr
-     ELSE IF ( r <= 99999.9_dp ) THEN
+     ELSE IF ( r <= 99999.9_dp_ ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
        STRING_real_7_precision( 1 : 1 ) = ' '
        STRING_real_7_precision( 2 : 7 ) = cr( 1 : 6 )
-     ELSE IF ( r <= 999999.0_dp ) THEN
+     ELSE IF ( r <= 999999.0_dp_ ) THEN
        ir = INT(re)
        WRITE( UNIT = cr, FMT = "( I7 )" ) ir
        STRING_real_7_precision = cr
-     ELSE IF ( rm <= 99999.9_dp ) THEN
+     ELSE IF ( rm <= 99999.9_dp_ ) THEN
        ir = INT( rm )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_precision = cr( 1 : 6 ) // 'm'
-     ELSE IF ( rh <= 99999.9_dp ) THEN
+     ELSE IF ( rh <= 99999.9_dp_ ) THEN
        ir = INT( rh )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_precision = cr( 1 : 6 ) // 'h'
-     ELSE IF ( rd <= 99999.9_dp ) THEN
+     ELSE IF ( rd <= 99999.9_dp_ ) THEN
        ir = INT( rd )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
        STRING_real_7_precision = cr( 1 : 6 ) // 'd'
@@ -837,101 +834,101 @@
 !  r - a floating-point number
 !  string_real - equivalent 12 character string
 
-     REAL( KIND = sp ), INTENT( IN )  :: r
+     REAL( KIND = sp_ ), INTENT( IN )  :: r
      CHARACTER ( LEN = 12 ) :: STRING_real_12_single
 
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: i, i1, i2, j
-     REAL( KIND = sp ) :: s
+     REAL( KIND = sp_ ) :: s
      CHARACTER ( LEN = 11 ) :: field11
      CHARACTER ( LEN = 12 ) :: field
      CHARACTER ( LEN = 13 ) :: field13
 
 !  cram r into 12 characters
 
-     IF ( r == 0.0_sp ) THEN
+     IF ( r == 0.0_sp_ ) THEN
        field = "0.0         "
-     ELSE IF ( SIGN( 1.0_sp, r ) > 0.0_sp ) THEN
-!      IF ( r >= ( 10.0_sp ) ** 100 ) THEN
+     ELSE IF ( SIGN( 1.0_sp_, r ) > 0.0_sp_ ) THEN
+!      IF ( r >= ( 10.0_sp_ ) ** 100 ) THEN
 !        WRITE( field13, "( ES13.6E3 )" ) r
 !        field = field13( 1 : 9 ) // field13( 11 : 13 )
-       IF ( r >= ( 10.0_sp ) ** 11 ) THEN
+       IF ( r >= ( 10.0_sp_ ) ** 11 ) THEN
          WRITE( field13, "( ES13.7 )" ) r
          field = field13( 1 : 10 ) // field13( 12 : 13 )
-       ELSE IF ( r >= ( 10.0_sp ) ** 10 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 10 ) THEN
          WRITE( field, "( F12.0 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 9 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 9 ) THEN
          WRITE( field, "( F12.1 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 8 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 8 ) THEN
          WRITE( field, "( F12.2 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 7 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 7 ) THEN
          WRITE( field, "( F12.3 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 6 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 6 ) THEN
          WRITE( field, "( F12.4 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 5 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 5 ) THEN
          WRITE( field, "( F12.5 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 4 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 4 ) THEN
          WRITE( field, "( F12.6 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 3 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 3 ) THEN
          WRITE( field, "( F12.7 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 2 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 2 ) THEN
          WRITE( field, "( F12.8 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 1 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 1 ) THEN
          WRITE( field, "( F12.9 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** 0 ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** 0 ) THEN
          WRITE( field, "( F12.10 )" ) r
-       ELSE IF ( r >= ( 10.0_sp ) ** ( - 4 ) ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** ( - 4 ) ) THEN
          WRITE( field13, "( F13.11 )" ) r
          field = field13( 2 : 13 )
-       ELSE IF ( r >= ( 10.0_sp ) ** ( - 9 ) ) THEN
+       ELSE IF ( r >= ( 10.0_sp_ ) ** ( - 9 ) ) THEN
          WRITE( field13, "( ES13.7 )" ) r
          field = field13( 1 : 11 ) // field13( 13 : 13 )
-!      ELSE IF ( r >= ( 10.0_sp ) ** ( - 99 ) ) THEN
+!      ELSE IF ( r >= ( 10.0_sp_ ) ** ( - 99 ) ) THEN
 !        WRITE( field, "( ES12.6 )" ) r
-!      ELSE IF ( r >= ( 10.0_sp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( r >= ( 10.0_sp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field, "( ES12.5E3 )" ) r
        ELSE
          WRITE( field, "( ES12.5E4 )" ) r
        END IF
      ELSE
        s = - r
-       IF ( ABS( s - 1.0_sp ) <= teneps_s ) s = 1.0_sp
-!      IF ( s >= ( 10.0_sp ) ** 100 ) THEN
+       IF ( ABS( s - 1.0_sp_ ) <= teneps_s ) s = 1.0_sp_
+!      IF ( s >= ( 10.0_sp_ ) ** 100 ) THEN
 !        WRITE( field, "( ES12.5E3 )" ) s
 !        field11 = field( 1 : 8 ) // field( 10 : 12 )
-       IF ( s >= ( 10.0_sp ) ** 10 ) THEN
+       IF ( s >= ( 10.0_sp_ ) ** 10 ) THEN
          WRITE( field, "( ES12.6 )" ) s
          field11 = field( 1 : 9 ) // field( 11 : 12 )
-       ELSE IF ( s >= ( 10.0_sp ) ** 9 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 9 ) THEN
          WRITE( field11, "( F11.0 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 8 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 8 ) THEN
          WRITE( field11, "( F11.1 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 7 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 7 ) THEN
          WRITE( field11, "( F11.2 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 6 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 6 ) THEN
          WRITE( field11, "( F11.3 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 5 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 5 ) THEN
          WRITE( field11, "( F11.4 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 4 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 4 ) THEN
          WRITE( field11, "( F11.5 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 3 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 3 ) THEN
          WRITE( field11, "( F11.6 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 2 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 2 ) THEN
          WRITE( field11, "( F11.7 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 1 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 1 ) THEN
          WRITE( field11, "( F11.8 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** 0 ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** 0 ) THEN
          WRITE( field11, "( F11.9 )" ) s
-       ELSE IF ( s >= ( 10.0_sp ) ** ( - 4 ) ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** ( - 4 ) ) THEN
          WRITE( field, "( F12.10 )" ) s
          field11 = field( 2 : 12 )
-       ELSE IF ( s >= ( 10.0_sp ) ** ( - 9 ) ) THEN
+       ELSE IF ( s >= ( 10.0_sp_ ) ** ( - 9 ) ) THEN
          WRITE( field, "( ES12.6 )" ) s
          field11 = field( 1 : 10 ) // field( 12 : 12 )
-!      ELSE IF ( s > ( 10.0_sp ) ** ( - 99 ) ) THEN
+!      ELSE IF ( s > ( 10.0_sp_ ) ** ( - 99 ) ) THEN
 !        WRITE( field11, "( ES11.5 )" ) s
-!      ELSE IF ( s > ( 10.0_sp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( s > ( 10.0_sp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field11, "( ES11.4E3 )" ) s
        ELSE
          WRITE( field11, "( ES11.5E4 )" ) s
@@ -990,101 +987,101 @@
 !  r - a floating-point number
 !  string_real - equivalent 12 character string
 
-     REAL( KIND = dp ), INTENT( IN )  :: r
+     REAL( KIND = dp_ ), INTENT( IN )  :: r
      CHARACTER ( LEN = 12 ) :: STRING_real_12_precision
 
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: i, i1, i2, j
-     REAL( KIND = dp ) :: s
+     REAL( KIND = dp_ ) :: s
      CHARACTER ( LEN = 11 ) :: field11
      CHARACTER ( LEN = 12 ) :: field
      CHARACTER ( LEN = 13 ) :: field13
 
 !  cram r into 12 characters
 
-     IF ( r == 0.0_dp ) THEN
+     IF ( r == 0.0_dp_ ) THEN
        field = "0.0         "
-     ELSE IF ( SIGN( 1.0_dp, r ) > 0.0_dp ) THEN
-       IF ( r >= ( 10.0_dp ) ** 100 ) THEN
+     ELSE IF ( SIGN( 1.0_dp_, r ) > 0.0_dp_ ) THEN
+       IF ( r >= ( 10.0_dp_ ) ** 100 ) THEN
          WRITE( field13, "( ES13.6E3 )" ) r
          field = field13( 1 : 9 ) // field13( 11 : 13 )
-       ELSE IF ( r >= ( 10.0_dp ) ** 11 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 11 ) THEN
          WRITE( field13, "( ES13.7 )" ) r
          field = field13( 1 : 10 ) // field13( 12 : 13 )
-       ELSE IF ( r >= ( 10.0_dp ) ** 10 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 10 ) THEN
          WRITE( field, "( F12.0 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 9 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 9 ) THEN
          WRITE( field, "( F12.1 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 8 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 8 ) THEN
          WRITE( field, "( F12.2 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 7 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 7 ) THEN
          WRITE( field, "( F12.3 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 6 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 6 ) THEN
          WRITE( field, "( F12.4 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 5 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 5 ) THEN
          WRITE( field, "( F12.5 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 4 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 4 ) THEN
          WRITE( field, "( F12.6 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 3 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 3 ) THEN
          WRITE( field, "( F12.7 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 2 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 2 ) THEN
          WRITE( field, "( F12.8 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 1 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 1 ) THEN
          WRITE( field, "( F12.9 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** 0 ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** 0 ) THEN
          WRITE( field, "( F12.10 )" ) r
-       ELSE IF ( r >= ( 10.0_dp ) ** ( - 4 ) ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** ( - 4 ) ) THEN
          WRITE( field13, "( F13.11 )" ) r
          field = field13( 2 : 13 )
-       ELSE IF ( r >= ( 10.0_dp ) ** ( - 9 ) ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** ( - 9 ) ) THEN
          WRITE( field13, "( ES13.7 )" ) r
          field = field13( 1 : 11 ) // field13( 13 : 13 )
-       ELSE IF ( r >= ( 10.0_dp ) ** ( - 99 ) ) THEN
+       ELSE IF ( r >= ( 10.0_dp_ ) ** ( - 99 ) ) THEN
          WRITE( field, "( ES12.6 )" ) r
-!      ELSE IF ( r >= ( 10.0_dp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( r >= ( 10.0_dp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field, "( ES12.5E3 )" ) r
        ELSE
          WRITE( field, "( ES12.5E4 )" ) r
        END IF
      ELSE
        s = - r
-       IF ( ABS( s - 1.0_dp ) <= teneps_d ) s = 1.0_dp
-       IF ( s >= ( 10.0_dp ) ** 100 ) THEN
+       IF ( ABS( s - 1.0_dp_ ) <= teneps_d ) s = 1.0_dp_
+       IF ( s >= ( 10.0_dp_ ) ** 100 ) THEN
          WRITE( field, "( ES12.5E3 )" ) s
          field11 = field( 1 : 8 ) // field( 10 : 12 )
-       ELSE IF ( s >= ( 10.0_dp ) ** 10 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 10 ) THEN
          WRITE( field, "( ES12.6 )" ) s
          field11 = field( 1 : 9 ) // field( 11 : 12 )
-       ELSE IF ( s >= ( 10.0_dp ) ** 9 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 9 ) THEN
          WRITE( field11, "( F11.0 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 8 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 8 ) THEN
          WRITE( field11, "( F11.1 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 7 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 7 ) THEN
          WRITE( field11, "( F11.2 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 6 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 6 ) THEN
          WRITE( field11, "( F11.3 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 5 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 5 ) THEN
          WRITE( field11, "( F11.4 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 4 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 4 ) THEN
          WRITE( field11, "( F11.5 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 3 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 3 ) THEN
          WRITE( field11, "( F11.6 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 2 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 2 ) THEN
          WRITE( field11, "( F11.7 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 1 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 1 ) THEN
          WRITE( field11, "( F11.8 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** 0 ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** 0 ) THEN
          WRITE( field11, "( F11.9 )" ) s
-       ELSE IF ( s >= ( 10.0_dp ) ** ( - 4 ) ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** ( - 4 ) ) THEN
          WRITE( field, "( F12.10 )" ) s
          field11 = field( 2 : 12 )
-       ELSE IF ( s >= ( 10.0_dp ) ** ( - 9 ) ) THEN
+       ELSE IF ( s >= ( 10.0_dp_ ) ** ( - 9 ) ) THEN
          WRITE( field, "( ES12.6 )" ) s
          field11 = field( 1 : 10 ) // field( 12 : 12 )
-       ELSE IF ( s > ( 10.0_dp ) ** ( - 99 ) ) THEN
+       ELSE IF ( s > ( 10.0_dp_ ) ** ( - 99 ) ) THEN
          WRITE( field11, "( ES11.5 )" ) s
-!      ELSE IF ( s > ( 10.0_dp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( s > ( 10.0_dp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field11, "( ES11.4E3 )" ) s
        ELSE
          WRITE( field11, "( ES11.5E4 )" ) s
@@ -1134,13 +1131,13 @@
 
      FUNCTION STRING_trim_real_24_single( value )
      CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_single
-     REAL ( KIND = sp ) :: value
+     REAL ( KIND = sp_ ) :: value
 
 !  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
      INTEGER ( KIND = ip_ ) :: i, i_start, i_point, i_end, j, k, l, zs
-     REAL ( KIND = sp ) :: minus_value
+     REAL ( KIND = sp_ ) :: minus_value
      LOGICAL :: zeros
      CHARACTER ( LEN = 22 ) :: field22
      CHARACTER ( LEN = 23 ) :: field
@@ -1149,128 +1146,128 @@
 !  cram value into 23 characters
 
 !write(6,*) value
-     IF ( value == 0.0_sp ) THEN
+     IF ( value == 0.0_sp_ ) THEN
        field = "0.0         "
-     ELSE IF ( SIGN( 1.0_sp, value ) > 0.0_sp ) THEN
-!      IF ( value >= ( 10.0_sp ) ** 100 ) THEN
+     ELSE IF ( SIGN( 1.0_sp_, value ) > 0.0_sp_ ) THEN
+!      IF ( value >= ( 10.0_sp_ ) ** 100 ) THEN
 !        WRITE( field24, "( ES24.15E3 )" ) value
 !        field = field24( 1 : 20 ) // field24( 22 : 24 )
-       IF ( value >= ( 10.0_sp ) ** 16 ) THEN
+       IF ( value >= ( 10.0_sp_ ) ** 16 ) THEN
          WRITE( field24, "( ES24.15 )" ) value
          field = field24( 1 : 21 ) // field24( 23 : 24 )
-       ELSE IF ( value >= ( 10.0_sp ) ** 15 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 15 ) THEN
          WRITE( field, "( F23.0 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 14 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 14 ) THEN
          WRITE( field, "( F23.1 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 13 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 13 ) THEN
          WRITE( field, "( F23.2 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 12 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 12 ) THEN
          WRITE( field, "( F23.3 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 11 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 11 ) THEN
          WRITE( field, "( F23.4 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 10 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 10 ) THEN
          WRITE( field, "( F23.5 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 9 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 9 ) THEN
          WRITE( field, "( F23.6 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 8 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 8 ) THEN
          WRITE( field, "( F23.7 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 7 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 7 ) THEN
          WRITE( field, "( F23.8 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 6 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 6 ) THEN
          WRITE( field, "( F23.9 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 5 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 5 ) THEN
          WRITE( field, "( F23.10 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 4 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 4 ) THEN
          WRITE( field, "( F23.11 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 3 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 3 ) THEN
          WRITE( field, "( F23.12 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 2 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 2 ) THEN
          WRITE( field, "( F23.13 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 1 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 1 ) THEN
          WRITE( field, "( F23.14 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** 0 ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** 0 ) THEN
          WRITE( field, "( F23.15 )" ) value
-       ELSE IF ( value >= ( 10.0_sp ) ** ( - 1 ) ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 1 ) ) THEN
          WRITE( field24, "( F24.16 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_sp ) ** ( - 2 ) ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 2 ) ) THEN
          WRITE( field24, "( F24.17 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_sp ) ** ( - 3 ) ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 3 ) ) THEN
          WRITE( field24, "( F24.18 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_sp ) ** ( - 4 ) ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 4 ) ) THEN
          WRITE( field24, "( F24.16 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_sp ) ** ( - 9 ) ) THEN
+       ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 9 ) ) THEN
          WRITE( field24, "( ES24.15 )" ) value
          field = field24( 1 : 22 ) // field24( 24 : 24 )
-!      ELSE IF ( value >= ( 10.0_sp ) ** ( - 99 ) ) THEN
+!      ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 99 ) ) THEN
 !        WRITE( field, "( ES23.15 )" ) value
-!      ELSE IF ( value >= ( 10.0_sp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( value >= ( 10.0_sp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field, "( ES23.15E3 )" ) value
        ELSE
          WRITE( field, "( ES23.15E4 )" ) value
        END IF
      ELSE
        minus_value = - value
-       IF ( ABS( minus_value - 1.0_sp ) <= teneps_d ) minus_value = 1.0_sp
-!      IF ( minus_value >= ( 10.0_sp ) ** 100 ) THEN
+       IF ( ABS( minus_value - 1.0_sp_ ) <= teneps_d ) minus_value = 1.0_sp_
+!      IF ( minus_value >= ( 10.0_sp_ ) ** 100 ) THEN
 !        WRITE( field, "( ES23.15E3 )" ) minus_value
 !        field22 = field( 1 : 19 ) // field( 21 : 23 )
-       IF ( minus_value >= ( 10.0_sp ) ** 16 ) THEN
+       IF ( minus_value >= ( 10.0_sp_ ) ** 16 ) THEN
          WRITE( field, "( ES23.15 )" ) minus_value
          field22 = field( 1 : 20 ) // field( 22 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 15 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 15 ) THEN
          WRITE( field22, "( F22.0 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 14 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 14 ) THEN
          WRITE( field22, "( F22.1 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 13 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 13 ) THEN
          WRITE( field22, "( F22.2 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 12 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 12 ) THEN
          WRITE( field22, "( F22.3 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 11 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 11 ) THEN
          WRITE( field22, "( F22.4 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 10 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 10 ) THEN
          WRITE( field22, "( F22.5 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 9 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 9 ) THEN
          WRITE( field22, "( F22.6 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 8 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 8 ) THEN
          WRITE( field22, "( F22.7 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 7 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 7 ) THEN
          WRITE( field22, "( F22.8 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 6 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 6 ) THEN
          WRITE( field22, "( F22.9 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 5 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 5 ) THEN
          WRITE( field22, "( F22.10 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 4 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 4 ) THEN
          WRITE( field22, "( F22.11 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 3 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 3 ) THEN
          WRITE( field22, "( F22.12 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 2 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 2 ) THEN
          WRITE( field22, "( F22.13 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 1 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 1 ) THEN
          WRITE( field22, "( F22.14 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** 0 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** 0 ) THEN
          WRITE( field22, "( F22.15 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** ( - 1 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** ( - 1 ) ) THEN
          WRITE( field, "( F23.16 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** ( - 2 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** ( - 2 ) ) THEN
          WRITE( field, "( F23.17 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** ( - 3 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** ( - 3 ) ) THEN
          WRITE( field, "( F23.18 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** ( - 4 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** ( - 4 ) ) THEN
          WRITE( field, "( F23.15 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_sp ) ** ( - 9 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_sp_ ) ** ( - 9 ) ) THEN
          WRITE( field, "( ES23.15 )" ) minus_value
          field22 = field( 1 : 21 ) // field( 23 : 23 )
-!      ELSE IF ( minus_value > ( 10.0_sp ) ** ( - 99 ) ) THEN
+!      ELSE IF ( minus_value > ( 10.0_sp_ ) ** ( - 99 ) ) THEN
 !        WRITE( field22, "( ES22.15 )" ) minus_value
-!      ELSE IF ( minus_value > ( 10.0_sp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( minus_value > ( 10.0_sp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field22, "( ES22.15E3 )" ) minus_value
        ELSE
          WRITE( field22, "( ES22.15E4 )" ) minus_value
@@ -1509,13 +1506,13 @@
 
      FUNCTION STRING_trim_real_24_precision( value )
      CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_precision
-     REAL ( KIND = dp ) :: value
+     REAL ( KIND = dp_ ) :: value
 
 !  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
      INTEGER ( KIND = ip_ ) :: i, i_start, i_point, i_end, j, k, l, zs
-     REAL ( KIND = dp ) :: minus_value
+     REAL ( KIND = dp_ ) :: minus_value
      LOGICAL :: zeros
      CHARACTER ( LEN = 22 ) :: field22
      CHARACTER ( LEN = 23 ) :: field
@@ -1524,128 +1521,128 @@
 !  cram value into 23 characters
 
 !write(6,*) value
-     IF ( value == 0.0_dp ) THEN
+     IF ( value == 0.0_dp_ ) THEN
        field = "0.0         "
-     ELSE IF ( SIGN( 1.0_dp, value ) > 0.0_dp ) THEN
-       IF ( value >= ( 10.0_dp ) ** 100 ) THEN
+     ELSE IF ( SIGN( 1.0_dp_, value ) > 0.0_dp_ ) THEN
+       IF ( value >= ( 10.0_dp_ ) ** 100 ) THEN
          WRITE( field24, "( ES24.15E3 )" ) value
          field = field24( 1 : 20 ) // field24( 22 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** 16 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 16 ) THEN
          WRITE( field24, "( ES24.15 )" ) value
          field = field24( 1 : 21 ) // field24( 23 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** 15 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 15 ) THEN
          WRITE( field, "( F23.0 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 14 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 14 ) THEN
          WRITE( field, "( F23.1 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 13 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 13 ) THEN
          WRITE( field, "( F23.2 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 12 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 12 ) THEN
          WRITE( field, "( F23.3 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 11 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 11 ) THEN
          WRITE( field, "( F23.4 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 10 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 10 ) THEN
          WRITE( field, "( F23.5 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 9 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 9 ) THEN
          WRITE( field, "( F23.6 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 8 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 8 ) THEN
          WRITE( field, "( F23.7 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 7 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 7 ) THEN
          WRITE( field, "( F23.8 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 6 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 6 ) THEN
          WRITE( field, "( F23.9 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 5 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 5 ) THEN
          WRITE( field, "( F23.10 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 4 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 4 ) THEN
          WRITE( field, "( F23.11 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 3 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 3 ) THEN
          WRITE( field, "( F23.12 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 2 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 2 ) THEN
          WRITE( field, "( F23.13 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 1 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 1 ) THEN
          WRITE( field, "( F23.14 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** 0 ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** 0 ) THEN
          WRITE( field, "( F23.15 )" ) value
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 1 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 1 ) ) THEN
          WRITE( field24, "( F24.16 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 2 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 2 ) ) THEN
          WRITE( field24, "( F24.17 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 3 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 3 ) ) THEN
          WRITE( field24, "( F24.18 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 4 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 4 ) ) THEN
          WRITE( field24, "( F24.16 )" ) value
          field = field24( 2 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 9 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 9 ) ) THEN
          WRITE( field24, "( ES24.15 )" ) value
          field = field24( 1 : 22 ) // field24( 24 : 24 )
-       ELSE IF ( value >= ( 10.0_dp ) ** ( - 99 ) ) THEN
+       ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 99 ) ) THEN
          WRITE( field, "( ES23.15 )" ) value
-!      ELSE IF ( value >= ( 10.0_dp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( value >= ( 10.0_dp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field, "( ES23.15E3 )" ) value
        ELSE
          WRITE( field, "( ES23.15E4 )" ) value
        END IF
      ELSE
        minus_value = - value
-       IF ( ABS( minus_value - 1.0_dp ) <= teneps_d ) minus_value = 1.0_dp
-       IF ( minus_value >= ( 10.0_dp ) ** 100 ) THEN
+       IF ( ABS( minus_value - 1.0_dp_ ) <= teneps_d ) minus_value = 1.0_dp_
+       IF ( minus_value >= ( 10.0_dp_ ) ** 100 ) THEN
          WRITE( field, "( ES23.15E3 )" ) minus_value
          field22 = field( 1 : 19 ) // field( 21 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 16 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 16 ) THEN
          WRITE( field, "( ES23.15 )" ) minus_value
          field22 = field( 1 : 20 ) // field( 22 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 15 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 15 ) THEN
          WRITE( field22, "( F22.0 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 14 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 14 ) THEN
          WRITE( field22, "( F22.1 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 13 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 13 ) THEN
          WRITE( field22, "( F22.2 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 12 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 12 ) THEN
          WRITE( field22, "( F22.3 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 11 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 11 ) THEN
          WRITE( field22, "( F22.4 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 10 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 10 ) THEN
          WRITE( field22, "( F22.5 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 9 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 9 ) THEN
          WRITE( field22, "( F22.6 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 8 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 8 ) THEN
          WRITE( field22, "( F22.7 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 7 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 7 ) THEN
          WRITE( field22, "( F22.8 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 6 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 6 ) THEN
          WRITE( field22, "( F22.9 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 5 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 5 ) THEN
          WRITE( field22, "( F22.10 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 4 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 4 ) THEN
          WRITE( field22, "( F22.11 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 3 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 3 ) THEN
          WRITE( field22, "( F22.12 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 2 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 2 ) THEN
          WRITE( field22, "( F22.13 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 1 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 1 ) THEN
          WRITE( field22, "( F22.14 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** 0 ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** 0 ) THEN
          WRITE( field22, "( F22.15 )" ) minus_value
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** ( - 1 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** ( - 1 ) ) THEN
          WRITE( field, "( F23.16 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** ( - 2 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** ( - 2 ) ) THEN
          WRITE( field, "( F23.17 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** ( - 3 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** ( - 3 ) ) THEN
          WRITE( field, "( F23.18 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** ( - 4 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** ( - 4 ) ) THEN
          WRITE( field, "( F23.15 )" ) minus_value
          field22 = field( 2 : 23 )
-       ELSE IF ( minus_value >= ( 10.0_dp ) ** ( - 9 ) ) THEN
+       ELSE IF ( minus_value >= ( 10.0_dp_ ) ** ( - 9 ) ) THEN
          WRITE( field, "( ES23.15 )" ) minus_value
          field22 = field( 1 : 21 ) // field( 23 : 23 )
-       ELSE IF ( minus_value > ( 10.0_dp ) ** ( - 99 ) ) THEN
+       ELSE IF ( minus_value > ( 10.0_dp_ ) ** ( - 99 ) ) THEN
          WRITE( field22, "( ES22.15 )" ) minus_value
-!      ELSE IF ( minus_value > ( 10.0_dp ) ** ( - 999 ) ) THEN
+!      ELSE IF ( minus_value > ( 10.0_dp_ ) ** ( - 999 ) ) THEN
 !        WRITE( field22, "( ES22.15E3 )" ) minus_value
        ELSE
          WRITE( field22, "( ES22.15E4 )" ) minus_value
@@ -1904,7 +1901,7 @@
 !  d digits of precision
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: d
-     REAL ( KIND = sp ) :: val
+     REAL ( KIND = sp_ ) :: val
      CHARACTER ( len = d + 6 + COUNT( SPREAD( val, 1, 1 ) < 0.0 ) ) ::         &
        STRING_es_single
 
@@ -1936,7 +1933,7 @@
 !  d digits of precision
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: d
-     REAL ( KIND = dp ) :: val
+     REAL ( KIND = dp_ ) :: val
      CHARACTER ( len = d + 6 + COUNT( SPREAD( val, 1, 1 ) < 0.0 ) ) ::         &
        STRING_es_precision
 
@@ -1967,7 +1964,7 @@
 !  obtain a left-shited ES12.5 character representation of a real variable
 
      CHARACTER ( len = 12 ) :: STRING_es12_single
-     REAL ( KIND = sp ), INTENT( IN ) :: val
+     REAL ( KIND = sp_ ), INTENT( IN ) :: val
 
 !  local variables
 
@@ -1988,7 +1985,7 @@
 !  obtain a left-shited ES12.5 character representation of a real variable
 
      CHARACTER ( len = 12 ) :: STRING_es12_precision
-     REAL ( KIND = dp ), INTENT( IN ) :: val
+     REAL ( KIND = dp_ ), INTENT( IN ) :: val
 
 !  local variables
 
@@ -2015,13 +2012,13 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     REAL ( KIND = sp ) :: r
+     REAL ( KIND = sp_ ) :: r
 
 !  Local variable
 
      INTEGER ( KIND = ip_ ) :: i
 
-     IF ( r == 0.0_sp ) THEN
+     IF ( r == 0.0_sp_ ) THEN
        WRITE( STRING_exponent_single, "( '-in' )" )
      ELSE
        i = FLOOR( LOG10( r ) )
@@ -2052,13 +2049,13 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     REAL ( KIND = dp ) :: r
+     REAL ( KIND = dp_ ) :: r
 
 !  Local variable
 
      INTEGER ( KIND = ip_ ) :: i
 
-     IF ( r == 0.0_dp ) THEN
+     IF ( r == 0.0_dp_ ) THEN
        WRITE( STRING_exponent_precision, "( '-in' )" )
      ELSE
        i = FLOOR( LOG10( r ) )

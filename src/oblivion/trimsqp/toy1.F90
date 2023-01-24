@@ -11,7 +11,7 @@
 
    PROGRAM TOY1
 
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USERDATA_precision
    USE GALAHAD_SMT_precision
    USE GALAHAD_NLPT_precision

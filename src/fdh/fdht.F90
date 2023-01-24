@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_FDH_test_deck
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_FDH_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
@@ -21,7 +21,7 @@
 
    INTERFACE
      SUBROUTINE WRP( data, products ,out )
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_FDH_precision, ONLY: FDH_data_type
      TYPE ( FDH_data_type ) :: data
      INTEGER ( KIND = ip_ ) :: out, products
@@ -30,7 +30,7 @@
 
    INTERFACE
      SUBROUTINE WRH( H, H_true, out )
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
      INTEGER ( KIND = ip_ ) :: out
      REAL ( KIND = rp_ ), DIMENSION( : ) :: H, H_true
      END SUBROUTINE WRH
@@ -269,7 +269,7 @@
    END SUBROUTINE GRAD
 
    SUBROUTINE WRP( data, products ,out )
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_FDH_precision, ONLY: FDH_data_type
    TYPE ( FDH_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: out, products
@@ -283,7 +283,7 @@
    END SUBROUTINE WRP
 
    SUBROUTINE WRH( H, H_true, out )
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ) :: out
    REAL ( KIND = rp_ ), DIMENSION( : ) :: H, H_true
    INTEGER ( KIND = ip_ ) :: l 

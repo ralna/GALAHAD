@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -45,7 +45,7 @@ PROGRAM test_mop
 !                                                               !
 !****************************************************************
 
-  USE GALAHAD_KINDS
+  USE GALAHAD_KINDS_precision
   USE GALAHAD_SMT_precision
   USE GALAHAD_MOP_precision
 
@@ -74,14 +74,14 @@ PROGRAM test_mop
 
   INTERFACE IAMAX
      FUNCTION ISAMAX( n, X, incx )
-      USE GALAHAD_KINDS
+      USE GALAHAD_KINDS_precision
       INTEGER ( KIND = ip_ ) :: IDAMAX
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
     END FUNCTION ISAMAX
 
      FUNCTION IDAMAX( n, X, incx )
-      USE GALAHAD_KINDS
+      USE GALAHAD_KINDS_precision
       INTEGER ( KIND = ip_ ) :: IDAMAX
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X

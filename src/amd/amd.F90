@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-      MODULE GALAHAD_AMD
+      MODULE GALAHAD_AMD_precision
             
 !  This module is based on
 
@@ -58,7 +58,7 @@
 
 !  https://doi.org/10.1145/1024074.1024081
 
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         USE GALAHAD_SYMBOLS
         USE GALAHAD_SPECFILE_precision
 
@@ -1738,4 +1738,4 @@
 
 !  end of module GALAHAD_AMD
 
-      END MODULE GALAHAD_AMD
+      END MODULE GALAHAD_AMD_precision

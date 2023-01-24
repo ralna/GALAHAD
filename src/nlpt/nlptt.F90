@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
 PROGRAM GALAHAD_NLPT_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-12-09 AT 07:45 GMT
-  USE GALAHAD_KINDS
+  USE GALAHAD_KINDS_precision
   USE GALAHAD_NLPT_precision ! the problem type
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  August 3rd 2004
 
    PROGRAM RUNTRTN_SIF_precision
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USETRTN_precision
 
 !  Main program for the SIF interface to TRTN, a trust-region

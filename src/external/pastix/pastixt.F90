@@ -4,7 +4,7 @@
 #include "galahad_modules.h"
 
 PROGRAM test_pastix
-  USE GALAHAD_KINDS
+  USE GALAHAD_KINDS_precision
   USE iso_c_binding
   USE spmf_enums
   USE spmf_interfaces
