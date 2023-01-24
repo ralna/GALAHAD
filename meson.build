@@ -115,11 +115,11 @@ libgalahad_hsl_single_src += files(ma33_path / 'ma33s.f', ma33_path / 'mc13s.f',
 libgalahad_hsl_double_src += files(ma33_path / 'ma33d.f', ma33_path / 'mc13d.f', ma33_path / 'mc20d.f', ma33_path / 'mc21d.f')
 
 # FIXME: zd11 is in both libraries (libgalahad and libgalahad_hsl)
-libgalahad_hsl_single_src += files('src/zd11/zd11.F90')
-libgalahad_hsl_double_src += files('src/zd11/zd11.F90')
-
 libgalahad_hsl_single_src += files('src/kinds/kinds.F90')
 libgalahad_hsl_double_src += files('src/kinds/kinds.F90')
+
+libgalahad_hsl_single_src += files('src/zd11/zd11.F90')
+libgalahad_hsl_double_src += files('src/zd11/zd11.F90')
 
 libgalahad_hsl_single_src += files('src/symbols/symbols.F90')
 libgalahad_hsl_double_src += files('src/symbols/symbols.F90')
@@ -250,7 +250,7 @@ libpardiso = library('pardiso',
                      include_directories: libgalahad_include,
                      install : true)
 
-libmumps_src += files('src/dum/mumps.F90', 'src/dum/mpi.F90', 'src/kinds/kinds.F90')
+libmumps_src += files('src/dum/mumps.F90', 'src/kinds/kinds.F90', 'src/dum/mpi.F90')
 
 libmumps_single = library('mumps_single',
                           sources : libmumps_src,
