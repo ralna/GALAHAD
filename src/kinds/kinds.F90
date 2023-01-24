@@ -8,6 +8,8 @@
 !  History -
 !   originally released, GALAHAD Version 4.1, December 6th 2022
 
+!-*-*-*-*-*-*-*-  G A L A H A D _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
+
 MODULE GALAHAD_KINDS
   USE ISO_C_BINDING
   USE ISO_FORTRAN_ENV
