@@ -10,7 +10,6 @@
 
    PROGRAM RUNFUNNEL_SIF_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_KINDS
    USE GALAHAD_USEFUNNEL_precision
 
 !  Main program for the SIF interface to FUNNEL, a filter trust-funnel
