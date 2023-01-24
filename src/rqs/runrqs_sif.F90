@@ -10,7 +10,6 @@
 
    PROGRAM RUNRQS_SIF_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_KINDS
    USE GALAHAD_USERQS_precision
 
 !  Main program for the SIF interface to RQS, a solver for the regularised
