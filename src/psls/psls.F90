@@ -16,7 +16,6 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_PSLS_precision
-
      USE GALAHAD_KINDS_precision
 
 !      --------------------------------------------------------------------
@@ -445,7 +444,7 @@
       INTERFACE MC61A
         SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
                           ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
         INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
         INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
@@ -460,7 +459,7 @@
 
         SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,         &
                            ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
         INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
         INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
