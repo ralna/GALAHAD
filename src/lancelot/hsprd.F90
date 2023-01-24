@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,7 +13,7 @@
 !  The elements of the array IUSED must be set to zero on entry; they will have
 !  been reset to zero on exit. 
 
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
 
      IMPLICIT NONE
 
@@ -103,7 +103,7 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp

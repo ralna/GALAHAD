@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RQS_LARGE_EXAMPLE  !  GALAHAD 4.1 - 2022-12-16 AT 15:00 GMT.
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_RQS_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_

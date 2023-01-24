@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,7 +9,7 @@
 !  November 24th 2008
 
    PROGRAM RUNTRS_SIF_precision
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USETRS_precision
 
 !  Main program for the SIF interface to TRS, a solver for the trsst-region 

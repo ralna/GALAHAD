@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -17,7 +17,7 @@
 !  SIF interface to LANCELOT. It opens and closes all the files, allocate
 !  arrays, reads and checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_RAND_precision
      USE GALAHAD_SPECFILE_precision
@@ -186,7 +186,7 @@
 
        SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
@@ -200,7 +200,7 @@
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
                           lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,      &
                           lfuval, lxvalu, lepvlu, ifflag, ifstat )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
@@ -219,7 +219,7 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-17 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,7 +21,7 @@
 !    | crossover method for strictly convex l_1 quadratic programming    |
 !     -------------------------------------------------------------------
 
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
 !$ USE omp_lib
    USE GALAHAD_CLOCK
    USE GALAHAD_RAND_precision

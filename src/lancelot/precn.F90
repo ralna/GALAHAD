@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -37,7 +37,7 @@
             
 !    USE GLOBAL_ma27e, ONLY: SA%INFO(5), SA%INFO(6), SA%INFO(7),               &
 !                            SA%INFO(9), SA%INFO(2)
-     USE GALAHAD_KINDS
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
      USE LANCELOT_BAND_precision
      USE GALAHAD_SMT_precision
@@ -188,7 +188,7 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp

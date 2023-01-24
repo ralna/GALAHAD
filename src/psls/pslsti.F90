@@ -1,6 +1,6 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_PSLS_interface_test !  GALAHAD 4.1 - 2022-12-14 AT 12:55 GMT.
-   USE GALAHAD_KINDS
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_PSLS_precision
    IMPLICIT NONE
    TYPE ( PSLS_full_data_type ) :: data

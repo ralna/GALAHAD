@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 !-*-*-*-  G A L A H A D  -  D U M M Y   S P M F  S U B R O U T I N E S -*-*-*-
 
@@ -94,10 +94,14 @@
 
    SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,    &
                                ldx, info )
-     USE GALAHAD_KINDS, ONLY : ipc_, rpc_
+     USE GALAHAD_KINDS, ONLY : ipc_, spc_, dpc_
      USE spmf_enums, ONLY : spmatrix_t, spm_int_t
      IMPLICIT NONE
-     REAL ( KIND = rpc_ ), INTENT( IN ) :: eps
+#ifdef GALAHAD_SINGLE
+     REAL ( KIND = spc_ ), INTENT( IN ) :: eps
+#else
+     REAL ( KIND = dpc_ ), INTENT( IN ) :: eps
+#endif
      INTEGER ( KIND = spm_int_t ),INTENT( IN ) :: nrhs
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
      CLASS( * ), INTENT( INOUT ), TARGET, DIMENSION( :, : ), OPTIONAL :: opt_X0

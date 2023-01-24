@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -6,7 +6,7 @@
 
    MODULE LANCELOT_simple_precision
             
-      USE GALAHAD_KINDS
+      USE GALAHAD_KINDS_precision
       PRIVATE
       PUBLIC :: LANCELOT_simple
 
@@ -496,21 +496,21 @@
        INTERFACE
 
           SUBROUTINE MY_FUN( X, F, i )
-          USE GALAHAD_KINDS
+          USE GALAHAD_KINDS_precision
           REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
           REAL( KIND = rp_ ), INTENT( OUT )  :: F
           INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
           END SUBROUTINE MY_FUN
 
           SUBROUTINE MY_GRAD( X, G, i )
-          USE GALAHAD_KINDS
+          USE GALAHAD_KINDS_precision
           REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
           REAL( KIND = rp_ ), INTENT( OUT )  :: G( : )
           INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
           END SUBROUTINE MY_GRAD
 
           SUBROUTINE MY_HESS( X, H, i )
-          USE GALAHAD_KINDS
+          USE GALAHAD_KINDS_precision
           REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
           REAL( KIND = rp_ ), INTENT( OUT )  :: H( : )
           INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
@@ -879,7 +879,7 @@
 !===============================================================================
 !
        SUBROUTINE RANGE( iel, transp, W1, W2, nelv, ninv, ielt, lw1, lw2 )
-       USE GALAHAD_KINDS
+       USE GALAHAD_KINDS_precision
        IMPLICIT NONE
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: iel, nelv, ninv, ielt, lw1, lw2
        LOGICAL, INTENT( IN ) :: transp

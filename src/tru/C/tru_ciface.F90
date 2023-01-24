@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-11 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -17,7 +17,7 @@
 !  C interface module to GALAHAD_TRU types and interfaces
 
   MODULE GALAHAD_TRU_precision_ciface
-    USE GALAHAD_KINDS
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_TRU_precision, ONLY:                                           &
         f_tru_time_type                 => TRU_time_type,                      &
@@ -200,7 +200,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_f( n, x, f, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), value :: n
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
@@ -211,7 +211,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_g( n, x, g, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
@@ -222,7 +222,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
@@ -235,7 +235,7 @@
     ABSTRACT INTERFACE
       FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )      &
                                                          BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: u
@@ -248,7 +248,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status ) BIND( C )
-        USE GALAHAD_KINDS
+        USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: u

@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-10-11 AT 11:30 GMT.
    PROGRAM GALAHAD_AMD_EXAMPLE
-   USE GALAHAD_AMD
+   USE GALAHAD_AMD_double
    IMPLICIT NONE
    TYPE ( AMD_data_type ) :: data
    TYPE ( AMD_control_type ) :: control
