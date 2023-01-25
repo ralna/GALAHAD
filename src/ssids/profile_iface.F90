@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -8,7 +8,7 @@
 !> \author    Jonathan Hogg
 !> \author    Florent Lopez
 module spral_ssids_profile_precision
-   use spral_kinds
+   use spral_kinds_precision
    implicit none
 
    private

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -12,7 +12,7 @@
 !>        topology for topology-aware routines
 module spral_hw_topology
 
-  use spral_kinds, only: ip_, C_IP_
+  use spral_kinds_precision, only: ip_, C_IP_
   use, intrinsic :: iso_c_binding
   implicit none
 
@@ -37,7 +37,7 @@ module spral_hw_topology
   interface
      !> Interface to spral_hw_topology_guess()
      subroutine spral_hw_topology_guess(nregion, regions) bind(C)
-       use spral_kinds, only: C_IP_
+       use spral_kinds_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
        integer(C_IP_), intent(out) :: nregion
@@ -45,7 +45,7 @@ module spral_hw_topology
      end subroutine spral_hw_topology_guess
      !> Interface to spral_hw_topology_free()
      subroutine spral_hw_topology_free(nregion, regions) bind(C)
-       use spral_kinds, only: C_IP_
+       use spral_kinds_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
        integer(C_IP_), value :: nregion
