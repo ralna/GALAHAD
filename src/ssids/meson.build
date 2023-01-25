@@ -1,7 +1,7 @@
 if build_ssids
   libgalahad_src += files('cholesky.cxx', 'ldlt_app.cxx', 'ldlt_nopiv.cxx',
-                              'ldlt_tpp.cxx', 'NumericSubtree.cxx', 'profile.cxx',
-                              'SymbolicSubtree.cxx', 'ThreadStats.cxx', 'wrappers.cxx')
+                          'ldlt_tpp.cxx', 'NumericSubtree.cxx', 'profile.cxx',
+                          'SymbolicSubtree.cxx', 'ThreadStats.cxx', 'wrappers.cxx')
 
   libgalahad_src += files('akeep.F90', 'anal.F90', 'blas_iface.F90',
                           'contrib.F90', 'contrib_free.F90', 'cpu_iface.F90',
