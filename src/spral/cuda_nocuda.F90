@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
 ! Provides limited interface definitions for CUDA functions in the case
 ! we are not compiled against CUDA libraries
 module spral_cuda_precision
-  use spral_kinds
+  use spral_kinds_precision
   use, intrinsic :: iso_c_binding
   implicit none
 

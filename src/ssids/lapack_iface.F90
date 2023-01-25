@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 ! Definition of LAPACK API in module
 module spral_ssids_lapack_iface
@@ -10,7 +10,7 @@ module spral_ssids_lapack_iface
 
   interface
     subroutine spotrf( uplo, n, a, lda, info )
-      use spral_kinds, only: ip_, sp_
+      use spral_kinds_single, only: ip_, sp_
       implicit none
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda
@@ -18,7 +18,7 @@ module spral_ssids_lapack_iface
       integer, intent(out) :: info
     end subroutine spotrf
     subroutine ssytrf( uplo, n, a, lda, ipiv, work, lwork, info )
-      use spral_kinds, only: ip_, sp_
+      use spral_kinds_single, only: ip_, sp_
       implicit none
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda, lwork
@@ -31,7 +31,7 @@ module spral_ssids_lapack_iface
 
   interface
     subroutine dpotrf( uplo, n, a, lda, info )
-      use spral_kinds, only: ip_, dp_
+      use spral_kinds_double, only: ip_, dp_
       implicit none
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda
@@ -39,7 +39,7 @@ module spral_ssids_lapack_iface
       integer, intent(out) :: info
     end subroutine dpotrf
     subroutine dsytrf( uplo, n, a, lda, ipiv, work, lwork, info )
-      use spral_kinds, only: ip_, dp_
+      use spral_kinds_double, only: ip_, dp_
       implicit none
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda, lwork
