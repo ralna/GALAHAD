@@ -1,14 +1,12 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 08:50 GMT.
 
-!-*-*-*-*-*-*-*-*-*-*-*-*-*- G A L A H A D _ K I N D S -*-*-*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
 !   originally released, GALAHAD Version 4.1, December 6th 2022
-
-!-*-*-*-*-*-*-*-  G A L A H A D _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 MODULE GALAHAD_KINDS
   USE ISO_C_BINDING

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -9,7 +9,7 @@
 !> \note      Originally based on HSL_MA97 v2.2.0
 module spral_ssids_precision
 !$  use omp_lib
-  use spral_kinds
+  use spral_kinds_precision
   use spral_hw_topology, only : guess_topology, numa_region
   use spral_match_order_precision, only : match_order_metis
   use spral_matrix_util_precision, only : SPRAL_MATRIX_REAL_SYM_INDEF, &
