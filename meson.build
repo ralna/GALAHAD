@@ -87,6 +87,9 @@ libgalahad_deps += blas_dep + lapack_dep
 libgalahad_hsl_single_src = []
 libgalahad_hsl_double_src = []
 
+libgalahad_hsl_single_src += files('src/kinds/kinds.F90')
+libgalahad_hsl_double_src += files('src/kinds/kinds.F90')
+
 has_hslarchive = false
 hslarchive_galahad = get_option('hslarchive-galahad')
 if hslarchive_galahad != ''
@@ -115,9 +118,6 @@ libgalahad_hsl_single_src += files(ma33_path / 'ma33s.f', ma33_path / 'mc13s.f',
 libgalahad_hsl_double_src += files(ma33_path / 'ma33d.f', ma33_path / 'mc13d.f', ma33_path / 'mc20d.f', ma33_path / 'mc21d.f')
 
 # FIXME: zd11 is in both libraries (libgalahad and libgalahad_hsl)
-libgalahad_hsl_single_src += files('src/kinds/kinds.F90')
-libgalahad_hsl_double_src += files('src/kinds/kinds.F90')
-
 libgalahad_hsl_single_src += files('src/zd11/zd11.F90')
 libgalahad_hsl_double_src += files('src/zd11/zd11.F90')
 
