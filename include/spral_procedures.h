@@ -33,6 +33,7 @@
 #define spral_blas_iface_precision spral_blas_iface_single
 #define spral_core_analyse_precision spral_core_analyse_single
 #define spral_cuda_precision spral_cuda_single
+#define spral_kinds_precision spral_kinds_single
 #define spral_lapack_iface_precision spral_lapack_iface_single
 #define spral_match_order_precision spral_match_order_single
 #define spral_matrix_util_precision spral_matrix_util_single
@@ -96,6 +97,7 @@
 #define spral_blas_iface_precision spral_blas_iface_double
 #define spral_core_analyse_precision spral_core_analyse_double
 #define spral_cuda_precision spral_cuda_double
+#define spral_kinds_precision spral_kinds_double
 #define spral_lapack_iface_precision spral_lapack_iface_double
 #define spral_match_order_precision spral_match_order_double
 #define spral_matrix_util_precision spral_matrix_util_double

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -9,7 +9,7 @@
 module spral_ssids_akeep_precision
    use spral_ssids_types_precision, only : SSIDS_ERROR_CUDA_UNKNOWN, &
                                            ssids_options
-   use spral_kinds
+   use spral_kinds_precision
    use spral_hw_topology, only : numa_region
    use spral_ssids_inform_precision, only : ssids_inform
    use spral_ssids_subtree_precision, only : symbolic_subtree_base
