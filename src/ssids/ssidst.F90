@@ -3,7 +3,7 @@
 #include "spral_procedures.h"
 
    PROGRAM SPRAL_SSIDS_test_program
-   USE spral_kinds
+   USE spral_kinds_precision
    USE spral_ssids_precision
    IMPLICIT NONE
    TYPE( ssids_inform ) :: inform
@@ -11,7 +11,7 @@
    TYPE( ssids_fkeep ) :: fkeep
    TYPE( ssids_options ) :: options
    INTEGER ( KIND = ip_ ) :: i, ordering, cuda_error
-   LOGICAL :: mpi_flag
+!  LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    INTEGER ( KIND = ip_ ) :: ORDER( n )
    REAL ( KIND = rp_ ) :: X( n ), X2( n, 2 ), D( 2, n )
