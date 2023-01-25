@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
 ! This module provides a way of doing solve on CPU using GPU data structures
 module spral_ssids_gpu_cpu_solve
-  use spral_kinds
+  use spral_kinds_precision
   use spral_ssids_types_precision
   implicit none
 

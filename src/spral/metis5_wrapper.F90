@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
@@ -12,7 +12,7 @@
 #endif
 
 module spral_metis_wrapper
-   use spral_kinds
+   use spral_kinds_precision
    use, intrinsic :: iso_c_binding
    implicit none
 

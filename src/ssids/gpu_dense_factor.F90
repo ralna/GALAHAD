@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
 module spral_ssids_gpu_denfact_precision
   use, intrinsic :: iso_c_binding
   use spral_cuda_precision
-  use spral_kinds
+  use spral_kinds_precision
   use spral_ssids_gpu_alloc_precision, only : cuda_stack_alloc_type, &
                                               custack_alloc, &
                                               custack_free

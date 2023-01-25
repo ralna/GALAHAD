@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 10:10 GMT.
 
-!-*-*-*-*-*-*-*-*-*-*- S P R A L _ K I N D S   M O D U L E -*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  S P R A L _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, GALAHAD productions
 !  Principal author: Nick Gould
@@ -11,9 +11,7 @@
 MODULE SPRAL_KINDS
   USE ISO_C_BINDING
   USE ISO_FORTRAN_ENV
-
   IMPLICIT NONE
-
   PUBLIC
 
 !---------------------------------------------
@@ -22,48 +20,71 @@ MODULE SPRAL_KINDS
 
 !  basic kinds used
 
- INTEGER, PARAMETER :: i4_ = INT32
- INTEGER, PARAMETER :: i8_ = INT64
- INTEGER, PARAMETER :: r4_ = REAL32
- INTEGER, PARAMETER :: r8_ = REAL64
- INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
- INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
+  INTEGER, PARAMETER :: i4_ = INT32
+  INTEGER, PARAMETER :: i8_ = INT64
+  INTEGER, PARAMETER :: r4_ = REAL32
+  INTEGER, PARAMETER :: r8_ = REAL64
+  INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
+  INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
 
 !  common aliases
 
- INTEGER, PARAMETER :: sp_ = r4_
- INTEGER, PARAMETER :: dp_ = r8_
- INTEGER, PARAMETER :: long_ = i8_
- INTEGER, PARAMETER :: spc_ = C_FLOAT
- INTEGER, PARAMETER :: dpc_ = C_DOUBLE
- INTEGER, PARAMETER :: longc_ = C_INT64_T
+  INTEGER, PARAMETER :: sp_ = r4_
+  INTEGER, PARAMETER :: dp_ = r8_
+  INTEGER, PARAMETER :: long_ = i8_
+  INTEGER, PARAMETER :: spc_ = C_FLOAT
+  INTEGER, PARAMETER :: dpc_ = C_DOUBLE
+  INTEGER, PARAMETER :: longc_ = C_INT64_T
 
-!--------------------------------
-!   P r e c i s i o n s  u s e d
-!--------------------------------
-
-#ifdef SPRAL_SINGLE
- INTEGER, PARAMETER :: real_bytes_ = 4
- INTEGER, PARAMETER :: rp_ = r4_
- INTEGER, PARAMETER :: cp_ = c4_
- INTEGER, PARAMETER :: rpc_ = C_FLOAT
-#else
- INTEGER, PARAMETER :: real_bytes_ = 8
- INTEGER, PARAMETER :: rp_ = r8_
- INTEGER, PARAMETER :: cp_ = c8_
- INTEGER, PARAMETER :: rpc_ = C_DOUBLE
-#endif
+!  integer kinds
 
 #ifdef SPRAL_64BIT_INTEGER
- INTEGER, PARAMETER :: ip_ = i8_
- INTEGER, PARAMETER :: ipc_ = C_INT64_T
+  INTEGER, PARAMETER :: ip_ = INT64
+  INTEGER, PARAMETER :: ipc_ = C_INT64_T
 #else
- INTEGER, PARAMETER :: ip_ = i4_
- INTEGER, PARAMETER :: ipc_ = C_INT32_T
+  INTEGER, PARAMETER :: ip_ = INT32
+  INTEGER, PARAMETER :: ipc_ = C_INT32_T
 #endif
 
- INTEGER, PARAMETER :: C_IP_ = ipc_
- INTEGER, PARAMETER :: C_RP_ = rpc_
- INTEGER, PARAMETER :: CLONG_ = longc_
+  INTEGER, PARAMETER :: C_IP_ = ipc_
+  INTEGER, PARAMETER :: CLONG_ = longc_
 
 END MODULE SPRAL_KINDS
+
+!-*-*-*-*-  G A L A H A D _  K I N D S _ S I N G L E  M O D U L E   -*-*-*-*-*-
+
+MODULE SPRAL_KINDS_single
+  USE SPRAL_KINDS
+  IMPLICIT NONE
+  PUBLIC
+
+!--------------------------------------------------------
+!  R e a l  k i n d s  ( s i n g l e  p r e c i s i o n )
+!--------------------------------------------------------
+
+  INTEGER, PARAMETER :: real_bytes_ = 4
+  INTEGER, PARAMETER :: rp_ = r4_
+  INTEGER, PARAMETER :: cp_ = c4_
+  INTEGER, PARAMETER :: rpc_ = spc_
+  INTEGER, PARAMETER :: C_RP_ = rpc_
+
+END MODULE SPRAL_KINDS_single
+
+!-*-*-*-*-  G A L A H A D _  K I N D S _ D O U B L E  M O D U L E   -*-*-*-*-*-
+
+MODULE SPRAL_KINDS_double
+  USE SPRAL_KINDS
+  IMPLICIT NONE
+  PUBLIC
+
+!--------------------------------------------------------
+!  R e a l  k i n d s  ( d o u b l e  p r e c i s i o n )
+!--------------------------------------------------------
+
+  INTEGER, PARAMETER :: real_bytes_ = 8
+  INTEGER, PARAMETER :: rp_ = r8_
+  INTEGER, PARAMETER :: cp_ = c8_
+  INTEGER, PARAMETER :: rpc_ = dpc_
+  INTEGER, PARAMETER :: C_RP_ = rpc_
+
+END MODULE SPRAL_KINDS_double
