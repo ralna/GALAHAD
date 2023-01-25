@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -10,7 +10,7 @@
 !
 !> \brief Define ssids_fkeep type and associated procedures (CPU version)
 module spral_ssids_fkeep_precision
-   use spral_kinds
+   use spral_kinds_precision
    use :: omp_lib
    use spral_ssids_akeep_precision, only : ssids_akeep
    use spral_ssids_contrib_precision, only : contrib_type

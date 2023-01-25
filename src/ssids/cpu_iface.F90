@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-01 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #ifdef SPRAL_SINGLE
+#define spral_kinds_precision spral_kinds_single
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
@@ -19,6 +20,7 @@
 #define potrf spotrf
 #define gemm  sgemm
 #else
+#define spral_kinds_precision spral_kinds_double
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
@@ -43,7 +45,7 @@
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 module spral_ssids_cpu_iface_precision
-   use spral_kinds
+   use spral_kinds_precision
    use, intrinsic :: iso_c_binding
    use spral_ssids_types_precision, only : ssids_options
    use spral_ssids_inform_precision, only : ssids_inform
@@ -133,7 +135,7 @@ end subroutine cpu_copy_stats_out
 !> interop calls from C.
 subroutine spral_c_gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
 bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_blas_iface, only : dgemm
    character(C_CHAR), intent(in) :: ta, tb
    integer(C_IP_), intent(in) :: m, n, k
@@ -146,7 +148,7 @@ bind(C)
 end subroutine spral_c_gemm
 
 subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_lapack_iface, only : dpotrf
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda
@@ -156,7 +158,7 @@ subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
 end subroutine spral_c_potrf
 
 subroutine spral_c_sytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_lapack_iface, only : dsytrf
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda, lwork
@@ -169,7 +171,7 @@ end subroutine spral_c_sytrf
 
 subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
                          ldb) bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_blas_iface, only : dtrsm
    character(C_CHAR), intent(in) :: side, uplo, transa, diag
    integer(C_IP_), intent(in) :: m, n, lda, ldb
@@ -180,7 +182,7 @@ subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
 end subroutine spral_c_trsm
 
 subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_blas_iface, only : dsyrk
    character(C_CHAR), intent(in) :: uplo, trans
    integer(C_IP_), intent(in) :: n, k, lda, ldc
@@ -191,7 +193,7 @@ subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
 end subroutine spral_c_syrk
 
 subroutine spral_c_trsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_blas_iface, only : dtrsv
    character(C_CHAR), intent(in) :: uplo, trans, diag
    integer(C_IP_), intent(in) :: n, lda, incx
@@ -202,7 +204,7 @@ end subroutine spral_c_trsv
 
 subroutine spral_c_gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
 bind(C)
-   use spral_kinds, only: C_IP_, C_RP_
+   use spral_kinds_precision, only: C_IP_, C_RP_
    use spral_ssids_blas_iface, only : dgemv
    character(C_CHAR), intent(in) :: trans
    integer(C_IP_), intent(in) :: m, n, lda, incx, incy
