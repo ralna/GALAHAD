@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-03 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -7,7 +7,7 @@
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 module spral_ssids_cpu_subtree_precision
-  use spral_kinds
+  use spral_kinds_precision
   use spral_ssids_contrib_precision, only : contrib_type
   use spral_ssids_cpu_iface_precision ! fixme only
   use spral_ssids_types_precision
@@ -48,7 +48,7 @@ module spral_ssids_cpu_subtree_precision
      type(C_PTR) function c_create_symbolic_subtree(n, sa, en, sptr, sparent, &
           rptr, rlist, nptr, nlist, ncontrib, contrib_idx, options) &
           bind(C, name="spral_ssids_cpu_create_symbolic_subtree")
-       use :: spral_kinds
+       use spral_kinds
        import :: cpu_factor_options
        implicit none
        integer(C_IP_), value :: n
@@ -67,7 +67,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_destroy_symbolic_subtree(subtree) &
           bind(C, name="spral_ssids_cpu_destroy_symbolic_subtree")
-       use :: spral_kinds
+       use spral_kinds
        implicit none
        type(C_PTR), value :: subtree
      end subroutine c_destroy_symbolic_subtree
@@ -78,7 +78,7 @@ module spral_ssids_cpu_subtree_precision
      type(C_PTR) function c_create_numeric_subtree(posdef, symbolic_subtree, &
           aval, scaling, child_contrib, options, stats) &
           bind(C, name="spral_ssids_cpu_create_num_subtree_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        import :: cpu_factor_options, cpu_factor_stats
        implicit none
        logical(C_BOOL), value :: posdef
@@ -92,7 +92,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_destroy_numeric_subtree(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_destroy_num_subtree_sgl")
-       use :: spral_kinds
+       use spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -101,7 +101,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_fwd_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -113,7 +113,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -125,7 +125,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
           x, ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -137,7 +137,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_bwd_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -148,7 +148,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
           bind(C, name="spral_ssids_cpu_subtree_enquire_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -158,7 +158,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_subtree_alter(posdef, subtree, d) &
           bind(C, name="spral_ssids_cpu_subtree_alter_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -168,7 +168,7 @@ module spral_ssids_cpu_subtree_precision
      subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
           delay_perm, delay_val, lddelay) &
           bind(C, name="spral_ssids_cpu_subtree_get_contrib_sgl")
-       use :: spral_kinds
+       use spral_kinds_single
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -184,7 +184,7 @@ module spral_ssids_cpu_subtree_precision
      
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_sgl")
-       use :: spral_kinds
+       use spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -197,7 +197,7 @@ module spral_ssids_cpu_subtree_precision
      type(C_PTR) function c_create_numeric_subtree(posdef, symbolic_subtree, &
           aval, scaling, child_contrib, options, stats) &
           bind(C, name="spral_ssids_cpu_create_num_subtree_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        import :: cpu_factor_options, cpu_factor_stats
        implicit none
        logical(C_BOOL), value :: posdef
@@ -211,7 +211,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_destroy_numeric_subtree(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_destroy_num_subtree_dbl")
-       use :: spral_kinds
+       use spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -220,7 +220,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_fwd_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -232,7 +232,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -244,7 +244,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
           x, ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -256,7 +256,7 @@ module spral_ssids_cpu_subtree_precision
      integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_bwd_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -267,7 +267,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
           bind(C, name="spral_ssids_cpu_subtree_enquire_dbl")
-       use :: spral_kinds
+       use spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -277,7 +277,7 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_subtree_alter(posdef, subtree, d) &
           bind(C, name="spral_ssids_cpu_subtree_alter_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -287,7 +287,7 @@ module spral_ssids_cpu_subtree_precision
      subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
           delay_perm, delay_val, lddelay) &
           bind(C, name="spral_ssids_cpu_subtree_get_contrib_dbl")
-       use :: spral_kinds
+       use spral_kinds_double
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree
@@ -303,7 +303,7 @@ module spral_ssids_cpu_subtree_precision
      
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_dbl")
-       use :: spral_kinds
+       use spral_kinds_precision
        implicit none
        logical(C_BOOL), value :: posdef
        type(C_PTR), value :: subtree

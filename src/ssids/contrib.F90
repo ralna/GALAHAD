@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -7,7 +7,7 @@
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 module spral_ssids_contrib_precision
-  use spral_kinds
+  use spral_kinds_precision
   implicit none
 
   private
@@ -39,7 +39,7 @@ end module spral_ssids_contrib_precision
 ! C function to get interesting components
 subroutine spral_ssids_contrib_get_data_precision(ccontrib, n, val, ldval, &
      rlist, ndelay, delay_perm, delay_val, lddelay) bind(C)
-  use spral_kinds
+  use spral_kinds_precision
   use spral_ssids_contrib_precision
   implicit none
 

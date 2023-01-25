@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -8,7 +8,7 @@
 ! Based on modified versions of hsl_mc34 and hsl_mc69
 !
 module spral_matrix_util_precision
-   use spral_kinds
+   use spral_kinds_precision
    implicit none
 
    private
