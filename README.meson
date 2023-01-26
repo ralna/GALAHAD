@@ -20,10 +20,10 @@ Currently supported options:
 * `-Dlibblas=/path/to/folder,libname`: name and location of a BLAS library;
 * `-Dliblapack=/path/to/folder,libname`: name and location of a LAPACK library.
 
-Non-default compilers can be selected by setting the `CC` and `FC` shell variables.
+Non-default compilers can be selected by setting the `CC`, `CXX` and `FC` shell variables.
 For instance,
 ```
-CC=icc FC=ifort meson setup builddir [options...]
+CC=icc FC=ifort CXX=icpc meson setup builddir [options...]
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers and linkers.
 

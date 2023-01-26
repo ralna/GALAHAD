@@ -233,7 +233,7 @@ libwsmp_src = []
 
 subdir('src/external')
 
-libmkl_pardiso_src += files('src/dum/mkl_pardiso.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
+libmkl_pardiso_src += files('src/kinds/kinds.F90', 'src/symbols/symbols.F90', 'src/dum/mkl_pardiso.F90')
 
 libmkl_pardiso = library('mkl_pardiso',
                          sources : libmkl_pardiso_src,
@@ -241,7 +241,7 @@ libmkl_pardiso = library('mkl_pardiso',
                          dependencies : blas_dep + lapack_dep,
                          install : true)
 
-libpardiso_src += files('src/dum/pardiso.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
+libpardiso_src += files('src/kinds/kinds.F90', 'src/symbols/symbols.F90', 'src/dum/pardiso.F90')
 
 libpardiso = library('pardiso',
                      sources : libpardiso_src,
@@ -250,7 +250,7 @@ libpardiso = library('pardiso',
                      include_directories: libgalahad_include,
                      install : true)
 
-libmumps_src += files('src/dum/mumps.F90', 'src/kinds/kinds.F90', 'src/dum/mpi.F90')
+libmumps_src += files('src/kinds/kinds.F90', 'src/dum/mpi.F90', 'src/dum/mumps.F90')
 
 libmumps_single = library('mumps_single',
                           sources : libmumps_src,
@@ -268,7 +268,7 @@ libmumps_double = library('mumps_double',
                           include_directories: libgalahad_include + 'src/dum/include',
                           install : true)
 
-libspmf_src += files('src/dum/spmf_enums.F90', 'src/dum/spmf_interfaces.F90', 'src/dum/spmf.F90', 'src/kinds/kinds.F90')
+libspmf_src += files('src/kinds/kinds.F90', 'src/dum/spmf_enums.F90', 'src/dum/spmf_interfaces.F90', 'src/dum/spmf.F90')
 
 libspmf_single = library('spmf_single',
                          sources : libspmf_src,
@@ -284,7 +284,7 @@ libspmf_double = library('spmf_double',
                          fortran_args : extra_args_double,
                          install : true)
 
-libpastix_src += files('src/dum/pastixf_enums.F90', 'src/dum/pastixf_interfaces.F90', 'src/dum/pastixf.F90', 'src/kinds/kinds.F90')
+libpastix_src += files('src/kinds/kinds.F90', 'src/dum/pastixf_enums.F90', 'src/dum/pastixf_interfaces.F90', 'src/dum/pastixf.F90')
 
 libpastix_single = library('pastix_single',
                     sources : libpastix_src,
@@ -300,7 +300,7 @@ libpastix_double = library('pastix_double',
                     fortran_args : extra_args_double,
                     install : true)
 
-libwsmp_src += files('src/dum/wsmp.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
+libwsmp_src += files('src/kinds/kinds.F90', 'src/symbols/symbols.F90', 'src/dum/wsmp.F90')
 
 libwsmp = library('wsmp',
                   sources : libwsmp_src,
