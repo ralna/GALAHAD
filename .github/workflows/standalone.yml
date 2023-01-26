@@ -16,14 +16,17 @@ jobs:
             compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
+            cxx_cmd: g++
           - os: ubuntu-latest
             compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
+            cxx_cmd: g++
           - os: macos-latest
             compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
+            cxx_cmd: g++
           - os: windows-latest
             compiler: intel
             hpckit: https://registrationcenter-download.intel.com/akdlm/irc_nas/19085/w_HPCKit_p_2023.0.0.25931_offline.ex
@@ -31,18 +34,21 @@ jobs:
             script: 'install_windows.bat'
             cc_cmd: icc
             fc_cmd: ifort
+            cxx_cmd: icpc
           - os: ubuntu-latest
             compiler: intel
             hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18975/l_HPCKit_p_2022.3.1.16997_offline.sh'
             script: 'install_linux.sh'
             cc_cmd: icc
             fc_cmd: ifort
+            cxx_cmd: icpc
           - os: macos-latest
             compiler: intel
             hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18977/m_HPCKit_p_2022.3.1.15344_offline.dmg'
             script: 'install_macos.sh'
             cc_cmd: icc
             fc_cmd: ifort
+            cxx_cmd: icpc
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -67,6 +73,7 @@ jobs:
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
+          CXX: ${{ matrix.cxx_cmd }}
       - name: Build GALAHAD
         shell: bash
         run: |
