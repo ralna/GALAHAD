@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 11:20 GMT.
 
 ! Define BLAS API in Fortran module
+
 module spral_ssids_blas_iface
   implicit none
 
@@ -13,7 +14,7 @@ module spral_ssids_blas_iface
   ! Level 2 BLAS
   interface
     subroutine sgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
-      use spral_kinds_single, only: ip_, sp_
+      use spral_kinds, only: ip_, sp_
       implicit none
       character, intent(in) :: trans
       integer(ip_), intent(in) :: m, n, lda, incx, incy
@@ -23,7 +24,7 @@ module spral_ssids_blas_iface
       real(sp_), intent(inout), dimension(*) :: y
     end subroutine sgemv
     subroutine strsv( uplo, trans, diag, n, a, lda, x, incx )
-      use spral_kinds_single, only: ip_, sp_
+      use spral_kinds, only: ip_, sp_
       implicit none
       character, intent(in) :: uplo, trans, diag
       integer(ip_), intent(in) :: n, lda, incx
@@ -34,7 +35,7 @@ module spral_ssids_blas_iface
 
   interface
     subroutine dgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
-      use spral_kinds_double, only: ip_, dp_
+      use spral_kinds, only: ip_, dp_
       implicit none
       character, intent(in) :: trans
       integer(ip_), intent(in) :: m, n, lda, incx, incy
@@ -44,7 +45,7 @@ module spral_ssids_blas_iface
       real(dp_), intent(inout), dimension(*) :: y
     end subroutine dgemv
     subroutine dtrsv( uplo, trans, diag, n, a, lda, x, incx )
-      use spral_kinds_double, only: ip_, dp_
+      use spral_kinds, only: ip_, dp_
       implicit none
       character, intent(in) :: uplo, trans, diag
       integer(ip_), intent(in) :: n, lda, incx
@@ -56,7 +57,7 @@ module spral_ssids_blas_iface
   ! Level 3 BLAS
   interface
     subroutine sgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
-      use spral_kinds_single
+      use spral_kinds, only : ip_, sp_
       implicit none
       character, intent(in) :: ta, tb
       integer(ip_), intent(in) :: m, n, k
@@ -67,7 +68,7 @@ module spral_ssids_blas_iface
       real(sp_), intent(inout), dimension(ldc, *) :: c
     end subroutine sgemm
     subroutine ssyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-      use spral_kinds_single
+      use spral_kinds, only : ip_, sp_
       implicit none
       character, intent(in) :: uplo, trans
       integer(ip_), intent(in) :: n, k, lda, ldc
@@ -76,7 +77,7 @@ module spral_ssids_blas_iface
       real(sp_), intent(inout), dimension(ldc, n) :: c
     end subroutine ssyrk
     subroutine strsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
-      use spral_kinds_single
+      use spral_kinds, only : ip_, sp_
       implicit none
       character, intent(in) :: side, uplo, trans, diag
       integer(ip_), intent(in) :: m, n, lda, ldb
@@ -88,7 +89,7 @@ module spral_ssids_blas_iface
 
   interface
     subroutine dgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
-      use spral_kinds_double
+      use spral_kinds, only : ip_, dp_
       implicit none
       character, intent(in) :: ta, tb
       integer(ip_), intent(in) :: m, n, k
@@ -99,7 +100,7 @@ module spral_ssids_blas_iface
       real(dp_), intent(inout), dimension(ldc, *) :: c
     end subroutine dgemm
     subroutine dsyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-      use spral_kinds_double
+      use spral_kinds, only : ip_, dp_
       implicit none
       character, intent(in) :: uplo, trans
       integer(ip_), intent(in) :: n, k, lda, ldc
@@ -108,7 +109,7 @@ module spral_ssids_blas_iface
       real(dp_), intent(inout), dimension(ldc, n) :: c
     end subroutine dsyrk
     subroutine dtrsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
-      use spral_kinds_double
+      use spral_kinds, only : ip_, dp_
       implicit none
       character, intent(in) :: side, uplo, trans, diag
       integer(ip_), intent(in) :: m, n, lda, ldb
