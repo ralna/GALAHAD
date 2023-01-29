@@ -6,6 +6,7 @@
 ! Authors: Jonathan Hogg and Iain Duff
 !
 ! Based on modified versions of MC56 and HSL_MC56.
+
 module spral_rutherford_boeing_precision
 
   use spral_kinds_precision
@@ -13,16 +14,12 @@ module spral_rutherford_boeing_precision
   use spral_random_precision, only : random_state, random_real
   implicit none
 
-  integer(ip_), parameter :: wp = kind(0d0)
-  integer(ip_), parameter :: long = selected_int_kind(18)
-  real(rp_), parameter :: zero = 0.0_wp
-
   private
   public :: rb_peek, &         ! Peeks at the header of a RB file
-       rb_read,      &         ! Reads a RB file
-       rb_write                ! Writes a RB file
+            rb_read, &         ! Reads a RB file
+            rb_write           ! Writes a RB file
   public :: rb_read_options, & ! Options that control what rb_read returns
-       rb_write_options        ! Options that control what rb_write does
+            rb_write_options   ! Options that control what rb_write does
 
   ! Possible values options%lwr_upr_full
   integer(ip_), parameter :: TRI_LWR  = 1 ! Lower triangle
@@ -369,7 +366,7 @@ contains
 
     ! ptr
     len = n + 1
-    len = max(len, int(real(len,rp_) * options%extra_space, long))
+    len = max(len, int(real(len,rp_) * options%extra_space, long_))
     allocate(ptr(len), stat=st)
     if (st .ne. 0) goto 200
 
@@ -397,7 +394,7 @@ contains
        if (options%add_diagonal) len = len + n
     end select
     len2 = len
-    len = max(len, int(real(len,rp_) * options%extra_space, long))
+    len = max(len, int(real(len,rp_) * options%extra_space, long_))
     allocate(row(len), stat=st)
     if (st .ne. 0) goto 200
     rcptr => row
@@ -684,11 +681,11 @@ contains
 
     ! Determine formats
     max_ptr = maxval(ptr(1:n+1))
-    ptr_prec = int(log10(real(max_ptr, wp)))+2
+    ptr_prec = int(log10(real(max_ptr, rp_)))+2
     ptr_per_line = 80 / ptr_prec ! 80 character per line
     ptr_format = create_format(ptr_per_line, ptr_prec)
     max_row = maxval(row(1:ptr(n+1)-1))
-    row_prec = int(log10(real(max_row, wp)))+2
+    row_prec = int(log10(real(max_row, rp_)))+2
     row_per_line = 80 / row_prec ! 80 character per line
     row_format = create_format(row_per_line, row_prec)
 
@@ -900,7 +897,7 @@ contains
           ndiag = ndiag - 1
           i = ptr(col) + ndiag
           row(i) = col
-          if (present(val)) val(i) = zero
+          if (present(val)) val(i) = 0.0_rp_
        end if
     end do
   end subroutine add_missing_diag

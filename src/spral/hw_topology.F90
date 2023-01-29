@@ -12,7 +12,7 @@
 !>        topology for topology-aware routines
 module spral_hw_topology
 
-  use spral_kinds_precision, only: ip_, C_IP_
+  use spral_kinds, only: ip_, C_IP_
   use, intrinsic :: iso_c_binding
   implicit none
 

@@ -1,19 +1,19 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-11-22
+#  This version: 2023-01-29
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package).o)
-D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
+S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package)_single.o)
+D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package)_double.o)
 
 #  compilation agenda for package with C interface
 
 S$(PACKAGE)C = $(S$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
-               $(CLGS)($(package)_ciface.o)
+               $(CLGS)($(package)_ciface_single.o)
 D$(PACKAGE)C = $(D$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
-               $(CLGD)($(package)_ciface.o)
+               $(CLGD)($(package)_ciface_double.o)
 
 #  compilation agenda for package with python interface
 
@@ -22,9 +22,9 @@ D$(PACKAGE)PY = $(D$(PACKAGE)C) $(PYDEPENDENCIES) $(PYLGD)($(package)_pyiface.o)
 
 #  additional run agenda
 
-SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package).o) \
+SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package)_single.o) \
                  $(OBJS)/run$(package)_sif_single.o
-DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package).o) \
+DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package)_double.o) \
                  $(OBJD)/run$(package)_sif_double.o
 SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
                    $(OBJS)/in$(package)_single.o
@@ -60,90 +60,92 @@ OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
 
 #  test agenda
 
-$(PACKAGE)DE = $(D$(PACKAGE)) $(OBJD)/$(package)e.o
-$(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
-$(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
-$(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
-$(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4.o
-$(PACKAGE)DS5 = $(D$(PACKAGE)) $(OBJD)/$(package)s5.o
-$(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6.o
-$(PACKAGE)DS7 = $(D$(PACKAGE)) $(OBJD)/$(package)s7.o
-$(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
-$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2.o
-$(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti.o
-$(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
-$(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
-$(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
-$(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4.o
-$(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
-$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2.o
-$(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti.o
+$(PACKAGE)DE = $(D$(PACKAGE)) $(OBJD)/$(package)e_double.o
+$(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s_double.o
+$(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2_double.o
+$(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3_double.o
+$(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4_double.o
+$(PACKAGE)DS5 = $(D$(PACKAGE)) $(OBJD)/$(package)s5_double.o
+$(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6_double.o
+$(PACKAGE)DS7 = $(D$(PACKAGE)) $(OBJD)/$(package)s7_double.o
+$(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t_double.o
+$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2_double.o
+$(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti_double.o
 
-R$(PACKAGE)DE = $(OBJD)/$(package)e.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS4 = $(OBJD)/$(package)s4.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS5 = $(OBJD)/$(package)s5.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS6 = $(OBJD)/$(package)s6.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DS7 = $(OBJD)/$(package)s7.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DT2 = $(OBJD)/$(package)t2.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DTI = $(OBJD)/$(package)ti.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)SS4 = $(OBJS)/$(package)s4.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)STI = $(OBJS)/$(package)ti.o -L$(OBJS) $(LIBS)
+$(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s_single.o
+$(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2_single.o
+$(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3_single.o
+$(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4_single.o
+$(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t_single.o
+$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2_single.o
+$(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti_single.o
+
+R$(PACKAGE)DE = $(OBJD)/$(package)e_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS = $(OBJD)/$(package)s_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS2 = $(OBJD)/$(package)s2_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS3 = $(OBJD)/$(package)s3_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS4 = $(OBJD)/$(package)s4_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS5 = $(OBJD)/$(package)s5_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS6 = $(OBJD)/$(package)s6_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS7 = $(OBJD)/$(package)s7_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DT = $(OBJD)/$(package)t_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DT2 = $(OBJD)/$(package)t2_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DTI = $(OBJD)/$(package)ti_double.o -L$(OBJD) $(LIBS)
+
+R$(PACKAGE)SS = $(OBJS)/$(package)s_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS2 = $(OBJS)/$(package)s2_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS3 = $(OBJS)/$(package)s3_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS4 = $(OBJS)/$(package)s4_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)ST = $(OBJS)/$(package)t_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)ST2 = $(OBJS)/$(package)t2_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)STI = $(OBJS)/$(package)ti_single.o -L$(OBJS) $(LIBS)
 
 #  test agenda for C interfaces
 
-$(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs.o
-$(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2.o
-$(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
-$(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4.o
-$(PACKAGE)CDS5 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs5.o
-$(PACKAGE)CDS6 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs6.o
-$(PACKAGE)CDS7 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs7.o
-$(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
-$(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti.o
-$(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf.o
+$(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs_single.o
+$(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2_single.o
+$(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3_single.o
+$(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4_single.o
+$(PACKAGE)CSS5 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs5_single.o
+$(PACKAGE)CSS6 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs6_single.o
+$(PACKAGE)CSS7 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs7_single.o
+$(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct_single.o
+$(PACKAGE)CSTI = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)cti_single.o
+$(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf_single.o
 
-$(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
-$(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
-$(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
-$(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4.o
-$(PACKAGE)CSS5 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs5.o
-$(PACKAGE)CSS6 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs6.o
-$(PACKAGE)CSS7 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs7.o
-$(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
-$(PACKAGE)CSTI = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)cti.o
-$(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf.o
+$(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs_double.o
+$(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2_double.o
+$(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3_double.o
+$(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4_double.o
+$(PACKAGE)CDS5 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs5_double.o
+$(PACKAGE)CDS6 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs6_double.o
+$(PACKAGE)CDS7 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs7_double.o
+$(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct_double.o
+$(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti_double.o
+$(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf_double.o
 
-R$(PACKAGE)CDS = $(OBJD)/$(package)cs.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS5 = $(OBJD)/$(package)cs5.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS6 = $(OBJD)/$(package)cs6.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDS7 = $(OBJD)/$(package)cs7.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDTI = $(OBJD)/$(package)cti.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CSS = $(OBJS)/$(package)cs_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS5 = $(OBJS)/$(package)cs5_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS6 = $(OBJS)/$(package)cs6_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS7 = $(OBJS)/$(package)cs7_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CST = $(OBJS)/$(package)ct_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSTF = $(OBJS)/$(package)ctf_single.o -L$(OBJS) $(CLIBS)
 
-R$(PACKAGE)CSS = $(OBJS)/$(package)cs.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS5 = $(OBJS)/$(package)cs5.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS6 = $(OBJS)/$(package)cs6.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSS7 = $(OBJS)/$(package)cs7.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CST = $(OBJS)/$(package)ct.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CTI = $(OBJS)/$(package)cti.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSTI = $(OBJS)/$(package)cti.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CSTF = $(OBJS)/$(package)ctf.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CDS = $(OBJD)/$(package)cs_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS5 = $(OBJD)/$(package)cs5_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS6 = $(OBJD)/$(package)cs6_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS7 = $(OBJD)/$(package)cs7_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDT = $(OBJD)/$(package)ct_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDTI = $(OBJD)/$(package)cti_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf_double.o -L$(OBJD) $(CLIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -261,16 +263,16 @@ $(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
 #  process package add-ons for CUTEst
 
 $(package)_cutest_addon: $(package)_cutest_addon_$(PRECIS)
-$(package)_cutest_addon_single: $(CULGS)(use$(package).o) \
+$(package)_cutest_addon_single: $(CULGS)(use$(package)_single.o) \
                                 $(OBJS)/run$(package)_sif_single.o
-$(package)_cutest_addon_double: $(CULGD)(use$(package).o) \
+$(package)_cutest_addon_double: $(CULGD)(use$(package)_double.o) \
                                 $(OBJD)/run$(package)_sif_double.o
 
 #  process package add-ons for AMPL
 
 $(package)_ampl_addon: $(package)_ampl_addon_$(PRECIS)
-$(package)_ampl_addon_single: $(CULGS)(use$(package).o)
-$(package)_ampl_addon_double: $(CULGD)(use$(package).o)
+$(package)_ampl_addon_single: $(CULGS)(use$(package)_single.o)
+$(package)_ampl_addon_double: $(CULGD)(use$(package)_double.o)
 
 #  process package for QPLIB
 
@@ -403,47 +405,47 @@ test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
 #  run specification document example tests
 
 $(package)de: $($(PACKAGE)DE)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DE)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DE)
 	$(RMOOC)
 	- ./run_$(package)
 	rm ./run_$(package)
 
 $(package)ss: $($(PACKAGE)SS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)SS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS)
 	$(RMOOC)
 	- ./run_$(package) > $(package)s.output 2>&1
 	cat $(package)s.output
 	rm ./run_$(package)
 
 $(package)ss2: $($(PACKAGE)SS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)SS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)s2.output 2>&1
 	cat $(package)s2.output
 	rm ./run_$(package)
 
 $(package)ss3: $($(PACKAGE)SS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)SS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)s3.output 2>&1
 	cat $(package)s3.output
 	rm ./run_$(package)
 
 $(package)ss4: $($(PACKAGE)SS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)SS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)s4.output 2>&1
 	cat $(package)s4.output
 	rm ./run_$(package)
 
 $(package)ds: $($(PACKAGE)DS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS)
 	$(RMOOC)
 #	- ./run_$(package)
 	- ./run_$(package) > $(package)ds.output 2>&1
@@ -451,8 +453,8 @@ $(package)ds: $($(PACKAGE)DS)
 	rm ./run_$(package)
 
 $(package)ds_valgrind: $($(PACKAGE)DS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS)
 	$(RMOOC)
 	- valgrind $(VALGRIND) ./run_$(package) > \
            $(package)ds_valgrind.output 2>&1
@@ -460,16 +462,16 @@ $(package)ds_valgrind: $($(PACKAGE)DS)
 	rm ./run_$(package)
 
 $(package)ds2: $($(PACKAGE)DS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)ds2.output 2>&1
 	cat $(package)ds2.output
 	rm ./run_$(package)
 
 $(package)ds2_valgrind: $($(PACKAGE)DS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS2)
 	$(RMOOC)
 	- valgrind $(VALGRIND) ./run_$(package) > \
            $(package)ds2_valgrind.output 2>&1
@@ -477,8 +479,8 @@ $(package)ds2_valgrind: $($(PACKAGE)DS2)
 	rm ./run_$(package)
 
 $(package)ds3: $($(PACKAGE)DS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS3)
 	$(RMOOC)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds3.output 2>&1
@@ -486,8 +488,8 @@ $(package)ds3: $($(PACKAGE)DS3)
 	rm ./run_$(package)
 
 $(package)ds3_valgrind: $($(PACKAGE)DS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS3)
 	$(RMOOC)
 	- valgrind $(VALGRIND) ./run_$(package) > \
            $(package)ds3_valgrind.output 2>&1
@@ -495,8 +497,8 @@ $(package)ds3_valgrind: $($(PACKAGE)DS3)
 	rm ./run_$(package)
 
 $(package)ds4: $($(PACKAGE)DS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS4)
 	$(RMOOC)
 #	- ./run_$(package)
 	- ./run_$(package) > $(package)ds4.output 2>&1
@@ -504,8 +506,8 @@ $(package)ds4: $($(PACKAGE)DS4)
 	rm ./run_$(package)
 
 $(package)ds5: $($(PACKAGE)DS5)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS5)
 	$(RMOOC)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds5.output 2>&1
@@ -513,8 +515,8 @@ $(package)ds5: $($(PACKAGE)DS5)
 	rm ./run_$(package)
 
 $(package)ds6: $($(PACKAGE)DS6)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS6)
 	$(RMOOC)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds6.output 2>&1
@@ -522,8 +524,8 @@ $(package)ds6: $($(PACKAGE)DS6)
 	rm ./run_$(package)
 
 $(package)ds7: $($(PACKAGE)DS7)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DS7)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS7)
 	$(RMOOC)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds7.output 2>&1
@@ -533,112 +535,112 @@ $(package)ds7: $($(PACKAGE)DS7)
 #  run C specification document example tests
 
 $(package)css: $($(PACKAGE)CSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs.output 2>&1
 	cat $(package)cs.output
 	rm ./run_$(package)
 
 $(package)css2: $($(PACKAGE)CSS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs2.output 2>&1
 	cat $(package)cs2.output
 	rm ./run_$(package)
 
 $(package)css3: $($(PACKAGE)CSS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs3.output 2>&1
 	cat $(package)cs3.output
 	rm ./run_$(package)
 
 $(package)css4: $($(PACKAGE)CSS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs4.output 2>&1
 	cat $(package)cs4.output
 	rm ./run_$(package)
 
 $(package)css5: $($(PACKAGE)CSS5)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS5)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs5.output 2>&1
 	cat $(package)cs5.output
 	rm ./run_$(package)
 
 $(package)css6: $($(PACKAGE)CSS6)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS6)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs6.output 2>&1
 	cat $(package)cs6.output
 	rm ./run_$(package)
 
 $(package)css7: $($(PACKAGE)CSS7)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSS7)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS7)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs7.output 2>&1
 	cat $(package)cs7.output
 	rm ./run_$(package)
 
 $(package)cds: $($(PACKAGE)CDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds.output 2>&1
 	cat $(package)cds.output
 	rm ./run_$(package)
 
 $(package)cds2: $($(PACKAGE)CDS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds2.output 2>&1
 	cat $(package)cds2.output
 	rm ./run_$(package)
 
 $(package)cds3: $($(PACKAGE)CDS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds3.output 2>&1
 	cat $(package)cds3.output
 	rm ./run_$(package)
 
 $(package)cds4: $($(PACKAGE)CDS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds4.output 2>&1
 	cat $(package)cds4.output
 	rm ./run_$(package)
 
 $(package)cds5: $($(PACKAGE)CDS5)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS5)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds5.output 2>&1
 	cat $(package)cds5.output
 	rm ./run_$(package)
 
 $(package)cds6: $($(PACKAGE)CDS6)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS6)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds6.output 2>&1
 	cat $(package)cds6.output
 	rm ./run_$(package)
 
 $(package)cds7: $($(PACKAGE)CDS7)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDS7)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS7)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds7.output 2>&1
 	cat $(package)cds7.output
@@ -649,8 +651,8 @@ $(package)cds7: $($(PACKAGE)CDS7)
 $(package)st: $($(PACKAGE)ST)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)ST)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST)
 	$(RMOOC)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)st.output 2>&1
@@ -660,8 +662,8 @@ $(package)st: $($(PACKAGE)ST)
 $(package)st2: $($(PACKAGE)ST2)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)ST2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)st2.output 2>&1
 	cat $(package)st2.output
@@ -670,8 +672,8 @@ $(package)st2: $($(PACKAGE)ST2)
 $(package)sti: $($(PACKAGE)STI)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)STI)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)STI)
 	$(RMOOC)
 	- ./run_$(package) > $(package)sti.output 2>&1
 	cat $(package)sti.output
@@ -680,8 +682,8 @@ $(package)sti: $($(PACKAGE)STI)
 $(package)dt: $($(PACKAGE)DT)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT)
 	$(RMOOC)
 	- ./run_$(package) 2>/dev/null
 #	- ./run_$(package) > $(package)dt.output 2>&1
@@ -691,8 +693,8 @@ $(package)dt: $($(PACKAGE)DT)
 $(package)dt2: $($(PACKAGE)DT2)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DT2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT2)
 	$(RMOOC)
 	- ./run_$(package) 2>/dev/null
 #	- ./run_$(package) > $(package)dt2.output 2>&1
@@ -700,8 +702,8 @@ $(package)dt2: $($(PACKAGE)DT2)
 	rm ./run_$(package)
 
 $(package)dt_valgrind: $($(PACKAGE)DT)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT)
 	$(RMOOC)
 	- valgrind $(VALGRIND) ./run_$(package) > \
            $(package)dt_valgrind.output 2>&1
@@ -711,8 +713,8 @@ $(package)dt_valgrind: $($(PACKAGE)DT)
 $(package)dti: $($(PACKAGE)DTI)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DTI)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DTI)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dti.output 2>&1
 	cat $(package)dti.output
@@ -723,8 +725,8 @@ $(package)dti: $($(PACKAGE)DTI)
 $(package)cst: $($(PACKAGE)CST)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CST)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST)
 	$(RMOOC)
 	- ./run_$(package) > $(package)st.output 2>&1
 	cat $(package)st.output
@@ -733,8 +735,8 @@ $(package)cst: $($(PACKAGE)CST)
 $(package)csti: $($(PACKAGE)CSTI)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSTI)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTI)
 	$(RMOOC)
 	- ./run_$(package) > $(package)sti.output 2>&1
 	cat $(package)sti.output
@@ -743,8 +745,8 @@ $(package)csti: $($(PACKAGE)CSTI)
 $(package)cstf: $($(PACKAGE)CSTF)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CSTF)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTF)
 	$(RMOOC)
 	- ./run_$(package) > $(package)stf.output 2>&1
 	cat $(package)stf.output
@@ -753,8 +755,8 @@ $(package)cstf: $($(PACKAGE)CSTF)
 $(package)cdt: $($(PACKAGE)CDT)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dt.output 2>&1
 	cat $(package)dt.output
@@ -762,8 +764,8 @@ $(package)cdt: $($(PACKAGE)CDT)
 
 $(package)cdti: $($(PACKAGE)CDTI)
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDTI)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTI)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dti.output 2>&1
 	cat $(package)dti.output
@@ -772,8 +774,8 @@ $(package)cdti: $($(PACKAGE)CDTI)
 $(package)cdtf: $($(PACKAGE)CDTF)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDTF)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTF)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dtf.output 2>&1
 	cat $(package)dtf.output
@@ -807,8 +809,8 @@ $(OBJ)/in$(package)_$(PRECIS).o: ../$(package)/in$(package).F90
 
 clean:
 	@printf ' %-9s\t\t' "Removing $(package) files"
-	$(RMARFILE) $(package).o
-	$(RM) $(OBJ)/$(package)t.o $(OBJ)/$(package)s.o
+	$(RMARFILE) $(package)_$(PRECIS).o
+	$(RM) $(OBJ)/$(package)t_$(PRECIS).o $(OBJ)/$(package)s_$(PRECIS).o
 	@printf '[ OK ]\n'
 
 cleanall:

@@ -56,11 +56,13 @@ MKL_PARDISO_INTERFACE = $(BASICZ) $(LG)(mkl_pardiso_interface.o)
 MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
 MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
 
-MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
-MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
+MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot_single.o
+MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot_double.o
 
-RMKL_PARDISODT = $(OBJD)/mkl_pardisot.o -L$(OBJD) -lgalahad $(MKL_PARDISO)
-RMKL_PARDISOST = $(OBJS)/mkl_pardisot.o -L$(OBJS) -lgalahad $(MKL_PARDISO)
+RMKL_PARDISOST = $(OBJS)/mkl_pardisot_single.o -L$(OBJS) -lgalahad \
+                 $(MKL_PARDISO)
+RMKL_PARDISODT = $(OBJD)/mkl_pardisot_double.o -L$(OBJD) -lgalahad \
+                 $(MKL_PARDISO)
 
 SUCC = precision version) compiled successfully
 
@@ -151,12 +153,13 @@ $(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.F90
 
 #  test programs
 
-mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
+mkl_pardisot.o: $(OBJ)/mkl_pardisot_$(PRECIS).o
 
-$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.F90
+$(OBJ)/mkl_pardisot_$(PRECIS).o: ../mkl/mkl_pardisot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
 	$(CP) ../mkl/mkl_pardisot.F90 $(OBJ)/mkl_pardisot.F90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.F90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot_$(PRECIS).o \
+                      $(FFLAGSS) mkl_pardisot.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
