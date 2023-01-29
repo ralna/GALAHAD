@@ -29,7 +29,7 @@
 
    MODULE GALAHAD_TOOLS
 
-      USE GALAHAD_KINDS_precision
+      USE GALAHAD_KINDS
 
 !-------------------------------------------------------------------------------
 !   A c c e s s

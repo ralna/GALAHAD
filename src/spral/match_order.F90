@@ -27,9 +27,6 @@ module spral_match_order_precision
   public :: match_order_metis ! Find a matching-based ordering using the
     ! Hungarian algorithm for matching and METIS for ordering.
 
-  integer(ip_), parameter :: wp = kind(0d0)
-  integer(ip_), parameter :: long = selected_int_kind(18)
-
   ! Error flags
   integer(ip_), parameter :: SUCCESS               = 0
   integer(ip_), parameter :: ERROR_ALLOCATION      = -1
@@ -542,7 +539,7 @@ contains
     
     ! Compute column maximums    
     do i = 1, n
-       colmax = max(0.0_wp,maxval(val2(ptr2(i):ptr2(i+1)-1)))
+       colmax = max(0.0_rp_,maxval(val2(ptr2(i):ptr2(i+1)-1)))
        if (colmax .ne. 0.0) colmax = log(colmax)
        cmax(i) = colmax
     end do

@@ -59,70 +59,79 @@ include $(GALAHAD)/src/makedefs/instructions
 
 #  non-standard package compilation
 
-$(package).o: $(LG)($(package).o)
+$(package).o: $(LG)($(package)_$(PRECIS).o)
 
-$(LG)($(package).o): ../$(package)/$(package).F90
+$(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).F90 \
+	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o $(FFLAGS) \
+                     $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
-	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).F90 $(package).o
+                   $(FORTRAN) -o $(package)_$(PRECIS).o \
+                     $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(ARR) $(package)_$(PRECIS).o; \
+                     $(RM) $(package).F90 $(package)_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  package C interface compilation
 
-$(package)_ciface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o)
+$(package)_ciface.o: $(LG)($(package)_$(PRECIS).o) \
+                     $(CLG)($(package)_ciface_$(PRECIS).o)
 
-$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
+$(CLG)($(package)_ciface_$(PRECIS).o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
 	$(CP) ../$(package)/C/$(package)_ciface.F90 $(OBJ)/$(package)_ciface.F90
-	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
-           $(package)_ciface.F90 \
+	cd $(OBJ); $(FORTRAN) -o $(package)_ciface_$(PRECIS).o \
+           $(FFLAGSS) $(package)_ciface.F90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \
-           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.F90 )
-	cd $(OBJ); $(CARR) $(package)_ciface.o
-	cd $(OBJ); $(RM) $(package)_ciface.F90 $(package)_ciface.o
+           $(FORTRAN) -o $(package)_ciface_$(PRECIS).o \
+             $(FFLAGSN) $(package)_ciface.F90 )
+	cd $(OBJ); $(CARR) $(package)_ciface_$(PRECIS).o
+	cd $(OBJ); $(RM) $(package)_ciface.F90 $(package)_ciface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  test programs for specification document
 
-$(package)s.o: $(OBJ)/$(package)s.o
+$(package)s.o: $(OBJ)/$(package)s_$(PRECIS).o
 
-$(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
+$(OBJ)/$(package)s_$(PRECIS).o: ../$(package)/$(package)s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
 	$(SED) -f $(SEDS) \
            ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s_$(PRECIS).o \
+                      $(FFLAGS) $(package)s.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
 #  comprehensive test programs
 
-$(package)t.o: $(OBJ)/$(package)t.o
+$(package)t.o: $(OBJ)/$(package)t_$(PRECIS).o
 
-$(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
+$(OBJ)/$(package)t_$(PRECIS).o: ../$(package)/$(package)t.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
 	$(CP) ../$(package)/$(package)t.F90 $(OBJ)/$(package)t.F90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.F90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t_$(PRECIS).o \
+                      $(FFLAGSS) $(package)t.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 
 #  CUTEst/AMPL interfaces
 
-use$(package).o: $(CULG)(use$(package).o)
+use$(package).o: $(CULG)(use$(package)_$(PRECIS).o)
 
-$(CULG)(use$(package).o): ../$(package)/use$(package).F90
+$(CULG)(use$(package)_$(PRECIS).o): ../$(package)/use$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
 	$(CP) ../$(package)/use$(package).F90 $(OBJ)/use$(package).F90
 	cd $(OBJ); \
-          $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).F90 \
+          $(FORTRAN) -o use$(package)_$(PRECIS).o \
+            $(FFLAGSOMP) use$(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).F90 )
-	cd $(OBJ); $(CUARR) use$(package).o ; \
-                   $(RM) use$(package).F90 use$(package).o
+                   $(FORTRAN) -o use$(package)_$(PRECIS).o \
+                     $(FFLAGSN) use$(package).F90 )
+	cd $(OBJ); $(CUARR) use$(package)_$(PRECIS).o ; \
+                   $(RM) use$(package).F90 use$(package)_$(PRECIS).o
 	$(RMOBFILE) run$(package)_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
