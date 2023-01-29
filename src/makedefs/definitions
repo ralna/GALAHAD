@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-11-10
+#  This version: 2023-01-26
 
 #  makefile shell
 
@@ -9,8 +9,10 @@ SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single"
  DPREC = -DGALAHAD_SINGLE
+ HSL_PRECIS = s
 else
  DPREC = -DGALAHAD_DOUBLE
+ HSL_PRECIS = d
 endif
 
 ifeq "$(LINEARSOLVER)" "ma57"
@@ -136,7 +138,7 @@ WLGD = $(OBJD)/libgalahad_wsmp.a
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(LG)
+RMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(LG) $(PRECIS)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
@@ -144,7 +146,7 @@ BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
 
 CARR = $(AR) $(ARREPFLAGS) $(CLG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
-CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG)
+CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG) $(PRECIS)
 
 CUARR = $(AR) $(ARREPFLAGS) $(CULG)
 CURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CULG)
@@ -187,7 +189,7 @@ PXRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PXLG)
 
 PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
 PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
-PYRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(PYLG)
+PYRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(PYLG) $(PRECIS)
 
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)

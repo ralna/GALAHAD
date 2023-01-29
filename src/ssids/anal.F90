@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 10:30 GMT.
 
 #include "spral_procedures.h"
 
@@ -10,7 +10,7 @@ module spral_ssids_anal_precision
   use, intrinsic :: iso_c_binding
 !$ use :: omp_lib
   use spral_kinds_precision
-  use spral_core_analyse_precision, only : basic_analyse
+  use spral_core_analyse, only : basic_analyse
   use spral_cuda_precision, only : detect_gpu
   use spral_hw_topology, only : guess_topology, numa_region
   use spral_pgm, only : writePPM

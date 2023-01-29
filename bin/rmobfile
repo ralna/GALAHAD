@@ -1,13 +1,16 @@
 #!/bin/bash -f
 
-# Remove the object file FILE from the directory FILEDIR if FILE is present
+#  Remove the object file FILE from the directory FILEDIR if FILE is present
 
-# syntax rmobfile rm-command file-dir file-name ,
+#  syntax rmobfile rm-command file-dir file-name ,
 
-# where rm-command   is the appropriate "rm" command,
-#       file-dir     is the name of the directory from which the
-#                    file to be removed
-#       file-name    is the name of the file to be removed
+#  where rm-command   is the appropriate "rm" command,
+#        file-dir     is the name of the directory from which the
+#                     file to be removed
+#        file-name    is the name of the file to be removed
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2023-01-26
 
 f=$#
 let d=f-1

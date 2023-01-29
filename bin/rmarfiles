@@ -1,22 +1,27 @@
 #!/bin/bash -f
 
-# Remove the archive files FILE1,...,FILEn  from the archive ARC if files
-# are present
+#  Remove the archive files FILE1,...,FILEn  from the archive ARC if files
+#  are present
 
-# syntax rmarfile ar-command grep-command arc-name file1 ... filen ,
+#  syntax rmarfile ar-command grep-command arc-name precis file1 ... filen ,
 
-# where ar-command   is the appropriate "ar" command,
-#       grep-command is the appropriate "grep" command,
-#       arc-name     is the name of the archive, and
-#       file1,...,filen-name are the names of the files to be removed
+#  where ar-command   is the appropriate "ar" command,
+#        grep-command is the appropriate "grep" command,
+#        arc-name     is the name of the archive,
+#        precis       is the precision (single,double) of the file, and
+#        file1,...,filen-name are the names of the files to be removed
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2023-01-26
 
 AR=$1
 GREP=$2
 ARC=$3
+PRECIS=$4
 END=$#
 if [[ -e $ARC ]] ; then
- for i in $(seq 4 $END); do 
-   FILE=${!i}.o
+ for i in $(seq 5 $END); do 
+   FILE=${!i}_$PRECIS.o
 #   echo " removing file $FILE"
    [[  `$AR -t $ARC | $GREP -w $FILE` == $FILE  ]] && $AR -d $ARC $FILE
  done

@@ -130,157 +130,170 @@ smt_silent:
 
 #  blas packages
 
-blas_silent: $(BLG)(blas.o)
-blas: $(BLG)(blas.o)
+blas_silent: $(BLG)(blas_$(PRECIS).o)
+blas: $(BLG)(blas_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: BLAS compiled successfully"
 
-blas.o: $(BLG)(blas.o)
+blas.o: $(BLG)(blas_$(PRECIS).o)
 
-$(BLG)(blas.o): ../lapack/blas.f
+$(BLG)(blas_$(PRECIS).o): ../lapack/blas.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas  "
 	$(CP) ../lapack/blas.f $(OBJ)/blas.f90
-	cd $(OBJ); $(FORTRAN) -o blas.o $(FFLAGS77) blas.f90
-	cd $(OBJ); $(BARR) blas.o ; $(RM) blas.f90 blas.o
+	cd $(OBJ); $(FORTRAN) -o blas_$(PRECIS).o $(FFLAGS77) blas.f90
+	cd $(OBJ); $(BARR) blas_$(PRECIS).o ; $(RM) blas.f90 blas_$(PRECIS).o
 	$(RANLIB) $(BLG)
 	@printf '[ OK ]\n'
 
 #  lapack packages
 
-lapack_silent: $(LLG)(lapack.o)
-lapack: $(LLG)(lapack.o)
+lapack_silent: $(LLG)(lapack_$(PRECIS).o)
+lapack: $(LLG)(lapack_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: LAPACK compiled successfully"
 
-lapack.o: $(LLG)(lapack.o)
+lapack.o: $(LLG)(lapack_$(PRECIS).o)
 
-$(LLG)(lapack.o): ../lapack/lapack.f
+$(LLG)(lapack_$(PRECIS).o): ../lapack/lapack.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack"
 	$(CAT) ../lapack/lapack.f ../lapack/$(IEEECK)ieeeck.f > \
           $(OBJ)/lapack.f90
-	cd $(OBJ); $(FORTRAN) -o lapack.o $(FFLAGS77) lapack.f90
-	cd $(OBJ); $(LARR) lapack.o ; $(RM) lapack.f90 lapack.o
+	cd $(OBJ); $(FORTRAN) -o lapack_$(PRECIS).o $(FFLAGS77) lapack.f90
+	cd $(OBJ); $(LARR) lapack_$(PRECIS).o ; \
+          $(RM) lapack.f90 lapack_$(PRECIS).o
 	$(RANLIB) $(LLG)
 	@printf '[ OK ]\n'
 
 #  dummy package
 
-dummy_silent: $(DLG)(dummy.o)
-dummy: $(DLG)(dummy.o)
+dummy_silent: $(DLG)(dummy_$(PRECIS).o)
+dummy: $(DLG)(dummy_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-dummy.o: $(DLG)(dummy.o)
+dummy.o: $(DLG)(dummy_$(PRECIS).o)
 
-$(DLG)(dummy.o): ../dum/dummy.f
+$(DLG)(dummy_$(PRECIS).o): ../dum/dummy.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy"
 	$(CP) ../dum/dummy.f $(OBJ)/dummy.f90
-	cd $(OBJ); $(FORTRAN) -o dummy.o $(FFLAGS77) dummy.f90
-	cd $(OBJ); $(DARR) dummy.o ; $(RM) dummy.f90 dummy.o
+	cd $(OBJ); $(FORTRAN) -o dummy_$(PRECIS).o $(FFLAGS77) dummy.f90
+	cd $(OBJ); $(DARR) dummy_$(PRECIS).o ; $(RM) dummy.f90 dummy_$(PRECIS).o
 	$(RANLIB) $(DLG)
 	@printf '[ OK ]\n'
 
 # cutest_dummy package
 
-cutest_dummy_silent: $(CDLG)(cutest_dummy.o)
-cutest_dummy: $(CDLG)(cutest_dummy.o)
+cutest_dummy_silent: $(CDLG)(cutest_dummy_$(PRECIS).o)
+cutest_dummy: $(CDLG)(cutest_dummy_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: CUTEST_DUMMY compiled successfully"
 
-cutest_dummy.o: $(CDLG)(cutest_dummy.o)
+cutest_dummy.o: $(CDLG)(cutest_dummy_$(PRECIS).o)
 
-$(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.F90
+$(CDLG)(cutest_dummy_$(PRECIS).o): ../dum/cutest_dummy.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_dummy"
 	$(CUARR) ../dum/empty
 	$(CP) ../dum/cutest_dummy.F90 $(OBJ)/cutest_dummy.F90
-	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.F90
-	cd $(OBJ); $(CDARR) cutest_dummy.o ; \
-           $(RM) cutest_dummy.F90 cutest_dummy.o
+	cd $(OBJ); $(FORTRAN) -o cutest_dummy_$(PRECIS).o \
+           $(FFLAGS) cutest_dummy.F90
+	cd $(OBJ); $(CDARR) cutest_dummy_$(PRECIS).o ; \
+           $(RM) cutest_dummy.F90 cutest_dummy_$(PRECIS).o
 	$(RANLIB) $(CDLG)
 	@printf '[ OK ]\n'
 
 #  dummy_hsl package
 
-dummy_hsl_silent: $(HLG)(dummy_hsl.o)
-dummy_hsl: $(HLG)(dummy_hsl.o)
+dummy_hsl_silent: $(HLG)(dummy_hsl_$(PRECIS).o)
+dummy_hsl: $(HLG)(dummy_hsl_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-dummy_hsl.o: $(HLG)(dummy_hsl.o)
+dummy_hsl.o: $(HLG)(dummy_hsl_$(PRECIS).o)
 
-$(HLG)(dummy_hsl.o): ../dum/dummy_hsl.F90
+$(HLG)(dummy_hsl_$(PRECIS).o): ../dum/dummy_hsl.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl"
 	$(CP) ../dum/dummy_hsl.F90 $(OBJ)/dummy_hsl.F90
-	cd $(OBJ); $(FORTRAN) -o dummy_hsl.o $(FFLAGSS) dummy_hsl.F90
-	cd $(OBJ); $(HARR) dummy_hsl.o ; $(RM) dummy_hsl.F90 dummy_hsl.o
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl_$(PRECIS).o $(FFLAGSS) dummy_hsl.F90
+	cd $(OBJ); $(HARR) dummy_hsl_$(PRECIS).o ; \
+           $(RM) dummy_hsl.F90 dummy_hsl_$(PRECIS).o
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
 #  dummy_hsl c package
 
-dummy_hsl_c_silent: $(HCLG)(dummy_hsl_c.o)
-dummy_hsl_c: $(HCLG)(dummy_hsl_c.o)
+dummy_hsl_c_silent: $(HCLG)(dummy_hsl_c_$(PRECIS).o)
+dummy_hsl_c: $(HCLG)(dummy_hsl_c_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-dummy_hsl_c.o: $(HCLG)(dummy_hsl_c.o)
+dummy_hsl_c.o: $(HCLG)(dummy_hsl_c_$(PRECIS).o)
 
-$(HCLG)(dummy_hsl_c.o): ../dum/dummy_hsl_c.F90
+$(HCLG)(dummy_hsl_c_$(PRECIS).o): ../dum/dummy_hsl_c.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl_c"
 	$(CP) ../dum/dummy_hsl_c.F90 $(OBJ)/dummy_hsl_c.F90
-	cd $(OBJ); $(FORTRAN) -o dummy_hsl_c.o $(FFLAGSS) dummy_hsl_c.F90
-	cd $(OBJ); $(HCARR) dummy_hsl_c.o ; $(RM) dummy_hsl_c.F90 dummy_hsl_c.o
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl_c_$(PRECIS).o \
+                     $(FFLAGSS) dummy_hsl_c.F90
+	cd $(OBJ); $(HCARR) dummy_hsl_c_$(PRECIS).o ; \
+          $(RM) dummy_hsl_c.F90 dummy_hsl_c_$(PRECIS).o
 	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'
 
 #  dummy_spral package
 
-dummy_spral_silent: $(RLG)(dummy_spral.o)
-dummy_spral: $(RLG)(dummy_spral.o)
+dummy_spral_silent: $(RLG)(dummy_spral_$(PRECIS).o)
+dummy_spral: $(RLG)(dummy_spral_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-dummy_spral.o: $(RLG)(dummy_spral.o)
+dummy_spral.o: $(RLG)(dummy_spral_$(PRECIS).o)
 
-$(RLG)(dummy_spral.o): ../dum/dummy_spral.F90
+$(RLG)(dummy_spral_$(PRECIS).o): ../dum/dummy_spral.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_spral"
 	$(CP) ../dum/dummy_spral.F90 $(OBJ)/dummy_spral.F90
-	cd $(OBJ); $(FORTRAN) -o dummy_spral.o $(FFLAGSS) dummy_spral.F90
-	cd $(OBJ); $(RARR) dummy_spral.o ; $(RM) dummy_spral.F90 dummy_spral.o
+	cd $(OBJ); $(FORTRAN) -o dummy_spral_$(PRECIS).o \
+                     $(FFLAGSS) dummy_spral.F90
+	cd $(OBJ); $(RARR) dummy_spral_$(PRECIS).o ; \
+          $(RM) dummy_spral.F90 dummy_spral_$(PRECIS).o
 	$(RANLIB) $(RLG)
 	@printf '[ OK ]\n'
 
 #  blas_interface package
 
-blas_interface_silent: $(BLG)(blas.o) $(LG)(blas_interface.o)
-blas_interface: $(BLG)(blas.o) $(LG)(blas_interface.o)
+blas_interface_silent: $(BLG)(blas_$(PRECIS).o) \
+                         $(LG)(blas_interface_$(PRECIS).o)
+blas_interface: $(BLG)(blas_$(PRECIS).o) $(LG)(blas_interface_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: BLAS_interface compiled successfully"
 
-blas_interface.o: $(BLG)(blas.o) $(LG)(blas_interface.o)
+blas_interface.o: $(BLG)(blas_$(PRECIS).o) $(LG)(blas_interface_$(PRECIS).o)
 
-$(LG)(blas_interface.o): ../lapack/blas_interface.F90
+$(LG)(blas_interface_$(PRECIS).o): ../lapack/blas_interface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_interface"
 	$(CP) ../lapack/blas_interface.F90 $(OBJ)/blas_interface.F90
-	cd $(OBJ); $(FORTRAN) -o blas_interface.o $(FFLAGSS) \
+	cd $(OBJ); $(FORTRAN) -o blas_interface_$(PRECIS).o $(FFLAGSS) \
            blas_interface.F90 || \
          ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o blas_interface.o $(FFLAGSN) blas_interface.F90 )
-	cd $(OBJ); $(ARR) blas_interface.o ; $(RM) blas_interface.F90 \
-          blas_interface.o
+            $(FORTRAN) -o blas_interface_$(PRECIS).o $(FFLAGSN) \
+             blas_interface.F90 )
+	cd $(OBJ); $(ARR) blas_interface_$(PRECIS).o ; \
+          $(RM) blas_interface.F90 blas_interface_$(PRECIS).o
 	$(RANLIB) $(LG)
 	$(RMARFILES) norms scu lstr lsrt l2rt sls sha
 	@printf '[ OK ]\n'
 
 #  lapack_interface package
 
-lapack_interface_silent: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
-lapack_interface: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
+lapack_interface_silent: $(LLG)(lapack_$(PRECIS).o) \
+                           $(LG)(lapack_interface_$(PRECIS).o)
+lapack_interface: $(LLG)(lapack_$(PRECIS).o) \
+                    $(LG)(lapack_interface_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: LAPACK_interface compiled successfully"
 
-lapack_interface.o: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
+lapack_interface.o: $(LLG)(lapack_$(PRECIS).o) \
+                      $(LG)(lapack_interface_$(PRECIS).o)
 
-$(LG)(lapack_interface.o): ../lapack/lapack_interface.F90
+$(LG)(lapack_interface_$(PRECIS).o): ../lapack/lapack_interface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_interface"
 	$(CP) ../lapack/lapack_interface.F90 $(OBJ)/lapack_interface.F90
-	cd $(OBJ); $(FORTRAN) -o lapack_interface.o $(FFLAGSS) \
+	cd $(OBJ); $(FORTRAN) -o lapack_interface_$(PRECIS).o $(FFLAGSS) \
            lapack_interface.F90 || \
          ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o lapack_interface.o $(FFLAGSN) lapack_interface.F90 )
-	cd $(OBJ); $(ARR) lapack_interface.o ; $(RM) lapack_interface.F90 \
-          lapack_interface.o
+            $(FORTRAN) -o lapack_interface_$(PRECIS).o $(FFLAGSN) \
+              lapack_interface.F90 )
+	cd $(OBJ); $(ARR) lapack_interface_$(PRECIS).o ; \
+          $(RM) lapack_interface.F90 lapack_interface_$(PRECIS).o
 	$(RANLIB) $(LG)
 	$(RMARFILES) gltr glrt sls trs rqs sha
 	@printf '[ OK ]\n'
@@ -380,8 +393,8 @@ ulinearsolver_single: $($(ULINEARSOLVERS))
 ulinearsolver_double: $($(ULINEARSOLVERD))
 	$(RANLIB) $(LGD)
 
-SSIDSS = symbols_silent $(RLGS)(ssids.o)
-SSIDSD = symbols_silent $(RLGD)(ssids.o)
+SSIDSS = symbols_silent $(RLGS)(ssids_single.o)
+SSIDSD = symbols_silent $(RLGD)(ssids_double.o)
 
 PARDISOS = symbols_silent $(PLGS)(pardiso.o)
 PARDISOD = symbols_silent $(PLGD)(pardiso.o)
@@ -423,27 +436,27 @@ ssids:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
 
-ssidss.o: $(RLGS)(ssids.o)
+ssidss.o: $(RLGS)(ssids_$(PRECIS).o)
 
-$(RLGS)(ssids.o): ../dum/ssidss.F90
+$(RLGS)(ssids_$(PRECIS).o): ../dum/ssidss.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
 	$(CP) ../dum/ssidss.F90 $(OBJ)/ssids.F90
-	cd $(OBJ); $(FORTRAN) -o ssids.o $(FFLAGS) ssids.F90
-	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
+	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90
+	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
 	$(MVMODS)
-	$(RMARFILE) sls.o
+	$(RMARFILE) sls_$(PRECIS).o
 	$(RANLIB) $(RLGS)
 	@printf '[ OK ]\n'
 
-ssidsd.o: $(RLGD)(ssids.o)
+ssidsd.o: $(RLGD)(ssids_$(PRECIS).o)
 
-$(RLGD)(ssids.o): ../dum/ssidsd.F90
+$(RLGD)(ssids_$(PRECIS).o): ../dum/ssidsd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
 	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssids.F90
-	cd $(OBJ); $(FORTRAN) -o ssids.o $(FFLAGS) ssids.F90
-	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
+	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90
+	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
 	$(MVMODS)
-	$(RMARFILE) sls.o
+	$(RMARFILE) sls_$(PRECIS).o
 	$(RANLIB) $(RLGD)
 	@printf '[ OK ]\n'
 
@@ -456,7 +469,7 @@ $(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.F90
                       ssids_ciface.F90
 	cd $(OBJ) ; $(RARR) ssids_ciface.o ; \
                     $(RM) ssids_ciface.F90 ssids_ciface.o
-	$(CRMARFILE) sls_ciface.o
+	$(CRMARFILE) sls_ciface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
