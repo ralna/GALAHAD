@@ -95,6 +95,7 @@
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_single
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_single
 #define GALAHAD_SCU_precision GALAHAD_SCU_single
+#define GALAHAD_TR1_precision GALAHAD_TR1_single
 #define GALAHAD_SEC_precision GALAHAD_SEC_single
 #define GALAHAD_SHA_precision GALAHAD_SHA_single
 #define GALAHAD_SILS_precision GALAHAD_SILS_single
@@ -282,6 +283,7 @@
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_single_ciface
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_single_ciface
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_single_ciface
+#define GALAHAD_TR1_precision_ciface GALAHAD_TR1_single_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_single_ciface
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_single_ciface
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_single_ciface
@@ -485,6 +487,7 @@
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_double
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_double
 #define GALAHAD_SCU_precision GALAHAD_SCU_double
+#define GALAHAD_TR1_precision GALAHAD_TR1_double
 #define GALAHAD_SEC_precision GALAHAD_SEC_double
 #define GALAHAD_SHA_precision GALAHAD_SHA_double
 #define GALAHAD_SILS_precision GALAHAD_SILS_double
@@ -672,6 +675,7 @@
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_double_ciface
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_double_ciface
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_double_ciface
+#define GALAHAD_TR1_precision_ciface GALAHAD_TR1_double_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_double_ciface
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_double_ciface
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_double_ciface
