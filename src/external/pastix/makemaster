@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the PaStiX stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 19 X 2022
+#  This version: 2023-01-26
 
 SHELL = /bin/$(BINSHELL)
 
@@ -66,18 +66,20 @@ PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-PASTIXS = $(BASICSZ) $(PLGS)(spmf_enums.o) $(PLGS)(spmf_interfaces.o) \
-          $(PLGS)(spmf.o) $(PLGS)(pastixf_enums.o) \
-          $(PLGS)(pastixf_interfaces.o) $(PLGS)(pastixf.o)
-PASTIXD = $(BASICSZ) $(PLGD)(spmf_enums.o) $(PLGD)(spmf_interfaces.o) \
-          $(PLGD)(spmf.o) $(PLGD)(pastixf_enums.o) \
-          $(PLGD)(pastixf_interfaces.o) $(PLGD)(pastixf.o)
+PASTIXS = $(BASICSZ) $(PLGS)(spmf_enums_single.o) \
+          $(PLGS)(spmf_interfaces_single.o) \
+          $(PLGS)(spmf_single.o) $(PLGS)(pastixf_enums_single.o) \
+          $(PLGS)(pastixf_interfaces_single.o) $(PLGS)(pastixf_single.o)
+PASTIXD = $(BASICSZ) $(PLGD)(spmf_enums_double.o) \
+          $(PLGD)(spmf_interfaces_double.o) \
+          $(PLGD)(spmf_double.o) $(PLGD)(pastixf_enums_double.o) \
+          $(PLGD)(pastixf_interfaces_double.o) $(PLGD)(pastixf_double.o)
 
-PASTIXDT = $(PASTIXD) $(OBJD)/pastixt.o
-PASTIXST = $(PASTIXS) $(OBJS)/pastixt.o
+PASTIXST = $(PASTIXS) $(OBJS)/pastixt_single.o
+PASTIXDT = $(PASTIXD) $(OBJD)/pastixt_double.o
 
-RPASTIXDT = $(OBJD)/pastixt.o -L$(OBJD) $(LIBS)
-RPASTIXST = $(OBJS)/pastixt.o -L$(OBJS) $(LIBS)
+RPASTIXST = $(OBJS)/pastixt_single.o -L$(OBJS) $(LIBS)
+RPASTIXDT = $(OBJD)/pastixt_double.o -L$(OBJD) $(LIBS)
 
 SUCC = precision version) compiled successfully
 
@@ -138,85 +140,88 @@ lapack_interface:
 
 #  individual compilations
 
-spmf_enums.o: $(PLG)(spmf_enums.o)
+spmf_enums.o: $(PLG)(spmf_enums_$(PRECIS).o)
 
-$(PLG)(spmf_enums.o): ../../dum/spmf_enums.F90
+$(PLG)(spmf_enums_$(PRECIS).o): ../../dum/spmf_enums.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm_enums  "
 	$(CP) ../../dum/spmf_enums.F90 $(OBJ)/spmf_enums.F90
-	cd $(OBJ); $(FORTRAN) -o spmf_enums.o $(FFLAGS) spmf_enums.F90
-	cd $(OBJ); $(PARR) spmf_enums.o ; $(RM) spmf_enums.F90 spmf_enums.o
-	$(PRMARFILE) spmf_interface.o
-	$(PRMARFILE) spmf.o
-	$(PRMARFILE) pastix_enums.o
+	cd $(OBJ); $(FORTRAN) -o spmf_enums_$(PRECIS).o $(FFLAGS) spmf_enums.F90
+	cd $(OBJ); $(PARR) spmf_enums_$(PRECIS).o ; \
+          $(RM) spmf_enums.F90 spmf_enums_$(PRECIS).o
+	$(PRMARFILE) spmf_interface_$(PRECIS).o
+	$(PRMARFILE) spmf_$(PRECIS).o
+	$(PRMARFILE) pastix_enums_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-spmf_interfaces.o: $(PLG)(spmf_interfaces.o)
+spmf_interfaces.o: $(PLG)(spmf_interfaces_$(PRECIS).o)
 
-$(PLG)(spmf_interfaces.o): ../../dum/spmf_interfaces.F90
+$(PLG)(spmf_interfaces_$(PRECIS).o): ../../dum/spmf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm_interfaces  "
 	$(CP) ../../dum/spmf_interfaces.F90 $(OBJ)/spmf_interfaces.F90
-	cd $(OBJ); $(FORTRAN) -o spmf_interfaces.o $(FFLAGS) spmf_interfaces.F90
-	cd $(OBJ); $(PARR) spmf_interfaces.o ; \
-           $(RM) spmf_interfaces.F90 spmf_interfaces.o
-	$(RMARFILE) sls.o
+	cd $(OBJ); $(FORTRAN) -o spmf_interfaces_$(PRECIS).o \
+                     $(FFLAGS) spmf_interfaces.F90
+	cd $(OBJ); $(PARR) spmf_interfaces_$(PRECIS).o ; \
+           $(RM) spmf_interfaces.F90 spmf_interfaces_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-spmf.o: $(PLG)(spmf.o)
+spmf.o: $(PLG)(spmf_$(PRECIS).o)
 
-$(PLG)(spmf.o): ../../dum/spmf.F90
+$(PLG)(spmf_$(PRECIS).o): ../../dum/spmf.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm  "
 	$(CP) ../../dum/spmf.F90 $(OBJ)/spmf.F90
-	cd $(OBJ); $(FORTRAN) -o spmf.o $(FFLAGS) spmf.F90
-	cd $(OBJ); $(PARR) spmf.o ; \
-           $(RM) spmf.F90 spmf.o
-	$(RMARFILE) sls.o
+	cd $(OBJ); $(FORTRAN) -o spmf_$(PRECIS).o $(FFLAGS) spmf.F90
+	cd $(OBJ); $(PARR) spmf_$(PRECIS).o ; \
+           $(RM) spmf.F90 spmf_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf_enums.o: $(PLG)(pastixf_enums.o)
+pastixf_enums.o: $(PLG)(pastixf_enums_$(PRECIS).o)
 
-$(PLG)(pastixf_enums.o): ../../dum/pastixf_enums.F90
+$(PLG)(pastixf_enums_$(PRECIS).o): ../../dum/pastixf_enums.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_enums  "
 	$(CP) ../../dum/pastixf_enums.F90 $(OBJ)/pastixf_enums.F90
-	cd $(OBJ); $(FORTRAN) -o pastixf_enums.o $(FFLAGS) pastixf_enums.F90
-	cd $(OBJ); $(PARR) pastixf_enums.o ; \
-           $(RM) pastixf_enums.F90 pastixf_enums.o
-	$(PRMARFILE) pastixf_interfaces.o
-	$(PRMARFILE) pastixf.o
+	cd $(OBJ); $(FORTRAN) -o pastixf_enums_$(PRECIS).o \
+           $(FFLAGS) pastixf_enums.F90
+	cd $(OBJ); $(PARR) pastixf_enums_$(PRECIS).o ; \
+           $(RM) pastixf_enums.F90 pastixf_enums_$(PRECIS).o
+	$(PRMARFILE) pastixf_interfaces_$(PRECIS).o
+	$(PRMARFILE) pastixf_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf_interfaces.o: $(PLG)(pastixf_interfaces.o)
+pastixf_interfaces.o: $(PLG)(pastixf_interfaces_$(PRECIS).o)
 
-$(PLG)(pastixf_interfaces.o): ../../dum/pastixf_interfaces.F90
+$(PLG)(pastixf_interfaces_$(PRECIS).o): ../../dum/pastixf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_interfaces  "
 	$(CP) ../../dum/pastixf_interfaces.F90 $(OBJ)/pastixf_interfaces.F90
-	cd $(OBJ); $(FORTRAN) -o pastixf_interfaces.o \
+	cd $(OBJ); $(FORTRAN) -o pastixf_interfaces_$(PRECIS).o \
            $(FFLAGS) pastixf_interfaces.F90
-	cd $(OBJ); $(PARR) pastixf_interfaces.o ; \
-           $(RM) pastixf_interfaces.F90 pastixf_interfaces.o
-	$(RMARFILE) sls.o
+	cd $(OBJ); $(PARR) pastixf_interfaces_$(PRECIS).o ; \
+           $(RM) pastixf_interfaces.F90 pastixf_interfaces_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf.o: $(PLG)(pastixf.o)
+pastixf.o: $(PLG)(pastixf_$(PRECIS).o)
 
-$(PLG)(pastixf.o): ../../dum/pastixf.F90
+$(PLG)(pastixf_$(PRECIS).o): ../../dum/pastixf.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf  "
 	$(CP) ../../dum/pastixf.F90 $(OBJ)/pastixf.F90
-	cd $(OBJ); $(FORTRAN) -o pastixf.o \
+	cd $(OBJ); $(FORTRAN) -o pastixf_$(PRECIS).o \
            $(FFLAGS) pastixf.F90
-	cd $(OBJ); $(PARR) pastixf.o ; \
-           $(RM) pastixf.F90 pastixf.o
-	$(RMARFILE) sls.o
+	cd $(OBJ); $(PARR) pastixf_$(PRECIS).o ; \
+           $(RM) pastixf.F90 pastixf_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
 #  test programs
 
-pastixt.o: $(OBJ)/pastixt.o
+pastixt.o: $(OBJ)/pastixt_$(PRECIS).o
 
-$(OBJ)/pastixt.o: ../pastix/pastixt.F90
+$(OBJ)/pastixt_$(PRECIS).o: ../pastix/pastixt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixt  "
 	$(CP) ../pastix/pastixt.F90 $(OBJ)/pastixt.F90
-	cd $(OBJ) ; $(FORTRAN) -o pastixt.o $(FFLAGSS) pastixt.F90
+	cd $(OBJ) ; $(FORTRAN) -o pastixt_$(PRECIS).o $(FFLAGSS) pastixt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

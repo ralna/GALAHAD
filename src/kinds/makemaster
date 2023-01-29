@@ -36,13 +36,32 @@ TESTS =
 #  =================  end of package-dependent parts  ========================
 #  ===========================================================================
 
+
 #  include standard GALAHAD makefile definitions
 
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include compilation and run instructions
+#  non-standard compilation agenda for package
 
-include $(GALAHAD)/src/makedefs/instructions
+S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package).o)
+D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
+$(PACKAGE)OBJECTSS = $(S$(PACKAGE))
+$(PACKAGE)OBJECTSD = $(D$(PACKAGE))
+
+#  process package
+
+$(package): $(package)_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)_single: $($(PACKAGE)OBJECTSS)
+	$(RANLIB) $(LGS)
+$(package)_double: $($(PACKAGE)OBJECTSD)
+	$(RANLIB) $(LGD)
+
+#  process package silently
+
+$(package)_silent: $(package)_silent_$(PRECIS)
+$(package)_silent_single: $($(PACKAGE)OBJECTSS)
+$(package)_silent_double: $($(PACKAGE)OBJECTSD)
 
 #  non-standard package compilation
 

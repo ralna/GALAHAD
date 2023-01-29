@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-26 AT 14:20 GMT.
 
 #include "spral_procedures.h"
 
 ! This module provides a way of doing solve on CPU using GPU data structures
-module spral_ssids_gpu_cpu_solve
+module spral_ssids_gpu_cpu_solve_precision
   use spral_kinds_precision
   use spral_ssids_types_precision
   implicit none
@@ -168,8 +168,8 @@ contains
 !
 ! Forward substitution single rhs
 !
-  subroutine solve_fwd_one(pos_def, rlist, invp, x, blkm, blkn, nelim, nd, lcol, &
-       lperm, xlocal, map)
+  subroutine solve_fwd_one(pos_def, rlist, invp, x, blkm, blkn, nelim, nd, &
+       lcol, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
     integer(ip_), dimension(*), intent(in) :: rlist
@@ -416,10 +416,8 @@ contains
              ! 2x2 pivot
              rp1 = map(j)
              rp2 = map(j+1)
-             xlocal(j)   = d(2*j-1) * x(rp1) + &
-                           d(2*j)   * x(rp2)
-             xlocal(j+1) = d(2*j)   * x(rp1) + &
-                           d(2*j+1) * x(rp2)
+             xlocal(j)   = d(2*j-1) * x(rp1) + d(2*j)   * x(rp2)
+             xlocal(j+1) = d(2*j)   * x(rp1) + d(2*j+1) * x(rp2)
              j = j + 2
           else
              ! 1x1 pivot
@@ -553,10 +551,8 @@ contains
                 ! 2x2 pivot
                 rp1 = map(j)
                 rp2 = map(j+1)
-                xlocal(j,r)   = d(2*j-1) * x(rp1,r) + &
-                                d(2*j)   * x(rp2,r)
-                xlocal(j+1,r) = d(2*j)   * x(rp1,r) + &
-                                d(2*j+1) * x(rp2,r)
+                xlocal(j,r)   = d(2*j-1) * x(rp1,r) + d(2*j)   * x(rp2,r)
+                xlocal(j+1,r) = d(2*j)   * x(rp1,r) + d(2*j+1) * x(rp2,r)
                 j = j + 2
              else
                 ! 1x1 pivot
@@ -663,10 +659,8 @@ contains
           ! 2x2 pivot
           rp1 = invp( lperm(j) )
           rp2 = invp( lperm(j+1) )
-          temp   = d(2*j-1) * x(rp1) + &
-                   d(2*j)   * x(rp2)
-          x(rp2) = d(2*j)   * x(rp1) + &
-                   d(2*j+1) * x(rp2)
+          temp   = d(2*j-1) * x(rp1) + d(2*j)   * x(rp2)
+          x(rp2) = d(2*j)   * x(rp1) + d(2*j+1) * x(rp2)
           x(rp1) = temp
           j = j + 2
        else
@@ -703,10 +697,8 @@ contains
              ! 2x2 pivot
              rp1 = invp( lperm(j) )
              rp2 = invp( lperm(j+1) )
-             temp     = d(2*j-1) * x(rp1,r) + &
-                        d(2*j)   * x(rp2,r)
-             x(rp2,r) = d(2*j)   * x(rp1,r) + &
-                        d(2*j+1) * x(rp2,r)
+             temp     = d(2*j-1) * x(rp1,r) + d(2*j)   * x(rp2,r)
+             x(rp2,r) = d(2*j)   * x(rp1,r) + d(2*j+1) * x(rp2,r)
              x(rp1,r) = temp
              j = j + 2
           else
@@ -719,4 +711,4 @@ contains
     end do
   end subroutine solve_diag_mult
 
-end module spral_ssids_gpu_cpu_solve
+end module spral_ssids_gpu_cpu_solve_precision
