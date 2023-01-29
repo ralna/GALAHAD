@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MPi stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2022-11-19
+#  This version: 2023-01-26
 
 SHELL = /bin/$(BINSHELL)
 
@@ -33,8 +33,8 @@ MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
 
 #  compilation agenda
 
-MPIS = $(MPILG)(mpi.o)
-MPID = $(MPILG)(mpi.o)
+MPIS = $(MPILG)(mpi_single.o)
+MPID = $(MPILG)(mpi_double.o)
 
 SUCC = precision version) compiled successfully
 
@@ -50,13 +50,13 @@ mpi_double: $(MPID)
 
 #  individual compilations
 
-mpi.o: $(MPILG)(mpi.o)
+mpi.o: $(MPILG)(mpi_$(PRECIS).o)
 
-$(MPILG)(mpi.o): ../../dum/mpi.F90
+$(MPILG)(mpi_$(PRECIS).o): ../../dum/mpi.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mpi  "
 	$(CP) ../../dum/mpi.F90 $(OBJ)/mpi.F90
-	cd $(OBJ); $(FORTRAN) -o mpi.o $(FFLAGS) mpi.F90
-	cd $(OBJ); $(MPIARR) mpi.o ; $(RM) mpi.F90 mpi.o
+	cd $(OBJ); $(FORTRAN) -o mpi_$(PRECIS).o $(FFLAGS) mpi.F90
+	cd $(OBJ); $(MPIARR) mpi_$(PRECIS).o ; $(RM) mpi.F90 mpi_$(PRECIS).o
 	$(RANLIB) $(MPILG)
 	@printf '[ OK ]\n'
 

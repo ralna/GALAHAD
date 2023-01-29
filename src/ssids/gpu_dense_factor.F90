@@ -31,14 +31,14 @@ contains
 ! a block of <block_size> columns ("pending block")
 ! and, if needed, reordering and forward elimination kernels
 !
-  subroutine node_ldlt(stream, nrows, ncols, gpu_L, gpu_LD, ldL, gpu_D, gpu_B,  &
+  subroutine node_ldlt(stream, nrows, ncols, gpu_L, gpu_LD, ldL, gpu_D, gpu_B, &
        gpu_ind, delta, eps, block_size, perm, ind, done, gwork, cublas_handle, &
        cuda_error, cublas_error)
     type(C_PTR), intent(in) :: stream
     integer(ip_), intent(in) :: nrows ! A's n.o. rows
     integer(ip_), intent(in) :: ncols ! A's n.o. cols
     integer(ip_), intent(in) :: ldL   ! A/L's leading dimension
-    integer(ip_), intent(in) :: block_size ! no cols factorized by block_ldlt kernel
+    integer(ip_), intent(in) :: block_size ! #cols factored by block_ldlt kernel
     type(C_PTR) :: gpu_L  ! dev. pointer to L-factor (nrows x ncols, A on input)
     type(C_PTR) :: gpu_LD ! same for L*D (nrows x ncols)
     type(C_PTR) :: gpu_D  ! same for D-factor (2 x ncols)

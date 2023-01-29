@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD ZD11 package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  This version: 2023-01-26
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -48,8 +48,8 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(HLGS)($(package).o)
-D$(PACKAGE) = $(DEPENDENCIES) $(HLGD)($(package).o)
+S$(PACKAGE) = $(DEPENDENCIES) $(HLGS)(hsl_$(package)s.o)
+D$(PACKAGE) = $(DEPENDENCIES) $(HLGD)(hsl_$(package)d.o)
 
 #  compilation and run agenda
 
@@ -98,26 +98,23 @@ cleanallc:
 
 #  ----------- end of non-default section -------------
 
-#  include standard package compilation instructions
+#  non-standard package compilation instructions
 
-#include $(GALAHAD)/src/makedefs/compile
+$(package).o: $(HLG)(hsl_$(package)$(HSL_PRECIS).o)
 
-#  -------------- non-default section ----------------
-
-$(package).o: $(HLG)($(package).o)
-
-$(HLG)($(package).o): ../$(package)/$(package).F90
+$(HLG)(hsl_$(package)$(HSL_PRECIS).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
+	cd $(OBJ); $(FORTRAN) -o hsl_$(package)$(HSL_PRECIS).o \
+                     $(FFLAGSS) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
-	cd $(OBJ); $(HARR) $(package).o ; $(RM) $(package).F90 $(package).o
+                   $(FORTRAN) -o hsl_$(package)$(HSL_PRECIS).o \
+                     $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(HARR) hsl_$(package)$(HSL_PRECIS).o ; \
+          $(RM) $(package).F90 hsl_$(package)$(HSL_PRECIS).o
 	$(RMARFILES) $(DEPENDS)
 	$(MVMODS)
 	@printf '[ OK ]\n'
-
-#  ----------- end of non-default section -------------
 
 #  include required package intermediaries
  

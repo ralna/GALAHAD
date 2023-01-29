@@ -31,7 +31,6 @@
 #define ssids_solve_mult_precision ssids_solve_mult_single
 #define ssids_solve_one_precision ssids_solve_one_single
 #define spral_blas_iface_precision spral_blas_iface_single
-#define spral_core_analyse_precision spral_core_analyse_single
 #define spral_cuda_precision spral_cuda_single
 #define spral_kinds_precision spral_kinds_single
 #define spral_lapack_iface_precision spral_lapack_iface_single
@@ -51,6 +50,7 @@
 #define spral_ssids_types_precision spral_ssids_types_single
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_single
 #define spral_ssids_gpu_alloc_precision spral_ssids_gpu_alloc_single
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_single
 #define spral_ssids_gpu_types_precision spral_ssids_gpu_types_single
 #define spral_ssids_gpu_denfact_precision spral_ssids_gpu_denfact_single
 #define spral_ssids_gpu_factor_precision spral_ssids_gpu_factor_single
@@ -59,7 +59,6 @@
 #define spral_ssids_gpu_solve_precision spral_ssids_gpu_solve_single
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
-#define spral_ssids_profile_precision spral_ssids_profile_single
 #define spral_ssids_subtree_precision spral_ssids_subtree_single
 #define spral_ssids_contrib_get_data_precision spral_ssids_contrib_get_data_single
 #else
@@ -95,7 +94,6 @@
 #define ssids_solve_mult_precision ssids_solve_mult_double
 #define ssids_solve_one_precision ssids_solve_one_double
 #define spral_blas_iface_precision spral_blas_iface_double
-#define spral_core_analyse_precision spral_core_analyse_double
 #define spral_cuda_precision spral_cuda_double
 #define spral_kinds_precision spral_kinds_double
 #define spral_lapack_iface_precision spral_lapack_iface_double
@@ -115,6 +113,7 @@
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_double
 #define spral_ssids_types_precision spral_ssids_types_double
 #define spral_ssids_gpu_alloc_precision spral_ssids_gpu_alloc_double
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_double
 #define spral_ssids_gpu_types_precision spral_ssids_gpu_types_double
 #define spral_ssids_gpu_denfact_precision spral_ssids_gpu_denfact_double
 #define spral_ssids_gpu_factor_precision spral_ssids_gpu_factor_double
@@ -123,7 +122,6 @@
 #define spral_ssids_gpu_solve_precision spral_ssids_gpu_solve_double
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
-#define spral_ssids_profile_precision spral_ssids_profile_double
 #define spral_ssids_subtree_precision spral_ssids_subtree_double
 #define spral_ssids_contrib_get_data_precision spral_ssids_contrib_get_data_double
 #endif

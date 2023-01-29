@@ -47,38 +47,43 @@ LIBS = -lgalahad
 
 #  non-standard package compilation
 
-$(package).o: $(LG)($(package).o)
+$(package).o: $(LG)($(package)_$(PRECIS).o)
 
-$(LG)($(package).o): ../$(package)/$(package).F90
+$(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).F90 \
+	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o \
+                     $(FFLAGS) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
-	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).F90 $(package).o
+                   $(FORTRAN) -o $(package)_$(PRECIS).o \
+                     $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(ARR) $(package)_$(PRECIS).o; \
+                     $(RM) $(package).F90 $(package)_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  test programs for specification document
 
-$(package)s.o: $(OBJ)/$(package)s.o
+$(package)s.o: $(OBJ)/$(package)s_$(PRECIS).o
 
-$(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
+$(OBJ)/$(package)s_$(PRECIS).o: ../$(package)/$(package)s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
 	$(SED) -f $(SEDS) \
            ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s_$(PRECIS).o \
+                      $(FFLAGS) $(package)s.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
 #  comprehensive test programs
 
-$(package)t.o: $(OBJ)/$(package)t.o
+$(package)t.o: $(OBJ)/$(package)t_$(PRECIS).o
 
-$(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
+$(OBJ)/$(package)t_$(PRECIS).o: ../$(package)/$(package)t.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
 	$(CP) ../$(package)/$(package)t.F90 $(OBJ)/$(package)t.F90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.F90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t_$(PRECIS).o \
+                      $(FFLAGSS) $(package)t.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 

@@ -1,13 +1,16 @@
 #!/bin/bash -f
 
-# Remove the archive file FILE from the archive ARC if FILE is present
+#  Remove the archive file FILE from the archive ARC if FILE is present
 
-# syntax rmarfile ar-command grep-command arc-name file-name ,
+#  syntax rmarfile ar-command grep-command arc-name file-name ,
 
-# where ar-command   is the appropriate "ar" command,
-#       grep-command is the appropriate "grep" command,
-#       arc-name     is the name of the archive, and
-#       file-name    is the name of the file to be removed
+#  where ar-command   is the appropriate "ar" command,
+#        grep-command is the appropriate "grep" command,
+#        arc-name     is the name of the archive, and
+#        file-name    is the name of the file to be removed
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2023-01-26
 
 AR=$1
 GREP=$2
