@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_TR1_precision
-            
+
 !     --------------------------------------------------------
 !    |                                                        |
 !    | TR1, a first-order (steepest-descent) trust-region     |
@@ -97,8 +97,6 @@
      REAL ( KIND = rp_ ), PARAMETER :: mu_1 = one - ten ** ( - 8 )
      REAL ( KIND = rp_ ), PARAMETER :: mu_2 = point1
      REAL ( KIND = rp_ ), PARAMETER :: theta = half
-
-     LOGICAL, PARAMETER :: sparsity_hessian_model = .FALSE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -213,13 +211,13 @@
 
        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
-!   is a retrospective strategy to be used to update the trust-region radius?
-
-       LOGICAL :: retrospective_trust_region = .FALSE.
-
 !   should the radius be renormalized to account for a change in preconditioner?
 
        LOGICAL :: renormalize_radius = .FALSE.
+
+!   is a sparse Hessian approximation required?
+
+       LOGICAL :: find_sparse_hessian = .FALSE.
 
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -365,12 +363,12 @@
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
        REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio
        REAL ( KIND = rp_ ) :: old_radius, radius_trial, etat, ometat
-       REAL ( KIND = rp_ ) :: dxtdg, dgtdg, df, stg, hstbs, s_norm, radius_max
+       REAL ( KIND = rp_ ) :: dxtdg, dgtdg, df, stg, s_norm, radius_max
        REAL ( KIND = rp_ ) :: stop_g, s_new_norm, rho_g
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
-       LOGICAL :: monotone, new_h, poor_model, f_is_nan, non_trivial_p
+       LOGICAL :: monotone, poor_model, f_is_nan, non_trivial_p
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: bndry = ' '
@@ -540,8 +538,8 @@
 !  maximum-clock-time-limit                        -1.0
 !  hessian-available                               yes
 !  sub-problem-direct                              no
-!  retrospective-trust-region                      no
 !  renormalize-radius                              no
+!  find-sparse-hessian                             no
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
@@ -590,19 +588,19 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = radius_reduce_max + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_unbounded + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: retrospective_trust_region           &
-                                            = clock_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: renormalize_radius                   &
-                                            = retrospective_trust_region + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = clock_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: find_sparse_hessian                  &
                                             = renormalize_radius + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = find_sparse_hessian + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
                                             = deallocate_error_fatal + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'TRU '
+     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'TR1 '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -642,8 +640,8 @@
 
 !  Logical key-words
 
-     spec( retrospective_trust_region )%keyword = 'retrospective-trust-region'
      spec( renormalize_radius )%keyword = 'renormalize-radius'
+     spec( find_sparse_hessian )%keyword = 'find-sparse-hessian'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -745,11 +743,11 @@
 
 !  Set logical values
 
-     CALL SPECFILE_assign_value( spec( retrospective_trust_region ),           &
-                                 control%retrospective_trust_region,           &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( renormalize_radius ),                   &
                                  control%renormalize_radius,                   &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( find_sparse_hessian ),                  &
+                                 control%find_sparse_hessian,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
@@ -787,7 +785,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  TR1_solve, a first-order trust-region method for finding a local 
+!  TR1_solve, a first-order trust-region method for finding a local
 !    unconstrained minimizer of a given function
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1461,9 +1459,6 @@
      data%stop_g = MAX( control%stop_g_absolute,                               &
                         control%stop_g_relative * inform%norm_g )
 
-!    data%new_h = data%control%hessian_available
-     data%new_h = .TRUE.
-
      IF ( data%printi ) WRITE( data%out, "( A, '  Problem: ', A,               &
     &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
        prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
@@ -1495,11 +1490,12 @@
        IF ( data%printi ) THEN
           IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
            WRITE( data%out, 2090 ) prefix
+           WRITE( data%out, 2100 ) prefix
          END IF
          data%print_1st_header = .FALSE.
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
          IF ( inform%iter > 0 ) THEN
-!          char_sit = 
+!          char_sit =
 !          char_sit2 =
            WRITE( data%out, 2130 ) prefix, char_iter, data%accept,             &
               data%bndry, data%negcur, data%perturb, inform%obj,               &
@@ -1551,7 +1547,7 @@
        IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
          WRITE ( data%out, 2040 ) prefix, TRIM( nlp%pname ), nlp%n
          WRITE ( data%out, 2000 ) prefix, inform%f_eval, prefix, inform%g_eval,&
-           prefix, inform%h_eval, prefix, inform%iter, prefix, inform%cg_iter, &
+           prefix, inform%iter, prefix, inform%cg_iter, &
            prefix, inform%obj, prefix, inform%norm_g
          WRITE ( data%out, 2010 ) prefix
 !        l = nlp%n
@@ -1565,12 +1561,12 @@
             END IF
             IF ( ALLOCATED( nlp%vnames ) ) THEN
               DO i = ir, ic
-                 WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),  &
-                  nlp%G( i )
+                WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),  &
+                                        nlp%G( i )
               END DO
             ELSE
               DO i = ir, ic
-                 WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
+                WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
               END DO
             END IF
          END DO
@@ -1583,7 +1579,7 @@
 !  if a sparsity-based secant approximation of the Hessian is required,
 !  record the latest step and gradient difference
 
-           IF ( sparsity_hessian_model ) THEN
+           IF ( data%control%find_sparse_hessian ) THEN
              data%latest_diff = data%latest_diff + 1
              IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
              data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
@@ -1661,6 +1657,7 @@
                  inform%SHA_inform%status
              END IF
            END IF
+         END IF
 
 !  ============================================================================
 !  2. Update the trust-region radius and other book-keeping
@@ -1673,11 +1670,12 @@
 !  had the objective been quadratic the next iteration would be very successful
 
          IF ( data%ratio < zero ) THEN
-           inform%radius =                                                     &
-             MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
-                  MAX( data%control%radius_reduce_max,                         &
-                       data%ometat * data%stg / ( data%df +                    &
-                         data%ometat * data%stg + data%etat * data%model ) ) )
+           inform%radius = data%control%radius_reduce * data%s_norm
+!          inform%radius =                                                     &
+!            MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
+!                 MAX( data%control%radius_reduce_max,                         &
+!                      data%ometat * data%stg / ( data%df +                    &
+!                        data%ometat * data%stg + data%etat * data%model ) ) )
 
 !  if the iteration was very unsuccesful, decrease the radius to chop off the
 !  current step
@@ -1694,101 +1692,37 @@
 !            IF ( inform%radius < radmin ) EXIT
 !          END DO
 
-!  compute the new norm of the step
+!  if the iteration was very (but not too) successful, increase the radius
 
          ELSE
 
-!  a retrospective radius update strategy will be used
-!  ---------------------------------------------------
-
-           IF ( data%control%retrospective_trust_region ) THEN
-
-!  compute the new Hessian-step product u = H s
-
-              data%U( : nlp%n ) = zero
-
-!  a traditional radius update strategy will be used
-!  -------------------------------------------------
-
-           ELSE
-
 !write(6,*) ' rho_g ', data%rho_g, ABS( data%ratio - one ), rho_quad
 
-!  if the iteration was very (but not too) successful, increase the radius
-
-             IF ( data%ratio >= data%control%eta_very_successful .AND.         &
-                  data%ratio <= data%control%eta_too_successful ) THEN
-               IF ( ABS( data%ratio - one ) <= rho_quad .AND.                  &
-                    data%rho_g <= rho_quad ) THEN
-                 inform%radius = data%control%maximum_radius
-               ELSE
-                 IF ( data%control%radius_increase * data%s_norm               &
-                      > inform%radius )                                        &
-                   inform%radius = MIN( data%control%maximum_radius,           &
-                                    data%control%radius_increase * data%s_norm )
-               END IF
+           IF ( data%ratio >= data%control%eta_very_successful .AND.           &
+                data%ratio <= data%control%eta_too_successful ) THEN
+             IF ( ABS( data%ratio - one ) <= rho_quad .AND.                    &
+                  data%rho_g <= rho_quad ) THEN
+               inform%radius = data%control%maximum_radius
+             ELSE
+               IF ( data%control%radius_increase * data%s_norm                 &
+                    > inform%radius )                                          &
+                 inform%radius = MIN( data%control%maximum_radius,             &
+                                  data%control%radius_increase * data%s_norm )
              END IF
            END IF
          END IF
        END IF
-
-!  update after a successful step with a retrospective radius update strategy
-
-       IF ( inform%iter > 1 .AND. data%ratio >= data%control%eta_successful    &
-            .AND. data%control%retrospective_trust_region ) THEN
-
-!  compute the new model change
-
-         data%stg = DOT_PRODUCT( data%S( : nlp%n ), nlp%G( : nlp%n ) )
-         data%model = - data%stg +                                             &
-           half * DOT_PRODUCT( data%S( : nlp%n ), data%U( : nlp%n ) )
-
-         rounding =                                                            &
-           MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ ) * epsmch
-         ared = data%df + rounding
-         prered = - data%model - rounding
-         IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )          &
-           ared = prered
-         data%ratio = - ared / prered
-!write(6,*) ' ratio backwards ', data%ratio, ared, prered
-
-!  if the iteration has increased the objective, decrease the radius so that
-!  had the objective been quadratic the next iteration would be very successful
-
-         IF ( data%ratio < zero ) THEN
-           data%poor_model = .FALSE.
-           inform%radius =                                                     &
-             MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
-                  MAX( data%control%radius_reduce_max,                         &
-                       - data%ometat * data%stg / ( - data%df -                &
-                       data%ometat * data%stg + data%etat * data%model ) ) )
-
-!  if the iteration was very unsuccesful, decrease the radius to chop off the
-!  current step
-
-         ELSE IF ( data%ratio < data%control%eta_successful ) THEN
-           data%poor_model = .FALSE.
-           inform%radius = data%control%radius_reduce * data%s_norm
-         ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
-                   data%ratio <= data%control%eta_too_successful ) THEN
-           IF ( ABS( data%ratio - one ) <= rho_quad .AND.                      &
-                data%rho_g <= rho_quad ) THEN
-             inform%radius = data%control%maximum_radius
-           ELSE
-             IF ( data%control%radius_increase * data%s_norm > inform%radius)  &
-                 inform%radius = MIN( data%control%maximum_radius,             &
-                                data%control%radius_increase * data%s_norm )
-           END IF
-         END IF
-       END IF
-
    220 CONTINUE
 
 !  ============================================================================
 !  3. Calculate the search direction, s
 !  ============================================================================
 
-       data%S( : nlp%n ) = - nlp%G( : nlp%n )
+       data%S( : nlp%n )                                                       &
+         = - ( inform%radius / inform%norm_g ) * nlp%G( : nlp%n )
+       data%model = - inform%radius * inform%norm_g
+       data%s_norm = inform%radius
+       data%bndry = 'b'
 
 !  ============================================================================
 !  4. check for acceptance of the new point
@@ -1796,7 +1730,7 @@
 
 !  If necessary, temporarily store the old gradient
 
-       IF ( sparsity_hessian_model ) data%G_current = nlp%G
+       IF ( data%control%find_sparse_hessian ) data%G_current = nlp%G
 
 !  see if the correction will make any difference
 
@@ -1808,16 +1742,11 @@
 !  compute the slope and curvature along the step
 
        data%stg = DOT_PRODUCT( data%S( : nlp%n ), nlp%G( : nlp%n ) )
-       data%hstbs = data%model - data%stg
-!write(6,*) ' gTs, 1/2stBs ', data%stg, data%hstbs
+
 !  prepare for advanced starting-point calculation if requested
 
        IF ( inform%iter == 1 .AND. data%control%advanced_start > 0 ) THEN
-         IF ( data%hstbs > zero ) THEN
-           data%radius_max = - half * data%stg * data%s_norm / data%hstbs
-         ELSE
-           data%radius_max = data%control%maximum_radius
-         END IF
+         data%radius_max = data%control%maximum_radius
 !write(6,*) ' radius_max ', data%radius_max
          inform%radius = data%s_norm
          data%X_best( : nlp%n )  = nlp%X( : nlp%n )
@@ -1887,7 +1816,7 @@
            END IF
            data%print_1st_header = .FALSE.
            char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-!            char_sit = 
+!            char_sit =
 !            char_sit2 =                                                       &
              WRITE( data%out, "( A, A6, 1X, 4A1, '    NaN           -    ',    &
             &  '    - Inf ', '    -    ', ES9.1, 1X, 2A6, F8.2 )" ) prefix,    &
@@ -1969,9 +1898,9 @@
 
 !  compute radius adjustment factors
 
-           tau_1 = - theta * data%stg / ( data%hstbs - ( one - theta ) *       &
+           tau_1 = - theta * data%stg / ( - ( one - theta ) *                  &
                     ( data%f_trial - inform%obj - data%stg ) )
-           tau_2 = theta * data%stg / ( data%hstbs - ( one + theta ) *         &
+           tau_2 = theta * data%stg / (  - ( one + theta ) *                   &
                     ( data%f_trial - inform%obj - data%stg ) )
            tau_min = MIN( tau_1, tau_2 )
            tau_max = MAX( tau_1, tau_2 )
@@ -2041,8 +1970,7 @@
 !  update the slope, curvature and model value
 
            data%stg = tau * data%stg
-           data%hstbs = tau * tau * data%hstbs
-           data%model = data%stg + data%hstbs
+           data%model = data%stg
 
            IF ( data%printi ) THEN
               IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
@@ -2169,7 +2097,6 @@
        IF ( data%ratio >= data%control%eta_successful ) THEN
          inform%g_eval = inform%g_eval + 1
          inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
-         data%new_h = .TRUE.
 
 !  update the history
 
@@ -2199,11 +2126,6 @@
 !                         data%non_monotone_history + 1 )
 
          END IF
-
-!  the new point is not acceptable
-
-       ELSE
-         data%new_h = .FALSE.
        END IF
 
 !  record the clock time
@@ -2238,7 +2160,7 @@
 
      IF ( data%printi ) THEN
 !      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
-!      WRITE ( data%out, 2000 ) inform%f_eval, inform%g_eval, inform%h_eval,   &
+!      WRITE ( data%out, 2000 ) inform%f_eval, inform%g_eval,   &
 !         inform%iter, inform%cg_iter, inform%obj, inform%norm_g
 !      WRITE ( data%out, 2010 )
 !      IF ( data%print_level > 3 ) THEN
@@ -2292,27 +2214,23 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
-              /, A, ' # gradient evaluations  = ', I10,                        &
-              /, A, ' # Hessian evaluations   = ', I10,                        &
-              /, A, ' # major  iterations     = ', I10,                        &
-              /, A, ' # minor (cg) iterations = ', I10,                        &
-             //, A, ' objective value         = ', ES22.14,                    &
-              /, A, ' gradient norm           = ', ES12.4 )
+ 2000 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
+              /, A, ' # gradient evaluations  = ', I0,                         &
+              /, A, ' # major  iterations     = ', I0,                         &
+              /, A, ' # minor (cg) iterations = ', I0,                         &
+              /, A, ' objective value         = ', ES21.14,                    &
+              /, A, ' gradient norm           = ', ES11.4 )
  2010 FORMAT( /, A, ' name             X         G ' )
  2020 FORMAT(  A, 1X, A10, 2ES12.4 )
  2030 FORMAT(  A, 1X, I10, 2ES12.4 )
- 2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
+ 2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I0 )
  2050 FORMAT( A, ' .          ........... ...........' )
  2090 FORMAT( A, '        (a=accept r=reject b=TR boundary',                   &
                  ' n=-ve curvature h=hard case)' )
  2100 FORMAT( A, '    It           f         grad    ',                        &
-             ' ratio   radius multplr # fact    time' )
- 2110 FORMAT( A, '    It           f         grad     ',                       &
-             ' ratio   radius pass 1 pass 2   time' )
+             ' ratio   radius     time' )
  2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, ES8.1, 1X, 2A6, F8.2 )
  2140 FORMAT( A, A6, 5X, ES12.4, ES10.3, 9X, ES8.1 )
- 2150 FORMAT( A, A6, 5X, ES12.4, ES11.4, 9X, ES8.1 )
 
  !  End of subroutine TR1_solve
 
@@ -2601,8 +2519,7 @@
 
 !-*-*-*-*-  G A L A H A D -  T R 1 _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
-     SUBROUTINE TR1_import( control, data, status, n, H_type, H_ne, H_row,     &
-                            H_col, H_ptr )
+     SUBROUTINE TR1_import( control, data, status, n )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
@@ -2798,10 +2715,10 @@
      CASE( 3 )
        data%tr1_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
-     CASE( 4 )
-       data%tr1_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
+!    CASE( 4 )
+!      data%tr1_data%eval_status = eval_status
+!      IF ( eval_status == 0 )                                                 &
+!        data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
      CASE( 6 )
        data%tr1_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
