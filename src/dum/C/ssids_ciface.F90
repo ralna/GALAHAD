@@ -32,7 +32,7 @@
 !   USE SPRAL_KINDS_precision
 !   USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
 !   USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
-    USE GALAHAD_KINDS_precision
+    USE SPRAL_KINDS_precision
     USE SPRAL_SSIDS_precision, ONLY : f_ssids_options => ssids_options,        &
                                       f_ssids_inform => ssids_inform
 

@@ -9,7 +9,7 @@
 !  May 15th 2008
 
    MODULE GALAHAD_USETR1_precision
-            
+
 !  This is the driver program for running TR1 for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
@@ -58,7 +58,7 @@
 !  Problem input characteristics
 
      INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l
-     LOGICAL :: filexx, is_specfile, hessian_pattern_required
+     LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
 !    REAL ( KIND = rp_ ) :: clocko, clockt
      CHARACTER ( LEN = 10 ) :: name
@@ -220,12 +220,9 @@
 
 !  Initialize the problem data
 
-     hessian_pattern_required                                                  &
-       = control%hessian_available .OR. control%model == 4
-
      cutest_control%input = input ; cutest_control%error = control%error
      CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
-                             no_hessian = .NOT. hessian_pattern_required )
+                             no_hessian = .NOT. control%find_sparse_hessian )
 
 !  Read a previous solution file for a re-entry
 
@@ -276,8 +273,7 @@
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      CALL TR1_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
-                     eval_H = CUTEST_eval_H, eval_HPROD = CUTEST_eval_HPROD )
+                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -291,30 +287,15 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( control%subproblem_direct ) THEN
-          IF ( inform%status == GALAHAD_ok .OR.                                &
-               inform%status == GALAHAD_error_unbounded ) THEN
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_g, inform%iter, inform%g_eval,                       &
-              inform%factorization_average, inform%factorization_max,          &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_g, - inform%iter, - inform%g_eval,                   &
-              inform%factorization_average, inform%factorization_max,          &
-              - inform%time%clock_total, inform%status
-          END IF
+        IF ( inform%status == GALAHAD_ok .OR.                                &
+             inform%status == GALAHAD_error_unbounded ) THEN
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
+            inform%norm_g, inform%iter, inform%g_eval,                       &
+            inform%time%clock_total, inform%status
         ELSE
-          IF ( inform%status == GALAHAD_ok .OR.                                &
-               inform%status == GALAHAD_error_unbounded ) THEN
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_g, inform%iter, inform%g_eval, inform%cg_iter,       &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_g, - inform%iter, - inform%g_eval, inform%cg_iter,   &
-              - inform%time%clock_total, inform%status
-          END IF
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
+            inform%norm_g, - inform%iter, - inform%g_eval,                   &
+            - inform%time%clock_total, inform%status
         END IF
       END IF
 
@@ -338,33 +319,17 @@
         END DO
       END DO
 
-      IF ( control%subproblem_direct ) THEN
         WRITE( errout, "( /, 'name           n  f              du-feas ',      &
        &  '   its     #g   av fac     time stat' )" )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_g,   &
-            inform%iter, inform%g_eval, inform%factorization_average,          &
-            inform%factorization_max, inform%time%clock_total, inform%status
+            inform%iter, inform%g_eval, inform%time%clock_total, inform%status
         ELSE
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_g,   &
-            - inform%iter, - inform%g_eval, inform%factorization_average,      &
-            inform%factorization_max, - inform%time%clock_total, inform%status
+            - inform%iter, - inform%g_eval, - inform%time%clock_total,         &
+            inform%status
         END IF
-      ELSE
-        WRITE( errout, "( /, 'name           n  f              du-feas ',      &
-       &  '   its     #g      #cg       time stat' )" )
-        IF ( inform%status == GALAHAD_ok .OR.                                  &
-             inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%norm_g, inform%iter, inform%g_eval,                         &
-            inform%cg_iter, inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%norm_g, - inform%iter, - inform%g_eval,                     &
-            inform%cg_iter, - inform%time%clock_total, inform%status
-        END IF
-      END IF
 
       IF ( write_solution .AND.                                                &
           ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
@@ -446,9 +411,8 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, F5.1, I4, F9.2, I5 )
+ 2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, F9.2, I5 )
  2050 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, I9, ' :', F9.2, I5 )
-
 
 !  End of subroutine USE_TR1
 
