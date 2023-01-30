@@ -879,6 +879,15 @@ elif [[ $2 == 'tru' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tru update
   [[ ! -L RUNTRU.SPC ]] && ln -s ~/.galahad/specs/RUNTRU.SPC RUNTRU.SPC
 
+# tr1
+
+elif [[ $2 == 'tr1' ]]; then
+  RUNMAIN=$GALOBJ/runtr1_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTR1.SPC ]] && $GALOBJ/buildspec tr1
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tr1 update
+  [[ ! -L RUNTR1.SPC ]] && ln -s ~/.galahad/specs/RUNTR1.SPC RUNTR1.SPC
+
 # bgo
 
 elif [[ $2 == 'bgo' ]]; then
