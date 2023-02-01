@@ -24,7 +24,6 @@
 !    |                                                        |
 !     --------------------------------------------------------
 
-     USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_USERDATA_precision
@@ -68,8 +67,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER  :: nskip_prec_max = 0
      INTEGER ( KIND = ip_ ), PARAMETER  :: history_max = 100
      LOGICAL, PARAMETER  :: debug_model_4 = .TRUE.
-     LOGICAL, PARAMETER  :: test_s = .TRUE.
-!    LOGICAL, PARAMETER  :: test_s = .FALSE.
+!    LOGICAL, PARAMETER  :: test_s = .TRUE.
+     LOGICAL, PARAMETER  :: test_s = .FALSE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
@@ -80,8 +79,6 @@
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: sixteen = 16.0_rp_
-     REAL ( KIND = rp_ ), PARAMETER :: tenm5 = ten ** ( - 5 )
-     REAL ( KIND = rp_ ), PARAMETER :: tenm8 = ten ** ( - 8 )
      REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
      REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
      REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
@@ -166,8 +163,8 @@
        REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
        REAL ( KIND = rp_ ) :: stop_g_relative = ten ** ( - 4 )
 #else
-       REAL ( KIND = rp_ ) :: stop_g_absolute = tenm5
-       REAL ( KIND = rp_ ) :: stop_g_relative = tenm8
+       REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_g_relative = ten ** ( - 8 )
 #endif
        REAL ( KIND = rp_ ) :: stop_s = epsmch
 
@@ -364,11 +361,12 @@
        REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio
        REAL ( KIND = rp_ ) :: old_radius, radius_trial, etat, ometat
        REAL ( KIND = rp_ ) :: dxtdg, dgtdg, df, stg, s_norm, radius_max
-       REAL ( KIND = rp_ ) :: stop_g, s_new_norm, rho_g
+       REAL ( KIND = rp_ ) :: stop_g, s_new_norm
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
-       LOGICAL :: monotone, poor_model, f_is_nan, non_trivial_p
+       LOGICAL :: monotone, f_is_nan, non_trivial_p
+       LOGICAL :: sparse_hessian, successful
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: bndry = ' '
@@ -380,7 +378,6 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_current
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_current
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHO
@@ -390,10 +387,8 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL_est
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DG
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BANDH
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DX_past
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DG_past
-
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DX_svd
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: U_svd
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: VT_svd
@@ -896,14 +891,6 @@
 !        unable to evaluate the product - for instance, if a component of the
 !        Hessian is undefined at x - the user need not alter data%U, but
 !        should then set data%eval_status to a non-zero value.
-!     6. The user should compute the product u = P(x)v of their preconditioner
-!        P(x) at the point x indicated in nlp%X with the vector v and then
-!        re-enter the subroutine. The vectors v is given in data%V, the
-!        resulting vector u = P(x)v should be set in data%U and
-!        data%eval_status should be set to 0. If the user is unable to evaluate
-!        the product - for instance, if a component of the preconditioner is
-!        undefined at x - the user need not set data%U, but should then set
-!        data%eval_status to a non-zero value.
 !
 !  alloc_status is a scalar variable of type default integer, that gives
 !   the status of the last attempted array allocation or deallocation.
@@ -1072,12 +1059,12 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, facts_this_solve, info_svd
-     REAL ( KIND = rp_ ) :: delta, ared, prered, rounding, multiplier
+     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, info_svd
+     REAL ( KIND = rp_ ) :: ared, prered, rounding
 !    REAL ( KIND = rp_ ) :: radmin
      REAL ( KIND = rp_ ) :: tau, tau_1, tau_2, tau_min, tau_max
      LOGICAL :: alive
-     CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
+     CHARACTER ( LEN = 6 ) :: char_iter, char_sit, char_sit2
      CHARACTER ( LEN = 80 ) :: array_name
 !    REAL ( KIND = rp_ ), DIMENSION( nlp%n ) :: V
 
@@ -1102,10 +1089,12 @@
        GO TO 20
      CASE ( 30 )  ! initial gradient evaluation
        GO TO 30
-     CASE ( 420 )  ! objective evaluation
-       GO TO 420
-     CASE ( 450 )  ! gradient evaluation
-       GO TO 450
+     CASE ( 110 ) ! Hessian evaluation (for comparison)
+       GO TO 110
+     CASE ( 320 ) ! objective evaluation
+       GO TO 320
+     CASE ( 340 ) ! gradient evaluation
+       GO TO 340
      END SELECT
 
 !  ============================================================================
@@ -1177,7 +1166,6 @@
                           data%control%eta_successful )
      data%ometat = one - data%etat
      data%advanced_start_iter = 0
-     data%rho_g = two * rho_quad
 !    data%lbfgs_mem = MAX( 1, data%control%lbfgs_vectors )
      data%negcur = ' '
      data%it_succ = 0
@@ -1186,6 +1174,7 @@
 
      data%reverse_f = .NOT. PRESENT( eval_F )
      data%reverse_g = .NOT. PRESENT( eval_G )
+     data%reverse_h = .NOT. PRESENT( eval_H )
 
 !  control the output printing
 
@@ -1276,15 +1265,6 @@
        IF ( inform%status /= 0 ) GO TO 980
      END IF
 
-       array_name = 'tr1: data%U'
-       CALL SPACE_resize_array( nlp%n, data%U, inform%status,                  &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-!    END IF
-
 ! evaluate the objective function at the initial point
 
      IF ( data%reverse_f ) THEN
@@ -1359,8 +1339,8 @@
 
 !  allocate space for the differences
 
-     data%latest_diff = 0
-     data%max_diffs = MIN( inform%SHA_inform%differences_needed,               &
+     data%total_diffs = 0 ; data%latest_diff = 0
+     data%max_diffs = MIN( inform%SHA_inform%differences_needed + 1,           &
                            data%control%max_dxg )
      write(6, "( ' maximum # differences required = ', I0 )" ) data%max_diffs
 
@@ -1495,12 +1475,10 @@
          data%print_1st_header = .FALSE.
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
          IF ( inform%iter > 0 ) THEN
-!          char_sit =
-!          char_sit2 =
            WRITE( data%out, 2130 ) prefix, char_iter, data%accept,             &
               data%bndry, data%negcur, data%perturb, inform%obj,               &
-              inform%norm_g, data%ratio, inform%radius, char_sit,              &
-              char_sit2, data%clock_now
+              inform%norm_g, data%ratio, inform%radius, data%s_norm,           &
+              data%clock_now
          ELSE
            WRITE( data%out, 2140 ) prefix,                                     &
                   char_iter, inform%obj, inform%norm_g, inform%radius
@@ -1572,152 +1550,114 @@
          END DO
        END IF
 
-!  if a new Hessian approximation is required, compute it
+!  if a new Hessian approximation is desired, compute the exact Hessian as a
+!  comparison
 
-         IF ( inform%iter > 1 ) THEN
+       data%sparse_hessian = inform%iter > 1 .AND. data%successful .AND.       &
+                             data%control%find_sparse_hessian
+
+       IF ( data%sparse_hessian ) THEN
+         IF ( data%reverse_h ) THEN
+           data%branch = 110 ; inform%status = 4 ; RETURN
+         ELSE
+           CALL eval_H( data%eval_status, nlp%X( : nlp%n ), userdata,          &
+                        nlp%H%val( : nlp%H%ne ) )
+         END IF
+       END IF
+
+!  return from reverse communication to obtain the Hessian
+
+   110 CONTINUE
 
 !  if a sparsity-based secant approximation of the Hessian is required,
 !  record the latest step and gradient difference
 
-           IF ( data%control%find_sparse_hessian ) THEN
-             data%latest_diff = data%latest_diff + 1
-             IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
-             data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
-             data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
+       IF ( data%sparse_hessian ) THEN
+         data%latest_diff = data%latest_diff + 1
+         IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
+!        data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
+         data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
+         data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
 !write(6,*) ' latest ', data%latest_diff
 !write(6,*) 's', data%DX_past( : , data%latest_diff )
 
 !  record the column positions in DX and DG of the ordered latest differences
 !  (most to least recent)
 
-             IF ( data%total_diffs < data%max_diffs ) THEN
-               DO i = data%total_diffs, 1, - 1
-                 data%PAST( i + 1 ) = data%PAST( i )
-               END DO
-               data%total_diffs = data%total_diffs + 1
-               data%PAST( 1 ) = data%total_diffs
-             ELSE
-               DO i = data%max_diffs - 1, 1, - 1
-                 data%PAST( i + 1 ) = data%PAST( i )
-               END DO
-               data%PAST( 1 ) = data%latest_diff
-             END IF
+         IF ( data%total_diffs < data%max_diffs ) THEN
+           DO i = data%total_diffs, 1, - 1
+             data%PAST( i + 1 ) = data%PAST( i )
+           END DO
+           data%total_diffs = data%total_diffs + 1
+           data%PAST( 1 ) = data%total_diffs
+         ELSE
+           DO i = data%max_diffs - 1, 1, - 1
+             data%PAST( i + 1 ) = data%PAST( i )
+           END DO
+           data%PAST( 1 ) = data%latest_diff
+         END IF
 
-             IF ( test_s ) THEN
-               data%DX_svd( : nlp%n, : data%total_diffs ) =                    &
-                 data%DX_past( : nlp%n, : data%total_diffs )
+         IF ( test_s ) THEN
+           data%DX_svd( : nlp%n, : data%total_diffs ) =                        &
+             data%DX_past( : nlp%n, : data%total_diffs )
 
-               CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,     &
-                           nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,   &
-                           data%WORK_svd, data%lwork_svd, info_svd )
+           CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,         &
+                       nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,       &
+                       data%WORK_svd, data%lwork_svd, info_svd )
 
-!              write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
-!                info_svd, data%S_svd( : data%total_diffs )
-             END IF
+!          write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
+!            info_svd, data%S_svd( : data%total_diffs )
+         END IF
 
 !write(6,"( ' PAST ', /, 20( I0 :, ' ' ) )" ) &
 ! ( data%PAST( i ), i = 1, data%total_diffs )
 
 !  compute the new Hessian estimates
 
-             CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,         &
-                                data%total_diffs, data%PAST,                   &
-                                nlp%n, data%total_diffs, data%DX_past,         &
-                                nlp%n, data%total_diffs, data%DG_past,         &
-                                data%VAL_est, data%SHA_data,                   &
-                                data%control%SHA_control, inform%SHA_inform )
+         CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
+                            data%total_diffs, data%PAST,                       &
+                            nlp%n, data%total_diffs, data%DX_past,             &
+                            nlp%n, data%total_diffs, data%DG_past,             &
+                            data%VAL_est, data%SHA_data,                       &
+                            data%control%SHA_control, inform%SHA_inform )
 
-             IF ( inform%SHA_inform%status == 0 ) THEN
-               IF ( .FALSE. ) THEN
-                 IF ( test_s ) THEN
-                   WRITE( data%out, "( '    row    col     true         est',  &
-                  & '       error' )" )
-                   DO i = 1, nlp%H%ne
-                     WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),     &
-                       nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),      &
-                       ABS( nlp%H%val( i ) - data%VAL_est( i ) )
-                   END DO
-                 ELSE
-                   WRITE(6,*) ' diff ', MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) - &
-                                                data%VAL_est( : nlp%H%ne ) ) / &
-                                 MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ))
-                 END IF
-               END IF
-               nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
-
-               IF ( .FALSE. ) THEN
-                 WRITE( data%out, "( '    row    col      val    for H' )" )
-                 DO i = 1, nlp%H%ne
-                   WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),       &
-                     nlp%H%col( i ), nlp%H%val( i )
-                 END DO
-               END IF
+         IF ( inform%SHA_inform%status == 0 ) THEN
+!          IF ( .FALSE. ) THEN
+           IF ( .TRUE. ) THEN
+             IF ( test_s ) THEN
+               WRITE( data%out, "( '    row    col     true         est',      &
+              & '       error' )" )
+               DO i = 1, nlp%H%ne
+                 WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),         &
+                   nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),          &
+                   ABS( nlp%H%val( i ) - data%VAL_est( i ) )
+               END DO
              ELSE
-               WRITE( data%out, "( ' SHA status = ', I0 )" )                   &
-                 inform%SHA_inform%status
+               WRITE( data%out, "( ' max error = ', ES9.2 )" )                 &
+                 MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                      &
+                                data%VAL_est( : nlp%H%ne ) ) /                 &
+                         MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
              END IF
            END IF
-         END IF
-
-!  ============================================================================
-!  2. Update the trust-region radius and other book-keeping
-!  ============================================================================
-
-       IF ( inform%iter > 1 ) THEN
-         data%old_radius = inform%radius
-
-!  if the iteration has increased the objective, decrease the radius so that
-!  had the objective been quadratic the next iteration would be very successful
-
-         IF ( data%ratio < zero ) THEN
-           inform%radius = data%control%radius_reduce * data%s_norm
-!          inform%radius =                                                     &
-!            MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
-!                 MAX( data%control%radius_reduce_max,                         &
-!                      data%ometat * data%stg / ( data%df +                    &
-!                        data%ometat * data%stg + data%etat * data%model ) ) )
-
-!  if the iteration was very unsuccesful, decrease the radius to chop off the
-!  current step
-
-         ELSE IF ( data%ratio < data%control%eta_successful ) THEN
-           inform%radius = data%control%radius_reduce * data%s_norm
-
-!          radmin = data%s_norm * MAX( data%control%radius_reduce_max,         &
-!                data%ometat * data%stg /                                      &
-!             ( data%df + data%ometat * data%stg + data%etat * data%model ) )
-!          radmin = data%s_norm
-!          DO
-!            inform%radius = data%control%radius_reduce * inform%radius
-!            IF ( inform%radius < radmin ) EXIT
-!          END DO
-
-!  if the iteration was very (but not too) successful, increase the radius
-
+!          nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
+           IF ( .FALSE. ) THEN
+             WRITE( data%out, "( '    row    col      val    for H' )" )
+             DO i = 1, nlp%H%ne
+               WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),           &
+                 nlp%H%col( i ), nlp%H%val( i )
+             END DO
+            END IF
          ELSE
-
-!write(6,*) ' rho_g ', data%rho_g, ABS( data%ratio - one ), rho_quad
-
-           IF ( data%ratio >= data%control%eta_very_successful .AND.           &
-                data%ratio <= data%control%eta_too_successful ) THEN
-             IF ( ABS( data%ratio - one ) <= rho_quad .AND.                    &
-                  data%rho_g <= rho_quad ) THEN
-               inform%radius = data%control%maximum_radius
-             ELSE
-               IF ( data%control%radius_increase * data%s_norm                 &
-                    > inform%radius )                                          &
-                 inform%radius = MIN( data%control%maximum_radius,             &
-                                  data%control%radius_increase * data%s_norm )
-             END IF
-           END IF
+           WRITE( data%out, "( ' SHA status = ', I0 )" )                       &
+             inform%SHA_inform%status
          END IF
        END IF
-   220 CONTINUE
 
 !  ============================================================================
-!  3. Calculate the search direction, s
+!  2. Calculate the search direction, s
 !  ============================================================================
 
+   200 CONTINUE
        data%S( : nlp%n )                                                       &
          = - ( inform%radius / inform%norm_g ) * nlp%G( : nlp%n )
        data%model = - inform%radius * inform%norm_g
@@ -1725,17 +1665,13 @@
        data%bndry = 'b'
 
 !  ============================================================================
-!  4. check for acceptance of the new point
+!  3. check for acceptance of the new point
 !  ============================================================================
-
-!  If necessary, temporarily store the old gradient
-
-       IF ( data%control%find_sparse_hessian ) data%G_current = nlp%G
 
 !  see if the correction will make any difference
 
-       IF ( MAXVAL( ABS( data%S( : nlp%n ) ) / MAX( one, nlp%X( : nlp%n ) ) )  &
-            <= data%control%stop_s ) THEN
+       IF ( TWO_NORM( data%S( : nlp%n ) / MAX( one,                            &
+            TWO_NORM( nlp%X( : nlp%n ) ) ) ) <= data%control%stop_s ) THEN
          inform%status = GALAHAD_error_tiny_step ; GO TO 900
        END IF
 
@@ -1760,7 +1696,7 @@
 
 !  form the trial point
 
- 410   CONTINUE
+ 310   CONTINUE
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
 !write(6,"(' X ', 5ES12.4)" ) data%X_current( : nlp%n )
 !write(6,"(' S ', 5ES12.4)" ) data%S( : nlp%n )
@@ -1769,7 +1705,7 @@
 !  evaluate the objective function at the trial point
 
        IF ( data%reverse_f ) THEN
-         data%branch = 420 ; inform%status = 2 ; RETURN
+         data%branch = 320 ; inform%status = 2 ; RETURN
        ELSE
          CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata,            &
                       data%f_trial )
@@ -1777,7 +1713,7 @@
 
 !  return from reverse communication to obtain the objective value
 
- 420   CONTINUE
+ 320   CONTINUE
        IF ( data%reverse_f ) data%f_trial = nlp%f
        inform%f_eval = inform%f_eval + 1
 
@@ -1787,7 +1723,6 @@
        data%f_is_nan = data%f_trial /= data%f_trial
 !write(6,*) ' objective is NaN? ', data%f_is_nan
        IF ( data%f_is_nan ) THEN
-         data%poor_model = .TRUE.
          data%accept = 'n'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
 
@@ -1844,7 +1779,7 @@
 !  reduce the trust region radiius and try again
 
          inform%radius = data%control%radius_reduce * data%s_norm
-         GO TO 220
+         GO TO 200
        END IF
 
 !  test to see if the objective appears to be unbounded from below
@@ -1868,7 +1803,7 @@
 
 !  If the predicted radius is larger than its upper bound, exit
 
-         IF ( inform%radius >= data%radius_max ) GO TO 430
+         IF ( inform%radius >= data%radius_max ) GO TO 330
 
 !  perform another iteration
 
@@ -1987,19 +1922,19 @@
 !               char_sit2
                WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
                   data%bndry, data%negcur, data%perturb, data%f_trial,         &
-                  inform%norm_g, data%ratio, data%old_radius, char_sit,        &
-                  char_sit2, data%clock_now
+                  inform%norm_g, data%ratio, data%old_radius, data%s_norm,     &
+                  data%clock_now
            END IF
 
 !  form the next trial step
 
            data%S( : nlp%n ) = tau * data%S( : nlp%n )
-           GO TO 410
+           GO TO 310
          END IF
 
 !  record the best value found
 
- 430     CONTINUE
+ 330     CONTINUE
          inform%iter = inform%iter + data%advanced_start_iter - 1
          IF ( data%f_best < inform%obj ) THEN
            data%S( : nlp%n ) = data%X_best( : nlp%n ) - nlp%X( : nlp%n )
@@ -2015,10 +1950,8 @@
 
 !  compute the ratio of actual to predicted reduction over the current iteration
 
-!      rounding = MAX( one, ABS( inform%obj ) ) * teneps
-       rounding =                                                              &
-         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ ) * epsmch
-
+       rounding = MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ )    &
+                    * epsmch
        ared = data%df + rounding
        prered = - data%model + rounding
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
@@ -2045,56 +1978,35 @@
              data%non_monotone_history + 1 ) ) + data%model ) )
        END IF
 
-!  if the function and model values agree very closely, examime the
-!  corresponding gradients
-
-       IF ( ABS( data%ratio - one ) <= rho_quad ) THEN
-
-!  compute the gradient of the model at the new point; store in U
-
-         data%U( : nlp%n ) = nlp%G( : nlp%n )
-       END IF
-
 !  the new point is acceptable
 
-       IF ( data%ratio >= data%control%eta_successful ) THEN
-         data%poor_model = .FALSE.
+       data%successful = data%ratio >= data%control%eta_successful
+       IF ( data%successful ) THEN
          data%accept = 'a'
          inform%obj = data%f_trial
+
+!  If necessary, temporarily store the old gradient
+
+         IF ( data%control%find_sparse_hessian )                               &
+           data%G_current( : nlp%n ) = nlp%G( : nlp%n )
 
 !  evaluate the gradient of the objective function
 
          IF ( data%reverse_g ) THEN
-            data%branch = 450 ; inform%status = 3 ; RETURN
+            data%branch = 340 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                    &
                         userdata, nlp%G( : nlp%n ) )
          END IF
        ELSE
-         data%poor_model = .TRUE.
          data%accept = 'r'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
        END IF
 
 !  return from reverse communication to obtain the gradient
 
- 450   CONTINUE
-
-!  compute rho_g, the relative difference in model and true gradients
-
-       IF ( ABS( data%ratio - one ) <= rho_quad ) THEN
-         IF ( MAXVAL( ABS( nlp%G( : nlp%n ) ) ) /= zero ) THEN
-           data%rho_g = MAXVAL( ABS( data%U( : nlp%n ) - nlp%G( : nlp%n ) ) )  &
-                          / MAXVAL( ABS( nlp%G( : nlp%n )  ) )
-         ELSE
-           data%rho_g = zero
-         END IF
-       ELSE
-         data%rho_g = - one
-       END IF
-!write(6,*) ' rho_g', data%rho_g
-
-       IF ( data%ratio >= data%control%eta_successful ) THEN
+ 340   CONTINUE
+       IF ( data%successful ) THEN
          inform%g_eval = inform%g_eval + 1
          inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
 
@@ -2119,12 +2031,10 @@
 !  find how much past history is allowed
 
            data%max_hist = MIN( data%max_hist + 1, data%non_monotone_history )
-
 !          write( 6, "( ' f, fref ', 2ES12.4 ) " ) inform%obj, data%f_ref
 !          write( 6, "( ' fhist ', ( 6ES12.4 ) ) " ) &
 !            data%F_hist( data%non_monotone_history + 2 - data%max_hist :      &
 !                         data%non_monotone_history + 1 )
-
          END IF
        END IF
 
@@ -2142,6 +2052,34 @@
          inform%status = GALAHAD_error_cpu_limit ; GO TO 900
        END IF
 
+!  ============================================================================
+!  4. Update the trust-region radius and other book-keeping
+!  ============================================================================
+
+       data%old_radius = inform%radius
+
+!  if the iteration has increased the objective, decrease the radius so that
+!  had the objective been quadratic the next iteration would be very successful
+
+       IF ( data%ratio < zero ) THEN
+         inform%radius = data%control%radius_reduce * data%s_norm
+
+!  if the iteration was very unsuccesful, decrease the radius to chop off the
+!  current step
+
+       ELSE IF ( data%ratio < data%control%eta_successful ) THEN
+         inform%radius = data%control%radius_reduce * data%s_norm
+
+!  if the iteration was very (but not too) successful, increase the radius
+
+       ELSE
+         IF ( data%ratio >= data%control%eta_very_successful .AND.             &
+              data%ratio <= data%control%eta_too_successful ) THEN
+           IF ( data%control%radius_increase * data%s_norm > inform%radius )   &
+             inform%radius = MIN( data%control%maximum_radius,                 &
+                                  data%control%radius_increase * data%s_norm )
+         END IF
+       END IF
      GO TO 100
 
 !  ============================================================================
@@ -2149,6 +2087,11 @@
 !  ============================================================================
 
  900 CONTINUE
+
+write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
+ data%DX_past( : nlp%n, data%latest_diff )
+write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
+ data%DG_past( : nlp%n, data%latest_diff )
 
 !  print details of solution
 
@@ -2228,8 +2171,8 @@
  2090 FORMAT( A, '        (a=accept r=reject b=TR boundary',                   &
                  ' n=-ve curvature h=hard case)' )
  2100 FORMAT( A, '    It           f         grad    ',                        &
-             ' ratio   radius     time' )
- 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, ES8.1, 1X, 2A6, F8.2 )
+             ' ratio   radius    step    time' )
+ 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 2ES8.1, F8.2 )
  2140 FORMAT( A, A6, 5X, ES12.4, ES10.3, 9X, ES8.1 )
 
  !  End of subroutine TR1_solve
@@ -2283,12 +2226,6 @@
 
      array_name = 'tr1: data%S'
      CALL SPACE_dealloc_array( data%S,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'tr1: data%U'
-     CALL SPACE_dealloc_array( data%U,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2355,12 +2292,6 @@
 
      array_name = 'tr1: data%VAL_est'
      CALL SPACE_dealloc_array( data%VAL_est,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'tr1: data%BANDH'
-     CALL SPACE_dealloc_array( data%BANDH,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2681,8 +2612,7 @@
 
 !-  G A L A H A D -  T R 1 _ s o l v e _ r e v e r s e _ S U B R O U T I N E -
 
-     SUBROUTINE TR1_solve_reverse( data, status, eval_status,         &
-                                    X, f, G, U, V )
+     SUBROUTINE TR1_solve_reverse( data, status, eval_status, X, f, G ) !,U,V)
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -2699,8 +2629,8 @@
      REAL ( KIND = rp_ ), INTENT( IN ) :: f
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: G
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: U
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
+!    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: U
+!    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
 
 !  recover data from reverse communication
 
@@ -2719,10 +2649,10 @@
 !      data%tr1_data%eval_status = eval_status
 !      IF ( eval_status == 0 )                                                 &
 !        data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
-     CASE( 6 )
-       data%tr1_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%tr1_data%U( : data%nlp%n ) = U( : data%nlp%n )
+!    CASE( 6 )
+!      data%tr1_data%eval_status = eval_status
+!      IF ( eval_status == 0 )                                                 &
+!        data%tr1_data%U( : data%nlp%n ) = U( : data%nlp%n )
      END SELECT
 
 !  call the solver
@@ -2736,8 +2666,8 @@
      SELECT CASE ( data%tr1_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     CASE( 6 )
-       V( : data%nlp%n ) = data%tr1_data%V( : data%nlp%n )
+!    CASE( 6 )
+!      V( : data%nlp%n ) = data%tr1_data%V( : data%nlp%n )
      CASE( 5 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%tr1_inform%status

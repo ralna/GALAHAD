@@ -14,6 +14,20 @@
 #include "ssids_cpu_SmallLeafNumericSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 
+#ifdef SPRAL_SINGLE
+#define cholesky_solve_fwd cholesky_solve_fwd_sgl
+#define cholesky_solve_bwd cholesky_solve_bwd_sgl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_sgl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl
+#else
+#define cholesky_solve_fwd cholesky_solve_fwd_dbl
+#define cholesky_solve_bwd cholesky_solve_bwd_dbl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_dbl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /** \brief Represents a submatrix (subtree) factorized on the CPU. 

@@ -35,8 +35,20 @@
 
 #ifdef SPRAL_SINGLE
 #define precision_ float
+#define ldlt_app_internal ldlt_app_internal_sgl
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
+#define ldlt_app_factor ldlt_app_factor_sgl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_sgl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl
 #else
 #define precision_ double
+#define ldlt_app_internal ldlt_app_internal_dbl
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl
+#define ldlt_app_factor ldlt_app_factor_dbl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_dbl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl
 #endif
 
 namespace spral { namespace ssids { namespace cpu {

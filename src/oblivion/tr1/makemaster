@@ -18,8 +18,9 @@ PACKAGE = TR1
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_specfile make_sort make_space \
-               make_roots make_norms make_rand
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 make_smt \
+               make_space make_roots make_norms make_rand make_sha \
+               make_userdata
 
 #  other packages that depend on package
 
