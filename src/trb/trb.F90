@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-31 AT 11:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -2356,7 +2356,7 @@
 
 !  allocate space for the differences
 
-       data%latest_diff = 0
+       data%total_diffs = 0 ; data%latest_diff = 0
        data%max_diffs = MIN( inform%SHA_inform%differences_needed,             &
                              data%control%max_dxg )
        write(6, "( ' maximum # differences required = ', I0 )" ) data%max_diffs

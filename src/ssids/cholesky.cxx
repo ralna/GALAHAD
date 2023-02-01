@@ -13,8 +13,14 @@
 
 #ifdef SPRAL_SINGLE
 #define precision_ float
+#define cholesky_factor cholesky_factor_sgl
+#define cholesky_solve_fwd cholesky_solve_fwd_sgl
+#define cholesky_solve_bwd cholesky_solve_bwd_sgl
 #else
 #define precision_ double
+#define cholesky_factor cholesky_factor_dbl
+#define cholesky_solve_fwd cholesky_solve_fwd_dbl
+#define cholesky_solve_bwd cholesky_solve_bwd_dbl
 #endif
 
 namespace spral { namespace ssids { namespace cpu {

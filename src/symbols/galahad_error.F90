@@ -16,6 +16,8 @@
    INTEGER, PARAMETER :: out = 6
    INTEGER :: status
    READ( in, * ) status
+   WRITE( out, "( ' GALAHAD status value ', I0, ' means:' )" )    &
+     status
    CALL SYMBOLS_status( status, out, '', 'GALAHAD' )
    STOP
    END PROGRAM GALAHAD_error

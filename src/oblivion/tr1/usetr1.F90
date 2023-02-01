@@ -273,7 +273,8 @@
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      CALL TR1_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G )
+                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           & 
+                     eval_H = CUTEST_eval_H )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -412,7 +413,6 @@
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, F9.2, I5 )
- 2050 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, I9, ' :', F9.2, I5 )
 
 !  End of subroutine USE_TR1
 
