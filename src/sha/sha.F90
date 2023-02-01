@@ -571,7 +571,8 @@
       DO i = 1, n
         data%LAST( data%PU( i ) ) = data%LAST( data%PU( i ) ) + 1
       END DO
-      WRITE( control%out, "( ' (row size, # with this size):' )" )
+      IF ( control%out > 0 .AND. control%print_level > 0 )                     &
+        WRITE( control%out, "( ' (row size, # with this size):' )" )
       CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
 
 !  set the start and finish positions for each degree in DEGREE
@@ -835,7 +836,8 @@
           l = data%PK( i + 1 ) - data%PU( i )
           data%LAST( l ) = data%LAST( l ) + 1
         END DO
-        WRITE( control%out, "( ' (block size, # with this size):' )" )
+        IF ( control%out > 0 .AND. control%print_level > 0 )                   &
+          WRITE( control%out, "( ' (block size, # with this size):' )" )
         CALL SHA_write_nonzero_list( control%out, data%differences_needed,     &
                                      data%LAST )
 
@@ -1106,7 +1108,8 @@
 
 ! add %extra_differences to accommodate a singularity precaution if possible
 
-      m_max = MIN( m_needed + control%extra_differences, m_available )
+!     m_max = MIN( m_needed + control%extra_differences, m_available )
+      m_max = m_needed + control%extra_differences
       n_max = m_needed
       min_mn = MIN( m_max, n_max )
 
@@ -1334,7 +1337,8 @@
 
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
-                                 data%solve_system_data, i, info )
+                                 data%solve_system_data, i,                    &
+                                 control%out, control%print_level, info )
 
 !  if A appears to be singular, add an extra row if there is one, and 
 !  solve the system as a least-squares problem
@@ -1383,7 +1387,8 @@
 
             CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
                                    data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i, info )
+                                   data%solve_system_data, i,                  &
+                                   control%out, control%print_level, info )
           ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
@@ -1480,7 +1485,8 @@
 !write(6,*) ' solver ', control%dense_linear_solver
             CALL SHA_solve_system( control%dense_linear_solver, mu, nu,        &
                                    data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i, info )
+                                   data%solve_system_data, i,                  &
+                                   control%out, control%print_level, info )
             IF ( info /= 0 ) THEN
               inform%status = GALAHAD_error_factorization ; GO TO 900
             END IF
@@ -1559,7 +1565,8 @@
 
             CALL SHA_solve_system( control%dense_linear_solver, mu, nu,        &
                                    data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i, info )
+                                   data%solve_system_data, i,                  &
+                                   control%out, control%print_level, info )
             IF ( info /= 0 ) THEN
               inform%status = GALAHAD_error_factorization ; GO TO 900
             END IF
@@ -1631,7 +1638,8 @@
 
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
-                                 data%solve_system_data, i, info )
+                                 data%solve_system_data, i,                    &
+                                 control%out, control%print_level, info )
           IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
@@ -1684,10 +1692,10 @@
 !-*-  G A L A H A D -  S H A _ s o l v e _ s y s t e m  S U B R O U T I N E  -*-
 
       SUBROUTINE SHA_solve_system( dense_linear_solver, m, n, A, la1, B, lb1,  &
-                                   data, row, status )
+                                   data, row, out, print_level, status )
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: dense_linear_solver, m, n
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: la1, lb1, row
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: la1, lb1, row, out, print_level
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la1, n ) :: A
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lb1, 1 ) :: B
@@ -1698,6 +1706,10 @@
 !---------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, rank
+      REAL ( KIND = rp_ ), DIMENSION( la1, n ) :: A_save
+      LOGICAL :: printi
+
+      printi = out > 0 .AND. print_level > 0
 
 !  solve A x = b using Gaussian elimination; A is copied to A_save as a
 !  precaution
@@ -1721,6 +1733,7 @@
 !  solve A x = b using a singular-value decomposition
 
       ELSE
+        IF ( printi ) A_save( : m, : n ) = A( : m, : n )
         IF ( dense_linear_solver == 4 ) THEN
           CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, data%IWORK, status )
@@ -1729,23 +1742,31 @@
                       data%WORK, data%lwork, status )
         END IF
         IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
-          WRITE( 6, "( ' matrix singular, sigma_min/sigma_1 = ', ES11.4 )" )   &
-            data%S( MIN( m, n ) ) / data%S( 1 )
-          WRITE( 6, "( ' row ', I0, ', solver status = ', I0 )" ) i, status
-          WRITE( 6, "( ' matrix =' )" )
-          DO i = 1, n
-            WRITE( 6, "( 'column ', I4, ' = ', ( 5ES12.4 ) )" ) i, A( : m, i )
-          END DO
           status = MAX( m, n ) + 1
+          IF( printi ) THEN
+            WRITE( out, "( ' matrix singular, sigma_min/sigma_1 = ',           &
+           &       ES11.4 )" )  data%S( MIN( m, n ) ) / data%S( 1 )
+            IF ( print_level > 1 ) THEN
+              WRITE( out, "( ' row ', I0, ', solver status = ',                &
+             &       I0, /, ' matrix =' )" ) i, status
+              DO i = 1, n
+                WRITE( out, "( 'column ', I4, ' = ', ( 5ES12.4 ) )" )          &
+                  i, A_save( : m, i )
+              END DO
+              WRITE( out, "( 'sigma = ', ( 5ES12.4 ) )" )                      &
+                data%S( 1 : MIN( m, n ) )
+            END IF
+          END IF
         END IF
       END IF
-      IF ( data%out > 0 ) THEN
+      IF ( printi ) THEN
         IF ( rank > 0 ) THEN
-          write( 6, "( ' row ', I8, ' m ', I8, ' n ', I8, ' rank ', I8,        &
-        & ' kappa ', ES11.4 )" ) row, m, n, rank, data%S( rank ) / data%S( 1 )
+          WRITE( out, "( ' row ', I0, ' m ', I0, ' n ', I0, ' rank ',          &
+         &       I0, ' kappa ', ES11.4 )" )                                    &
+           row, m, n, rank, data%S( rank ) / data%S( 1 )
         ELSE
-          write( 6, "( ' row ', I8, ' m ', I8, ' n ', I8, ' rank ', I8 )" )    &
-          row, m, n, rank
+          WRITE( out, "( ' row ', I0, ' m ', I0, ' n ', I0, ' rank ', I0 )" )  &
+            row, m, n, rank
         END IF
       END IF
 

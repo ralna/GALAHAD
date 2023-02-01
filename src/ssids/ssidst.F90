@@ -24,7 +24,11 @@
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      SOL = (/ 1.0_rp_,  2.0_rp_,  3.0_rp_,  4.0_rp_,  5.0_rp_ /)
 
-   WRITE( 6, "( '  ssids tests', / )" )
+#ifdef SPRAL_SINGLE
+   WRITE( 6, "( '  ssids single precision tests', / )" )
+#else
+   WRITE( 6, "( '  ssids double precision tests', / )" )
+#endif
 
 !  test external ordering strategies
 

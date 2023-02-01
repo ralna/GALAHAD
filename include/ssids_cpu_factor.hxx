@@ -30,6 +30,16 @@
 
 //#include "ssids_cpu_kernels_verify.hxx" // FIXME: remove debug
 
+#ifdef SPRAL_SINGLE
+#define cholesky_factor cholesky_factor_sgl
+#define ldlt_app_factor ldlt_app_factor_sgl
+#define ldlt_tpp_factor ldlt_tpp_factor_sgl
+#else
+#define cholesky_factor cholesky_factor_dbl
+#define ldlt_app_factor ldlt_app_factor_dbl
+#define ldlt_tpp_factor ldlt_tpp_factor_dbl
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /* Factorize a node (indef) */
