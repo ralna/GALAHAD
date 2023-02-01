@@ -62,6 +62,11 @@ $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
 
+#  libraries used when linking for tests
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS4) \
+                 $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+
 #  non-standard package compilation
 
 $(package).o: $(LG)($(package).o)
@@ -91,7 +96,6 @@ $(OBJ)/galahad_error.o: ../$(package)/galahad_error.F90
 #  run full (comprehensive) example tests
 
 galahad_error: galahad_error.o
-	echo " required GALAHAD error code:"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o galahad_error \
                $(OBJ)/galahad_error.o -L$(OBJ) $(LIBS)
 	- ./galahad_error
