@@ -14,13 +14,15 @@
 #include "ssids_cpu_ThreadStats.hxx"
 
 #ifdef SPRAL_SINGLE
+#define precision_ float
 #define FAPrecisionTraits FASingleTraits
 #define factor_alloc_precision factor_alloc_single
-#define precision_ float
+#define ldlt_tpp_factor ldlt_tpp_factor_sgl
 #else
+#define precision_ double
 #define FAPrecisionTraits FADoubleTraits
 #define factor_alloc_precision factor_alloc_double
-#define precision_ double
+#define ldlt_tpp_factor ldlt_tpp_factor_dbl
 #endif
 
 /* SPRAL headers */
