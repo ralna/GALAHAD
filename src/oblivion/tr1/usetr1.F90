@@ -273,11 +273,11 @@
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      CALL TR1_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           & 
+                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
                      eval_H = CUTEST_eval_H )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
+!$    WRITE( out, "( /, ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
 
 !     write(6,*) ' H ', nlp%H%val(:nlp%H%ne)
 !  ================
@@ -321,7 +321,7 @@
       END DO
 
         WRITE( errout, "( /, 'name           n  f              du-feas ',      &
-       &  '   its     #g   av fac     time stat' )" )
+       &  '   its     #g     time stat' )" )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_g,   &
@@ -405,7 +405,7 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' Solution: ', /,'                        ',                     &
+ 2000 FORMAT( /, ' Solution: ', /, '                        ',                 &
               '        <------ Bounds ------> ', /                             &
               '      # name          value   ',                                &
               '    Lower       Upper       Dual ' )
