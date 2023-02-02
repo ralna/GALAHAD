@@ -1334,8 +1334,10 @@
 !    DO i = 1, nlp%H%ne
 !      write(6, "( ' row, col ', 2I7 )" ) nlp%H%row( i ), nlp%H%col( i )
 !    END DO
-     CALL SHA_analyse( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col, data%SHA_data, &
+data%control%SHA_control%print_level = 2
+     CALL SHA_analyse( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col, data%SHA_data,   &
                        data%control%SHA_control, inform%SHA_inform )
+data%control%SHA_control%print_level = 0
 
 !  allocate space for the differences
 
@@ -1620,7 +1622,8 @@
 !  compute the new Hessian estimates
 
 !data%control%SHA_control%print_level = 0
-!if ( inform%iter == 3610 ) data%control%SHA_control%print_level = 2
+!if ( inform%iter == 24603 ) data%control%SHA_control%print_level = 2
+if ( inform%iter == 5348 ) data%control%SHA_control%print_level = 2
          CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
                             data%total_diffs, data%PAST,                       &
                             nlp%n, data%total_diffs, data%DX_past,             &
@@ -2123,10 +2126,10 @@
 !      END IF
      END IF
 
-!write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
-! data%DX_past( : nlp%n, data%latest_diff )
-!write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
-! data%DG_past( : nlp%n, data%latest_diff )
+write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
+ data%DX_past( : nlp%n, data%latest_diff )
+write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
+ data%DG_past( : nlp%n, data%latest_diff )
 
 !  print details of solution
 
