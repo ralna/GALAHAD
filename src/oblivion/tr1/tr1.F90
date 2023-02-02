@@ -361,7 +361,7 @@
        REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio
        REAL ( KIND = rp_ ) :: old_radius, radius_trial, etat, ometat
        REAL ( KIND = rp_ ) :: dxtdg, dgtdg, df, stg, s_norm, radius_max
-       REAL ( KIND = rp_ ) :: stop_g, s_new_norm
+       REAL ( KIND = rp_ ) :: stop_g, s_new_norm, hmax_error
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
@@ -1219,7 +1219,7 @@
 
      IF ( inform%iter >= data%start_print .AND.                                &
           inform%iter < data%stop_print .AND.                                  &
-          MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) THEN
+          MOD( inform%iter - 1 - data%start_print, data%print_gap ) == 0 ) THEN
        data%printi = data%set_printi ; data%printt = data%set_printt
        data%printm = data%set_printm ; data%printd = data%set_printd
        data%print_level = data%control%print_level
@@ -1342,7 +1342,9 @@
      data%total_diffs = 0 ; data%latest_diff = 0
      data%max_diffs = MIN( inform%SHA_inform%differences_needed + 1,           &
                            data%control%max_dxg )
-     write(6, "( ' maximum # differences required = ', I0 )" ) data%max_diffs
+
+     IF ( data%printi ) WRITE( data%out, "( A,                                 &
+    &  ' maximum # differences required = ', I0 )" ) prefix, data%max_diffs
 
      array_name = 'tr1: data%DX_past'
      CALL SPACE_resize_array( nlp%n, data%max_diffs, data%DX_past,             &
@@ -1439,7 +1441,11 @@
      data%stop_g = MAX( control%stop_g_absolute,                               &
                         control%stop_g_relative * inform%norm_g )
 
-     IF ( data%printi ) WRITE( data%out, "( A, '  Problem: ', A,               &
+     CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+     data%time_now = data%time_now - data%time_start
+     data%clock_now = data%clock_now - data%clock_start
+
+     IF ( data%printi ) WRITE( data%out, "( /, A, '  Problem: ', A,            &
     &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
        prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
 
@@ -1453,7 +1459,7 @@
 
        IF ( inform%iter >= data%start_print .AND.                              &
             inform%iter < data%stop_print .AND.                                &
-            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
+            MOD( inform%iter - 1 - data%start_print, data%print_gap ) == 0 )   &
            THEN
          data%printi = data%set_printi ; data%printt = data%set_printt
          data%printm = data%set_printm ; data%printd = data%set_printd
@@ -1475,23 +1481,22 @@
          data%print_1st_header = .FALSE.
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
          IF ( inform%iter > 0 ) THEN
-           WRITE( data%out, 2130 ) prefix, char_iter, data%accept,             &
-              data%bndry, data%negcur, data%perturb, inform%obj,               &
-              inform%norm_g, data%ratio, inform%radius, data%s_norm,           &
-              data%clock_now
+           IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
+                data%bndry, data%negcur, data%perturb, inform%obj,             &
+                inform%norm_g, data%ratio, inform%radius, data%s_norm,         &
+                data%hmax_error, data%clock_now
+           ELSE
+             WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
+                data%bndry, data%negcur, data%perturb, inform%obj,             &
+                inform%norm_g, data%ratio, inform%radius, data%s_norm,         &
+                data%clock_now
+           END IF
          ELSE
-           WRITE( data%out, 2140 ) prefix,                                     &
-                  char_iter, inform%obj, inform%norm_g, inform%radius
+           WRITE( data%out, 2140 ) prefix, char_iter, inform%obj,              &
+               inform%norm_g, inform%radius, data%clock_now
          END IF
        END IF
-
-!IF ( nlp%X( nlp%n ) > zero ) THEN
-!  write(6,"( '+' )" )
-!ELSE IF ( nlp%X( nlp%n ) < zero ) THEN
-!  write(6,"( '-' )" )
-!ELSE
-!  write(6,"( '0' )" )
-!END IF
 
 !  ============================================================================
 !  1. Test for convergence
@@ -1524,29 +1529,29 @@
 
        IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
          WRITE ( data%out, 2040 ) prefix, TRIM( nlp%pname ), nlp%n
-         WRITE ( data%out, 2000 ) prefix, inform%f_eval, prefix, inform%g_eval,&
-           prefix, inform%iter, prefix, inform%cg_iter, &
+         WRITE ( data%out, 2000 ) prefix, inform%f_eval, prefix,               &
+           inform%g_eval, prefix, inform%iter, prefix, inform%cg_iter,         &
            prefix, inform%obj, prefix, inform%norm_g
          WRITE ( data%out, 2010 ) prefix
 !        l = nlp%n
          l = 2
          DO j = 1, 2
-            IF ( j == 1 ) THEN
-               ir = 1 ; ic = MIN( l, nlp%n )
-            ELSE
-               IF ( ic < nlp%n - l ) WRITE( data%out, 2050 ) prefix
-               ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-            END IF
-            IF ( ALLOCATED( nlp%vnames ) ) THEN
-              DO i = ir, ic
-                WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),  &
-                                        nlp%G( i )
-              END DO
-            ELSE
-              DO i = ir, ic
-                WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
-              END DO
-            END IF
+           IF ( j == 1 ) THEN
+              ir = 1 ; ic = MIN( l, nlp%n )
+           ELSE
+              IF ( ic < nlp%n - l ) WRITE( data%out, 2050 ) prefix
+              ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
+           END IF
+           IF ( ALLOCATED( nlp%vnames ) ) THEN
+             DO i = ir, ic
+               WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),    &
+                                       nlp%G( i )
+             END DO
+           ELSE
+             DO i = ir, ic
+               WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
+             END DO
+           END IF
          END DO
        END IF
 
@@ -1622,8 +1627,11 @@
                             data%control%SHA_control, inform%SHA_inform )
 
          IF ( inform%SHA_inform%status == 0 ) THEN
-!          IF ( .FALSE. ) THEN
-           IF ( .TRUE. ) THEN
+           data%hmax_error =                                                   &
+             MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                          &
+                            data%VAL_est( : nlp%H%ne ) ) /                     &
+                     MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
+           IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
              IF ( test_s ) THEN
                WRITE( data%out, "( '    row    col     true         est',      &
               & '       error' )" )
@@ -1633,21 +1641,12 @@
                    ABS( nlp%H%val( i ) - data%VAL_est( i ) )
                END DO
              ELSE
-               WRITE( data%out, "( ' max error = ', ES9.2 )" )                 &
-                 MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                      &
-                                data%VAL_est( : nlp%H%ne ) ) /                 &
-                         MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
+               WRITE( data%out, "( ' max error = ', ES9.2 )" ) data%hmax_error
              END IF
            END IF
 !          nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
-           IF ( .FALSE. ) THEN
-             WRITE( data%out, "( '    row    col      val    for H' )" )
-             DO i = 1, nlp%H%ne
-               WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),           &
-                 nlp%H%col( i ), nlp%H%val( i )
-             END DO
-            END IF
          ELSE
+           data%hmax_error = HUGE( one )
            WRITE( data%out, "( ' SHA status = ', I0 )" )                       &
              inform%SHA_inform%status
          END IF
@@ -1918,12 +1917,17 @@
              data%clock_now = data%clock_now - data%clock_start
              char_iter = STRING_integer_6( inform%iter +                       &
                                              data%advanced_start_iter )
-!               char_sit
-!               char_sit2
+             IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+               WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
+                  data%bndry, data%negcur, data%perturb, inform%obj,           &
+                  inform%norm_g, data%ratio, inform%radius, data%s_norm,       &
+                  data%hmax_error, data%clock_now
+             ELSE
                WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
-                  data%bndry, data%negcur, data%perturb, data%f_trial,         &
-                  inform%norm_g, data%ratio, data%old_radius, data%s_norm,     &
+                  data%bndry, data%negcur, data%perturb, inform%obj,           &
+                  inform%norm_g, data%ratio, inform%radius, data%s_norm,       &
                   data%clock_now
+             END IF
            END IF
 
 !  form the next trial step
@@ -1957,7 +1961,6 @@
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
          ared = prered
        data%ratio = ared / prered
-!write(6,*) ' ratio ', data%ratio, ared, prered
        IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
       &   ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
 
@@ -2087,11 +2090,23 @@
 !  ============================================================================
 
  900 CONTINUE
+      char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+     IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+       WRITE( data%out, 2120 ) prefix, char_iter, data%accept,                 &
+          data%bndry, data%negcur, data%perturb, inform%obj,                   &
+          inform%norm_g, data%ratio, inform%radius, data%s_norm,               &
+          data%hmax_error, data%clock_now
+     ELSE
+       WRITE( data%out, 2130 ) prefix, char_iter, data%accept,                 &
+          data%bndry, data%negcur, data%perturb, inform%obj,                   &
+          inform%norm_g, data%ratio, inform%radius, data%s_norm,               &
+          data%clock_now
+     END IF
 
-write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
- data%DX_past( : nlp%n, data%latest_diff )
-write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
- data%DG_past( : nlp%n, data%latest_diff )
+!write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
+! data%DX_past( : nlp%n, data%latest_diff )
+!write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
+! data%DG_past( : nlp%n, data%latest_diff )
 
 !  print details of solution
 
@@ -2171,9 +2186,10 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
  2090 FORMAT( A, '        (a=accept r=reject b=TR boundary',                   &
                  ' n=-ve curvature h=hard case)' )
  2100 FORMAT( A, '    It           f         grad    ',                        &
-             ' ratio   radius    step    time' )
- 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 2ES8.1, F8.2 )
- 2140 FORMAT( A, A6, 5X, ES12.4, ES10.3, 9X, ES8.1 )
+             ' ratio   radius   step   h_error    time' )
+ 2120 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 3ES8.1, F8.2 )
+ 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 2ES8.1, 8X, F8.2 )
+ 2140 FORMAT( A, A6, 5X, ES12.4, ES11.4, 9X, ES8.1, 16X, F8.2 )
 
  !  End of subroutine TR1_solve
 
