@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD SHA package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-25
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -22,7 +22,7 @@ DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt make_space
 
 #  other packages that depend on package
 
-DEPENDS = arc trace trb tru
+DEPENDS = arc trace trb tru tr1
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -41,11 +41,11 @@ CUTEST_EXAMPLE = QPBAND.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -53,5 +53,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

@@ -478,7 +478,12 @@
       INTEGER ( KIND = ip_ ) :: i, j, j1, jj, k, k1, kk, l, ll, r, c
       INTEGER ( KIND = ip_ ) :: max_row, deg, min_degree
       CHARACTER ( LEN = 80 ) :: array_name
+
+!  prefix for all output
+
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
 !  test for errors in the input data
 
@@ -571,9 +576,10 @@
       DO i = 1, n
         data%LAST( data%PU( i ) ) = data%LAST( data%PU( i ) ) + 1
       END DO
-      IF ( control%out > 0 .AND. control%print_level > 0 )                     &
-        WRITE( control%out, "( ' (row size, # with this size):' )" )
-      CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
+      IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
+        WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
+        CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
+      END IF
 
 !  set the start and finish positions for each degree in DEGREE
 
@@ -836,10 +842,12 @@
           l = data%PK( i + 1 ) - data%PU( i )
           data%LAST( l ) = data%LAST( l ) + 1
         END DO
-        IF ( control%out > 0 .AND. control%print_level > 0 )                   &
-          WRITE( control%out, "( ' (block size, # with this size):' )" )
-        CALL SHA_write_nonzero_list( control%out, data%differences_needed,     &
-                                     data%LAST )
+        IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
+          WRITE( control%out, "( A, ' (block size, # with this size):' )" )    &
+            prefix
+          CALL SHA_write_nonzero_list( control%out, data%differences_needed,   &
+                                       data%LAST )
+        END IF
 
 !  -----------------------------
 !  algorithm 3 (aka paper 2.2/3)
