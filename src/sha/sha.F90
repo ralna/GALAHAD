@@ -1090,6 +1090,7 @@
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
+
 !  test for an error in the input data
 
       IF ( .NOT. data%SHA_analyse_called ) THEN
@@ -1276,8 +1277,8 @@
 
         DO ii = 1, n
           i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = pkipi - pki
+          pki = data%PK( i ) ; pui = data%PU( i ) ; pkip1 = data%PK( i + 1 )
+          nu = pkip1 - pui
           IF ( nu == 0 ) CYCLE
           mu = MIN( nu + control%extra_differences, m_available )
 
@@ -1296,7 +1297,7 @@
 
 !  loop over the known entries
 
-          DO k = data%PK( i ), data%PU( i ) - 1
+          DO k = pki, pui - 1
             kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1314,7 +1315,7 @@
 !  B_{ij} is the jjth unknown
 
           jj = 1
-          DO k = data%PU( i ), data%PK( i + 1 ) - 1
+          DO k = pui, pkip1 - 1
             kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1353,7 +1354,7 @@
 
 !  loop over the known entries
 
-            DO k = data%PK( i ), data%PU( i ) - 1
+            DO k = pki, pui - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1371,7 +1372,7 @@
 !  B_{ij} is the jjth unknown
 
             jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
+            DO k = pui, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1398,7 +1399,7 @@
 !  finally, set the unknown B_{ij}
 
           jj = 1
-          DO k = data%PU( i ), data%PK( i + 1 ) - 1
+          DO k = pui, pkip1 - 1
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
@@ -1413,7 +1414,7 @@
 
 !  loop over the known entries
 
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
+            DO k = pki, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1441,8 +1442,8 @@
 
         DO ii = 1, n
           i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = pkipi - pki
+          pki = data%PK( i ) ; pkip1 = data%PK( i + 1 )
+          nu = pkip1 - pki
           IF ( nu == 0 ) CYCLE
 
 !  if there is sufficient data, compute all of the entries in the row afresh
@@ -1465,7 +1466,7 @@
 !  B_{ij} is the jjth unknown
 
             jj = 1
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
+            DO k = pki, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1492,7 +1493,7 @@
 !  finally, set the unknown B_{ij}
 
             jj = 1
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
+            DO k = pki, pkip1 - 1
               VAL( data%PTR( k ) ) = data%B( jj, 1 )
               jj = jj + 1
             END DO
@@ -1501,7 +1502,7 @@
 
           ELSE
             pui = data%PU( i )
-            nu = pkipi - pui
+            nu = pkip1 - pui
             IF ( nu == 0 ) CYCLE
             mu = MIN( m_available, nu )
 !           IF ( nu > m ) THEN
@@ -1527,7 +1528,7 @@
 
 !  loop over the known entries
 
-            DO k = data%PK( i ), data%PU( i ) - 1
+            DO k = pki, pui - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1545,7 +1546,7 @@
 !  B_{ij} is the jjth unknown
 
             jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
+            DO k = pui, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1572,7 +1573,7 @@
 !  finally, set the unknown B_{ij}
 
             jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
+            DO k = pui, pkip1 - 1
               VAL( data%PTR( k ) ) = data%B( jj, 1 )
               jj = jj + 1
             END DO
@@ -1590,8 +1591,8 @@
 !       DO ii = 1, n
         DO ii = n, 1, - 1
           i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = data%PK( i + 1 ) - data%PK( i )
+          pki = data%PK( i ) ; pkip1 = data%PK( i + 1 )
+          nu = pkip1 - pki
           IF ( nu == 0 ) CYCLE
           mu = MIN( m_available, nu )
 
