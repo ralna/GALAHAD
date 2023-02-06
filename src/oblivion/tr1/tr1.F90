@@ -1344,7 +1344,7 @@
                            data%control%max_dxg )
 
      IF ( data%printi ) WRITE( data%out, "( A,                                 &
-    &  ' maximum # differences required = ', I0 )" ) prefix, data%max_diffs
+    &  ' maximum # of differences required = ', I0 )" ) prefix, data%max_diffs
 
      array_name = 'tr1: data%DX_past'
      CALL SPACE_resize_array( nlp%n, data%max_diffs, data%DX_past,             &
@@ -1619,6 +1619,8 @@
 
 !  compute the new Hessian estimates
 
+!data%control%SHA_control%print_level = 0
+!if ( inform%iter == 3610 ) data%control%SHA_control%print_level = 2
          CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
                             data%total_diffs, data%PAST,                       &
                             nlp%n, data%total_diffs, data%DX_past,             &
@@ -2090,17 +2092,35 @@
 !  ============================================================================
 
  900 CONTINUE
-      char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+
+
+     IF ( inform%iter >= data%start_print .AND.                                &
+          inform%iter < data%stop_print .AND.                                  &
+          MOD( inform%iter + 1 - data%start_print, data%print_gap ) /= 0 ) THEN
+       char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+       IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+         WRITE( data%out, 2120 ) prefix, char_iter, data%accept,               &
+            data%bndry, data%negcur, data%perturb, inform%obj,                 &
+            inform%norm_g, data%ratio, inform%radius, data%s_norm,             &
+            data%hmax_error, data%clock_now
+       ELSE
+         WRITE( data%out, 2130 ) prefix, char_iter, data%accept,               &
+            data%bndry, data%negcur, data%perturb, inform%obj,                 &
+            inform%norm_g, data%ratio, inform%radius, data%s_norm,             &
+            data%clock_now
+       END IF
+     END IF
+
      IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
-       WRITE( data%out, 2120 ) prefix, char_iter, data%accept,                 &
-          data%bndry, data%negcur, data%perturb, inform%obj,                   &
-          inform%norm_g, data%ratio, inform%radius, data%s_norm,               &
-          data%hmax_error, data%clock_now
-     ELSE
-       WRITE( data%out, 2130 ) prefix, char_iter, data%accept,                 &
-          data%bndry, data%negcur, data%perturb, inform%obj,                   &
-          inform%norm_g, data%ratio, inform%radius, data%s_norm,               &
-          data%clock_now
+!      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
+         WRITE( data%out, "( /, &
+        &                 '    row    col     true         est       error' )" )
+         DO i = 1, nlp%H%ne
+           WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),               &
+             nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),                &
+             ABS( nlp%H%val( i ) - data%VAL_est( i ) )
+         END DO
+!      END IF
      END IF
 
 !write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
