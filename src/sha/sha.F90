@@ -859,7 +859,7 @@
 
 !  skip rows that have more than max_sparse_degree entries
 
-          IF ( data%PK( i + 1 ) -  data%PK( i ) >                              &
+          IF ( data%PK( i + 1 ) - data%PK( i ) >                               &
                control%max_sparse_degree ) CYCLE
           data%unsym_rows = data%unsym_rows + 1
           data%PERM_inv( data%unsym_rows ) = i
@@ -909,10 +909,10 @@
           IF (  data%COUNT( i ) == n + 1 ) THEN
             data%PU( i ) = data%PK( i )
             data%differences_needed =                                          &
-              MAX( data%differences_needed, data%PK( i + 1 ) -  data%PU( i ) )
+              MAX( data%differences_needed, data%PK( i + 1 ) - data%PU( i ) )
           ELSE
             inform%max_reduced_degree =                                        &
-              MAX( inform%max_reduced_degree, data%PK( i + 1 ) -  data%PU( i ) )
+              MAX( inform%max_reduced_degree, data%PK( i + 1 ) - data%PU( i ) )
             j = j + 1
             data%PERM_inv( j ) = i
           END IF
@@ -1082,7 +1082,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank, status
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
-      INTEGER ( KIND = ip_ ) :: m_needed, m_used
+      INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -1276,16 +1276,10 @@
 
         DO ii = 1, n
           i = data%PERM_inv( ii )
-          nu = data%PK( i + 1 ) - data%PU( i )
+          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
+          nu = pkipi - pki
           IF ( nu == 0 ) CYCLE
           mu = MIN( nu + control%extra_differences, m_available )
-!         IF ( nu > m ) THEN
-!           IF ( control%out > 0 .AND. control%print_level >= 1 )              &
-!             WRITE( control%out, "( I0, ' entries to be found in row ', I0,   &
-!            &  ' but only ', I0, ' differences supplied' )" ) nu, i, m
-!           inform%status = - 111
-!           RETURN
-!         END IF
 
 !  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
 !    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
@@ -1343,8 +1337,8 @@
 
 !  solve A x = b
 
-          CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
-                                 data%la1, data%B, data%lb1,                   &
+          CALL SHA_solve_system( control%dense_linear_solver, mu, nu,          &
+                                 data%A, data%la1, data%B, data%lb1,           &
                                  data%solve_system_data, i,                    &
                                  control%out, control%print_level, info )
 
@@ -1400,7 +1394,6 @@
           ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
-!write(6,*) ' pass ', inform%status
 
 !  finally, set the unknown B_{ij}
 
@@ -1448,8 +1441,8 @@
 
         DO ii = 1, n
           i = data%PERM_inv( ii )
-!write(6,*) ' ii, i ', ii, i
-          nu = data%PK( i + 1 ) - data%PK( i )
+          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
+          nu = pkipi - pki
           IF ( nu == 0 ) CYCLE
 
 !  if there is sufficient data, compute all of the entries in the row afresh
@@ -1459,7 +1452,7 @@
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
 !    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
-!  for l = 1,.., |I_i^+|, where
+!  for l = 1,.., |I_i|, where
 !    I_i = { j : B_{ij} /= 0}
 
 !  store the right-hand side y_{il}
@@ -1482,15 +1475,12 @@
 
 !  set the entries of A
 
-!write(6,*) ' RD ', RD( : mu )
               data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-!write(6,*) data%A( 1 : mu, jj )
               jj = jj + 1
             END DO
 
 !  solve A x = b
 
-!write(6,*) ' solver ', control%dense_linear_solver
             CALL SHA_solve_system( control%dense_linear_solver, mu, nu,        &
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
@@ -1510,8 +1500,8 @@
 !  if there is insufficient data, compute only the unknown entries in the row
 
           ELSE
-!write(6,*) nu, m
-            nu = data%PK( i + 1 ) - data%PU( i )
+            pui = data%PU( i )
+            nu = pkipi - pui
             IF ( nu == 0 ) CYCLE
             mu = MIN( m_available, nu )
 !           IF ( nu > m ) THEN
@@ -1600,20 +1590,14 @@
 !       DO ii = 1, n
         DO ii = n, 1, - 1
           i = data%PERM_inv( ii )
+          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
           nu = data%PK( i + 1 ) - data%PK( i )
           IF ( nu == 0 ) CYCLE
           mu = MIN( m_available, nu )
-!         IF ( nu > m ) THEN
-!           IF ( control%out > 0 .AND. control%print_level >= 1 )              &
-!             WRITE( control%out, "( I0, ' entries to be found in row ', I0,   &
-!            &  ' but only ', I0, ' differences supplied' )" ) nu, i, m
-!           inform%status = - 111
-!           RETURN
-!         END IF
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
 !    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
-!  for l = 1,.., |I_i^+|, where
+!  for l = 1,.., |I_i|, where
 !    I_i = { j : B_{ij} /= 0}
 
 !  store the right-hand side y_{il}
@@ -1626,7 +1610,7 @@
 !  B_{ij} is the jjth unknown
 
           jj = 1
-          DO k = data%PK( i ), data%PK( i + 1 ) - 1
+          DO k = pki, pkip1 - 1
             kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1636,9 +1620,7 @@
 
 !  set the entries of A
 
-!write(6,*) ' RD ', RD( : mu )
             data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-!write(6,*) data%A( 1 : mu, jj )
             jj = jj + 1
           END DO
 
@@ -1655,7 +1637,7 @@
 !  finally, set the unknown B_{ij}
 
           jj = 1
-          DO k = data%PK( i ), data%PK( i + 1 ) - 1
+          DO k = pki, pkip1 - 1
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
@@ -1749,24 +1731,25 @@
           CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, status )
         END IF
-        IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
-          status = MAX( m, n ) + 1
+!       IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
+!         status = MAX( m, n ) + 1
           IF( printi ) THEN
             WRITE( out, "( ' matrix singular, sigma_min/sigma_1 = ',           &
            &       ES11.4 )" )  data%S( MIN( m, n ) ) / data%S( 1 )
             IF ( print_level > 1 ) THEN
               WRITE( out, "( ' row ', I0, ', solver status = ',                &
-             &       I0, /, ' matrix =' )" ) i, status
+             &       I0, /, ' matrix =' )" ) row, status
               DO i = 1, n
                 WRITE( out, "( 'column ', I4, ' = ', ( 5ES12.4 ) )" )          &
                   i, A_save( : m, i )
               END DO
               WRITE( out, "( 'sigma = ', ( 5ES12.4 ) )" )                      &
                 data%S( 1 : MIN( m, n ) )
+              WRITE( out, "( 'b = ', ( 5ES12.4 ) )" ) B( 1 : n, 1 )
             END IF
           END IF
         END IF
-      END IF
+!     END IF
       IF ( printi ) THEN
         IF ( rank > 0 ) THEN
           WRITE( out, "( ' row ', I0, ' m ', I0, ' n ', I0, ' rank ',          &
