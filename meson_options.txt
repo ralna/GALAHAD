@@ -1,6 +1,6 @@
 option('ciface',
        type : 'boolean',
-       value : false,
+       value : true,
        description : 'whether to build the C interfaces')
 
 option('pythoniface',
