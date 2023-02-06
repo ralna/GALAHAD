@@ -2326,7 +2326,8 @@
            IF ( data%control%model == sparsity_hessian_model ) THEN
              data%latest_diff = data%latest_diff + 1
              IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
-             data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
+!            data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
+             data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
              data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
 !write(6,*) ' latest ', data%latest_diff
 !write(6,*) 's', data%DX_past( : , data%latest_diff )
