@@ -42,10 +42,10 @@ libgalahad_deps = []
 blas_dep = []
 lapack_dep = []
 
-# -DSPRAL_HAVE_HWLOC
-# -DSPRAL_NO_SCHED_GETCPU
-extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_HAVE_SCHED_GETCPU']
-extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_HAVE_SCHED_GETCPU']
+# -DSPRAL_HAVE_HWLOC | -DSPRAL_NO_HWLOC
+# -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
+extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_NO_SCHED_GETCPU']
+extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE', '-DSPRAL_NO_HWLOC', '-DSPRAL_NO_SCHED_GETCPU']
 
 # libgalahad_blas
 
@@ -309,7 +309,7 @@ libwsmp = library('wsmp',
                   include_directories: libgalahad_include,
                   install : true)
 
-libgalahad_metis = library('galahad_metis',
+libgalahad_metis4 = library('galahad_metis4',
                            sources : 'src/dum/metis4.f',
                            install : true)
 
@@ -450,7 +450,7 @@ if build_single
 
   libgalahad_single_link_with = [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_single,
                                  libpardiso, libmkl_pardiso, libmumps_single, libspmf_single,
-                                 libwsmp, libpastix_single, libgalahad_metis, libgalahad_cpp_single]
+                                 libwsmp, libpastix_single, libgalahad_metis4, libgalahad_cpp_single]
 
   if not build_ssids
     libspral_ssids_single = library('spral_ssids_single',
@@ -491,7 +491,7 @@ if build_double
 
   libgalahad_double_link_with = [libgalahad_blas, libgalahad_lapack, libgalahad_hsl_double,
                                  libpardiso, libmkl_pardiso, libmumps_double, libspmf_double,
-                                 libwsmp, libpastix_double, libgalahad_metis, libgalahad_cpp_double]
+                                 libwsmp, libpastix_double, libgalahad_metis4, libgalahad_cpp_double]
 
   if not build_ssids
     libspral_ssids_double = library('spral_ssids_double',
