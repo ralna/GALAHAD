@@ -1,8 +1,8 @@
 project(
   'GALAHAD',
-  'fortran',
   'c',
   'cpp',
+  'fortran',
   version: '5.0.0',
   license: 'BSD-3',
   meson_version: '>= 0.61.0',
@@ -435,6 +435,7 @@ libgalahad_cpp_single = library('galahad_cpp_single',
                                  link_with : [libgalahad_blas, libgalahad_lapack],
                                  dependencies : blas_dep + lapack_dep,
                                  cpp_args : extra_args_single,
+                                 # link_language : 'cpp',
                                  include_directories: libgalahad_include,
                                  install : true)
 
@@ -443,6 +444,7 @@ libgalahad_cpp_double = library('galahad_cpp_double',
                                 link_with : [libgalahad_blas, libgalahad_lapack],
                                 dependencies : blas_dep + lapack_dep,
                                 cpp_args : extra_args_double,
+                                # link_language : 'cpp',
                                 include_directories: libgalahad_include,
                                 install : true)
 
@@ -457,6 +459,7 @@ if build_single
                                     sources : libspral_ssids_single_src,
                                     link_with : [libgalahad_blas, libgalahad_lapack],
                                     dependencies : blas_dep + lapack_dep,
+                                    # link_language : 'cpp',
                                     install : true)
 
     libgalahad_single_link_with += libspral_ssids_single
@@ -468,6 +471,7 @@ if build_single
                               dependencies : libgalahad_deps,
                               fortran_args : extra_args_single,
                               cpp_args : extra_args_single,
+                              # link_language : 'fortran',
                               include_directories: libgalahad_include,
                               install : true)
 
@@ -482,6 +486,7 @@ if build_single
                                   sources : dum_single_c_src + libgalahad_c_src,
                                   link_with : libgalahad_single_c_link_with,
                                   fortran_args : extra_args_single,
+                                  # link_language : 'fortran',
                                   include_directories: libgalahad_include,
                                   install : true)
   endif
@@ -498,6 +503,7 @@ if build_double
                                     sources : libspral_ssids_double_src,
                                     link_with : [libgalahad_blas, libgalahad_lapack],
                                     dependencies : blas_dep + lapack_dep,
+                                    # link_language : 'cpp',
                                     install : true)
 
     libgalahad_double_link_with += libspral_ssids_double
@@ -509,6 +515,7 @@ if build_double
                               dependencies : libgalahad_deps,
                               fortran_args : extra_args_double,
                               cpp_args : extra_args_double,
+                              # link_language : 'fortran',
                               include_directories: libgalahad_include,
                               install : true)
 
@@ -523,6 +530,7 @@ if build_double
                                   sources : dum_double_c_src  + libgalahad_c_src,
                                   link_with : libgalahad_double_c_link_with,
                                   fortran_args : extra_args_double,
+                                  # link_language : 'fortran',
                                   include_directories: libgalahad_include,
                                   install : true)
   endif
@@ -530,10 +538,20 @@ endif
 
 # Executables
 if build_single
-  buildspec_single = executable('buildspec_single', 'src/buildspec/buildspec.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include, install : true)
+  buildspec_single = executable('buildspec_single', 'src/buildspec/buildspec.F90',
+                                fortran_args : extra_args_single,
+                                link_with : libgalahad_single,
+                                link_language : 'fortran',
+                                include_directories: libgalahad_include,
+                                install : true)
 endif
 if build_double
-  buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include, install : true)
+  buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90',
+                                fortran_args : extra_args_double,
+                                link_with : libgalahad_double,
+                                link_language : 'fortran',
+                                include_directories: libgalahad_include,
+                                install : true)
 endif
 
 # Unit tests
