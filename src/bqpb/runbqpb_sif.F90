@@ -38,7 +38,7 @@
 
    CALL USE_BQPB( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

@@ -1083,12 +1083,14 @@
       INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank, status
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
       INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui
+      LOGICAL :: sym
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       CHARACTER ( LEN = 80 ) :: array_name
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
 
 !  test for an error in the input data
 
@@ -1265,19 +1267,25 @@
 !       |           |                  |      those for k=PU(i),..,P(i+1)-1
 !     PK(i)        PU(i)            PK(i+1)   still to be determined
 
-!  -----------------------------
-!  method that exploits symmetry
-!  -----------------------------
-
-      IF ( control%approximation_algorithm == 1 .OR.                           &
-           control%approximation_algorithm == 3 ) THEN
-
 !  run through the rows finding the unknown entries
 
-        DO ii = 1, n
-          i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = pkipi - pki
+      DO ii = 1, n
+        i = data%PERM_inv( ii )
+        pki = data%PK( i ) ; pkip1 = data%PK( i + 1 ) ; nu = pkip1 - pki
+        IF ( nu == 0 ) CYCLE
+
+!  decide whether to exploit symmetry or not
+
+        sym = control%approximation_algorithm == 1 .OR.                        &
+              control%approximation_algorithm == 3 .OR.                        &
+            ( control%approximation_algorithm == 2 .AND. nu > m_available )
+
+!  -----------------------------
+!  methods that exploit symmetry
+!  -----------------------------
+
+        IF ( sym ) THEN
+          pui = data%PU( i ) ; nu = pkip1 - pui
           IF ( nu == 0 ) CYCLE
           mu = MIN( nu + control%extra_differences, m_available )
 
@@ -1285,18 +1293,16 @@
 !    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
 !  for l = 1,.., |I_i^+|, where
 !    I_i^+ = { j : j \in I_i and B_{ji} is already known }
-!    I_i^- = I_i \ I_i^+ and
-!    I_i = { j : B_{ij} /= 0}
+!    I_i^- = I_i \ I_i^+ and I_i = { j : B_{ij} /= 0}
 
-!  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
-
+!  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl},
 !  initialize b to Y(i,l)
 
           data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
 
 !  loop over the known entries
 
-          DO k = data%PK( i ), data%PU( i ) - 1
+          DO k = pki, pui - 1
             kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1314,7 +1320,7 @@
 !  B_{ij} is the jjth unknown
 
           jj = 1
-          DO k = data%PU( i ), data%PK( i + 1 ) - 1
+          DO k = pui, pkip1 - 1
             kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1353,7 +1359,7 @@
 
 !  loop over the known entries
 
-            DO k = data%PK( i ), data%PU( i ) - 1
+            DO k = pki, pui - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1371,7 +1377,7 @@
 !  B_{ij} is the jjth unknown
 
             jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
+            DO k = pui, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1391,6 +1397,9 @@
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
+
+!  check for errors
+
           ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
@@ -1398,7 +1407,7 @@
 !  finally, set the unknown B_{ij}
 
           jj = 1
-          DO k = data%PU( i ), data%PK( i + 1 ) - 1
+          DO k = pui, pkip1 - 1
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
@@ -1413,7 +1422,7 @@
 
 !  loop over the known entries
 
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
+            DO k = pki, pkip1 - 1
               kk = data%PTR( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
@@ -1429,180 +1438,19 @@
             write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
               MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
           END IF
-        END DO
 
-!  ---------------------------------------
-!  method that partially exploits symmetry
-!  ---------------------------------------
+!  -----------------------------------
+!  methods that don't exploit symmetry
+!  -----------------------------------
 
-      ELSE IF ( control%approximation_algorithm == 2 ) THEN
-
-!  run through the rows finding the unknown entries
-
-        DO ii = 1, n
-          i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = pkipi - pki
-          IF ( nu == 0 ) CYCLE
-
-!  if there is sufficient data, compute all of the entries in the row afresh
-
-          IF ( nu <= m_available ) THEN
-            mu = nu
+        ELSE
+          mu = MIN( nu + control%extra_differences, m_available )
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
 !    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
-!  for l = 1,.., |I_i|, where
-!    I_i = { j : B_{ij} /= 0}
+!  for l = 1,.., |I_i|, where I_i = { j : B_{ij} /= 0}
 
-!  store the right-hand side y_{il}
-
-!  initialize b to Y(i,l)
-
-            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-            jj = 1
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
-              kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-
-!  set the entries of A
-
-              data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-              jj = jj + 1
-            END DO
-
-!  solve A x = b
-
-            CALL SHA_solve_system( control%dense_linear_solver, mu, nu,        &
-                                   data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i,                  &
-                                   control%out, control%print_level, info )
-            IF ( info /= 0 ) THEN
-              inform%status = GALAHAD_error_factorization ; GO TO 900
-            END IF
-
-!  finally, set the unknown B_{ij}
-
-            jj = 1
-            DO k = data%PK( i ), data%PK( i + 1 ) - 1
-              VAL( data%PTR( k ) ) = data%B( jj, 1 )
-              jj = jj + 1
-            END DO
-
-!  if there is insufficient data, compute only the unknown entries in the row
-
-          ELSE
-            pui = data%PU( i )
-            nu = pkipi - pui
-            IF ( nu == 0 ) CYCLE
-            mu = MIN( m_available, nu )
-!           IF ( nu > m ) THEN
-!             IF ( control%out > 0 .AND. control%print_level >= 1 )            &
-!               WRITE( control%out, "( I0, ' entries to be found in row ', I0, &
-!              &  ' but only ', I0, ' differences supplied' )" ) nu, i, m
-!             inform%status = - 111
-!             RETURN
-!           END IF
-
-!  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
-!    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
-!  for l = 1,.., |I_i^+|, where
-!    I_i^+ = { j : j \in I_i and B_{ji} is already known }
-!    I_i^- = I_i \ I_i^+ and
-!    I_i = { j : B_{ij} /= 0}
-
-!  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
-
-!  initialize b to Y(i,l)
-
-            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
-
-!  loop over the known entries
-
-            DO k = data%PK( i ), data%PU( i ) - 1
-              kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-
-!  subtract B_{ij} s_{jl} from b
-
-              data%B( 1 : mu, 1 )                                              &
-                = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
-            END DO
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-            jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
-              kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-
-!  set the entries of A
-
-              data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-              jj = jj + 1
-            END DO
-
-!  solve A x = b
-
-            CALL SHA_solve_system( control%dense_linear_solver, mu, nu,        &
-                                   data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i,                  &
-                                   control%out, control%print_level, info )
-            IF ( info /= 0 ) THEN
-              inform%status = GALAHAD_error_factorization ; GO TO 900
-            END IF
-
-!  finally, set the unknown B_{ij}
-
-            jj = 1
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
-              VAL( data%PTR( k ) ) = data%B( jj, 1 )
-              jj = jj + 1
-            END DO
-          END IF
-        END DO
-
-!  ------------------------------------------
-!  naive method that doesn't exploit symmetry
-!  ------------------------------------------
-
-      ELSE
-
-!  run through the rows finding the unknown entries
-
-!       DO ii = 1, n
-        DO ii = n, 1, - 1
-          i = data%PERM_inv( ii )
-          pki = data%PU( i ) ; pkip1 = data%PK( i + 1 ) 
-          nu = data%PK( i + 1 ) - data%PK( i )
-          IF ( nu == 0 ) CYCLE
-          mu = MIN( m_available, nu )
-
-!  compute the unknown entries B_{ij}, j in I_i, to satisfy
-!    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
-!  for l = 1,.., |I_i|, where
-!    I_i = { j : B_{ij} /= 0}
-
-!  store the right-hand side y_{il}
-
-!  initialize b to Y(i,l)
+!  store the right-hand side y_{il}, initialize b to Y(i,l)
 
           data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
 
@@ -1624,13 +1472,56 @@
             jj = jj + 1
           END DO
 
+! make a copy of A and b as a precaution for possible use later
+
+          IF ( mu + 1 <= m_max ) THEN
+            data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+            data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+          END IF
+
 !  solve A x = b
 
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i,                    &
                                  control%out, control%print_level, info )
-          IF ( info /= 0 ) THEN
+
+!  if A appears to be singular, add an extra row if there is one, and
+!  solve the system as a least-squares problem
+
+          IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
+
+!  store the right-hand side y_{il}, initialize b to Y(i,l)
+
+            data%B( mu + 1, 1 ) = Y( i, RD( mu + 1 ) )
+
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
+
+            jj = 1
+            DO k = pki, pkip1 - 1
+              kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+              j = COL( kk )
+              IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
+              jj = jj + 1
+            END DO
+
+!  solve A x = b
+
+            CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
+                                   data%A, data%la1, data%B, data%lb1,         &
+                                   data%solve_system_data, i,                  &
+                                   control%out, control%print_level, info )
+!  check for errors
+
+          ELSE IF ( info /= 0 ) THEN
             inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
 
@@ -1641,8 +1532,35 @@
             VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
           END DO
-        END DO
-      END IF
+
+!  if required, compute and print the residuals
+
+          IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
+
+!  loop over the known entries
+
+            DO k = pki, pkip1 - 1
+              kk = data%PTR( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+              j = COL( kk )
+              IF ( j == i ) j = ROW( kk )
+
+!  subtract B_{ij} s_{jl} from b
+
+              data%B( 1 : mu, 1 )                                              &
+                = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
+            END DO
+            write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
+              MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+          END IF
+        END IF
+      END DO
 
 !  prepare to return
 

@@ -38,7 +38,7 @@
 
    CALL USE_L1QP( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP
