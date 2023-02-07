@@ -211,7 +211,7 @@
 
 !  Set copyright
 
-     IF ( out > 0 ) CALL COPYRIGHT( out, '2008' )
+     IF ( out > 0 ) CALL COPYRIGHT( out, '2023' )
 
 !  Set up control parameters prior to the next solution
 
