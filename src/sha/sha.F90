@@ -1091,7 +1091,6 @@
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
-
 !  test for an error in the input data
 
       IF ( .NOT. data%SHA_analyse_called ) THEN
@@ -1343,6 +1342,12 @@
 
 !  solve A x = b
 
+          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
+            WRITE( control%out, "( ' known', 9I6, /, ( 10I6 ) )" )             &
+              data%PTR( pki : pui - 1 )
+          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
+            WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
+              data%PTR( pui : pkip1 - 1 )
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu,          &
                                  data%A, data%la1, data%B, data%lb1,           &
                                  data%solve_system_data, i,                    &
@@ -1481,6 +1486,9 @@
 
 !  solve A x = b
 
+          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
+            WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
+              data%PTR( pki : pkip1 - 1 )
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i,                    &
