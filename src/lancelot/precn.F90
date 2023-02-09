@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -34,21 +34,21 @@
 !   update released with GALAHAD Version 2.0. February 16th 2005
 
    MODULE LANCELOT_PRECN_precision
-            
+
 !    USE GLOBAL_ma27e, ONLY: SA%INFO(5), SA%INFO(6), SA%INFO(7),               &
 !                            SA%INFO(9), SA%INFO(2)
      USE GALAHAD_KINDS_precision
      USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
-     USE LANCELOT_BAND_precision
+     USE GALAHAD_BAND_precision
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,         &
                                        SCU_inform_type, SCU_restart_m_eq_0,    &
                                        SCU_solve, SCU_append
+     USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
      USE LANCELOT_HSL_routines, ONLY : MA61_initialize
      USE LANCELOT_ASMBL_precision
      USE LANCELOT_MDCHL_precision
-     USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
      IMPLICIT NONE
 
      PRIVATE
@@ -1182,4 +1182,3 @@
 !  End of module LANCELOT_PRECN
 
    END MODULE LANCELOT_PRECN_precision
-
