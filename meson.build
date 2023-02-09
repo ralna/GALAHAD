@@ -332,6 +332,7 @@ libgalahad_metis4 = library('galahad_metis4',
 subdir('src/kinds')
 
 ## 2. the following modules have no dependencies inside libgalahad; they appear in alphabetical order
+subdir('src/band')
 subdir('src/clock')
 subdir('src/checkpoint')
 subdir('src/common')
@@ -413,6 +414,7 @@ subdir('src/dps')
 subdir('src/eqp')
 subdir('src/demo')
 subdir('src/l1qp')
+subdir('src/psls')
 
 # needs CUTEst interface
 # subdir('src/ptrans')

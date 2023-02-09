@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD FILTRANE package
 
-#  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  Nick Gould, for GALAHAD productions
+#  This version: 2023-02-09
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -21,11 +21,11 @@ PACKAGE = FILTRANE
 DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
                make_smt make_space make_roots make_norms \
                make_rand make_gltr make_tools make_userdata \
-               make_nlpt make_copyright make_lancelot_filtrane
+               make_nlpt make_copyright make_band make_lancelot_filtrane
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -44,11 +44,11 @@ CUTEST_EXAMPLE = CLUSTER.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -56,5 +56,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries
