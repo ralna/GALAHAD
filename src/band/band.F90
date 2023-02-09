@@ -1,20 +1,23 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:40 GMT.
 ! Updated 29/11/2002: extra arguments introduced to allow changing bandwidth
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-  L A N C E L O T  -B-  BAND   M O D U L E  *-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-  G A L A H A D _ B A N D   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
-!  Nick Gould, for GALAHAD productions
-!  Copyright reserved
-!  January 23rd 1995
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal author: Nick Gould
 
-   MODULE LANCELOT_BAND_precision
+!  History -
+!  Based on LANCELOT B package BNDSL, January 23rd 1995
+!  Moved from LANECLOT to GALAHAD and renamed accordingly, February 9th 2023
+
+   MODULE GALAHAD_BAND_precision
 
      USE GALAHAD_KINDS_precision
 
      IMPLICIT NONE
-     
+
      PRIVATE
      PUBLIC :: BAND_factor, BAND_solve
 
@@ -43,15 +46,15 @@
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( lsemib, n ) :: OFFDIA
      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION ( n ) :: PERT
      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( OUT ) :: n_pert
-     
+
 !-------------------------------------------
 !   L a l   V a r i a b l e s
 !-------------------------------------------
-     
+
      INTEGER ( KIND = ip_ ) :: i, ipjm1, j, k, m
      REAL ( KIND = rp_ ) :: offd, tau1, tau2, gamma, offsum
      LOGICAL :: phase1
-     
+
      IF ( nsemib <= lsemib ) THEN
        status = 0
      ELSE
@@ -108,41 +111,41 @@
 !  last N - I by N - I submatrix
 
        IF ( .NOT. phase1 ) THEN
-!         offsum = SUM( ABS( OFFDIA( : m, i ) ) )
-          offsum = zero
-          DO j = 1, m ; offsum = offsum + ABS( OFFDIA( j, i ) ) ; END DO
+!        offsum = SUM( ABS( OFFDIA( : m, i ) ) )
+         offsum = zero
+         DO j = 1, m ; offsum = offsum + ABS( OFFDIA( j, i ) ) ; END DO
 
 !  Perturb the diagonal so that the Gershgorin disk lies in the
 !  positive half of the complex plane
 
-          offsum = MAX( zero, - DIAG( i ) + MAX( offsum, tau2 ) )
-!         WRITE(6,*) ' DIAGONAL ', I, ' MODIFIED BY ', OFFSUM
-          DIAG( i ) = DIAG( i ) + offsum
-          IF ( PRESENT( PERT ) ) PERT( i ) = offsum
-          IF ( PRESENT( n_pert ) ) n_pert = n_pert + 1
+         offsum = MAX( zero, - DIAG( i ) + MAX( offsum, tau2 ) )
+!        WRITE(6,*) ' DIAGONAL ', I, ' MODIFIED BY ', OFFSUM
+         DIAG( i ) = DIAG( i ) + offsum
+         IF ( PRESENT( PERT ) ) PERT( i ) = offsum
+         IF ( PRESENT( n_pert ) ) n_pert = n_pert + 1
        END IF
 
 !  Perform the I-th step of the factorization
 
        DO j = 1, m
-          offd = OFFDIA( j, i )
+         offd = OFFDIA( j, i )
 
 !  Update the Schur complement. (1) off diagonal terms
 
-          ipjm1 = j
-          DO k = 1, j - 1
-            OFFDIA( ipjm1 - k, i + k ) =                                       &
-              OFFDIA( ipjm1 - k, i + k ) - offd * OFFDIA( k, i )
-          END DO
+         ipjm1 = j
+         DO k = 1, j - 1
+           OFFDIA( ipjm1 - k, i + k ) =                                        &
+             OFFDIA( ipjm1 - k, i + k ) - offd * OFFDIA( k, i )
+         END DO
 
 !  (2) diagonal terms
 
-          offd = offd / DIAG( i )
-          DIAG( i + j ) = DIAG( i + j ) - offd * OFFDIA( j, i )
+         offd = offd / DIAG( i )
+         DIAG( i + j ) = DIAG( i + j ) - offd * OFFDIA( j, i )
 
 !  Find the subdiagonal of the I-th column of the factor L.
 
-          OFFDIA( j, i ) = offd
+         OFFDIA( j, i ) = offd
        END DO
      END DO
      RETURN
@@ -218,4 +221,4 @@
 
 !  End of module LANCELOT_BAND
 
-   END MODULE LANCELOT_BAND_precision
+   END MODULE GALAHAD_BAND_precision

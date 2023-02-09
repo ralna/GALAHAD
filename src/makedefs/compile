@@ -323,7 +323,7 @@ $(OBJ)/$(package)ti_$(PRECIS).o: ../$(package)/$(package)ti.F90
 
 $(package)ct.o: $(OBJ)/$(package)ct_$(PRECIS).o
 
-$(OBJ)/$(package)ct_$(PRECIS).o: ../$(package)/C/$(package)t_$(PRECIS).c
+$(OBJ)/$(package)ct_$(PRECIS).o: ../$(package)/C/$(package)t.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct  "
 	$(CP) ../$(package)/C/$(package)t.c $(OBJ)/$(package)ct.c
 	cd $(OBJ) ; $(CC) -o $(package)ct_$(PRECIS).o $(CFLAGS) \

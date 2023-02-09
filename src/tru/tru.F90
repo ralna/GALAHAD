@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_TRU_precision
-            
+
 !     --------------------------------------------------------------
 !    |                                                              |
 !    | TRU, a trust-region algorithm for unconstrained optimization |
@@ -556,7 +556,7 @@
        REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio
        REAL ( KIND = rp_ ) :: old_radius, radius_trial, etat, ometat
        REAL ( KIND = rp_ ) :: dxtdg, dgtdg, df, stg, hstbs, s_norm, radius_max
-       REAL ( KIND = rp_ ) :: stop_g, s_new_norm, rho_g
+       REAL ( KIND = rp_ ) :: stop_g, s_new_norm, hmax_error, rho_g
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, use_dps
@@ -2042,6 +2042,7 @@
 
 !    data%new_h = data%control%hessian_available
      data%new_h = .TRUE.
+     data%hmax_error = zero
 
      IF ( data%printi ) WRITE( data%out, "( A, '  Problem: ', A,               &
     &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
@@ -2109,8 +2110,8 @@
                 ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter_pass2 ) )
              WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
                 data%bndry, data%negcur, data%perturb, inform%obj,             &
-                inform%norm_g, data%ratio, inform%radius, char_sit,            &
-                char_sit2, data%clock_now
+                inform%norm_g, data%ratio, inform%radius, data%hmax_error,     &
+                char_sit, char_sit2, data%clock_now
            END IF
          ELSE
           IF ( data%control%subproblem_direct ) THEN
@@ -2375,7 +2376,11 @@
                                 data%control%SHA_control, inform%SHA_inform )
 
              IF ( inform%SHA_inform%status == 0 ) THEN
-               IF ( .FALSE. ) THEN
+               data%hmax_error =                                               &
+                 MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                      &
+                                data%VAL_est( : nlp%H%ne ) ) /                 &
+                         MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
+               IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
                  IF ( test_s ) THEN
                    WRITE( data%out, "( '    row    col     true         est',  &
                   & '       error' )" )
@@ -2385,20 +2390,11 @@
                        ABS( nlp%H%val( i ) - data%VAL_est( i ) )
                    END DO
                  ELSE
-                   WRITE(6,*) ' diff ', MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) - &
-                                                data%VAL_est( : nlp%H%ne ) ) / &
-                                 MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ))
+                   WRITE( data%out, "( ' max error = ', ES9.2 )" )             &
+                     data%hmax_error
                  END IF
                END IF
                nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
-
-               IF ( .FALSE. ) THEN
-                 WRITE( data%out, "( '    row    col      val    for H' )" )
-                 DO i = 1, nlp%H%ne
-                   WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),       &
-                     nlp%H%col( i ), nlp%H%val( i )
-                 END DO
-               END IF
              ELSE
                WRITE( data%out, "( ' SHA status = ', I0 )" )                   &
                  inform%SHA_inform%status
@@ -3456,8 +3452,8 @@
                char_sit2 = STRING_integer_6( inform%GLTR_inform%iter_pass2 )
                WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
                   data%bndry, data%negcur, data%perturb, data%f_trial,         &
-                  inform%norm_g, data%ratio, data%old_radius, char_sit,        &
-                  char_sit2, data%clock_now
+                  inform%norm_g, data%ratio, data%old_radius, data%hmax_error, &
+                  char_sit, char_sit2, data%clock_now
                 inform%GLTR_inform%iter = 0
                 inform%GLTR_inform%iter_pass2 = 0
              END IF
@@ -3888,9 +3884,9 @@
  2100 FORMAT( A, '    It           f         grad    ',                        &
              ' ratio   radius multplr # fact    time' )
  2110 FORMAT( A, '    It           f         grad     ',                       &
-             ' ratio   radius pass 1 pass 2   time' )
+             ' ratio   radius h_error its 1 its 2    time' )
  2120 FORMAT( A, A6, 1X, 4A1, ES12.4, ES10.3, ES9.1, 2ES8.1, 1X, A6, F8.2 )
- 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, ES8.1, 1X, 2A6, F8.2 )
+ 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 2ES8.1, 2A6, F8.2 )
  2140 FORMAT( A, A6, 5X, ES12.4, ES10.3, 9X, ES8.1 )
  2150 FORMAT( A, A6, 5X, ES12.4, ES11.4, 9X, ES8.1 )
 
