@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -33,11 +33,11 @@
         SCU_inform_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
       USE GALAHAD_SORT_precision, ONLY : SORT_reorder_by_cols
       USE GALAHAD_EXTEND_precision, ONLY : EXTEND_arrays
-      USE LANCELOT_BAND_precision
-      USE HSL_MI28_precision
+      USE GALAHAD_BAND_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
       USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
+      USE HSL_MI28_precision
 
       IMPLICIT NONE
 

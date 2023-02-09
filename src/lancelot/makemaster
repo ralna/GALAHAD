@@ -78,7 +78,7 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
 
 #  compilation agenda
 
-OBJECTSBASICS = extend basics scu $(LGS)(bndsl_single.o)  \
+OBJECTSBASICS = extend basics scu band \
          $(LGS)(others_single.o) icfs ma61 linearsolver ma57 sils ad02 \
          $(LGS)(cauchy_single.o) $(LGS)(cg_single.o) $(LGS)(hslint_single.o) \
          $(LGS)(asmbl_single.o) $(LGS)(hsprd_single.o) $(LGS)(initw_single.o) \
@@ -88,7 +88,7 @@ OBJECTSBASICS = extend basics scu $(LGS)(bndsl_single.o)  \
 OBJECTSS = $(OBJECTSBASICS) $(LGS)(lancelot_single.o) \
          $(LGS)(lancelot_simple_single.o)
 OBJECTSSTEERINGS = $(OBJECTSBASICS) $(LGS)(lancelot_steering_single.o)
-OBJECTSFILTRANES = extend $(LGS)(bndsl_single.o)
+OBJECTSFILTRANES = extend band
 OBJECTSPSLSS = $(OBJECTSFILTRANES) ma61 $(LGS)(hslint_single.o) \
          $(LGS)(mdchl_single.o)
 USEOBJECTSS = $(OBJECTSS) $(LGS)(scaln_single.o) $(LGS)(drchg_single.o) \
@@ -98,7 +98,7 @@ USEOBJECTSSTEERINGS = $(OBJECTSSTEERINGS) $(LGS)(scaln_single.o) \
           $(LGS)(drchg_single.o) $(LGS)(drche_single.o) rand \
           copyright $(CULGS)(uselancelot_steering_single.o)
 
-OBJECTSBASICD = extend basics scu $(LGD)(bndsl_double.o) \
+OBJECTSBASICD = extend basics scu band \
           $(LGD)(others_double.o) icfs ma61 linearsolver ma57 sils ad02 \
           $(LGD)(cauchy_double.o) $(LGD)(cg_double.o) $(LGD)(hslint_double.o) \
           $(LGD)(asmbl_double.o) $(LGD)(hsprd_double.o) $(LGD)(initw_double.o) \
@@ -108,7 +108,7 @@ OBJECTSBASICD = extend basics scu $(LGD)(bndsl_double.o) \
 OBJECTSD = $(OBJECTSBASICD) $(LGD)(lancelot_double.o) \
            $(LGD)(lancelot_simple_double.o)
 OBJECTSSTEERINGD = $(OBJECTSBASICD) $(LGD)(lancelot_steering_double.o)
-OBJECTSFILTRANED = extend $(LGD)(bndsl_double.o)
+OBJECTSFILTRANED = extend band
 OBJECTSPSLSD = $(OBJECTSFILTRANED) ma61 $(LGD)(hslint_double.o) \
            $(LGD)(mdchl_double.o)
 USEOBJECTSD = $(OBJECTSD) $(LGD)(scaln_double.o) $(LGD)(drchg_double.o) \
@@ -377,6 +377,9 @@ sils:
 scu:
 	( cd ../scu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             scu_silent  PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scu )
+band:
+	( cd ../band ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            band_silent  PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
 rand:
 	( cd ../rand ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             rand.o PRECIS=$(PRECIS) PWD=$(PWD)/../rand )
@@ -397,20 +400,6 @@ icfs:
             icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../icfs )
 
 #  constituent packages
-
-bndsl.o: $(LG)(bndsl_$(PRECIS).o)
-
-$(LG)(bndsl_$(PRECIS).o): ../lancelot/bndsl.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "bndsl"
-	$(CP) ../lancelot/bndsl.F90 $(OBJ)/bndsl.F90
-	cd $(OBJ); $(FORTRAN) -o bndsl_$(PRECIS).o $(FFLAGSS) bndsl.F90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o bndsl_$(PRECIS).o $(FFLAGSN) bndsl.F90 )
-	cd $(OBJ); $(ARR) bndsl_$(PRECIS).o; $(RM) bndsl.F90 bndsl_$(PRECIS).o
-	$(RMARFILE) precn_$(PRECIS).o
-	$(RMARFILE) psls_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
 
 others.o: $(LG)(others_$(PRECIS).o)
 
