@@ -229,8 +229,8 @@ libpardiso = library('pardiso',
                      include_directories: libgalahad_include,
                      install : true)
 
-libspral_ssids_single_src += files('src/dum/ssidss.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
-libspral_ssids_double_src += files('src/dum/ssidsd.F90', 'src/kinds/kinds.F90', 'src/symbols/symbols.F90')
+libspral_ssids_single_src += files('src/dum/ssidss.F90', 'src/kinds/kinds.F90', 'src/spral/kinds.F90', 'src/symbols/symbols.F90')
+libspral_ssids_double_src += files('src/dum/ssidsd.F90', 'src/kinds/kinds.F90', 'src/spral/kinds.F90', 'src/symbols/symbols.F90')
 
 libspral_ssids_single = library('spral_ssids_single',
                                 sources : libspral_ssids_single_src,
