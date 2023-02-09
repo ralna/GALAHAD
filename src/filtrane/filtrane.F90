@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -348,14 +348,14 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
    MODULE GALAHAD_FILTRANE_precision
-            
+
       USE GALAHAD_KINDS_precision
 
 !-------------------------------------------------------------------------------
 !   U s e d   m o d u l e s   a n d   s y m b o l s
 !-------------------------------------------------------------------------------
 
-      USE LANCELOT_BAND_precision    ! band factorization and solve
+      USE GALAHAD_BAND_precision     ! band factorization and solve
 
       USE GALAHAD_NLPT_precision     ! the problem type
 
@@ -1217,7 +1217,7 @@
 
 ! the combined number of equalities, inequalities and bounded variables
 
-         INTEGER ( KIND = ip_ ) :: n_items  
+         INTEGER ( KIND = ip_ ) :: n_items
 
 ! the output device number
 
@@ -1225,7 +1225,7 @@
 
 ! the effective iteration dependent printout level
 
-         INTEGER ( KIND = ip_ ) :: level 
+         INTEGER ( KIND = ip_ ) :: level
 
  ! the global printout level
 
@@ -1237,7 +1237,7 @@
 
 ! the type of model currently in use
 
-         INTEGER ( KIND = ip_ ) :: model_used 
+         INTEGER ( KIND = ip_ ) :: model_used
 
  ! the position of the next vote for a model in the vector s%vote
 
@@ -1245,32 +1245,32 @@
 
 ! the requested band preconditioner semi-bandwidth
 
-         INTEGER ( KIND = ip_ ) :: nsemib  
+         INTEGER ( KIND = ip_ ) :: nsemib
 
 ! the actual band preconditioner semi-bandwidth
 
-         INTEGER ( KIND = ip_ ) :: bandw  
+         INTEGER ( KIND = ip_ ) :: bandw
 
 ! the number of theta values in the filter
 
-         INTEGER ( KIND = ip_ ) :: filter_size 
+         INTEGER ( KIND = ip_ ) :: filter_size
 
 ! the number of inactive values in the current filter
 
-         INTEGER ( KIND = ip_ ) :: filter_nbr_inactive 
+         INTEGER ( KIND = ip_ ) :: filter_nbr_inactive
 
 ! the number of slices in the current filter
 
-         INTEGER ( KIND = ip_ ) :: filter_capacity 
+         INTEGER ( KIND = ip_ ) :: filter_capacity
 
 ! which of the two possible hooks for the filter is active
 
-         INTEGER ( KIND = ip_ ) :: active_filter   
+         INTEGER ( KIND = ip_ ) :: active_filter
 
 ! the size of the Jacobian according to CUTEst (includes an additional
 ! proble%n locations for the gradient of the objective function)
 
-         INTEGER ( KIND = ip_ ) :: cuter_J_size        
+         INTEGER ( KIND = ip_ ) :: cuter_J_size
 
 ! the current stage in the calculation Possible values: READY, ONGOING,
 ! DONE, VOID
@@ -1280,7 +1280,7 @@
 ! indicates whether groups are restricted in sign or not :
 ! (RESTRICTED, UNRESTRICTED, MIXED )
 
-         INTEGER ( KIND = ip_ ) :: filter_sign         
+         INTEGER ( KIND = ip_ ) :: filter_sign
 
 ! the subproblem accuracy currently used (ADAPTIVE, FULL)
 
@@ -1414,23 +1414,23 @@
 !        Pointer arrays defined globally with FILTRANE
 !        ---------------------------------------------
 
-! group(i) is the index of ! the group to which c_i belongs. ! It points 
-! either s%aut_group (when AUTOMATIC grouping is used) or to control%group 
+! group(i) is the index of ! the group to which c_i belongs. ! It points
+! either s%aut_group (when AUTOMATIC grouping is used) or to control%group
 ! (when USER-DEFINED grouping is used).
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group 
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group
 
 ! the automatic avatar of s%group
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: aut_group 
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: aut_group
 
 ! .TRUE. if the group is sign restricted. Only allocated if s%filter_sign=MIXED
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: g_status 
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: g_status
 
 ! integer workspace of size problem%m + 1
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: iw   
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: iw
 
 ! integer workspace of size problem%J_ne
 
@@ -1438,13 +1438,13 @@
 
 ! integer workspace of size problem%J_ne
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: perm 
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: perm
 
 ! the most recent votes for a model
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: vote 
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: vote
 
-!  the position in the filter of the entry which is next by order of 
+!  the position in the filter of the entry which is next by order of
 ! increasing norms
 
          INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: filter_next_1

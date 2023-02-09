@@ -17,6 +17,11 @@ make_arc:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
+make_band:
+	( cd $(GALAHAD)/src/band ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) band.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
+
 make_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo.o \
@@ -692,6 +697,11 @@ make_all_arc:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
+make_all_band:
+	( cd $(GALAHAD)/src/band ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) band_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
+
 make_all_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_silent \
@@ -1294,6 +1304,11 @@ make_ciface_arc:
 	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
+
+make_ciface_band:
+	( cd $(GALAHAD)/src/band ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) band_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
 
 make_ciface_basic:
 	( cd $(GALAHAD)/src/general ; \
@@ -1899,6 +1914,11 @@ make_pyiface_arc:
 	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
+
+make_pyiface_band:
+	( cd $(GALAHAD)/src/band ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) band_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
 
 make_pyiface_basic:
 	( cd $(GALAHAD)/src/general ; \
