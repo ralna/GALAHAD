@@ -1334,8 +1334,10 @@
 !    DO i = 1, nlp%H%ne
 !      write(6, "( ' row, col ', 2I7 )" ) nlp%H%row( i ), nlp%H%col( i )
 !    END DO
-     CALL SHA_analyse( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col, data%SHA_data, &
+data%control%SHA_control%print_level = 2
+     CALL SHA_analyse( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col, data%SHA_data,   &
                        data%control%SHA_control, inform%SHA_inform )
+data%control%SHA_control%print_level = 0
 
 !  allocate space for the differences
 

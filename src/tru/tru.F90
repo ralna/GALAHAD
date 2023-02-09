@@ -562,6 +562,7 @@
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, use_dps
        LOGICAL :: monotone, new_h, got_h, poor_model, f_is_nan, non_trivial_p
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
+       LOGICAL :: sparse_hessian, successful
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: bndry = ' '
        CHARACTER ( LEN = 1 ) :: perturb = ' '
@@ -2318,7 +2319,8 @@
 
 !  if a new Hessian approximation is required, compute it
 
-         IF ( inform%iter > 1 ) THEN
+!        IF ( inform%iter > 1 ) THEN
+         IF ( inform%iter > 1 .AND. data%successful ) THEN
 
 !  if a sparsity-based secant approximation of the Hessian is required,
 !  record the latest step and gradient difference
@@ -3580,7 +3582,8 @@
 !  the new point is acceptable
 
  440   CONTINUE
-       IF ( data%ratio >= data%control%eta_successful ) THEN
+       data%successful = data%ratio >= data%control%eta_successful
+       IF ( data%successful ) THEN
          IF ( ABS( data%ratio - one ) <= rho_quad .AND.                        &
               data%control%model == second_order_model .AND.                   &
              .NOT. data%control%hessian_available .AND.                        &
@@ -3725,25 +3728,25 @@
        CASE ( second_order_model )
          WRITE( data%out, "( A, '  Second-order model used' )" ) prefix
        CASE ( identity_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with identity',           &
+         WRITE( data%out, "( A, '  Second-order model with identity',          &
         &  ' Hessian used' )" ) prefix
        CASE ( sparsity_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with sparse secant',      &
+         WRITE( data%out, "( A, '  Second-order model with sparse secant',     &
         &  ' Hessian used' )" ) prefix
        CASE ( l_bfgs_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with ', I0, '-step',      &
+         WRITE( data%out, "( A, '  Second-order model with ', I0, '-step',     &
         &  ' L-BFGS secant Hessian used' )" )                                  &
           prefix, data%control%LMS_control%memory_length
        CASE ( l_sr1_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with ', I0, '-step',      &
+         WRITE( data%out, "( A, '  Second-order model with ', I0, '-step',     &
         &  ' L-SR1 secant Hessian used' )" )                                   &
           prefix, data%control%LMS_control%memory_length
        CASE ( bfgs_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with BFGS secant Hessian',&
-        &  ' used' )" ) prefix
+         WRITE( data%out, "( A, '  Second-order model with BFGS secant',       &
+        &  ' Hessian used' )" ) prefix
        CASE ( sr1_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with SR1 secant Hessian', &
-        &  ' used' )" ) prefix
+         WRITE( data%out, "( A, '  Second-order model with SR1 secant',        &
+        &  ' Hessian used' )" ) prefix
        END SELECT
        IF ( data%control%subproblem_direct ) THEN
          IF ( inform%TRS_inform%dense_factorization ) THEN
