@@ -79,10 +79,6 @@
      INTEGER ( KIND = ip_ ) :: errout = 6
      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
 
-!  functions
-
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
-
 !  specfile characteristics
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
