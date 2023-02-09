@@ -701,8 +701,8 @@ if build_tests
     randt = executable('randt_'+val[0], 'src/rand/randt.F90', fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
     test('randt_'+val[0], randt, suite: ['rand', 'fortran', val[0]], is_parallel : false)
 
-    rpdt = executable('rpdt_'+val[0], 'src/rpd/rpdt.F90', fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
-    rpdti = executable('rpdti_'+val[0], 'src/rpd/rpdti.F90', fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
+    rpdt = executable('rpdt_'+val[0], 'src/rpd/rpdt.F90', env : ['GALAHAD=/home/runner/work/GALAHAD/GALAHAD'], fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
+    rpdti = executable('rpdti_'+val[0], 'src/rpd/rpdti.F90', env : ['GALAHAD=/home/runner/work/GALAHAD/GALAHAD'], fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
     test('rpdt_'+val[0], rpdt, suite: ['rpd', 'fortran', val[0]], is_parallel : false)
     test('rpdti_'+val[0], rpdti, suite: ['rpd', 'fortran', val[0]], is_parallel : false)
 
