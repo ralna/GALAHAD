@@ -193,14 +193,14 @@
        INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK_1
        REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK_1
 
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IN_DEGREE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEGREE_inv
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEGREE
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIRST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LAST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COUNT
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM_inv
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_sym
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_lower
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PU
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PK
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
@@ -494,7 +494,7 @@
       data%n = n ; data%nz = nz
       inform%status = GALAHAD_ok
 
-!  allocate workspace
+!  allocate space for starting address PK and row count COUNT
 
       array_name = 'SHA: data%PK'
       CALL SPACE_resize_array( n + 1, data%PK,                                 &
@@ -504,49 +504,43 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%PU'
-      CALL SPACE_resize_array( n, data%PU,                                     &
+      array_name = 'SHA: data%COUNT'
+      CALL SPACE_resize_array( n, data%COUNT,                                  &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  determine how many nonzeros there are in each row
+!  determine how many nonzeros there are in each row of the whole matrix 
+!  (both upper and lower parts)
 
-      data%PU = 0
+      data%COUNT = 0
       DO l = 1, nz
         i = ROW( l ) ; j = COL( l )
-        data%PU( i ) = data%PU( i ) + 1
-        IF ( i /= j ) data%PU( j ) = data%PU( j ) + 1
+        data%COUNT( i ) = data%COUNT( i ) + 1
+        IF ( i /= j ) data%COUNT( j ) = data%COUNT( j ) + 1
       END DO
 
-!  now set the starting addresses PK for each row in the array PTR
+!  now set the starting addresses PK for each row of the whole matrix in the 
+!  pointer array PTR
 
       data%PK( 1 ) = 1
       DO i = 1, n
-        data%PK( i + 1 ) = data%PK( i ) + data%PU( i )
+        data%PK( i + 1 ) = data%PK( i ) + data%COUNT( i )
       END DO
 
-!  compute the maximum degree
+!  compute the maximum degree (row length)
 
-      max_row = MAXVAL( data%PU( 1 : n ) )
+      max_row = MAXVAL( data%COUNT( 1 : n ) )
       inform%max_degree = max_row
 
-!  allocate space for the list of degrees, as well the first and last
-!  positions for those of a given degree and pointers from the rows to
-!  the list of degrees
+!  allocate space for the list of rows of increasing degrees (DEGREE), as well 
+!  the first and last positions for those of a given degree (FIRST & LAST) and 
+!  pointers from the rows to the list of degrees (DEGREE_inv)
 
       array_name = 'SHA: data%DEGREE'
       CALL SPACE_resize_array( n, data%DEGREE,                                 &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'SHA: data%IN_DEGREE'
-      CALL SPACE_resize_array( n, data%IN_DEGREE,                              &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -570,11 +564,19 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  count the number of rows with each degree
+      array_name = 'SHA: data%DEGREE_inv'
+      CALL SPACE_resize_array( n, data%DEGREE_inv,                             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  count the number of rows with each degree 
 
       data%LAST( 0 : max_row ) = 0
       DO i = 1, n
-        data%LAST( data%PU( i ) ) = data%LAST( data%PU( i ) ) + 1
+        data%LAST( data%COUNT( i ) ) = data%LAST( data%COUNT( i ) ) + 1
       END DO
       IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
         WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
@@ -590,12 +592,12 @@
       END DO
       data%LAST( max_row ) = data%FIRST( max_row ) + data%LAST( max_row ) - 1
 
-!  now sort the rows by increaseing degree ...
+!  now sort the rows by increasing degree (and record their inverses) ...
 
       DO i = 1, n
-        deg = data%PU( i )
+        deg = data%COUNT( i )
         data%DEGREE( data%FIRST( deg ) ) = i
-        data%IN_DEGREE( i ) = data%FIRST( deg )
+        data%DEGREE_inv( i ) = data%FIRST( deg )
         data%FIRST( deg ) = data%FIRST( deg ) + 1
       END DO
 
@@ -606,7 +608,7 @@
       END DO
       data%FIRST( 0 ) = 1
 
-!  compute the minimum degree
+!  compute the minimum degree (row length)
 
       DO j = 0, max_row + 1
         IF ( data%FIRST( j ) <= data%LAST( j ) ) THEN
@@ -615,16 +617,23 @@
         END IF
       END DO
 
-!DO i = 0, max_row
-!  write(6,"( ' degree ', I0, ' rows:' )" ) i
-!  write(6,"( 6( 1X, I0 ) )" ) &
-!   ( data%DEGREE( l ), l = data%FIRST( i ), data%LAST( i ) )
-!END DO
-!WRITE(6,"( 10( 1X, I0 ) )" ) ( data%IN_DEGREE( i ), i = 1, n )
+!  print row statistics if required
+
+      IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+        DO i = 0, max_row
+          WRITE( control%out, "( ' degree ', I0, ' rows:' )" ) i
+          IF ( data%FIRST( i ) <= data%LAST( i ) )                             &
+            WRITE( control%out, "( 10( :, 1X, I0 ) )" )                        &
+             ( data%DEGREE( l ), l = data%FIRST( i ), data%LAST( i ) )
+        END DO
+        WRITE( control%out, "( ' degree_inv:', /, 10( 1X, I0 ) )" )            &
+          data%DEGREE_inv( 1 : n )
+      END IF
 
 !  allocate space for PTR to hold mappings from the rows back to the
-!  coordinate storage, and the "shadow" PTR_sym set so that entries k and
-!  PTR_sym(k) of PTR correspond to entries (i,j) and (j,i)
+!  coordinate storage, and its "shadow" PTR_lower set so that entries k and
+!  PTR_lower(k) of PTR correspond to the "upper" and "lower" triangular entries 
+!  (i,j) and (j,i)
 
       array_name = 'SHA: data%PTR'
       CALL SPACE_resize_array( data%PK( n + 1 ) - 1, data%PTR,                 &
@@ -634,15 +643,15 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%PTR_sym'
-      CALL SPACE_resize_array( data%PK( n + 1 ) - 1, data%PTR_sym,             &
+      array_name = 'SHA: data%PTR_lower'
+      CALL SPACE_resize_array( data%PK( n + 1 ) - 1, data%PTR_lower,           &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  now set the PTR map ...
+!  now set the PTR and PTR_lower maps ...
 
       DO l = 1, nz
         i = ROW( l ) ; j = COL( l )
@@ -651,10 +660,10 @@
         IF ( i /= j ) THEN
           data%PTR( data%PK( j ) ) = l
           data%PK( j ) = data%PK( j ) + 1
-          data%PTR_sym( data%PK( j ) - 1 ) = data%PK( i ) - 1
-          data%PTR_sym( data%PK( i ) - 1 ) = data%PK( j ) - 1
+          data%PTR_lower( data%PK( j ) - 1 ) = data%PK( i ) - 1
+          data%PTR_lower( data%PK( i ) - 1 ) = data%PK( j ) - 1
         ELSE
-          data%PTR_sym( data%PK( i ) - 1 ) = data%PK( i ) - 1
+          data%PTR_lower( data%PK( i ) - 1 ) = data%PK( i ) - 1
         END IF
       END DO
 
@@ -665,29 +674,29 @@
       END DO
       data%PK( 1 ) = 1
 
-!DO i = 1, n
-!  write(6,"( ' row ', I0 )" ) i
-!  write(6,"( 6( '(' I0, ',', I0 ')' ) )" ) ( ROW( data%PTR( l ) ),            &
-!    COL( data%PTR( l ) ), l = data%PK( i ),  data%PK( i + 1 ) - 1 )
-!end do
-!stop
+!  print more row statistics if required
 
-!DO l = 1, data%PK( n + 1 ) - 1
-!  write( 6, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) l,                         &
-!  ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                                 &
-!  ROW( data%PTR( data%PTR_sym( l ) ) ), COL( data%PTR( data%PTR_sym( l ) ) )
-!END DO
-!stop
+      IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+        DO i = 1, n
+          WRITE( control%out, "( ' row ', I0 )" ) i
+          WRITE( control%out, "( 1X, 6( '(' I0, ',', I0 ')', : ) )" )          &
+            ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ), l = data%PK( i ),    &
+              data%PK( i + 1 ) - 1 )
+        END DO
+      END IF
 
-!  allocate further workspace
+      IF ( control%out > 0 .AND. control%print_level > 2 ) THEN
+        WRITE( control%out, "( ' matrix:' )" )
+        DO l = 1, data%PK( n + 1 ) - 1
+          WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0 ')' ) )" ) l,    &
+            ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                        &
+            COL( data%PTR( data%PTR_lower( l ) ) ),                            &
+            ROW( data%PTR( data%PTR_lower( l ) ) )
+        END DO
+      END IF
 
-      array_name = 'SHA: data%COUNT'
-      CALL SPACE_resize_array( n, data%COUNT,                                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+!  allocate further workspace to record row (inverse) permutations and the
+!  starting addresses for undetermined entries in each row
 
       array_name = 'SHA: data%PERM_inv'
       CALL SPACE_resize_array( n, data%PERM_inv,                               &
@@ -697,12 +706,17 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  initialize row counts
+      array_name = 'SHA: data%PU'
+      CALL SPACE_resize_array( n, data%PU,                                     &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      DO i = 1, n
-        data%COUNT( i ) = data%PU( i )
-        data%PU( i ) =  data%PK( i )
-      END DO
+!  initialize undetermined row entry pointers
+
+      data%PU( 1 : n ) = data%PK( 1 : n )
 
       data%approximation_algorithm_used = control%approximation_algorithm
 
@@ -711,10 +725,10 @@
 !  ----------------------------------
 
       IF ( control%approximation_algorithm <= 2 ) THEN
-        DO l = 1, n
 
 !  find a row with the lowest count
 
+        DO l = 1, n
           i = data%DEGREE( MAX( data%FIRST( min_degree ), l ) )
           data%FIRST( min_degree ) = MAX( data%FIRST( min_degree ), l ) + 1
           IF ( min_degree > 0 ) THEN
@@ -732,14 +746,14 @@
               END IF
             END DO
 
-!  reduce the row counts for all other rows that have an entry in column i
+!  reduce the row counts for each other row j that has an entry in column i
 
             DO k = data%PU( i ), data%PK( i + 1 ) - 1
               kk = data%PTR( k )
               r = ROW( kk ) ; c = COL( kk )
               IF ( r == c ) CYCLE
 
-!  determine which of row( kk ) or col( kk ) gives the column number j
+!  determine which of row(kk) or col(kk) gives the row number j
 
               IF ( c == i ) THEN
                 j = r
@@ -750,41 +764,42 @@
 !  upgrade DEGREE and its pointers
 
               deg = data%COUNT( j )
-              kk = data%IN_DEGREE( j )
+              kk = data%DEGREE_inv( j )
               jj = MAX( data%FIRST( deg ), l )
               IF ( jj /= kk ) THEN
                 data%DEGREE( kk ) = data%DEGREE( jj )
                 data%DEGREE( jj ) = j
-                data%IN_DEGREE( j ) = jj
-                data%IN_DEGREE( data%DEGREE( kk ) ) = kk
+                data%DEGREE_inv( j ) = jj
+                data%DEGREE_inv( data%DEGREE( kk ) ) = kk
               END IF
               data%FIRST( deg ) = jj + 1
               data%LAST( deg - 1 ) = data%LAST( deg - 1 ) + 1
               min_degree = MIN( min_degree, deg - 1 )
 
-!DO jj = 0, max_row
-!  write(6,"( ' degree ', I0, ' rows:' )" ) jj
-!  write(6,"( 6( 1X, I0 ) )" ) &
-!   ( data%DEGREE( kk ), kk = data%FIRST( jj ), data%LAST( jj ) )
-!END DO
-!WRITE(6,"( 10( 1X, I0 ) )" ) ( data%IN_DEGREE( jj ), jj = 1, n )
+!             DO jj = 0, max_row
+!               write( control%out,"( ' degree ', I0, ' rows:' )" ) jj
+!               write( control%out,"( 6( 1X, I0 ) )" ) &
+!                ( data%DEGREE( kk ), kk = data%FIRST( jj ), data%LAST( jj ) )
+!             END DO
+!             WRITE( control%out,"( 10( 1X, I0 ) )" )                          &
+!               ( data%DEGREE_inv( jj ), jj = 1, n )
 
 !  reduce the count for row j
 
-             data%COUNT( j ) = deg - 1
+              data%COUNT( j ) = deg - 1
 
-!  interchange entries jj = PU(j) and kk = data%PTR_sym( k ) of PTR
+!  interchange entries jj = PU(j) and kk = data%PTR_lower(k) of PTR
 !  and their shadows
 
               jj = data%PU( j )
-              kk = data%PTR_sym( k )
+              kk = data%PTR_lower( k )
               IF ( jj /= kk ) THEN
-                k1 = data%PTR_sym( kk )
-                j1 = data%PTR_sym( jj )
-                data%PTR_sym( jj ) = k1
-                data%PTR_sym( k1 ) = jj
-                data%PTR_sym( kk ) = j1
-                data%PTR_sym( j1 ) = kk
+                k1 = data%PTR_lower( kk )
+                j1 = data%PTR_lower( jj )
+                data%PTR_lower( jj ) = k1
+                data%PTR_lower( k1 ) = jj
+                data%PTR_lower( kk ) = j1
+                data%PTR_lower( j1 ) = kk
                 ll = data%PTR( jj )
                 data%PTR( jj ) = data%PTR( kk )
                 data%PTR( kk ) = ll
@@ -795,25 +810,26 @@
           data%COUNT( i ) = n + 1
           data%PERM_inv( l ) = i
 
-!DO ll = 1, data%PK( n + 1 ) - 1
-!  write( 6, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) ll, &
-!  ROW( data%PTR( ll ) ), COL( data%PTR( ll ) ), &
-!  ROW( data%PTR( data%PTR_sym( ll ) ) ), COL( data%PTR( data%PTR_sym( ll ) ) )
-!END DO
+!         DO ll = 1, data%PK( n + 1 ) - 1
+!           write(  control%out, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) ll,    &
+!             ROW( data%PTR( ll ) ), COL( data%PTR( ll ) ),                    &
+!             ROW( data%PTR( data%PTR_lower( ll ) ) ),                         &
+!             COL( data%PTR( data%PTR_lower( ll ) ) )
+!         END DO
 
         END DO
 
-!write(6,*) ' inv perm ', data%PERM_inv( : n )
+!write( control%out,*) ' inv perm ', data%PERM_inv( : n )
 
-!DO i = 1, n
-!   write(6,"( ' row ', I0 )" ) i
-!   write(6,"( 6( '(', I0, ',', I0, ')' ) )" ) ( ROW( data%PTR( l ) ),         &
-!     COL( data%PTR( l ) ), l = data%PU( i ),  data%PK( i + 1 ) - 1 )
-!END DO
-
-!DO i = 1, n
-!  write(6,"( 3I0 )" ) i, data%PU( i ), data%PK( i + 1 ) - 1
-!END DO
+!      DO i = 1, n
+!        write( control%out,"( ' row ', I0 )" ) i
+!        write( control%out,"( 6( '(', I0, ',', I0, ')' ) )" )                 &
+!          ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                       &
+!            l = data%PU( i ),  data%PK( i + 1 ) - 1 )
+!      END DO
+!      DO i = 1, n
+!        write( control%out,"( 3I0 )" ) i, data%PU( i ), data%PK( i + 1 ) - 1
+!      END DO
 
         IF ( control%approximation_algorithm == 1 ) THEN
           data%differences_needed                                              &
@@ -880,18 +896,18 @@
                 j = c
               END IF
 
-!  interchange entries jj = PU(j) and kk = data%PTR_sym( k ) of PTR
+!  interchange entries jj = PU(j) and kk = data%PTR_lower( k ) of PTR
 !  and their shadows
 
               jj = data%PU( j )
-              kk = data%PTR_sym( k )
+              kk = data%PTR_lower( k )
               IF ( jj /= kk ) THEN
-                k1 = data%PTR_sym( kk )
-                j1 = data%PTR_sym( jj )
-                data%PTR_sym( jj ) = k1
-                data%PTR_sym( k1 ) = jj
-                data%PTR_sym( kk ) = j1
-                data%PTR_sym( j1 ) = kk
+                k1 = data%PTR_lower( kk )
+                j1 = data%PTR_lower( jj )
+                data%PTR_lower( jj ) = k1
+                data%PTR_lower( k1 ) = jj
+                data%PTR_lower( kk ) = j1
+                data%PTR_lower( j1 ) = kk
                 ll = data%PTR( jj )
                 data%PTR( jj ) = data%PTR( kk )
                 data%PTR( kk ) = ll
@@ -921,11 +937,12 @@
         data%differences_needed                                                &
           = MAX( data%differences_needed, inform%max_reduced_degree )
 
-!       WRITE( 6, "( ' maximum degree in the connectivity graph = ', I0 )" )   &
-!          inform%max_degree
-!       WRITE( 6, "( 1X, I0, ' symmetric differences required ' )" )           &
-!          data%differences_needed
-!       WRITE( 6, "( ' max reduced degree = ', I0 )" ) inform%max_reduced_degree
+        IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+!         WRITE(  control%out, "( ' maximum degree in the connectivity',       &
+!      &   ' graph = ', I0, /, 1X, I0, ' symmetric differences required ',     &
+!      &   /, ' max reduced degree = ', I0 )" )                                &
+!         inform%max_degree, data%differences_needed, inform%max_reduced_degree
+        END IF
       END IF
       inform%differences_needed = data%differences_needed
 
@@ -956,8 +973,8 @@
 
 !  deallocate some workspace arrays
 
-      array_name = 'SHA: data%IN_DEGREE'
-      CALL SPACE_dealloc_array( data%IN_DEGREE,                                &
+      array_name = 'SHA: data%DEGREE_inv'
+      CALL SPACE_dealloc_array( data%DEGREE_inv,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -980,14 +997,8 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%COUNT'
-      CALL SPACE_dealloc_array( data%COUNT,                                    &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-      array_name = 'SHA: data%PTR_sym'
-      CALL SPACE_dealloc_array( data%PTR_sym,                                  &
+      array_name = 'SHA: data%PTR_lower'
+      CALL SPACE_dealloc_array( data%PTR_lower,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1024,9 +1035,8 @@
 
 !-*-*-*-  G A L A H A D -  S H A _ e s t i m a t e  S U B R O U T I N E -*-*-*-
 
-      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available,                   &
-                               RD, ls1, ls2, S, ly1, ly2, Y, VAL,              &
-                               data, control, inform )
+      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available, RD, ls1, ls2, S,  &
+                               ly1, ly2, Y, VAL, data, control, inform )
 
 !     ********************************************************
 !     *                                                      *
@@ -1069,8 +1079,8 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_available ) :: RD
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1 , ls2 ) :: S
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1 , ly2 ) :: Y
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( nz ) :: VAL
       TYPE ( SHA_control_type ), INTENT( IN ) :: control
       TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
@@ -1080,9 +1090,10 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank, status
+      INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
-      INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui
+      INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui, status
+      INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride
       LOGICAL :: sym
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
@@ -1090,7 +1101,6 @@
       CHARACTER ( LEN = 80 ) :: array_name
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
 
 !  test for an error in the input data
 
@@ -1267,9 +1277,16 @@
 !       |           |                  |      those for k=PU(i),..,P(i+1)-1
 !     PK(i)        PU(i)            PK(i+1)   still to be determined
 
-!  run through the rows finding the unknown entries
+!  run through the rows finding the unknown entries (backwards when
+!  not exploiting symmetry)
 
-      DO ii = 1, n
+      IF ( control%approximation_algorithm > 0 ) THEN
+        ii_start = 1 ; ii_end = n ; ii_stride = 1
+      ELSE
+        ii_start = n ; ii_end = 1 ; ii_stride = - 1
+      END IF
+
+      DO ii = ii_start, ii_end, ii_stride
         i = data%PERM_inv( ii )
         pki = data%PK( i ) ; pkip1 = data%PK( i + 1 ) ; nu = pkip1 - pki
         IF ( nu == 0 ) CYCLE
@@ -1302,6 +1319,7 @@
 
 !  loop over the known entries
 
+          jj = 0
           DO k = pki, pui - 1
             kk = data%PTR( k )
 
@@ -1309,17 +1327,21 @@
 
             j = COL( kk )
             IF ( j == i ) j = ROW( kk )
+            jj = jj + 1 ; data%COUNT( jj ) = j            
 
 !  subtract B_{ij} s_{jl} from b
 
             data%B( 1 : mu, 1 )                                                &
               = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
           END DO
+          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
+            WRITE( control%out, "( ' known', 9( 1X, I0 ), /, ( 1X, 10I6 ) )" ) &
+              data%COUNT( : jj )
 
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
-          jj = 1
+          jj = 0
           DO k = pui, pkip1 - 1
             kk = data%PTR( k )
 
@@ -1327,11 +1349,11 @@
 
             j = COL( kk )
             IF ( j == i ) j = ROW( kk )
+            jj = jj + 1 ; data%COUNT( jj ) = j            
 
 !  set the entries of A
 
             data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-            jj = jj + 1
           END DO
 
 ! make a copy of A and b as a precaution for possible use later
@@ -1340,15 +1362,12 @@
             data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
             data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
           END IF
+          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
+            WRITE( control%out, "( ' unknown', 9( 1X, I0 ), /, ( 1X, 10I6 ) )")&
+              data%COUNT( : jj )
 
 !  solve A x = b
 
-          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
-            WRITE( control%out, "( ' known', 9I6, /, ( 10I6 ) )" )             &
-              data%PTR( pki : pui - 1 )
-          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
-            WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
-              data%PTR( pui : pkip1 - 1 )
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu,          &
                                  data%A, data%la1, data%B, data%lb1,           &
                                  data%solve_system_data, i,                    &
@@ -1382,7 +1401,7 @@
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
-            jj = 1
+            jj = 0
             DO k = pui, pkip1 - 1
               kk = data%PTR( k )
 
@@ -1393,8 +1412,8 @@
 
 !  set the entries of A
 
-              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
               jj = jj + 1
+              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
             END DO
 
 !  solve A x = b
@@ -1403,6 +1422,7 @@
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
+
 !  check for errors
 
           ELSE IF ( info /= 0 ) THEN
@@ -1462,7 +1482,7 @@
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
-          jj = 1
+          jj = 0
           DO k = pki, pkip1 - 1
             kk = data%PTR( k )
 
@@ -1473,8 +1493,8 @@
 
 !  set the entries of A
 
-            data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
             jj = jj + 1
+            data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
           END DO
 
 ! make a copy of A and b as a precaution for possible use later
@@ -1488,7 +1508,7 @@
 
           IF ( control%out > 0 .AND. control%print_level > 1 )                 &
             WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
-              data%PTR( pki : pkip1 - 1 )
+              COL( data%PTR( pki : pkip1 - 1 ) )
           CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i,                    &
@@ -1506,7 +1526,7 @@
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
-            jj = 1
+            jj = 0
             DO k = pki, pkip1 - 1
               kk = data%PTR( k )
 
@@ -1517,8 +1537,8 @@
 
 !  set the entries of A
 
-              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
               jj = jj + 1
+              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
             END DO
 
 !  solve A x = b
@@ -1535,10 +1555,10 @@
 
 !  finally, set the unknown B_{ij}
 
-          jj = 1
+          jj = 0
           DO k = pki, pkip1 - 1
-            VAL( data%PTR( k ) ) = data%B( jj, 1 )
             jj = jj + 1
+            VAL( data%PTR( k ) ) = data%B( jj, 1 )
           END DO
 
 !  if required, compute and print the residuals
@@ -1666,20 +1686,20 @@
               WRITE( out, "( ' row ', I0, ', solver status = ',                &
              &       I0, /, ' matrix =' )" ) row, status
               DO i = 1, n
-                WRITE( out, "( 'column ', I4, ' = ', ( 5ES12.4 ) )" )          &
+                WRITE( out, "( ' column ', I0, ' = ', ( 5ES12.4 ) )" )         &
                   i, A_save( : m, i )
               END DO
-              WRITE( out, "( 'sigma = ', ( 5ES12.4 ) )" )                      &
+              WRITE( out, "( ' sigma = ', ( 5ES12.4 ) )" )                     &
                 data%S( 1 : MIN( m, n ) )
-              WRITE( out, "( 'b = ', ( 5ES12.4 ) )" ) B( 1 : n, 1 )
+              WRITE( out, "( ' b = ', ( 5ES12.4 ) )" ) B( 1 : n, 1 )
             END IF
           END IF
         END IF
 !     END IF
       IF ( printi ) THEN
         IF ( rank > 0 ) THEN
-          WRITE( out, "( ' row ', I0, ' m ', I0, ' n ', I0, ' rank ',          &
-         &       I0, ' kappa ', ES11.4 )" )                                    &
+          WRITE( out, "( ' row ', I0, ', m ', I0, ', n ', I0, ', rank ',       &
+         &       I0, ', kappa ', ES11.4 )" )                                   &
            row, m, n, rank, data%S( rank ) / data%S( 1 )
         ELSE
           WRITE( out, "( ' row ', I0, ' m ', I0, ' n ', I0, ' rank ', I0 )" )  &
@@ -1750,6 +1770,12 @@
 
       array_name = 'SHA: data%PERM_inv'
       CALL SPACE_dealloc_array( data%PERM_inv,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%COUNT'
+      CALL SPACE_dealloc_array( data%COUNT,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
