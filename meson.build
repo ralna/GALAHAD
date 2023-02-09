@@ -250,6 +250,21 @@ libpardiso = library('pardiso',
                      include_directories: libgalahad_include,
                      install : true)
 
+libspral_ssids_single_src += files('src/dum/ssidss.F90', 'src/kinds/kinds.F90', 'src/spral/kinds.F90', 'src/symbols/symbols.F90')
+libspral_ssids_double_src += files('src/dum/ssidsd.F90', 'src/kinds/kinds.F90', 'src/spral/kinds.F90', 'src/symbols/symbols.F90')
+
+libspral_ssids_single = library('spral_ssids_single',
+                                sources : libspral_ssids_single_src,
+                                link_with : [libgalahad_blas, libgalahad_lapack],
+                                dependencies : blas_dep + lapack_dep,
+                                install : true)
+
+libspral_ssids_double = library('spral_ssids_double',
+                                sources : libspral_ssids_double_src,
+                                link_with : [libgalahad_blas, libgalahad_lapack],
+                                dependencies : blas_dep + lapack_dep,
+                                install : true)
+
 libmumps_src += files('src/kinds/kinds.F90', 'src/dum/mpi.F90', 'src/dum/mumps.F90')
 
 libmumps_single = library('mumps_single',
