@@ -263,7 +263,15 @@
 
 !  Reallocate point to be of length len, checking for error returns
 
-     IF ( reallocate ) ALLOCATE( point( l : u ), STAT = alloc_status )
+     IF ( reallocate ) THEN
+       IF ( l <= u ) THEN !! avoid gfortran bug
+         ALLOCATE( point( l : u ), STAT = alloc_status )
+       ELSE 
+!        ALLOCATE( point( 0 ), STAT = alloc_status )
+         alloc_status = 0
+       END IF
+     END IF
+
      IF ( alloc_status /= 0 ) THEN
        status = GALAHAD_error_allocate
        IF ( PRESENT( bad_alloc ) .AND. PRESENT( point_name ) )                 &
@@ -1386,7 +1394,15 @@
 
 !  Reallocate array to be of length len, checking for error returns
 
-     IF ( reallocate ) ALLOCATE( array( l : u ), STAT = alloc_status )
+     IF ( reallocate ) THEN
+       IF ( l <= u ) THEN !! avoid gfortran bug
+         ALLOCATE( array( l : u ), STAT = alloc_status )
+       ELSE 
+!        ALLOCATE( array( 0 ), STAT = alloc_status )
+         alloc_status = 0
+       END IF
+     END IF
+
      IF ( alloc_status /= 0 ) THEN
        status = GALAHAD_error_allocate
        IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )                 &
