@@ -68,16 +68,19 @@ jobs:
             cxx_cmd: g++
           - os: windows-latest
             compiler: intel
+            version:
             cc_cmd: icl
             fc_cmd: ifort
             cxx_cmd: icl
           - os: ubuntu-latest
             compiler: intel
+            version:
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
           - os: macos-latest
             compiler: intel
+            version:
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
