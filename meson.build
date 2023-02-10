@@ -14,11 +14,13 @@ project(
   ],
 )
 
+
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 fc = meson.get_compiler('fortran')
 fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
+py = import('python').find_installation()
 
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
@@ -459,12 +461,13 @@ if build_examples and build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python = library('galahad_python',
-                              sources : libgalahad_python_src,
-                              link_with : libgalahad_c_double,
-                              link_language : 'c',
-                              include_directories: libgalahad_include,
-                              install : true)
+  libgalahad_python = py.extension_module('galahad_python',
+                                          sources : libgalahad_python_src,
+                                          link_with : libgalahad_c_double,
+                                          link_language : 'c',
+                                          dependencies: py.dependency(),
+                                          include_directories: libgalahad_include,
+                                          install : true)
 endif
 
 # if build_tests and build_pythoniface
