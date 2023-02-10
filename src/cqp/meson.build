@@ -1,8 +1,15 @@
 libgalahad_src += files('cqp.F90')
+
 galahad_binaries += [['incqp', files('incqp.F90')]]
+
 if build_ciface
   libgalahad_c_src += files('C/cqp_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += files('Python/cqp_pyiface.c')
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usecqp.F90', 'runcqp_sif.F90')
 endif

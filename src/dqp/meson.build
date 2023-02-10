@@ -1,8 +1,15 @@
 libgalahad_src += files('dqp.F90')
+
 galahad_binaries += [['indqp', files('indqp.F90')]]
+
 if build_ciface
   libgalahad_c_src += files('C/dqp_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += files('Python/dqp_pyiface.c')
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usedqp.F90', 'rundqp_sif.F90')
 endif

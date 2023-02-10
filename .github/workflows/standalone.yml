@@ -82,7 +82,7 @@ jobs:
       - name: Build GALAHAD
         shell: bash
         run: |
-          meson compile -C builddir
+          meson compile -C builddir -Dpythoniface=true
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
