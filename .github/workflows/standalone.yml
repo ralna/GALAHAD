@@ -7,12 +7,12 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.version }}
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.compiler_version }}
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        version: [10, 11, 12]
+        compiler_version: [10, 11, 12]
         include:
           - compiler: gnu
             cc_cmd: gcc
@@ -20,19 +20,19 @@ jobs:
             cxx_cmd: g++
           - os: windows-latest
             compiler: intel
-            version: latest
+            compiler_version: latest
             cc_cmd: icl
             fc_cmd: ifort
             cxx_cmd: icl
           - os: ubuntu-latest
             compiler: intel
-            version: latest
+            compiler_version: latest
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
           - os: macos-latest
             compiler: intel
-            version: latest
+            compiler_version: latest
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
@@ -59,7 +59,7 @@ jobs:
         uses: awvwgk/setup-fortran@main
         with:
           compiler: gcc
-          version: ${{ matrix.version }}
+          version: ${{ matrix.compiler_version }}
 
       - name: Install Intel OpenAPI C and Fortran compilers
         if: matrix.compiler == 'intel'
