@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.compiler }}/${{ matrix.version }}
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.version }}
     strategy:
       fail-fast: false
       matrix:
