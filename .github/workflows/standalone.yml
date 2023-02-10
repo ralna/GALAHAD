@@ -68,7 +68,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dlibblas= -Dliblapack=
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dlibblas= -Dliblapack=
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
@@ -82,7 +82,7 @@ jobs:
       - name: Build GALAHAD
         shell: bash
         run: |
-          meson compile -C builddir -Dpythoniface=true
+          meson compile -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
