@@ -14,38 +14,70 @@ jobs:
         include:
           - os: windows-latest
             compiler: gnu
+            version: 10
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: windows-latest
+            compiler: gnu
+            version: 11
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: windows-latest
+            compiler: gnu
+            version: 12
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
           - os: ubuntu-latest
             compiler: gnu
+            version: 10
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: ubuntu-latest
+            compiler: gnu
+            version: 11
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: ubuntu-latest
+            compiler: gnu
+            version: 12
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
           - os: macos-latest
             compiler: gnu
+            version: 10
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: macos-latest
+            compiler: gnu
+            version: 11
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+          - os: macos-latest
+            compiler: gnu
+            version: 12
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
           - os: windows-latest
             compiler: intel
-            hpckit: https://registrationcenter-download.intel.com/akdlm/irc_nas/19085/w_HPCKit_p_2023.0.0.25931_offline.ex
-            # hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/xxx/w_HPCKit_p_2022.3.1.19755_offline.exe'
-            script: 'install_windows.bat'
-            cc_cmd: icc
+            cc_cmd: icl
             fc_cmd: ifort
-            cxx_cmd: icpc
+            cxx_cmd: icl
           - os: ubuntu-latest
             compiler: intel
-            hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18975/l_HPCKit_p_2022.3.1.16997_offline.sh'
-            script: 'install_linux.sh'
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
           - os: macos-latest
             compiler: intel
-            hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18977/m_HPCKit_p_2022.3.1.15344_offline.dmg'
-            script: 'install_macos.sh'
             cc_cmd: icc
             fc_cmd: ifort
             cxx_cmd: icpc
@@ -60,16 +92,18 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja
       - name: Install GNU C and Fortran compilers
-        uses: modflowpy/install-gfortran-action@v1
+        if: matrix.compiler == 'gnu'
+        uses: awvwgk/setup-fortran@main
+        with:
+          compiler: gcc
+          version: ${{ matrix.version }}
       - name: Install Intel OpenAPI C and Fortran compilers
         if: matrix.compiler == 'intel'
-        run: |
-          .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
+        uses: modflowpy/install-intelfortran-action@v1
       - name: Setup GALAHAD build
         shell: bash
         run: |
-          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          meson setup builddir -Dciface=true
+          meson setup builddir
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
@@ -77,7 +111,6 @@ jobs:
       - name: Build GALAHAD
         shell: bash
         run: |
-          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           meson compile -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
@@ -87,7 +120,6 @@ jobs:
       - name: Test GALAHAD
         shell: bash
         run: |
-          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           meson test -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
