@@ -2711,6 +2711,8 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      RETURN  
+
 !  End of subroutine EQP_terminate
 
       END SUBROUTINE EQP_terminate

@@ -5400,6 +5400,14 @@
            inform%entries_in_factors =                                         &
              INT( data%n * ( data%n + 1 ) / 2, long_ )
            inform%flops_elimination = INT( data%n ** 3 / 3, long_ )
+
+           CALL SPACE_resize_array( data%n, data%INVP,                         &
+                                    inform%status, inform%alloc_status )
+           IF ( inform%status /= GALAHAD_ok ) THEN
+             inform%bad_alloc = 'sls: data%INVP' ; GO TO 900 ; END IF
+           DO i = 1, data%n
+             data%INVP( data%ORDER( i ) ) = i
+           END DO
          CASE DEFAULT
            inform%status = GALAHAD_error_lapack
          END SELECT
@@ -7288,6 +7296,8 @@
 
 !  local variables
 
+     INTEGER, DIMENSION( data%n ) :: INV
+
      INTEGER ( KIND = ip_ ) :: i, ip, k, pk
      REAL :: time_start, time_now
      REAL ( KIND = rp_ ) :: clock_start, clock_now
@@ -7538,6 +7548,14 @@
              PIVOTS( k + 1 ) = - PIVOTS( - ip )
              PIVOTS( - ip ) = pk
              k = k + 2
+           END IF
+         END DO
+         DO i = 1, data%n
+           k = PIVOTS( i )
+           IF ( k > 0 ) then
+             PIVOTS( i ) = data%INVP( k )
+           ELSE
+             PIVOTS( i ) = - data%INVP( - k )
            END IF
          END DO
        END IF

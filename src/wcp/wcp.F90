@@ -1889,6 +1889,7 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 900
 
+
 !  Allocate optional extra arrays
 
       nbnds = prob%n + data%dims%x_l_end - data%dims%x_free                    &
