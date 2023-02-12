@@ -11,6 +11,18 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#define spral_ssids_dsyrk spral_ssids_dsyrk_single
+#define spral_ssids_multidsyrk spral_ssids_multidsyrk_single
+#define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_single
+#else
+#define precision_ double
+#define spral_ssids_dsyrk spral_ssids_dsyrk_double
+#define spral_ssids_multidsyrk spral_ssids_multidsyrk_double
+#define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_double
+#endif
+
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define max(x,y) ((x) > (y) ? (x) : (y))
 
@@ -28,8 +40,8 @@ namespace /* anon */ {
 
 template< int WIDTH >
 inline __device__ void 
-loadDevToSmem_generic( volatile double *const __restrict__ as, volatile double *const __restrict__ bs, 
-               const double* __restrict__ a, const double* __restrict__ b, 
+loadDevToSmem_generic( volatile precision_ *const __restrict__ as, volatile precision_ *const __restrict__ bs, 
+               const precision_* __restrict__ a, const precision_* __restrict__ b, 
                int bx, int by, int offa, int lda, int ldb, 
                int n, int i, int k) 
 {
@@ -159,8 +171,8 @@ case 2:
 
 struct multisyrk_type {
   int first;
-  double *lval;
-  double *ldval;
+  precision_ *lval;
+  precision_ *ldval;
   long offc;
   int n;
   int k;
@@ -181,7 +193,7 @@ cu_multisyrk_lc_r4x4(
 ){
 
 // The number of elements we want in each shared memory buffer depends on the shared memory:register ratio
-// SM 3.0+ has double the number of registers per shared memory, so need half the shared memory here.
+// SM 3.0+ has precision_ the number of registers per shared memory, so need half the shared memory here.
 #if SM_3X
   #define SYRK_WIDTH 4
   #define DOUBLE_BUFFERED 0
@@ -247,7 +259,7 @@ cu_multisyrk_lc_r4x4(
     
     
 #if (SYRK_WIDTH <= 2 && DOUBLE_BUFFERED)
-  loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, 0, k );    
+  loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, 0, lda, ldb, n, 0, k );    
 #endif
     
   for ( int i = 0; i < k; i += SYRK_WIDTH ) {
@@ -261,12 +273,12 @@ cu_multisyrk_lc_r4x4(
     // challenge to get it working without spilling.
 #if (DOUBLE_BUFFERED)
     if ( i + SYRK_WIDTH < k ) {
-       loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as2, bs2, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
+       loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as2, bs2, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
     }
 #endif // (DOUBLE_BUFFERED)
 
 #if (SYRK_WIDTH > 2 || DOUBLE_BUFFERED)
-    loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, i, k );
+    loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, 0, lda, ldb, n, i, k );
 #endif
     __syncthreads();
 
@@ -297,7 +309,7 @@ cu_multisyrk_lc_r4x4(
     __syncthreads();
     if ( i + SYRK_WIDTH < k ) {
 #if (SYRK_WIDTH <= 2)
-       loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
+       loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
 #endif
     }
     
@@ -440,9 +452,9 @@ cu_multisyrk_r4x4(
   if ( by >= n || by >= m )
     return;
 
-  const double * __restrict__ a = ndatat->lval;
-  const double * __restrict__ b = posdef ? ndatat->lval : ndatat->ldval;
-  double * __restrict__ c = ndatat->lval;
+  const precision_ * __restrict__ a = ndatat->lval;
+  const precision_ * __restrict__ b = posdef ? ndatat->lval : ndatat->ldval;
+  precision_ * __restrict__ c = ndatat->lval;
 
   offa = by + lda*n;
   offc = by + by*n;
@@ -464,12 +476,12 @@ cu_multisyrk_r4x4(
   }
 
 #if (DOUBLE_BUFFERED)
-  loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, offa, lda, ldb, n, 0, k );
+  loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, offa, lda, ldb, n, 0, k );
 #endif
   
   for ( int i = 0; i < k; i += SYRK_WIDTH ) {
 #if (!DOUBLE_BUFFERED)
-    loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, offa, lda, ldb, n, i, k );
+    loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, offa, lda, ldb, n, i, k );
 #endif
 
     __syncthreads();
@@ -526,8 +538,8 @@ template< typename ELEMENT_TYPE >
 __global__ void
 cu_syrk_r4x4(
   int n, int m, int k,
-  double alpha, const double* a, int lda, const double* b, int ldb,
-  double beta, double* c, int ldc
+  precision_ alpha, const precision_* a, int lda, const precision_* b, int ldb,
+  precision_ beta, precision_* c, int ldc
 ){
   ELEMENT_TYPE s[16];
 
@@ -602,15 +614,15 @@ cu_syrk_r4x4(
 
 extern "C" {
 
-void spral_ssids_dsyrk(cudaStream_t *stream, int n, int m, int k, double alpha,
-      const double* a, int lda, const double* b, int ldb, double beta,
-      double* c, int ldc) {
+void spral_ssids_dsyrk(cudaStream_t *stream, int n, int m, int k, 
+      precision_ alpha, const precision_* a, int lda, const precision_* b, 
+      int ldb, precision_ beta, precision_* c, int ldc) {
   int nx, ny;
   nx = (n - 1)/32 + 1;
   ny = (m - 1)/32 + 1;
   dim3 threads(8,8);
   dim3 grid(nx,ny);
-  cu_syrk_r4x4< double > <<< grid, threads, 0, *stream >>>
+  cu_syrk_r4x4< precision_ > <<< grid, threads, 0, *stream >>>
     ( n, m, k, alpha, a, lda, b, ldb, beta, c, ldc );
 }
 
@@ -620,18 +632,18 @@ void spral_ssids_multidsyrk(cudaStream_t *stream, bool posdef, int nb,
   dim3 threads(8,8);
   for ( int i = 0; i < nb; i += MAX_CUDA_BLOCKS ) {
     int blocks = min(MAX_CUDA_BLOCKS, nb - i);
-    cu_multisyrk_r4x4< double >
+    cu_multisyrk_r4x4< precision_ >
       <<< blocks, threads, 0, *stream >>>
       ( posdef, stat, mdata + i, i, ndata );
   }
 }
 
 void spral_ssids_multidsyrk_low_col(cudaStream_t *stream, int nb,
-      struct multisyrk_type* msdata, double* c) {
+      struct multisyrk_type* msdata, precision_* c) {
   dim3 threads(8,8);
   for ( int i = 0; i < nb; i += MAX_CUDA_BLOCKS ) {
     int blocks = min(MAX_CUDA_BLOCKS, nb - i);
-    cu_multisyrk_lc_r4x4< double >
+    cu_multisyrk_lc_r4x4< precision_ >
       <<< blocks, threads, 0, *stream >>>( msdata + i, i, c );
   }
 }

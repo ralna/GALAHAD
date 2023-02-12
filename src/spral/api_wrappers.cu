@@ -72,11 +72,20 @@ extern "C" {
       free(handle);
       return error;
    }
-   cublasStatus_t spral_cublasDgemm(cublasHandle_t *const handle, const char *const transa,
-      const char *const transb, const int *const m, const int *const n, const int *const k,
-      const double *const alpha, const double *const devPtrA, const int *const lda,
-      const double *const devPtrB, const int *const ldb, const double *const beta,
-      double *const devPtrC, const int *const ldc)
+   cublasStatus_t spral_cublasDgemm(cublasHandle_t *const handle, 
+                                    const char *const transa,
+                                    const char *const transb, 
+                                    const int *const m, 
+                                    const int *const n, 
+                                    const int *const k,
+                                    const double *const alpha, 
+                                    const double *const devPtrA, 
+                                    const int *const lda,
+                                    const double *const devPtrB, 
+                                    const int *const ldb, 
+                                    const double *const beta,
+                                    double *const devPtrC, 
+                                    const int *const ldc)
   {
       cublasOperation_t tA, tB;
       if (toupper(*transa) == 'N') 
@@ -88,7 +97,34 @@ extern "C" {
       else
          tB = CUBLAS_OP_T;
       return cublasDgemm(*handle, tA, tB, *m, *n, *k, alpha, devPtrA, *lda, 
-         devPtrB, *ldb, beta, devPtrC, *ldc);
+                         devPtrB, *ldb, beta, devPtrC, *ldc);
+   }
+   cublasStatus_t spral_cublasSgemm(cublasHandle_t *const handle, 
+                                    const char *const transa,
+                                    const char *const transb, 
+                                    const int *const m, 
+                                    const int *const n, 
+                                    const int *const k,
+                                    const float *const alpha, 
+                                    const float *const devPtrA, 
+                                    const int *const lda,
+                                    const float *const devPtrB, 
+                                    const int *const ldb, 
+                                    const float *const beta,
+                                    float *const devPtrC, 
+                                    const int *const ldc)
+  {
+      cublasOperation_t tA, tB;
+      if (toupper(*transa) == 'N') 
+        tA = CUBLAS_OP_N;
+      else
+        tA = CUBLAS_OP_T;
+      if (toupper(*transb) == 'N') 
+        tB = CUBLAS_OP_N;
+      else
+         tB = CUBLAS_OP_T;
+      return cublasSgemm(*handle, tA, tB, *m, *n, *k, alpha, devPtrA, *lda, 
+                         devPtrB, *ldb, beta, devPtrC, *ldc);
    }
    cublasStatus_t spral_cublasSetStream(cublasHandle_t *handle,
          cudaStream_t *streamId) {
