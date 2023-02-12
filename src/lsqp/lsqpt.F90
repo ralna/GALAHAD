@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LSQP_test_deck
    USE GALAHAD_KINDS_precision
@@ -58,6 +58,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL LSQP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 
@@ -138,6 +139,7 @@
    p%X_l = (/ 0.0_rp_ /)
    p%X_u = (/ infty /)
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
@@ -178,6 +180,7 @@
    ALLOCATE( p%A%ptr( m + 1 ) )
    DO data_storage_type = 0, 2
      CALL LSQP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
      stop_c = control%stop_c
@@ -274,6 +277,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    
@@ -324,6 +328,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%print_level = 4
@@ -352,6 +357,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    DO i = tests + 2, tests + 2
@@ -423,6 +429,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%print_level = 1
@@ -492,6 +499,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%treat_zero_bounds_as_general = .TRUE.
    control%restore_problem = 2
@@ -566,6 +574,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL LSQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%treat_zero_bounds_as_general = .TRUE.
    control%restore_problem = 2
@@ -594,6 +603,16 @@
    DEALLOCATE( p%A%ptr )
    DEALLOCATE( p%A%type )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( LSQP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_LSQP_test_deck
 
 

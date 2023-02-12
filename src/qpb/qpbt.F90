@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPB_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -57,6 +57,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL QPB_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infbnd
      control%restore_problem = 1
 
@@ -143,6 +144,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 1
 !  control%print_level = 1
@@ -182,6 +184,7 @@
 
    DO data_storage_type = -3, 0
      CALL QPB_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infbnd
      control%restore_problem = 2
      p%new_problem_structure = .TRUE.
@@ -294,6 +297,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 2
 ! control%print_level = 1   
@@ -378,6 +382,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 2
 !  control%print_level = 4
@@ -410,6 +415,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 2
 !  control%print_level = 11
@@ -437,6 +443,7 @@
 !   p%C_u = (/ 0.0_rp_ /)
 
 !   CALL QPB_initialize( data, control, info )
+!   CALL WHICH_sls( control )
 !   control%infinity = infbnd
 !   control%restore_problem = 2
 !!  control%print_level = 11
@@ -499,11 +506,6 @@
               1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty,         &
               1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
-   p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,          &
-                4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,          &
-                7.0_rp_, 7.0_rp_ /)
-   p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 /)
    p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
                 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
                 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
@@ -519,14 +521,21 @@
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+   p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,          &
+                4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,          &
+                7.0_rp_, 7.0_rp_ /)
+   p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
+   p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 /)
 
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 1
    control%print_level = 101
    control%itref_max = 3
    control%out = scratch_out
    control%error = scratch_out
+!  control%print_level = 1
 !  control%out = 6
 !  control%error = 6
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
@@ -599,6 +608,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL QPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infbnd
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -621,4 +631,20 @@
    IF ( ALLOCATED( p%X0 ) ) DEALLOCATE( p%X0 )
    WRITE( 6, "( /, ' tests completed' )" )
 
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QPB_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     control%LSQP_control%FDC_control%use_sls = use_sls
+     control%LSQP_control%FDC_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%LSQP_control%SBLS_control%symmetric_linear_solver                 &
+       = symmetric_linear_solver
+     control%LSQP_control%SBLS_control%definite_linear_solver                  &
+       = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_QPB_EXAMPLE
