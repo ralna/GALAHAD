@@ -11,6 +11,22 @@
 #include "spral_cuda_cuda_check.h"
 #include "ssids_gpu_kernels_datatypes.h"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#define spral_ssids_add_delays_precision spral_ssids_add_delays_single
+#define spral_ssids_assemble_precision spral_ssids_assemble_single
+#define spral_ssids_load_nodes_precision spral_ssids_load_nodes_single
+#define spral_ssids_load_nodes_sc_precision spral_ssids_load_nodes_sc_single
+#define spral_ssids_max_abs_precision spral_ssids_max_abs_single
+#else
+#define precision_ double
+#define spral_ssids_add_delays_precision spral_ssids_add_delays_double
+#define spral_ssids_assemble_precision spral_ssids_assemble_double
+#define spral_ssids_load_nodes_precision spral_ssids_load_nodes_double
+#define spral_ssids_load_nodes_sc_precision spral_ssids_load_nodes_sc_double
+#define spral_ssids_max_abs_precision spral_ssids_max_abs_double
+#endif
+
 #define HOGG_ASSEMBLE_TX 128  // Block height
 #define HOGG_ASSEMBLE_TY 8    // Block width
 #define HOGG_ASSEMBLE_NTX 32  // Number of threads x
@@ -24,7 +40,7 @@ struct load_nodes_type {
   long nnz;    // Number of entries to map
   int lda;    // Leading dimension of A
   int ldl;    // Leading dimension of L
-  double *lcol; // Pointer to non-delay part of L
+  precision_ *lcol; // Pointer to non-delay part of L
   long offn;   // Offset into nlist
   long offr;  // Offset into rlist
 };
@@ -40,7 +56,7 @@ __global__ void
 cu_load_nodes(
     const struct load_nodes_type *lndata,
     const long *nlist,
-    const double *aval
+    const precision_ *aval
 ) {
    lndata += blockIdx.x;
    const long nnz = lndata->nnz;
@@ -48,7 +64,7 @@ cu_load_nodes(
    const int ldl = lndata->ldl;
 
    nlist += 2*lndata->offn;
-   double *const lval = lndata->lcol;
+   precision_ *const lval = lndata->lcol;
   
    for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
      // Note: nlist is 1-indexed, not 0 indexed, so we have to adjust
@@ -72,8 +88,8 @@ cu_load_nodes_sc(
     const struct load_nodes_type *lndata,
     const long *nlist,
     const int *rlist,
-    const double *scale,
-    const double *aval
+    const precision_ *scale,
+    const precision_ *aval
 ) {
    lndata += blockIdx.x;
    const int nnz = lndata->nnz;
@@ -81,7 +97,7 @@ cu_load_nodes_sc(
    const int ldl = lndata->ldl;
 
    nlist += 2*lndata->offn;
-   double *const lval = lndata->lcol;
+   precision_ *const lval = lndata->lcol;
    rlist += lndata->offr;
   
    for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
@@ -89,8 +105,8 @@ cu_load_nodes_sc(
       const int r = (nlist[2*i+1] - 1) % lda; // row index
       const int c = (nlist[2*i+1] - 1) / lda; // col index
       const long sidx = nlist[2*i+0] - 1; // source index
-      const double rs = scale[rlist[r] - 1]; // row scaling
-      const double cs = scale[rlist[c] - 1]; // col scaling
+      const precision_ rs = scale[rlist[r] - 1]; // row scaling
+      const precision_ cs = scale[rlist[c] - 1]; // col scaling
       lval[r + c*ldl] = rs * aval[sidx] * cs;
    }
 }
@@ -127,7 +143,7 @@ cu_max_abs( const long n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxab
 struct assemble_cp_type {
   // Parent data
   int pvoffset; // Offset to start of parent node values
-  double *pval; // Pointer to non-delay part of parent L
+  precision_ *pval; // Pointer to non-delay part of parent L
   int ldp; // Leading dimension of parent
 
   // Child data
@@ -135,7 +151,7 @@ struct assemble_cp_type {
   int cn; // Number of columns in child
   int ldc; // Leading dimension of child
   long cvoffset; // Offset to start of child node values
-  double *cv; // Pointer to start of child node values
+  precision_ *cv; // Pointer to start of child node values
 
   // Alignment data
   int *rlist_direct; // Pointer to start of child's rlist
@@ -172,8 +188,8 @@ template <unsigned int blk_sz_x, unsigned int blk_sz_y,
 void __global__ assemble(
     const struct assemble_blk_type *blkdata, // block mapping
     const struct assemble_cp_type *cpdata, // child-parent data
-    const double *const children, // pointer to array containing children
-    double *const parents, // pointer to array containing parents
+    const precision_ *const children, // pointer to array containing children
+    precision_ *const parents, // pointer to array containing parents
     unsigned int *const next_blk, // gmem location used to determine next block
     volatile unsigned int *const sync // sync[cp] is #blocks completed so far for cp
 ) {
@@ -196,9 +212,9 @@ void __global__ assemble(
    // Initialize local information
    int m = min(blk_sz_x, cpdata->cm - bx*blk_sz_x);
    int n = min(blk_sz_y, cpdata->cn - by*blk_sz_y);
-   const double *src = 
+   const precision_ *src = 
       cpdata->cv + ldc*by*blk_sz_y + bx*blk_sz_x;
-   double *dest = cpdata->pval;
+   precision_ *dest = cpdata->pval;
    int *rows = cpdata->rlist_direct + bx*blk_sz_x;
    int *cols = cpdata->rlist_direct + by*blk_sz_y;
 
@@ -235,8 +251,8 @@ struct assemble_delay_type {
   int n; // Number of cols in child to copy
   int ldd; // Leading dimension of dest (parent)
   int lds; // Leading dimension of src (child)
-  double *dval; // Pointer to dest (parent)
-  double *sval; // Pointer to src (child)
+  precision_ *dval; // Pointer to dest (parent)
+  precision_ *sval; // Pointer to src (child)
   long roffset; // Offset to rlist_direct
 };
 
@@ -254,8 +270,8 @@ void __global__ add_delays(
    const int ldd = dinfo->ldd; // leading dimension of dest
    const int lds = dinfo->lds; // leading dimension of src
 
-   double *const dest = dinfo->dval;
-   const double *const src = dinfo->sval;
+   precision_ *const dest = dinfo->dval;
+   const precision_ *const src = dinfo->sval;
    rlist_direct += dinfo->roffset;
 
    for ( int y = threadIdx.y; y < n; y += blockDim.y ) {
@@ -297,8 +313,8 @@ void spral_ssids_add_delays( const cudaStream_t *stream, int ndblk,
 /* Requires gpu_next_sync[] to be of size >= (1+ncp)*sizeof(unsigned int) */
 void spral_ssids_assemble(const cudaStream_t *stream, int nblk, int blkoffset,
       struct assemble_blk_type *blkdata, int ncp,
-      struct assemble_cp_type *cpdata, double *children,
-      double *parents, unsigned int *gpu_next_sync) {
+      struct assemble_cp_type *cpdata, precision_ *children,
+      precision_ *parents, unsigned int *gpu_next_sync) {
    /* Create and initialize synchronization objects using a single call:
       next_blk[1]
       sync[ncp]
@@ -326,7 +342,7 @@ void spral_ssids_assemble(const cudaStream_t *stream, int nblk, int blkoffset,
 // Note: modified value lval is passed in via pointer in lndata, not as argument
 void spral_ssids_load_nodes( const cudaStream_t *stream, int nblocks,
       const struct load_nodes_type *lndata, const long* list,
-      const double* mval ) {
+      const precision_* mval ) {
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     cu_load_nodes <<< nb, 128, 0, *stream >>> ( lndata + i, list, mval );
@@ -337,7 +353,7 @@ void spral_ssids_load_nodes( const cudaStream_t *stream, int nblocks,
 // Note: modified value lval is passed in via pointer in lndata, not as argument
 void spral_ssids_load_nodes_sc( const cudaStream_t *stream, int nblocks,
       const struct load_nodes_type *lndata, const long* list, const int* rlist,
-      const double* scale, const double* mval ) {
+      const precision_* scale, const precision_* mval ) {
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     cu_load_nodes_sc <<< nb, 128, 0, *stream >>> ( lndata + i, list, rlist, scale, mval );
@@ -346,16 +362,16 @@ void spral_ssids_load_nodes_sc( const cudaStream_t *stream, int nblocks,
 }
 
 void spral_ssids_max_abs( const cudaStream_t *stream, 
-      int nb, long n, double* u, double* buff, double* maxabs )
+      int nb, long n, precision_* u, precision_* buff, precision_* maxabs )
 {
-  cudaMemsetAsync(buff, 0, nb*sizeof(double), *stream);
+  cudaMemsetAsync(buff, 0, nb*sizeof(precision_), *stream);
   cudaStreamSynchronize(*stream);
   if ( n > 1024*nb )
-    cu_max_abs< double, 256 ><<< nb, 256, 0, *stream >>>( n, u, buff );
+    cu_max_abs< precision_, 256 ><<< nb, 256, 0, *stream >>>( n, u, buff );
   else
-    cu_max_abs< double, 32 ><<< nb, 32, 0, *stream >>>( n, u, buff );
+    cu_max_abs< precision_, 32 ><<< nb, 32, 0, *stream >>>( n, u, buff );
   CudaCheckError();
-  cu_max_abs< double, 1024 ><<< 1, 1024, 0, *stream >>>( nb, buff, maxabs );
+  cu_max_abs< precision_, 1024 ><<< 1, 1024, 0, *stream >>>( nb, buff, maxabs );
   CudaCheckError();
 }
 

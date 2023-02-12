@@ -30,7 +30,7 @@ module spral_cuda_precision
        cudaMemsetAsync, cudaStreamCreate, cudaStreamDestroy, &
        cudaStreamSynchronize
   ! Wrapper interfaces to C function provided by cuBLAS API
-  public :: cublasCreate, cublasDestroy, cublasDgemm, cublasSetStream
+  public :: cublasCreate, cublasDestroy, cublasgemm, cublasSetStream
   ! Helper functions for dealing with type(C_PTR)
   public :: c_ptr_plus, c_print_ptr, c_ptr_plus_aligned, aligned_size
   ! A Fortran version of cudaGetErrorString
@@ -231,9 +231,9 @@ module spral_cuda_precision
        use, intrinsic :: iso_c_binding
        type(C_PTR), value :: handle
      end function cublasDestroy
-     integer(C_IP_) function cublasDgemm(handle, transa, transb, &
+     integer(C_IP_) function cublasgemm(handle, transa, transb, &
           m, n, k, alpha, devPtrA, lda, devPtrB, ldb, beta, devPtrC, ldc) &
-          bind(C, name="spral_cublasDgemm")
+          bind(C, name="spral_cublasgemm")
        use, intrinsic :: iso_c_binding
        type(C_PTR), value :: handle
        character(C_CHAR), intent(in) :: transa
@@ -249,7 +249,7 @@ module spral_cuda_precision
        integer(C_IP_), intent(in) :: lda
        integer(C_IP_), intent(in) :: ldb
        integer(C_IP_), intent(in) :: ldc
-     end function cublasDgemm
+     end function cublasgemm
      integer(C_IP_) function cublasSetStream(handle, streamId) &
           bind(C, name="spral_cublasSetStream")
        use, intrinsic :: iso_c_binding
