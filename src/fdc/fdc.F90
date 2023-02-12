@@ -724,8 +724,8 @@
 
       out = data%control%out
       IF ( out > 0 .AND. data%control%print_level >= 1 ) WRITE( out,           &
-       "( /, A, 5( ' -' ), ' SLS test for rank defficiency', 5( ' - ' ) )" )   &
-           prefix
+         "( /, A, 5( ' -' ), ' SLS test for rank defficiency', 5( ' - ' ),     &
+        &   /, A, 5( ' -' ), ' m = ', I0, ', n = ', I0 )" ) prefix, prefix, m, n
 
 !  Check that the problem makes sense
 
@@ -819,11 +819,11 @@
       END DO
       data%K%val( A_ne + 1 : A_ne + n ) = dmax
 
-!     write(78,*) data%K%n, data%K%ne
-!     DO i = 1,  data%K%ne
-!       write(78,"( 2I8, ES22.14 )" ) data%K%row( i ), data%K%col( i ),        &
-!        data%K%val( i )
-!     END DO
+      write(78,*) data%K%n, data%K%ne
+      DO i = 1,  data%K%ne
+        write(78,"( 2I8, ES22.14 )" ) data%K%row( i ), data%K%col( i ),        &
+         data%K%val( i )
+      END DO
 
 !  Analyse the sparsity pattern of the matrix
 
@@ -846,7 +846,7 @@
       IF ( inform%SLS_inform%status < 0 ) THEN
         IF ( data%control%error > 0 .AND. data%control%print_level >= 1 )      &
            WRITE( data%control%error,                                          &
-           "( A, '   **  Error return ', I6, ' from SLS_analyse' )")           &
+           "( A, '   **  Error return ', I0, ' from SLS_analyse' )")           &
           prefix, inform%SLS_inform%status
 !       write(6,*) ' ssids flag ', inform%SLS_inform%ssids_inform%flag
         inform%status = GALAHAD_error_analysis ; RETURN
@@ -884,7 +884,7 @@
       IF ( inform%SLS_inform%status < 0 ) THEN
         IF ( data%control%error > 0 .AND. data%control%print_level >= 1 )      &
            WRITE( data%control%error,                                          &
-            "( A, '   **  Error return ', I6, ' from SLS_factorize' )")        &
+            "( A, '   **  Error return ', I0, ' from SLS_factorize' )")        &
               prefix, inform%SLS_inform%status
         inform%status = GALAHAD_error_factorization
         RETURN
@@ -966,13 +966,13 @@
             IF ( rmax >= big ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE(  out, "( A, ' 2x2 block ', 2i7, ' eval = ', ES12.4 )" ) &
+                WRITE(  out, "( A, ' 2x2 block ', 2I7, ' eval = ', ES12.4 )" ) &
                   prefix, pmax - n, pmin - n, one / rmax
               END IF
             ELSE IF ( rmin == zero ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE( out, "( A, ' 2x2 block ', 2i7, ' eval = infinity' )" )  &
+                WRITE( out, "( A, ' 2x2 block ', 2I7, ' eval = infinity' )" )  &
                   prefix, pmax - n, pmin - n
               END IF
             END IF
@@ -980,13 +980,13 @@
             IF ( rmin >= big ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE( out, "( A, ' 2x2 block ', 2i7, ' eval = ', ES12.4 )" )  &
+                WRITE( out, "( A, ' 2x2 block ', 2I7, ' eval = ', ES12.4 )" )  &
                    prefix, pmin - n, pmax - n, one / rmin
               END IF
             ELSE IF ( rmax == zero ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE( out, "( A, ' 2x2 block ', 2i7, ' eval = infinity' )" )  &
+                WRITE( out, "( A, ' 2x2 block ', 2I7, ' eval = infinity' )" )  &
                    prefix, pmin - n, pmax - n
               END IF
             END IF
@@ -1001,13 +1001,13 @@
             IF ( rmax >= big ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE( out, "( A, ' 1x1 block ', i7, 8x, 'eval = ', ES12.4 )" )&
+                WRITE( out, "( A, ' 1x1 block ', I7, 8X, 'eval = ', ES12.4 )" )&
                   prefix, data%P( i ) - n,  one / rmax
               END IF
             ELSE IF ( rmax == zero ) THEN
               n_depen = n_depen + 1
               IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-                WRITE( out, "( A, ' 1x1 block ', i7, 8x, 'eval = infinity' )" )&
+                WRITE( out, "( A, ' 1x1 block ', I7, 8X, 'eval = infinity' )" )&
                   prefix, data%P( i ) - n
               END IF
             END IF
@@ -1023,13 +1023,13 @@
           IF ( rmax >= big ) THEN
             n_depen = n_depen + 1
             IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-              WRITE( out, "( A, ' 1x1 block ', i7, 7x, ' eval = ', ES12.4 )" ) &
+              WRITE( out, "( A, ' 1x1 block ', I7, 7X, ' eval = ', ES12.4 )" ) &
                 prefix, data%P( i ) - n,  one / rmax
             END IF
           ELSE IF ( rmax == zero ) THEN
             n_depen = n_depen + 1
             IF ( out > 0 .AND. data%control%print_level >= 3 ) THEN
-              WRITE( out, "( A, ' 1x1 block ', i7, 7x, ' eval = infinity ' )" )&
+              WRITE( out, "( A, ' 1x1 block ', I7, 7X, ' eval = infinity ' )" )&
                 prefix, data%P( i ) - n
             END IF
           END IF

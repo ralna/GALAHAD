@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 17:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_interface_test
    USE GALAHAD_KINDS_precision
@@ -18,7 +18,6 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
@@ -54,6 +53,7 @@
 
    DO data_storage_type = 1, 6
      CALL EQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -113,6 +113,7 @@
 
    DO data_storage_type = 1, 1
      CALL EQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 0.0_rp_ ; Y = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
@@ -136,4 +137,15 @@
    DEALLOCATE( X, C, G, Y, W, X_0 )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
 
+   WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( EQP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_EQP_interface_test

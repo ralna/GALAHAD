@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-10 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -3671,7 +3671,7 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR.&
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit ; GO TO 600

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_WCP_test_program
    USE GALAHAD_KINDS_precision
@@ -42,6 +42,7 @@
    p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 
@@ -96,6 +97,7 @@
    p%X_l = (/ 0.0_rp_ /)
    p%X_u = (/ infty /)
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%maxit = 1
@@ -133,6 +135,7 @@
    p%X0 = (/  -2.0_rp_, 1.0_rp_, 3.0_rp_ /)
 
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 
@@ -196,10 +199,13 @@
    ALLOCATE( p%A%ptr( m + 1 ) )
    DO data_storage_type = 0, 2
      CALL WCP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
      control%print_level = 0
      control%mu_target = 1.0_rp_
+!    control%print_level = 3
+!    control%FDC_control%print_level = 3
      DO gradient_kind = 0, 2
        p%gradient_kind = gradient_kind
        p%new_problem_structure = .TRUE.
@@ -282,10 +288,12 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    control%mu_target = 1.0_rp_
-   
+!  control%print_level = 3
+
 !  test with new and existing data
 
    DO i = 0, 7
@@ -329,10 +337,12 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%print_level = 4
    control%mu_target = 1.0_rp_
+
    DO i = 8, 8
 
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -359,6 +369,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
@@ -432,6 +443,7 @@
    p%gradient_kind = 1
 
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    control%out = scratch_out
@@ -506,6 +518,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL WCP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%treat_zero_bounds_as_general = .TRUE.
    control%restore_problem = 2
@@ -535,6 +548,15 @@
    DEALLOCATE( p%A%type )
    WRITE( 6, "( /, ' tests completed' )" )
 
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( WCP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_WCP_test_program
 
 

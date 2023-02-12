@@ -437,7 +437,7 @@
 !  control parameters for CRO
 
         TYPE ( CRO_control_type ) :: CRO_control
-      END TYPE
+      END TYPE CCQP_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
@@ -492,7 +492,7 @@
 !  the clock time spent computing the search direction
 
         REAL ( KIND = rp_ ) :: clock_solve = 0.0
-      END TYPE
+      END TYPE CCQP_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
@@ -614,7 +614,7 @@
 !  inform parameters for RPD
 
         TYPE ( RPD_inform_type ) :: RPD_inform
-      END TYPE
+      END TYPE CCQP_inform_type
 
 !  - - - - - - - - - - - -
 !   full_data derived type
@@ -902,7 +902,7 @@
       INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_name = sif_file_name + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: prefix = qplib_file_name + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'CCQP'
+      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'CCQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -3484,6 +3484,7 @@
       get_stat = .FALSE.
       stat_known = .FALSE.
       iorder = 0
+      optimal = .FALSE.
 
 !  initialize status indicators
 
@@ -4185,7 +4186,7 @@
             ABS( C_l( : dims%c_equality ) )
           RHS( dims%c_e + dims%c_l_start : dims%c_e +  dims%c_u_end ) =        &
             ABS( SCALE_C * C )
-          CALL CCQP_abs_AX( m, RHS( dims%y_s : dims%y_e ), m, a_ne,             &
+          CALL CCQP_abs_AX( m, RHS( dims%y_s : dims%y_e ), m, a_ne,            &
                            A_val, A_col, A_ptr, n, X, ' ' )
           IF ( printw ) WRITE( out, "( A, '  abs(primal) ', ES12.4 )" )        &
             prefix, MAXVAL( RHS( dims%y_s : dims%y_e ) )
@@ -4366,9 +4367,9 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
-             ( control%clock_time_limit >= zero .AND.                          &
-               clock_now - clock_start > control%clock_time_limit ) ) THEN
+                 REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) &
+           .OR. ( control%clock_time_limit >= zero .AND.                       &
+                  clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit ; GO TO 600
         END IF
 
@@ -7103,7 +7104,7 @@
               "( A, 7X, ' changes in predicted X/C_stat = ',                   &
             &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
-            CALL CCQP_pounce( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,       &
+            CALL CCQP_pounce( n, m, A_val, A_col, A_ptr, C_l, C_u,             &
                               X_l, X_u, X_last, C_last, Y_last, Z_last,        &
                               Hessian_kind, gradient_kind, target_kind,        &
                               C_stat, X_Stat, X_free, RHS, H_free, A_active,   &
@@ -7453,7 +7454,7 @@
             "( A, 7X, ' changes in predicted X/C_stat = ',                     &
           &    I0, ', ', I0, ', pouncing for solution ...' )" )                &
              prefix, b_change, c_change
-          CALL CCQP_pounce( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,         &
+          CALL CCQP_pounce( n, m, A_val, A_col, A_ptr, C_l, C_u,               &
                             X_l, X_u, X_last, C_last, Y_last, Z_last,          &
                             Hessian_kind, gradient_kind, target_kind,          &
                             C_stat, X_Stat, X_free, RHS, H_free, A_active,     &
@@ -7475,7 +7476,6 @@
 !  If necessary, print warning messages
 
   810 CONTINUE
-
       SBLS_data%last_preconditioner = no_last
       SBLS_data%last_factorization = no_last
 
@@ -8264,16 +8264,15 @@
 
 !-*-*-*-*-*-*-*-*-   C C Q P _ P U N T   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
-      SUBROUTINE CCQP_pounce( dims, n, m, A_val, A_col, A_ptr,                 &
-                            C_l, C_u, X_l, X_u, X, C, Y, Z,                    &
-                            Hessian_kind, gradient_kind, target_kind,          &
-                            C_stat, X_stat, X_free, SOL, H_free, A_active,     &
-                            SBLS_data, control, inform, optimal,               &
-                            H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G )
+      SUBROUTINE CCQP_pounce( n, m, A_val, A_col, A_ptr,                      &
+                              C_l, C_u, X_l, X_u, X, C, Y, Z,                  &
+                              Hessian_kind, gradient_kind, target_kind,        &
+                              C_stat, X_stat, X_free, SOL, H_free, A_active,   &
+                              SBLS_data, control, inform, optimal,             &
+                              H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G )
 
 !  Dummy arguments
 
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: Hessian_kind, gradient_kind
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: target_kind

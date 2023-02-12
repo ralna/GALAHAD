@@ -2647,7 +2647,7 @@
           efactors%K%n = m
           efactors%K%ne = nnz_aat + c_ne
 
-          IF ( printi ) WRITE( out, "( A, ' Allocate arrays on length ', I0,   &
+          IF ( printi ) WRITE( out, "( A, ' Allocate arrays of length ', I0,   &
          &  ' to hold Schur complement' )" ) prefix, efactors%K%ne
 
           array_name = 'sbls: efactors%K%row'
@@ -5158,7 +5158,6 @@
         WRITE( control%out, "( A, ' sol = ', /, ( 5ES16.8 ) )" )               &
           prefix, SOL( : n + m )
 
-
       RETURN
 
 !  End of subroutine SBLS_solve
@@ -5349,6 +5348,9 @@
             inform%sls_solve_status = inform%SLS_inform%status
             IF ( inform%sls_solve_status ==                                    &
                    GALAHAD_error_primal_infeasible ) THEN
+              IF ( control%out > 0 .AND. control%print_level > 0 )             &
+                WRITE( control%out, "( A, ' solve exit status = ', I0 )" )     &
+                  prefix, inform%sls_solve_status
                inform%status = GALAHAD_error_primal_infeasible ; RETURN
             ELSE IF ( inform%sls_solve_status < 0 ) THEN
               IF ( control%out > 0 .AND. control%print_level > 0 )             &
@@ -5394,6 +5396,9 @@
           inform%sls_solve_status = inform%SLS_inform%status
           IF ( inform%sls_solve_status ==                                      &
                  GALAHAD_error_primal_infeasible ) THEN
+            IF ( control%out > 0 .AND. control%print_level > 0 )               &
+              WRITE( control%out, "( A, ' solve exit status = ', I0 )" )       &
+                prefix, inform%sls_solve_status
              inform%status = GALAHAD_error_primal_infeasible ; RETURN
           ELSE IF ( inform%sls_solve_status < 0 ) THEN
             IF ( control%out > 0 .AND. control%print_level > 0 )               &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:20 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -28,6 +28,7 @@
    p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
 
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%print_level = 0
 !  control%print_level = 1
    control%sbls_control%sls_control%warning = - 1
@@ -138,6 +139,7 @@
        DO data_storage_type = -3, 1
 !      DO data_storage_type = -3, -3
          CALL EQP_initialize( data, control, info )
+         CALL WHICH_sls( control )
 !        control%print_level = 1
          control%sbls_control%preconditioner = preconditioner
          control%SBLS_control%factorization = factorization
@@ -281,6 +283,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 
 !  test with new and existing data
 
@@ -367,6 +370,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 4
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -395,6 +399,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -410,9 +415,8 @@
      END IF
    END DO
    CALL EQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr )
    DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
 
 !  ============================
@@ -457,6 +461,7 @@
                 8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
 
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 1
    control%itref_max = 3
    control%out = scratch_out
@@ -464,7 +469,6 @@
 !  control%print_level = 1
 !  control%out = 6
 !  control%error = 6
-   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL EQP_solve( p, data, control, info )
@@ -483,9 +487,8 @@
    END IF
    CLOSE( UNIT = scratch_out )
    CALL EQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr )
    DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
 
 !  Second problem
@@ -522,10 +525,13 @@
                 8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
 
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
+!  control%FDC_control%symmetric_linear_solver = 'ssids'
+!  control%FDC_control%SLS_control%ordering = 0
 !  control%print_level = 1
+!  control%FDC_control%print_level = 3
    control%sbls_control%preconditioner = - 2
    control%SBLS_control%factorization = 2
-   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
@@ -542,10 +548,9 @@
      WRITE( 6, "( I1, 'R: EQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF
    CALL EQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
-   DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr )
+   DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C, STAT = smt_stat )
 
 !  Third problem
 
@@ -580,10 +585,10 @@
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL EQP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 1 ; control%out = 6 ; control%error = 6
    control%sbls_control%preconditioner = 2
    control%SBLS_control%factorization = 1
-   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
@@ -600,16 +605,20 @@
      WRITE( 6, "( I1, 'R: EQP_solve exit status = ', I6 ) " ) 3, info%status
    END IF
    CALL EQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X, p%Y, p%Z, p%C )
-
-   GO TO 10000
-10000 CONTINUE
-   DEALLOCATE( p%A%type, p%H%type )
    WRITE( 6, "( /, ' tests completed' )" )
 
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( EQP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_EQP_EXAMPLE
 
 
