@@ -18,6 +18,50 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#define multinode_chol_type multinode_chol_type_single
+#define multiblock_fact_type multiblock_fact_type_single
+#define cstat_data_type cstat_data_type_single
+#define cu_block_ldlt_init cu_block_ldlt_init_single
+#define cu_block_chol cu_block_chol_single
+#define cu_multiblock_fact_setup cu_multiblock_fact_setup_single
+#define cu_block_ldlt cu_block_ldlt_single
+#define cu_multiblock_ldlt cu_multiblock_ldlt_single
+#define cu_square_ldlt cu_square_ldlt_single
+#define cu_multiblock_chol cu_multiblock_chol_single
+#define cu_collect_stats cu_collect_stats_single
+#define spral_ssids_block_ldlt spral_ssids_block_ldlt_single
+#define spral_ssids_block_llt spral_ssids_block_llt_single
+#define spral_ssids_cuda_collect_stats spral_ssids_cuda_collect_stats_single
+#define spral_ssids_multiblock_ldlt spral_ssids_multiblock_ldlt_single
+#define spral_ssids_multiblock_ldlt_setup spral_ssids_multiblock_ldlt_setup_single
+#define spral_ssids_multiblock_llt spral_ssids_multiblock_llt_single
+#define spral_ssids_multiblock_llt_setup spral_ssids_multiblock_llt_setup_single
+#define spral_ssids_square_ldlt spral_ssids_square_ldlt_single
+#else
+#define precision_ double
+#define multinode_chol_type multinode_chol_type_double
+#define multiblock_fact_type multiblock_fact_type_double
+#define cstat_data_type cstat_data_type_double
+#define cu_block_ldlt_init cu_block_ldlt_init_double
+#define cu_block_chol cu_block_chol_double
+#define cu_multiblock_fact_setup cu_multiblock_fact_setup_double
+#define cu_block_ldlt cu_block_ldlt_double
+#define cu_multiblock_ldlt cu_multiblock_ldlt_double
+#define cu_square_ldlt cu_square_ldlt_double
+#define cu_multiblock_chol cu_multiblock_chol_double
+#define cu_collect_stats cu_collect_stats_double
+#define spral_ssids_block_ldlt spral_ssids_block_ldlt_double
+#define spral_ssids_block_llt spral_ssids_block_llt_double
+#define spral_ssids_cuda_collect_stats spral_ssids_cuda_collect_stats_double
+#define spral_ssids_multiblock_ldlt spral_ssids_multiblock_ldlt_double
+#define spral_ssids_multiblock_ldlt_setup spral_ssids_multiblock_ldlt_setup_double
+#define spral_ssids_multiblock_llt spral_ssids_multiblock_llt_double
+#define spral_ssids_multiblock_llt_setup spral_ssids_multiblock_llt_setup_double
+#define spral_ssids_square_ldlt spral_ssids_square_ldlt_double
+#endif
+
 #define min(x,y) ((x) < (y) ? (x) : (y))
 
 #define FAVOUR2x2 100
@@ -33,7 +77,7 @@ using namespace spral::ssids::gpu;
 
 namespace /* anon */ {
 
-extern __shared__ volatile double SharedMemory[];
+extern __shared__ volatile precision_ SharedMemory[];
 
 __global__ void
 cu_block_ldlt_init(
@@ -207,7 +251,7 @@ cu_block_chol(
 struct multinode_chol_type {
    int nrows;
    int ncols;
-   double *lcol;
+   precision_ *lcol;
 };
 
 // input data type for multiblock_fact and multiblock_chol
@@ -217,10 +261,10 @@ struct multiblock_fact_type {
    int ncols; // no node's cols
    int ld;    // node's leading dimension
    int p;     // no rows above the pivot block
-   double *aptr; // pointer to this node's A matrix
-   double *ldptr; // pointer to this node's LD matrix
+   precision_ *aptr; // pointer to this node's A matrix
+   precision_ *ldptr; // pointer to this node's LD matrix
    int offf;  // this node's L offset in the array of all Ls
-   double *dptr; // pointer to this node's D in array of all Ds
+   precision_ *dptr; // pointer to this node's D in array of all Ds
    int node;  // node index
    int offb;  // the idx of the first CUDA block processing this node
 };
@@ -240,9 +284,9 @@ cu_multiblock_fact_setup(
   ndata += blockIdx.x;
   const int ncols = ndata->ncols;
   const int nrows = ndata->nrows;
-  double *const lval  = ndata->lval;
-  double *const ldval = ndata->ldval;
-  double *const dval  = ndata->dval;
+  precision_ *const lval  = ndata->lval;
+  precision_ *const ldval = ndata->ldval;
+  precision_ *const dval  = ndata->dval;
   int ib    = ndata->ib;
   int jb    = ndata->jb;
   int done  = ndata->done;
@@ -301,7 +345,7 @@ cu_multiblock_fact_setup(
     ncb = atomicAdd(&nl[0], k);
   
   __shared__ volatile int iwork[9];
-  __shared__ double *volatile lptr, *volatile ldptr, *volatile dptr;
+  __shared__ precision_ *volatile lptr, *volatile ldptr, *volatile dptr;
   if ((threadIdx.x == 0) && (threadIdx.y == 0)) {
     iwork[0] = cb;
     iwork[1] = rb;
@@ -1112,11 +1156,11 @@ cu_multiblock_ldlt(
    int block  = mbfdata->offb; // relative CUDA block index
 
    f += mbfdata->offf; // shift to the array of this L elements
-   double *fd = mbfdata->ldptr;
-   double *a = mbfdata->aptr; // pointer to A
-   double *d = mbfdata->dptr; // pointer to D**(-1)
+   precision_ *fd = mbfdata->ldptr;
+   precision_ *a = mbfdata->aptr; // pointer to A
+   precision_ *d = mbfdata->dptr; // pointer to D**(-1)
 
-   dev_block_ldlt < double, TILE_SIZE, TILES > 
+   dev_block_ldlt < precision_, TILE_SIZE, TILES > 
      ( block, nrows, ncols, p, a, lda, f, lda,
        fd, lda, d, delta, eps, &index[node*TILE_SIZE], &stat[node]);
 }
@@ -1374,7 +1418,7 @@ cu_multiblock_chol(
   
 struct cstat_data_type {
   int nelim;
-  double *dval;
+  precision_ *dval;
 };
 
 __global__ void 
@@ -1384,7 +1428,7 @@ cu_collect_stats(
 ) {
    // Designed to be run with a single thread
    csdata += blockIdx.x;
-   double *const d = csdata->dval;
+   precision_ *const d = csdata->dval;
    const int nelim = csdata->nelim;
 
    int num_zero = 0;
@@ -1392,8 +1436,8 @@ cu_collect_stats(
    int num_two = 0;
 
    for (int i = 0; i < nelim; ) {
-      const double a11 = d[2*i];
-      const double a21 = d[2*i + 1];
+      const precision_ a11 = d[2*i];
+      const precision_ a21 = d[2*i + 1];
       if ( a21 == 0.0 ) {
          // 1x1 pivot (can be a zero pivot)
          if ( a11 == 0 ) 
@@ -1404,15 +1448,15 @@ cu_collect_stats(
       } 
       else {
          // 2x2 pivot (can't be a zero pivot)
-         const double a22 = d[2*(i + 1)];
+         const precision_ a22 = d[2*(i + 1)];
          num_two++;
          // To check for negative eigenvalues, we exploit
          // det   = product of evals
          // trace = sum of evals
          // if det is negative, exactly one eval is negative;
          // otherwise, both have same sign, equal to sign of trace
-         const double det = a11*a22 - a21*a21;
-         const double trace = a11 + a22;
+         const precision_ det = a11*a22 - a21*a21;
+         const precision_ trace = a11 + a22;
          if ( det < 0 ) 
             num_neg++;
          else if ( trace < 0 ) 
@@ -1439,11 +1483,11 @@ extern "C" {
 
 void spral_ssids_block_ldlt(
       cudaStream_t *stream, int nrows, int ncols, int p,
-      double* a, int lda,
-      double* f, int ldf,
-      double* fd, int ldfd,
-      double* d,
-      double delta, double eps,
+      precision_* a, int lda,
+      precision_* f, int ldf,
+      precision_* fd, int ldfd,
+      precision_* d,
+      precision_ delta, precision_ eps,
       int* index, int* stat
       ) {
    
@@ -1452,18 +1496,18 @@ void spral_ssids_block_ldlt(
   
    dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
    cu_block_ldlt
-      < double, BLOCK_SIZE, BLOCKS >
+      < precision_, BLOCK_SIZE, BLOCKS >
       <<< nblocks, threads, 0, *stream >>>
       ( nrows, ncols, p, a, lda, f, ldf, fd, ldfd, d, delta, eps, index, stat );
 }
 
 void spral_ssids_block_llt( cudaStream_t *stream, int nrows, int ncols,
-      double* a, int lda, double* f, int ldf, int* stat ) {
-   int smsize = CBLOCKS*BLOCK_SIZE*BLOCK_SIZE*sizeof(double);
+      precision_* a, int lda, precision_* f, int ldf, int* stat ) {
+   int smsize = CBLOCKS*BLOCK_SIZE*BLOCK_SIZE*sizeof(precision_);
    int nblocks = (nrows - ncols - 1)/(BLOCK_SIZE*(CBLOCKS - 1)) + 1;
    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
    cu_block_chol
-      < double, BLOCK_SIZE, CBLOCKS >
+      < precision_, BLOCK_SIZE, CBLOCKS >
       <<< nblocks, threads, smsize, *stream >>>
       ( nrows, ncols, a, lda, f, ldf, stat );
 }
@@ -1478,13 +1522,13 @@ void spral_ssids_collect_stats(cudaStream_t *stream, int nblk,
 }
 
 void spral_ssids_multiblock_ldlt( cudaStream_t *stream, int nblocks,
-      struct multiblock_fact_type *mbfdata, double* f, double delta,
-      double eps, int* index, int* stat ) {
+      struct multiblock_fact_type *mbfdata, precision_* f, precision_ delta,
+      precision_ eps, int* index, int* stat ) {
    dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
    for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
       int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
       cu_multiblock_ldlt
-         < double, BLOCK_SIZE, MBLOCKS >
+         < precision_, BLOCK_SIZE, MBLOCKS >
          <<< nb, threads, 0, *stream >>>
          ( mbfdata + i, f, delta, eps, index, stat );
    }
@@ -1504,16 +1548,16 @@ void spral_ssids_multiblock_ldlt_setup( cudaStream_t *stream, int nblocks,
 }
 
 void spral_ssids_multiblock_llt( cudaStream_t *stream, int nblocks,
-      struct multiblock_fact_type *mbfdata, double* f, int* stat ) {
+      struct multiblock_fact_type *mbfdata, precision_* f, int* stat ) {
    if ( nblocks < 1 )
       return;
 
-   int smsize = MCBLOCKS*BLOCK_SIZE*BLOCK_SIZE*sizeof(double);
+   int smsize = MCBLOCKS*BLOCK_SIZE*BLOCK_SIZE*sizeof(precision_);
    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
    for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
       int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
       cu_multiblock_chol
-         < double, BLOCK_SIZE, MCBLOCKS > 
+         < precision_, BLOCK_SIZE, MCBLOCKS > 
          <<< nb, threads, smsize, *stream >>>
          ( mbfdata + i, f, stat );
    }
@@ -1534,19 +1578,19 @@ void spral_ssids_multiblock_llt_setup( cudaStream_t *stream, int nblocks,
 void spral_ssids_square_ldlt( 
             cudaStream_t *stream, 
             int n, 
-            double* a, 
-            double* f, 
-            double* w,
-            double* d,
+            precision_* a, 
+            precision_* f, 
+            precision_* w,
+            precision_* d,
             int ld,
-            double delta, double eps,
+            precision_ delta, precision_ eps,
             int* index,
             int* stat
            )
 {
   int nt = min(n, 256);
-  int sm = nt*sizeof(double) + (nt + 2)*sizeof(int);
-  cu_square_ldlt< double ><<< 1, nt, sm, *stream >>>
+  int sm = nt*sizeof(precision_) + (nt + 2)*sizeof(int);
+  cu_square_ldlt< precision_ ><<< 1, nt, sm, *stream >>>
     ( n, a, f, w, d, ld, delta, eps, index, stat );
 }
 
