@@ -13,18 +13,36 @@
 
 #ifdef SPRAL_SINGLE
 #define precision_ float
-#define spral_ssids_add_delays_precision spral_ssids_add_delays_single
-#define spral_ssids_assemble_precision spral_ssids_assemble_single
-#define spral_ssids_load_nodes_precision spral_ssids_load_nodes_single
-#define spral_ssids_load_nodes_sc_precision spral_ssids_load_nodes_sc_single
-#define spral_ssids_max_abs_precision spral_ssids_max_abs_single
+#define load_nodes_type load_nodes_type_single
+#define assemble_cp_type assemble_cp_type_single
+#define assemble_blk_type assemble_blk_type_single
+#define assemble_delay_type assemble_delay_type_single
+#define assemble assemble_single
+#define add_delays add_delays_single
+#define cu_load_nodes cu_load_nodes_single
+#define cu_load_nodes_sc cu_load_nodes_sc_single
+#define cu_max_abs cu_max_abs_single
+#define spral_ssids_add_delays spral_ssids_add_delays_single
+#define spral_ssids_assemble spral_ssids_assemble_single
+#define spral_ssids_load_nodes spral_ssids_load_nodes_single
+#define spral_ssids_load_nodes_sc spral_ssids_load_nodes_sc_single
+#define spral_ssids_max_abs spral_ssids_max_abs_single
 #else
 #define precision_ double
-#define spral_ssids_add_delays_precision spral_ssids_add_delays_double
-#define spral_ssids_assemble_precision spral_ssids_assemble_double
-#define spral_ssids_load_nodes_precision spral_ssids_load_nodes_double
-#define spral_ssids_load_nodes_sc_precision spral_ssids_load_nodes_sc_double
-#define spral_ssids_max_abs_precision spral_ssids_max_abs_double
+#define load_nodes_type load_nodes_type_single
+#define assemble_cp_type assemble_cp_type_double
+#define assemble_blk_type assemble_blk_type_double
+#define assemble_delay_type assemble_delay_type_double
+#define assemble assemble_double
+#define add_delays add_delays_double
+#define cu_load_nodes cu_load_nodes_double
+#define cu_load_nodes_sc cu_load_nodes_sc_double
+#define cu_max_abs cu_max_abs_double
+#define spral_ssids_add_delays spral_ssids_add_delays_double
+#define spral_ssids_assemble spral_ssids_assemble_double
+#define spral_ssids_load_nodes spral_ssids_load_nodes_double
+#define spral_ssids_load_nodes_sc spral_ssids_load_nodes_sc_double
+#define spral_ssids_max_abs spral_ssids_max_abs_double
 #endif
 
 #define HOGG_ASSEMBLE_TX 128  // Block height

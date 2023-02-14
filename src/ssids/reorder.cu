@@ -11,6 +11,72 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
+#ifdef SPRAL_SINGLE
+#define precision_ float
+#define multiswap_type multiswap_type_single
+#define multireorder_data multireorder_data_single
+#define multisymm_type multisymm_type_single
+#define cu_copy_mc cu_copy_mc_single
+#define cu_copy_ic cu_copy_ic_single
+#define cu_swap_ni2D_ic cu_swap_ni2D_ic_single
+#define cu_swap_ni2D_ir cu_swap_ni2D_ir_single
+#define cu_multiswap_ni2D_c cu_multiswap_ni2D_c_single
+#define cu_multiswap_ni2D_r cu_multiswap_ni2D_r_single
+#define cu_reorder_rows cu_reorder_rows_single
+#define cu_reorder_cols2 cu_reorder_cols2_single
+#define cu_reorder_rows2 cu_reorder_rows2_single
+#define copy_L_LD_no_perm copy_L_LD_no_perm_single
+#define shuffle_perm_shmem shuffle_perm_shmem_single
+#define copy_L_LD_perm_shmem copy_L_LD_perm_shmem_single
+#define copy_L_LD_perm_noshmem copy_L_LD_perm_noshmem_single
+#define cu_multireorder cu_multireorder_single
+#define cu_multicopy cu_multicopy_single
+#define cu_multisymm cu_multisymm_single
+#define spral_ssids_copy_ic spral_ssids_copy_ic_single
+#define spral_ssids_copy_mc spral_ssids_copy_mc_single
+#define spral_ssids_multisymm spral_ssids_multisymm_single
+#define spral_ssids_multicopy spral_ssids_multicopy_single
+#define spral_ssids_multireorder spral_ssids_multireorder_single
+#define spral_ssids_reorder_cols2 spral_ssids_reorder_cols2_single
+#define spral_ssids_reorder_rows spral_ssids_reorder_rows_single
+#define spral_ssids_reorder_rows2 spral_ssids_reorder_rows2_single
+#define spral_ssids_swap_ni2Dm spral_ssids_swap_ni2Dm_single
+#define spral_ssids_swap_ni2D_ic spral_ssids_swap_ni2D_ic_single
+#define spral_ssids_swap_ni2D_ir spral_ssids_swap_ni2D_ir_single
+#else
+#define precision_ double
+#define multiswap_type multiswap_type_double
+#define multireorder_data multireorder_data_double
+#define multisymm_type multisymm_type_double
+#define cu_copy_mc cu_copy_mc_double
+#define cu_copy_ic cu_copy_ic_double
+#define cu_swap_ni2D_ic cu_swap_ni2D_ic_double
+#define cu_swap_ni2D_ir cu_swap_ni2D_ir_double
+#define cu_multiswap_ni2D_c cu_multiswap_ni2D_c_double
+#define cu_multiswap_ni2D_r cu_multiswap_ni2D_r_double
+#define cu_reorder_rows cu_reorder_rows_double
+#define cu_reorder_cols2 cu_reorder_cols2_double
+#define cu_reorder_rows2 cu_reorder_rows2_double
+#define copy_L_LD_no_perm copy_L_LD_no_perm_double
+#define shuffle_perm_shmem shuffle_perm_shmem_double
+#define copy_L_LD_perm_shmem copy_L_LD_perm_shmem_double
+#define copy_L_LD_perm_noshmem copy_L_LD_perm_noshmem_double
+#define cu_multireorder cu_multireorder_double
+#define cu_multicopy cu_multicopy_double
+#define cu_multisymm cu_multisymm_double
+#define spral_ssids_copy_ic spral_ssids_copy_ic_double
+#define spral_ssids_copy_mc spral_ssids_copy_mc_double
+#define spral_ssids_multisymm spral_ssids_multisymm_double
+#define spral_ssids_multicopy spral_ssids_multicopy_double
+#define spral_ssids_multireorder spral_ssids_multireorder_double
+#define spral_ssids_reorder_cols2 spral_ssids_reorder_cols2_double
+#define spral_ssids_reorder_rows spral_ssids_reorder_rows_double
+#define spral_ssids_reorder_rows2 spral_ssids_reorder_rows2_double
+#define spral_ssids_swap_ni2Dm spral_ssids_swap_ni2Dm_double
+#define spral_ssids_swap_ni2D_ic spral_ssids_swap_ni2D_ic_double
+#define spral_ssids_swap_ni2D_ir spral_ssids_swap_ni2D_ir_double
+#endif
+
 #define min(x,y) ((x) < (y) ? (x) : (y))
 
 #define BLOCK_SIZE 8
@@ -62,7 +128,7 @@ cu_swap_ni2D_ic( int nrows, int ncols,
   int i = threadIdx.x + blockDim.x*blockIdx.x;
   int j = threadIdx.y + blockDim.y*blockIdx.y;
   int k;
-  double s;
+  precision_ s;
 
   if ( i < nrows && j < ncols && (k = index[j] - 1) > -1 ) {
     s = a[i + lda*k];
@@ -83,7 +149,7 @@ cu_swap_ni2D_ir( int nrows, int ncols,
   int i = threadIdx.x + blockDim.x*blockIdx.x;
   int j = threadIdx.y + blockDim.y*blockIdx.y;
   int k;
-  double s;
+  precision_ s;
 
   if ( i < nrows && j < ncols && (k = index[i] - 1) > -1 ) {
     s = a[k + lda*j];
@@ -96,7 +162,7 @@ struct multiswap_type {
    int nrows;
    int ncols;
    int k;
-   double *lcol;
+   precision_ *lcol;
    int lda;
    int off;
 };
@@ -311,7 +377,7 @@ copy_L_LD_perm_shmem(
       int offc, int offp,
       int ld,
       volatile int *const indr,
-      double *a, double *b, const double *c,
+      precision_ *a, precision_ *b, const precision_ *c,
       int *perm
 ) {
    __shared__ volatile ELEMENT_TYPE work1[SIZE_X*SIZE_Y];
@@ -538,7 +604,7 @@ copy_L_LD_perm_noshmem(
       int ld,
       const int *ind,
       const volatile int *const indf,
-      double *a, double *b, const double *c,
+      precision_ *a, precision_ *b, const precision_ *c,
       int *perm
 ) {
 
@@ -841,7 +907,7 @@ cu_multicopy(
 }
 
 struct multisymm_type {
-   double *lcol;
+   precision_ *lcol;
    int ncols;
    int nrows;
 };
@@ -875,23 +941,23 @@ cu_multisymm( const struct multisymm_type* msdata )
 extern "C" {
 
 void spral_ssids_copy_ic(cudaStream_t *stream, int nrows, int ncols,
-    double* a, int lda, double* b, int ldb, int* ind) {
+    precision_* a, int lda, precision_* b, int ldb, int* ind) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
-  cu_copy_ic< double >
+  cu_copy_ic< precision_ >
     <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, ind );
 }
 
-void spral_ssids_copy_mc(cudaStream_t *stream, int nrows, int ncols, double* a,
-      int lda, double* b, int ldb, int* mask) {
+void spral_ssids_copy_mc(cudaStream_t *stream, int nrows, int ncols, precision_* a,
+      int lda, precision_* b, int ldb, int* mask) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
-  cu_copy_mc< double >
+  cu_copy_mc< precision_ >
     <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, mask );
 }
@@ -902,18 +968,18 @@ void spral_ssids_multisymm(cudaStream_t *stream, int nblocks,
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     dim3 grid(nb,4,4);
-    cu_multisymm< double ><<< grid, threads, 0, *stream >>>( msdata + i );
+    cu_multisymm< precision_ ><<< grid, threads, 0, *stream >>>( msdata + i );
   }
 }
 
 void spral_ssids_multicopy(cudaStream_t *stream, int nblocks,
       const struct multinode_fact_type *ndata, 
       const struct multireorder_data *rdata,
-      double* a, double* b, int* stat, int* ncb) {
+      precision_* a, precision_* b, int* stat, int* ncb) {
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
-    cu_multicopy< double, BLOCK_SIZE, BLOCK_SIZE >
+    cu_multicopy< precision_, BLOCK_SIZE, BLOCK_SIZE >
       <<< nb, threads, 0, *stream >>>
       ( ndata, rdata + i, b, stat, ncb );
   }
@@ -922,12 +988,12 @@ void spral_ssids_multicopy(cudaStream_t *stream, int nblocks,
 void spral_ssids_multireorder(cudaStream_t *stream, int nblocks,
       const struct multinode_fact_type *ndata, 
       const struct multireorder_data *rdata,
-      double* c, int* stat, int* ind, int* index, int* ncb) {
+      precision_* c, int* stat, int* ind, int* index, int* ncb) {
   dim3 threads(2*BLOCK_SIZE, 2*BLOCK_SIZE);
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     dim3 grid(nb,1);
-    cu_multireorder< double, 2*BLOCK_SIZE, 2*BLOCK_SIZE >
+    cu_multireorder< precision_, 2*BLOCK_SIZE, 2*BLOCK_SIZE >
       <<< grid, threads, 0, *stream >>>
       ( ndata, rdata + i, c, stat, ind, index, ncb );
   }
@@ -935,50 +1001,50 @@ void spral_ssids_multireorder(cudaStream_t *stream, int nblocks,
 
 // ncols <= 2*BLOCK_SIZE
 void spral_ssids_reorder_cols2(cudaStream_t *stream, int nrows, int ncols,
-    double* a, int lda, double* b, int ldb, int* index, int mode ) {
+    precision_* a, int lda, precision_* b, int ldb, int* index, int mode ) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   dim3 grid(rb, 2);
 
   if ( ncols <= BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    cu_reorder_cols2< double, BLOCK_SIZE, BLOCK_SIZE >
+    cu_reorder_cols2< precision_, BLOCK_SIZE, BLOCK_SIZE >
       <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
   else if ( ncols <= 2*BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
-    cu_reorder_cols2< double, BLOCK_SIZE, 2*BLOCK_SIZE >
+    cu_reorder_cols2< precision_, BLOCK_SIZE, 2*BLOCK_SIZE >
       <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
 }
 
 void spral_ssids_reorder_rows(cudaStream_t *stream, int nrows, int ncols,
-      double* a, int lda, double* b, int ldb, int* index) {
+      precision_* a, int lda, precision_* b, int ldb, int* index) {
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 grid(1, cb);
   int tx = min(nrows, 1024/BLOCK_SIZE);
   dim3 threads(tx, BLOCK_SIZE);
-  cu_reorder_rows< double >
+  cu_reorder_rows< precision_ >
     <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }
 
 // nrows <= 2*BLOCK_SIZE
 void spral_ssids_reorder_rows2(cudaStream_t *stream, int nrows, int ncols,
-    double* a, int lda, double* b, int ldb, int* index, int mode ) {
+    precision_* a, int lda, precision_* b, int ldb, int* index, int mode ) {
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 grid(cb, 2);
 
   if ( nrows <= BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-    cu_reorder_rows2< double, BLOCK_SIZE, BLOCK_SIZE >
+    cu_reorder_rows2< precision_, BLOCK_SIZE, BLOCK_SIZE >
       <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
   else if ( nrows <= 2*BLOCK_SIZE ) {
     dim3 threads(2*BLOCK_SIZE, BLOCK_SIZE);
-    cu_reorder_rows2< double, 2*BLOCK_SIZE, BLOCK_SIZE >
+    cu_reorder_rows2< precision_, 2*BLOCK_SIZE, BLOCK_SIZE >
       <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
@@ -991,34 +1057,34 @@ void spral_ssids_swap_ni2Dm(cudaStream_t *stream, int nblocks,
       int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
       dim3 grid(nb,8);
       cu_multiswap_ni2D_c
-         < double >
+         < precision_ >
          <<< grid, threads, 0, *stream >>>
          ( swapdata + i );
       cu_multiswap_ni2D_r
-         < double >
+         < precision_ >
          <<< grid, threads, 0, *stream >>>
          ( swapdata + i );
    }
 }
 
 void spral_ssids_swap_ni2D_ic(cudaStream_t *stream, int nrows, int ncols,
-      double* a, int lda, double* b, int ldb, int* index) {
+      precision_* a, int lda, precision_* b, int ldb, int* index) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
-  cu_swap_ni2D_ic< double >
+  cu_swap_ni2D_ic< precision_ >
     <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }
 
 void spral_ssids_swap_ni2D_ir(cudaStream_t *stream, int nrows, int ncols,
-    double* a, int lda, double* b, int ldb, int* index) {
+    precision_* a, int lda, precision_* b, int ldb, int* index) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
-  cu_swap_ni2D_ir< double >
+  cu_swap_ni2D_ir< precision_ >
     <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }

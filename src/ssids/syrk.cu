@@ -13,11 +13,23 @@
 
 #ifdef SPRAL_SINGLE
 #define precision_ float
+#define loadDevToSmem_generic loadDevToSmem_generic_single
+#define multisyrk_type multisyrk_type_single
+#define multielm_data multielm_data_single
+#define cu_multisyrk_lc_r4x4 cu_multisyrk_lc_r4x4_single
+#define cu_multisyrk_r4x4 cu_multisyrk_r4x4_single
+#define cu_syrk_r4x4 cu_syrk_r4x4_single
 #define spral_ssids_dsyrk spral_ssids_dsyrk_single
 #define spral_ssids_multidsyrk spral_ssids_multidsyrk_single
 #define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_single
 #else
 #define precision_ double
+#define loadDevToSmem_generic loadDevToSmem_generic_double
+#define multisyrk_type multisyrk_type_double
+#define multielm_data multielm_data_double
+#define cu_multisyrk_lc_r4x4 cu_multisyrk_lc_r4x4_double
+#define cu_multisyrk_r4x4 cu_multisyrk_r4x4_double
+#define cu_syrk_r4x4 cu_syrk_r4x4_double
 #define spral_ssids_dsyrk spral_ssids_dsyrk_double
 #define spral_ssids_multidsyrk spral_ssids_multidsyrk_double
 #define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_double
@@ -259,7 +271,8 @@ cu_multisyrk_lc_r4x4(
     
     
 #if (SYRK_WIDTH <= 2 && DOUBLE_BUFFERED)
-  loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, 0, lda, ldb, n, 0, k );    
+  loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, 
+    bx, by, 0, lda, ldb, n, 0, k );    
 #endif
     
   for ( int i = 0; i < k; i += SYRK_WIDTH ) {
@@ -273,12 +286,14 @@ cu_multisyrk_lc_r4x4(
     // challenge to get it working without spilling.
 #if (DOUBLE_BUFFERED)
     if ( i + SYRK_WIDTH < k ) {
-       loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as2, bs2, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
+       loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as2, bs2, 
+         a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
     }
 #endif // (DOUBLE_BUFFERED)
 
 #if (SYRK_WIDTH > 2 || DOUBLE_BUFFERED)
-    loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, bx, by, 0, lda, ldb, n, i, k );
+    loadDevToSmem_generic<SYRK_WIDTH>( (volatile precision_*)as, bs, a, b, 
+      bx, by, 0, lda, ldb, n, i, k );
 #endif
     __syncthreads();
 
