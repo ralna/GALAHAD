@@ -1545,13 +1545,13 @@ MODULE GALAHAD_CDQP_precision
 
 !  allocate arrays to indicate which constraints have been freed
 
-          array_name = 'cdqp: data%C_freed'
-          CALL SPACE_resize_array( n_depen, data%C_freed,                      &
-                 inform%status, inform%alloc_status, array_name = array_name,  &
-                 deallocate_error_fatal = control%deallocate_error_fatal,      &
-                 exact_size = control%space_critical,                          &
-                 bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'cdqp: data%C_freed'
+        CALL SPACE_resize_array( n_depen, data%C_freed,                        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  free the constraint bounds as required
 
