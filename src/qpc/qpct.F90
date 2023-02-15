@@ -1,11 +1,15 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-14 AT 12:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPC_EXAMPLE
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPC_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
+#ifdef GALAHAD_SINGLE
+   REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 10
+#else
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
+#endif
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPC_data_type ) :: data
    TYPE ( QPC_control_type ) :: control        
@@ -36,7 +40,7 @@
      IF ( status == - GALAHAD_error_deallocate ) CYCLE
 !    IF ( status == - GALAHAD_error_restrictions ) CYCLE
 !    IF ( status == - GALAHAD_error_bad_bounds ) CYCLE
-!    IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
+     IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_dual_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_unbounded ) CYCLE
      IF ( status == - GALAHAD_error_no_center ) CYCLE
@@ -58,6 +62,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL QPC_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 
@@ -153,6 +158,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
@@ -194,6 +200,7 @@
 
    DO data_storage_type = -3, 0
      CALL QPC_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 11
@@ -309,6 +316,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
@@ -376,6 +384,7 @@
      ELSE IF ( i == 24 ) THEN
        control%no_qpa = .TRUE.
      ELSE IF ( i == 25 ) THEN
+       control%no_qpa = .FALSE.
        control%no_qpb = .TRUE.
      END IF
 
@@ -409,6 +418,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
@@ -444,6 +454,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 11
    control%infinity = infty
    control%restore_problem = 2
@@ -480,6 +491,7 @@
 
    WRITE( 6, "( /, ' full test of generic problems ', / )" )
 
+   GO TO 123
    n = 14 ; m = 17 ; h_ne = 14 ; a_ne = 46
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -531,15 +543,14 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
    control%QPA_control%itref_max = 3 ; control%QPB_control%itref_max = 3
    control%out = scratch_out
    control%error = scratch_out
-!  control%out = 6
-!  control%error = 6
-!  control%print_level = 1
+   control%out = 6 ; control%error = 6 ; control%print_level = 1
 !  control%QPB_control%print_level = 1
 !  control%QPB_control%SBLS_control%print_level = 1
 !  control%QPB_control%LSQP_control%SBLS_control%print_level = 1
@@ -551,10 +562,9 @@
 !  control%QPB_control%LSQP_control%remove_dependencies = .TRUE.
 !  control%QPB_control%LSQP_control%FDC_control%print_level = 2
 !  control%generate_sif_file = .TRUE.
-
-
    control%QPB_control%extrapolate = 1
-!  control%EQP_control%print_level = 1
+   control%EQP_control%print_level = 5
+   control%EQP_control%GLTR_control%print_level = 3
 !  control%EQP_control%SBLS_control%print_level = 2
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
@@ -568,14 +578,14 @@
      WRITE( 6, "( I2, ': QPC_solve exit status = ', I6 ) " ) 1, info%status
    END IF
    CALL QPC_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Second problem
 
+123 CONTINUE
    n = 14 ; m = 17 ; h_ne = 14 ; a_ne = 46
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -627,6 +637,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -704,6 +715,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -776,6 +788,7 @@
    p%C_u = p%C_l
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 1
 !  control%FDC_control%print_level = 1
    control%infinity = infty
@@ -819,7 +832,7 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
-stop
+
 !  Sixth problem
 
    n = 11 ; m = 5 ; h_ne = 21 ; a_ne = 33
@@ -870,6 +883,7 @@ stop
             0.5_rp_, 0.5_rp_, 0.4_rp_, 0.4_rp_, 0.4_rp_ /) ! optimal dual vars
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -943,6 +957,7 @@ stop
             0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /) ! optimal dual vars
 
    CALL QPC_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -967,4 +982,46 @@ stop
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QPC_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
+
+     control%QPB_control%FDC_control%use_sls = use_sls
+     control%QPB_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%QPB_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%QPB_control%SBLS_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%QPB_control%LSQP_control%FDC_control%use_sls = use_sls
+     control%QPB_control%LSQP_control%FDC_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPB_control%LSQP_control%SBLS_control%symmetric_linear_solver     &
+       = symmetric_linear_solver
+     control%QPB_control%LSQP_control%SBLS_control%definite_linear_solver      &
+       = definite_linear_solver
+     control%CQP_control%FDC_control%use_sls = use_sls
+     control%CQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%EQP_control%FDC_control%use_sls = use_sls
+     control%EQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%EQP_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%EQP_control%SBLS_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%CRO_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CRO_control%SBLS_control%definite_linear_solver                   &
+        = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_QPC_EXAMPLE
