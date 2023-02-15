@@ -36,7 +36,7 @@
      IF ( status == - GALAHAD_error_deallocate ) CYCLE
 !    IF ( status == - GALAHAD_error_restrictions ) CYCLE
 !    IF ( status == - GALAHAD_error_bad_bounds ) CYCLE
-!    IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
+     IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_dual_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_unbounded ) CYCLE
      IF ( status == - GALAHAD_error_no_center ) CYCLE
@@ -58,6 +58,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL QP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
 
      p%new_problem_structure = .TRUE.
@@ -177,6 +178,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%print_level = 1
 !  control%print_level = 4
@@ -249,6 +251,7 @@
 
    DO data_storage_type = -3, 0
      CALL QP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
 !    control%out = 6 ; control%print_level = 11
      p%new_problem_structure = .TRUE.
@@ -362,6 +365,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 1
 
@@ -475,6 +479,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 11
 !  control%EQP_control%print_level = 21
@@ -508,6 +513,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !   control%print_level = 101
 !   control%QPC_control%print_level = 1
 !   control%QPC_control%QPB_control%print_level = 1
@@ -597,6 +603,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%print_level = 101
    control%out = scratch_out
@@ -677,6 +684,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL QP_solve( p, data, control, info, C_stat, B_stat )
@@ -746,6 +754,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    B_stat = 0 ; C_stat = 0
@@ -814,6 +823,7 @@
    p%C_u = p%C_l
 
    CALL QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    B_stat = 0 ; C_stat = 0
@@ -851,4 +861,94 @@
    DEALLOCATE( p%Y_l, p%Y_u, p%Z_l, p%Z_u, p%X_status, p%C_status )
    WRITE( 6, "( /, ' tests completed' )" )
 
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPB_control%FDC_control%use_sls = use_sls
+     control%QPB_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%QPB_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%QPB_control%SBLS_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%QPB_control%LSQP_control%FDC_control%use_sls = use_sls
+     control%QPB_control%LSQP_control%FDC_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPB_control%LSQP_control%SBLS_control%symmetric_linear_solver     &
+       = symmetric_linear_solver
+     control%QPB_control%LSQP_control%SBLS_control%definite_linear_solver      &
+       = definite_linear_solver
+     control%QPC_control%FDC_control%use_sls = use_sls
+     control%QPC_control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPC_control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPC_control%QPB_control%FDC_control%use_sls = use_sls
+     control%QPC_control%QPB_control%FDC_control%symmetric_linear_solver       &
+       = symmetric_linear_solver
+     control%QPC_control%QPB_control%SBLS_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPC_control%QPB_control%SBLS_control%definite_linear_solver       &
+       = definite_linear_solver
+     control%QPC_control%QPB_control%LSQP_control%FDC_control%use_sls = use_sls
+     control%QPC_control%QPB_control%LSQP_control%FDC_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPC_control%QPB_control%LSQP_control%SBLS_control%symmetric_linear_solver     &
+       = symmetric_linear_solver
+     control%QPC_control%QPB_control%LSQP_control%SBLS_control%definite_linear_solver      &
+       = definite_linear_solver
+     control%QPC_control%CQP_control%FDC_control%use_sls = use_sls
+     control%QPC_control%CQP_control%FDC_control%symmetric_linear_solver       &
+       = symmetric_linear_solver
+     control%QPC_control%CQP_control%SBLS_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPC_control%CQP_control%SBLS_control%definite_linear_solver       &
+       = definite_linear_solver
+     control%QPC_control%EQP_control%FDC_control%use_sls = use_sls
+     control%QPC_control%EQP_control%FDC_control%symmetric_linear_solver       &
+       = symmetric_linear_solver
+     control%QPC_control%EQP_control%SBLS_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPC_control%EQP_control%SBLS_control%definite_linear_solver       &
+       = definite_linear_solver
+     control%QPC_control%CRO_control%SBLS_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%QPC_control%CRO_control%SBLS_control%definite_linear_solver       &
+        = definite_linear_solver
+     control%CQP_control%FDC_control%use_sls = use_sls
+     control%CQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%DQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%DQP_control%symmetric_linear_solver = symmetric_linear_solver
+     control%DQP_control%definite_linear_solver = definite_linear_solver
+     control%CDQP_control%FDC_control%use_sls = use_sls
+     control%CDQP_control%FDC_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CDQP_control%CQP_control%FDC_control%use_sls = use_sls
+     control%CDQP_control%CQP_control%FDC_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%CDQP_control%CQP_control%SBLS_control%symmetric_linear_solver     &
+       = symmetric_linear_solver
+     control%CDQP_control%CQP_control%SBLS_control%definite_linear_solver      &
+        = definite_linear_solver
+     control%CDQP_control%DQP_control%FDC_control%use_sls = use_sls
+     control%CDQP_control%DQP_control%FDC_control%symmetric_linear_solver      &
+       = symmetric_linear_solver
+     control%CDQP_control%DQP_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CDQP_control%DQP_control%definite_linear_solver                   &
+       = definite_linear_solver
+     control%CDQP_control%CRO_control%SBLS_control%symmetric_linear_solver     &
+       = symmetric_linear_solver
+     control%CDQP_control%CRO_control%SBLS_control%definite_linear_solver      &
+        = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_QP_EXAMPLE
+
+
+

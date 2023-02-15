@@ -2970,11 +2970,14 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, ii, j, jj, ll, scu_status, out, error, iii
-      INTEGER ( KIND = ip_ ) :: m_active, linesearch_inform, j_min, itref_max, n_all
-      INTEGER ( KIND = ip_ ) :: iter, pcount, j_add, j_del, active, pcg_iter, pcg_status
-      INTEGER ( KIND = ip_ ) :: cg_maxit, print_level, max_col, s_plus, s_minus, dof, inactive
-      INTEGER ( KIND = ip_ ) :: factor, precon, nsemib, icount, QPA_delete_constraint_status
-      INTEGER ( KIND = ip_ ) :: jumpto_factorize_reference, QPA_add_constraint_status
+      INTEGER ( KIND = ip_ ) :: m_active, linesearch_inform, j_min, itref_max
+      INTEGER ( KIND = ip_ ) :: n_all, pcg_iter, pcg_status, dof
+      INTEGER ( KIND = ip_ ) :: iter, pcount, j_add, j_del, active, inactive
+      INTEGER ( KIND = ip_ ) :: cg_maxit, print_level, max_col, s_plus, s_minus
+      INTEGER ( KIND = ip_ ) :: factor, precon, nsemib, icount
+      INTEGER ( KIND = ip_ ) :: jumpto_factorize_reference
+      INTEGER ( KIND = ip_ ) :: QPA_delete_constraint_status
+      INTEGER ( KIND = ip_ ) :: QPA_add_constraint_status
       REAL ( KIND = rp_ ) :: g_s, s_hs, t_opt, mult, hmax, G_perturb
       REAL ( KIND = rp_ ) :: last_infeas_g, last_infeas_b
       REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
@@ -6948,8 +6951,7 @@
             val = val + half * t_opt * slope
 
             IF ( print_detail ) WRITE( out, 2000 )
-            IF ( print_1line ) WRITE( out, &
-              "( 3X, I7, ES12.4, A14, 3ES12.4 )" ) &
+            IF ( print_1line ) WRITE( out, "( 3X, I7, ES12.4, A14, 3ES12.4 )" )&
                  iter, t_opt, '      -      -', fun, zero, curv
             IF ( print_debug ) THEN
               eval = QPA_p_val( dims, n, m,                                    &
@@ -7044,7 +7046,7 @@
 
           fun = val + t_break * ( slope_old + half * t_break * curv )
           gradient = slope + t_break * curv
-          WRITE( cluster, "( 2I7 )" ) cluster_start, cluster_end
+!         WRITE( out, "( 2I7 )" ) cluster_start, cluster_end
 
           IF ( print_detail ) THEN
             CALL QPA_p_val_and_slope( dims, n, m,                              &
@@ -7052,8 +7054,8 @@
                                       X_l, X_u, RES_l, RES_u, S, A_s, t_break, &
                                       t_pert, too_small, REF, m_link, C_stat,  &
                                       B_stat, eval, eslope )
-            write( out, 2010 ) '  val', fun, eval
-            write( out, 2010 ) 'slope', gradient, eslope
+            WRITE( out, 2010 ) '  val', fun, eval
+            WRITE( out, 2010 ) 'slope', gradient, eslope
           END IF
 
 !  Fit the new quadratic so that it's value is fun at the breakpoint
@@ -11709,7 +11711,8 @@ main: DO
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, active, out, k_n_max, m_link, itref_max
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, active, out, k_n_max
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_link, itref_max
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: QPA_add_constraint_status
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: j_add, j_del, scu_status
       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: m_active, s_plus, s_minus

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-02-14 AT 10:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CDQP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -18,13 +18,7 @@
    REAL ( KIND = rp_ ) :: delta
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
-   CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
-   CHARACTER ( LEN = 30 ) :: definite_linear_solver = REPEAT( ' ', 30 )
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
-!  symmetric_linear_solver = 'ssids'
-   symmetric_linear_solver = 'sils'
-!  definite_linear_solver = 'ssids'
-   definite_linear_solver = 'sils'
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -69,6 +63,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL CDQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 
@@ -170,6 +165,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = 0.1_rp_ * infty
    control%restore_problem = 1
 !  control%print_level = 1
@@ -225,6 +221,7 @@
 !  DO data_storage_type = -7, 0
    DO data_storage_type = -6, 0
      CALL CDQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 1
@@ -234,8 +231,6 @@
 ! control%SBLS_control%preconditioner = 3
 !  control%SBLS_control%factorization = 2
 ! control%SBLS_control%itref_max = 2
-!    control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!    control%SBLS_control%definite_linear_solver = definite_linear_solver
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -412,12 +407,11 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
 !  control%sbls_control%print_level = 1
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    
 !  test with new and existing data
 
@@ -459,13 +453,12 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 11
 !  control%EQP_control%print_level = 21
 !  control%print_level = 4
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -496,12 +489,11 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%CRO_control%error = 0
 !  control%print_level = 4
    control%infinity = infty
    control%restore_problem = 2
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -519,11 +511,10 @@
      END IF
    END DO
    CALL CDQP_terminate( data, control, inform )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  ============================
 !  full test of generic problem
@@ -585,8 +576,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL CDQP_initialize( data, control, inform )
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -665,11 +655,10 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL CDQP_solve( p, data, control, inform, C_stat, B_stat )
    IF ( inform%status == 0 ) THEN
@@ -739,11 +728,10 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    B_stat = 0 ; C_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
@@ -812,11 +800,10 @@
    p%C_u = p%C_l
 
    CALL CDQP_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-!  control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-!  control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    B_stat = 0 ; C_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
@@ -848,12 +835,35 @@
    END IF
 
    CALL CDQP_terminate( data, control, inform )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( CDQP_control_type ) :: control        
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver                               &
+       = symmetric_linear_solver
+     control%CQP_control%FDC_control%use_sls = use_sls
+     control%CQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%definite_linear_solver                   &
+        = definite_linear_solver
+     control%DQP_control%FDC_control%use_sls = use_sls
+     control%DQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%DQP_control%symmetric_linear_solver = symmetric_linear_solver
+     control%DQP_control%definite_linear_solver = definite_linear_solver
+     control%CRO_control%SBLS_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%CRO_control%SBLS_control%definite_linear_solver                   &
+        = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_CDQP_EXAMPLE
