@@ -36,12 +36,11 @@
 !  tests for status = - 1 ... - 24
 
    DO status = 1, 24
-
      IF ( status == - GALAHAD_error_allocate ) CYCLE
      IF ( status == - GALAHAD_error_deallocate ) CYCLE
 !    IF ( status == - GALAHAD_error_restrictions ) CYCLE
 !    IF ( status == - GALAHAD_error_bad_bounds ) CYCLE
-!    IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
+     IF ( status == - GALAHAD_error_primal_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_dual_infeasible ) CYCLE
      IF ( status == - GALAHAD_error_unbounded ) CYCLE
      IF ( status == - GALAHAD_error_no_center ) CYCLE

@@ -819,11 +819,11 @@
       END DO
       data%K%val( A_ne + 1 : A_ne + n ) = dmax
 
-      write(78,*) data%K%n, data%K%ne
-      DO i = 1,  data%K%ne
-        write(78,"( 2I8, ES22.14 )" ) data%K%row( i ), data%K%col( i ),        &
-         data%K%val( i )
-      END DO
+!      write(78,*) data%K%n, data%K%ne
+!      DO i = 1,  data%K%ne
+!        write(78,"( 2I8, ES22.14 )" ) data%K%row( i ), data%K%col( i ),       &
+!         data%K%val( i )
+!      END DO
 
 !  Analyse the sparsity pattern of the matrix
 

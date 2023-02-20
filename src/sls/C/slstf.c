@@ -45,8 +45,8 @@ int main(void) {
 
     for( int d=1; d <= 3; d++){
 
-        // Initialize SLS - use the sils solver
-        sls_initialize( "sils", &data, &control, &status );
+        // Initialize SLS - use the sytr solver
+        sls_initialize( "sytr", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
