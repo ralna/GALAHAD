@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_eqp.h"
@@ -29,9 +30,9 @@ int main(void) {
     int A_col[] = {1, 2, 2, 3}; // column indices
     int A_ptr[] = {1, 3, 5}; // row pointers
     real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
+    real_wp_ c[] = {3.0, 0.0};   // rhs of the constraints
 
     // Set output storage
-    real_wp_ c[m]; // constraint values
     int x_stat[n]; // variable status
     int c_stat[m]; // constraint status
     char st;
@@ -41,13 +42,17 @@ int main(void) {
 
     printf(" basic tests of qp storage formats\n\n");
 
-    for( int d=1; d <= 7; d++){
+    for( int d=1; d <= 6; d++){
 
         // Initialize EQP
         eqp_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
+        control.fdc_control.use_sls = true ;
+        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
         // Start from 0
         real_wp_ x[] = {0.0,0.0,0.0};
@@ -117,9 +122,6 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
                               A_ne, A_val, c, x, y );
                 break;
-
-
-
             }
         eqp_information( &data, &inform, &status );
 
@@ -145,6 +147,10 @@ int main(void) {
 
         // Initialize EQP
         eqp_initialize( &data, &control, &status );
+        control.fdc_control.use_sls = true ;
+        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing

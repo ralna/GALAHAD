@@ -669,6 +669,17 @@ $(package)st2: $($(PACKAGE)ST2)
 	cat $(package)st2.output
 	rm ./run_$(package)
 
+$(package)st_valgrind: $($(PACKAGE)ST)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)st_valgrind.output 2>&1
+	cat $(package)st_valgrind.output
+	rm ./run_$(package)
+
 $(package)sti: $($(PACKAGE)STI)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
@@ -677,6 +688,17 @@ $(package)sti: $($(PACKAGE)STI)
 	$(RMOOC)
 	- ./run_$(package) > $(package)sti.output 2>&1
 	cat $(package)sti.output
+	rm ./run_$(package)
+
+$(package)sti_valgrind: $($(PACKAGE)STI)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)STI)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)sts_valgrind.output 2>&1
+	cat $(package)sts_valgrind.output
 	rm ./run_$(package)
 
 $(package)dt: $($(PACKAGE)DT)
@@ -720,6 +742,17 @@ $(package)dti: $($(PACKAGE)DTI)
 	cat $(package)dti.output
 	rm ./run_$(package)
 
+$(package)dti_valgrind: $($(PACKAGE)DTI)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DTI)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dti_valgrind.output 2>&1
+	cat $(package)dti_valgrind.output
+	rm ./run_$(package)
+
 #  run full (comprehensive) C example tests
 
 $(package)cst: $($(PACKAGE)CST)
@@ -752,6 +785,26 @@ $(package)cstf: $($(PACKAGE)CSTF)
 	cat $(package)stf.output
 	rm ./run_$(package)
 
+$(package)cst_valgrind: $($(PACKAGE)CST)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)st_valgrind.output 2>&1
+	cat $(package)st_valgrind.output
+	rm ./run_$(package)
+
+$(package)cst_gdb: $($(PACKAGE)CST)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST)
+	$(RMOOC)
+	- gdb ./run_$(package)
+	rm ./run_$(package)
+
 $(package)cdt: $($(PACKAGE)CDT)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
@@ -779,6 +832,27 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dtf.output 2>&1
 	cat $(package)dtf.output
+	rm ./run_$(package)
+
+$(package)cdt_valgrind: $($(PACKAGE)CDT)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt.output 2>&1
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dt_valgrind.output 2>&1
+	cat $(package)dt_valgrind.output
+	rm ./run_$(package)
+
+$(package)cdt_gdb: $($(PACKAGE)CDT)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
+	$(RMOOC)
+	- gdb ./run_$(package)
 	rm ./run_$(package)
 
 #  main program

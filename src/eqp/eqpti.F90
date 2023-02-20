@@ -114,7 +114,6 @@
    DO data_storage_type = 1, 1
      CALL EQP_initialize( data, control, inform )
      CALL WHICH_sls( control )
-!    control%print_level = 1
      X = 0.0_rp_ ; Y = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage

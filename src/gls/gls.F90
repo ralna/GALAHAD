@@ -439,37 +439,37 @@
 
 !  Dummy arguments
 
-     TYPE( GLS_factors ), INTENT( out ), OPTIONAL :: FACTORS
-     TYPE( GLS_control ), INTENT( out ), OPTIONAL :: CONTROL
+     TYPE( GLS_factors ), INTENT( OUT ), OPTIONAL :: FACTORS
+     TYPE( GLS_control ), INTENT( OUT ), OPTIONAL :: CONTROL
 
      IF ( PRESENT( FACTORS ) ) THEN
        FACTORS%got_factors = .FALSE.
      END IF
 
      IF ( PRESENT( CONTROL ) ) THEN
-       CONTROL%switch = half
-       CONTROL%u = point01
-       CONTROL%drop = zero
-       CONTROL%tolerance = zero
-       CONTROL%cgce = half
-       CONTROL%lp = 6
-       CONTROL%wp = 6
-       CONTROL%mp = 6
-       CONTROL%ldiag = 2
-!      CONTROL%pivoting = 3
-       CONTROL%pivoting = 32768
-       CONTROL%diagonal_pivoting = .FALSE.
-       CONTROL%fill_in = 3
-       CONTROL%maxit = 10
-       CONTROL%struct = .FALSE.
-       CONTROL%factor_blocking = 32
-       CONTROL%solve_blas = 2
-       CONTROL%btf = 1
-       CONTROL%la = 0
-       CONTROL%la_int = 0
-       CONTROL%maxla = HUGE( 0 )
-       CONTROL%multiplier = two
-       CONTROL%reduce = two
+!       CONTROL%switch = half
+!       CONTROL%u = point01
+!       CONTROL%drop = zero
+!       CONTROL%tolerance = zero
+!       CONTROL%cgce = half
+!       CONTROL%lp = 6
+!       CONTROL%wp = 6
+!       CONTROL%mp = 6
+!       CONTROL%ldiag = 2
+!!      CONTROL%pivoting = 3
+!       CONTROL%pivoting = 32768
+!       CONTROL%diagonal_pivoting = .FALSE.
+!       CONTROL%fill_in = 3
+!       CONTROL%maxit = 10
+!       CONTROL%struct = .FALSE.
+!       CONTROL%factor_blocking = 32
+!       CONTROL%solve_blas = 2
+!       CONTROL%btf = 1
+!       CONTROL%la = 0
+!       CONTROL%la_int = 0
+!       CONTROL%maxla = HUGE( 0 )
+!       CONTROL%multiplier = two
+!       CONTROL%reduce = two
      END IF
 
      RETURN

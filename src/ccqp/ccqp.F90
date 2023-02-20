@@ -128,8 +128,12 @@
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
-      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( -15 )
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
+#ifdef GALAHAD_SINGLE
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 7 )
+#else
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 15 )
+#endif
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -2186,6 +2190,7 @@
 !  ----------------
 !  set up workspace
 !  ----------------
+
 
       CALL CCQP_workspace( prob%m, prob%n, data%dims, data%a_ne, data%h_ne,    &
                            prob%Hessian_kind, lbfgs, .TRUE., data%order,       &
@@ -6420,7 +6425,6 @@
 
 !  evaluate the merit function at the new point
 
-            one_minus_alpha = one - alpha
             one_minus_alpha = one - alpha
             IF ( puiseux .AND. arc /= 'ZP' ) THEN
               merit_trial = comp + one_minus_alpha ** 2 * tau * res_primal_dual

@@ -394,6 +394,7 @@
 
 !  local variables
 
+  INTEGER :: alloc_stat
   TYPE ( f_eqp_full_data_type ), POINTER :: fdata
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_inform_type ) :: finform
@@ -401,7 +402,7 @@
 
 !  allocate fdata
 
-  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+  ALLOCATE( fdata, STAT = alloc_stat ); cdata = C_LOC( fdata )
 
 !  initialize required fortran types
 
@@ -732,6 +733,7 @@
 
 !  local variables
 
+  INTEGER :: alloc_stat
   TYPE ( f_eqp_full_data_type ), pointer :: fdata
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_inform_type ) :: finform
@@ -759,7 +761,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR
+  DEALLOCATE( fdata, STAT = alloc_stat ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE eqp_terminate
