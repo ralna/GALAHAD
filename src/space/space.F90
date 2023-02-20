@@ -1398,8 +1398,8 @@
        IF ( l <= u ) THEN !! avoid gfortran bug
          ALLOCATE( array( l : u ), STAT = alloc_status )
        ELSE 
-!        ALLOCATE( array( 0 ), STAT = alloc_status )
-         alloc_status = 0
+         ALLOCATE( array( 0 ), STAT = alloc_status ) !comment this for gfortran?
+!        alloc_status = 0
        END IF
      END IF
 

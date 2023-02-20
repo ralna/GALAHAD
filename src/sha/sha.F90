@@ -679,7 +679,7 @@
       IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
         DO i = 1, n
           WRITE( control%out, "( ' row ', I0 )" ) i
-          WRITE( control%out, "( 1X, 6( '(' I0, ',', I0 ')', : ) )" )          &
+          WRITE( control%out, "( 1X, 6( '(', I0, ',', I0, ')', : ) )" )        &
             ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ), l = data%PK( i ),    &
               data%PK( i + 1 ) - 1 )
         END DO
@@ -688,7 +688,7 @@
       IF ( control%out > 0 .AND. control%print_level > 2 ) THEN
         WRITE( control%out, "( ' matrix:' )" )
         DO l = 1, data%PK( n + 1 ) - 1
-          WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0 ')' ) )" ) l,    &
+          WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0, ')' ) )" ) l,   &
             ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                        &
             COL( data%PTR( data%PTR_lower( l ) ) ),                            &
             ROW( data%PTR( data%PTR_lower( l ) ) )

@@ -990,7 +990,6 @@
      control%FDC_control%use_sls = use_sls
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
-
      control%QPB_control%FDC_control%use_sls = use_sls
      control%QPB_control%FDC_control%symmetric_linear_solver                   &
        = symmetric_linear_solver
