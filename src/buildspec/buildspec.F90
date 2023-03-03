@@ -181,8 +181,8 @@
 
 !  local variables
 
-        INTEGER ( KIND = ip_ ) :: i, j, end_section
-        INTEGER ( KIND = ip_ ) :: len2, len_spec, len_template_name, len_section_name
+        INTEGER ( KIND = ip_ ) :: i, j, end_section, len2, len_spec
+        INTEGER ( KIND = ip_ ) :: len_template_name, len_section_name
         LOGICAL :: is_file, two_args
         LOGICAL :: main_section, include_section, comment_section
         LOGICAL :: remove, replace, old, section_found

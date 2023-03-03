@@ -1669,7 +1669,7 @@
                  "( A, ' Computing preconditioner' )" ) prefix
            CALL PSLS_form_and_factorize( nlp%H, data%PSLS_data,                &
                      data%control%PSLS_control, inform%PSLS_inform )
-
+!write(6,*) ' perturbed? ', inform%PSLS_inform%perturbed,  data%control%PSLS_control%definite_linear_solver
 !  check for error returns
 
            IF ( inform%PSLS_inform%status /= 0 ) THEN
@@ -1855,6 +1855,7 @@
                             data%V( : nlp%n ), data%GLTR_data,                 &
                             data%control%GLTR_control, inform%GLTR_inform )
 
+!write(6,*) ' gltr status ', inform%GLTR_inform%status
            SELECT CASE( inform%GLTR_inform%status )
 
 !  form the preconditioned gradient
@@ -2061,7 +2062,7 @@
 !  ====================================
 
        data%tru_nlp%n = data%n_subspace
-       data%X_current( : nlp%n )  = nlp%X( : nlp%n )
+       data%X_current( : nlp%n ) = nlp%X( : nlp%n )
        data%tru_nlp%X( : data%n_subspace ) = zero
 
 !  loop to perform subpsapce minimization

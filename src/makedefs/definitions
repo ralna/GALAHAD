@@ -252,3 +252,7 @@ VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
 --track-origins=yes
 VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
 --track-origins=yes
+
+#  gdb options if needed
+
+GDB = -silent -ex run -ex bt -ex exit

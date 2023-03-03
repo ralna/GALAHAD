@@ -986,7 +986,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 910
 
-!  copy H temporrily into the lower triangle of Q_dense
+!  copy H temporarily into the lower triangle of Q_dense
 
           data%Q_dense( : n, : n ) = zero
           SELECT CASE ( SMT_get( H%type ) )
@@ -1750,6 +1750,8 @@
                                       data%SLS_data, inform%SLS_inform,        &
                                       check = .TRUE. )
         ELSE
+
+write(6,*) control%definite_linear_solver
           CALL SLS_initialize_solver( control%definite_linear_solver,          &
                                       data%SLS_data, inform%SLS_inform,        &
                                       check = .TRUE. )
@@ -4933,7 +4935,7 @@
 
 !   X^T_k Z_k y_k = X^T_k x_1 = ||x_1||^2 e_1
 
-!  Let H = L_H L^T_H and W_k = L_H^{-1} X_k so that w_k = W_k e_k =>
+!  Let H = L_H L_H^T and W_k = L_H^{-1} X_k so that w_k = W_k e_k =>
 
 !   X^T_k Z_k = X^T_k L^-T L_H^{-1} X_k = W^T_k W_k = L_k L^T_k
 
@@ -5062,6 +5064,7 @@
          IF ( LT( k, k ) < DOT_PRODUCT( LT( : k - 1, k ), LT( : k - 1, k ) ) ) &
            write(6,*) ' error ', LT( k, k ),                                   &
              DOT_PRODUCT( LT( : k - 1, k ), LT( : k - 1, k ) )
+!if (LT( k, k ) <= zero ) write(6,*) ' help, lt_kk <= 0', LT( k, k )
          LT( k, k ) =                                                          &
            SQRT( LT( k, k ) - DOT_PRODUCT( LT( : k - 1, k ), LT( : k - 1, k ) ))
        ELSE
