@@ -17,7 +17,7 @@
 
     MODULE GALAHAD_SBLS_precision
             
- !      ---------------------------------------------------------------
+!      ---------------------------------------------------------------
 !     |                                                               |
 !     | Given matrices A and (symmetric) H and C, provide and apply   |
 !     | preconditioners for the symmetric block linear system         |
@@ -34,7 +34,7 @@
 !     |                                                               |
 !      ---------------------------------------------------------------
 
-     USE GALAHAD_KINDS_precision
+      USE GALAHAD_KINDS_precision
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision

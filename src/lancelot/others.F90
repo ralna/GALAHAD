@@ -666,7 +666,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin, ncalcf
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval, nvrels
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ntotin, ncalcf
      LOGICAL, INTENT( IN ) :: inith
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH

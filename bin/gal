@@ -942,6 +942,15 @@ elif [[ $2 == 'ugo' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ugo update
   [[ ! -L RUNUGO.SPC ]] && ln -s ~/.galahad/specs/RUNUGO.SPC RUNUGO.SPC
 
+# gsm
+
+elif [[ $2 == 'gsm' ]]; then
+  RUNMAIN=$GALOBJ/rungsm_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNGSM.SPC ]] && $GALOBJ/buildspec gsm
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec gsm update
+  [[ ! -L RUNGSM.SPC ]] && ln -s ~/.galahad/specs/RUNGSM.SPC RUNGSM.SPC
+
 # ism
 
 elif [[ $2 == 'ism' ]]; then
