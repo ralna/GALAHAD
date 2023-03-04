@@ -3,6 +3,7 @@
 ! alive-device                                      40
 ! print-level                                       0
 ! maximum-number-of-iterations                      100
+! maximum-number-of-inner-iterations                100
 ! start-print                                       -1
 ! stop-print                                        -1
 ! iterations-between-printing                       1
