@@ -43,7 +43,7 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: GSM_initialize, GSM_read_specfile, GSM_solve,                   &
+     PUBLIC :: GSM_initialize, GSM_read_specfile, GSM_solve, GSM_solve_full,   &
                GSM_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
                GSM_import, GSM_solve_direct, GSM_solve_reverse,                &
                GSM_full_initialize, GSM_full_terminate, GSM_reset_control,     &
@@ -70,7 +70,8 @@
      LOGICAL, PARAMETER  :: debug_model_4 = .TRUE.
 !    LOGICAL, PARAMETER  :: test_s = .TRUE.
      LOGICAL, PARAMETER  :: test_s = .FALSE.
-     LOGICAL, PARAMETER  :: reset_to_I = .TRUE.
+!    LOGICAL, PARAMETER  :: reset_to_I = .TRUE.
+     LOGICAL, PARAMETER  :: reset_to_I = .FALSE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
@@ -140,6 +141,10 @@
 !   the maximum number of iterations performed
 
        INTEGER ( KIND = ip_ ) :: maxit = 100
+
+!   the maximum number of inner iterations performed per outer iteration
+
+       INTEGER ( KIND = ip_ ) :: inner_maxit = 100
 
 !   the maximum dimension of the search subspace
 
@@ -538,6 +543,7 @@
 !  stop-print                                      -1
 !  iterations-between-printing                     1
 !  maximum-number-of-iterations                    100
+!  maximum-number-of-inner-iterations              100
 !  maximum-subspace-dimension                      2
 !  advanced-start                                  5
 !  history-length-for-non-monotone-descent         0
@@ -585,7 +591,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: max_subspace = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: inner_maxit = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_subspace = inner_maxit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = max_subspace + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: non_monotone = alive_unit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: advanced_start = non_monotone + 1
@@ -633,6 +640,7 @@
      spec( stop_print )%keyword = 'stop-print'
      spec( print_gap )%keyword = 'iterations-between-printing'
      spec( maxit )%keyword = 'maximum-number-of-iterations'
+     spec( inner_maxit )%keyword = 'maximum-number-of-inner-iterations'
      spec( max_subspace )%keyword = 'maximum-subspace-dimension'
      spec( alive_unit )%keyword = 'alive-device'
      spec( non_monotone )%keyword = 'history-length-for-non-monotone-descent'
@@ -699,6 +707,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( maxit ),                                &
                                  control%maxit,                                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( inner_maxit ),                          &
+                                 control%inner_maxit,                          &
                                  control%error )
      CALL SPECFILE_assign_value( spec( max_subspace ),                         &
                                  control%max_subspace,                         &
@@ -1715,6 +1726,696 @@
 
      END SUBROUTINE GSM_solve
 
+!-*-*-  G A L A H A D -  G S M _ s o l v e _ f u l l  S U B R O U T I N E  -*-*-
+
+     SUBROUTINE GSM_solve_full( nlp, control, inform, data, userdata,          &
+                               eval_F, eval_G )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!  GSM_solve_full, a first-order trust-region method for finding a local
+!    unconstrained minimizer of a given function
+
+!  This variant treats the problem as if it were dense
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!
+!  For full details see the specification sheet for GALAHAD_GSM.
+!
+!  ** NB. default real/complex means double precision real/complex in
+!  ** GALAHAD_GSM_precision
+!
+! nlp is a scalar variable of type NLPT_problem_type that is used to
+!  hold data about the objective function. Relevant components are
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  G is a rank-one allocatable array of dimension n and type default real,
+!   that holds the gradient g of the objective function. The j-th component of
+!   G, j = 1,  ... ,  n, contains g_j.
+!
+!  f is a scalar variable of type default real, that holds the value of
+!   the objective function.
+!
+!  X is a rank-one allocatable array of dimension n and type default real, that
+!   holds the values x of the optimization variables. The j-th component of
+!   X, j = 1, ... , n, contains x_j.
+!
+!  pname is a scalar variable of type default character and length 10, which
+!   contains the ``name'' of the problem for printing. The default ``empty''
+!   string is provided.
+!
+!  VNAMES is a rank-one allocatable array of dimension n and type default
+!   character and length 10, whose j-th entry contains the ``name'' of the j-th
+!   variable for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
+!   not allocated.
+!
+! control is a scalar variable of type GSM_control_type. See GSM_initialize
+!  for details
+!
+! inform is a scalar variable of type GSM_inform_type. On initial entry,
+!  inform%status should be set to 1. On exit, the following components will
+!  have been set:
+!
+!  status is a scalar variable of type default integer, that gives
+!   the exit status from the package. Possible values are:
+!
+!     0. The run was succesful
+!
+!    -1. An allocation error occurred. A message indicating the offending
+!        array is written on unit control%error, and the returned allocation
+!        status and a string containing the name of the offending array
+!        are held in inform%alloc_status and inform%bad_alloc respectively.
+!    -2. A deallocation error occurred.  A message indicating the offending
+!        array is written on unit control%error and the returned allocation
+!        status and a string containing the name of the offending array
+!        are held in inform%alloc_status and inform%bad_alloc respectively.
+!    -7. The objective function appears to be unbounded from below
+!   -16. The problem is so ill-conditioned that further progress is impossible.
+!   -18. Too many iterations have been performed. This may happen if
+!        control%maxit is too small, but may also be symptomatic of
+!        a badly scaled problem.
+!   -19. The CPU time limit has been reached. This may happen if
+!        control%cpu_time_limit is too small, but may also be symptomatic of
+!        a badly scaled problem.
+!   -40. The user has forced termination of solver by removing the file named
+!        control%alive_file from unit unit control%alive_unit.
+!
+!     2. The user should compute the objective function value f(x) at the point
+!        x indicated in nlp%X and then re-enter the subroutine. The required
+!        value should be set in nlp%f, and data%eval_status should be set to 0.
+!        If the user is unable to evaluate f(x) - for instance, if the function
+!        is undefined at x - the user need not set nlp%f, but should then set
+!        data%eval_status to a non-zero value.
+!     3. The user should compute the gradient of the objective function
+!        nabla_x f(x) at the point x indicated in nlp%X  and then re-enter the
+!        subroutine. The value of the i-th component of the gradient should be
+!        set in nlp%G(i), for i = 1, ..., n and data%eval_status should be set
+!        to 0. If the user is unable to evaluate a component of nabla_x f(x)
+!        - for instance if a component of the gradient is undefined at x - the
+!        user need not set nlp%G, but should then set data%eval_status to a
+!        non-zero value.
+!
+!  alloc_status is a scalar variable of type default integer, that gives
+!   the status of the last attempted array allocation or deallocation.
+!   This will be 0 if status = 0.
+!
+!  bad_alloc is a scalar variable of type default character
+!   and length 80, that  gives the name of the last internal array
+!   for which there were allocation or deallocation errors.
+!   This will be the null string if status = 0.
+!
+!  iter is a scalar variable of type default integer, that holds the
+!   number of iterations performed.
+!
+!  cg_iter is a scalar variable of type default integer, that gives the
+!   total number of conjugate-gradient iterations required.
+!
+!  factorization_status is a scalar variable of type default integer, that
+!   gives the return status from the matrix factorization.
+!
+!  factorization_integer is a scalar variable of type default integer,
+!   that gives the amount of integer storage used for the matrix factorization.
+!
+!  factorization_real is a scalar variable of type default integer,
+!   that gives the amount of real storage used for the matrix factorization.
+!
+!  f_eval is a scalar variable of type default integer, that gives the
+!   total number of objective function evaluations performed.
+!
+!  g_eval is a scalar variable of type default integer, that gives the
+!   total number of objective function gradient evaluations performed.
+!
+!  obj is a scalar variable of type default real, that holds the
+!   value of the objective function at the best estimate of the solution found.
+!
+!  norm_g is a scalar variable of type default real, that holds the
+!   value of the norm of the objective function gradient at the best estimate
+!   of the solution found.
+!
+!  time is a scalar variable of type GSM_time_type whose components are used to
+!   hold elapsed CPU and clock times for the various parts of the calculation.
+!   Components are:
+!
+!    total is a scalar variable of type default real, that gives
+!     the total CPU time spent in the package.
+!
+!    preprocess is a scalar variable of type default real, that gives the
+!      CPU time spent reordering the problem to standard form prior to solution.
+!
+!    analyse is a scalar variable of type default real, that gives
+!      the CPU time spent analysing required matrices prior to factorization.
+!
+!    factorize is a scalar variable of type default real, that gives
+!      the CPU time spent factorizing the required matrices.
+!
+!    solve is a scalar variable of type default real, that gives
+!     the CPU time spent using the factors to solve relevant linear equations.
+!
+!    clock_total is a scalar variable of type default real, that gives
+!     the total clock time spent in the package.
+!
+!    clock_preprocess is a scalar variable of type default real, that gives
+!      the clock time spent reordering the problem to standard form prior
+!      to solution.
+!
+!    clock_analyse is a scalar variable of type default real, that gives
+!      the clock time spent analysing required matrices prior to factorization.
+!
+!    clock_factorize is a scalar variable of type default real, that gives
+!      the clock time spent factorizing the required matrices.
+!
+!    clock_solve is a scalar variable of type default real, that gives
+!     the clock time spent using the factors to solve relevant linear equations.
+!
+!  data is a scalar variable of type GSM_data_type used for internal data.
+!
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!   to pass user data to and from the eval_* subroutines (see below)
+!   Available coomponents which may be allocated as required are:
+!
+!    integer is a rank-one allocatable array of type default integer.
+!    real is a rank-one allocatable array of type default real
+!    complex is a rank-one allocatable array of type default comple.
+!    character is a rank-one allocatable array of type default character.
+!    logical is a rank-one allocatable array of type default logical.
+!    integer_pointer is a rank-one pointer array of type default integer.
+!    real_pointer is a rank-one pointer array of type default  real
+!    complex_pointer is a rank-one pointer array of type default complex.
+!    character_pointer is a rank-one pointer array of type default character.
+!    logical_pointer is a rank-one pointer array of type default logical.
+!
+!  eval_F is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The value of the objective
+!   function f(x) evaluated at x=X must be returned in f, and the status
+!   variable set to 0. If the evaluation is impossible at X, status should
+!   be set to a nonzero value. If eval_F is not present, GSM_solve will
+!   return to the user with inform%status = 2 each time an evaluation is
+!   required.
+!
+!  eval_G is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The components of the gradient
+!   nabla_x f(x) of the objective function evaluated at x=X must be returned in
+!   G, and the status variable set to 0. If the evaluation is impossible at X,
+!   status should be set to a nonzero value. If eval_G is not present,
+!   GSM_solve will return to the user with inform%status = 3 each time an
+!   evaluation is required.
+!
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
+     TYPE ( GSM_control_type ), INTENT( IN ) :: control
+     TYPE ( GSM_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( GSM_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     OPTIONAL :: eval_F, eval_G
+
+!----------------------------------
+!   I n t e r f a c e   B l o c k s
+!----------------------------------
+
+     INTERFACE
+       SUBROUTINE eval_F( status, X, userdata, f )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_F
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_G( status, X, userdata, G )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_G
+     END INTERFACE
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, k, l
+     REAL ( KIND = rp_ ) :: ared, prered, rounding
+!    REAL ( KIND = rp_ ) :: radmin
+     REAL ( KIND = rp_ ) :: tau, tau_1, tau_2, tau_min, tau_max
+     LOGICAL :: alive
+     CHARACTER ( LEN = 6 ) :: char_iter, char_sit, char_sit2
+     CHARACTER ( LEN = 80 ) :: array_name
+!    REAL ( KIND = rp_ ), DIMENSION( nlp%n ) :: V
+
+!  prefix for all output
+
+     CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+     IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
+       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  branch to different sections of the code depending on input status
+
+     IF ( inform%status < 1 ) THEN
+       CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+       GO TO 990
+     END IF
+     IF ( inform%status == 1 ) data%branch = 10
+
+     SELECT CASE ( data%branch )
+     CASE ( 10 )  ! initialization
+       GO TO 10
+     CASE ( 20 )  ! initial objective evaluation
+       GO TO 20
+     CASE ( 30 )  ! initial gradient evaluation
+       GO TO 30
+     CASE ( 300 ) ! objective or gradient evaluation
+       GO TO 300
+     END SELECT
+
+!  ============================================================================
+!  0. Initialization
+!  ============================================================================
+
+  10 CONTINUE
+     CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+     IF ( nlp%n <= 0 ) THEN
+       inform%status = GALAHAD_error_restrictions
+       GO TO 990
+     END IF
+
+!  allocate sufficient space for the problem
+
+     array_name = 'gsm: data%X_dense'
+     CALL SPACE_resize_array( nlp%n, data%X_dense,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'gsm: data%S_dense'
+     CALL SPACE_resize_array( nlp%n, data%S_dense,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'gsm: data%Y_dense'
+     CALL SPACE_resize_array( nlp%n, data%Y_dense,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     data%H_dense%n = nlp%n
+     data%H_dense%ne = nlp%n * ( nlp%n + 1 ) / 2
+     array_name = 'gsm: data%H_dense%val'
+     CALL SPACE_resize_array( data%H_dense%ne, data%H_dense%val,               &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+     CALL SMT_put( data%H_dense%type, 'DENSE', inform%status )
+
+!  ensure that the data is consistent
+
+     data%control = control
+     data%non_monotone_history = data%control%non_monotone
+     IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
+     data%monotone = data%non_monotone_history == 1
+     inform%radius = data%control%initial_radius
+     data%etat = half * ( data%control%eta_very_successful +                   &
+                          data%control%eta_successful )
+     data%ometat = one - data%etat
+     data%advanced_start_iter = 0
+!    data%lbfgs_mem = MAX( 1, data%control%lbfgs_vectors )
+     data%negcur = ' '
+     data%it_succ = 0
+     data%dense_radius = - one
+     data%control%trs_control%dense_factorization = 1
+
+!  decide how much reverse communication is required
+
+     data%reverse_f = .NOT. PRESENT( eval_F )
+     data%reverse_g = .NOT. PRESENT( eval_G )
+
+!  control the output printing
+
+     IF ( data%control%start_print < 0 ) THEN
+       data%start_print = - 1
+     ELSE
+       data%start_print = data%control%start_print
+     END IF
+
+     IF ( data%control%stop_print < 0 ) THEN
+       data%stop_print = data%control%maxit + 1
+     ELSE
+       data%stop_print = data%control%stop_print
+     END IF
+
+     IF ( control%print_gap < 2 ) THEN
+       data%print_gap = 1
+     ELSE
+       data%print_gap = control%print_gap
+     END IF
+
+     data%out = data%control%out
+     data%print_1st_header = .TRUE.
+
+!  basic single line of output per iteration
+
+     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
+
+!  as per printi, but with additional timings for various operations
+
+     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
+
+!  as per printt with a few more scalars
+
+     data%set_printm = data%out > 0 .AND. data%control%print_level >= 3
+
+!  full debug printing
+
+     data%set_printd = data%out > 0 .AND. data%control%print_level > 10
+
+!  set iteration-specific print controls
+
+     IF ( inform%iter >= data%start_print .AND.                                &
+          inform%iter < data%stop_print .AND.                                  &
+          MOD( inform%iter - 1 - data%start_print, data%print_gap ) == 0 ) THEN
+       data%printi = data%set_printi ; data%printt = data%set_printt
+       data%printm = data%set_printm ; data%printd = data%set_printd
+       data%print_level = data%control%print_level
+     ELSE
+       data%printi = .FALSE. ; data%printt = .FALSE.
+       data%printm = .FALSE. ; data%printd = .FALSE.
+       data%print_level = 0
+     END IF
+
+!  create a file which the user may subsequently remove to cause
+!  immediate termination of a run
+
+     IF ( control%alive_unit > 0 ) THEN
+      INQUIRE( FILE = control%alive_file, EXIST = alive )
+      IF ( .NOT. alive ) THEN
+         OPEN( control%alive_unit, FILE = control%alive_file,                  &
+               FORM = 'FORMATTED', STATUS = 'NEW' )
+         REWIND control%alive_unit
+         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
+         CLOSE( control%alive_unit )
+       END IF
+     END IF
+
+!  allocate further arrays
+
+     IF ( .NOT. data%monotone ) THEN
+       array_name = 'gsm: data%F_hist'
+       CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
+              inform%status,                                                   &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'gsm: data%D_hist'
+       CALL SPACE_resize_array( data%non_monotone_history + 1, data%D_hist,    &
+              inform%status,                                                   &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+     END IF
+
+! evaluate the objective function at the initial point
+
+     IF ( data%reverse_f ) THEN
+       data%branch = 20 ; inform%status = 2 ; RETURN
+     ELSE
+       CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, nlp%f )
+     END IF
+
+!  return from reverse communication to obtain the objective value
+
+  20 CONTINUE
+     inform%f_eval = inform%f_eval + 1
+
+!  test to see if the initial objective value is undefined
+
+!    data%f_is_nan = IEEE_IS_NAN( inform%obj )
+     data%f_is_nan = inform%obj /= inform%obj
+!write(6,*) ' objective is NaN? ', data%f_is_nan
+
+     IF ( data%f_is_nan ) THEN
+       IF ( data%printi ) WRITE( data%out,                                     &
+          "( A, ' initial objective value is a NaN' )" ) prefix
+       inform%status = GALAHAD_error_evaluation ; GO TO 990
+     END IF
+
+!  test to see if the objective appears to be unbounded from below
+
+     IF ( inform%obj < control%obj_unbounded ) THEN
+       IF ( data%printi ) WRITE( data%out,                                     &
+          "( A, ' objective value', ES12.4, ' is lower than unbounded limit',  &
+         &   ES12.4 )" ) prefix, inform%obj, control%obj_unbounded
+       inform%status = GALAHAD_error_unbounded ; GO TO 990
+     END IF
+
+     data%f_ref = inform%obj
+     IF ( .NOT. data%monotone ) THEN
+        data%F_hist = data%f_ref ; data%D_hist = zero ; data%max_hist = 1
+     END IF
+
+!  evaluate the gradient of the objective function
+
+     IF ( data%reverse_g ) THEN
+       data%branch = 30 ; inform%status = 3 ; RETURN
+     ELSE
+       CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,              &
+                    nlp%G( : nlp%n ) )
+     END IF
+
+!  return from reverse communication to obtain the gradient
+
+  30 CONTINUE
+     inform%g_eval = inform%g_eval + 1
+     inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
+!    WRITE(6,"( ' g: ', ( 5ES12.4 ) )" ) nlp%G( : nlp%n )
+
+!  reset the initial radius to ||g|| if no sensible value is given
+
+     IF ( data%control%initial_radius <= zero )                                &
+       inform%radius = inform%norm_g
+
+!  compute the stopping tolerance
+
+     data%stop_g = MAX( control%stop_g_absolute,                               &
+                        control%stop_g_relative * inform%norm_g )
+
+     CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+     data%time_now = data%time_now - data%time_start
+     data%clock_now = data%clock_now - data%clock_start
+
+     IF ( data%printi ) WRITE( data%out, "( /, A, '  Problem: ', A,            &
+    &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
+       prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
+
+     data%n_s = 0 ; data%H_dense%n = 0
+
+!  initialize dense H = I
+
+     data%H_dense%n = nlp%n
+     data%H_dense%ne = 0
+     DO i = 1, nlp%n
+       DO j = 1, i - 1
+         data%H_dense%ne = data%H_dense%ne + 1
+         data%H_dense%val( data%H_dense%ne ) = 0.0_rp_
+       END DO
+       data%H_dense%ne = data%H_dense%ne + 1
+       data%H_dense%val( data%H_dense%ne ) = 1.0_rp_
+     END DO
+
+!  subspace problem iteration loop
+
+     inform%status = 1
+ 300 CONTINUE
+
+!  perform an iteration in the subspace
+
+       CALL GSM_dense_solve( inform%status, nlp%n, nlp%X, nlp%f,               &
+                             nlp%G, data%dense_radius, data%control,           &
+                             data%dense_data, data%X_dense, data%S_dense,      &
+                             data%Y_dense, data%H_dense,                       &
+                             inform%dense_inform, inform%TRS_inform )
+
+!  react to demands from the subspace solver
+
+       SELECT CASE ( inform%status )
+
+!  evaluate the objective function
+
+       CASE ( 2 )
+         IF ( data%reverse_f ) THEN
+           data%branch = 300 ; inform%status = 2 ; RETURN
+         ELSE
+           CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata,        &
+                        nlp%f )
+         END IF
+
+!  evaluate the gradient of the objective function
+
+       CASE ( 3 )
+         IF ( data%reverse_g ) THEN
+            data%branch = 300 ; inform%status = 3 ; RETURN
+         ELSE
+           CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,        &
+                        nlp%G( : nlp%n ) )
+         END IF
+
+!  successful conclusion
+
+       CASE ( 0 )
+         GO TO 320
+
+!  error exit
+
+       CASE DEFAULT
+         GO TO 320
+       END SELECT
+     GO TO 300
+
+!  end of subproblem iteration loop
+
+ 320 CONTINUE
+     inform%obj = nlp%f ; inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
+!    inform%iter = inform%f_eval
+     data%norm_s = TWO_NORM( nlp%X( : nlp%n ) )
+
+!  record the clock time
+
+     CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+     data%time_now = data%time_now - data%time_start
+     data%clock_now = data%clock_now - data%clock_start
+     IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,       &
+    &    F12.2,  ' seconds' )" ) prefix, data%clock_now
+     IF ( ( data%control%cpu_time_limit >= zero .AND.                          &
+            data%time_now > data%control%cpu_time_limit ) .OR.                 &
+          ( data%control%clock_time_limit >= zero .AND.                        &
+            data%clock_now > data%control%clock_time_limit ) ) THEN
+       inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+     END IF
+
+!  ============================================================================
+!  End of the main iteration
+!  ============================================================================
+
+ 900 CONTINUE
+     IF ( inform%iter >= data%start_print .AND.                                &
+          inform%iter < data%stop_print .AND.                                  &
+          MOD( inform%iter + 1 - data%start_print, data%print_gap ) /= 0 ) THEN
+       char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+       WRITE( data%out, 2130 ) prefix, char_iter, data%n_s, data%accept,       &
+          data%bndry, data%negcur, data%perturb, inform%obj,                   &
+          inform%norm_g, data%norm_s, inform%dense_inform%iter, data%clock_now
+     END IF
+
+!  print details of solution
+
+     inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
+
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+
+     IF ( data%printi ) THEN
+!      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
+!      WRITE ( data%out, 2000 ) inform%f_eval, inform%g_eval,   &
+!         inform%iter, inform%cg_iter, inform%obj, inform%norm_g
+!      WRITE ( data%out, 2010 )
+!      IF ( data%print_level > 3 ) THEN
+!         l = nlp%n
+!      ELSE
+!         l = 2
+!      END IF
+!      DO j = 1, 2
+!         IF ( j == 1 ) THEN
+!            ir = 1 ; ic = MIN( l, nlp%n )
+!         ELSE
+!            IF ( ic < nlp%n - l ) WRITE( data%out, 2050 )
+!            ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
+!         END IF
+!         DO i = ir, ic
+!            WRITE ( data%out, 2020 ) nlp%vnames( i ), nlp%X( i ), nlp%G( i )
+!         END DO
+!      END DO
+       WRITE( data%out, "( /, A, '  Problem: ', A,                             &
+      &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4 )" )             &
+         prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
+       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
+           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
+         data%non_monotone_history
+       WRITE( data%out, "( A, '  First-order model used' )" ) prefix
+       WRITE ( data%out, "( A, '  Total time = ', 0P, F0.2, ' seconds', / )" ) &
+         prefix, inform%time%clock_total
+     END IF
+     IF ( inform%status /= GALAHAD_OK ) GO TO 990
+     RETURN
+
+!  -------------
+!  Error returns
+!  -------------
+
+ 980 CONTINUE
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+     RETURN
+
+ 990 CONTINUE
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+     IF ( control%error > 0 ) THEN
+       CALL SYMBOLS_status( inform%status, control%error, prefix, 'GSM_solve' )
+       WRITE( control%error, "( ' ' )" )
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+ 2000 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
+              /, A, ' # gradient evaluations  = ', I0,                         &
+              /, A, ' # major  iterations     = ', I0,                         &
+              /, A, ' # minor (cg) iterations = ', I0,                         &
+              /, A, ' objective value         = ', ES21.14,                    &
+              /, A, ' gradient norm           = ', ES11.4 )
+ 2010 FORMAT( /, A, ' name             X         G ' )
+ 2020 FORMAT(  A, 1X, A10, 2ES12.4 )
+ 2030 FORMAT(  A, 1X, I10, 2ES12.4 )
+ 2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I0 )
+ 2050 FORMAT( A, ' .          ........... ...........' )
+ 2100 FORMAT( A, '    It  n_s          f         grad    ',                    &
+             '  step   it_s    time' )
+ 2130 FORMAT( A, A6, I4, 1X, 4A1, ES12.4, ES11.4, ES8.1, I6, F8.2 )
+ 2140 FORMAT( A, A6, 4X, 5X, ES12.4, ES11.4, 14X, F8.2 )
+
+ !  End of subroutine GSM_solve_full
+
+     END SUBROUTINE GSM_solve_full
+
 !-*-  G A L A H A D -  G S M _ d e n s e _ s o l v e _ S U B R O U T I N E -*-
 
      SUBROUTINE GSM_dense_solve( status, n, X, f, G, radius, control, data,    &
@@ -1797,7 +2498,7 @@
 
 !  check to see if the iteration limit has not been exceeded
 
-       IF ( inform%iter > control%maxit ) THEN
+       IF ( inform%iter > control%inner_maxit ) THEN
          status = GALAHAD_error_max_iterations ; RETURN
        END IF
 

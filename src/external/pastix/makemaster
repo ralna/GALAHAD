@@ -155,9 +155,9 @@ $(PLG)(spmf_enums_$(PRECIS).o): ../../dum/spmf_enums.F90
 
 spmf_interfaces.o: $(PLG)(spmf_interfaces_$(PRECIS).o)
 
-$(PLG)(spmf_interfaces_$(PRECIS).o): ../../dum/spmf_interfaces.F90
+$(PLG)(spmf_interfaces_$(PRECIS).o): ../pastix/spmf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm_interfaces  "
-	$(CP) ../../dum/spmf_interfaces.F90 $(OBJ)/spmf_interfaces.F90
+	$(CP) ../pastix/spmf_interfaces.F90 $(OBJ)/spmf_interfaces.F90
 	cd $(OBJ); $(FORTRAN) -o spmf_interfaces_$(PRECIS).o \
                      $(FFLAGS) spmf_interfaces.F90
 	cd $(OBJ); $(PARR) spmf_interfaces_$(PRECIS).o ; \
@@ -191,9 +191,9 @@ $(PLG)(pastixf_enums_$(PRECIS).o): ../../dum/pastixf_enums.F90
 
 pastixf_interfaces.o: $(PLG)(pastixf_interfaces_$(PRECIS).o)
 
-$(PLG)(pastixf_interfaces_$(PRECIS).o): ../../dum/pastixf_interfaces.F90
+$(PLG)(pastixf_interfaces_$(PRECIS).o): ../pastix/pastixf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_interfaces  "
-	$(CP) ../../dum/pastixf_interfaces.F90 $(OBJ)/pastixf_interfaces.F90
+	$(CP) ../pastix/pastixf_interfaces.F90 $(OBJ)/pastixf_interfaces.F90
 	cd $(OBJ); $(FORTRAN) -o pastixf_interfaces_$(PRECIS).o \
            $(FFLAGS) pastixf_interfaces.F90
 	cd $(OBJ); $(PARR) pastixf_interfaces_$(PRECIS).o ; \

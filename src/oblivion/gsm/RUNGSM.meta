@@ -26,6 +26,7 @@ MAIN
 ! restart-data-file-name                            GSMSAVE.d
 ! restart-data-file-device                          59
 ! save-data-for-restart-every                       0
+! solve-as-full-problem                             no
 
 INCLUDE GSM
 
