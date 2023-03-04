@@ -86,20 +86,21 @@ mkl_pardiso_interface: $(MKL_PARDISO_INTERFACE)
 
 mkl_pardisodt: $(MKL_PARDISODT)
 	echo " Exhaustive test of subroutine interface to mkl_pardiso"
-	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
-                         $(RMKL_PARDISODT)
-#	- ../mkl/run_mkl_pardiso > ../mkl/mkl_pardisodt.output 2>&1
-#	cat ../mkl/mkl_pardisodt.output
-	- ../mkl/run_mkl_pardiso
-	rm ../mkl/run_mkl_pardiso
+	cd ../mkl_pardiso ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) \
+                              -o run_mkl_pardiso $(RMKL_PARDISODT)
+	- ../mkl_pardiso/run_mkl_pardiso > \
+            ../mkl_pardiso/mkl_pardisodt.output 2>&1
+	cat ../mkl_pardiso/mkl_pardisodt.output
+	rm ../mkl_pardiso/run_mkl_pardiso
 
 mkl_pardisost: $(MKL_PARDISOST)
 	echo " Exhaustive test of subroutine interface to mkl_pardiso"
-	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
-                         $(RMKL_PARDISOST)
-	- ../mkl/run_mkl_pardiso > ../mkl_pardiso/mkl_pardisot.output 2>&1
-	cat ../mkl/mkl_pardisot.output
-	rm ../mkl/run_mkl_pardiso
+	cd ../mkl_pardiso ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o \
+                              run_mkl_pardiso $(RMKL_PARDISOST)
+	- ../mkl_pardiso/run_mkl_pardiso > \
+             ../mkl_pardiso_pardiso/mkl_pardisot.output 2>&1
+	cat ../mkl_pardiso/mkl_pardisot.output
+	rm ../mkl_pardiso/run_mkl_pardiso
 
 #  blas and lapack generic packages and interfaces
 
@@ -131,9 +132,10 @@ lapack_interface:
 
 mkl_pardiso_interface.o: $(LG)(mkl_pardiso_interface.o)
 
-$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.F90
+$(LG)(mkl_pardiso_interface.o): ../mkl_pardiso/mkl_pardiso_interface.F90
 	@printf ' %-9s %-15s\t' "Compiling" "mkl_pardiso_interface  "
-	$(CP) ../mkl/mkl_pardiso_interface.F90 $(OBJ)/mkl_pardiso_interface.F90
+	$(CP) ../mkl_pardiso/mkl_pardiso_interface.F90 \
+           $(OBJ)/mkl_pardiso_interface.F90
 	cd $(OBJ); $(FORTRAN) -o mkl_pardiso_interface.o $(FFLAGS) \
                       mkl_pardiso_interface.F90
 	cd $(OBJ); $(ARR) mkl_pardiso_interface.o ; \
@@ -155,9 +157,9 @@ $(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.F90
 
 mkl_pardisot.o: $(OBJ)/mkl_pardisot_$(PRECIS).o
 
-$(OBJ)/mkl_pardisot_$(PRECIS).o: ../mkl/mkl_pardisot.F90
+$(OBJ)/mkl_pardisot_$(PRECIS).o: ../mkl_pardiso/mkl_pardisot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
-	$(CP) ../mkl/mkl_pardisot.F90 $(OBJ)/mkl_pardisot.F90
+	$(CP) ../mkl_pardiso/mkl_pardisot.F90 $(OBJ)/mkl_pardisot.F90
 	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot_$(PRECIS).o \
                       $(FFLAGSS) mkl_pardisot.F90
 	@printf '[ OK ]\n'

@@ -349,9 +349,9 @@ pardiso_silent:
 #  mkl pardiso package
 
 mkl_pardiso_silent:
-	( cd ../external/mkl ; $(MAKE) -f \
+	( cd ../external/mkl_pardiso ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mkl )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mkl_pardiso )
 
 #  umfpack package
 

@@ -104,6 +104,7 @@
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
+     LOGICAL :: solve_as_full = .FALSE.
      INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  Output file characteristics
@@ -147,7 +148,7 @@
        spec( 25 )%keyword = 'restart-data-file-name'
        spec( 26 )%keyword = 'restart-data-file-device'
        spec( 27 )%keyword = 'save-data-for-restart-every'
-       spec( 28 )%keyword = ''
+       spec( 28 )%keyword = 'solve-as-full-problem'
        spec( 29 )%keyword = ''
 
 !   Read the specfile
@@ -183,6 +184,7 @@
        CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
        CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
        CALL SPECFILE_assign_integer( spec( 27 ), istore, errout )
+       CALL SPECFILE_assign_logical( spec( 28 ), solve_as_full, errout )
      END IF
 
      IF ( dechk .OR. testal ) THEN ; dechke = .TRUE. ; dechkg = .TRUE. ; END IF
@@ -272,8 +274,13 @@
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-     CALL GSM_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G )
+     IF ( solve_as_full ) THEN
+       CALL GSM_solve_full( nlp, control, inform, data, userdata,              &
+                            eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G )
+     ELSE
+       CALL GSM_solve( nlp, control, inform, data, userdata,                   &
+                       eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G )
+     END IF
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( /, ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -287,14 +294,14 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( inform%status == GALAHAD_ok .OR.                                &
+        IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-            inform%norm_g, inform%iter, inform%g_eval,                       &
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_g, inform%iter, inform%f_eval, inform%g_eval,          &
             inform%time%clock_total, inform%status
         ELSE
-          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-            inform%norm_g, - inform%iter, - inform%g_eval,                   &
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_g, - inform%iter, - inform%f_eval, - inform%g_eval,    &
             - inform%time%clock_total, inform%status
         END IF
       END IF
@@ -320,15 +327,16 @@
       END DO
 
         WRITE( errout, "( /, 'name           n  f              du-feas ',      &
-       &  '   its     #g     time stat' )" )
+       &  '   its     #f     #g     time stat' )" )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_g,   &
-            inform%iter, inform%g_eval, inform%time%clock_total, inform%status
+            inform%iter, inform%f_eval, inform%g_eval,                         &
+            inform%time%clock_total, inform%status
         ELSE
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_g,   &
-            - inform%iter, - inform%g_eval, - inform%time%clock_total,         &
-            inform%status
+            - inform%iter, - inform%f_eval, - inform%g_eval,                   &
+            - inform%time%clock_total, inform%status
         END IF
 
       IF ( write_solution .AND.                                                &
@@ -411,7 +419,7 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, F9.2, I5 )
+ 2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 3I7, F9.2, I5 )
 
 !  End of subroutine USE_GSM
 
