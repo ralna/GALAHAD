@@ -52,7 +52,7 @@
                                  CCQP_AX => QPD_AX, CCQP_HX => QPD_HX,         &
                                  CCQP_abs_AX => QPD_abs_AX,                    &
                                  CCQP_abs_HX => QPD_abs_HX
-      USE GALAHAD_CQP_precision, CCQP_merit_value => CQP_merit_value,       &
+      USE GALAHAD_CQP_precision, CCQP_merit_value => CQP_merit_value,          &
                                  CCQP_potential_value => CQP_potential_value,  &
                                  CCQP_Lagrangian_gradient                      &
                                    => CQP_Lagrangian_gradient,                 &
