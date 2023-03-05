@@ -67,11 +67,6 @@
 
      INTEGER ( KIND = ip_ ), PARAMETER  :: nskip_prec_max = 0
      INTEGER ( KIND = ip_ ), PARAMETER  :: history_max = 100
-     LOGICAL, PARAMETER  :: debug_model_4 = .TRUE.
-!    LOGICAL, PARAMETER  :: test_s = .TRUE.
-     LOGICAL, PARAMETER  :: test_s = .FALSE.
-!    LOGICAL, PARAMETER  :: reset_to_I = .TRUE.
-     LOGICAL, PARAMETER  :: reset_to_I = .FALSE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
@@ -101,6 +96,11 @@
      INTEGER ( KIND = ip_ ), PARAMETER  :: first_order_model = 1
      INTEGER ( KIND = ip_ ), PARAMETER  :: second_order_model = 2
      INTEGER ( KIND = ip_ ), PARAMETER  :: model = second_order_model
+
+!    LOGICAL, PARAMETER  :: reset_to_I = .TRUE.
+     LOGICAL, PARAMETER  :: reset_to_I = .FALSE.
+     REAL ( KIND = rp_ ), PARAMETER :: h_diag_initial = 1.0_rp_
+!    REAL ( KIND = rp_ ), PARAMETER :: h_diag_initial = 10.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -1044,9 +1044,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ic, ir, j, k, l
-     REAL ( KIND = rp_ ) :: ared, prered, rounding
-!    REAL ( KIND = rp_ ) :: radmin
-     REAL ( KIND = rp_ ) :: tau, tau_1, tau_2, tau_min, tau_max
+     REAL ( KIND = rp_ ) :: h_diag
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_sit, char_sit2
      CHARACTER ( LEN = 80 ) :: array_name
@@ -1359,7 +1357,7 @@
     &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
        prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
 
-     data%n_s = 0 ; data%H_dense%n = 0
+     data%n_s = 0 ; data%H_dense%ne = 0
 
 !  ============================================================================
 !  Start of main iteration
@@ -1492,9 +1490,9 @@
        END DO
        data%Q( : nlp%n, data%n_s ) = data%Q( : nlp%n, data%n_s )               &
            / TWO_NORM( data%Q( : nlp%n, data%n_s ) )
-!      write(6,"( ' q_j^Tq_n ', ( 5ES12.4 ) )" ) &
-!        ( DOT_PRODUCT( data%Q( : nlp%n, j ), data%Q( : nlp%n, data%n_s ) ),   &
-!          j = 1, data%n_s )
+       write(6,"( ' q_j^Tq_n ', ( 5ES12.4 ) )" ) &
+         ( DOT_PRODUCT( data%Q( : nlp%n, j ), data%Q( : nlp%n, data%n_s ) ),   &
+           j = 1, data%n_s )
 
 !  ============================================================================
 !  3. Find the minimizer of f(x + Q x_s) using a low-dimensional server
@@ -1511,6 +1509,13 @@
 
 !  initialize dense H = I
 
+       h_diag = h_diag_initial
+       data%H_dense%ne = 0
+       DO i = 1, data%n_s - 1
+         data%H_dense%ne = data%H_dense%ne + i
+         h_diag = MAX( h_diag, data%H_dense%val( data%H_dense%ne ) )
+       END DO
+
        data%H_dense%n = data%n_s
        IF ( reset_to_I ) THEN
          data%H_dense%ne = 0
@@ -1520,8 +1525,9 @@
              data%H_dense%val( data%H_dense%ne ) = 0.0_rp_
            END DO
            data%H_dense%ne = data%H_dense%ne + 1
-           data%H_dense%val( data%H_dense%ne ) = 1.0_rp_
+           data%H_dense%val( data%H_dense%ne ) = h_diag
          END DO
+
 
 !  initialize the new row of dense H to that of the identity matrix
 
@@ -1531,8 +1537,10 @@
            data%H_dense%val( data%H_dense%ne ) = 0.0_rp_
          END DO
          data%H_dense%ne = data%H_dense%ne + 1
-         data%H_dense%val( data%H_dense%ne ) = 1.0_rp_
+         data%H_dense%val( data%H_dense%ne ) = h_diag
        END IF
+!write(6,"( ' ne = ', I0, ' H_initial =', /, ( 5ES12.4 ) )" ) 
+!    data%H_dense%ne, data%H_dense%val( : data%H_dense%ne )
 
 !  subspace problem iteration loop
 
@@ -1967,7 +1975,6 @@
      INTEGER ( KIND = ip_ ) :: i, ic, ir, j, k, l
      REAL ( KIND = rp_ ) :: ared, prered, rounding
 !    REAL ( KIND = rp_ ) :: radmin
-     REAL ( KIND = rp_ ) :: tau, tau_1, tau_2, tau_min, tau_max
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_sit, char_sit2
      CHARACTER ( LEN = 80 ) :: array_name
