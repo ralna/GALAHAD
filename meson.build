@@ -285,7 +285,7 @@ libmumps_double = library('mumps_double',
                           include_directories: libgalahad_include + 'src/dum/include',
                           install : true)
 
-libspmf_src += files('src/kinds/kinds.F90', 'src/dum/spmf_enums.F90', 'src/dum/spmf_interfaces.F90', 'src/dum/spmf.F90')
+libspmf_src += files('src/kinds/kinds.F90', 'src/dum/spmf_enums.F90', 'src/external/pastix/spmf_interfaces.F90', 'src/dum/spmf.F90')
 
 libspmf_single = library('spmf_single',
                          sources : libspmf_src,
@@ -301,7 +301,7 @@ libspmf_double = library('spmf_double',
                          fortran_args : extra_args_double,
                          install : true)
 
-libpastix_src += files('src/kinds/kinds.F90', 'src/dum/pastixf_enums.F90', 'src/dum/pastixf_interfaces.F90', 'src/dum/pastixf.F90')
+libpastix_src += files('src/kinds/kinds.F90', 'src/dum/pastixf_enums.F90', 'src/external/pastix/pastixf_interfaces.F90', 'src/dum/pastixf.F90')
 
 libpastix_single = library('pastix_single',
                     sources : libpastix_src,
@@ -744,7 +744,7 @@ if build_tests
     ugot = executable('ugot_'+val[0], 'src/ugo/ugot.F90', fortran_args : val[1], link_with : val[2], link_language: 'fortran', include_directories: libgalahad_include)
     test('ugot_'+val[0], ugot, suite: ['ugo', 'fortran', val[0]], is_parallel : false)
 
-    mkl_pardisot = executable('mkl_pardisot_'+val[0], 'src/external/mkl/mkl_pardisot.F90', fortran_args : val[1], link_with : libmkl_pardiso, link_language: 'fortran', include_directories: libgalahad_include)
+    mkl_pardisot = executable('mkl_pardisot_'+val[0], 'src/external/mkl_pardiso/mkl_pardisot.F90', fortran_args : val[1], link_with : libmkl_pardiso, link_language: 'fortran', include_directories: libgalahad_include)
     test('mkl_pardisot_'+val[0], mkl_pardisot, suite: ['mkl_pardiso', 'fortran', val[0]], is_parallel : false)
 
     mumpst = executable('mumpst_'+val[0], 'src/external/mumps/mumpst.F90', fortran_args : val[1], link_with : val[3], link_language: 'fortran', include_directories: libgalahad_include)
