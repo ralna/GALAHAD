@@ -2497,8 +2497,9 @@
 
        IF ( inform%iter >= data%start_print .AND.                              &
             inform%iter < data%stop_print .AND.                                &
-            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
-           THEN
+            ( MOD( inform%iter - 1 - data%start_print, data%print_gap ) == 0   &
+              .OR. inform%iter == data%control%maxit                           &
+              .OR. inform%norm_pg <= data%stop_pg ) ) THEN
          data%printi = data%set_printi ; data%printt = data%set_printt
          data%printm = data%set_printm ; data%printw = data%set_printw
          data%printd = data%set_printd
