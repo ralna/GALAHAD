@@ -2137,7 +2137,10 @@
         a_ne = A%ne
       END IF
 
-      IF ( SMT_get( H%type ) == 'DIAGONAL' .OR.                                &
+      IF ( SMT_get( H%type ) == 'ZERO' .OR.                                    &
+                SMT_get( H%type ) == 'NONE' ) THEN
+        h_ne = 0
+      ELSE IF ( SMT_get( H%type ) == 'DIAGONAL' .OR.                           &
            SMT_get( H%type ) == 'SCALED_IDENTITY' .OR.                         &
            SMT_get( H%type ) == 'IDENTITY' ) THEN
         h_ne = n
