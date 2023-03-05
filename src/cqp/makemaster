@@ -22,7 +22,7 @@ DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd
 
 #  other packages that depend on package
 
-DEPENDS = cdqp fastr l1qp qp qpc
+DEPENDS = ccqp cdqp fastr l1qp qp qpc
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

@@ -2138,7 +2138,7 @@
       END IF
 
       IF ( SMT_get( H%type ) == 'ZERO' .OR.                                    &
-                SMT_get( H%type ) == 'NONE' ) THEN
+           SMT_get( H%type ) == 'NONE' ) THEN
         h_ne = 0
       ELSE IF ( SMT_get( H%type ) == 'DIAGONAL' .OR.                           &
            SMT_get( H%type ) == 'SCALED_IDENTITY' .OR.                         &
@@ -3557,6 +3557,7 @@
             efactors%K%val( a_ne + 1 : a_ne + h_ne ) = H%val( 1 )
           CASE ( 'IDENTITY' )
             efactors%K%val( a_ne + 1 : a_ne + h_ne ) = one
+          CASE ( 'ZERO', 'NONE' )
           CASE DEFAULT
             efactors%K%val( a_ne + 1 : a_ne + h_ne ) = H%val( : h_ne )
           END SELECT
