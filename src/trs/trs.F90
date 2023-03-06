@@ -4965,24 +4965,24 @@ write(6,*) control%definite_linear_solver
 
 ! -1. Set Z_0 = 0 and u_0 = 0
 
- ! 0. Factorize H and compute x_1 = - H^-1 c
+!  0. Factorize H and compute x_1 = - H^-1 c
 
-! for k = 1, ..., k_max - 1
+!  for k = 1, ..., k_max - 1
 
-! 1. Set z_k = H^{-1} x_k and Z_k = ( Z_k-1 : z_k )
+!  1. Set z_k = H^{-1} x_k and Z_k = ( Z_k-1 : z_k )
 
-! 2. Compute v_k-1 = Z^T_k-1 x_k and nu_k = z^T_k x_k
+!  2. Compute v_k-1 = Z^T_k-1 x_k and nu_k = z^T_k x_k
 
-! 3. Find new row of (l^T_k-1,lam_k) of L_k via
+!  3. Find new row of (l^T_k-1,lam_k) of L_k via
 
 !     L_k-1 l_k-1 = v_k-1 and lam_k^2 = nu_k - l^T_k-1 l_k-1
 
-! 4. If k = 1, set mu_1 = x^T_1 x_1 / lam_1
-!    else mu_k = - u_k-1^T l_k-1 / lam_k
+!  4. If k = 1, set mu_1 = x^T_1 x_1 / lam_1
+!     else mu_k = - u_k-1^T l_k-1 / lam_k
 
-! 5. Find  L^T_k y_k = u_k, where u^T_k = (`u^T_k-1,mu_k)
+!  5. Find  L^T_k y_k = u_k, where u^T_k = (`u^T_k-1,mu_k)
 
-! 6. Set x_k+1 = x_1 - Z_k y_k
+!  6. Set x_k+1 = x_1 - Z_k y_k
 
 ! end for
 

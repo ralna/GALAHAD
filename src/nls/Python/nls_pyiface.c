@@ -45,9 +45,10 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   CALLBACK FUNCTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Python eval_* function pointers */
-static PyObject *py_eval_f = NULL;
-static PyObject *py_eval_g = NULL;
+static PyObject *py_eval_c = NULL;
+static PyObject *py_eval_j = NULL;
 static PyObject *py_eval_h = NULL;
+static PyObject *py_eval_hprods = NULL;
 
 /* C eval_* function wrappers */
 static int eval_c(int n, int m, const double x[], double c[],
@@ -69,16 +70,10 @@ static int eval_c(int n, int m, const double x[], double c[],
     if(!result)
         return -1;
 
-    // Get return value data pointer and copy data into g
+    // Get return value data pointer and copy data intoc
     const double *cval = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<m; i++) {
         c[i] = cval[i];
-    }
-
-    // Extract single double return value
-    if(!parse_double("eval_f return value", result, f)){
-        Py_DECREF(result); // Free result memory
-        return -1;
     }
 
     // Free result memory
@@ -98,7 +93,7 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
     // Build Python argument list
     PyObject *arglist = Py_BuildValue("(O)", py_x);
 
-    // Call Python eval_h
+    // Call Python eval_j
     PyObject *result = PyObject_CallObject(py_eval_j, arglist);
     Py_DECREF(py_x);    // Free py_x memory
     Py_DECREF(arglist); // Free arglist memory
@@ -114,7 +109,7 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
         return -1;
     }
 
-    // Get return value data pointer and copy data into hval
+    // Get return value data pointer and copy data into jval
     const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<jne; i++) {
         jval[i] = val[i];
@@ -126,16 +121,19 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
     return 0;
 }
 
-static int eval_h(int n, int m, int hne, const double x[], double hval[],
-                  const void *userdata){
+static int eval_h(int n, int m, int hne, const double x[], const double y[],
+                  double hval[], const void *userdata){
 
-    // Wrap input array as NumPy array
+    // Wrap input arrays as NumPy arrays
     npy_intp xdim[] = {n};
     PyArrayObject *py_x = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
+    npy_intp ydim[] = {m};
+    PyArrayObject *py_y = (PyArrayObject*)
+       PyArray_SimpleNewFromData(1, ydim, NPY_DOUBLE, (void *) y);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(OO)", py_x, py_y);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_h, arglist);
@@ -165,19 +163,20 @@ static int eval_h(int n, int m, int hne, const double x[], double hval[],
     return 0;
 }
 
-static int eval_hprods(int n, int m, int pne, const double x[],
-                       const double v[], double pval[], bool got_h,
-                       const void *userdata){
+static int eval_hprods(int n, int m, int pne, const double x[], const double v[], 
+                  double pval[], bool got_h, const void *userdata){
 
-    // Wrap input array as NumPy array
+    // Wrap input arrays as NumPy arrays
     npy_intp xdim[] = {n};
     PyArrayObject *py_x = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
+
     npy_intp vdim[] = {m};
     PyArrayObject *py_v = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, vdim, NPY_DOUBLE, (void *) v);
+
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(OOp)", py_x, py_v, got_h);
+    PyObject *arglist = Py_BuildValue("(OO)", py_x, py_v);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_hprods, arglist);
@@ -190,8 +189,8 @@ static int eval_hprods(int n, int m, int pne, const double x[],
         return -1;
 
     // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_h return value",
-                           (PyArrayObject*) result, hne)){
+    if(!check_array_double("eval_hprods return value",
+                           (PyArrayObject*) result, pne)){
         Py_DECREF(result); // Free result memory
         return -1;
     }
@@ -213,7 +212,7 @@ static int eval_hprods(int n, int m, int pne, const double x[],
 /* Update the subproblem control options: use C defaults but update any
    passed via Python*/
 static bool nls_update_subproblem_control(
-                               struct nls_subrproblem_control_type *control,
+                               struct nls_subproblem_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -281,7 +280,7 @@ static bool nls_update_subproblem_control(
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  &control->alive_file))
+                                  control->alive_file))
                 return false;
             continue;
         }
@@ -491,10 +490,11 @@ static bool nls_update_subproblem_control(
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  &control->prefix))
+                                  control->prefix))
                 return false;
             continue;
         }
+
         //if(strcmp(key_name, "rqs_options") == 0){
         //    if(!rqs_update_control(&control->rqs_control, value))
         //        return false;
@@ -514,7 +514,7 @@ static bool nls_update_subproblem_control(
         //    if(!bsc_update_control(&control->bsc_control, value))
         //        return false;
         //    continue;
-        }
+        //}
         //if(strcmp(key_name, "roots_options") == 0){
         //    if(!roots_update_control(&control->roots_control, value))
         //        return false;
@@ -601,7 +601,7 @@ static bool nls_update_control(struct nls_control_type *control,
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  &control->alive_file))
+                                  control->alive_file))
                 return false;
             continue;
         }
@@ -811,7 +811,7 @@ static bool nls_update_control(struct nls_control_type *control,
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  &control->prefix))
+                                  control->prefix))
                 return false;
             continue;
         }
@@ -840,7 +840,7 @@ static bool nls_update_control(struct nls_control_type *control,
         //    if(!bsc_update_control(&control->bsc_control, value))
         //        return false;
         //    continue;
-        }
+        //}
         //if(strcmp(key_name, "roots_options") == 0){
         //    if(!roots_update_control(&control->roots_control, value))
         //        return false;
@@ -1018,7 +1018,7 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
 static PyObject* py_nls_initialize(PyObject *self){
 
     // Call nls_initialize
-    nls_initialize(&data, &control, &status);
+    nls_initialize(&data, &control, &inform);
 
     // Record that NLS has been initialised
     init_called = true;
@@ -1051,8 +1051,9 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"n","m",
                              "J_type","J_ne","J_row","J_col","J_ptr",
                              "H_type","H_ne","H_row","H_col","H_ptr",
-                             "H_type","H_ne","H_row","H_col","H_ptr",
-                             "options",NULL};
+                             "P_type","P_ne","P_row","P_col","P_ptr",
+                             "w","options"};
+//                           "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|siOOOsiOOOOO",
                                     kwlist, &n, &m,
@@ -1192,9 +1193,9 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   NLS_SOLVE   -*-*-*-*-*-*-*-*
 
 static PyObject* py_nls_solve(PyObject *self, PyObject *args){
-    PyArrayObject *py_x, *py_c, *py_g;
+    PyArrayObject *py_x;
     PyObject *temp_c, *temp_j, *temp_h, *temp_hprods;
-    double *x, *c, *g;
+    double *x;
     int n, m, J_ne, H_ne, P_ne;
 
     // Check that package has been initialised
@@ -1202,8 +1203,8 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOOOOiO|iOiO", &n, &m,
-                         &py_x, &py_c, &py_g, &temp_c, &J_ne, &temp_j,
+    if(!PyArg_ParseTuple(args, "iiOOiO|iOiO", &n, &m,
+                         &py_x, &temp_c, &J_ne, &temp_j,
                          &H_ne, &temp_h, &P_ne, &temp_hprods))
         return NULL;
 
@@ -1262,7 +1263,7 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
-    return Py_BuildValue("OOO", py_x, py_g, py_c);
+    return Py_BuildValue("OOO", py_x, py_c, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -1315,13 +1316,13 @@ PyDoc_STRVAR(nls_module_doc,
 
 "The nls package uses a regularization method to find a (local) unconstrained\n"
 "minimizer of a differentiable weighted sum-of-squares objective function\n"
-"$$\mathbf{f(x) :=\n"
-"   \frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv rac{1}{2} \|c(x)\|^2_W}$$\n"
-"of many variables $f{x}$ involving positive weights $w_i$, $i=1,\ldots,m$.\n"
+"f(x) :=\n"
+"   1/2 sum_{i=1}^m w_i c_i^2(x) == 1/2 ||c(x)||^2_W\n"
+"of many variables f{x} involving positive weights w_i, i=1,...,m.\n"
 "The method offers the choice of direct and iterative solution of the key\n"
 "regularization subproblems, and is most suitable for large problems.\n"
-"First derivatives of the residual function $c(x)$ are required, and if\n"
-"second derivatives of the $c_i(x)$ can be calculated, they may be exploited.\n"
+"First derivatives of the residual function c(x) are required, and if\n"
+"second derivatives of the c_i(x) can be calculated, they may be exploited.\n"
 "\n"
 "See $GALAHAD/html/Python/nls.html for argument lists, call order\n"
 "and other details.\n"
