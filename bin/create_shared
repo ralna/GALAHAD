@@ -37,7 +37,7 @@ $LOADALL lib$name.a $LOADNONE
   fi
 done
 
-for name in galahad galahad_hsl galahad_spral \
+for name in galahad galahad_hsl galahad_spral galahad_mpi \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
             galahad_pastix galahad_mumps galahad_umfpack \
             galahad_metis4 galahad_lapack galahad_blas \

@@ -429,13 +429,13 @@ static bool arc_update_control(struct arc_control_type *control,
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  &control->prefix))
+                                  control->prefix))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  &control->alive_file))
+                                  control->alive_file))
                 return false;
             continue;
         }
