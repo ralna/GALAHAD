@@ -350,6 +350,10 @@
 
         INTEGER ( KIND = ip_ ) :: la04_job_info = 0
 
+!  the number of threads used
+
+        INTEGER ( KIND = ip_ ) :: threads = 1
+
 !  the value of the objective function at the best estimate of the solution
 !   determined by LPA_solve
 
@@ -1006,8 +1010,10 @@
       TYPE ( LPA_data_type ), INTENT( INOUT ) :: data
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+         DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+         DIMENSION( prob%n ) :: X_stat
 
 !  Local variables
 
