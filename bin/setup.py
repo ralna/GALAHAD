@@ -79,7 +79,7 @@ dgo_module = Extension(
 )
 arc_module = Extension(
     str('galahad.arc'),
-    sources=[f'{GALAHAD}/src/ugo/python/arc_pyiface.c'],
+    sources=[f'{GALAHAD}/src/arc/python/arc_pyiface.c'],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -88,7 +88,7 @@ arc_module = Extension(
 )
 tru_module = Extension(
     str('galahad.tru'),
-    sources=[f'{GALAHAD}/src/ugo/python/tru_pyiface.c'],
+    sources=[f'{GALAHAD}/src/trb/python/tru_pyiface.c'],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -97,7 +97,16 @@ tru_module = Extension(
 )
 trb_module = Extension(
     str('galahad.trb'),
-    sources=[f'{GALAHAD}/src/ugo/python/trb_pyiface.c'],
+    sources=[f'{GALAHAD}/src/tru/python/trb_pyiface.c'],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    define_macros=define_macros,
+    extra_link_args=extra_link_args,
+)
+nls_module = Extension(
+    str('galahad.nls'),
+    sources=[f'{GALAHAD}/src/nls/python/nls_pyiface.c'],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -124,7 +133,8 @@ setup(
     license='GNU LGPL',
     packages=find_packages(),
     ext_modules=[arc_module,tru_module,trb_module,\
-                 ugo_module,bgo_module,dgo_module],
+                 ugo_module,bgo_module,dgo_module,\
+                 nls_module],
     keywords = "mathematics optimization",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

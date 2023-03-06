@@ -6,45 +6,70 @@ nls.initialize()
 
 # set some non-default options
 #options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
-options = {'print_level' : 1 }
+options = {'print_level' : 1, 'jacobian_available' : 2,
+           'hessian_available' : 2, 'model' : 6 }
 print(options)
 
 # set parameters
-p = 4
-n = 3
+p = 1.0
+n = 2
+m = 3
+
+# set Jacobian sparsity
+J_type = 'coordinate'
+J_ne = 5
+J_row = np.array([0,1,1,2,2])
+J_col = np.array([0,0,1,0,1])
+J_ptr = None
 
 # set Hessian sparsity
 H_type = 'coordinate'
-H_ne = 5
-H_row = np.array([0,2,1,2,2])
-H_col = np.array([0,0,1,1,2])
+H_ne = 2
+H_row = np.array([0,1])
+H_col = np.array([0,1])
 H_ptr = None
 
-# load data (and optionally non-default options)
-nls.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=options)
+# set Hessian product sparsity
+P_type = 'sparse_by_columns'
+P_ne = 2
+P_row = np.array([0,1])
+P_col = None
+P_ptr = np.array([0,1,2,2])
 
-# define objective function and its derivatives
-def eval_f(x):
-    return (x[0] + x[2] + p)**2 + (x[1] + x[2])**2 + np.cos(x[0])
-def eval_g(x):
-    return np.array([2.0* ( x[0] + x[2] + p ) - np.sin(x[0]),
-                     2.0* ( x[1] + x[2] ),
-                     2.0* ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] )])
-def eval_h(x):
-    return np.array([2. - np.cos(x[0]),2.0,2.0,2.0,4.0])
+w = np.array([1.0,1.0,1.0])
+
+# load data (and optionally non-default options)
+nls.load(n, m, 
+         J_type, J_ne, J_row, J_col, J_ptr, 
+         H_type, H_ne, H_row, H_col, H_ptr, 
+         P_type, P_ne, P_row, P_col, P_ptr, 
+         w, options)
+
+# define residual function and its derivatives
+def eval_c(x):
+    return np.array([(x[0])**2 + p, x[0] + (x[1])**2, x[0] - x[1]])
+def eval_j(x):
+    return np.array([2.0 * x[0], 1.0, 2.0 * x[1], 1.0, - 1.0])
+def eval_h(x,y):
+    return np.array([2.0 * y[0], 2.0 * y[1]])
+def eval_hprod(x,v):
+    return np.array([2.0 * v[0], 2.0 * v[1]])
 
 # set starting point
-x = np.array([1.,1.,1.])
+x = np.array([1.5,1.5])
 
 # find optimum
-x, g = nls.solve(n, H_ne, x, eval_f, eval_g, eval_h)
+x, c, g = nls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h, 
+                    P_ne, eval_hprod)
 print("x:",x)
+print("c:",c)
 print("g:",g)
 
 # get information
 inform = nls.information()
 #print(inform)
 print("f:",inform['obj'])
+print("iter:",inform['iter'])
 
 # deallocate internal data
 nls.terminate()

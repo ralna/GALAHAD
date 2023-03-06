@@ -25,11 +25,11 @@ Initial sketch (for gfortran version)
    and then uses pip install $GALAHAD/bin/ to build the required python package
 
 4. Test via
-   cd $GALAHAD/src/(pack)/python ; python test_(pack).py
+   cd $GALAHAD/src/(pack)/Python ; python test_(pack).py
 
 When adding a new interface
 
-a. create $GALAHAD/src/(pack)/python
+a. create $GALAHAD/src/(pack)/Python
 b. add the relevant (pack)_pyiface.c
 c  add details to setup.py
 
