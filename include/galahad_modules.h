@@ -5,6 +5,7 @@
 #define CUTEST_LQP_precision CUTEST_LQP_single
 #define GALAHAD_AMD_precision GALAHAD_AMD_single
 #define GALAHAD_ARC_precision GALAHAD_ARC_single
+#define GALAHAD_BAND_precision GALAHAD_BAND_single
 #define GALAHAD_BARC_precision GALAHAD_BARC_single
 #define GALAHAD_BGO_precision GALAHAD_BGO_single
 #define GALAHAD_BLLS_precision GALAHAD_BLLS_single
@@ -186,7 +187,6 @@
 #define GALAHAD_USEWARM_precision GALAHAD_USEWARM_single
 #define GALAHAD_USEWCP_precision GALAHAD_USEWCP_single
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_single
-#define LANCELOT_BAND_precision LANCELOT_BAND_single
 #define LANCELOT_CAUCHY_precision LANCELOT_CAUCHY_single
 #define LANCELOT_CG_precision LANCELOT_CG_single
 #define LANCELOT_precision LANCELOT_single
@@ -397,6 +397,7 @@
 #define CUTEST_LQP_precision CUTEST_LQP_double
 #define GALAHAD_AMD_precision GALAHAD_AMD_double
 #define GALAHAD_ARC_precision GALAHAD_ARC_double
+#define GALAHAD_BAND_precision GALAHAD_BAND_double
 #define GALAHAD_BARC_precision GALAHAD_BARC_double
 #define GALAHAD_BGO_precision GALAHAD_BGO_double
 #define GALAHAD_BLLS_precision GALAHAD_BLLS_double
@@ -578,7 +579,6 @@
 #define GALAHAD_USEWARM_precision GALAHAD_USEWARM_double
 #define GALAHAD_USEWCP_precision GALAHAD_USEWCP_double
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_double
-#define LANCELOT_BAND_precision LANCELOT_BAND_double
 #define LANCELOT_CAUCHY_precision LANCELOT_CAUCHY_double
 #define LANCELOT_CG_precision LANCELOT_CG_double
 #define LANCELOT_precision LANCELOT_double
