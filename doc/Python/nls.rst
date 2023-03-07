@@ -5,9 +5,9 @@ NLS
 
 The nls package uses a regularization method to find a (local) unconstrained
 minimizer of a differentiable weighted sum-of-squares objective function
-$$\mathbf{f(x) :=
-   \frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv rac{1}{2} \|c(x)\|^2_W}$$
-of many variables $f{x}$ involving positive weights $w_i$, $i=1,\ldots,m$.
+$$f(x) :=
+\frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv \frac{1}{2} \|c(x)\|^2_W$$
+of many variables $x$ involving positive weights $w_i$, $i=1,\ldots,m$.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for large problems.
 First derivatives of the residual function $c(x)$ are required, and if
@@ -16,15 +16,132 @@ second derivatives of the $c_i(x)$ can be calculated, they may be exploited.
 See Section 4 of $GALAHAD/doc/nls.pdf for a brief description of the
 method employed and other details.
 
+terminology
+-----------
+
+The **gradient** $\nabla_x f(x)$ of a function $f(x)$ is the vector
+whose $i$-th component is $\partial f(x)/\partial x_i$.
+The **Hessian** $\nabla_{xx} f(x)$ of $f(x)$ is the symmetric matrix
+whose $i,j$-th entry is $\partial^2 f(x)/\partial x_i \partial x_j$.
+The Hessian is **sparse** if a significant and useful proportion of the
+entries are universally zero.
+
+The algorithm used by the package is iterative. From the current best estimate
+of the minimizer $x_k$, a trial improved point $x_k + s_k$ is sought.
+The correction $s_k$ is chosen to improve a model $m_k(s)$ of
+the objective function $f(x_k+s)$ built around
+$x_k$. The model is the sum of two basic components,
+a suitable approximation $t_k(s)$ of $f(x_k+s)$,
+%another approximation of $(\rho/r) \|x_k+s\|_r^r$ (if $\rho > 0$),
+and a regularization term $(\sigma_k/p) \|s\|_{S_k}^p$
+involving a weight $\sigma_k$, power $p$ and
+a norm $\|s\|_{S_k} := \sqrt{s^T S_k s}$ for a given positive
+definite scaling matrix $S_k$ that is included to prevent large
+corrections. The weight  $\sigma_k$ is adjusted as the algorithm
+progresses to  ensure convergence.
+
+The model $t_k(s)$ is a truncated Taylor-series approximation, and this
+relies on being able to compute or estimate derivatives of $c(x)$.
+Various models are provided, and each has different derivative requirements.
+We denote the $m$ by $n$ residual **Jacobian**
+$J(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
+$$J(x)_{i,j} := \partial c_i(x) / \partial x_j \;\;
+\mbox{for $i=1,\ldots,m$ and $j=1,\ldots,n$.}$$
+For a given $m$-vector $y$, the
+**weighted-residual Hessian** is the sum
+$$H(x,y) := \sum_{\ell=1}^m y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 c_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=1,\ldots,n$}$$
+is the Hessian of $c_\ell(x)$.
+Finally, for a given vector $v$, we define
+the **residual-Hessians-vector product** matrix
+$$P(x,v) := (H_1(x) v, \ldots, H_m(x) v).$$
+The models $t_k(s)$ provided are,
+
+1. the **first-order Taylor** approximation
+   $f(x_k) + g(x_k)^T s$, where $g(x) = J^T(x) W c(x)$,
+
+2. a **barely second-order** approximation
+   $f(x_k) + g(x_k)^T s + \frac{1}{2} s^T W s$,
+
+3. the **Gauss-Newton** approximation
+   $\frac{1}{2} \| c(x_k) + J(x_k) s\|^2_W$,
+
+4. the **Newton (second-order Taylor)** approximation
+
+   $f(x_k) + g(x_k)^T s + \frac{1}{2} s^T [ J^T(x_k) W J(x_k) + H(x_k,W c(x_k))] s$, and
+
+5. the **tensor Gauss-Newton** approximation
+   $\frac{1}{2} \| c(x_k) + J(x_k) s + \frac{1}{2} s^T \cdot P(x_k,s) \|^2_W$,
+   where the $i$-th component of $s^T \cdot P(x_k,s)$ is
+   shorthand for the scalar $s^T H_i(x_k) s$,
+   where $W$ is the diagonal matrix of weights
+   $w_i$, $i = 1, \ldots m$0.
+
 matrix storage
 --------------
 
-The symmetric $n$ by $n$ matrix $H = \nabla^2_{xx}f$ may
+The **unsymmetric** $m$ by $n$ Jacobian matrix $J = J(x)$ and the 
+residual-Hessians-vector product matrix $P(x,v)$ may be presented
+and stored in a variety of convenient input formats. Let
+$A$ be $J$ or $P$ as appropriate.
+
+*Dense* storage format:
+The matrix $A$ is stored as a compact  dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component $n \ast i + j$  of the storage array A_val
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$,
+$0 \leq j \leq n-1$.
+
+*Dense by columns* storage format:
+The matrix $A$ is stored as a compact  dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component $m \ast j + i$  of the storage array A_val
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$,
+$0 \leq j \leq n-1$.
+
+*Sparse co-ordinate* storage format:
+Only the nonzero entries of the matrices are stored.
+For the $l$-th entry, $0 \leq l \leq ne-1$, of $A$,
+its row index i, column index j
+and value $A_{ij}$,
+$0 \leq i \leq m-1$,  $0 \leq j \leq n-1$,  are stored as
+the $l$-th components of the integer arrays A_row and
+A_col and real array A_val, respectively, while the number of nonzeros
+is recorded as A_ne = $ne$.
+
+*Sparse row-wise storage* format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of $A$ the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m) holds the total number of entries plus one.
+The column indices j, $0 \leq j \leq n-1$, and values
+$A_{ij}$ of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+
+*Sparse column-wise* storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of $A$ the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n) holds the total number of entries plus one.
+The row indices i, $0 \leq i \leq m-1$, and values $A_{ij}$
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), $\ldots$, A_ptr(j+1)-1, $0 \leq j \leq n-1$,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+
+The **symmetric** $n$ by $n$ matrix $H = H(x,y)$ may
 be presented and stored in a variety of formats. But crucially symmetry
 is exploited by only storing values from the lower triangular part
 (i.e, those entries that lie on or below the leading diagonal).
 
-Dense storage format:
+*Dense* storage format:
 The matrix $H$ is stored as a compact  dense matrix by rows, that
 is, the values of the entries of each row in turn are stored in order
 within an appropriate real one-dimensional array. Since $H$ is
@@ -35,7 +152,7 @@ component $i * i / 2 + j$  of the storage array H_val
 will hold the value $H_{ij}$ (and, by symmetry, $H_{ji}$)
 for $0 <= j <= i <= n-1$.
 
-Sparse co-ordinate storage format:
+*Sparse co-ordinate* storage format:
 Only the nonzero entries of the matrices are stored.
 For the $l$-th entry, $0 <= l <= ne-1$, of $H$,
 its row index i, column index j and value $H_{ij}$,
@@ -45,7 +162,7 @@ respectively, while the number of nonzeros is recorded as
 H_ne = $ne$. Note that only the entries in the lower triangle
 should be stored.
 
-Sparse row-wise storage format:
+*Sparse row-wise* storage format:
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
@@ -58,6 +175,25 @@ integer array H_col, and real array H_val, respectively. Note that
 as before only the entries in the lower triangle should be stored. For
 sparse matrices, this scheme almost always requires less storage than
 its predecessor.
+
+*Diagonal* storage format:
+If $H$ is diagonal (i.e., $H_{ij} = 0$ for all
+$0 \leq i \neq j \leq n-1$) only the diagonals entries
+$H_{ii}$, $0 \leq i \leq n-1$ need
+be stored, and the first n components of the array H_val may be
+used for the purpose.
+
+*Multiples of the identity* storage format:
+If $H$ is a multiple of the identity matrix, (i.e., $H = \alpha I$
+where $I$ is the n by n identity matrix and $\alpha$ is a scalar),
+it suffices to store $\alpha$ as the first component of H_val.
+
+The *identity matrix* format:
+If $H$ is the identity matrix, no values need be stored.
+
+The *zero matrix* format:
+The same is true if $H$7 is the zero matrix.
+
 
 functions
 ---------
@@ -79,13 +215,13 @@ functions
 
              * **<= 0**
 
-             gives no output,
+               gives no output,
 
              * **1**
 
                gives a one-line summary for every iteration,
 
-             * *2**
+             * **2**
 
                gives a summary of the inner iteration for each iteration,
 
@@ -161,26 +297,25 @@ functions
 
              * **-3**
 
-             user's own regularization norm
+               user's own regularization norm
 
              * **-2**
 
-             $S$ = limited-memory BFGS matrix (with
-
-             ``PSLS_options.lbfgs_vectors`` history) (*not yet implemented*)
+               $S$ = limited-memory BFGS matrix (with
+               ``PSLS_options.lbfgs_vectors`` history) (*not yet implemented*)
 
              * **-1**
 
-             identity (= Euclidan two-norm)
+               identity (= Euclidan two-norm)
 
              * **0**
 
-             automatic (*not yet implemented*)
+               automatic (*not yet implemented*)
 
              * **1**
 
-             diagonal, $S$ = diag( max( $J^TJ$ Hessian,
-             ``PSLS_options.min_diagonal`` ) )
+               diagonal, $S$ = diag( max( $J^TJ$ Hessian,
+               ``PSLS_options.min_diagonal`` ) )
 
              * **2**
 
@@ -194,7 +329,8 @@ functions
 
              * **4**
 
-               re-ordered band, P=band(order(A)) with semi-bandwidth
+               re-ordered band, $S$ = band(order(A)) with semi-bandwidth
+
                ``PSLS_options.semi_bandwidth``
 
              * **5**
@@ -233,12 +369,12 @@ functions
              lower bound), 5 (GPT).
           stop_c_absolute : float
              overall convergence tolerances. The iteration will
-             terminate when $||c(x)||_2 \leq $ MAX(
-             ``stop_c_absolute,`` ``stop_c_relative``
-             $ * \|c(x_{\mbox{initial}})\|_2$ or when the norm of the
+             terminate when $||c(x)||_2 \leq \max($
+             ``stop_c_absolute,`` ``stop_c_relative`` *
+             $\|c(x_{\mbox{initial}})\|_2$ or when the norm of the
              gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of ||c(x)||_2
-             satisfies $\|g\|_2 \leq$ MAX( ``stop_g_absolute,``
-             ``stop_g_relative``  $ * \|g_{\mbox{initial}}\|_2$, or if
+             satisfies $\|g\|_2 \leq \max($ ``stop_g_absolute,``
+             ``stop_g_relative`` * $\|g_{\mbox{initial}}\|_2$, or if
              the step is less than ``stop_s``.
           stop_c_relative : float
              see stop_c_absolute.
@@ -494,12 +630,12 @@ functions
                lower bound), 5 (GPT).
             stop_c_absolute : float
                overall convergence tolerances. The iteration will
-               terminate when $||c(x)||_2 \leq $ MAX(
-               ``stop_c_absolute,`` ``stop_c_relative``
-               $ * \|c(x_{\mbox{initial}})\|_2$, or when the norm of the
-               gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of ||c||_2,
-               satisfies $\|g\|_2 \leq$ MAX( ``stop_g_absolute,``
-               ``stop_g_relative``  $ * \|g_{\mbox{initial}}\|_2$, or if
+               terminate when $||c(x)||_2 \leq \max($
+               ``stop_c_absolute,`` ``stop_c_relative`` *
+               $\|c(x_{\mbox{initial}})\|_2$ or when the norm of the
+               gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of ||c(x)||_2
+               satisfies $\|g\|_2 \leq \max($ ``stop_g_absolute,``
+               ``stop_g_relative`` * $\|g_{\mbox{initial}}\|_2$, or if
                the step is less than ``stop_s``.
             stop_c_relative : float
                see stop_c_absolute.
@@ -612,7 +748,7 @@ functions
           roots_options : dict
              default control options for ROOTS (see ``roots.initialize``).
 
-   .. function:: nls.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
+   .. function:: nls.load(n, m, J_type, J_ne, J_row, J_col, J_ptr, H_type, H_ne,                          H_row, H_col, H_ptr, P_type, P_ne, P_row, P_col, P_ptr, w, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -620,34 +756,87 @@ functions
 
       n : int
           holds the number of variables.
-      H_type : string
-          specifies the symmetric storage scheme used for the Hessian.
-          It should be one of 'coordinate', 'sparse_by_rows', 'dense',
-          'diagonal' or 'absent', the latter if access to the Hessian
-          is via matrix-vector products; lower or upper case variants
-          are allowed.
-      H_ne : int
+      m : int
+          holds the number of residuals.
+      J_type : string
+          specifies the unsymmetric storage scheme used for the Jacobian
+          $J = J(x)$.
+          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+          lower or upper case variants are allowed.
+      J_ne : int
+          holds the number of entries in $J$ in the sparse co-ordinate storage 
+          scheme. It need not be set for any of the other two schemes.
+      J_row : ndarray(J_ne)
+          holds the row indices of $J$
+          in the sparse co-ordinate storage scheme. It need not be set for
+          any of the other two schemes, and in this case can be None.
+      J_col : ndarray(J_ne)
+          holds the column indices of $J$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme. It need not be set when the 
+          dense storage scheme is used, and in this case can be None.
+      J_ptr : ndarray(m+1)
+          holds the starting position of each row of $J$, as well as the 
+          total number of entries plus one, in the sparse row-wise storage 
+          scheme. It need not be set when the other schemes are used, and in 
+          this case can be None.
+      H_type : string, optional
+          specifies the symmetric storage scheme used for the Hessian 
+          $H = H(x,y)$.
+          It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+          'diagonal'; lower or upper case variants are allowed.
+          This and the following H_* arguments are only required if
+          a Newton approximation or tensor Gauss-Newton approximation
+          model is required (see control.model = 4,...,8).
+      H_ne : int, optional
           holds the number of entries in the  lower triangular part of
           $H$ in the sparse co-ordinate storage scheme. It need
           not be set for any of the other three schemes.
-      H_row : ndarray(H_ne)
+      H_row : ndarray(H_ne), optional
           holds the row indices of the lower triangular part of $H$
           in the sparse co-ordinate storage scheme. It need not be set for
-          any of the other three schemes, and in this case can be None
-      H_col : ndarray(H_ne)
+          any of the other three schemes, and in this case can be None.
+      H_col : ndarray(H_ne), optional
           holds the column indices of the  lower triangular part of
           $H$ in either the sparse co-ordinate, or the sparse row-wise
           storage scheme. It need not be set when the dense or diagonal
-          storage schemes are used, and in this case can be None
-      H_ptr : ndarray(n+1)
+          storage schemes are used, and in this case can be None.
+      H_ptr : ndarray(n+1), optional
           holds the starting position of each row of the lower triangular
           part of $H$, as well as the total number of entries plus one,
           in the sparse row-wise storage scheme. It need not be set when the
-          other schemes are used, and in this case can be None
+          other schemes are used, and in this case can be None.
+      P_type : string, optional
+          specifies the unsymmetric storage scheme used for the residual
+          Hessian-product matrix $P = P(x,v)$.
+          It should be one of 'sparse_by_columns' or 'dense_by_columns'
+          (with the intention that 'coordinate' will be added at some time);;
+          lower or upper case variants are allowed.
+          This and the following P_* arguments are only required if
+          a tensor Gauss-Newton approximation model is required 
+          (see control.model = 6,7,8).
+      P_ne : int, optional
+          holds the number of entries in $P$ in the sparse co-ordinate storage 
+          scheme. It need not be set for any of the other two schemes.
+      P_row : ndarray(P_ne), optional
+          holds the row indices of $P$
+          in the sparse co-ordinate storage scheme. It need not be set for
+          any of the other two schemes, and in this case can be None.
+      P_col : ndarray(P_ne), optional
+          holds the column indices of $P$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme. It need not be set when the 
+          dense storage scheme is used, and in this case can be None.
+      P_ptr : ndarray(n+1), optional
+          holds the starting position of each column of $P$, as well as the 
+          total number of entries plus one, in the sparse column-wise storage 
+          scheme. It need not be set when the other schemes are used, and in 
+          this case can be None.
+      w : ndarray(n), optional
+          holds the vector of weights $w$. If w is not provided, weights of
+          one will be presumed.
       options : dict, optional
           dictionary of control options (see ``nls.initialize``).
 
-   .. function:: nls.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: nls.solve(n, m, x, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprod)
 
       Find an approximate local minimizer of a given function subject
       to simple bounds on the variables using a trust-region method.
@@ -656,39 +845,64 @@ functions
 
       n : int
           holds the number of variables.
-      H_ne : int
-          holds the number of entries in the lower triangular part of $H$.
+      m : int
+          holds the number of residuals.
       x : ndarray(n)
           holds the values of optimization variables $x$.
-      eval_f : callable
+      eval_c : callable
           a user-defined function that must have the signature:
 
-           ``f = eval_f(x)``
+           ``c = eval_c(x)``
 
-          The value of the objective function $f(x)$
-          evaluated at $x$ must be assigned to ``f``.
-      eval_g : callable
+          The components of the residual $c(x)$ evaluated at $x$ must be
+          assigned to ``c``.
+      j_ne : int
+          holds the number of entries in the Jacobian $J = J(x)$.
+      eval_j : callable
           a user-defined function that must have the signature:
 
-           ``g = eval_g(x)``
+           ``j = eval_(x)``
 
-          The components of the gradient $\nabla f(x)$ of the
-          objective function evaluated at $x$ must be assigned to ``g``.
-      eval_h : callable
+          The components of the nonzeros in the Jacobian
+          $J(x)$ of the objective function evaluated at
+          $x$ must be assigned to ``j`` in the same order as specified
+          in the sparsity pattern in ``nls.load``.
+      h_ne : int, optional
+          holds the number of entries in the lower triangular part of 
+          the Hessian $H = H(x,y$.
+          This and the following eval_h argument are only required if
+          a Newton approximation or tensor Gauss-Newton approximation
+          model is required (see control.model = 4,...,8).
+      eval_h : callable, optional
           a user-defined function that must have the signature:
 
-           ``h = eval_h(x)``
+           ``h = eval_h(x,y)``
 
           The components of the nonzeros in the lower triangle of the Hessian
-          $\nabla^2 f(x)$ of the objective function evaluated at
-          $x$ must be assigned to ``h`` in the same order as specified
-          in the sparsity pattern in ``nls.load``.
+          $H(x,y)$ evaluated at $x$ and $y$ must be assigned to ``h`` in the 
+          same order as specified in the sparsity pattern in ``nls.load``.
+      p_ne : int, optional
+          holds the number of entries in the residual
+          Hessian-product matrix $P = P(x,v)$.
+          This and the following eval_hprod argument are only required if
+          a Newton approximation or tensor Gauss-Newton approximation
+          model is required (see control.model = 6,7,8).
+      eval_hprod : callable, optional
+          a user-defined function that must have the signature:
+
+           ``p = eval_hprod(x,v)``
+
+          The components of the nonzeros in the Hessian producr matrix
+          $P(x,y)$ evaluated at $x$ and $v$ must be assigned to ``p`` in the 
+          same order as specified in the sparsity pattern in ``nls.load``.
 
       **Returns:**
 
       x : ndarray(n)
-          holds the value of the approximate global minimizer $x$ after
+          holds the value of the approximate minimizer $x$ after
           a successful call.
+      c : ndarray(m)
+          holds the value of the residuals $c(x)$.
       g : ndarray(n)
           holds the gradient $\nabla f(x)$ of the objective function.
 

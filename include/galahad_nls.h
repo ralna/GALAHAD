@@ -1314,7 +1314,7 @@ void nls_import( struct nls_control_type *control,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  J_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  J_ptr is a one-dimensional array of size m+1 and type int,
    that holds the starting position of each row of \f$J\f$, as well as the
    total number of entries plus one, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -1370,7 +1370,7 @@ void nls_import( struct nls_control_type *control,
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  P_ptr is a one-dimensional array of size m+1 and type int,
+ @param[in]  P_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of each row of \f$P\f$, as well as the
    total number of entries plus one, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
