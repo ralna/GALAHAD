@@ -1,15 +1,16 @@
-** CURRENT STATUS OF PACKAGES 2022-03-08 **
+** CURRENT STATUS OF PACKAGES 2023-03-05 **
 
-CONVERSION TO NEW MAKEMASTERS & C INTERFACES
---------------------------------------------
+CONVERSION TO NEW MAKEMASTERS & C/PYTHON/JULIA INTERFACES
+---------------------------------------------------------
 
 M = makemaster done, C = C interface planned, C+ = C interface done
                      C- = C interface to structures done
+                     P+ = Python interface done
 
 ampl
-arc                       M C+
+arc                       M C+ P+
 basic                     M
-bgo                       M C+
+bgo                       M C+ P+
 blls                      M C+
 bqp                       M C+
 bqpb                      M (replace with specialised cqp?) C+
@@ -26,7 +27,7 @@ cpu_time                  M
 cro                       M C+
 cutest_functions          M
 demo                      M
-dgo                       M C+
+dgo                       M C+ P+
 dlp                       M C+
 dps                       M C+
 dqp                       M C+
@@ -62,7 +63,7 @@ lstr                      M C+
 miqr                      M
 mop                       M
 nlpt                      M
-nls                       M C+
+nls                       M C+ P+
 norms                     M
 opt                       M
 pdqp                      M C
@@ -99,10 +100,10 @@ string                    M
 symbols                   M
 tools                     M
 trans                     M
-trb                       M C+
+trb                       M C+ P+
 trs                       M C+
-tru                       M C+
-ugo                       M C+
+tru                       M C+ P+
+ugo                       M C+ P+
 uls                       M C+
 userdata                  M
 warm                      M
