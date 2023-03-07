@@ -5,7 +5,6 @@ import numpy as np
 nls.initialize()
 
 # set some non-default options
-#options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
 options = {'print_level' : 1, 'jacobian_available' : 2,
            'hessian_available' : 2, 'model' : 6 }
 print(options)
@@ -69,7 +68,6 @@ print("g:",g)
 inform = nls.information()
 #print(inform)
 print("f:",inform['obj'])
-print("iter:",inform['iter'])
 
 # deallocate internal data
 nls.terminate()
