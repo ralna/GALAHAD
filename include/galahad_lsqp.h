@@ -402,13 +402,13 @@ struct lsqp_control_type {
 
     /// \brief
     /// specifies the type of indicator function used. Possible values are
-    /// \li primal indicator: constraint active if and only if the
-    ///    distance to nearest bound $\f$\leq\f$ .indicator_p_tol
+    /// \li 1 primal indicator: constraint active if and only if the
+    ///    distance to nearest bound \f$\leq\f$ .indicator_p_tol
     /// \li 2 primal-dual indicator: constraint active if and only if the
-    ///    distance to nearest bound $\f$\leq\f$ .indicator_tol_pd * size of
+    ///    distance to nearest bound \f$\leq\f$ .indicator_tol_pd * size of
     ///    corresponding multiplier
     /// \li 3 primal-dual indicator: constraint active if and only if the
-    ///     distance to the nearest bound $\f$\leq\f$
+    ///     distance to the nearest bound \f$\leq\f$
     ///    .indicator_tol_tapia * distance to same bound at previous iteration
     int indicator_type;
 

@@ -639,15 +639,15 @@ struct qpa_control_type {
     int max_sc;
 
     /// \brief
-    /// an initial guess as to the integer workspace required by SLS      (OBSOL
+    /// an initial guess as to the integer workspace required by SLS  (OBSOLETE)
     int indmin;
 
     /// \brief
-    /// an initial guess as to the real workspace required by SLS         (OBSOL
+    /// an initial guess as to the real workspace required by SLS     (OBSOLETE)
     int valmin;
 
     /// \brief
-    /// the maximum number of iterative refinements allowed               (OBSOL
+    /// the maximum number of iterative refinements allowed           (OBSOLETE)
     int itref_max;
 
     /// \brief
@@ -659,7 +659,6 @@ struct qpa_control_type {
     /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
-    ///
     int cg_maxit;
 
     /// \brief
@@ -705,7 +704,8 @@ struct qpa_control_type {
 
     /// \brief
     ///
-    /// indicates whether a cold or warm start should be made. Possible values a
+    /// indicates whether a cold or warm start should be made. 
+    /// Possible values are
     ///
     /// 0 warm start - the values set in C_stat and B_stat indicate which
     /// constraints will be included in the initial working set.
@@ -731,14 +731,14 @@ struct qpa_control_type {
     real_wp_ feas_tol;
 
     /// \brief
-    /// if the objective function value is smaller than obj_unbounded, it will b
-    /// flagged as unbounded from below.
+    /// if the objective function value is smaller than obj_unbounded, it will
+    /// be flagged as unbounded from below.
     real_wp_ obj_unbounded;
 
     /// \brief
-    /// if the problem is currently infeasible and solve_qp (see below) is .TRUE
-    /// the current penalty parameter for the general constraints will be
-    /// increased by increase_rho_g_factor when needed
+    /// if the problem is currently infeasible and solve_qp (see below) is 
+    /// .TRUE. the current penalty parameter for the general constraints will
+    /// be increased by increase_rho_g_factor when needed
     real_wp_ increase_rho_g_factor;
 
     /// \brief
@@ -807,7 +807,7 @@ struct qpa_control_type {
     /// \brief
     /// if solve_qp is .TRUE., the value of prob.rho_g and prob.rho_b will be
     /// increased as many times as are needed to ensure that the output
-    /// solution is feasible, and thus aims to solve the qoadraic program
+    /// solution is feasible, and thus aims to solve the quadratic program
     /// (2)-(4)
     bool solve_qp;
 
@@ -815,7 +815,7 @@ struct qpa_control_type {
     /// if solve_within_bounds is  .TRUE., the value of prob.rho_b will be
     /// increased as many times as are needed to ensure that the output
     /// solution is feasible with respect to the simple bounds, and thus
-    /// aims to solve the bound-constrained qoadraic program (4)-(5)
+    /// aims to solve the bound-constrained quadratic program (4)-(5)
     bool solve_within_bounds;
 
     /// \brief
@@ -827,7 +827,7 @@ struct qpa_control_type {
 
     /// \brief
     /// if .array_syntax_worse_than_do_loop is true, f77-style do loops will be
-    /// used rather than f90-style array syntax for vector operations    (OBSOLE
+    /// used rather than f90-style array syntax for vector operations (OBSOLETE)
     bool array_syntax_worse_than_do_loop;
 
     /// \brief
@@ -851,8 +851,9 @@ struct qpa_control_type {
 
     /// \brief
     /// definite linear equation solver
-    /// CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-    /// "sils" // REPEAT( ' ', 26 )
+    char definite_linear_solver[31];
+
+    // \brief
     /// name of generated SIF file containing input problem
     char sif_file_name[31];
 

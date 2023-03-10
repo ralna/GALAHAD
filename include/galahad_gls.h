@@ -188,8 +188,9 @@ struct gls_control {
     real_wp_ multiplier;
 
     /// \brief
-    /// if previously allocated internal workspace arrays are greater than reduc
-    /// times the currently required sizes, they are reset to current requirment
+    /// if previously allocated internal workspace arrays are greater than 
+    /// reduce times the currently required sizes, they are reset to current 
+    /// requirment
     real_wp_ reduce;
 
     /// \brief

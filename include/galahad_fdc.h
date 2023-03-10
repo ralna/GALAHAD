@@ -207,7 +207,8 @@ struct fdc_time_type {
     real_wp_ total;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to factorizatio
+    /// the CPU time spent analysing the required matrices prior to
+    /// factorization
     real_wp_ analyse;
 
     /// \brief
@@ -219,7 +220,8 @@ struct fdc_time_type {
     real_wp_ clock_total;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to factorizat
+    /// the clock time spent analysing the required matrices prior to
+    /// factorization
     real_wp_ clock_analyse;
 
     /// \brief

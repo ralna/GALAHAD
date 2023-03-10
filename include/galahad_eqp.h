@@ -327,30 +327,30 @@ struct eqp_control_type {
 
     /// \brief
     /// the factorization to be used. Possible values are
-    /// 0  automatic
-    /// 1  Schur-complement factorization
-    /// 2  augmented-system factorization                              (OBSOLETE
+    /// /li 0  automatic
+    /// /li 1  Schur-complement factorization
+    /// /li 2  augmented-system factorization                         (OBSOLETE)
     int factorization;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
-    /// with the Schur-complement factorization                          (OBSOLE
+    /// with the Schur-complement factorization                       (OBSOLETE)
     int max_col;
 
     /// \brief
-    /// an initial guess as to the integer workspace required by SBLS     (OBSOL
+    /// an initial guess as to the integer workspace required by SBLS (OBSOLETE)
     int indmin;
 
     /// \brief
-    /// an initial guess as to the real workspace required by SBLS        (OBSOL
+    /// an initial guess as to the real workspace required by SBLS    (OBSOLETE)
     int valmin;
 
     /// \brief
-    /// an initial guess as to the workspace required by ULS              (OBSOL
+    /// an initial guess as to the workspace required by ULS          (OBSOLETE)
     int len_ulsmin;
 
     /// \brief
-    /// the maximum number of iterative refinements allowed               (OBSOL
+    /// the maximum number of iterative refinements allowed           (OBSOLETE)
     int itref_max;
 
     /// \brief
@@ -360,18 +360,18 @@ struct eqp_control_type {
     int cg_maxit;
 
     /// \brief
-    /// the preconditioner to be used for the CG is defined by precon.
-    /// Possible values are
-    /// 0  automatic
-    /// 1  no preconditioner, i.e, the identity within full factorization
-    /// 2  full factorization
-    /// 3  band within full factorization
-    /// 4  diagonal using the barrier terms within full factorization  (OBSOLETE
-    /// 5  optionally supplied diagonal, G = D
+    /// the preconditioner to be used for the CG. Possible values are
+    /// \li 0  automatic
+    /// \li 1  no preconditioner, i.e, the identity within full factorization
+    /// \li 2  full factorization
+    /// \li 3  band within full factorization
+    /// \li 4  diagonal using the barrier terms within full factorization 
+    ///        (OBSOLETE)
+    /// \li 5  optionally supplied diagonal, G = D
     int preconditioner;
 
     /// \brief
-    /// the semi-bandwidth of a band preconditioner, if appropriate       (OBSOL
+    /// the semi-bandwidth of a band preconditioner, if appropriate   (OBSOLETE)
     int semi_bandwidth;
 
     /// \brief
@@ -391,22 +391,22 @@ struct eqp_control_type {
 
     /// \brief
     /// the threshold pivot used by the matrix factorization.
-    /// See the documentation for SBLS for details                       (OBSOLE
+    /// See the documentation for SBLS for details                    (OBSOLETE)
     real_wp_ pivot_tol;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization when finding the ba
-    /// See the documentation for ULS for details                        (OBSOLE
+    /// See the documentation for ULS for details                     (OBSOLETE)
     real_wp_ pivot_tol_for_basis;
 
     /// \brief
     /// any pivots smaller than zero_pivot in absolute value will be regarded to
-    /// zero when attempting to detect linearly dependent constraints    (OBSOLE
+    /// zero when attempting to detect linearly dependent constraints (OBSOLETE)
     real_wp_ zero_pivot;
 
     /// \brief
     /// the computed solution which gives at least inner_fraction_opt times the
-    /// optimal value will be found                                      (OBSOLE
+    /// optimal value will be found                                   (OBSOLETE)
     real_wp_ inner_fraction_opt;
 
     /// \brief
@@ -415,8 +415,8 @@ struct eqp_control_type {
     real_wp_ radius;
 
     /// \brief
-    /// diagonal preconditioners will have diagonals no smaller than min_diagona
-    /// (OBSOLETE)
+    /// diagonal preconditioners will have diagonals no smaller than 
+    /// min_diagonal (OBSOLETE)
     real_wp_ min_diagonal;
 
     /// \brief
@@ -442,7 +442,8 @@ struct eqp_control_type {
 
     /// \brief
     /// if .find_basis_by_transpose is true, implicit factorization precondition
-    /// will be based on a basis of A found by examining A's transpose   (OBSOLE
+    /// will be based on a basis of A found by examining A's transpose 
+    /// (OBSOLETE)
     bool find_basis_by_transpose;
 
     /// \brief
