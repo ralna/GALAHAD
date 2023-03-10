@@ -350,8 +350,8 @@ functions
 
    .. function:: tru.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
 
-      Find an approximate local minimizer of a given function subject
-      to simple bounds on the variables using a trust-region method.
+      Find an approximate local unconstrained minimizer of a given function
+      using a trust-region method.
 
       **Parameters:**
 

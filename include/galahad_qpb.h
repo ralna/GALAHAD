@@ -454,9 +454,9 @@ struct qpb_control_type {
     /// \brief
     /// indicate whether and how much of the input problem
     /// should be restored on output. Possible values are
-    /// 0 nothing restored
-    /// 1 scalar and vector parameters
-    /// 2 all parameters
+    /// \li 0 nothing restored
+    /// \li 1 scalar and vector parameters
+    /// \li 2 all parameters
     int restore_problem;
 
     /// \brief

@@ -616,18 +616,18 @@ struct wcp_control_type {
 
     /// \brief
     /// the threshold pivot used by the matrix factorization.
-    /// See the documentation for SBLS for details                       (OBSOLE
+    /// See the documentation for SBLS for details                    (obsolete)
     real_wp_ pivot_tol;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization when attempting to
     /// detect linearly dependent constraints.
-    /// See the documentation for SBLS for details                       (OBSOLE
+    /// See the documentation for SBLS for details                    (obsolete)
     real_wp_ pivot_tol_for_dependencies;
 
     /// \brief
     /// any pivots smaller than zero_pivot in absolute value will be regarded to
-    /// zero when attempting to detect linearly dependent constraints    (OBSOLE
+    /// zero when attempting to detect linearly dependent constraints (obsolete)
     real_wp_ zero_pivot;
 
     /// \brief

@@ -70,7 +70,7 @@ program control
           write( out, 4 ) trim( name ), trim( name ), trim( name )
 4 format( '        if(strcmp(key_name, "', A, '") == 0){', /,                  &
           '            if(!parse_char_option(value, "', A, '",', /,            &
-          '                                  &control->', A, '))', /,          &
+          '                                  control->', A, '))', /,           &
           '                return false;', /,                                  &
           '            continue;', /,                                          &
           '        }')
@@ -78,12 +78,12 @@ program control
           name =  REPEAT( ' ', 120 )
           name( 1 : line_length - i - 10 ) = line( i + 3 : line_length - 8 )
           write( out, 5 ) trim( name ), trim( name ), trim( name )
-5 format( '        if(strcmp(key_name, "', A, '_options") == 0){', /,          &
-          '            if(!', A, '_update_control(&control->', A,              &
+5 format( '        //if(strcmp(key_name, "', A, '_options") == 0){', /,        &
+          '        //    if(!', A, '_update_control(&control->', A,            &
           '_control, value))', /,                                              &
-          '                return false;', /,                                  &
-          '            continue;', /,                                          &
-          '        }')
+          '        //        return false;', /,                                &
+          '        //    continue;', /,                                        &
+          '        //}')
         end select
         exit
       end if

@@ -376,7 +376,8 @@ struct lpb_control_type {
     real_wp_ infinity;
 
     /// \brief
-    /// the required absolute and relative accuracies for the primal infeasibili
+    /// the required absolute and relative accuracies for the primal 
+    /// infeasibility
     real_wp_ stop_abs_p;
     /// see stop_abs_p
     real_wp_ stop_rel_p;
@@ -408,8 +409,8 @@ struct lpb_control_type {
     real_wp_ muzero;
 
     /// \brief
-    /// the weight attached to primal-dual infeasibility compared to complementa
-    /// when assessing step acceptance
+    /// the weight attached to primal-dual infeasibility compared to 
+    /// complementarity when assessing step acceptance
     real_wp_ tau;
 
     /// \brief
@@ -707,8 +708,8 @@ struct lpb_inform_type {
     real_wp_ potential;
 
     /// \brief
-    /// the smallest pivot which was not judged to be zero when detecting linear
-    /// dependent constraints
+    /// the smallest pivot which was not judged to be zero when detecting 
+    /// linearly dependent constraints
     real_wp_ non_negligible_pivot;
 
     /// \brief

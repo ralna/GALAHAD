@@ -275,7 +275,8 @@ struct bqp_control_type {
     int cg_maxit;
 
     /// \brief
-    /// the unit number to write generated SIF file describing the current probl
+    /// the unit number to write generated SIF file describing the current 
+    /// problem
     int sif_file_device;
 
     /// \brief
@@ -303,7 +304,8 @@ struct bqp_control_type {
     /// \brief
     /// the CG iteration will be stopped as soon as the current norm of the
     /// preconditioned gradient is smaller than
-    /// max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolut
+    /// max( stop_cg_relative * initial preconditioned gradient, 
+    /// stop_cg_absolute)
     real_wp_ stop_cg_relative;
     /// see stop_cg_relative
     real_wp_ stop_cg_absolute;
@@ -599,7 +601,7 @@ void bqp_solve_given_h( void **data,
                         const real_wp_ f,
                         const real_wp_ x_l[],
                         const real_wp_ x_u[],
-                        real_wp_ y[],
+                        real_wp_ x[],
                         real_wp_ z[],
                         int x_stat[] );
 
@@ -697,7 +699,7 @@ void bqp_solve_reverse_h_prod( void **data,
                                 const real_wp_ f,
                                 const real_wp_ x_l[],
                                 const real_wp_ x_u[],
-                                real_wp_ y[],
+                                real_wp_ x[],
                                 real_wp_ z[],
                                 int x_stat[],
                                 real_wp_ v[],
