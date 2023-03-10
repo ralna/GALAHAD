@@ -838,8 +838,8 @@ functions
 
    .. function:: nls.solve(n, m, x, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprod)
 
-      Find an approximate local minimizer of a given function subject
-      to simple bounds on the variables using a trust-region method.
+      Find an approximate local unconstrained minimizer of a given 
+      least-squares function using a regularization method.
 
       **Parameters:**
 

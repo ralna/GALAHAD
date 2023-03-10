@@ -330,7 +330,7 @@ struct lpa_control_type {
 
     /// \brief
     /// the level of output required is specified by print_level
-    /// (>= 2 turns on LA)4 output)
+    /// (>= 2 turns on LA04 output)
     int print_level;
 
     /// \brief
