@@ -116,7 +116,7 @@
       mwPointer :: x_pr, obj_pr
       mwPointer :: g_pr, f_pr, radius_pr
 
-      CHARACTER ( len = 80 ) :: output_unit, filename
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
       LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
       REAL ( KIND = wp ) :: val
@@ -209,7 +209,7 @@
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
-          WRITE( output_unit, "( I0 )" ) control%error
+          WRITE( char_output_unit, "( I0 )" ) control%error
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -217,8 +217,8 @@
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_gltr." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) control%out
+            filename = "output_gltr." // TRIM( char_output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF

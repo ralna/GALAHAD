@@ -871,38 +871,6 @@ struct wcp_inform_type {
     bool feasible;
 
     /// \brief
-    /// if control.record_x_status is true, .X_status will be allocated
-    /// and the status of the bound constraints will be reported on exit.
-    /// In this case, possible values of .X_status(i) are as follows:
-    /// 0  the variable lies between its bounds
-    /// -1  the variable lies on its lower bound for all feasible points
-    /// 1  the variable lies on its upper bound for all feasible points
-    /// -2  the variable never lies on its lower bound at any feasible point
-    /// 2  the variable never lies on its upper bound at any feasible point
-    /// 3  the bounds are equal, and the variable takes this value for
-    /// all feasible points
-    /// -3  the variable never lies on either bound at any feasible point
-    /// INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status
-    /// if control.record_c_status is true, .C_status will be allocated
-    /// and the status of the general constraints will be reported on exit.
-    /// In this case, possible values of inform.C_status(i) are as follows:
-    /// 0  the constraint lies between its bounds
-    /// -1  the constraint lies on its lower bound for all feasible points
-    /// and may be fixed at this value and removed from the problem
-    /// 1  the constraint lies on its upper bound for all feasible points
-    /// and may be fixed at this value and removed from the problem
-    /// -2  the constraint never lies on its lower bound at any feasible point
-    /// and the bound may be removed from the problem
-    /// 2  the constraint never lies on its upper bound at any feasible point
-    /// and the bound may be removed from the problem
-    /// 3  the bounds are equal, and the constraint takes this value for
-    /// all feasible points
-    /// -3  the constraint never lies on either bound at any feasible point
-    /// and the constraint may be removed from the problem
-    /// 4  the constraint is implied by the others and may be removed
-    /// from the problem
-    /// INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status
-
     /// timings (see above)
     struct wcp_time_type time;
 
@@ -1089,8 +1057,8 @@ void wcp_find_wcp( void **data,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
         has been violated.
-  \li -5. The simple-bound constraints are inconsistent.
-  \li -7. The constraints appear to have no feasible point.
+  \li -4. The constraint bounds are inconsistent.
+  \li -5. The constraints appear to have no feasible point.
   \li -9. The analysis phase of the factorization failed; the return status
          from the factorization package is given in the component
          inform.factor_status

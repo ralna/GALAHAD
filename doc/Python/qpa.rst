@@ -66,7 +66,7 @@ The matrix $A$ is stored as a compact dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component $m \ast j + i$  of the storage array A_val
-will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1$.
 The string A_type = 'dense_by_columns' should be specified.
 
 *Sparse co-ordinate* storage format:
@@ -195,7 +195,7 @@ functions
 
              * **1**
 
-               1 gives a one-line summary for every iteration.
+               gives a one-line summary for every iteration.
 
              * **2**
 
@@ -318,7 +318,7 @@ functions
              obj_unbounded, it will b flagged as unbounded from below.
           increase_rho_g_factor : float
              if the problem is currently infeasible and solve_qp (see
-             below) is ``TRUE.`` the current penalty parameter for the
+             below) is True, the current penalty parameter for the
              general constraints will be increased by
              increase_rho_g_factor when needed.
           infeas_g_improved_by_factor : float
@@ -328,7 +328,7 @@ functions
              corresponding penalty parameter will be increase.
           increase_rho_b_factor : float
              if the problem is currently infeasible and solve_qp or
-             solve_within_boun (see below) is ``TRUE.,`` the current
+             solve_within_boun (see below) is True,` the current
              penalty parameter for the simple boun constraints will be
              increased by increase_rho_b_factor when needed.
           infeas_b_improved_by_factor : float
@@ -368,18 +368,18 @@ functions
              any problem bound with the value zero will be treated as
              if it were a general value if True.
           solve_qp : bool
-             if solve_qp is ``TRUE.,`` the value of prob.rho_g and
+             if solve_qp is True, the value of prob.rho_g and
              prob.rho_b will be increased as many times as are needed
              to ensure that the output solution is feasible, and thus
              aims to solve the quadratic program (2)-(4).
           solve_within_bounds : bool
-             if solve_within_bounds is ``TRUE.,`` the value of
+             if solve_within_bounds is True, the value of
              prob.rho_b will be increased as many times as are needed
              to ensure that the output solution is feasible with
              respect to the simple bounds, and thus aims to solve the
              bound-constrained quadratic program (4)-(5).
           randomize : bool
-             if randomize is ``TRUE.,`` the constraint bounds will be
+             if randomize is True, the constraint bounds will be
              perturbed by small random quantities during the first
              stage of the solution process. Any randomization will
              ultimately be removed. Randomization helps when solving
@@ -397,7 +397,7 @@ functions
              deallocation error will terminate execution. Otherwise,
              computation will continue.
           generate_sif_file : bool
-             if ``generate_sif_file`` is ``true.`` if a SIF file
+             if ``generate_sif_file`` is True, a SIF file
              describing the current problem is to be generated.
           symmetric_linear_solver : str
              indefinite linear equation solver.

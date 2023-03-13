@@ -12,16 +12,17 @@ Linear Programming
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there are three packages designed to find global
-optima, or at least good approximations to them.
+optimization.  Currently there are three packages designed to solve linear
+programming problems, or to find a feasible point within a polyhedral
+set (one defined by a finite number of linear inequalities).
 
 .. toctree::
    :maxdepth: 1
    :caption: Contents
    :titlesonly:
 
-   DLP - linear programming using a dual gradient-projection method <dlp>
-   LPA - linear programming using an active-set method <lpa>
+   DLP - linear programming using a dual gradient-projection method <>
+   LPA - linear programming using the simplex method <lpa>
    LPB - linear programming using an interior-point method <lpb>
    WCP - find a well-centered point within a polyhedral set <wcp>
 

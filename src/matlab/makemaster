@@ -16,7 +16,8 @@ MATLABINC = -I$(MATLAB)/extern/include
 FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 MFFLAGS   = $(MBASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES)
-MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' FFLAGS='$(MFFLAGS) $(OPENMP)' \
+MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' \
+            FFLAGS='$(MFFLAGS) $(OPENMP) -fallow-argument-mismatch -fallow-invalid-boz' \
             LD='$(FORTRAN) $(MFFLAGS) $(OPENMP)' \
             -largeArrayDims $(MATLABINC) $(MOMP)
 #            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) $(MOMP)
@@ -39,7 +40,7 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 #  Derived type dependencies
 
-MAT_BASIC = basics_$(PRECIS) $(MLG)(galahad_matlab.o) \
+MAT_BASIC = basic_$(PRECIS) $(MLG)(galahad_matlab.o) \
             $(MLG)(galahad_transfer_matlab.o)
 MAT_DEMO = $(MAT_BASIC)
 MAT_DEBUG = $(MAT_BASIC)
@@ -61,7 +62,7 @@ MAT_SCALE = $(MAT_BASIC) $(MLG)(galahad_scale_matlab_types.o)
 MAT_PRESOLVE = $(MAT_BASIC) $(MLG)(galahad_presolve_matlab_types.o)
 MAT_PSLS = $(MAT_SLS) $(MLG)(galahad_psls_matlab_types.o)
 MAT_SBLS = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_sbls_matlab_types.o)
-MAT_S = basics $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_m.o)
+MAT_S = basic $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_m.o)
 MAT_FDC = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_fdc_matlab_types.o)
 MAT_IR = $(MAT_SLS) $(MLG)(galahad_ir_matlab_types.o)
 MAT_BQP = $(MAT_SBLS) $(MLG)(galahad_bqp_matlab_types.o)
@@ -105,12 +106,12 @@ NO_MATLAB = precision GALAHAD interface to Matlab not currently available
 
 all: all_$(PRECIS)
 
-#all_single: basics_single sils sls lpa lpb cqp dqp eqp glrt gltr llst lsqp \
+#all_single: basic_single sils sls lpa lpb cqp dqp eqp glrt gltr llst lsqp \
 #            lsrt lstr l2rt qpa qpb qpc qp rqs sbls trs wcp tru arc trb nls
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basics_double sils sls bqp bqpb blls slls lpa lpb cqp dqp eqp \
+all_double: basic_double sils sls bqp bqpb blls slls lpa lpb cqp dqp eqp \
             glrt gltr llst lsqp lsrt lstr l2rt qpa qpb qpc qp \
             rqs sbls trs wcp tru arc trb nls ugo bgo dgo
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
@@ -132,31 +133,31 @@ all_current_double: all_double ugo bgo dgo
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basics_single bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
+allqp_single: basic_single bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
               qpa qpb qpc qp wcp
-allqp_double: basics_double bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
+allqp_double: basic_double bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
               qpa qpb qpc qp wcp
 
 #  everything for un/bound-constrained optimization from the distribution
 
 allucbc: allucbc_$(PRECIS)
 
-allucbc_single: basics_single arc nls trb tru
-allucbc_double: basics_double arc nls trb tru
+allucbc_single: basic_single arc nls trb tru
+allucbc_double: basic_double arc nls trb tru
 
 #  everything for regularization from the distribution
 
 allrq: allrq_$(PRECIS)
 
-allrq_single: basics_single glrt gltr llst lsrt lstr l2rt rqs trs
-allrq_double: basics_double glrt gltr llst lsrt lstr l2rt rqs trs
+allrq_single: basic_single glrt gltr llst lsrt lstr l2rt rqs trs
+allrq_double: basic_double glrt gltr llst lsrt lstr l2rt rqs trs
 
 #  everything for global optimization from the distribution
 
 allgo: allgo_$(PRECIS)
 
-allgo_single: basics_single bgo dgo ugo
-allgo_double: basics_double bgo dgo ugo
+allgo_single: basic_single bgo dgo ugo
+allgo_double: basic_double bgo dgo ugo
 
 #  basic packages
 
@@ -164,15 +165,15 @@ smt:
 	( cd ../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../zd11 )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                    smt.o PRECIS=double PWD=$(PWD)/../general )
-basics_single:
+            smt_silent PRECIS=double PWD=$(PWD)/../general )
+basic_single:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids_dum PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-basics_double:
+basic_double:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
@@ -626,7 +627,7 @@ $(MLG)(galahad_matlab.o): galahad_matlab.F90
 
 #  transfer matrices from Matlab to fortran
 
-galahad_transfer_matlab.o: basics $(MLG)(galahad_transfer_matlab.o)
+galahad_transfer_matlab.o: basic $(MLG)(galahad_transfer_matlab.o)
 
 $(MLG)(galahad_transfer_matlab.o): galahad_transfer_matlab.F90
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_transfer_matlab"

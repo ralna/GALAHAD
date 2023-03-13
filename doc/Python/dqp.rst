@@ -42,7 +42,7 @@ The matrix $A$ is stored as a compact dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component $m \ast j + i$  of the storage array A_val
-will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1$.
 The string A_type = 'dense_by_columns' should be specified.
 
 *Sparse co-ordinate* storage format:
@@ -161,8 +161,27 @@ functions
              error and warning diagnostics occur on stream error.
           out : int
              general output occurs on stream out.
+
           print_level : int
              the level of output required is specified by print_level.
+             Possible values are
+
+             * **<=0**
+
+               gives no output,
+
+             * **1**
+
+               gives a one-line summary for every iteration.
+
+             * **2**
+
+               gives a summary of the inner iteration for each iteration.
+
+             * **>=3**
+
+               gives increasingly verbose (debugging) output.
+
           start_print : int
              any printing will start on this iteration.
           stop_print : int
@@ -341,10 +360,10 @@ functions
              deallocation error will terminate execution. Otherwise,
              computation will continue.
           generate_sif_file : bool
-             if ``generate_sif_file`` is ``true.`` if a SIF file
+             if ``generate_sif_file`` is True, a SIF file
              describing the current problem is to be generated.
           generate_qplib_file : bool
-             if ``generate_qplib_file`` is ``true.`` if a QPLIB file
+             if ``generate_qplib_file`` is True, a QPLIB file
              describing the current problem is to be generated.
           symmetric_linear_solver : str
              indefinite linear equation solver set in

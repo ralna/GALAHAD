@@ -268,20 +268,36 @@
      TYPE, PUBLIC :: BLLS_time_type
 
 !  total time
-
-       REAL :: total = 0.0
+ 
+       REAL ( KIND = rp_ ) :: total = 0.0
 
 !  time for the analysis phase
 
-       REAL :: analyse = 0.0
+       REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  time for the factorization phase
 
-       REAL :: factorize = 0.0
+       REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  time for the linear solution phase
 
-       REAL :: solve = 0.0
+       REAL ( KIND = rp_ ) :: solve = 0.0
+
+!  total clock time
+
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
+
+!  clock time for the analysis phase
+
+       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
+
+!  clock time for the factorization phase
+
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
+
+!  clock time for the linear solution phase
+
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
      END TYPE BLLS_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -391,7 +407,7 @@
        INTEGER ( KIND = ip_ ) :: n_free, branch, cg_iter, preconditioner
        INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end, maxit
        INTEGER ( KIND = ip_ ) :: segments, max_segments, steps, max_steps
-       REAL :: time_start
+       REAL ( KIND = RP_ ) :: time_start, clock_start
        REAL ( KIND = rp_ ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = rp_ ) :: alpha_0, alpha_max, alpha_new, f_new, phi_new
        REAL ( KIND = rp_ ) :: weight, stabilisation_weight
@@ -1058,11 +1074,17 @@
 !       zero when detecting linearly dependent constraints
 !     bad_alloc = the name of the array for which an allocation/deallocation
 !       error ocurred
-!     time%total = the total time spent in the package.
-!     time%analyse = the time spent analysing the required matrices prior to
-!       factorization.
-!     time%factorize = the time spent factorizing the required matrices.
-!     time%solve = the time spent computing the search direction.
+!     time%total = the total CPU time spent in the package.
+!     time%analyse = the CPU time spent analysing the required matrices prior
+!       to factorization.
+!     time%factorize = the CPU time spent factorizing the required matrices.
+!     time%solve = the CPU time spent computing the search direction.
+!     time%clock_total = the total clock time spent in the package.
+!     time%clock_analyse = the clock time spent analysing the required 
+!       matrices prior to factorization.
+!     time%clock_factorize = the clock time spent factorizing the required 
+!       matrices.
+!     time%clock_solve = the clock time spent computing the search direction.
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
@@ -1208,7 +1230,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, j, k, nap
-     REAL :: time
+     REAL ( KIND = rp_ ) :: time, clock_now
      REAL ( KIND = rp_ ) :: val, av_bnd, x_j, g_j
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 6 ) :: string_iter
@@ -1250,7 +1272,7 @@
 
 !  initialize time
 
-     CALL CPU_TIME( data%time_start )
+     CALL CPU_TIME( data%time_start ) ; CALL CLOCK_time( data%clock_start )
 
 !  set initial timing breakdowns
 
@@ -1752,7 +1774,9 @@
        "( /, A, 9X, 'S=steepest descent, F=factorization used' )" ) prefix
 
  110 CONTINUE ! mock iteration loop
-       CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
+       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
+        inform%time%total = time - data%time_start
+        inform%time%clock_total = clock_now - data%clock_start
 
 !  set the print levels for the iteration
 
@@ -1988,7 +2012,7 @@
          IF ( inform%SBLS_inform%status < 0 ) THEN
            IF ( data%printe )                                                  &
              WRITE( control%error, 2010 ) prefix, inform%SBLS_inform%status,   &
-               'SBSL_form_and_factorize'
+               'SBLS_form_and_factorize'
            CALL SYMBOLS_status( inform%SBLS_inform%status, control%out,        &
                                 prefix, 'SBSL_form_and_factorize' )
            inform%status = GALAHAD_error_factorization ; GO TO 910
@@ -2381,14 +2405,18 @@
 !  successful return
 
  900 CONTINUE
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
+     CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
+     inform%time%total = time - data%time_start
+     inform%time%clock_total = clock_now - data%clock_start
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
      RETURN
 
 !  error returns
 
  910 CONTINUE
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
+     CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
+     inform%time%total = time - data%time_start
+     inform%time%clock_total = clock_now - data%clock_start
 
      IF ( data%printi ) THEN
        CALL SYMBOLS_status( inform%status, control%out, prefix, 'BLLS_solve' )
@@ -6791,7 +6819,7 @@
 !-  G A L A H A D -  B L L S _ s o l v e _ g i v e n _ a  S U B R O U T I N E  -
 
      SUBROUTINE BLLS_solve_given_a( data, userdata, status, A_val, B,          &
-                                    X_l, X_u, X, Z, C, G, X_stat, eval_PREC )
+                                    X_l, X_u, X, Z, C, G, X_stat, W, eval_PREC )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported. See BLLS_solve for a description of the required
@@ -6868,6 +6896,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
+!  W is an OPTIONAL rank-one array of dimension m and type default real, 
+!   that holds the vector of weights, w, If W is not present, weights of 
+!   one will be used.
+!
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
 !   given below (see the interface blocks). The product P^{-1} * v of the given
 !   preconditioner P and vector v stored in V must be returned in P.
@@ -6886,6 +6918,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
      OPTIONAL :: eval_PREC
 
 !  interface blocks
@@ -6934,7 +6967,7 @@
 !  call the solver
 
      CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
-                      data%blls_inform, userdata, eval_PREC = eval_PREC )
+                      data%blls_inform, userdata, W = W, eval_PREC = eval_PREC )
      status = data%blls_inform%status
 
 !  recover the optimal primal and dual variables
@@ -6964,7 +6997,7 @@
      SUBROUTINE BLLS_solve_reverse_a_prod( data, status, eval_status,          &
                                            B, X_l, X_u, X, Z, C, G, X_stat,    &
                                            V, P, NZ_in, nz_in_start,           &
-                                           nz_in_end, NZ_out, nz_out_end )
+                                           nz_in_end, NZ_out, nz_out_end, W )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported, and for which the action of A and its traspose
@@ -7091,6 +7124,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
+!  W is an OPTIONAL rank-one array of dimension m and type default real, 
+!   that holds the vector of weights, w, If W is not present, weights of 
+!   one will be used.
+!
 !  The remaining components V, ... , nz_out_end need not be set
 !  on initial entry, but must be set as instructed by status as above.
 
@@ -7101,13 +7138,14 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
-     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: X_stat
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_out_end
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_in_start, nz_in_end
-     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: NZ_out
-     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: NZ_in
-     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: P
-     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: V
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: NZ_out
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: NZ_in
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: P
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
 
 !  local variables
 
@@ -7216,7 +7254,8 @@
 !  call the solver
 
      CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
-                     data%blls_inform, data%userdata, reverse = data%reverse )
+                      data%blls_inform, data%userdata, W = W,                  &
+                      reverse = data%reverse )
      status = data%blls_inform%status
 
 !  recover the optimal primal and dual variables

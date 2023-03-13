@@ -165,14 +165,14 @@
       mwSize :: x_arg, i_arg, s_len
 
       mwPointer :: xl_in, xu_in, xl_pr, xu_pr, v_pr
-      mwPointer :: x0_in, pat_in, con_in, x0_pr, pat_pr, p_in, p_pr, u_in, u_pr
+      mwPointer :: x0_in, pat_in, con_in, x0_pr, pat_pr, u_in, u_pr
       mwPointer :: x_pr, s_in, s_pr, f_in, f_pr, g_in, g_pr, h_in, h_pr
       mwPointer :: input_x( 3 ), output_f( 2 )
       mwPointer :: output_g( 2 ), output_h( 2 ), output_hprod( 2 )
       mwSize :: status
       mwSize :: m_mwsize, n_mwsize
 
-      CHARACTER ( len = 80 ) :: output_unit, filename
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
 !     CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_f = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_g = REPEAT( ' ', 80 )
@@ -331,8 +331,8 @@
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
-          WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_dgo." // TRIM( output_unit )
+          WRITE( char_output_unit, "( I0 )" ) control%error
+          filename = "output_dgo." // TRIM( char_output_unit )
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -340,8 +340,8 @@
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_dgo." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) control%out
+            filename = "output_dgo." // TRIM( char_output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF
