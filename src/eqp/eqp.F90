@@ -1299,7 +1299,7 @@
                  exact_size = .TRUE. )
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
-!  mark the independendent constraints with c_status = 1
+!  mark the independent constraints with c_status = 1
 
           data%C_status( : prob%m ) = 1
           data%C_status( data%C_depen( : data%n_depen ) ) = 0

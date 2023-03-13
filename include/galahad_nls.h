@@ -1379,7 +1379,7 @@ void nls_import( struct nls_control_type *control,
  @param[in] w is a one-dimensional array of size m and type double,
    that holds the values \f$w\f$ of the weights on the residuals in the
    least-squares objective function. It need not be set if the weights are
-   all ones, and in this case can be NULL
+   all ones, and in this case can be NULL.
  */
 
 //  *-*-*-*-*-*-*-*-*-   N L S _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*

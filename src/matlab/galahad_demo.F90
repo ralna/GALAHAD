@@ -58,7 +58,7 @@
       mwPointer :: h_in
 
       INTEGER, PARAMETER :: history_max = 100
-      CHARACTER ( len = 80 ) :: output_unit, filename
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
       LOGICAL :: filexx, opened, initial_set = .FALSE.
       CHARACTER ( len = 18 ) :: mode
       mwPointer, ALLOCATABLE :: col_ptr( : )
@@ -74,8 +74,6 @@
 
       IF ( .NOT. mxIsChar( prhs( 1 ) ) )                                       &
         CALL mexErrMsgTxt( ' first argument must be a string' )
-i = mexPrintf( "hello\n" )
-
 
 !  interpret the first argument
 

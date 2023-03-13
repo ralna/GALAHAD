@@ -23,7 +23,7 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; q(x) = q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
+  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
 \manonly
   \n
   minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
@@ -687,6 +687,7 @@ void blls_solve_given_a( void **data,
                          real_wp_ c[],
                          real_wp_ g[],
                          int x_stat[],
+                         const real_wp_ w[],
                          int (*eval_prec)(
                               int, const real_wp_[],
                               real_wp_[], const void * ) );
@@ -777,6 +778,11 @@ void blls_solve_given_a( void **data,
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
+ @param[in] w is an optional one-dimensional array of size m and type double,
+   that holds the values \f$w\f$ of the weights on the residuals in the
+   least-squares objective function. It need not be set if the weights are
+   all ones, and in this case can be NULL.
+
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
@@ -812,7 +818,8 @@ void blls_solve_reverse_a_prod( void **data,
                                 int *nz_v_start,
                                 int *nz_v_end,
                                 const int nz_p[],
-                                int nz_p_end );
+                                int nz_p_end,
+                                const real_wp_ w[] );
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
@@ -966,25 +973,30 @@ void blls_solve_reverse_a_prod( void **data,
     between its bounds.
 
  @param[out] v is a one-dimensional array of size n and type double, that
-    is used for reverse communication (see status=2-4 above for details)
+    is used for reverse communication (see status=2-4 above for details).
 
  @param[in] p is a one-dimensional array of size n and type double, that
-    is used for reverse communication (see status=2-4 above for details)
+    is used for reverse communication (see status=2-4 above for details).
 
  @param[out] nz_v is a one-dimensional array of size n and type int, that
-    is used for reverse communication (see status=3-4 above for details)
+    is used for reverse communication (see status=3-4 above for details).
 
  @param[out] nz_v_start is a scalar of type int, that
-    is used for reverse communication (see status=3-4 above for details)
+    is used for reverse communication (see status=3-4 above for details).
 
  @param[out] nz_v_end is a scalar of type int, that
-    is used for reverse communication (see status=3-4 above for details)
+    is used for reverse communication (see status=3-4 above for details).
 
  @param[in] nz_p is a one-dimensional array of size n and type int, that
-    is used for reverse communication (see status=4 above for details)
+    is used for reverse communication (see status=4 above for details).
 
  @param[in] nz_p_end is a scalar of type int, that
-    is used for reverse communication (see status=4 above for details)
+    is used for reverse communication (see status=4 above for details).
+
+ @param[in] w is an optional one-dimensional array of size m and type double,
+   that holds the values \f$w\f$ of the weights on the residuals in the
+   least-squares objective function. It need not be set if the weights are
+   all ones, and in this case can be NULL.
 
 */
 

@@ -1,9 +1,9 @@
-LPB
+LPA
 ===
 
-.. module:: galahad.lpb
+.. module:: galahad.lpa
 
-The lpb package uses a **primal-dual interior-point method** to solve a
+The lpa package uses the **simplex method** to solve a
 given **linear program**.
 The aim is to minimize the linear objective function
 $$q(x) = f + g^T x$$ 
@@ -16,8 +16,16 @@ The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns $x$.
 
-See Section 4 of $GALAHAD/doc/lpb.pdf for a brief description of the
+See Section 4 of $GALAHAD/doc/lpa.pdf for a brief description of the
 method employed and other details.
+
+**N.B.** The package is simply a sophisticated interface to the HSL package
+LA04, and requires that a user has obtained the latter. LA04 is not
+included in GALAHAD but is available without charge to recognised
+academics, see http://www.hsl.rl.ac.uk/catalogue/la04.html. If LA04 is
+unavailable, the interior- point linear programming package ``lpb``
+is an alternative.
+
 
 matrix storage
 --------------
@@ -82,7 +90,7 @@ The string A_type = 'sparse_by_columns' should be specified.
 functions
 ---------
 
-   .. function:: lpb.initialize()
+   .. function:: lpa.initialize()
 
       Set default option values and initialize private data
 
@@ -104,91 +112,35 @@ functions
 
              * **1**
 
-               gives a one-line summary for every iteration.
+               gives a summary.
 
              * **2**
 
-               gives a summary of the inner iteration for each iteration.
+               gives a summary of the inner iteration for each iteration
+               by enabling output from LA04.
 
              * **>=3**
 
                gives increasingly verbose (debugging) output.
 
+          print_level : int
+             the level of output required is specified by print_level
+             (>= 2 turns on LA04 output).
           start_print : int
              any printing will start on this iteration.
           stop_print : int
              any printing will stop on this iteration.
           maxit : int
              at most maxit inner iterations are allowed.
-          infeas_max : int
-             the number of iterations for which the overall
-             infeasibility of the problem is not reduced by at least a
-             factor ``reduce_infeas`` before the problem is flagged as
-             infeasible (see reduce_infeas).
-          muzero_fixed : int
-             the initial value of the barrier parameter will not be
-             changed for the first muzero_fixed iterations.
-          restore_problem : int
-             indicate whether and how much of the input problem should
-             be restored on output. Possible values are
-
-             * **0**
-
-               nothing restored
-
-             * **1**
-
-               scalar and vector parameters
-
-             * **2**
-
-               all parameters.
-
-          indicator_type : int
-             specifies the type of indicator function used. Possible values are
-
-             * **1**
-
-               primal indicator: a constraint is active if and only
-               if  the distance to its nearest bound <= ``indicator_p_tol``.
-
-             * **2**
-
-               primal-dual indicator: a constraint is active if and only if the
-               distance to its nearest bound <= ``indicator_tol_pd`` times the
-               size of the corresponding multiplier.
-
-             * **3**
-
-               primal-dual indicator: a constraint is active if and
-               only if  the distance to its nearest bound <=
-               ``indicator_tol_tapia`` times the distance to same bound at the
-               previous iteration.
-
-          arc : int
-             which residual trajectory should be used to aim from the
-             current iteration to the solution. Possible values are
-
-             * **1**
-
-               the Zhang linear residual trajectory.
-
-             * **2**
-
-               the Zhao-Sun quadratic residual trajectory.
-
-             * **3**
-
-               the Zhang arc ultimately switching to the Zhao-Sun
-               residual trajectory.
-
-             * **4**
-
-               the mixed linear-quadratic residual trajectory.
-
-          series_order : int
-             the order of (Taylor/Puiseux) series to fit to the path
+          max_iterative_refinements : int
+             maximum number of iterative refinements allowed.
+          min_real_factor_size : int
+             initial size for real array for the factors and other data.
+          min_integer_factor_size : int
+             initial size for integer array for the factors and other
              data.
+          random_number_seed : int
+             the initial seed used when generating random numbers.
           sif_file_device : int
              specifies the unit number to write generated SIF file
              describing the current problem.
@@ -198,117 +150,61 @@ functions
           infinity : float
              any bound larger than infinity in modulus will be regarded
              as infinite.
-          stop_abs_p : float
-             the required absolute and relative accuracies for the
-             primal infeasibility.
-          stop_rel_p : float
-             see stop_abs_p.
-          stop_abs_d : float
-             the required absolute and relative accuracies for the dual
-             infeasibility.
-          stop_rel_d : float
-             see stop_abs_d.
-          stop_abs_c : float
-             the required absolute and relative accuracies for the
-             complementarity.
-          stop_rel_c : float
-             see stop_abs_c.
-          prfeas : float
-             initial primal variables will not be closer than prfeas
-             from their bound.
-          dufeas : float
-             initial dual variables will not be closer than dufeas from
-             their bounds.
-          muzero : float
-             the initial value of the barrier parameter. If muzero is
-             not positive, it will be reset to an appropriate value.
-          tau : float
-             the weight attached to primal-dual infeasibility compared
-             to complementarity when assessing step acceptance.
-          gamma_c : float
-             individual complementarities will not be allowed to be
-             smaller than gamma_c times the average value.
-          gamma_f : float
-             the average complementarity will not be allowed to be
-             smaller than gamma_f times the primal/dual infeasibility.
-          reduce_infeas : float
-             if the overall infeasibility of the problem is not reduced
-             by at least a factor reduce_infeas over ``infeas_max``
-             iterations, the problem is flagged as infeasible (see
-             infeas_max).
-          obj_unbounded : float
-             if the objective function value is smaller than
-             obj_unbounded, it will be flagged as unbounded from below.
-          potential_unbounded : float
-             if W=0 and the potential function value is smaller than
-             potential_unbounded * number of one-sided bounds, the
-             analytic center will be flagged as unbounded.
+          tol_data : float
+             the tolerable relative perturbation of the data ($A$,$g,\ldots$)
+             defining the problem.
+          feas_tol : float
+             any constraint violated by less than feas_tol will be
+             considered to be satisfied.
+          relative_pivot_tolerance : float
+             pivot threshold used to control the selection of pivot
+             elements in the matrix factorization. Any potential pivot
+             which is less than the largest entry in its row times the
+             threshold is excluded as a candidate.
+          growth_limit : float
+             limit to control growth in the upated basis factors. A
+             refactorization occurs if the growth exceeds this limit.
+          zero_tolerance : float
+             any entry in the basis smaller than this is considered
+             zero.
+          change_tolerance : float
+             any solution component whose change is smaller than a
+             tolerence times the largest change may be considered to be
+             zero.
           identical_bounds_tol : float
              any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that
              are closer than identical_bounds_tol will be reset to the
              average of their values.
-          mu_lunge : float
-             start terminal extrapolation when mu reaches mu_lunge.
-          indicator_tol_p : float
-             if ``indicator_type`` = 1, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_p_tol``.
-          indicator_tol_pd : float
-             if ``indicator_type`` = 2, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_tol_pd`` * size of corresponding
-             multiplier.
-          indicator_tol_tapia : float
-             if ``indicator_type`` = 3, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_tol_tapia`` * distance to same bound
-             at previous iteration.
           cpu_time_limit : float
              the maximum CPU time allowed (-ve means infinite).
           clock_time_limit : float
              the maximum elapsed clock time allowed (-ve means
              infinite).
-          remove_dependencies : bool
-             the equality constraints will be preprocessed to remove
-             any linear dependencies if True.
-          treat_zero_bounds_as_general : bool
-             any problem bound with the value zero will be treated as
-             if it were a general value if True.
-          just_feasible : bool
-             if ``just_feasible`` is True, the algorithm will stop as
-             soon as a feasible point is found. Otherwise, the optimal
-             solution to the problem will be found.
-          getdua : bool
-             if ``getdua,`` is True, advanced initial values are
-             obtained for the dual variables.
-          puiseux : bool
-             decide between Puiseux and Taylor series approximations to
-             the arc.
-          every_order : bool
-             try every order of series up to series_order?.
-          feasol : bool
-             if ``feasol`` is True, the final solution obtained will be
-             perturbed so tha variables close to their bounds are moved
-             onto these bounds.
-          balance_initial_complentarity : bool
-             if ``balance_initial_complentarity`` is True, the initial
-             complemetarity is required to be balanced.
-          crossover : bool
-             if ``crossover`` is True, cross over the solution to one
-             defined by linearly-independent constraints if possible.
+          scale : bool
+             if ``scale`` is True, the problem will be automatically
+             scaled prior to solution. This may improve computation
+             time and accuracy.
+          dual : bool
+             should the dual problem be solved rather than the primal?.
+          warm_start : bool
+             should a warm start using the data in C_stat and X_stat be
+             attempted?.
+          steepest_edge : bool
+             should steepest-edge weights be used to detetrmine the
+             variable leaving the basis?.
           space_critical : bool
-             if ``space_critical`` True, every effort will be made to
-             use as little space as possible. This may result in longer
-             computation time.
+             if ``space_critical`` is True, every effort will be made
+             to use as little space as possible. This may result in
+             longer computation time.
           deallocate_error_fatal : bool
              if ``deallocate_error_fatal`` is True, any array/pointer
              deallocation error will terminate execution. Otherwise,
              computation will continue.
           generate_sif_file : bool
-             if ``generate_sif_file`` is True if a SIF file
+             if ``generate_sif_file`` is True, a SIF file
              describing the current problem is to be generated.
           generate_qplib_file : bool
-             if ``generate_qplib_file`` is True if a QPLIB file
+             if ``generate_qplib_file`` is True, a QPLIB file
              describing the current problem is to be generated.
           sif_file_name : str
              name of generated SIF file containing input problem.
@@ -318,18 +214,8 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          fit_control : dict
-             control parameters for FIT (see ``fit.initialize``).
-          roots_control : dict
-             control parameters for ROOTS (see ``roots.initialize``).
-          cro_control : dict
-             control parameters for CRO (see ``cro.initialize``).
 
-   .. function:: lpb.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+   .. function:: lpa.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -361,9 +247,9 @@ functions
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       options : dict, optional
-          dictionary of control options (see ``lpb.initialize``).
+          dictionary of control options (see ``lpa.initialize``).
 
-   .. function:: lpb.solve_lp(n, m, f, g, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: lpa.solve_lp(n, m, f, g, a_ne, A_val, c_l, c_u, x_l, x_u)
 
       Find a solution to the convex quadratic program involving the
       quadratic objective function $q(x)$.
@@ -383,7 +269,7 @@ functions
       A_val : ndarray(a_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
-          ``lpb.load``.
+          ``lpa.load``.
       c_l : ndarray(m)
           holds the values of the lower bounds $c_l$ on the constraints
           The lower bound on any component of $A x$ that is unbounded from 
@@ -425,7 +311,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: [optional] lpb.information()
+   .. function:: [optional] lpa.information()
 
       Provide optional output information
 
@@ -518,92 +404,34 @@ functions
              error ocurred.
           iter : int
              the total number of iterations required.
-          factorization_status : int
-             the return status from the factorization.
-          factorization_integer : long
-             the total integer workspace required for the factorization.
-          factorization_real : long
-             the total real workspace required for the factorization.
-          nfacts : int
-             the total number of factorizations performed.
-          nbacts : int
-             the total number of "wasted" function evaluations during
-             the linesearch.
-          threads : int
-             the number of threads used.
+          la04_job : int
+             the final value of LA04's job argument.
+          la04_job_info : int
+             any extra information from an unsuccesfull call to LA04
+             (LA04's RINFO(35).
           obj : float
              the value of the objective function at the best estimate
-             of the solution determined by LPB_solve.
+             of the solution.
           primal_infeasibility : float
              the value of the primal infeasibility.
-          dual_infeasibility : float
-             the value of the dual infeasibility.
-          complementary_slackness : float
-             the value of the complementary slackness.
-          init_primal_infeasibility : float
-             these values at the initial point (needed bg GALAHAD_CLPB).
-          init_dual_infeasibility : float
-             see init_primal_infeasibility.
-          init_complementary_slackness : float
-             see init_primal_infeasibility.
-          potential : float
-             the value of the logarithmic potential function sum
-             -log(distance to constraint boundary).
-          non_negligible_pivot : float
-             the smallest pivot which was not judged to be zero when
-             detecting linearly dependent constraints.
           feasible : bool
              is the returned "solution" feasible?.
-          checkpointsIter : ndarray(17)
-             checkpointsIter(i) records the iteration at which the
-             criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
-          checkpointsTime : ndarray(17)
-             checkpointsTime(i) records the CPU time at which the
-             criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
+          RINFO : ndarray(40)
+             the information array from LA04.
           time : dict
              dictionary containing timing information:
                total : float
                   the total CPU time spent in the package.
                preprocess : float
                   the CPU time spent preprocessing the problem.
-               find_dependent : float
-                  the CPU time spent detecting linear dependencies.
-               analyse : float
-                  the CPU time spent analysing the required matrices prior
-                  to factorization.
-               factorize : float
-                  the CPU time spent factorizing the required matrices.
-               solve : float
-                  the CPU time spent computing the search direction.
                clock_total : float
                   the total clock time spent in the package.
                clock_preprocess : float
                   the clock time spent preprocessing the problem.
-               clock_find_dependent : float
-                  the clock time spent detecting linear dependencies.
-               clock_analyse : float
-                  the clock time spent analysing the required matrices prior
-                  to factorization.
-               clock_factorize : float
-                  the clock time spent factorizing the required matrices.
-               clock_solve : float
-                  the clock time spent computing the search direction.
-          fdc_inform : dict
-             inform parameters for FDC (see ``fdc.information``).
-          sbls_inform : dict
-             inform parameters for SBLS (see ``sbls.information``).
-          fit_inform : dict
-             return information from FIT (see ``fit.information``).
-          roots_inform : dict
-             return information from ROOTS (see ``roots.information``).
-          cro_inform : dict
-             inform parameters for CRO (see ``cro.information``).
           rpd_inform : dict
              inform parameters for RPD (see ``rpd.information``).
 
 
-   .. function:: lpb.terminate()
+   .. function:: lpa.terminate()
 
      Deallocate all internal private storage.

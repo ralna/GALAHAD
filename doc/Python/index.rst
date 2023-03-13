@@ -21,8 +21,8 @@ transparently to the underlying fortran.
    :titlesonly:
 
    uco
-   nlls
    bco
+   ls
    lp
    qp
    go

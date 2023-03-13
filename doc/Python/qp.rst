@@ -12,8 +12,8 @@ Quadratic Programming
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there are three packages designed to find global
-optima, or at least good approximations to them.
+optimization.  Currently there are eight packages designed to solve quadratic
+programming problems of various kinds.
 
 .. toctree::
    :maxdepth: 1
@@ -23,6 +23,7 @@ optima, or at least good approximations to them.
    BQP - bound-constrained quadratic programming using a preconditioned, projected-gradient method <bqp>
    BQPB - bound-constrained quadratic programming using an interior-point method <bqpb>
    CQP - convex quadratic programming using an interior-point method <cqp>
+   CRO - crossover from an interior-point to basic solution for convex quadratic programming <cro>
    DQP - convex quadratic programming using a dual active-set method <dqp>
    EQP - equality-constrained quadratic programming using an iterative method <eqp>
    LSQP - linear or separable convex quadratic programming using an interior-point trust-region method <lsqp>

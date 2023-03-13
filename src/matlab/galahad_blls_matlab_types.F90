@@ -47,6 +47,7 @@
       TYPE, PUBLIC :: BLLS_time_pointer_type
         mwPointer :: pointer
         mwPointer :: total, analyse, factorize, solve
+        mwPointer :: clock_total, clock_analyse, clock_factorize, clock_solve
       END TYPE 
 
       TYPE, PUBLIC :: BLLS_pointer_type
@@ -354,10 +355,12 @@
            'iter                 ', 'cg_iter              ',                   &
            'obj                  ', 'norm_pg              ',                   &
            'time                 ', 'SBLS_inform          ' /)
-      INTEGER * 4, PARAMETER :: t_ninform = 4
+      INTEGER * 4, PARAMETER :: t_ninform = 8
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'analyse              ',                   &
-           'factorize            ', 'solve                '         /)
+           'factorize            ', 'solve                ',                   &
+           'clock_total          ', 'clock_analyse        ',                   &
+           'clock_factorize      ', 'clock_solve          '         /)
 
 !  create the structure
 
@@ -400,6 +403,14 @@
         'factorize', BLLS_pointer%time_pointer%factorize )
       CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
         'solve', BLLS_pointer%time_pointer%solve )
+      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
+        'clock_total', BLLS_pointer%time_pointer%clock_total )
+      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
+        'clock_analyse', BLLS_pointer%time_pointer%clock_analyse )
+      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
+        'clock_factorize', BLLS_pointer%time_pointer%clock_factorize )
+      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
+        'clock_solve', BLLS_pointer%time_pointer%clock_solve )
 
 !  Define the components of sub-structure SBLS_inform
 
@@ -461,6 +472,14 @@
                                mxGetPr( BLLS_pointer%time_pointer%factorize ) )
       CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%solve, wp ),             &
                                mxGetPr( BLLS_pointer%time_pointer%solve ) )
+      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_total, wp ),       &
+                         mxGetPr( BLLS_pointer%time_pointer%clock_total ) )
+      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_analyse, wp ),     &
+                         mxGetPr( BLLS_pointer%time_pointer%clock_analyse ) )
+      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_factorize, wp ),   &
+                         mxGetPr( BLLS_pointer%time_pointer%clock_factorize ) )
+      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_solve, wp ),       &
+                         mxGetPr( BLLS_pointer%time_pointer%clock_solve ) )
 
 !  positive-definite linear solvers
 

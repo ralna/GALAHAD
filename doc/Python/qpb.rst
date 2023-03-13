@@ -44,7 +44,7 @@ The matrix $A$ is stored as a compact dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component $m \ast j + i$  of the storage array A_val
-will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1$.
 The string A_type = 'dense_by_columns' should be specified.
 
 *Sparse co-ordinate* storage format:
@@ -173,7 +173,7 @@ functions
 
              * **1**
 
-               1 gives a one-line summary for every iteration.
+               gives a one-line summary for every iteration.
 
              * **2**
 
@@ -431,7 +431,7 @@ functions
              deallocation error will terminate execution. Otherwise,
              computation will continue.
           generate_sif_file : bool
-             if ``generate_sif_file`` is ``true.`` if a SIF file
+             if ``generate_sif_file`` is True, a SIF file
              describing the current problem is to be generated.
           sif_file_name : str
              name of generated SIF file containing input problem.

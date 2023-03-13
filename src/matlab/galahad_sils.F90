@@ -106,7 +106,7 @@
       mwPointer :: a_in, b_in, c_in, rhs_in, x_pr
 !     mwSize :: s_len
 
-      CHARACTER ( len = 80 ) :: output_unit, filename
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
       LOGICAL :: filexx, opened, initial_set = .FALSE.
       INTEGER :: iores
 
@@ -212,8 +212,8 @@
 !  Open i/o units
 
         IF ( CONTROL%lp > 0 ) THEN
-          WRITE( output_unit, "( I0 )" ) CONTROL%lp
-          filename = "output_sils." // TRIM( output_unit )
+          WRITE( char_output_unit, "( I0 )" ) CONTROL%lp
+          filename = "output_sils." // TRIM( char_output_unit )
           OPEN( CONTROL%lp, FILE = filename, FORM = 'FORMATTED',               &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -221,8 +221,8 @@
         IF ( CONTROL%wp > 0 ) THEN
           INQUIRE( CONTROL%wp, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) CONTROL%wp
-            filename = "output_sils." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) CONTROL%wp
+            filename = "output_sils." // TRIM( char_output_unit )
             OPEN( CONTROL%wp, FILE = filename, FORM = 'FORMATTED',             &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF
@@ -231,8 +231,8 @@
         IF ( CONTROL%mp > 0 ) THEN
           INQUIRE( CONTROL%mp, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) CONTROL%mp
-            filename = "output_sils." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) CONTROL%mp
+            filename = "output_sils." // TRIM( char_output_unit )
             INQUIRE( FILE = filename, EXIST = filexx )
             IF ( filexx ) THEN
                OPEN( CONTROL%mp, FILE = filename, FORM = 'FORMATTED',          &
@@ -247,8 +247,8 @@
         IF ( CONTROL%sp > 0 ) THEN
           INQUIRE( CONTROL%sp, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) CONTROL%sp
-            filename = "output_sils." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) CONTROL%sp
+            filename = "output_sils." // TRIM( char_output_unit )
             INQUIRE( FILE = filename, EXIST = filexx )
             IF ( filexx ) THEN
                OPEN( CONTROL%sp, FILE = filename, FORM = 'FORMATTED',          &
