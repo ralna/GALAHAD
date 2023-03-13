@@ -98,10 +98,14 @@
     END TYPE blls_control_type
 
     TYPE, BIND( C ) :: blls_time_type
-      REAL ( KIND = spc_ ) :: total
-      REAL ( KIND = spc_ ) :: analyse
-      REAL ( KIND = spc_ ) :: factorize
-      REAL ( KIND = spc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: analyse
+      REAL ( KIND = rpc_ ) :: factorize
+      REAL ( KIND = rpc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE blls_time_type
 
     TYPE, BIND( C ) :: blls_inform_type
@@ -607,7 +611,7 @@
 !  -----------------------------------------
 
   SUBROUTINE blls_solve_given_a( cdata, cuserdata, status, n, m, ane, aval,    &
-                                 b, xl, xu, x, z, c, g, xstat,                 &
+                                 b, xl, xu, x, z, c, g, xstat, w,              &
                                  ceval_prec ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
@@ -624,7 +628,8 @@
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
   REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( OUT ) :: c
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
-  INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ), OPTIONAL :: w
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
 !  local variables
@@ -651,8 +656,15 @@
 
 !  solve the bound-constrained least-squares problem
 
-  CALL f_blls_solve_given_a( fdata, fuserdata, status, aval, b, xl, xu,        &
-                             x, z, c, g, xstat, wrap_eval_prec )
+  IF ( PRESENT( w ) ) THEN
+    CALL f_blls_solve_given_a( fdata, fuserdata, status, aval, b, xl, xu,      &
+                               x, z, c, g, xstat, W = w,                       &
+                               eval_PREC = wrap_eval_prec )
+   ELSE
+    CALL f_blls_solve_given_a( fdata, fuserdata, status, aval, b, xl, xu,      &
+                               x, z, c, g, xstat,                              &
+                               eval_PREC = wrap_eval_prec )
+   END IF
 
   RETURN
 
@@ -684,7 +696,7 @@
   SUBROUTINE blls_solve_reverse_a_prod( cdata, status, eval_status, n, m, b,   &
                                         xl, xu, x, z, c, g, xstat, v, p,       &
                                         nz_v, nz_v_start, nz_v_end,         &
-                                        nz_p, nz_p_end ) BIND( C )
+                                        nz_p, nz_p_end, w ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
@@ -705,6 +717,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
+  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ), OPTIONAL :: w
 
 !  local variables
 
@@ -725,12 +738,12 @@
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
                                       x, z, c, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p, nz_p_end )
+                                      nz_p, nz_p_end, W = w )
   ELSE
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
                                       x, z, c, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p( : nz_p_end ) + 1, nz_p_end )
+                                      nz_p( : nz_p_end ) + 1, nz_p_end, W = w )
     IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
       nz_v( nz_v_start : nz_v_end ) = nz_v( nz_v_start : nz_v_end ) - 1
     END IF 

@@ -72,8 +72,8 @@
      INTEGER :: iores
      LOGICAL :: filexx
      CHARACTER ( len = 80 ) :: filename
-     INTEGER ::  mexPrintf
-     CHARACTER ( LEN = 200 ) :: str
+!    INTEGER ::  mexPrintf
+!    CHARACTER ( LEN = 200 ) :: str
 
 !  Get the row and column dimensions
 

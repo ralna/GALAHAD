@@ -287,9 +287,9 @@
 !  ------------------------------------------------------
 
       mwPointer :: mxCreateStructMatrix
-      INTEGER * 4  :: ninform_i4
+      INTEGER * 4  :: ninform_i4, i4 = 1
 
-      ninform_i4 = ninform
+      ninform_i4 = INT( ninform, KIND = KIND( i4 ) )
       pr = mxCreateStructMatrix( 1_mws_, 1_mws_, ninform_i4, finform )
       CALL mxSetField( struct, 1_mwi_, name, pr )
 
@@ -1070,9 +1070,6 @@
 !  --------------------------------------------------------------
 
       mwSize :: nn
-      INTEGER :: alloc_stat
-!     mwIndex, DIMENSION(:), ALLOCATABLE :: temp_mwi
-      INTEGER * 8, DIMENSION(:), ALLOCATABLE :: temp_mwi
 
       nn = n
       CALL mxCopyPtrToInteger8( px, Y, nn )
@@ -1141,8 +1138,6 @@
 !  --------------------------------------------------------------
 
       mwSize :: nn
-      INTEGER :: alloc_stat
-      mwIndex, DIMENSION(:), ALLOCATABLE :: temp_mwi
 
 !     CALL mexWarnMsgTxt( ' 88 ' )
 
@@ -1169,7 +1164,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       REAL ( KIND = wp ) :: Y_vect( 1 )
 
       CALL mxCopyPtrToReal8( px, Y_vect, 1_mws_ )
@@ -1198,7 +1192,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: nn
 
       nn = n
@@ -1227,7 +1220,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: nn
 
       nn = n
@@ -1257,7 +1249,6 @@
 !
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       REAL ( KIND = wp ), DIMENSION( m * n ) :: Y_vect
       mwSize :: mn
 
@@ -1288,7 +1279,6 @@
 !
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       REAL ( KIND = wp ), DIMENSION( m * n ) :: Y_vect
       mwSize :: mn
 
@@ -1489,7 +1479,6 @@
 
 !  -----------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       REAL ( KIND = wp ) :: Y_vect( 1 )
       Y_vect( 1 ) = Y
 
@@ -1518,7 +1507,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: nn
 
       nn = n
@@ -1546,7 +1534,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: nn
 
       nn = n
@@ -1576,7 +1563,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: mn
 
       mn = m * n
@@ -1606,7 +1592,6 @@
 
 !  -----------------------------------------------------------
 
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwSize :: mn
 
       mn = m * n
@@ -2374,7 +2359,6 @@
 !  --------------------------------------------
 
       mwPointer :: pr, px
-      REAL ( KIND = wp ) :: ddig = 1.0_wp
       mwPointer :: mxGetPr
       REAL ( KIND = wp ) :: Y_vect( 1 )
       Y_vect( 1 ) = Y

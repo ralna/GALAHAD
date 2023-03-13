@@ -147,7 +147,7 @@
         INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
-!    (>= 2 turns on LA)4 output)
+!    (>= 2 turns on LA04 output)
 
         INTEGER ( KIND = ip_ ) :: print_level = 0
 

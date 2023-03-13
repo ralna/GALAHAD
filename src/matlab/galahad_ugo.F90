@@ -103,7 +103,7 @@
       INTEGER, PARAMETER :: slen = 30
       LOGICAL :: mxIsChar, mxIsStruct
       mwSize :: mxGetString, mxIsNumeric
-      mwPointer :: mxGetPr, mxGetM, mxGetN, mxCreateDoubleMatrix
+      mwPointer :: mxGetPr, mxCreateDoubleMatrix
       INTEGER :: mexCallMATLABWithTrap
 
       INTEGER ::  mexPrintf
@@ -113,8 +113,8 @@
 
 !  local variables
 
-      INTEGER :: i, info
-      INTEGER * 4 :: i4, n, alloc_stat
+      INTEGER :: i
+      INTEGER * 4 :: i4
       INTEGER, PARAMETER :: int4 = KIND( i4 )
 
       mwSize :: xl_arg, xu_arg
@@ -127,7 +127,7 @@
       mwSize :: status
       mwSize :: m_mwsize, n_mwsize
 
-      CHARACTER ( len = 80 ) :: output_unit, filename
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
 !     CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_fgh = REPEAT( ' ', 80 )
       LOGICAL :: opened, file_exists, initial_set = .FALSE.
@@ -237,8 +237,8 @@
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
-          WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_ugo." // TRIM( output_unit )
+          WRITE( char_output_unit, "( I0 )" ) control%error
+          filename = "output_ugo." // TRIM( char_output_unit )
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -246,8 +246,8 @@
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
-            WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_ugo." // TRIM( output_unit )
+            WRITE( char_output_unit, "( I0 )" ) control%out
+            filename = "output_ugo." // TRIM( char_output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF

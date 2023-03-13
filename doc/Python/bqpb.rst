@@ -324,10 +324,10 @@ functions
              deallocation error will terminate execution. Otherwise,
              computation will continue.
           generate_sif_file : bool
-             if ``generate_sif_file`` is True if a SIF file
+             if ``generate_sif_file`` is True, a SIF file
              describing the current problem is to be generated.
           generate_qplib_file : bool
-             if ``generate_qplib_file`` is True if a QPLIB file
+             if ``generate_qplib_file`` is True, a QPLIB file
              describing the current problem is to be generated.
           sif_file_name : str
              name of generated SIF file containing input problem.

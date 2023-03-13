@@ -111,7 +111,7 @@ functions
 
              * **1**
 
-               1 gives a one-line summary for every iteration.
+               gives a one-line summary for every iteration.
 
              * **2**
 

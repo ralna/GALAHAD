@@ -1,22 +1,22 @@
-LPB
+WCP
 ===
 
-.. module:: galahad.lpb
+.. module:: galahad.wcp
 
-The lpb package uses a **primal-dual interior-point method** to solve a
-given **linear program**.
-The aim is to minimize the linear objective function
-$$q(x) = f + g^T x$$ 
-subject to the general linear constraints and simple bounds
+The wcp package uses a **primal-dual interior-point method** to find a 
+well-centered point within a **polyhedral set**.
+The aim is to find a point that lies interior to the boundary of the 
+polyhedron definied by the general linear constraints and simple bounds
 $$c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,$$
-where $A$ is a given $m$ by $n$ matrix,  
-$g$ is a vector, $f$ is a scalar, and any of the components 
+where $A$ is a given $m$ by $n$ matrix, and any of the components 
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns $x$.
+The package identifies infeasible problems, and problems for which there is 
+no strict interior.
 
-See Section 4 of $GALAHAD/doc/lpb.pdf for a brief description of the
+See Section 4 of $GALAHAD/doc/wcp.pdf for a brief description of the
 method employed and other details.
 
 matrix storage
@@ -82,7 +82,7 @@ The string A_type = 'sparse_by_columns' should be specified.
 functions
 ---------
 
-   .. function:: lpb.initialize()
+   .. function:: wcp.initialize()
 
       Set default option values and initialize private data
 
@@ -114,20 +114,84 @@ functions
 
                gives increasingly verbose (debugging) output.
 
+          print_level : int
+             the level of output required is specified by print_level.
           start_print : int
              any printing will start on this iteration.
           stop_print : int
              any printing will stop on this iteration.
           maxit : int
              at most maxit inner iterations are allowed.
+          initial_point : int
+             how to choose the initial point. Possible values are
+
+             * **0**
+
+               the values input in X, shifted to be at least prfeas
+               from  their nearest bound, will be used
+
+             * **1**
+
+               the nearest point to the "bound average" 0.5(X_l+X_u)
+               that  satisfies the linear constraints will be used.
+
+          factor : int
+             the factorization to be used. Possible values are
+
+             * **0**
+
+               automatic
+
+             * **1**
+
+               Schur-complement factorization
+
+             * **2**
+
+               augmented-system factorization.
+
+          max_col : int
+             the maximum number of nonzeros in a column of A which is
+             permitted with the Schur-complement factorization.
+          indmin : int
+             an initial guess as to the integer workspace required by
+             SBLS.
+          valmin : int
+             an initial guess as to the real workspace required by SBLS.
+          itref_max : int
+             the maximum number of iterative refinements allowed.
           infeas_max : int
              the number of iterations for which the overall
              infeasibility of the problem is not reduced by at least a
-             factor ``reduce_infeas`` before the problem is flagged as
-             infeasible (see reduce_infeas).
-          muzero_fixed : int
-             the initial value of the barrier parameter will not be
-             changed for the first muzero_fixed iterations.
+             factor ``required_infeas_reduction`` before the problem is
+             flagged as infeasible (see required_infeas_reducti.
+          perturbation_strategy : int
+             the strategy used to reduce relaxed constraint bounds.
+             Possible values are
+
+             * **0**
+
+               do not perturb the constraints
+
+             * **1**
+
+               reduce all perturbations by the same amount with
+               linear reduction
+
+             * **2**
+
+               reduce each perturbation as much as possible with
+               linear reduction
+
+             * **3**
+
+               reduce all perturbations by the same amount with
+               superlinear  reduction
+
+             * **4**
+
+               reduce each perturbation as much as possible with
+               superlinear  reduction.
           restore_problem : int
              indicate whether and how much of the input problem should
              be restored on output. Possible values are
@@ -144,125 +208,88 @@ functions
 
                all parameters.
 
-          indicator_type : int
-             specifies the type of indicator function used. Possible values are
-
-             * **1**
-
-               primal indicator: a constraint is active if and only
-               if  the distance to its nearest bound <= ``indicator_p_tol``.
-
-             * **2**
-
-               primal-dual indicator: a constraint is active if and only if the
-               distance to its nearest bound <= ``indicator_tol_pd`` times the
-               size of the corresponding multiplier.
-
-             * **3**
-
-               primal-dual indicator: a constraint is active if and
-               only if  the distance to its nearest bound <=
-               ``indicator_tol_tapia`` times the distance to same bound at the
-               previous iteration.
-
-          arc : int
-             which residual trajectory should be used to aim from the
-             current iteration to the solution. Possible values are
-
-             * **1**
-
-               the Zhang linear residual trajectory.
-
-             * **2**
-
-               the Zhao-Sun quadratic residual trajectory.
-
-             * **3**
-
-               the Zhang arc ultimately switching to the Zhao-Sun
-               residual trajectory.
-
-             * **4**
-
-               the mixed linear-quadratic residual trajectory.
-
-          series_order : int
-             the order of (Taylor/Puiseux) series to fit to the path
-             data.
-          sif_file_device : int
-             specifies the unit number to write generated SIF file
-             describing the current problem.
-          qplib_file_device : int
-             specifies the unit number to write generated QPLIB file
-             describing the current problem.
           infinity : float
              any bound larger than infinity in modulus will be regarded
              as infinite.
-          stop_abs_p : float
-             the required absolute and relative accuracies for the
-             primal infeasibility.
-          stop_rel_p : float
-             see stop_abs_p.
-          stop_abs_d : float
-             the required absolute and relative accuracies for the dual
-             infeasibility.
-          stop_rel_d : float
-             see stop_abs_d.
-          stop_abs_c : float
-             the required absolute and relative accuracies for the
-             complementarity.
-          stop_rel_c : float
-             see stop_abs_c.
+          stop_p : float
+             the required accuracy for the primal infeasibility.
+          stop_d : float
+             the required accuracy for the dual infeasibility.
+          stop_c : float
+             the required accuracy for the complementarity.
           prfeas : float
              initial primal variables will not be closer than prfeas
              from their bound.
           dufeas : float
              initial dual variables will not be closer than dufeas from
              their bounds.
-          muzero : float
-             the initial value of the barrier parameter. If muzero is
+          mu_target : float
+             the target value of the barrier parameter. If mu_target is
              not positive, it will be reset to an appropriate value.
-          tau : float
-             the weight attached to primal-dual infeasibility compared
-             to complementarity when assessing step acceptance.
-          gamma_c : float
-             individual complementarities will not be allowed to be
-             smaller than gamma_c times the average value.
-          gamma_f : float
-             the average complementarity will not be allowed to be
-             smaller than gamma_f times the primal/dual infeasibility.
-          reduce_infeas : float
+          mu_accept_fraction : float
+             the complemtary slackness x_i.z_i will be judged to lie
+             within an acceptable margin around its target value mu as
+             soon as mu_accept_fraction * mu <= x_i.z_i <= ( 1 /
+             mu_accept_fraction ) * mu; the perturbations will be
+             reduced as soon as all of the complemtary slacknesses
+             x_i.z_i lie within acceptable bounds. mu_accept_fraction
+             will be reset to ensure that it lies in the interval (0,1].
+          mu_increase_factor : float
+             the target value of the barrier parameter will be
+             increased by mu_increase_factor for infeasible constraints
+             every time the perturbations are adjusted.
+          required_infeas_reduction : float
              if the overall infeasibility of the problem is not reduced
-             by at least a factor reduce_infeas over ``infeas_max``
-             iterations, the problem is flagged as infeasible (see
-             infeas_max).
-          obj_unbounded : float
-             if the objective function value is smaller than
-             obj_unbounded, it will be flagged as unbounded from below.
-          potential_unbounded : float
-             if W=0 and the potential function value is smaller than
-             potential_unbounded * number of one-sided bounds, the
-             analytic center will be flagged as unbounded.
+             by at least a factor required_infeas_reduction over
+             ``infeas_max`` iterations, the problem is flagged as
+             infeasible (see infeas_max).
+          implicit_tol : float
+             any primal or dual variable that is less feasible than
+             implicit_tol will be regarded as defining an implicit
+             constraint.
+          pivot_tol : float
+             the threshold pivot used by the matrix factorization. See
+             the documentation for SBLS for details (obsolete).
+          pivot_tol_for_dependencies : float
+             the threshold pivot used by the matrix factorization when
+             attempting to detect linearly dependent constraints. See
+             the documentation for SBLS for details (obsolete).
+          zero_pivot : float
+             any pivots smaller than zero_pivot in absolute value will
+             be regarded to zero when attempting to detect linearly
+             dependent constraints (obsolete).
+          perturb_start : float
+             the constraint bounds will initially be relaxed by
+             ``perturb_start;`` this perturbation will subsequently be
+             reduced to zero. If perturb_start < 0, the amount by which
+             the bounds are relaxed will be computed automatically.
+          alpha_scale : float
+             the test for rank defficiency will be to factorize (
+             alpha_scale I A^T ) ( A 0 ).
           identical_bounds_tol : float
              any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that
-             are closer than identical_bounds_tol will be reset to the
+             are closer tha identical_bounds_tol will be reset to the
              average of their values.
-          mu_lunge : float
-             start terminal extrapolation when mu reaches mu_lunge.
-          indicator_tol_p : float
-             if ``indicator_type`` = 1, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_p_tol``.
-          indicator_tol_pd : float
-             if ``indicator_type`` = 2, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_tol_pd`` * size of corresponding
-             multiplier.
-          indicator_tol_tapia : float
-             if ``indicator_type`` = 3, a constraint/bound will be
-             deemed to be active if and only if distance to nearest
-             bound <= ``indicator_tol_tapia`` * distance to same bound
-             at previous iteration.
+          reduce_perturb_factor : float
+             the constraint perturbation will be reduced as follows:
+             * - if the variable lies outside a bound, the
+             corresponding  perturbation will be reduced to
+             reduce_perturb_factor * current pertubation + ( 1 -
+             reduce_perturb_factor ) * violation
+             * - otherwise, if the variable lies within
+             insufficiently_feasible of its bound the pertubation will
+             be reduced to reduce_perturb_multiplier * current
+             pertubation
+             * - otherwise if will be set to zero.
+          reduce_perturb_multiplier : float
+             see reduce_perturb_factor.
+          insufficiently_feasible : float
+             see reduce_perturb_factor.
+          perturbation_small : float
+             if the maximum constraint pertubation is smaller than
+             perturbation_small and the violation is smaller than
+             implicit_tol, the method will deduce that there is a
+             feasible point but no interior.
           cpu_time_limit : float
              the maximum CPU time allowed (-ve means infinite).
           clock_time_limit : float
@@ -278,24 +305,11 @@ functions
              if ``just_feasible`` is True, the algorithm will stop as
              soon as a feasible point is found. Otherwise, the optimal
              solution to the problem will be found.
-          getdua : bool
-             if ``getdua,`` is True, advanced initial values are
-             obtained for the dual variables.
-          puiseux : bool
-             decide between Puiseux and Taylor series approximations to
-             the arc.
-          every_order : bool
-             try every order of series up to series_order?.
-          feasol : bool
-             if ``feasol`` is True, the final solution obtained will be
-             perturbed so tha variables close to their bounds are moved
-             onto these bounds.
-          balance_initial_complentarity : bool
-             if ``balance_initial_complentarity`` is True, the initial
-             complemetarity is required to be balanced.
-          crossover : bool
-             if ``crossover`` is True, cross over the solution to one
-             defined by linearly-independent constraints if possible.
+          balance_initial_complementarity : bool
+             if ``balance_initial_complementarity`` is ``true.`` the
+             initial complemetarity will be balanced.
+          use_corrector : bool
+             if ``use_corrector,`` a corrector step will be used.
           space_critical : bool
              if ``space_critical`` True, every effort will be made to
              use as little space as possible. This may result in longer
@@ -304,16 +318,14 @@ functions
              if ``deallocate_error_fatal`` is True, any array/pointer
              deallocation error will terminate execution. Otherwise,
              computation will continue.
-          generate_sif_file : bool
-             if ``generate_sif_file`` is True if a SIF file
-             describing the current problem is to be generated.
-          generate_qplib_file : bool
-             if ``generate_qplib_file`` is True if a QPLIB file
-             describing the current problem is to be generated.
-          sif_file_name : str
-             name of generated SIF file containing input problem.
-          qplib_file_name : str
-             name of generated QPLIB file containing input problem.
+          record_x_status : bool
+             if ``record_x_status`` is True, the array inform.X_status
+             will be allocated and the status of the bound constraints
+             will be reported on exit.
+          record_c_status : bool
+             if ``record_c_status`` is True, the array inform.C_status
+             will be allocated and the status of the general
+             constraints will be reported on exit.
           prefix : str
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
@@ -322,14 +334,8 @@ functions
              control parameters for FDC (see ``fdc.initialize``).
           sbls_control : dict
              control parameters for SBLS (see ``sbls.initialize``).
-          fit_control : dict
-             control parameters for FIT (see ``fit.initialize``).
-          roots_control : dict
-             control parameters for ROOTS (see ``roots.initialize``).
-          cro_control : dict
-             control parameters for CRO (see ``cro.initialize``).
 
-   .. function:: lpb.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+   .. function:: wcp.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -361,12 +367,12 @@ functions
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       options : dict, optional
-          dictionary of control options (see ``lpb.initialize``).
+          dictionary of control options (see ``wcp.initialize``).
 
-   .. function:: lpb.solve_lp(n, m, f, g, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: wcp.find_wcp(n, m, a_ne, A_val, c_l, c_u, x_l, x_u)
 
-      Find a solution to the convex quadratic program involving the
-      quadratic objective function $q(x)$.
+      Find a well-centered point for a given polyhedral set of linear 
+      inequalities.
 
       **Parameters:**
 
@@ -383,7 +389,7 @@ functions
       A_val : ndarray(a_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
-          ``lpb.load``.
+          ``wcp.load``.
       c_l : ndarray(m)
           holds the values of the lower bounds $c_l$ on the constraints
           The lower bound on any component of $A x$ that is unbounded from 
@@ -425,7 +431,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: [optional] lpb.information()
+   .. function:: [optional] wcp.information()
 
       Provide optional output information
 
@@ -465,16 +471,11 @@ functions
 
             * **-4**
 
-              The bound constraints are inconsistent.
+              The constraint bounds are inconsistent.
 
             * **-5**
 
               The constraints appear to have no feasible point.
-
-            * **-7**
-
-              The objective function appears to be unbounded from below
-              on the feasible set.
 
             * **-9**
 
@@ -498,6 +499,10 @@ functions
 
               The problem is so ill-conditioned that further progress
               is impossible.
+
+            * **-17**
+
+               The step is too small to make further impact.
 
             * **-18**
 
@@ -526,42 +531,29 @@ functions
              the total real workspace required for the factorization.
           nfacts : int
              the total number of factorizations performed.
-          nbacts : int
-             the total number of "wasted" function evaluations during
-             the linesearch.
-          threads : int
-             the number of threads used.
+          c_implicit : int
+             the number of general constraints that lie on (one) of
+             their bounds for feasible solutions.
+          x_implicit : int
+             the number of variables that lie on (one) of their bounds
+             for all feasible solutions.
+          y_implicit : int
+             the number of Lagrange multipliers for general constraints
+             that lie on (one) of their bounds for all feasible
+             solutions.
+          z_implicit : int
+             the number of dual variables that lie on (one) of their
+             bounds for all feasible solutions.
           obj : float
              the value of the objective function at the best estimate
-             of the solution determined by LPB_solve.
-          primal_infeasibility : float
-             the value of the primal infeasibility.
-          dual_infeasibility : float
-             the value of the dual infeasibility.
-          complementary_slackness : float
-             the value of the complementary slackness.
-          init_primal_infeasibility : float
-             these values at the initial point (needed bg GALAHAD_CLPB).
-          init_dual_infeasibility : float
-             see init_primal_infeasibility.
-          init_complementary_slackness : float
-             see init_primal_infeasibility.
-          potential : float
-             the value of the logarithmic potential function sum
-             -log(distance to constraint boundary).
+             of the solution determined by WCP_solve.
+          mu_final_target_max : float
+             the largest target value on termination.
           non_negligible_pivot : float
              the smallest pivot which was not judged to be zero when
-             detecting linearly dependent constraints.
+             detecting linear dependent constraints.
           feasible : bool
              is the returned "solution" feasible?.
-          checkpointsIter : ndarray(17)
-             checkpointsIter(i) records the iteration at which the
-             criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
-          checkpointsTime : ndarray(17)
-             checkpointsTime(i) records the CPU time at which the
-             criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
           time : dict
              dictionary containing timing information:
                total : float
@@ -572,7 +564,7 @@ functions
                   the CPU time spent detecting linear dependencies.
                analyse : float
                   the CPU time spent analysing the required matrices prior
-                  to factorization.
+                  to  factorization.
                factorize : float
                   the CPU time spent factorizing the required matrices.
                solve : float
@@ -585,7 +577,7 @@ functions
                   the clock time spent detecting linear dependencies.
                clock_analyse : float
                   the clock time spent analysing the required matrices prior
-                  to factorization.
+                  to  factorization.
                clock_factorize : float
                   the clock time spent factorizing the required matrices.
                clock_solve : float
@@ -594,16 +586,7 @@ functions
              inform parameters for FDC (see ``fdc.information``).
           sbls_inform : dict
              inform parameters for SBLS (see ``sbls.information``).
-          fit_inform : dict
-             return information from FIT (see ``fit.information``).
-          roots_inform : dict
-             return information from ROOTS (see ``roots.information``).
-          cro_inform : dict
-             inform parameters for CRO (see ``cro.information``).
-          rpd_inform : dict
-             inform parameters for RPD (see ``rpd.information``).
 
-
-   .. function:: lpb.terminate()
+   .. function:: wcp.terminate()
 
      Deallocate all internal private storage.
