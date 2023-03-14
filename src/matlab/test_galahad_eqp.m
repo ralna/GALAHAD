@@ -23,6 +23,14 @@ for i = 1:m
 end
 control.out = 6 ;
 control.print_level = 0 ;
+use_sls = true;
+symmetric_linear_solver = 'sytr';
+definite_linear_solver = 'sytr';
+control.FDC_control.use_sls = use_sls;
+control.FDC_control.symmetric_linear_solver = symmetric_linear_solver;
+control.SBLS_control.symmetric_linear_solver = symmetric_linear_solver;
+control.SBLS_control.definite_linear_solver = definite_linear_solver;
+
 %[ x, inform ] = galahad_eqp( H, g, f, A, c, control )
 
 fprintf('solve dense example \n')

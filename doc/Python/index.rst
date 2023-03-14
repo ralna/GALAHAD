@@ -25,6 +25,7 @@ transparently to the underlying fortran.
    ls
    lp
    qp
+   reg
    go
 
 * :ref:`genindex`
