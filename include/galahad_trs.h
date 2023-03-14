@@ -638,9 +638,6 @@ void trs_import( struct trs_control_type *control,
  @param[in] n is a scalar variable of type int, that holds the number of
     rows (and columns) of H.
 
- @param[in] m is a scalar variable of type int, that holds the number of
-    general linear constraints.
-
  @param[in]  H_type is a one-dimensional array of type char that specifies the
    \link main_symmetric_matrices symmetric storage scheme \endlink
    used for the Hessian, \f$H\f$. It should be one of 'coordinate',
@@ -913,7 +910,7 @@ void trs_solve_problem( void **data,
     \f$A\f$, if used, in any of the available storage schemes.
     If A_val is NULL, no constraints will be enforced.
 
- @param[out] y is a one-dimensional array of size n and type double, that
+ @param[out] y is a one-dimensional array of size m and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the equality
     constraints \f$A x = 0\f$ if used. The i-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.

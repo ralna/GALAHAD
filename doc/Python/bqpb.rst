@@ -24,7 +24,7 @@ method employed and other details.
 matrix storage
 --------------
 
-The **symmetric** $n$ by $n$ matrix $H$ may also
+The **symmetric** $n$ by $n$ matrix $H$ may
 be presented and stored in a variety of formats. But crucially symmetry
 is exploited by only storing values from the *lower triangular* part
 (i.e, those entries that lie on or below the leading diagonal).

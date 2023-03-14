@@ -1,6 +1,8 @@
 .. GALAHAD Python Interface documentation master file
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+   TODO:
+   DLP - linear programming using a dual gradient-projection method <>
 
 Linear Programming
 ------------------
@@ -21,7 +23,6 @@ set (one defined by a finite number of linear inequalities).
    :caption: Contents
    :titlesonly:
 
-   DLP - linear programming using a dual gradient-projection method <>
    LPA - linear programming using the simplex method <lpa>
    LPB - linear programming using an interior-point method <lpb>
    WCP - find a well-centered point within a polyhedral set <wcp>
