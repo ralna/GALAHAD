@@ -915,7 +915,7 @@ void rqs_solve_problem( void **data,
     \f$A\f$, if used, in any of the available storage schemes.
     If A_val is NULL, no constraints will be enforced.
 
- @param[out] y is a one-dimensional array of size n and type double, that
+ @param[out] y is a one-dimensional array of size m and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the equality
     constraints \f$A x = 0\f$ if used. The i-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.

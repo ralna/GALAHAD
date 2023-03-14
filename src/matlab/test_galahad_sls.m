@@ -13,22 +13,24 @@ end
 A(1:n,1) = 1.0 ;
 A(1,1:n) = 1.0 ;
 
+linear_solver = 'sytr';
+
 [ control ] = galahad_sls( 'initial' ) ;
 
 fprintf('solve dense example \n')
-[ x, inform ] = galahad_sls( A, b, control ) ;
+[ x, inform ] = galahad_sls( A, b, control, linear_solver ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
-[ x, inform ] = galahad_sls( SA, b, control ) ;
+[ x, inform ] = galahad_sls( SA, b, control, linear_solver ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 fprintf('sophisticated calls \n')
 
-[ control ] = galahad_sls( 'initial' ) ;
+[ control ] = galahad_sls( 'initial', linear_solver ) ;
 [ inform ] = galahad_sls( 'factor', A, control ) ;
 [ x, inform ] = galahad_sls( 'solve', b ) ;
 [ inform ] = galahad_sls( 'final' ) ;

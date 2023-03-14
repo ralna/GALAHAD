@@ -2,8 +2,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Least-Squares
--------------
+Regularization subproblems
+--------------------------
 
 **Release:** 1.0
 
@@ -12,18 +12,19 @@ Least-Squares
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there is a single package designed to find a local
-minimizer of a sum-of-squares function whose variables may take any values
-and a second that targets linear problems
-with simple bounds on the variables.
+optimization.  Currently there eight packages designed to find a global
+minimizer of a variety of regularized quadratic functions
 
 .. toctree::
    :maxdepth: 1
    :caption: Contents
    :titlesonly:
 
-   BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method <blls>
-   NLS - unconstrained local nonlinear least-squares using a regularization method<nls>
+   TRS - global minization of a quadratic function within an ellipsoid using matrix factorization <trs>
+   RQS - global minization of a regularized quadratic function using matrix factorization <rqs>
+   LSTR - global minization of a linear least-squares objective using an iterative method <lstr>
+   GLTR - global minization of a quadratic function within an ellipsoid using an iterative method <gltr>
+
 
 References
 ^^^^^^^^^^

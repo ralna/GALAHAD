@@ -18,6 +18,11 @@ for i = 1:n
 end
 [ control ] = galahad_llst( 'initial' ) ;
 %[ x, obj, inform ] = galahad_llst( A, b, radius, control )
+symmetric_linear_solver = 'sytr';
+definite_linear_solver = 'sytr';
+control.definite_linear_solver = definite_linear_solver;
+control.SBLS_control.symmetric_linear_solver = symmetric_linear_solver;
+control.SBLS_control.definite_linear_solver = definite_linear_solver;
 
 fprintf('solve dense examples \n')
 [ x, obj, inform ] = galahad_llst( A, b, radius, control ) ;
