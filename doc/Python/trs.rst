@@ -9,10 +9,12 @@ an **ellipsoidal region**; this is commonly known as the
 **trust-region subproblem**.
 The aim is to minimize the quadratic objective function
 $$q(x) = f + g^T x + \frac{1}{2} x^T H x,$$ 
-where the **radius** $\Delta > 0$, the vector $x$ is required to satisfy 
+where the vector $x$ is required to satisfy 
 the ellipsoidal  **trust-region constraint** $\|x\|_{M} \leq  \Delta$, 
 and optionally  **affine constraints** $A x = 0$, 
-and where the $M$-norm of $x$ is defined to be $\|x\|_{M} = \sqrt{x^T M x}$.
+where the $M$-norm of $x$ is defined to be $\|x\|_{M} = \sqrt{x^T M x}$,
+and where the **radius** $\Delta > 0$.
+
 
 The package may also be used to solve the related problem in which $x$ is
 instead required to satisfy the **equality constraint** $\|x\|_{M} = \Delta$.
@@ -284,7 +286,7 @@ functions
              start full inverse iteration when bracket on multiplier <=
              stop_start_invitmax_tol * max( bracket ends).
           equality_problem : bool
-             is the solution is <b<required</b> to lie on the boundary
+             is the solution is **required** to lie on the boundary
              (i.e., is the constraint an equality)?.
           use_initial_multiplier : bool
              ignore initial_multiplier?.
