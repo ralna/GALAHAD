@@ -200,10 +200,10 @@ struct glrt_control_type {
     int itmax;
 
     /// \brief
-    /// the stopping rule used (see below):
-    /// \li 1. stop rule = norm of the step
-    /// \li 2. stop rule is norm of the step / \f$\sigma\f$
-    /// other. stop rule = 1.0,
+    /// the stopping rule used (see below). Possible values are:
+    /// \li 1 stopping rule = norm of the step.
+    /// \li 2 stopping rule is norm of the step / \f$\sigma\f$.
+    /// \li other. stopping rule = 1.0.
     int stopping_rule;
 
     /// \brief
@@ -221,7 +221,7 @@ struct glrt_control_type {
     /// \brief
     /// the iteration stops successfully when the gradient in the \f$M^{-1}\f$
     /// norm is smaller than
-    /// max( stop_relative * min( 1, stop_rule ) * norm initial gradient,
+    /// max( stop_relative * min( 1, stopping_rule ) * norm initial gradient,
     /// stop_absolute )
     real_wp_ stop_relative;
     /// see stop_relative
