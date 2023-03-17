@@ -11,14 +11,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-2019, ubuntu-latest, macos-latest]
         compiler_version: [10, 11, 12]
         include:
           - compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
-          - os: windows-latest
+          - os: windows-2019
             compiler: intel
             compiler_version: latest
             cc_cmd: icl
