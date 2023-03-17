@@ -107,6 +107,7 @@
       TYPE ( ma48_ainfo ) :: ma48_ainfo
       TYPE ( ma48_finfo ) :: ma48_finfo
       TYPE ( ma48_sinfo ) :: ma48_sinfo
+      INTEGER ( KIND = ipc_ ) :: lapack_error
     END TYPE uls_inform_type
 
 !----------------------
@@ -240,6 +241,7 @@
     finform%structural_rank = cinform%structural_rank
     finform%pivot_control = cinform%pivot_control
     finform%iterative_refinements = cinform%iterative_refinements
+    finform%lapack_error = cinform%lapack_error
 
     ! Logicals
     finform%alternative = cinform%alternative
@@ -278,7 +280,7 @@
     cinform%rank = finform%rank
     cinform%structural_rank = finform%structural_rank
     cinform%pivot_control = finform%pivot_control
-    cinform%iterative_refinements = finform%iterative_refinements
+    cinform%lapack_error = finform%lapack_error
 
     ! Logicals
     cinform%alternative = finform%alternative

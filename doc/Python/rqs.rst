@@ -454,7 +454,6 @@ functions
 
       inform : dict
          dictionary containing output information:
-
           status : int
             return status.  Possible values are:
 
@@ -480,7 +479,8 @@ functions
 
             * **-3**
 
-              The restriction n > 0 or m > 0 or requirement that type contains
+              The restriction n > 0, m > 0, weight > 0 or 
+              power $\geq$ 2, or requirement that type contains
               its relevant string 'dense', 'coordinate', 'sparse_by_rows',
               'diagonal', 'scaled_identity',  'identity', 'zero' or 'none' 
               has been violated.
