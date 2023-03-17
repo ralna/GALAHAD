@@ -89,22 +89,19 @@ The matrix $A$ is stored as a compact  dense matrix by rows, that is,
 the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component $n \ast i + j$  of the storage array A_val
-will hold the value $A_{ij}$ for $0 \leq i \leq m-1$,
-$0 \leq j \leq n-1$.
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1$.
 
 *Dense by columns* storage format:
 The matrix $A$ is stored as a compact  dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component $m \ast j + i$  of the storage array A_val
-will hold the value $A_{ij}$ for $0 \leq i \leq m-1$,
-$0 \leq j \leq n-1$.
+will hold the value $A_{ij}$ for $0 \leq i \leq m-1$, $0 \leq j \leq n-1$.
 
 *Sparse co-ordinate* storage format:
 Only the nonzero entries of the matrices are stored.
 For the $l$-th entry, $0 \leq l \leq ne-1$, of $A$,
-its row index i, column index j
-and value $A_{ij}$,
+its row index i, column index j and value $A_{ij}$,
 $0 \leq i \leq m-1$,  $0 \leq j \leq n-1$,  are stored as
 the $l$-th components of the integer arrays A_row and
 A_col and real array A_val, respectively, while the number of nonzeros
@@ -146,17 +143,17 @@ The matrix $H$ is stored as a compact  dense matrix by rows, that
 is, the values of the entries of each row in turn are stored in order
 within an appropriate real one-dimensional array. Since $H$ is
 symmetric, only the lower triangular part (that is the part
-$H_{ij}$ for $0 <= j <= i <= n-1$) need be held.
+$H_{ij}$ for $0 \leq j \leq i \leq n-1$) need be held.
 In this case the lower triangle should be stored by rows, that is
 component $i * i / 2 + j$  of the storage array H_val
 will hold the value $H_{ij}$ (and, by symmetry, $H_{ji}$)
-for $0 <= j <= i <= n-1$.
+for $0 \leq j \leq i \leq n-1$.
 
 *Sparse co-ordinate* storage format:
 Only the nonzero entries of the matrices are stored.
-For the $l$-th entry, $0 <= l <= ne-1$, of $H$,
+For the $l$-th entry, $0 \leq l \leq ne-1$, of $H$,
 its row index i, column index j and value $H_{ij}$,
-$0 <= j <= i <= n-1$,  are stored as the $l$-th
+$0 \leq j \leq i \leq n-1$,  are stored as the $l$-th
 components of the integer arrays H_row and H_col and real array H_val,
 respectively, while the number of nonzeros is recorded as
 H_ne = $ne$. Note that only the entries in the lower triangle
@@ -168,7 +165,7 @@ they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries plus one.
-The column indices j, $0 <= j <= i$, and values
+The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
 integer array H_col, and real array H_val, respectively. Note that
@@ -215,15 +212,15 @@ functions
 
              * **<= 0**
 
-               gives no output,
+               gives no output.
 
              * **1**
 
-               gives a one-line summary for every iteration,
+               gives a one-line summary for every iteration.
 
              * **2**
 
-               gives a summary of the inner iteration for each iteration,
+               gives a summary of the inner iteration for each iteration.
 
              * **>=3**
 
@@ -385,16 +382,16 @@ functions
           stop_s : float
              see stop_c_absolute.
           power : float
-             the regularization power (<2 => chosen according to the
+             the regularization power (<2 means chosen according to the
              model).
           initial_weight : float
-             initial value for the regularization weight (-ve =>
+             initial value for the regularization weight (-ve means
              $1/\|g_0\|)$).
           minimum_weight : float
              minimum permitted regularization weight.
           initial_inner_weight : float
              initial value for the inner regularization weight for
-             tensor GN (-ve => 0).
+             tensor GN (-ve means 0).
           eta_successful : float
              potential iterate will only be accepted if the actual
              decrease f - f(x_new) is larger than ``eta_successful``
@@ -466,25 +463,25 @@ functions
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
           subproblem_options : dict
-             default control options for the step-finding subproblem:
+           default control options for the step-finding subproblem:
             error : int
                error and warning diagnostics occur on stream error.
             out : int
                general output occurs on stream out.
             print_level : int
-               the level of output required. Possible values are
+               the level of output required. Possible values are:
 
                * **<= 0**
 
-               gives no output,
+                 gives no output.
 
                * **1**
 
-                 gives a one-line summary for every iteration,
+                 gives a one-line summary for every iteration.
 
-               * *2**
+               * **2**
 
-                 gives a summary of the inner iteration for each iteration,
+                 gives a summary of the inner iteration for each iteration.
 
                * **>=3**
 
@@ -646,16 +643,16 @@ functions
             stop_s : float
                see stop_c_absolute.
             power : float
-               the regularization power (<2 => chosen according to the
+               the regularization power (<2 means chosen according to the
                model).
             initial_weight : float
-               initial value for the regularization weight (-ve =>
+               initial value for the regularization weight (-ve means
                $1/\|g_0\|)$).
             minimum_weight : float
                minimum permitted regularization weight.
             initial_inner_weight : float
                initial value for the inner regularization weight for
-               tensor GN (-ve => 0).
+               tensor GN (-ve means 0).
             eta_successful : float
                potential iterate will only be accepted if the actual
                decrease f - f(x_new) is larger than ``eta_successful``
@@ -852,7 +849,7 @@ functions
       eval_c : callable
           a user-defined function that must have the signature:
 
-           ``c = eval_c(x)``
+          ``c = eval_c(x)``
 
           The components of the residual $c(x)$ evaluated at $x$ must be
           assigned to ``c``.
@@ -861,7 +858,7 @@ functions
       eval_j : callable
           a user-defined function that must have the signature:
 
-           ``j = eval_(x)``
+          ``j = eval_(x)``
 
           The components of the nonzeros in the Jacobian
           $J(x)$ of the objective function evaluated at
@@ -876,7 +873,7 @@ functions
       eval_h : callable, optional
           a user-defined function that must have the signature:
 
-           ``h = eval_h(x,y)``
+          ``h = eval_h(x,y)``
 
           The components of the nonzeros in the lower triangle of the Hessian
           $H(x,y)$ evaluated at $x$ and $y$ must be assigned to ``h`` in the 
@@ -890,7 +887,7 @@ functions
       eval_hprod : callable, optional
           a user-defined function that must have the signature:
 
-           ``p = eval_hprod(x,v)``
+          ``p = eval_hprod(x,v)``
 
           The components of the nonzeros in the Hessian producr matrix
           $P(x,y)$ evaluated at $x$ and $v$ must be assigned to ``p`` in the 
@@ -915,7 +912,6 @@ functions
 
       inform : dict
          dictionary containing output information:
-
           status : int
             return status.  Possible values are:
 
@@ -1063,7 +1059,7 @@ functions
                clock_solve : float
                   the clock time spent computing the search direction.
           subproblem_inform : dict
-             inform parameters for subproblem:
+           inform parameters for subproblem:
             status : int
               return status.  Possible values are:
 
@@ -1219,6 +1215,7 @@ functions
                inform parameters for BSC (see ``bsc.information``).
             roots_inform : dict
                inform parameters for ROOTS (see ``roots.information``).
+
           rqs_inform : dict
              inform parameters for RQS (see ``rqs.information``).
           glrt_inform : dict

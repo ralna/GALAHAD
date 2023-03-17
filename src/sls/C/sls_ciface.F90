@@ -241,11 +241,15 @@
       TYPE ( mc68_info ) :: mc68_info
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc77_info
       REAL ( KIND = rpc_ ), DIMENSION( 10 ) :: mc77_rinfo
+      INTEGER ( KIND = ipc_ ) :: mumps_error
+      INTEGER ( KIND = ipc_ ), DIMENSION( 80 ) :: mumps_info
+      REAL ( KIND = rpc_ ), DIMENSION( 40 ) :: mumps_rinfo
       INTEGER ( KIND = ipc_ ) :: pardiso_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: pardiso_IPARM
       REAL ( KIND = rpc_ ), DIMENSION( 64 ) :: pardiso_DPARM
       INTEGER ( KIND = ipc_ ) :: mkl_pardiso_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM
+      INTEGER ( KIND = ipc_ ) :: pastix_info
       INTEGER ( KIND = ipc_ ) :: wsmp_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: wsmp_iparm
       REAL ( KIND = rpc_ ), DIMENSION( 64 ) :: wsmp_dparm
@@ -572,10 +576,13 @@
     finform%flops_blas = cinform%flops_blas
     finform%mc61_info = cinform%mc61_info
     finform%mc77_info = cinform%mc77_info
+    finform%mumps_error = cinform%mumps_error
+    finform%mumps_info = cinform%mumps_info
     finform%pardiso_error = cinform%pardiso_error
     finform%pardiso_IPARM = cinform%pardiso_IPARM
     finform%mkl_pardiso_error = cinform%mkl_pardiso_error
     finform%mkl_pardiso_IPARM = cinform%mkl_pardiso_IPARM
+    finform%pastix_info = cinform%pastix_info
     finform%wsmp_error = cinform%wsmp_error
     finform%wsmp_iparm = cinform%wsmp_iparm
     finform%lapack_error = cinform%lapack_error
@@ -591,6 +598,7 @@
     finform%forward_error = cinform%forward_error
     finform%mc61_rinfo = cinform%mc61_rinfo
     finform%mc77_rinfo = cinform%mc77_rinfo
+    finform%mumps_rinfo = cinform%mumps_rinfo
     finform%pardiso_DPARM = cinform%pardiso_DPARM
     finform%wsmp_dparm = cinform%wsmp_dparm
 
@@ -657,10 +665,13 @@
     cinform%flops_blas = finform%flops_blas
     cinform%mc61_info = finform%mc61_info
     cinform%mc77_info = finform%mc77_info
+    cinform%mumps_error = finform%mumps_error
+    cinform%mumps_info = finform%mumps_info
     cinform%pardiso_error = finform%pardiso_error
     cinform%pardiso_IPARM = finform%pardiso_IPARM
     cinform%mkl_pardiso_error = finform%mkl_pardiso_error
     cinform%mkl_pardiso_IPARM = finform%mkl_pardiso_IPARM
+    cinform%pastix_info = finform%pastix_info
     cinform%wsmp_error = finform%wsmp_error
     cinform%wsmp_iparm = finform%wsmp_iparm
     cinform%lapack_error = finform%lapack_error
@@ -677,6 +688,7 @@
     cinform%mc61_rinfo = finform%mc61_rinfo
     cinform%mc77_rinfo = finform%mc77_rinfo
     cinform%pardiso_DPARM = finform%pardiso_DPARM
+    cinform%mumps_rinfo = finform%mumps_rinfo
     cinform%wsmp_dparm = finform%wsmp_dparm
 
     ! Logicals

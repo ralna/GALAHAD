@@ -33,7 +33,9 @@
   \c MA27/SILS, \c HSL\_MA57, \c HSL\_MA77, \c HSL\_MA86,
   \c HSL\_MA87 and \c HSL\_MA97 from HSL,
   \c SSIDS from SPRAL,
-  \c PARDISO both from the Pardiso Project and Intel's MKL
+  \c MUMPS from Mumps Technologies,
+  \c PARDISO both from the Pardiso Project and Intel's MKL,
+  \c PaStix from Inria
   and \c WSMP from the IBM alpha Works, as
   well as \c POTR, \c SYTR and \c SBTR from LAPACK.
   Note that
@@ -86,9 +88,11 @@
 <tr><td> \c HSL_MA87 <td> left-looking <td> no <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA97 <td> multifrontal <td> yes <td> no <td> OpenMP core
 <tr><td> \c SSIDS <td> multifrontal <td> yes <td> no <td> CUDA core
+<tr><td> \c MUMPS <td> multifrontal <td> yes <td> optionally <td> MPI
 <tr><td> \c PARDISO <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally
      <td> OpenMP fully
+<tr><td> \c PaStix <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c WSMP <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c POTR <td> dense <td> no <td> no <td> with parallel LAPACK
 <tr><td> \c SYTR <td> dense <td> yes <td> no <td> with parallel LAPACK
@@ -106,8 +110,10 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
  SSIDS       multifrontal          yes   no    CUDA core
+ MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
+ PaStix      left-right-looking    yes   no    OpenMP fully
  WSMP        left-right-looking    yes   no    OpenMP fully
  POTR        dense                  no   no    with parallel LAPACK
  SYTR        dense                 yes   no    with parallel LAPACK
@@ -140,6 +146,12 @@ http://hsl.rl.ac.uk
 The solver \c SSIDS is from the SPRAL sparse-matrix collection,
 and is available as part of GALAHAD.
 
+The solver \c MUMPS is available from Mumps Technologies in France, and 
+version 5.5.1 or above is sufficient.
+To obtain \c MUMPS, see
+
+https://mumps-solver.org .
+
 The solver \c PARDISO is available from the Pardiso Project;
 version 4.0.0 or above is required.
 To obtain \c PARDISO, see
@@ -151,6 +163,12 @@ Library (oneMKL).
 To obtain this version of \c PARDISO, see
 
 https://software.intel.com/content/www/us/en/develop/tools/oneapi.html .
+
+The solver \c PaStix is available from Inria in France, and 
+version 6.2 or above is sufficient.
+To obtain \c PaStiX, see
+
+https://solverstack.gitlabpages.inria.fr/pastix .
 
 The solver \c WSMP is available from the IBM alpha Works;
 version 10.9 or above is required.
@@ -186,21 +204,39 @@ HSL 2011, A collection of Fortran codes for large-scale scientific
 
 and papers
 
-O. Schenk and K. G&auml;rtner,
-``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
-Journal of Future Generation Computer Systems \b, 20(3) (2004) 475--487,
+E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche 
+and F.-H. Rouet,
+``Robust memory-aware mappings for parallel multifrontal factorizations''.
+SIAM Journal on Scientific Computing, \b 38(3) (2016), C256--C279,
 
-O. Schenk and K. G&auml;rtner,
-``On fast factorization pivoting methods for symmetric indefinite systems''.
-Electronic Transactions on Numerical Analysis \b 23 (2006) 158--179,
-and
+P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L'Excellent.
+``A fully asynchronous multifrontal solver using distributed 
+dynamic scheduling''.
+SIAM Journal on Matrix Analysis and Applications \b 23(1) (2001) 15-41,
 
 A. Gupta,
 ``WSMP: Watson Sparse Matrix Package Part I - direct
 solution of symmetric sparse systems''.
 IBM Research Report RC 21886, IBM T. J. Watson Research Center,
-NY 10598, USA (2010).
+NY 10598, USA (2010),
 
+P. Henon, P. Ramet and J. Roman,
+``PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
+Definite Systems''.
+Parallel Computing, \b 28(2) (2002) 301--321,
+
+J.D. Hogg, E. Ovtchinnikov and J.A. Scott. 
+``A sparse symmetric indefinite direct solver for GPU architectures''.
+ACM Transactions on Mathematical Software \b 42(1) (2014), Article 1,
+
+O. Schenk and K. G&auml;rtner,
+``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
+Journal of Future Generation Computer Systems \b, 20(3) (2004) 475--487,
+and
+
+O. Schenk and K. G&auml;rtner,
+``On fast factorization pivoting methods for symmetric indefinite systems''.
+Electronic Transactions on Numerical Analysis \b 23 (2006) 158--179.
 
   \subsection sls_call_order Call order
 
@@ -891,6 +927,14 @@ struct sls_inform_type {
     real_wp_ mc77_rinfo[10];
 
     /// \brief
+    /// the output scalars and arrays from mumps
+    int mumps_error;
+    /// see mumps_error
+    int pardiso_info[80];
+    /// see mumps_error
+    real_wp_ pardiso_rinfo[40];
+
+    /// \brief
     /// the output scalars and arrays from pardiso
     int pardiso_error;
     /// see pardiso_error
@@ -903,6 +947,10 @@ struct sls_inform_type {
     int mkl_pardiso_error;
     /// see mkl_pardiso_error
     int mkl_pardiso_IPARM[64];
+
+    /// \brief
+    /// the output scalars and arrays from pastix
+    int pastix_info;
 
     /// \brief
     /// the output scalars and arrays from wsmp
@@ -932,8 +980,8 @@ void sls_initialize( const char solver[],
  @param[in] solver is a one-dimensional array of type char that specifies
     the \link external solver package \endlink
     that should be used to factorize the matrix \f$A\f$. It should be one of
-   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids',
-   'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr';
+   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps',
+   'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr';
    lower or upper case variants are allowed.
 
  @param[in,out] data  holds private internal data

@@ -26,6 +26,7 @@ transparently to the underlying fortran.
    lp
    qp
    reg
+   sys
    go
 
 * :ref:`genindex`
