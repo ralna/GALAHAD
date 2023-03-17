@@ -52,7 +52,7 @@ jobs:
       - name: Set environment variables
         shell: bash
         run: |
-          echo "GALAHAD=/home/runner/work/GALAHAD/GALAHAD" >> $GITHUB_ENV
+          echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install GNU C and Fortran compilers
         if: matrix.compiler == 'gnu'
