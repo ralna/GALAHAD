@@ -1,17 +1,28 @@
 #  Main body of the installation makefile for the MKL stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 27 III 2021
+#  This version: 17 III 2023
 
 SHELL = /bin/$(BINSHELL)
 
+ifeq "$(PRECIS)" "single"
+ DPREC = -DGALAHAD_SINGLE
+else
+ DPREC = -DGALAHAD_DOUBLE
+endif
+
 #  compiler flags
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+              $(DPREC) -I $(GALAHAD)/include
 RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
 
 #  names of random libraries

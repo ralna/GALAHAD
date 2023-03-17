@@ -6,7 +6,7 @@ BLLS
 The blls package uses a **preconditioned project-gradient method** to solve a
 given **bound-constrained linear least-squares problem**.
 The aim is to minimize the regularized linear least-squares objective function
-$$q(x) =  \half \| A x - b\|_W^2 + \half \sigma \|x\|_2^2$$ 
+$$q(x) =  \frac{1}{2} \| A x - b\|_W^2 + \frac{1}{2} \sigma \|x\|_2^2$$ 
 subject to the simple bounds
 $$x_l \leq x \leq x_u,$$
 where the $m$ by $n$ matrix $A$, the vectors 
@@ -176,11 +176,12 @@ functions
              than identical_bounds_tol will be reset to the average of
              their values.
           stop_cg_relative : float
-          stop_cg_absolute : float
              the CG iteration will be stopped as soon as the current
              norm of the preconditioned gradient is smaller than max(
-             stop_cg_relative * initial preconditioned gradient,
-             stop_cg_absolute).
+             ``stop_cg_relative`` * initial preconditioned gradient,
+             ``stop_cg_absolute``).
+          stop_cg_absolute : float
+             see ``stop_cg_relative``.
           alpha_max : float
              the largest permitted arc length during the piecewise line
              search.
@@ -319,7 +320,6 @@ functions
 
       inform : dict
          dictionary containing output information:
-
           status : int
             return status.  Possible values are:
 

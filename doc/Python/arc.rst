@@ -424,7 +424,6 @@ functions
 
       inform : dict
          dictionary containing output information:
-
           status : int
             return status.  Possible values are:
 
