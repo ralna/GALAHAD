@@ -26,7 +26,7 @@ preconditioners and solve linear systems of equations.
    PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver) <psls>
    GLS - solve unsymmetric systems of linear equations <gls>
    ULS - solve unsymmetric systems of linear equations (übersolver) <uls>
-   FDC - find a linearly independent subset of a system of linear equations <fdc>
+   FDC - find an equivalent linearly independent subset of a system of linear equations <fdc>
 
 
 References

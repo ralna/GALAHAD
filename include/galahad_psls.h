@@ -43,12 +43,12 @@
 
   \subsection psls_method Method and references
 
-  The basic preconditioners are described in detail in Section 3.3.10 of
+  The basic preconditioners are described in detail in 
 
   A. R. Conn, N. I. M. Gould and Ph. L. Toint (1992).
   LANCELOT. A fortran package for large-scale nonlinear optimization
   (release A). Springer Verlag Series in Computational Mathematics 17,
-  Berlin,
+  Berlin, Section 3.3.10,
 
   along with the more modern versions implements in ICFS due to
 
@@ -82,9 +82,11 @@
 <tr><td> \c HSL_MA87 <td> left-looking <td> no <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA97 <td> multifrontal <td> yes <td> no <td> OpenMP core
 <tr><td> \c SSIDS <td> multifrontal <td> yes <td> no <td> CUDA core
+<tr><td> \c MUMPS <td> multifrontal <td> yes <td> optionally <td> MPI
 <tr><td> \c PARDISO <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally
      <td> OpenMP fully
+<tr><td> \c PaStix <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c WSMP <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c POTR <td> dense <td> no <td> no <td> with parallel LAPACK
 <tr><td> \c SYTR <td> dense <td> yes <td> no <td> with parallel LAPACK
@@ -102,8 +104,10 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
  SSIDS       multifrontal          yes   no    CUDA core
+ MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
+ PaStix      left-right-looking    yes   no    OpenMP fully
  WSMP        left-right-looking    yes   no    OpenMP fully
  POTR        dense                  no   no    with parallel LAPACK
  SYTR        dense                 yes   no    with parallel LAPACK
@@ -359,8 +363,9 @@ struct psls_control_type {
     /// \brief
     /// the definite linear equation solver used when .preconditioner = 3,4.
     /// Possible choices are currently:
-    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, pardiso, mkl_pardiso,
-    /// wsmp, potr and pbtr, although only sils, potr, pbtr and,
+    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, 
+    /// mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, 
+    /// pbtr and,
     /// for OMP 4.0-compliant compilers, ssids are installed by default.
     char definite_linear_solver[31];
 

@@ -586,26 +586,6 @@ struct sbls_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// obsolete return status from the factorization routines
-    int sils_analyse_status;
-    /// see sils_analyse_status
-    int sils_factorize_status;
-    /// see sils_analyse_status
-    int sils_solve_status;
-    /// see sils_analyse_status
-    int sls_analyse_status;
-    /// see sils_analyse_status
-    int sls_factorize_status;
-    /// see sils_analyse_status
-    int sls_solve_status;
-    /// see sils_analyse_status
-    int uls_analyse_status;
-    /// see sils_analyse_status
-    int uls_factorize_status;
-    /// see sils_analyse_status
-    int uls_solve_status;
-
-    /// \brief
     /// the return status from the sorting routines
     int sort_status;
 
