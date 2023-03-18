@@ -386,7 +386,6 @@
     ! Integers
     cinform%status = finform%status
     cinform%alloc_status = finform%alloc_status
-    cinform%uls_solve_status = finform%uls_solve_status
     cinform%sort_status = finform%sort_status
     cinform%factorization_integer = finform%factorization_integer
     cinform%factorization_real = finform%factorization_real
