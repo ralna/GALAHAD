@@ -1,3 +1,8 @@
+option('modules',
+       type : 'boolean',
+       value : 'true',
+       description : 'option to install Fortran modules and submodules')
+
 option('ciface',
        type : 'boolean',
        value : true,
@@ -28,22 +33,122 @@ option('double',
        value : true,
        description : 'whether to generate the double precision libraries, tests and examples')
 
-option('hslarchive-galahad',
-       type : 'string',
-       value : '',
-       description : 'uncompressed and extracted hslarchive-galahad directory')
-
 option('libblas',
-       type : 'array',
-       value : [],
-       description : 'array [path, libname] with a path to search for BLAS library named libname')
+       type : 'string',
+       value : 'blas',
+       description : 'option for BLAS library switching')
 
 option('liblapack',
+       type : 'string',
+       value : 'lapack',
+       description : 'option for BLAS library switching')
+
+option('libmetis',
+       type : 'string',
+       value : 'metis',
+       description : 'option for METIS 4 library switching')
+
+option('libhsl',
+       type : 'string',
+       value : 'hsl',
+       description : 'option for HSL library switching')
+
+option('libcutest',
+       type : 'string',
+       value : 'cutest',
+       description : 'option for CUTEST library switching')
+
+option('libwsmp',
+       type : 'string',
+       value : 'wsmp',
+       description : 'option for WSMP library switching')
+
+option('libumfpack',
+       type : 'string',
+       value : 'umfpack',
+       description : 'option for UMFPACK library switching')
+
+option('libpardiso',
+       type : 'string',
+       value : 'pardiso',
+       description : 'option for PARDISO library switching')
+
+option('libspmf',
+       type : 'string',
+       value : 'spmf',
+       description : 'option for SPMF library switching')
+
+option('libpastix',
+       type : 'string',
+       value : 'pastix',
+       description : 'option for PASTIX library switching')
+
+option('libmkl_pardiso',
+       type : 'string',
+       value : 'mkl_intel_lp64',
+       description : 'option for Intel MKL PARDISO library switching')
+
+option('libblas_path',
        type : 'array',
        value : [],
-       description : 'array [path, libname] with a path to search for LAPACK library named libname')
+       description : 'Additional directories to search BLAS library')
+
+option('liblapack_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search LAPACK library')
+
+option('libmetis_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search METIS 4 library')
+
+option('libhsl_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search HSL library')
+
+option('libcutest_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search CUTEST library')
+
+option('libwsmp_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search WSMP library')
+
+option('libumfpack_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search UMFPACK library')
+
+option('libpardiso_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search PARDISO library')
+
+option('libspmf_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search SPMF library')
+
+option('libpastix_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search PASTIX library')
+
+option('libmumps_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search MUMPS libraries')
+
+option('libmkl_pardiso_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search Intel MKL library library')
 
 option('ssids',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'whether to build ssids as well as the related tests and examples')
