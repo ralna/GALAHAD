@@ -871,9 +871,6 @@ and {\tt inform\%bad\_alloc} respectively.
 {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} or   {\tt 'DENSE'}
   has been violated.
 
-\itt{\galerrinertia} The matrix is not positive definite while the solver
-  used expected it to be.
-
 \itt{\galerranalysis} The solver required by {\tt SLS} reported an
   error during its analysis phase. 
   See {\tt inform\%SLS\_inform\%status} for more details.
@@ -881,6 +878,9 @@ and {\tt inform\%bad\_alloc} respectively.
 \itt{\galerrfactorization} The solver required by {\tt SLS} reported an
   error during its factorization phase. 
   See {\tt inform\%SLS\_inform\%status} for more details.
+
+\itt{\galerrinertia} The matrix is not positive definite while the solver
+  used expected it to be.
 
 \itt{\galunknownsolver} The requested factorization solver is not available.
 
