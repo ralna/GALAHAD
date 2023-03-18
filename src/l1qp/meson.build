@@ -1,1 +1,2 @@
 libgalahad_src += files('l1qp.F90')
+libgalahad_cutest_src += files('usel1qp.F90', 'runl1qp_sif.F90')
