@@ -315,7 +315,7 @@ struct sils_ainfo_type {
     int stat;
 
     /// \brief
-    /// OLD
+    /// legacy component, now not used
     int faulty;
 
     /// \brief
@@ -413,11 +413,11 @@ struct sils_finfo_type {
     int stat;
 
     /// \brief
-    /// OLD
+    /// legacy component, now not used
     int faulty;
 
     /// \brief
-    /// OLD
+    /// legacy component, now not used
     int step;
 
     /// \brief
@@ -459,19 +459,19 @@ struct sils_sinfo_type {
     int stat;
 
     /// \brief
-    /// Cond # of matrix (cat 1 eqs)
+    /// Condition number of matrix (category 1 eqs)
     real_wp_ cond;
 
     /// \brief
-    /// Cond # of matrix (cat 2 eqs)
+    /// Condition number of matrix (category 2 eqs)
     real_wp_ cond2;
 
     /// \brief
-    /// Cond # of matrix (cat 1 eqs)
+    /// Backward error for the system (category 1 eqs)
     real_wp_ berr;
 
     /// \brief
-    /// Cond # of matrix (cat 2 eqs)
+    /// Backward error for the system (category 2 eqs)
     real_wp_ berr2;
 
     /// \brief

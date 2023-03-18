@@ -112,15 +112,6 @@
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = ipc_ ) :: sils_analyse_status
-      INTEGER ( KIND = ipc_ ) :: sils_factorize_status
-      INTEGER ( KIND = ipc_ ) :: sils_solve_status
-      INTEGER ( KIND = ipc_ ) :: sls_analyse_status
-      INTEGER ( KIND = ipc_ ) :: sls_factorize_status
-      INTEGER ( KIND = ipc_ ) :: sls_solve_status
-      INTEGER ( KIND = ipc_ ) :: uls_analyse_status
-      INTEGER ( KIND = ipc_ ) :: uls_factorize_status
-      INTEGER ( KIND = ipc_ ) :: uls_solve_status
       INTEGER ( KIND = ipc_ ) :: sort_status
       INTEGER ( KIND = longc_ ) :: factorization_integer
       INTEGER ( KIND = longc_ ) :: factorization_real
@@ -354,15 +345,6 @@
     ! Integers
     finform%status = cinform%status
     finform%alloc_status = cinform%alloc_status
-    finform%sils_analyse_status = cinform%sils_analyse_status
-    finform%sils_factorize_status = cinform%sils_factorize_status
-    finform%sils_solve_status = cinform%sils_solve_status
-    finform%sls_analyse_status = cinform%sls_analyse_status
-    finform%sls_factorize_status = cinform%sls_factorize_status
-    finform%sls_solve_status = cinform%sls_solve_status
-    finform%uls_analyse_status = cinform%uls_analyse_status
-    finform%uls_factorize_status = cinform%uls_factorize_status
-    finform%uls_solve_status = cinform%uls_solve_status
     finform%sort_status = cinform%sort_status
     finform%factorization_integer = cinform%factorization_integer
     finform%factorization_real = cinform%factorization_real
@@ -404,14 +386,6 @@
     ! Integers
     cinform%status = finform%status
     cinform%alloc_status = finform%alloc_status
-    cinform%sils_analyse_status = finform%sils_analyse_status
-    cinform%sils_factorize_status = finform%sils_factorize_status
-    cinform%sils_solve_status = finform%sils_solve_status
-    cinform%sls_analyse_status = finform%sls_analyse_status
-    cinform%sls_factorize_status = finform%sls_factorize_status
-    cinform%sls_solve_status = finform%sls_solve_status
-    cinform%uls_analyse_status = finform%uls_analyse_status
-    cinform%uls_factorize_status = finform%uls_factorize_status
     cinform%uls_solve_status = finform%uls_solve_status
     cinform%sort_status = finform%sort_status
     cinform%factorization_integer = finform%factorization_integer
