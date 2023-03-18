@@ -1,1 +1,1 @@
-libgalahad_src += files('ptrans.F90')
+libgalahad_cutest_src += files('ptrans.F90')

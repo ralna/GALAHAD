@@ -1,1 +1,1 @@
-libgalahad_src += files('cutest_functions.F90')
+libgalahad_cutest_src += files('cutest_functions.F90')
