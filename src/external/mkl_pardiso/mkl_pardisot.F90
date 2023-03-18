@@ -19,7 +19,7 @@ PROGRAM TEST_PARDISO
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IPARM, IA, JA
   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION ( : ) :: A, B, X
   INTEGER ( KIND = ip_ ) :: i, j, l, idum( 1 )
-  REAL( KIND = rp_ ) :: ddum( 1 )
+  REAL( KIND = rp_ ) :: ddum( 1 ), ddum_out( 1 )
   LOGICAL :: all_in_one = .FALSE.
   LOGICAL :: easy_problem = .FALSE.
 
@@ -171,7 +171,7 @@ PROGRAM TEST_PARDISO
 1 CONTINUE 
   phase = - 1 ! release internal memory
   CALL MKL_PARDISO_SOLVE( PT, maxfct, mnum, mtype, phase, n, ddum, idum, idum, &
-                          idum, nrhs, IPARM, msglvl, ddum, ddum, error )
+                          idum, nrhs, IPARM, msglvl, ddum, ddum_out, error )
   DEALLOCATE( IPARM, IA, JA, A, B, X, PT )
 
 END PROGRAM TEST_PARDISO

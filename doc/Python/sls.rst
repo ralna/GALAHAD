@@ -679,66 +679,79 @@ functions
 
              * **0**
 
-               success.
+               The run was succesful.
 
              * **-1**
 
-               allocation error.
+               An allocation error occurred. A message indicating the
+               offending array is written on unit control['error'], and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
 
              * **-2**
 
-               deallocation error.
+               A deallocation error occurred.  A message indicating the
+               offending array is written on unit control['error'] and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
 
              * **-3**
 
-               matrix data faulty (n < 1, ne <  0).
+               The restriction n > 0 or requirement that type contains
+               its relevant string 'dense', 'coordinate', 'sparse_by_rows',
+               'diagonal', 'scaled_identity',  'identity', 'zero' or 'none' 
+               has been violated.
+               success.
 
              * **-20**
 
-               alegedly +ve definite matrix is not. 
+               The matrix $A$ is not positive definite while the factorization
+               solver used expected it to be.
 
              * **-29**
 
-               unavailable option.
+               A requested option is unavailable.
 
              * **-31**
 
-               input order is not a permutation or is faulty
+               The input order is not a permutation or is faulty
                in some other way.
 
              * **-32**
 
-               > control.max_integer_factor_size
-               integer space required for factor.
+               more than options['max_integer_factor_size']
+               integer space required for the factors.
 
              * **-33**
 
-               > control.max_real_factor_size real space required for
-               factors.
+               more than options['max_real_factor_size']
+               real space required for the factors.
 
              * **-40**
 
-               not possible to alter the diagonals.
+               It is not possible to alter the diagonals.
 
              * **-41**
 
-               no access to permutation or pivot sequence used.
+               there is no access to the permutation or pivot sequence used.
 
              * **-42**
 
-               no access to diagonal perturbations.
+               there is no access to diagonal perturbations.
 
              * **-43**
 
-               direct-access file error.
+               A direct-access file error has occurred.
 
              * **-50**
 
-               solver-specific error; see the solver's info parameter.
+               A solver-specific error; see the solver's info parameter.
 
              * **-101**
 
-               unknown solver.
+               An unknown solver has been requested.
 
           alloc_status : int
              the status of the last attempted allocation/deallocation.
