@@ -45,6 +45,7 @@ int main(void) {
 
     // Set user-defined control options
       control.f_indexing = true; // fortran sparse matrix indexing
+      strcpy(control.symmetric_linear_solver,"sytr ") ;
 
       switch(storage_type){
         case 1: // sparse co-ordinate storage
