@@ -3,8 +3,8 @@ BLLS
 
 .. module:: galahad.blls
 
-The blls package uses a **preconditioned project-gradient method** to solve a
-given **bound-constrained linear least-squares problem**.
+The ``blls`` package uses a **preconditioned project-gradient method** to solve
+a given **bound-constrained linear least-squares problem**.
 The aim is to minimize the regularized linear least-squares objective function
 $$q(x) =  \frac{1}{2} \| A x - b\|_W^2 + \frac{1}{2} \sigma \|x\|_2^2$$ 
 subject to the simple bounds

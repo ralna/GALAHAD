@@ -5,7 +5,7 @@ SBLS
 
 Given a **block, symmetric matrix**
 $$K_{H} = \left(\begin{matrix}H & A^T \\ A  & - C\end{matrix}\right),$$
-the sbls package constructs a variety of **preconditioners** of the form
+the ``sbls`` package constructs a variety of **preconditioners** of the form
 $$K_{G} = \left(\begin{matrix}G & A^T \\ A  & - C\end{matrix}\right).$$
 Here, the leading-block matrix $G$ is a suitably-chosen
 approximation to $H$; it may either be prescribed **explicitly**, in

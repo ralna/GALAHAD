@@ -3,7 +3,7 @@ BQPB
 
 .. module:: galahad.bqpb
 
-The bqpb package uses a **primal-dual interior-point method** to solve a
+The ``bqpb`` package uses a **primal-dual interior-point method** to solve a
 given **bound-constrained convex quadratic program**.
 The aim is to minimize the quadratic objective function
 $$q(x) = f + g^T x + \frac{1}{2} x^T H x,$$ 

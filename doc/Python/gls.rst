@@ -3,7 +3,7 @@ GLS
 
 .. module:: galahad.gls
 
-The gls package **solves sparse unsymmetric systems of linear equations**
+The ``gls`` package **solves sparse unsymmetric systems of linear equations**
 using a variant of Gaussian elimination.
 Given a sparse symmetric matrix $A = \{ a_{ij} \}_{m \times n}$, and an
 $n$-vector $b$, this function solves the system $A x = b$. If instead 

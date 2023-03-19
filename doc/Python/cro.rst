@@ -3,7 +3,8 @@ CRO
 
 .. module:: galahad.cro
 
-The cro package provides a **crossover** from an **primal-dual interior-point**
+The ``cro`` package provides a **crossover** from a
+**primal-dual interior-point**
 solution to given **convex quadratic program** to a **basic one** in which 
 the matrix of defining active constraints/variables is of **full rank**. 
 This applies to the problem of minimizing the quadratic objective function
@@ -143,21 +144,19 @@ functions
           part of $H$ in the sparse co-ordinate storage scheme.
       H_col : ndarray(H_ptr(n)-1)
           holds the column indices of the nonzeros of the lower triangular 
-          part of $H$ in the sparse co-ordinate storage scheme,
+          part of $H$ in the sparse co-ordinate storage scheme.
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
           part of $H$, as well as the total number of entries plus one.
       A_val : ndarray(A_ptr(m)-1)
           holds the values of the nonzeros of $A$ in the sparse co-ordinate
-          storage scheme
+          storage scheme.
       A_col : ndarray(A_ptr(m)-1)
           holds the column indices  of the nonzeros of $A$ in the sparse 
-          co-ordinate  storage scheme
+          co-ordinate  storage scheme.
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one
-          scheme. It need not be set when the other schemes are used, and in 
-          this case can be None.
+          total number of entries plus one.
       c_l : ndarray(m)
           holds the values of the lower bounds $c_l$ on the constraints
           The lower bound on any component of $A x$ that is unbounded from 
@@ -317,6 +316,7 @@ functions
           dependent : int
              the number of dependent active constraints.
           time : dict
+             dictionary containing timing information:
                total : float
                   the total CPU time spent in the package.
                analyse : float

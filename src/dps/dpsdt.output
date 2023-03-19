@@ -1,15 +1,10 @@
+ C sparse matrix indexing
 
-Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+ basic tests of storage formats
 
-Backtrace for this error:
-#0  0x1485df030d21 in ???
-#1  0x1485df02fef5 in ???
-#2  0x1485decb308f in ???
-	at /build/glibc-SzIz7B/glibc-2.31/signal/../sysdeps/unix/sysv/linux/x86_64/sigaction.c:0
-#3  0x5574d55fcbd9 in ???
-#4  0x5574d55eecd7 in ???
-#5  0x5574d55ef7c3 in ???
-#6  0x1485dec94082 in __libc_start_main
-	at ../csu/libc-start.c:308
-#7  0x5574d55e87cd in ???
-#8  0xffffffffffffffff in ???
+format C: DPS_solve_problem exit status   = 0, f = -0.04
+format C: DPS_resolve_problem exit status = 0, f = 0.38
+format R: DPS_solve_problem exit status   = 0, f = -0.04
+format R: DPS_resolve_problem exit status = 0, f = 0.38
+format D: DPS_solve_problem exit status   = 0, f = -0.04
+format D: DPS_resolve_problem exit status = 0, f = 0.38

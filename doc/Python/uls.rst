@@ -3,7 +3,7 @@ ULS
 
 .. module:: galahad.uls
 
-The uls package 
+The ``uls`` package 
 **solves dense or sparse unsymmetric systems of linear equations**
 using variants of Gaussian elimination.
 Given a sparse symmetric matrix $A = \{ a_{ij} \}_{m \times n}$, and an
@@ -151,9 +151,16 @@ The string A_type = 'sparse_by_columns' should be specified.
 functions
 ---------
 
-   .. function:: uls.initialize()
+   .. function:: uls.initialize(solver)
 
       Set default option values and initialize private data
+
+      **Parameters:**
+
+      solver : str
+        the name of the solver required to solve $Ax=b$. 
+        It should be one of 'gls', 'ma28', 'ma48' or 'getr';
+        lower or upper case variants are allowed.
 
       **Returns:**
 

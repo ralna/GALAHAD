@@ -20,12 +20,12 @@ preconditioners and solve linear systems of equations.
    :caption: Contents
    :titlesonly:
 
-   SILS - solve symmetric systems of linear equations <sils>
    SLS - solve symmetric systems of linear equations (übersolver) <sls>
+   ULS - solve unsymmetric systems of linear equations (übersolver) <uls>
    SBLS - precondition and solve block symmetric systems of linear equations <sbls>
    PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver) <psls>
+   SILS - solve symmetric systems of linear equations <sils>
    GLS - solve unsymmetric systems of linear equations <gls>
-   ULS - solve unsymmetric systems of linear equations (übersolver) <uls>
    FDC - find an equivalent linearly independent subset of a system of linear equations <fdc>
 
 

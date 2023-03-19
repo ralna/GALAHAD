@@ -1,31 +1,27 @@
-LSTR
+LSRT
 ====
 
-.. module:: galahad.lstr
+.. module:: galahad.lsrt
 
-The ``lstr`` package uses a **Krylov-subspace iteration** to find an 
+The ``lsrt`` package uses a **Krylov-subspace iteration** to find an 
 approximation of the global minimizer of the 
-**linear sum-of-squares objective function** 
-within a **sphere**; this is commonly known as the
-**linear least-squares trust-region subproblem**.
+**regularized linear sum-of-squares objective function**. 
 The aim is to minimize the least-squares objective function
-$$q(x) = \frac{1}{2}\|Ax - b\|_2^2,$$ 
-where the vector $x$ is required to satisfy 
-the spherical **trust-region constraint** $\|x\|_2 \leq  \Delta$, 
+$$r(x) = \frac{1}{2}\|Ax - b\|_2^2 + \frac{\sigma}{p} \|x\|_2^p,$$ 
 where the $\ell_2$-norm of $x$ is defined to be $\|x\|_2 = \sqrt{x^T x}$,
-and where the **radius** $\Delta > 0$.
+and where the **weight** $\sigma > 0$ and **power** $p \geq 2$.
 The method may be suitable for large problems as no factorization is
 required. Reverse communication is used to obtain
 matrix-vector products of the form $u + A v$ and $v + A^T u.$
 
-See Section 4 of $GALAHAD/doc/lstr.pdf for a brief description of the
+See Section 4 of $GALAHAD/doc/lsrt.pdf for a brief description of the
 method employed and other details.
 
 
 functions
 ---------
 
-   .. function:: lstr.initialize()
+   .. function:: lsrt.initialize()
 
       Set default option values and initialize private data
 
@@ -69,18 +65,21 @@ functions
              the minimum number of iterations allowed (-ve = no bound).
           itmax : int
              the maximum number of iterations allowed (-ve = no bound).
-          itmax_on_boundary : int
-             the maximum number of iterations allowed once the boundary
-             has been encountered (-ve = no bound).
           bitmax : int
              the maximum number of Newton inner iterations per outer
-             iteration allowe (-ve = no bound).
+             iteration allowed (-ve = no bound).
           extra_vectors : int
              the number of extra work vectors of length n used.
+          stopping_rule : int
+             the stopping rule used: 0=1.0, 1=norm step, 2=norm
+             step/sigma (NOT USED).
+          freq : int
+             frequency for solving the reduced tri-diagonal problem
+             (NOT USED).
           stop_relative : float
              the iteration stops successfully when $\|A^Tr\|$ is less
-             than max( ``stop_relative`` * $\|A^T b \|$,
-             ``stop_absolute`` ), where $r = A x - b$.
+             than max( ``stop_relative`` * $\|A^Tb\|$, ``stop_absolute`` ),
+             where $r = A x - b$.
           stop_absolute : float
              see stop_relative.
           fraction_opt : float
@@ -89,9 +88,6 @@ functions
              found.
           time_limit : float
              the maximum elapsed time allowed (-ve means infinite).
-          steihaug_toint : bool
-             should the iteration stop when the Trust-region is first
-             encountered?.
           space_critical : bool
              if ``space_critical`` True, every effort will be made to
              use as little space as possible. This may result in longer
@@ -105,20 +101,19 @@ functions
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
 
-
-   .. function:: lstr.load_control(options=None)
+   .. function:: lsrt.load_control(options=None)
 
       Import control data into internal storage prior to solution.
 
       **Parameters:**
 
       options : dict, optional
-          dictionary of control options (see ``lstr.initialize``).
+          dictionary of control options (see ``lsrt.initialize``).
 
-   .. function:: lstr.solve_problem(status, m, n, radius, u, v)
+   .. function:: lsrt.solve_problem(status, m, n, weight, power, u, v)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
-      within a trust-region of radius $\Delta$.
+      Find the global moinimizer of the regularized quadratic objective 
+      function $r(x)$.
 
       **Parameters:**
 
@@ -131,7 +126,7 @@ functions
 
           * **5**
 
-          a restart entry with u reset to $b$, but a smaller radius $\Delta$.
+          a restart entry with u reset to $b$, but a smaller larger $\sigma$.
 
           * **other**
 
@@ -141,8 +136,10 @@ functions
           holds the number of residuals, i.e., the number of rows of $A$.
       n : int
           holds the number of variables, i.e., the number of columns of $A$.
-      radius : float
-          holds the strictly positive trust-region radius, $\Delta$.
+      weight : float
+          holds the strictly positive regularization weight, $\sigma$.
+      power : float
+          holds the regularization power, $p \geq 2$.
       u : ndarray(m)
           holds the result vector when initial or return status = 1, 2, 
           4 or 5 (see below).
@@ -177,7 +174,7 @@ functions
 
           * **<0**
 
-          an error occurred, see ``status`` in ``lstr.information`` for
+          an error occurred, see ``status`` in ``lsrt.information`` for
           further details.
 
       x : ndarray(n)
@@ -187,7 +184,7 @@ functions
       v : ndarray(n)
           holds the result vector $v$.
 
-   .. function:: [optional] lstr.information()
+   .. function:: [optional] lsrt.information()
 
       Provide optional output information
 
@@ -220,7 +217,8 @@ functions
 
             * **-3**
 
-              The restriction n > 0, m > 0 or $\Delta > 0$ has been violated.
+              The restriction n > 0, m > 0, $p \geq 2$ or $\sigma > 0$ 
+              has been violated.
 
             * **-18**
 
@@ -238,19 +236,19 @@ functions
           iter : int
              the total number of iterations required.
           iter_pass2 : int
-             the total number of pass-2 iterations required if the
-             solution lies on the trust-region boundary.
+             the total number of pass-2 iterations required.
           biters : int
              the total number of inner iterations performed.
           biter_min : int
              the smallest number of inner iterations performed during
              an outer iteration.
           biter_max : int
-             the largestt number of inner iterations performed during
-             an outer iteration.
+             the largest number of inner iterations performed during an
+             outer iteration.
+          obj : float
+             the value of the objective function.
           multiplier : float
-             the Lagrange multiplier, $\lambda$, corresponding to the
-             trust-region constraint.
+             the multiplier, $\lambda = sigma \|x\|^(p-2)$.
           x_norm : float
              the Euclidean norm of $x$.
           r_norm : float
@@ -261,6 +259,6 @@ functions
              the average number of inner iterations performed during an
              outer iteration.
 
-   .. function:: lstr.terminate()
+   .. function:: lsrt.terminate()
 
      Deallocate all internal private storage.

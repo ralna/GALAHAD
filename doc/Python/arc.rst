@@ -3,7 +3,7 @@ ARC
 
 .. module:: galahad.arc
 
-The arc package uses a regularization method to find a (local)
+The ``arc`` package uses a regularization method to find a (local)
 minimizer of a differentiable objective function $f(x)$ of
 many variables $x$. The method offers the choice of direct
 and iterative solution of the key subproblems, and is most

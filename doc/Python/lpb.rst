@@ -3,7 +3,7 @@ LPB
 
 .. module:: galahad.lpb
 
-The lpb package uses a **primal-dual interior-point method** to solve a
+The ``lpb`` package uses a **primal-dual interior-point method** to solve a
 given **linear program**.
 The aim is to minimize the linear objective function
 $$q(x) = f + g^T x$$ 
