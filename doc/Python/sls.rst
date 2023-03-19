@@ -3,7 +3,8 @@ SLS
 
 .. module:: galahad.sls
 
-The sls package **solves dense or sparse symmetric systems of linear equations**
+The ``sls`` package 
+**solves dense or sparse symmetric systems of linear equations**
 using variants of Gaussian elimination.
 Given a sparse symmetric matrix $A = \{ a_{ij} \}_{n \times n}$, and an
 $n$-vector $b$ or a matrix $B = \{ b_{ij} \}_{n \times r}$, this
@@ -12,7 +13,7 @@ The matrix $A$ need not be definite.
 
 The method provides a common interface to a variety of well-known
 solvers from HSL and elsewhere. Currently supported solvers include
-``MA27/SILS``, ``HSL\_MA57``, ``HSL\_MA77`` , ``HSL_MA86``,
+``MA27/SILS``, ``HSL_MA57``, ``HSL_MA77`` , ``HSL_MA86``,
 ``HSL_MA87`` and ``HSL_MA97`` from {HSL},
 ``SSIDS`` from {SPRAL},
 ``MUMPS`` from Mumps Technologies,
@@ -323,9 +324,18 @@ the string A_type = 'zero' or 'none' should be specified.
 functions
 ---------
 
-   .. function:: sls.initialize()
+   .. function:: sls.initialize(solver)
 
       Set default option values and initialize private data
+
+      **Parameters:**
+
+      solver : str
+        the name of the solver required to solve $Ax=b$. 
+        It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 
+        'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 
+        'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr';
+        lower or upper case variants are allowed.
 
       **Returns:**
 
@@ -703,7 +713,6 @@ functions
                its relevant string 'dense', 'coordinate', 'sparse_by_rows',
                'diagonal', 'scaled_identity',  'identity', 'zero' or 'none' 
                has been violated.
-               success.
 
              * **-20**
 

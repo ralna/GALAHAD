@@ -31,8 +31,8 @@ transparently to the underlying fortran.
 
 * :ref:`genindex`
 
-   * :ref:`modindex`
-   * :ref:`search`
+  * :ref:`modindex`
+  * :ref:`search`
 
 References
 ----------

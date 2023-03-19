@@ -3,7 +3,7 @@ DGO
 
 .. module:: galahad.dgo
 
-The dgo package uses a deterministic partition-and-bound trust-region
+The ``dgo`` package uses a deterministic partition-and-bound trust-region
 method to find an approximation to the global minimizer of a
 differentiable objective function $f(x)$ of n variables $x$,
 subject to simple bounds $x^l <= x <= x^u$ on the variables.

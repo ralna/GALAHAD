@@ -3,8 +3,9 @@ GLRT
 
 .. module:: galahad.glrt
 
-The glrt package uses a **Krylov-subspace iteration** to find an approximation
-of the global minimizer of **regularized quadratic objective function**. 
+The ``glrt`` package uses a **Krylov-subspace iteration** to find an 
+approximation of the global minimizer of 
+**regularized quadratic objective function**. 
 The aim is to minimize the regularized quadratic objective function
 $$r(x) = f + g^T x + \frac{1}{2} x^T H x + \frac{\sigma}{p} \|x\|_{M}^p,$$ 
 where the **weight** $\sigma > 0$, the **power** $p \geq 2$, 

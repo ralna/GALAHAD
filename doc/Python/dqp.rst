@@ -3,7 +3,7 @@ DQP
 
 .. module:: galahad.dqp
 
-The dqp package uses a 
+The ``dqp`` package uses a 
 **dual gradient-projection method** to solve a given
 **stricly-convex quadratic program**.
 The aim is to minimize the quadratic objective function

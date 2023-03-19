@@ -3,7 +3,7 @@ UGO
 
 .. module:: galahad.ugo
 
-The ugo package aims to find the global minimizer of a univariate
+The ``ugo`` package aims to find the global minimizer of a univariate
 twice-continuously differentiable function $f(x)$ of a single
 variable over the finite interval $x^l <= x <= x^u$. Function
 and derivative values are provided via a subroutine call.

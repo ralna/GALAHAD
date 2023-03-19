@@ -33,8 +33,10 @@
   whenever \f$A\f$ is not of full rank.
 
   The method provides a common interface to a variety of well-known solvers
-  from HSL. Currently supported solvers include \c MA28/GLS and \c HSL\_MA48.
-  Note that <b> the solvers themselves do not form part of this package
+  from HSL and elsewhere. Currently supported solvers include \c MA28/GLS 
+  and \c HSL\_MA48 from HSL, as well as \c GETR from LAPACK.
+  Note that, with the exception of he Netlib reference LAPACK code,
+  <b> the solvers themselves do not form part of this package
   and must be obtained separately.</b>
   Dummy instances are provided for solvers that are unavailable.
   Also note that additional flexibility may be obtained by calling the
@@ -79,6 +81,10 @@
     HSL 2007, A collection of {F}ortran codes for large-scale scientific
     computation (2007).  \n
     http://www.cse.clrc.ac.uk/nag/hsl
+
+  The solver \c GETR is available as \c S/DGETRF/S as part of LAPACK. 
+  Reference versions are provided by GALAHAD, but for good performance
+  machined-tuned versions should be used.
 
   \subsection uls_call_order Call order
 
@@ -398,6 +404,11 @@ struct uls_inform_type {
     struct ma48_finfo ma48_finfo;
     /// see ma48_ainfo
     struct ma48_sinfo ma48_sinfo;
+
+    /// \brief
+    /// the LAPACK error return code
+    int lapack_error;
+
 };
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
@@ -415,7 +426,7 @@ void uls_initialize( const char solver[],
  @param[in] solver is a one-dimensional array of type char that specifies
     the \link external solver package \endlink
     that should be used to factorize the matrix \f$A\f$. It should be one of
-   'gls', 'ma28' or 'ma48; lower or upper case variants are allowed.
+   'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
 
  @param[in,out] data  holds private internal data
 
