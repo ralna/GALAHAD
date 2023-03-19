@@ -3,7 +3,7 @@ QPB
 
 .. module:: galahad.qpb
 
-The qpb package uses a 
+The ``qpb`` package uses a 
 **primal-dual interior-point method** to solve a given
 **non-convex quadratic program**.
 The aim is to minimize the quadratic objective function

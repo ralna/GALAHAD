@@ -3,7 +3,7 @@ NLS
 
 .. module:: galahad.nls
 
-The nls package uses a regularization method to find a (local) unconstrained
+The ``nls`` package uses a regularization method to find a (local) unconstrained
 minimizer of a differentiable weighted sum-of-squares objective function
 $$f(x) :=
 \frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv \frac{1}{2} \|c(x)\|^2_W$$

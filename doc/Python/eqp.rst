@@ -3,7 +3,7 @@ EQP
 
 .. module:: galahad.eqp
 
-The eqp package uses an **iterative method** to solve a
+The ``eqp`` package uses an **iterative method** to solve a
 given **equality-constrained quadratic program**.
 The aim is to minimize the quadratic objective function
 $$q(x) = f + g^T x + \frac{1}{2} x^T H x,$$ 

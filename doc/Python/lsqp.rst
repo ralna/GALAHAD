@@ -3,7 +3,7 @@ LSQP
 
 .. module:: galahad.lsqp
 
-The lsqp package uses an **interior-point trust-region method** to solve a
+The ``lsqp`` package uses an **interior-point trust-region method** to solve a
 given **linear or separable convex quadratic program**.
 The aim is to minimize the separable quadratic objective function
 $$s(x) = f + g^T x + \frac{1}{2} \sum_{j=1}^n w_j^2 (x_j - x_j^0)^2,$$ 

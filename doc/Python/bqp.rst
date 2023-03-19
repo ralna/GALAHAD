@@ -3,8 +3,8 @@ BQP
 
 .. module:: galahad.bqp
 
-The bqp package uses a **preconditioned, projected-gradient method** to solve a
-given **bound-constrained convex quadratic program**.
+The ``bqp`` package uses a **preconditioned, projected-gradient method** to 
+solve a given **bound-constrained convex quadratic program**.
 The aim is to minimize the quadratic objective function
 $$q(x) = f + g^T x + \frac{1}{2} x^T H x,$$ 
 subject to the simple bounds

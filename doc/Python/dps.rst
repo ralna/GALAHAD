@@ -3,8 +3,8 @@ DPS
 
 .. module:: galahad.dps
 
-The dps package **constructs a symmetric, positive definite matrix** $M$ from
-a given $H$ so that $H$ is is **diagonal** 
+The ``dps`` package **constructs a symmetric, positive definite matrix** $M$ 
+from a given $H$ so that $H$ is is **diagonal** 
 in the norm $\|v\|_M = \sqrt{v^T M v}$ induced by $M$, and consequently 
 minimizers of **trust-region** and **regularized quadratic** subproblems 
 may be computed efficiently.

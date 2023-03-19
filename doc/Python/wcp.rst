@@ -3,7 +3,7 @@ WCP
 
 .. module:: galahad.wcp
 
-The wcp package uses a **primal-dual interior-point method** to find a 
+The ``wcp`` package uses a **primal-dual interior-point method** to find a 
 well-centered point within a **polyhedral set**.
 The aim is to find a point that lies interior to the boundary of the 
 polyhedron definied by the general linear constraints and simple bounds

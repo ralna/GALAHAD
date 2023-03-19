@@ -3,7 +3,7 @@ BGO
 
 .. module:: galahad.bgo
 
-The bgo package uses a multi-start trust-region method to find an
+The ``bgo`` package uses a multi-start trust-region method to find an
 approximation to the global minimizer of a differentiable objective
 function $f(x)$ of n variables $x$, subject to simple
 bounds $x^l <= x <= x^u$ on the variables. Here, any of the

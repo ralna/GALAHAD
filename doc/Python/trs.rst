@@ -3,7 +3,7 @@ TRS
 
 .. module:: galahad.trs
 
-The trs package uses **matrix factorization** to find the 
+The ``trs`` package uses **matrix factorization** to find the 
 global minimizer of **quadratic objective function** within
 an **ellipsoidal region**; this is commonly known as the
 **trust-region subproblem**.
@@ -14,7 +14,6 @@ the ellipsoidal  **trust-region constraint** $\|x\|_{M} \leq  \Delta$,
 and optionally  **affine constraints** $A x = 0$, 
 where the $M$-norm of $x$ is defined to be $\|x\|_{M} = \sqrt{x^T M x}$,
 and where the **radius** $\Delta > 0$.
-
 
 The package may also be used to solve the related problem in which $x$ is
 instead required to satisfy the **equality constraint** $\|x\|_{M} = \Delta$.

@@ -3,8 +3,8 @@ L2RT
 
 .. module:: galahad.l2rt
 
-The l2rt package uses a **Krylov-subspace iteration** to find an approximation
-of the global minimizer of the 
+The ``l2rt`` package uses a **Krylov-subspace iteration** to find an 
+approximation of the global minimizer of the 
 **regularized linear Euclidean-norm objective function**. 
 The aim is to minimize the objective function
 $$r(x) = \sqrt{\|Ax - b\|_2^2 + \mu \|x\|_2^2} + \frac{\sigma}{p} \|x\|_2^p,$$ 

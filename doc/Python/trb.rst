@@ -3,7 +3,7 @@ TRB
 
 .. module:: galahad.trb
 
-The trb package uses a trust-region method to find a (local)
+The ``trb`` package uses a trust-region method to find a (local)
 minimizer of a differentiable objective function $f(x)$ of
 many variables $x$, where the variables satisfy the simple 
 bounds $x^l <= x <= x^u$.  The method offers the choice of

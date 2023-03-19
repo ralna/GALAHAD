@@ -3,7 +3,7 @@ QPA
 
 .. module:: galahad.qpa
 
-The qpa package uses a **working-set method** to solve
+The ``qpa`` package uses a **working-set method** to solve
 **non-convex quadratic programs** in various guises.
 The first is the **$\mathbf{\ell_1}$ quadratic programming problem** 
 that aims to minimize

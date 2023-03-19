@@ -3,7 +3,7 @@ SILS
 
 .. module:: galahad.sils
 
-The sils package **solves sparse symmetric systems of linear equations**
+The ``sils`` package **solves sparse symmetric systems of linear equations**
 using a multifrontal variant of Gaussian elimination.
 Given a sparse symmetric matrix $A = \{ a_{ij} \}_{n \times n}$, and an
 $n$-vector $b$, this function solves the system $A x = b$.

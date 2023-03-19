@@ -3,7 +3,7 @@ RQS
 
 .. module:: galahad.rqs
 
-The rqs package uses **matrix factorization** to find the 
+The ``rqs`` package uses **matrix factorization** to find the 
 global minimizer of a **regularized quadratic objective function**.
 The aim is to minimize the regularized quadratic objective function
 $$r(x) = f + g^T x + \frac{1}{2} x^T H x + \frac{\sigma}{p} \|x\|_{M}^p,$$ 

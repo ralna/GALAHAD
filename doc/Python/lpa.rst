@@ -3,7 +3,7 @@ LPA
 
 .. module:: galahad.lpa
 
-The lpa package uses the **simplex method** to solve a
+The ``lpa`` package uses the **simplex method** to solve a
 given **linear program**.
 The aim is to minimize the linear objective function
 $$q(x) = f + g^T x$$ 
