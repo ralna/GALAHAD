@@ -235,12 +235,9 @@ subdir('src/ssids')
 subdir('src/spral')
 
 if build_single
-  sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src]
+  sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src, libgalahad_cutest_src]
   if build_ciface
     sources_single += [libgalahad_c_single_src + libgalahad_c_integer_src + libgalahad_c_src]
-  endif
-  if libcutest.found()
-    sources_single += libgalahad_cutest_src
   endif
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -254,12 +251,9 @@ if build_single
 endif
 
 if build_double
-  sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src]
+  sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src, libgalahad_cutest_src]
   if build_ciface
     sources_double += [libgalahad_c_double_src + libgalahad_c_integer_src + libgalahad_c_src]
-  endif
-  if libcutest.found()
-    sources_double += libgalahad_cutest_src
   endif
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
