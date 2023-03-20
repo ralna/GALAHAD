@@ -1,1 +1,3 @@
-libgalahad_cutest_src += files('cutest_functions.F90')
+if libcutest.found()
+  libgalahad_cutest_src += files('cutest_functions.F90')
+endif
