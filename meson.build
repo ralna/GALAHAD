@@ -24,6 +24,15 @@ if fc.get_id() == 'nagfor'
   extra_args += '-dcfuns'
 endif
 
+# Preprocessing
+if fc.get_id() == 'gcc'
+  add_global_arguments('-cpp', language : 'fortran')
+elif fc.get_id() == 'intel' or fc.get_id() == 'nagfor'
+  add_global_arguments('-fpp', language : 'fortran')
+elif fc.get_id() == 'flang'
+  add_global_arguments('-c', language : 'fortran')
+endif
+
 # Options
 install_modules = get_option('modules')
 
