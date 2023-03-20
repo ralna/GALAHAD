@@ -9,7 +9,7 @@ libgalahad_c_double_src += files('C/hsl_ma48d_ciface.f90', 'C/hsl_ma57d_ciface.f
 libgalahad_c_integer_src += files('C/hsl_mc68i_ciface.f90')
 
 if not libcutest.found()
-  libgalahad_src += files('cutest_dummy.F90')
+  libgalahad_cutest_src += files('cutest_dummy.F90')
 endif
 
 if not libhsl.found()
