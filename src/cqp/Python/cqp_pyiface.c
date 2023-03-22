@@ -740,22 +740,22 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     npy_intp zdim[] = {n};
     PyObject *py_z = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) z); // create NumPy z array
-    long int x_stat_long[n];
-    for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
+    // long int x_stat_long[n];
+    // for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
     PyObject *py_x_stat = PyArray_SimpleNewFromData(1, ndim,
                 NPY_INT, (void *) x_stat); // create NumPy x_stat array
-//                NPY_INT, (void *) x_stat_long); // create NumPy x_stat array
+    //          NPY_INT, (void *) x_stat_long); // create NumPy x_stat array
 
     npy_intp mdim[] = {m}; // size of c, y and c_stat
     PyObject *py_c = PyArray_SimpleNewFromData(1, mdim,
                         NPY_DOUBLE, (void *) c); // create NumPy c array
     PyObject *py_y = PyArray_SimpleNewFromData(1, mdim,
                         NPY_DOUBLE, (void *) y); // create NumPy y array
-    long int c_stat_long[m];
-    for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
+    // long int c_stat_long[m];
+    // for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
     PyObject *py_c_stat = PyArray_SimpleNewFromData(1, mdim,
                   NPY_INT, (void *) c_stat); // create NumPy c_stat array
-//                NPY_INT, (void *) c_stat_long); // create NumPy c_stat array
+    //            NPY_INT, (void *) c_stat_long); // create NumPy c_stat array
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
@@ -764,6 +764,12 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
                                               py_x_stat, py_c_stat);
     // solve_qp_return = Py_BuildValue("iOOOO", n, py_x, py_c, py_y, py_z);
     Py_INCREF(solve_qp_return);
+
+    PyArray_SetBaseObject(py_x,solve_qp_return);
+    PyArray_SetBaseObject(py_c,solve_qp_return);
+    PyArray_SetBaseObject(py_y,solve_qp_return);
+    PyArray_SetBaseObject(py_z,solve_qp_return);
+
     return solve_qp_return;
 
 }
