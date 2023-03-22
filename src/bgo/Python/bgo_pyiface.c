@@ -43,6 +43,7 @@ static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *bgo_solve_return = NULL;
+static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -527,7 +528,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     bgo_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
                        eval_h, NULL, NULL);
 
-    // Propagate any errors with the callback function
+     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
 
@@ -535,10 +536,18 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
+//    g = PyArray_DATA(py_g);
+//    double g_copy[n];
+//    for(int i = 0; i < n; i++) g_copy[i] = g[i];
+
     // Wrap C array as NumPy array
     npy_intp ndim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
+
+    Py_XDECREF(py_g);
+    py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
+//                        NPY_DOUBLE, (void *) g_copy); // create NumPy g array
+    Py_XINCREF(py_g);
 
     // Return x and g
     Py_XDECREF(bgo_solve_return);

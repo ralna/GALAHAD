@@ -834,7 +834,8 @@
 
         solv = ' CCQP'
         IF ( printo ) WRITE( out, " ( ' ** CCQP solver used ** ' ) " )
-        CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform, C_stat, B_stat )
+!       CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform, C_stat, B_stat )
+        CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform )
 
         IF ( printo ) WRITE( out, " ( /, ' ** CCQP solver used ** ' ) " )
         qfval = CCQP_inform%obj ; newton = 0
