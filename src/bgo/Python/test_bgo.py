@@ -1,5 +1,6 @@
 from galahad import bgo
 import numpy as np
+import sys
 
 # allocate internal data and set default options
 bgo.initialize()
@@ -49,6 +50,10 @@ x_copy = x.copy()
 g_copy = g.copy()
 print("x:",x_copy)
 print("g:",g_copy)
+print("g:",g)
+print("g:",g)
+print("ref count x", sys.getrefcount(x))
+print("ref count g", sys.getrefcount(g))
 
 # get information
 inform = bgo.information()
