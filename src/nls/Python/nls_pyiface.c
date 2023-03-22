@@ -1255,11 +1255,11 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
     // Wrap C arrays as NumPy arrays
-    npy_intp cdim[] = {m}; // size of c
-    PyObject *py_c = PyArray_SimpleNewFromData(1, cdim,
+    npy_intp mdim[] = {m}; // size of c
+    PyObject *py_c = PyArray_SimpleNewFromData(1, mdim,
                         NPY_DOUBLE, (void *) c); // create NumPy c array
-    npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
+    npy_intp ndim[] = {n}; // size of g
+    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g

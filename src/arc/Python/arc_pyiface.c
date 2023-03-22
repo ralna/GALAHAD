@@ -733,8 +733,8 @@ static PyObject* py_arc_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
     // Wrap C array as NumPy array
-    npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
+    npy_intp ndim[] = {n}; // size of g
+    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
