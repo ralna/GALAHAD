@@ -42,6 +42,7 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
+static PyObject *bgo_solve_return = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -533,17 +534,17 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-    // Raise any status errors
-    if(!check_error_codes(status))
-        return NULL;
 
     // Wrap C array as NumPy array
-    npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
+    npy_intp ndim[] = {n}; // size of g
+    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
-    return Py_BuildValue("OO", py_x, py_g);
+    Py_XDECREF(bgo_solve_return);
+    bgo_solve_return = Py_BuildValue("OO", py_x, py_g);
+    Py_XINCREF(bgo_solve_return);
+    return bgo_solve_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -574,6 +575,10 @@ static PyObject* py_bgo_terminate(PyObject *self){
     bgo_terminate(&data, &control, &inform);
 
     // Return None boilerplate
+    Py_XDECREF(py_eval_f);
+    Py_XDECREF(py_eval_g);
+    Py_XDECREF(py_eval_h);
+    Py_XDECREF(bgo_solve_return);
     Py_INCREF(Py_None);
     return Py_None;
 }
