@@ -23,11 +23,11 @@ minimizer of a variety of regularized quadratic functions
    TRS - global minization of a quadratic function within an ellipsoid using matrix factorization <trs>
    RQS - global minization of a regularized quadratic function using matrix factorization <rqs>
    DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization <dps>
+   GLTR - global minization of a quadratic function within an ellipsoid using an iterative method <gltr>
+   GLRT - global minization of a regularized quadratic function <glrt>
    LSTR - global minization of a linear least-squares objective within a sphere using an iterative method <lstr>
    LSRT - global minization of a regularized linear least-squares objective using an iterative method <lsrt>
    L2RT - global minization of a regularized linear least-Euclidean-norm objective using an iterative method <l2rt>
-   GLTR - global minization of a quadratic function within an ellipsoid using an iterative method <gltr>
-   GLRT - global minization of a regularized quadratic function <glrt>
 
 
 References

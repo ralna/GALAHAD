@@ -405,7 +405,7 @@ functions
           cro_control : dict
              control parameters for CRO (see ``cro.initialize``).
 
-   .. function:: cqp.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, H_type, H_ne,                          H_row, H_col, H_ptr, options=None)
+   .. function:: cqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -415,27 +415,6 @@ functions
           holds the number of variables.
       m : int
           holds the number of constraints.
-      A_type : string
-          specifies the unsymmetric storage scheme used for the constraints 
-          Jacobian $A$.
-          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
-          lower or upper case variants are allowed.
-      A_ne : int
-          holds the number of entries in $A$ in the sparse co-ordinate storage 
-          scheme. It need not be set for any of the other two schemes.
-      A_row : ndarray(A_ne)
-          holds the row indices of $A$
-          in the sparse co-ordinate storage scheme. It need not be set for
-          any of the other two schemes, and in this case can be None.
-      A_col : ndarray(A_ne)
-          holds the column indices of $A$ in either the sparse co-ordinate, 
-          or the sparse row-wise storage scheme. It need not be set when the 
-          dense storage scheme is used, and in this case can be None.
-      A_ptr : ndarray(m+1)
-          holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one, in the sparse row-wise storage 
-          scheme. It need not be set when the other schemes are used, and in 
-          this case can be None.
       H_type : string
           specifies the symmetric storage scheme used for the Hessian $H$.
           It should be one of 'coordinate', 'sparse_by_rows', 'dense',
@@ -459,6 +438,27 @@ functions
           part of $H$, as well as the total number of entries plus one,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
+      A_type : string
+          specifies the unsymmetric storage scheme used for the constraints 
+          Jacobian $A$.
+          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+          lower or upper case variants are allowed.
+      A_ne : int
+          holds the number of entries in $A$ in the sparse co-ordinate storage 
+          scheme. It need not be set for any of the other two schemes.
+      A_row : ndarray(A_ne)
+          holds the row indices of $A$
+          in the sparse co-ordinate storage scheme. It need not be set for
+          any of the other two schemes, and in this case can be None.
+      A_col : ndarray(A_ne)
+          holds the column indices of $A$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme. It need not be set when the 
+          dense storage scheme is used, and in this case can be None.
+      A_ptr : ndarray(m+1)
+          holds the starting position of each row of $A$, as well as the 
+          total number of entries plus one, in the sparse row-wise storage 
+          scheme. It need not be set when the other schemes are used, and in 
+          this case can be None.
       options : dict, optional
           dictionary of control options (see ``cqp.initialize``).
 

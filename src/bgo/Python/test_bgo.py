@@ -5,7 +5,8 @@ import numpy as np
 bgo.initialize()
 
 # set some non-default options
-options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
+#options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
+options = {'print_level' : 1, 'ugo_options' : {'print_level' : 0}}
 print(options)
 
 # set parameters
@@ -43,8 +44,15 @@ x = np.array([0.,0.,0.])
 
 # find optimum
 x, g = bgo.solve(n, H_ne, x, eval_f, eval_g, eval_h )
+
+gout = g.copy()
+print("g:",g.copy())
+print("g:",g[0],g[1],g[2])
+print("g:",g[0],g[1],g[2])
 print("x:",x)
 print("g:",g)
+print("g:",gout)
+print("x:",x)
 
 # get information
 inform = bgo.information()

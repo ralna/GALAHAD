@@ -707,6 +707,7 @@ static PyObject* py_tru_solve(PyObject *self, PyObject *args){
     status = 1; // set status to 1 on entry
     tru_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
                        eval_h, NULL);
+    // for( int i = 0; i < n; i++) printf("g %f\n", g[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -716,11 +717,12 @@ static PyObject* py_tru_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
     // Wrap C array as NumPy array
-    npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
+    npy_intp ndim[] = {n}; // size of g
+    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
+    //printf("leaving\n");
     return Py_BuildValue("OO", py_x, py_g);
 }
 

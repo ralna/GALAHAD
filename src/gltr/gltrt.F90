@@ -28,6 +28,7 @@
       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 )                         &
            CALL GLTR_initialize( data, control, info )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
+!     control%error = 6 ; control%out = 6 ; control%print_level = 1
       info%status = 1
       radius = one
       IF ( pass == 2 ) control%unitm = .FALSE. ; radius = 1000.0_rp_
