@@ -45,14 +45,10 @@ x = np.array([0.,0.,0.])
 # find optimum
 x, g = bgo.solve(n, H_ne, x, eval_f, eval_g, eval_h )
 
-gout = g.copy()
-print("g:",g.copy())
-print("g:",g[0],g[1],g[2])
-print("g:",g[0],g[1],g[2])
-print("x:",x)
-print("g:",g)
-print("g:",gout)
-print("x:",x)
+x_copy = x.copy()
+g_copy = g.copy()
+print("x:",x_copy)
+print("g:",g_copy)
 
 # get information
 inform = bgo.information()
