@@ -412,8 +412,8 @@ functions
           each_interval : bool
              component specifically for parametric problems (not used
              at present).
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
 
    .. function:: qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -853,3 +853,11 @@ functions
    .. function:: qpa.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/qpa/Python/test_qpa.py
+   :code: python
+
+This example code is available in $GALAHAD/src/qpa/Python/test_qpa.py .

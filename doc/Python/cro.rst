@@ -113,14 +113,14 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          uls_control : dict
-             control parameters for ULS (see ``uls.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          ir_control : dict
-             control parameters for IR (see ``ir.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          uls_options : dict
+             default control options for ULS (see ``uls.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          ir_options : dict
+             default control options for IR (see ``ir.initialize``).
 
    .. function:: cro.crossover_solution(n, m, m_equal, f, g, H_val, H_col, H_ptr, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, x, y, z, c_stat, x_stat, options=None)
 
@@ -352,3 +352,11 @@ functions
    .. function:: cro.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/cro/Python/test_cro.py
+   :code: python
+
+This example code is available in $GALAHAD/src/cro/Python/test_cro.py .

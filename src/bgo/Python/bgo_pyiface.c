@@ -536,17 +536,15 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-//    g = PyArray_DATA(py_g);
-//    double g_copy[n];
-//    for(int i = 0; i < n; i++) g_copy[i] = g[i];
-
-    // Wrap C array as NumPy array
-    npy_intp ndim[] = {n}; // size of g
+    // double g_copy[n];
+    // for(int i = 0; i < n; i++) g_copy[i] = g[i];
 
     Py_XDECREF(py_g);
+    // Wrap C array as NumPy array
+    npy_intp ndim[] = {n}; // size of g
     py_g = PyArray_SimpleNewFromData(1, ndim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
-//                        NPY_DOUBLE, (void *) g_copy); // create NumPy g array
+    //                  NPY_DOUBLE, (void *) g_copy); // create NumPy g array
     Py_XINCREF(py_g);
 
     // Return x and g

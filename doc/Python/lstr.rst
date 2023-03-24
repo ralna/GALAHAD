@@ -106,9 +106,9 @@ functions
             will result in the prefix word.
 
 
-   .. function:: lstr.load_control(options=None)
+   .. function:: lstr.load_options(options=None)
 
-      Import control data into internal storage prior to solution.
+      Import control options into internal storage prior to solution.
 
       **Parameters:**
 
@@ -264,3 +264,11 @@ functions
    .. function:: lstr.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/lstr/Python/test_lstr.py
+   :code: python
+
+This example code is available in $GALAHAD/src/lstr/Python/test_lstr.py .

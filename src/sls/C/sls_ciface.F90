@@ -253,6 +253,7 @@
       INTEGER ( KIND = ipc_ ) :: wsmp_error
       INTEGER ( KIND = ipc_ ), DIMENSION( 64 ) :: wsmp_iparm
       REAL ( KIND = rpc_ ), DIMENSION( 64 ) :: wsmp_dparm
+      INTEGER ( KIND = ipc_ ) :: mpi_ierr
       INTEGER ( KIND = ipc_ ) :: lapack_error
     END TYPE sls_inform_type
 
@@ -585,6 +586,7 @@
     finform%pastix_info = cinform%pastix_info
     finform%wsmp_error = cinform%wsmp_error
     finform%wsmp_iparm = cinform%wsmp_iparm
+    finform%mpi_ierr = cinform%mpi_ierr
     finform%lapack_error = cinform%lapack_error
 
     ! Reals
@@ -674,6 +676,7 @@
     cinform%pastix_info = finform%pastix_info
     cinform%wsmp_error = finform%wsmp_error
     cinform%wsmp_iparm = finform%wsmp_iparm
+    cinform%mpi_ierr = finform%mpi_ierr
     cinform%lapack_error = finform%lapack_error
 
     ! Reals

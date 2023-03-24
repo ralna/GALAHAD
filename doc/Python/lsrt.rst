@@ -101,9 +101,9 @@ functions
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
 
-   .. function:: lsrt.load_control(options=None)
+   .. function:: lsrt.load_options(options=None)
 
-      Import control data into internal storage prior to solution.
+      Import control options into internal storage prior to solution.
 
       **Parameters:**
 
@@ -262,3 +262,11 @@ functions
    .. function:: lsrt.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/lsrt/Python/test_lsrt.py
+   :code: python
+
+This example code is available in $GALAHAD/src/lsrt/Python/test_lsrt.py .

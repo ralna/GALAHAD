@@ -373,10 +373,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          mi28_control : dict
-             control parameters for HSL_MI28 (see ``mi28.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          mi28_options : dict
+             default control options for HSL_MI28 (see ``mi28.initialize``).
 
    .. function:: psls.import(n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -641,3 +641,11 @@ functions
    .. function:: psls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/psls/Python/test_psls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/psls/Python/test_psls.py .

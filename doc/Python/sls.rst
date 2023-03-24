@@ -970,3 +970,11 @@ functions
    .. function:: sls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/sls/Python/test_sls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/sls/Python/test_sls.py .

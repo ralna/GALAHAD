@@ -1231,3 +1231,11 @@ functions
    .. function:: nls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/nls/Python/test_nls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/nls/Python/test_nls.py .

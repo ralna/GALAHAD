@@ -192,8 +192,8 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
 
    .. function:: bqp.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
@@ -394,3 +394,11 @@ functions
    .. function:: bqp.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/bqp/Python/test_bqp.py
+   :code: python
+
+This example code is available in $GALAHAD/src/bqp/Python/test_bqp.py .

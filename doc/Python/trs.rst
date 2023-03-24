@@ -309,10 +309,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          ir_control : dict
-             control parameters for IR (see ``ir.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          ir_options : dict
+             default control options for IR (see ``ir.initialize``).
 
    .. function:: trs.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
@@ -609,3 +609,11 @@ functions
    .. function:: trs.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/trs/Python/test_trs.py
+   :code: python
+
+This example code is available in $GALAHAD/src/trs/Python/test_trs.py .

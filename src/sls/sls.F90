@@ -699,6 +699,12 @@
 
         REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo
 
+!  the output scalars and arrays from mumps
+
+       INTEGER ( KIND = ip_ ) :: mumps_error = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 80 ) :: mumps_info = - 1
+       REAL ( KIND = rp_ ), DIMENSION( 40 ) :: mumps_rinfo = - 1.0_rp_
+
 !  the output scalars and arrays from pardiso
 
        INTEGER ( KIND = ip_ ) :: pardiso_error = 0
@@ -710,27 +716,21 @@
        INTEGER ( KIND = ip_ ) :: mkl_pardiso_error = 0
        INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM = - 1
 
+!  the output scalar from pastix
+
+       INTEGER ( KIND = ip_ ) :: pastix_info = 0
+
 !  the output scalars and arrays from wsmp
 
        INTEGER ( KIND = ip_ ) :: wsmp_error = 0
        INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: wsmp_iparm = - 1
        REAL ( KIND = rp_ ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_rp_
 
-!  the output scalars and arrays from mumps
-
-       INTEGER ( KIND = ip_ ) :: mumps_error = 0
-       INTEGER ( KIND = ip_ ), DIMENSION( 80 ) :: mumps_info = - 1
-       REAL ( KIND = rp_ ), DIMENSION( 40 ) :: mumps_rinfo = - 1.0_rp_
-
-!  the output scalar from pastix
-
-       INTEGER ( KIND = ip_ ) :: pastix_info = 0
-
 !  the output scalar from mpi
 
        INTEGER ( KIND = ip_ ) :: mpi_ierr = 0
 
-!  the output scalars and arrays from LAPACK routines
+!  the output scalar from LAPACK routines
 
        INTEGER ( KIND = ip_ ) :: lapack_error = 0
 
@@ -7296,11 +7296,10 @@
 
 !  local variables
 
-     INTEGER, DIMENSION( data%n ) :: INV
-
      INTEGER ( KIND = ip_ ) :: i, ip, k, pk
      REAL :: time_start, time_now
      REAL ( KIND = rp_ ) :: clock_start, clock_now
+!    INTEGER, DIMENSION( data%n ) :: INV
 
      inform%status = GALAHAD_ok
 

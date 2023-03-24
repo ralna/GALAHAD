@@ -92,10 +92,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          uls_control : dict
-             control parameters for ULS (see ``uls.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          uls_options : dict
+             default control options for ULS (see ``uls.initialize``).
 
    .. function:: fdc.find_dependent_rows(m, n, A_val, A_col, A_ptr, b, options=None)
 
@@ -242,3 +242,11 @@ functions
    .. function:: fdc.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/fdc/Python/test_fdc.py
+   :code: python
+
+This example code is available in $GALAHAD/src/fdc/Python/test_fdc.py .
