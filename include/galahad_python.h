@@ -231,6 +231,16 @@ static inline bool parse_int_option(PyObject *value, char *option_name, int *out
     return true;
 }
 
+/* Parse int64_t option from Python value to C out */
+static inline bool parse_int64_t_option(PyObject *value, char *option_name, int64_t *out){
+    *out = PyLong_AsLong(value);
+    if(*out == -1 && PyErr_Occurred()){
+        PyErr_Format(PyExc_TypeError, "options['%s'] must be an 64 bit integer", option_name);
+        return false;
+    }
+    return true;
+}
+
 /* Parse double option from Python value to C out */
 static inline bool parse_double_option(PyObject *value, char *option_name, double *out){
     *out = PyFloat_AsDouble(value);

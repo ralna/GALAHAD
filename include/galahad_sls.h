@@ -930,9 +930,9 @@ struct sls_inform_type {
     /// the output scalars and arrays from mumps
     int mumps_error;
     /// see mumps_error
-    int pardiso_info[80];
+    int mump_info[80];
     /// see mumps_error
-    real_wp_ pardiso_rinfo[40];
+    real_wp_ mumps_rinfo[40];
 
     /// \brief
     /// the output scalars and arrays from pardiso
@@ -949,7 +949,7 @@ struct sls_inform_type {
     int mkl_pardiso_IPARM[64];
 
     /// \brief
-    /// the output scalars and arrays from pastix
+    /// the output flag from pastix
     int pastix_info;
 
     /// \brief
@@ -961,11 +961,13 @@ struct sls_inform_type {
     real_wp_ wsmp_dparm[64];
 
     /// \brief
-    /// the output scalars and arrays from LAPACK routines
+    /// the output flag from MPI routines
+    int mpi_ierr;
+
+    /// \brief
+    /// the output flag from LAPACK routines
     int lapack_error;
 };
-
-
 
 // *-*-*-*-*-*-*-*-*-*-    S L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 

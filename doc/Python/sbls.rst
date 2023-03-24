@@ -384,10 +384,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          uls_control : dict
-             control parameters for ULS (see ``uls.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          uls_options : dict
+             default control options for ULS (see ``uls.initialize``).
 
    .. function:: sbls.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, C_type, C_ne, C_row, C_col, C_ptr, options=None)
 
@@ -675,3 +675,11 @@ functions
    .. function:: sbls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/sbls/Python/test_sbls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/sbls/Python/test_sbls.py .

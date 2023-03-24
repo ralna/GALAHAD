@@ -439,16 +439,16 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          lsqp_control : dict
-             control parameters for LSQP (see ``lsqp.initialize``).
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          fit_control : dict
-             control parameters for FIT (see ``fit.initialize``).
-          gltr_control : dict
-             control parameters for GLTR (see ``gltr.initialize``).
+          lsqp_options : dict
+             default control options for LSQP (see ``lsqp.initialize``).
+          fdc_options : dict
+             default control options for FDC (see ``fdc.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          fit_options : dict
+             default control options for FIT (see ``fit.initialize``).
+          gltr_options : dict
+             default control options for GLTR (see ``gltr.initialize``).
 
    .. function:: qpb.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -769,3 +769,11 @@ functions
    .. function:: qpb.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/qpb/Python/test_qpb.py
+   :code: python
+
+This example code is available in $GALAHAD/src/qpb/Python/test_qpb.py .

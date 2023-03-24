@@ -394,16 +394,16 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          fit_control : dict
-             control parameters for FIT (see ``fit.initialize``).
-          roots_control : dict
-             control parameters for ROOTS (see ``roots.initialize``).
-          cro_control : dict
-             control parameters for CRO (see ``cro.initialize``).
+          fdc_options : dict
+             default control options for FDC (see ``fdc.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          fit_options : dict
+             default control options for FIT (see ``fit.initialize``).
+          roots_options : dict
+             default control options for ROOTS (see ``roots.initialize``).
+          cro_options : dict
+             default control options for CRO (see ``cro.initialize``).
 
    .. function:: cqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -788,3 +788,11 @@ functions
    .. function:: cqp.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/cqp/Python/test_cqp.py
+   :code: python
+
+This example code is available in $GALAHAD/src/cqp/Python/test_cqp.py .

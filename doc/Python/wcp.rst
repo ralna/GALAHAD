@@ -330,10 +330,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
+          fdc_options : dict
+             default control options for FDC (see ``fdc.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
 
    .. function:: wcp.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -589,3 +589,11 @@ functions
    .. function:: wcp.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/wcp/Python/test_wcp.py
+   :code: python
+
+This example code is available in $GALAHAD/src/wcp/Python/test_wcp.py .

@@ -80,6 +80,8 @@ $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	$(RMOBFILE) in$(package)_$(PRECIS).o
 	$(RMOBFILE) $(package)s.o
 	$(RMOBFILE) $(package)t_$(PRECIS).o
+	$(RMOBFILE) $(package)ti_$(PRECIS).o
+	$(CRMARFILE) $(package)_ciface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -98,7 +100,45 @@ $(CLG)($(package)_ciface_$(PRECIS).o): ../$(package)/C/$(package)_ciface.F90
              $(FFLAGSN) $(package)_ciface.F90 )
 	cd $(OBJ); $(CARR) $(package)_ciface_$(PRECIS).o
 	cd $(OBJ); $(RM) $(package)_ciface.F90 $(package)_ciface_$(PRECIS).o
+	$(RMOBFILE) $(package)ct_$(PRECIS).o
+	$(RMOBFILE) $(package)ctf_$(PRECIS).o
+	$(PYRMARFILE) $(package)_pyiface.o
 	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  package python interface compilation
+
+$(package)_pyiface.o: $(LG)($(package)_$(PRECIS).o) \
+                        $(CLG)($(package)_ciface_$(PRECIS).o) \
+                        $(PYLG)($(package)_pyiface.o)
+
+$(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
+	$(SED) -f $(CISEDS) ../$(package)/Python/$(package)_pyiface.c \
+           > $(OBJ)/$(package)_pyiface.c
+	cd $(OBJ); $(CC) -o $(package)_pyiface.o $(CFLAGS) \
+           $(package)_pyiface.c $(PYINCLUDES) \
+            || ( printf ' %-26s' "=> Disabling optimization " ; \
+           $(CC) -o $(package)_pyiface.o $(CFLAGSN) $(package)_pyiface.c \
+            $(PYINCLUDES) )
+	cd $(OBJ); $(PYARR) $(package)_pyiface.o
+	cd $(OBJ); $(RM) $(package)_pyiface.c
+	$(PYRMARFILES) $(PYDEPENDS)
+	cd $(OBJ); CC=$(CC) FORTRAN=$(FORTRAN) OPTIMIZATION=$(OPTIMIZATION) \
+                   SHARED=$(SHARED) DLEXT=$(DLEXT) LOADALL=$(LOADALL) \
+                   LOADNONE=$(LOADNONE) \
+                   $(BINSHELL) $(GALAHAD)/bin/create_shared
+#	export ARCH=$(VERSION) ; pip install $(GALAHAD)/bin/
+	$(MKDIR) -p  $(PYSITEPACKDIR)/galahad
+	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
+          -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
+          -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
+          -lgalahad -lgalahad_cutest_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
+          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS4) \
+          $(LAPACK) $(BLAS) -lgfortran \
+          -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \
+          -Wl,-rpath=$(OBJ)/shared $(MOMP)
+	cd $(OBJ); $(RM) $(package)_pyiface.o
 	@printf '[ OK ]\n'
 
 #  package coverage compilation
