@@ -318,12 +318,12 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          gltr_control : dict
-             control parameters for GLTR (see ``gltr.initialize``).
+          fdc_options : dict
+             default control options for FDC (see ``fdc.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          gltr_options : dict
+             default control options for GLTR (see ``gltr.initialize``).
 
    .. function:: eqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -640,9 +640,14 @@ functions
           gltr_inform : dict
              inform parameters for GLTR (see ``gltr.information``).
 
-
-
-
    .. function:: eqp.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/eqp/Python/test_eqp.py
+   :code: python
+
+This example code is available in $GALAHAD/src/eqp/Python/test_eqp.py .

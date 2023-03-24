@@ -434,3 +434,11 @@ functions
    .. function:: lpa.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/lpa/Python/test_lpa.py
+   :code: python
+
+This example code is available in $GALAHAD/src/lpa/Python/test_lpa.py .

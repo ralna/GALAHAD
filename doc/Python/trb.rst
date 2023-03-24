@@ -578,3 +578,11 @@ functions
    .. function:: trb.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/trb/Python/test_trb.py
+   :code: python
+
+This example code is available in $GALAHAD/src/trb/Python/test_trb.py .

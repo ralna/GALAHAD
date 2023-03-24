@@ -376,3 +376,11 @@ functions
    .. function:: bgo.terminate()
 
       Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/bgo/Python/test_bgo.py
+   :code: python
+
+This example code is available in $GALAHAD/src/bgo/Python/test_bgo.py .

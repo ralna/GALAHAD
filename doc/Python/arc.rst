@@ -578,3 +578,11 @@ functions
    .. function:: arc.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/arc/Python/test_arc.py
+   :code: python
+
+This example code is available in $GALAHAD/src/arc/Python/test_arc.py .

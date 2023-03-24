@@ -6,8 +6,8 @@ ULS
 The ``uls`` package 
 **solves dense or sparse unsymmetric systems of linear equations**
 using variants of Gaussian elimination.
-Given a sparse symmetric matrix $A = \{ a_{ij} \}_{m \times n}$, and an
-$n$-vector $b$, this function solves the systems $A x = b$ or $A^T x = b$
+Given a sparse matrix $A = \{ a_{ij} \}_{m \times n}$, and an
+$n$-vector $b$, this function solves the systems $A x = b$ or $A^T x = b$.
 Both square ($m=n$) and rectangular ($m\neq n$)  matrices are handled; 
 one of an infinite class of  solutions for consistent systems will be returned
 whenever $A$ is not of full rank.
@@ -446,3 +446,11 @@ functions
    .. function:: uls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/uls/Python/test_uls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/uls/Python/test_uls.py .

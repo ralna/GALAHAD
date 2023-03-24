@@ -552,3 +552,11 @@ functions
    .. function:: tru.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/tru/Python/test_tru.py
+   :code: python
+
+This example code is available in $GALAHAD/src/tru/Python/test_tru.py .

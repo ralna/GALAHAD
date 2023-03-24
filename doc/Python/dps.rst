@@ -175,8 +175,8 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
 
    .. function:: dps.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
@@ -438,3 +438,11 @@ functions
    .. function:: dps.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/dps/Python/test_dps.py
+   :code: python
+
+This example code is available in $GALAHAD/src/dps/Python/test_dps.py .

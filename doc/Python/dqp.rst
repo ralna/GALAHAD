@@ -380,17 +380,14 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          fdc_control : dict
-             control parameters for FDC (see ``fdc.initialize``).
-          sls_control : dict
-             control parameters for SLS (see ``sls.initialize``).
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          gltr_control : dict
-             control parameters for GLTR (see ``gltr.initialize``).
-
-
-
+          fdc_options : dict
+             default control options for FDC (see ``fdc.initialize``).
+          sls_options : dict
+             default control options for SLS (see ``sls.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          gltr_options : dict
+             default control options for GLTR (see ``gltr.initialize``).
 
    .. function:: dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -751,3 +748,11 @@ functions
    .. function:: dqp.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/dqp/Python/test_dqp.py
+   :code: python
+
+This example code is available in $GALAHAD/src/dqp/Python/test_dqp.py .

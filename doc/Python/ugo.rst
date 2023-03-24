@@ -267,3 +267,11 @@ functions
    .. function:: ugo.terminate()
 
       Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/ugo/Python/test_ugo.py
+   :code: python
+
+This example code is available in $GALAHAD/src/ugo/Python/test_ugo.py .

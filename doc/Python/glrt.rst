@@ -116,9 +116,9 @@ functions
             will result in the prefix word.
 
 
-   .. function:: glrt.load_control(options=None)
+   .. function:: glrt.load_options(options=None)
 
-      Import control data into internal storage prior to solution.
+      Import control options into internal storage prior to solution.
 
       **Parameters:**
 
@@ -276,3 +276,11 @@ functions
    .. function:: glrt.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/glrt/Python/test_glrt.py
+   :code: python
+
+This example code is available in $GALAHAD/src/glrt/Python/test_glrt.py .

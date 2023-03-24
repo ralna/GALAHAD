@@ -113,9 +113,9 @@ functions
             will result in the prefix word.
 
 
-   .. function:: gltr.load_control(options=None)
+   .. function:: gltr.load_options(options=None)
 
-      Import control data into internal storage prior to solution.
+      Import control options into internal storage prior to solution.
 
       **Parameters:**
 
@@ -278,3 +278,11 @@ functions
    .. function:: gltr.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/gltr/Python/test_gltr.py
+   :code: python
+
+This example code is available in $GALAHAD/src/gltr/Python/test_gltr.py .

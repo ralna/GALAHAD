@@ -227,10 +227,10 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          sbls_control : dict
-             control parameters for SBLS (see ``sbls.initialize``).
-          convert_control : dict
-             control parameters for CONVERT (see ``convert.initialize``).
+          sbls_options : dict
+             default control options for SBLS (see ``sbls.initialize``).
+          convert_options : dict
+             default control options for CONVERT (see ``convert.initialize``).
 
    .. function:: blls.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -416,3 +416,11 @@ functions
    .. function:: blls.terminate()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/blls/Python/test_blls.py
+   :code: python
+
+This example code is available in $GALAHAD/src/blls/Python/test_blls.py .

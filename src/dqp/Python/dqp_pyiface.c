@@ -1,22 +1,22 @@
-//* \file cqp_pyiface.c */
+//* \file dqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-20 AT 08:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-23 AT 12:40 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_CQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-*-*-  GALAHAD_DQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes & Nick Gould
  *
  *  History -
- *   originally released GALAHAD Version 4.1. March 20th 2023
+ *   originally released GALAHAD Version 4.1. March 23rd 2023
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
 #include "galahad_python.h"
-#include "galahad_cqp.h"
+#include "galahad_dqp.h"
 
 /* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
@@ -37,15 +37,15 @@
 
 /* Module global variables */
 static void *data;                       // private internal data
-static struct cqp_control_type control;  // control struct
-static struct cqp_inform_type inform;    // inform struct
+static struct dqp_control_type control;  // control struct
+static struct dqp_inform_type inform;    // inform struct
 static bool init_called = false;         // record if initialise was called
 static int status = 0;                   // exit status
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool cqp_update_control(struct cqp_control_type *control,
+static bool dqp_update_control(struct dqp_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -93,45 +93,57 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "print_gap") == 0){
+            if(!parse_int_option(value, "print_gap",
+                                  &control->print_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "dual_starting_point") == 0){
+            if(!parse_int_option(value, "dual_starting_point",
+                                  &control->dual_starting_point))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "maxit") == 0){
             if(!parse_int_option(value, "maxit",
                                   &control->maxit))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "infeas_max") == 0){
-            if(!parse_int_option(value, "infeas_max",
-                                  &control->infeas_max))
+        if(strcmp(key_name, "max_sc") == 0){
+            if(!parse_int_option(value, "max_sc",
+                                  &control->max_sc))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "muzero_fixed") == 0){
-            if(!parse_int_option(value, "muzero_fixed",
-                                  &control->muzero_fixed))
+        if(strcmp(key_name, "cauchy_only") == 0){
+            if(!parse_int_option(value, "cauchy_only",
+                                  &control->cauchy_only))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "arc_search_maxit") == 0){
+            if(!parse_int_option(value, "arc_search_maxit",
+                                  &control->arc_search_maxit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "cg_maxit") == 0){
+            if(!parse_int_option(value, "cg_maxit",
+                                  &control->cg_maxit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "explore_optimal_subspace") == 0){
+            if(!parse_int_option(value, "explore_optimal_subspace",
+                                  &control->explore_optimal_subspace))
                 return false;
             continue;
         }
         if(strcmp(key_name, "restore_problem") == 0){
             if(!parse_int_option(value, "restore_problem",
                                   &control->restore_problem))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "indicator_type") == 0){
-            if(!parse_int_option(value, "indicator_type",
-                                  &control->indicator_type))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "arc") == 0){
-            if(!parse_int_option(value, "arc",
-                                  &control->arc))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "series_order") == 0){
-            if(!parse_int_option(value, "series_order",
-                                  &control->series_order))
                 return false;
             continue;
         }
@@ -144,6 +156,12 @@ static bool cqp_update_control(struct cqp_control_type *control,
         if(strcmp(key_name, "qplib_file_device") == 0){
             if(!parse_int_option(value, "qplib_file_device",
                                   &control->qplib_file_device))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "rho") == 0){
+            if(!parse_double_option(value, "rho",
+                                  &control->rho))
                 return false;
             continue;
         }
@@ -189,93 +207,33 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "perturb_h") == 0){
-            if(!parse_double_option(value, "perturb_h",
-                                  &control->perturb_h))
+        if(strcmp(key_name, "stop_cg_relative") == 0){
+            if(!parse_double_option(value, "stop_cg_relative",
+                                  &control->stop_cg_relative))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "prfeas") == 0){
-            if(!parse_double_option(value, "prfeas",
-                                  &control->prfeas))
+        if(strcmp(key_name, "stop_cg_absolute") == 0){
+            if(!parse_double_option(value, "stop_cg_absolute",
+                                  &control->stop_cg_absolute))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "dufeas") == 0){
-            if(!parse_double_option(value, "dufeas",
-                                  &control->dufeas))
+        if(strcmp(key_name, "cg_zero_curvature") == 0){
+            if(!parse_double_option(value, "cg_zero_curvature",
+                                  &control->cg_zero_curvature))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "muzero") == 0){
-            if(!parse_double_option(value, "muzero",
-                                  &control->muzero))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "tau") == 0){
-            if(!parse_double_option(value, "tau",
-                                  &control->tau))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "gamma_c") == 0){
-            if(!parse_double_option(value, "gamma_c",
-                                  &control->gamma_c))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "gamma_f") == 0){
-            if(!parse_double_option(value, "gamma_f",
-                                  &control->gamma_f))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "reduce_infeas") == 0){
-            if(!parse_double_option(value, "reduce_infeas",
-                                  &control->reduce_infeas))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "obj_unbounded") == 0){
-            if(!parse_double_option(value, "obj_unbounded",
-                                  &control->obj_unbounded))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "potential_unbounded") == 0){
-            if(!parse_double_option(value, "potential_unbounded",
-                                  &control->potential_unbounded))
+        if(strcmp(key_name, "max_growth") == 0){
+            if(!parse_double_option(value, "max_growth",
+                                  &control->max_growth))
                 return false;
             continue;
         }
         if(strcmp(key_name, "identical_bounds_tol") == 0){
             if(!parse_double_option(value, "identical_bounds_tol",
                                   &control->identical_bounds_tol))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "mu_lunge") == 0){
-            if(!parse_double_option(value, "mu_lunge",
-                                  &control->mu_lunge))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "indicator_tol_p") == 0){
-            if(!parse_double_option(value, "indicator_tol_p",
-                                  &control->indicator_tol_p))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "indicator_tol_pd") == 0){
-            if(!parse_double_option(value, "indicator_tol_pd",
-                                  &control->indicator_tol_pd))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "indicator_tol_tapia") == 0){
-            if(!parse_double_option(value, "indicator_tol_tapia",
-                                  &control->indicator_tol_tapia))
                 return false;
             continue;
         }
@@ -291,6 +249,30 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "initial_perturbation") == 0){
+            if(!parse_double_option(value, "initial_perturbation",
+                                  &control->initial_perturbation))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "perturbation_reduction") == 0){
+            if(!parse_double_option(value, "perturbation_reduction",
+                                  &control->perturbation_reduction))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "final_perturbation") == 0){
+            if(!parse_double_option(value, "final_perturbation",
+                                  &control->final_perturbation))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "factor_optimal_matrix") == 0){
+            if(!parse_bool_option(value, "factor_optimal_matrix",
+                                  &control->factor_optimal_matrix))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "remove_dependencies") == 0){
             if(!parse_bool_option(value, "remove_dependencies",
                                   &control->remove_dependencies))
@@ -303,51 +285,27 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "treat_separable_as_general") == 0){
-            if(!parse_bool_option(value, "treat_separable_as_general",
-                                  &control->treat_separable_as_general))
+        if(strcmp(key_name, "exact_arc_search") == 0){
+            if(!parse_bool_option(value, "exact_arc_search",
+                                  &control->exact_arc_search))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "just_feasible") == 0){
-            if(!parse_bool_option(value, "just_feasible",
-                                  &control->just_feasible))
+        if(strcmp(key_name, "subspace_direct") == 0){
+            if(!parse_bool_option(value, "subspace_direct",
+                                  &control->subspace_direct))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "getdua") == 0){
-            if(!parse_bool_option(value, "getdua",
-                                  &control->getdua))
+        if(strcmp(key_name, "subspace_alternate") == 0){
+            if(!parse_bool_option(value, "subspace_alternate",
+                                  &control->subspace_alternate))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "puiseux") == 0){
-            if(!parse_bool_option(value, "puiseux",
-                                  &control->puiseux))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "every_order") == 0){
-            if(!parse_bool_option(value, "every_order",
-                                  &control->every_order))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "feasol") == 0){
-            if(!parse_bool_option(value, "feasol",
-                                  &control->feasol))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "balance_initial_complentarity") == 0){
-            if(!parse_bool_option(value, "balance_initial_complentarity",
-                                  &control->balance_initial_complentarity))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "crossover") == 0){
-            if(!parse_bool_option(value, "crossover",
-                                  &control->crossover))
+        if(strcmp(key_name, "subspace_arc_search") == 0){
+            if(!parse_bool_option(value, "subspace_arc_search",
+                                  &control->subspace_arc_search))
                 return false;
             continue;
         }
@@ -375,6 +333,24 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "symmetric_linear_solver") == 0){
+            if(!parse_char_option(value, "symmetric_linear_solver",
+                                  control->symmetric_linear_solver))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "definite_linear_solver") == 0){
+            if(!parse_char_option(value, "definite_linear_solver",
+                                  control->definite_linear_solver))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "unsymmetric_linear_solver") == 0){
+            if(!parse_char_option(value, "unsymmetric_linear_solver",
+                                  control->unsymmetric_linear_solver))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "sif_file_name") == 0){
             if(!parse_char_option(value, "sif_file_name",
                                   control->sif_file_name))
@@ -398,27 +374,21 @@ static bool cqp_update_control(struct cqp_control_type *control,
         //        return false;
         //    continue;
         //}
+        //if(strcmp(key_name, "sls_options") == 0){
+        //    if(!sls_update_control(&control->sls_control, value))
+        //        return false;
+        //    continue;
+        //}
         //if(strcmp(key_name, "sbls_options") == 0){
         //    if(!sbls_update_control(&control->sbls_control, value))
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "fit_options") == 0){
-        //    if(!fit_update_control(&control->fit_control, value))
+        //if(strcmp(key_name, "gltr_options") == 0){
+        //    if(!gltr_update_control(&control->gltr_control, value))
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "roots_options") == 0){
-        //    if(!roots_update_control(&control->roots_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "cro_options") == 0){
-        //    if(!cro_update_control(&control->cro_control, value))
-        //        return false;
-        //    continue;
-        //}
-
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
           "unrecognised option options['%s']\n", key_name);
@@ -431,7 +401,7 @@ static bool cqp_update_control(struct cqp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the time struct from C and turn it into a python dictionary */
-static PyObject* cqp_make_time_dict(const struct cqp_time_type *time){
+static PyObject* dqp_make_time_dict(const struct dqp_time_type *time){
     PyObject *py_time = PyDict_New();
 
     // Set float/double time entries
@@ -448,6 +418,8 @@ static PyObject* cqp_make_time_dict(const struct cqp_time_type *time){
                          PyFloat_FromDouble(time->factorize));
     PyDict_SetItemString(py_time, "solve",
                          PyFloat_FromDouble(time->solve));
+    PyDict_SetItemString(py_time, "search",
+                         PyFloat_FromDouble(time->search));
     PyDict_SetItemString(py_time, "clock_total",
                          PyFloat_FromDouble(time->clock_total));
     PyDict_SetItemString(py_time, "clock_preprocess",
@@ -460,6 +432,8 @@ static PyObject* cqp_make_time_dict(const struct cqp_time_type *time){
                          PyFloat_FromDouble(time->clock_factorize));
     PyDict_SetItemString(py_time, "clock_solve",
                          PyFloat_FromDouble(time->clock_solve));
+    PyDict_SetItemString(py_time, "clock_search",
+                         PyFloat_FromDouble(time->clock_search));
 
     return py_time;
 }
@@ -467,7 +441,7 @@ static PyObject* cqp_make_time_dict(const struct cqp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
+static PyObject* dqp_make_inform_dict(const struct dqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -478,6 +452,8 @@ static PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
                          PyUnicode_FromString(inform->bad_alloc));
     PyDict_SetItemString(py_inform, "iter",
                          PyLong_FromLong(inform->iter));
+    PyDict_SetItemString(py_inform, "cg_iter",
+                         PyLong_FromLong(inform->cg_iter));
     PyDict_SetItemString(py_inform, "factorization_status",
                          PyLong_FromLong(inform->factorization_status));
     PyDict_SetItemString(py_inform, "factorization_integer",
@@ -486,8 +462,6 @@ static PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
                          PyLong_FromLong(inform->factorization_real));
     PyDict_SetItemString(py_inform, "nfacts",
                          PyLong_FromLong(inform->nfacts));
-    PyDict_SetItemString(py_inform, "nbacts",
-                         PyLong_FromLong(inform->nbacts));
     PyDict_SetItemString(py_inform, "threads",
                          PyLong_FromLong(inform->threads));
     PyDict_SetItemString(py_inform, "obj",
@@ -498,49 +472,42 @@ static PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
                          PyFloat_FromDouble(inform->dual_infeasibility));
     PyDict_SetItemString(py_inform, "complementary_slackness",
                          PyFloat_FromDouble(inform->complementary_slackness));
-    PyDict_SetItemString(py_inform, "init_primal_infeasibility",
-                         PyFloat_FromDouble(inform->init_primal_infeasibility));
-    PyDict_SetItemString(py_inform, "init_dual_infeasibility",
-                         PyFloat_FromDouble(inform->init_dual_infeasibility));
-    PyDict_SetItemString(py_inform, "init_complementary_slackness",
-                         PyFloat_FromDouble(inform->init_complementary_slackness));
-    PyDict_SetItemString(py_inform, "potential",
-                         PyFloat_FromDouble(inform->potential));
     PyDict_SetItemString(py_inform, "non_negligible_pivot",
                          PyFloat_FromDouble(inform->non_negligible_pivot));
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
-    //PyDict_SetItemString(py_inform, "checkpointsIter",
-    //                     PyLong_FromLong(inform->checkpointsIter));
-    //PyDict_SetItemString(py_inform, "checkpointsTime",
-    //                     PyFloat_FromDouble(inform->checkpointsTime));
-    // Set time nested dictionary
+    // PyDict_SetItemString(py_inform, "checkpointsIter",
+    //                      PyLong_FromLong(inform->checkpointsIter));
+    // PyDict_SetItemString(py_inform, "checkpointsTime",
+    //                      PyFloat_FromDouble(inform->checkpointsTime));
     PyDict_SetItemString(py_inform, "time",
-                         cqp_make_time_dict(&inform->time));
-    //PyDict_SetItemString(py_inform, "fdc_inform",
-    //                     fdc_make_inform_dict(&inform->fdc_inform));
-    //PyDict_SetItemString(py_inform, "sbls_inform",
-    //                    sbls_make_inform_dict(&inform->sbls_inform));
-    //PyDict_SetItemString(py_inform, "fit_inform",
-    //                     fit_make_inform_dict(&inform->fit_inform));
-    //PyDict_SetItemString(py_inform, "roots_inform",
-    //                     roots_make_inform_dict(&inform->roots_inform));
-    //PyDict_SetItemString(py_inform, "cro_inform",
-    //                     cro_make_inform_dict(&inform->cro_inform));
-    //PyDict_SetItemString(py_inform, "rpd_inform",
-    //                     rpd_make_inform_dict(&inform->rpd_inform));
+                         dqp_make_time_dict(&inform->time));
+    // PyDict_SetItemString(py_inform, "fdc_inform",
+    //                      fdc_make_inform_dict(&inform->fdc_inform));
+    // PyDict_SetItemString(py_inform, "sls_inform",
+    //                      sls_make_inform_dict(&inform->sls_inform));
+    // PyDict_SetItemString(py_inform, "sbls_inform",
+    //                      sbls_make_inform_dict(&inform->sbls_inform));
+    // PyDict_SetItemString(py_inform, "gltr_inform",
+    //                      gltr_make_inform_dict(&inform->gltr_inform));
+    // PyDict_SetItemString(py_inform, "scu_status",
+    //                      PyLong_FromLong(inform->scu_status));
+    // PyDict_SetItemString(py_inform, "scu_inform",
+    //                      scu_make_inform_dict(&inform->scu_inform));
+    // PyDict_SetItemString(py_inform, "rpd_inform",
+    //                      rpd_make_inform_dict(&inform->rpd_inform));
 
     return py_inform;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   CQP_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   DQP_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_initialize(PyObject *self){
+static PyObject* py_dqp_initialize(PyObject *self){
 
-    // Call cqp_initialize
-    cqp_initialize(&data, &control, &status);
+    // Call dqp_initialize
+    dqp_initialize(&data, &control, &status);
 
-    // Record that CQP has been initialised
+    // Record that DQP has been initialised
     init_called = true;
 
     // Return None boilerplate
@@ -548,9 +515,9 @@ static PyObject* py_cqp_initialize(PyObject *self){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-*-*-   CQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   DQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_load(PyObject *self, PyObject *args, PyObject *keywds){
+static PyObject* py_dqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
     PyArrayObject *py_w;
@@ -638,14 +605,14 @@ static PyObject* py_cqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     }
 
     // Reset control options
-    cqp_reset_control(&control, &data, &status);
+    dqp_reset_control(&control, &data, &status);
 
-    // Update CQP control options
-    if(!cqp_update_control(&control, py_options))
+    // Update DQP control options
+    if(!dqp_update_control(&control, py_options))
         return NULL;
 
-    // Call cqp_import
-    cqp_import(&control, &data, &status, n, m,
+    // Call dqp_import
+    dqp_import(&control, &data, &status, n, m,
                H_type, H_ne, H_row, H_col, H_ptr,
                A_type, A_ne, A_row, A_col, A_ptr);
 
@@ -666,9 +633,9 @@ static PyObject* py_cqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   CQP_SOLVE_QP   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   DQP_SOLVE_QP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
+static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_H_val, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u;
@@ -717,9 +684,9 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     int x_stat[n];
     int c_stat[m];
 
-    // Call cqp_solve_direct
+    // Call dqp_solve_direct
     status = 1; // set status to 1 on entry
-    cqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
+    dqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
@@ -773,9 +740,9 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     return solve_qp_return;
 
 }
-//  *-*-*-*-*-*-*-*-*-*-   CQP_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   DQP_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
+static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u;
@@ -828,9 +795,9 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     int x_stat[n];
     int c_stat[m];
 
-    // Call cqp_solve_direct
+    // Call dqp_solve_direct
     status = 1; // set status to 1 on entry
-    cqp_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
+    dqp_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
                     c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
@@ -845,7 +812,6 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-
     // Wrap C arrays as NumPy arrays
     npy_intp ndim[] = {n}; // size of x, z, x_stat
     PyObject *py_x = PyArray_SimpleNewFromData(1, ndim,
@@ -877,56 +843,56 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     return solve_sldqp_return;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   CQP_INFORMATION   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   DQP_INFORMATION   -*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_information(PyObject *self){
+static PyObject* py_dqp_information(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call cqp_information
-    cqp_information(&data, &inform, &status);
+    // Call dqp_information
+    dqp_information(&data, &inform, &status);
 
     // Return status and inform Python dictionary
-    PyObject *py_inform = cqp_make_inform_dict(&inform);
+    PyObject *py_inform = dqp_make_inform_dict(&inform);
     return Py_BuildValue("O", py_inform);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   CQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   DQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_cqp_terminate(PyObject *self){
+static PyObject* py_dqp_terminate(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call cqp_terminate
-    cqp_terminate(&data, &control, &inform);
+    // Call dqp_terminate
+    dqp_terminate(&data, &control, &inform);
 
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE CQP PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE DQP PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
 
-/* cqp python module method table */
-static PyMethodDef cqp_module_methods[] = {
-    {"initialize", (PyCFunction) py_cqp_initialize, METH_NOARGS,NULL},
-    {"load", (PyCFunction) py_cqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_qp", (PyCFunction) py_cqp_solve_qp, METH_VARARGS, NULL},
-    {"solve_sldqp", (PyCFunction) py_cqp_solve_sldqp, METH_VARARGS, NULL},
-    {"information", (PyCFunction) py_cqp_information, METH_NOARGS, NULL},
-    {"terminate", (PyCFunction) py_cqp_terminate, METH_NOARGS, NULL},
+/* dqp python module method table */
+static PyMethodDef dqp_module_methods[] = {
+    {"initialize", (PyCFunction) py_dqp_initialize, METH_NOARGS,NULL},
+    {"load", (PyCFunction) py_dqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_qp", (PyCFunction) py_dqp_solve_qp, METH_VARARGS, NULL},
+    {"solve_sldqp", (PyCFunction) py_dqp_solve_sldqp, METH_VARARGS, NULL},
+    {"information", (PyCFunction) py_dqp_information, METH_NOARGS, NULL},
+    {"terminate", (PyCFunction) py_dqp_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
-/* cqp python module documentation */
+/* dqp python module documentation */
 
-PyDoc_STRVAR(cqp_module_doc,
+PyDoc_STRVAR(dqp_module_doc,
 
-"The cqp package uses a primal-dual interior-point method to solve the \n"
+"The dqp package uses a dual gradient-projectiont method to solve the \n"
 "convex quadratic programming problem to minimize the quadratic objective\n"
 "q(x) = 1/2 x^T H x + g^T x + f,\n"
 "or the shifted least-distance objective\n"
@@ -943,23 +909,23 @@ PyDoc_STRVAR(cqp_module_doc,
 "Full advantage is taken of any zero coefficients in the matrix H\n"
 "or the matrix A of vectors a_i.\n"
 "\n"
-"See $GALAHAD/html/Python/cqp.html for argument lists, call order\n"
+"See $GALAHAD/html/Python/dqp.html for argument lists, call order\n"
 "and other details.\n"
 "\n"
 );
 
-/* cqp python module definition */
+/* dqp python module definition */
 static struct PyModuleDef module = {
    PyModuleDef_HEAD_INIT,
-   "cqp",               /* name of module */
-   cqp_module_doc,      /* module documentation, may be NULL */
+   "dqp",               /* name of module */
+   dqp_module_doc,      /* module documentation, may be NULL */
    -1,                  /* size of per-interpreter state of the module,or -1
                            if the module keeps state in global variables */
-   cqp_module_methods   /* module methods */
+   dqp_module_methods   /* module methods */
 };
 
 /* Python module initialization */
-PyMODINIT_FUNC PyInit_cqp(void) { // must be same as module name above
+PyMODINIT_FUNC PyInit_dqp(void) { // must be same as module name above
     import_array();  // for NumPy arrays
     return PyModule_Create(&module);
 }

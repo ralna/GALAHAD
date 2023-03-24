@@ -404,3 +404,11 @@ functions
    .. method:: dgo.terminate()
 
       Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/dgo/Python/test_dgo.py
+   :code: python
+
+This example code is available in $GALAHAD/src/dgo/Python/test_dgo.py .
