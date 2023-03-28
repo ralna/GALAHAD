@@ -5,3 +5,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usesls.F90', 'runsls_sif.F90')
 endif
+galahad_examples += [['slss', files('slss.f90')]]

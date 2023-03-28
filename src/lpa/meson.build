@@ -6,3 +6,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('uselpa.F90', 'runlpa_sif.F90')
 endif
+galahad_examples += [['lpas', files('lpas.f90')]]

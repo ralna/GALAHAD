@@ -7,3 +7,5 @@ if libcutest.found()
   libgalahad_cutest_src += files('uselancelot.F90', 'uselancelot_steering.F90',
                                  'runlancelot_sif.F90', 'runlancelot_steering_sif.F90')
 endif
+galahad_examples += [['lancelots', files('lancelots.f90')],
+                     ['lancelot_steerings', files('lancelot_steerings.f90')]]
