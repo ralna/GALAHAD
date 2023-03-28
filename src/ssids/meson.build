@@ -9,7 +9,9 @@ if build_ssids
                           'lapack_iface.F90', 'profile_iface.F90', 'ssids.F90',
                           'subtree.F90')
 
-  libgalahad_c_src += files('C/ssids_ciface.F90')
+  if build_ciface
+    libgalahad_c_src += files('C/ssids_ciface.F90')
+  endif
 endif
 
 # GPU: 'assemble.cu', 'dense_factor.cu', 'reorder.cu', 'solve.cu', 'syrk.cu'
