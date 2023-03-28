@@ -5,3 +5,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usefiltrane.F90', 'runfiltrane_sif.F90')
 endif
+galahad_examples += [['filtranes', files('filtranes.f90')]]

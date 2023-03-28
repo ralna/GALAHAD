@@ -12,6 +12,7 @@ if build_ssids
   if build_ciface
     libgalahad_c_src += files('C/ssids_ciface.F90')
   endif
+  galahad_examples += [['ssidss', files('ssidss.f90')]]
 endif
 
 # GPU: 'assemble.cu', 'dense_factor.cu', 'reorder.cu', 'solve.cu', 'syrk.cu'
