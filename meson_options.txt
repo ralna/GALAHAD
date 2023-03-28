@@ -88,6 +88,11 @@ option('libmkl_pardiso',
        value : 'mkl_intel_lp64',
        description : 'option for Intel MKL PARDISO library switching')
 
+option('libampl',
+       type : 'string',
+       value : 'ampl',
+       description : 'option for Intel AMPL library switching')
+
 option('libblas_path',
        type : 'array',
        value : [],
@@ -147,6 +152,11 @@ option('libmkl_pardiso_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search Intel MKL library library')
+
+option('libampl_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search AMPL library library')
 
 option('ssids',
        type : 'boolean',
