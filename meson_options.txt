@@ -91,7 +91,7 @@ option('libmkl_pardiso',
 option('libampl',
        type : 'string',
        value : 'ampl',
-       description : 'option for Intel AMPL library switching')
+       description : 'option for AMPL library switching')
 
 option('libblas_path',
        type : 'array',
