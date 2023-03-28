@@ -5,3 +5,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('useeqp.F90', 'runeqp_sif.F90')
 endif
+galahad_examples += [['eqps', files('eqps.f90')]]

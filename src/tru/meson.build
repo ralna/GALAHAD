@@ -5,6 +5,10 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usetru.F90', 'runtru_sif.F90')
 endif
+galahad_examples += [['trus', files('trus.f90')],
+                     ['trus2', files('trus2.f90')],
+                     ['trus3', files('trus3.f90')],
+                     ['trus4', files('trus4.f90')]]
 galahad_c_examples += [['trus_c', files('C/trus.c')],
                        ['trus2_c', files('C/trus2.c')],
                        ['trus3_c', files('C/trus3.c')],
