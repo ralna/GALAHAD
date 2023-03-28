@@ -1,6 +1,8 @@
 libgalahad_src += files('bqpb.F90')
 bingalahad_src += [['inbqpb', files('inbqpb.F90')]]
-libgalahad_c_src += files('C/bqpb_ciface.F90')
+if build_ciface
+  libgalahad_c_src += files('C/bqpb_ciface.F90')
+endif
 if libcutest.found()
   libgalahad_cutest_src += files('usebqpb.F90', 'runbqpb_sif.F90')
 endif
