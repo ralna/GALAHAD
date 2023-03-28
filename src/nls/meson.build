@@ -5,3 +5,7 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usenls.F90', 'runnls_sif.F90')
 endif
+galahad_c_examples += [['nlss_c', files('C/nlss.c')],
+                       ['nlss2_c', files('C/nlss2.c')],
+                       ['nlss3_c', files('C/nlss3.c')],
+                       ['nlss4_c', files('C/nlss4.c')]]

@@ -5,3 +5,7 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usedgo.F90', 'rundgo_sif.F90')
 endif
+galahad_c_examples += [['dgos_c', files('C/dgos.c')],
+                       ['dgos2_c', files('C/dgos2.c')],
+                       ['dgos3_c', files('C/dgos3.c')],
+                       ['dgos4_c', files('C/dgos4.c')]]

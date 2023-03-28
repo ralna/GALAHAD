@@ -5,3 +5,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('useugo.F90', 'runugo_sif.F90')
 endif
+galahad_c_examples += [['ugos_c', files('C/ugos.c')]]
