@@ -123,6 +123,7 @@ subdir('bin')
 ## 1. Module requires for single and double precision
 subdir('src/kinds')
 subdir('src/buildspec')
+subdir('src/lsrb')
 
 ## 2. the following modules have no dependencies inside libgalahad; they appear in alphabetical order
 subdir('src/zd11')
