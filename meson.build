@@ -55,6 +55,7 @@ libpardiso_name = get_option('libpardiso')
 libspmf_name = get_option('libspmf')
 libpastix_name = get_option('libpastix')
 libmkl_pardiso_name = get_option('libmkl_pardiso')
+libampl_name = get_option('libampl')
 
 libmumps_path = get_option('libmumps_path')
 libblas_path = get_option('libblas_path')
@@ -68,6 +69,7 @@ libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
 libpastix_path = get_option('libpastix_path')
 libmkl_pardiso_path = get_option('libmkl_pardiso_path')
+libampl_path = get_option('libampl_path')
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
@@ -83,6 +85,7 @@ libpastix = fc.find_library(libpastix_name, dirs : libpastix_path, required : fa
 libsmumps = fc.find_library('smumps', dirs : libmumps_path, required : false)
 libdmumps = fc.find_library('dmumps', dirs : libmumps_path, required : false)
 libmkl_pardiso = fc.find_library(libmkl_pardiso_name, dirs : libmkl_pardiso_path, required : false)
+libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
 libomp = dependency('openmp', language : 'fortran', required : true)
 libhwloc = dependency('hwloc', required : false)
@@ -90,7 +93,7 @@ libhwloc = dependency('hwloc', required : false)
 libgalahad_single_deps = [libsmumps]
 libgalahad_double_deps = [libdmumps]
 libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libcutest, libwsmp, libumfpack,
-                   libpardiso, libspmf, libpastix,libmkl_pardiso, libmpi, libomp, libhwloc]
+                   libpardiso, libspmf, libpastix,libmkl_pardiso, libampl, libmpi, libomp, libhwloc]
 
 libgalahad_single_src = []
 libgalahad_double_src = []
@@ -105,8 +108,9 @@ libgalahad_c_integer_src = []
 libgalahad_c_src = []
 
 libgalahad_cutest_src = []
+libgalahad_ampl_src = []
 
-libgalahad_include = ['include', 'src/dum/include']
+libgalahad_include = ['include', 'src/dum/include', 'src/ampl']
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
@@ -148,6 +152,7 @@ subdir('src/userdata')
 
 ## 3. the following modules have dependencies
 ## Order matters!
+subdir('src/ampl')
 subdir('src/smt')
 subdir('src/convert')
 subdir('src/qpt')
@@ -240,8 +245,8 @@ subdir('src/spral')
 
 if build_single
   sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_single_src + libgalahad_c_integer_src + libgalahad_c_src,
-                    libgalahad_cutest_src]
+                    libgalahad_c_single_src, libgalahad_c_integer_src, libgalahad_c_src,
+                    libgalahad_cutest_src, libgalahad_ampl_src]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -256,8 +261,8 @@ endif
 
 if build_double
   sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_double_src + libgalahad_c_integer_src + libgalahad_c_src,
-                    libgalahad_cutest_src]
+                    libgalahad_c_double_src, libgalahad_c_integer_src, libgalahad_c_src,
+                    libgalahad_cutest_src, libgalahad_ampl_src]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
