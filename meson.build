@@ -97,6 +97,8 @@ libgalahad_double_src = []
 libgalahad_integer_src = []
 libgalahad_src = []
 
+bingalahad_src = []
+
 libgalahad_c_single_src = []
 libgalahad_c_double_src = []
 libgalahad_c_integer_src = []
@@ -120,6 +122,7 @@ subdir('bin')
 
 ## 1. Module requires for single and double precision
 subdir('src/kinds')
+subdir('src/buildspec')
 
 ## 2. the following modules have no dependencies inside libgalahad; they appear in alphabetical order
 subdir('src/zd11')
@@ -272,22 +275,27 @@ if install_modules
 endif
 
 # Executables
-if build_single
-  buildspec_single = executable('buildspec_single', 'src/buildspec/buildspec.F90',
-                                fortran_args : extra_args_single,
-                                link_with : libgalahad_single,
-                                link_language : 'fortran',
-                                include_directories: libgalahad_include,
-                                install : true)
-endif
-if build_double
-  buildspec_double = executable('buildspec_double', 'src/buildspec/buildspec.F90',
-                                fortran_args : extra_args_double,
-                                link_with : libgalahad_double,
-                                link_language : 'fortran',
-                                include_directories: libgalahad_include,
-                                install : true)
-endif
+foreach val: bingalahad_src
+  binname = val[0]
+  binfile = val[1]
+
+  if build_single
+    executable(binname+'_single', binfile,
+               fortran_args : extra_args_single,
+               link_with : libgalahad_single,
+               link_language : 'fortran',
+               include_directories: libgalahad_include,
+               install : true)
+  endif
+  if build_double
+    executable(binname+'_double', binfile,
+               fortran_args : extra_args_double,
+               link_with : libgalahad_double,
+               link_language : 'fortran',
+               include_directories: libgalahad_include,
+               install : true)
+  endif
+endforeach
 
 # Unit tests
 
