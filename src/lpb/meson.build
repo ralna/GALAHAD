@@ -6,3 +6,4 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('uselpb.F90', 'runlpb_sif.F90')
 endif
+galahad_examples += [['lpbs', files('lpbs.f90')]]
