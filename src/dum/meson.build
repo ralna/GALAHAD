@@ -1,12 +1,14 @@
-libgalahad_c_single_src += files('C/hsl_ma48s_ciface.f90', 'C/hsl_ma57s_ciface.f90', 'C/hsl_ma77s_ciface.f90',
-                                 'C/hsl_ma86s_ciface.f90', 'C/hsl_ma87s_ciface.f90', 'C/hsl_ma97s_ciface.f90',
-                                 'C/hsl_mc64s_ciface.f90', 'C/hsl_mi28s_ciface.f90')
+if build_ciface
+  libgalahad_c_single_src += files('C/hsl_ma48s_ciface.f90', 'C/hsl_ma57s_ciface.f90', 'C/hsl_ma77s_ciface.f90',
+                                   'C/hsl_ma86s_ciface.f90', 'C/hsl_ma87s_ciface.f90', 'C/hsl_ma97s_ciface.f90',
+                                   'C/hsl_mc64s_ciface.f90', 'C/hsl_mi28s_ciface.f90')
 
-libgalahad_c_double_src += files('C/hsl_ma48d_ciface.f90', 'C/hsl_ma57d_ciface.f90', 'C/hsl_ma77d_ciface.f90',
-                                 'C/hsl_ma86d_ciface.f90', 'C/hsl_ma87d_ciface.f90', 'C/hsl_ma97d_ciface.f90',
-                                 'C/hsl_mc64d_ciface.f90', 'C/hsl_mi28d_ciface.f90')
+  libgalahad_c_double_src += files('C/hsl_ma48d_ciface.f90', 'C/hsl_ma57d_ciface.f90', 'C/hsl_ma77d_ciface.f90',
+                                   'C/hsl_ma86d_ciface.f90', 'C/hsl_ma87d_ciface.f90', 'C/hsl_ma97d_ciface.f90',
+                                   'C/hsl_mc64d_ciface.f90', 'C/hsl_mi28d_ciface.f90')
 
-libgalahad_c_integer_src += files('C/hsl_mc68i_ciface.f90')
+  libgalahad_c_integer_src += files('C/hsl_mc68i_ciface.f90')
+endif
 
 if not libcutest.found()
   libgalahad_cutest_src += files('cutest_dummy.F90')
@@ -77,5 +79,7 @@ endif
 if not build_ssids
   libgalahad_single_src += files('ssidss.F90')
   libgalahad_double_src += files('ssidsd.F90')
-  libgalahad_c_src += files('C/ssids_ciface.F90')
+  if build_ciface
+    libgalahad_c_src += files('C/ssids_ciface.F90')
+  endif
 endif
