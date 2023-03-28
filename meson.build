@@ -86,14 +86,17 @@ libsmumps = fc.find_library('smumps', dirs : libmumps_path, required : false)
 libdmumps = fc.find_library('dmumps', dirs : libmumps_path, required : false)
 libmkl_pardiso = fc.find_library(libmkl_pardiso_name, dirs : libmkl_pardiso_path, required : false)
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
-libmpi = dependency('mpi', language : 'fortran', required : false)
+lm = cc.find_library('m', required : false)
+
 libomp = dependency('openmp', language : 'fortran', required : true)
+libmpi = dependency('mpi', language : 'fortran', required : false)
 libhwloc = dependency('hwloc', required : false)
 
 libgalahad_single_deps = [libsmumps]
 libgalahad_double_deps = [libdmumps]
-libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libcutest, libwsmp, libumfpack,
-                   libpardiso, libspmf, libpastix,libmkl_pardiso, libampl, libmpi, libomp, libhwloc]
+libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libcutest,
+                   libwsmp, libumfpack, libpardiso, libspmf, libpastix,
+                   libmkl_pardiso, libampl, libomp, libmpi, libhwloc]
 
 libgalahad_single_src = []
 libgalahad_double_src = []
@@ -109,6 +112,11 @@ libgalahad_c_src = []
 
 libgalahad_cutest_src = []
 libgalahad_ampl_src = []
+
+galahad_examples = []
+galahad_c_examples = []
+galahad_tests = []
+galahad_c_tests = []
 
 libgalahad_include = ['include', 'src/dum/include', 'src/ampl']
 
@@ -822,7 +830,12 @@ endif
 # Example programs
 
 if build_examples and build_double
-  fortran_examples_folder = 'share/examples'
+
+  fortran_examples_folder = 'examples/Fortran'
+
+  # foreach example: galahad_examples
+  #   executable(example[0], example[1], link_with : libgalahad_double, dependencies : libgalahad_deps, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
+  # endforeach
   executable('amds', 'src/amd/amds.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
   executable('bscs', 'src/bsc/bscs.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
   executable('checks', 'src/check/checks.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
@@ -951,48 +964,24 @@ if build_examples and build_double
   executable('qpbs2', 'src/qpb/qpbs2.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
   executable('qpcs', 'src/qpc/qpcs.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
   executable('qps', 'src/qp/qps.f90', link_with : libgalahad_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
-
-  # executable('ma48ss', 'src/external/ma48/ma48ss.f90', link_with : libgalahad_hsl_single, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
-  # executable('ma48ds', 'src/external/ma48/ma48ds.f90', link_with : libgalahad_hsl_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
 endif
+# executable('ma48ss', 'src/external/ma48/ma48ss.f90', link_with : libgalahad_hsl_single, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
+# executable('ma48ds', 'src/external/ma48/ma48ds.f90', link_with : libgalahad_hsl_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
 
 if build_examples and build_ciface
 
-  c_examples_folder = 'share/examples/C'
-  c_examples = []
+  c_examples_folder = 'examples/C'
+  precisions = []
   if build_single
-    c_examples += [['single', extra_args_single, libgalahad_single]]
+    precisions += [['_single', extra_args_single, libgalahad_single]]
   endif
   if build_double
-    c_examples += [['double', extra_args_double, libgalahad_double]]
+    precisions += [['_double', extra_args_double, libgalahad_double]]
   endif
 
-  foreach val: c_examples
-    arcs_c = executable('arcs_c_'+val[0], 'src/arc/C/arcs.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    arcs2_c = executable('arcs2_c_'+val[0], 'src/arc/C/arcs2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    arcs3_c = executable('arcs3_c_'+val[0], 'src/arc/C/arcs3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    arcs4_c = executable('arcs4_c_'+val[0], 'src/arc/C/arcs4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    bgos_c = executable('bgos_c_'+val[0], 'src/bgo/C/bgos.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    bgos2_c = executable('bgos2_c_'+val[0], 'src/bgo/C/bgos2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    bgos3_c = executable('bgos3_c_'+val[0], 'src/bgo/C/bgos3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    bgos4_c = executable('bgos4_c_'+val[0], 'src/bgo/C/bgos4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    dgos_c = executable('dgos_c_'+val[0], 'src/dgo/C/dgos.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    dgos2_c = executable('dgos2_c_'+val[0], 'src/dgo/C/dgos2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    dgos3_c = executable('dgos3_c_'+val[0], 'src/dgo/C/dgos3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    dgos4_c = executable('dgos4_c_'+val[0], 'src/dgo/C/dgos4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    lhs_c = executable('lhss_c_'+val[0], 'src/lhs/C/lhss.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    nlss_c = executable('nlss_c_'+val[0], 'src/nls/C/nlss.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    nlss2_c = executable('nlss2_c_'+val[0], 'src/nls/C/nlss2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    nlss3_c = executable('nlss3_c_'+val[0], 'src/nls/C/nlss3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    nlss4_c = executable('nlss4_c_'+val[0], 'src/nls/C/nlss4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trbs_c = executable('trbs_c_'+val[0], 'src/trb/C/trbs.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trbs2_c = executable('trbs2_c_'+val[0], 'src/trb/C/trbs2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trbs3_c = executable('trbs3_c_'+val[0], 'src/trb/C/trbs3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trbs4_c = executable('trbs4_c_'+val[0], 'src/trb/C/trbs4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trus_c = executable('trus_c_'+val[0], 'src/tru/C/trus.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trus2_c = executable('trus2_c_'+val[0], 'src/tru/C/trus2.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trus3_c = executable('trus3_c_'+val[0], 'src/tru/C/trus3.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    trus4_c = executable('trus4_c_'+val[0], 'src/tru/C/trus4.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
-    ugos_c = executable('ugos_c_'+val[0], 'src/ugo/C/ugos.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
+  foreach example: galahad_c_examples
+    foreach val: precisions
+      executable(example[0]+val[0], example[1], c_args : val[1], link_with : val[2], dependencies: lm, link_language: 'c', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
+    endforeach
   endforeach
 endif
