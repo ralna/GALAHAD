@@ -5,4 +5,7 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usesha.F90', 'runsha_sif.F90')
 endif
+
+galahad_tests += [['sha', 'shat', files('shat.F90')]]
+
 galahad_examples += [['shas', files('shas.f90')]]
