@@ -5,6 +5,10 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('useslls.F90', 'runslls_sif.F90')
 endif
+
+galahad_c_tests += [['slls', 'sllst_c', files('C/sllst.c')],
+                    ['slls', 'sllstf_c', files('C/sllstf.c')]]
+
 galahad_examples += [['sllss', files('sllss.f90')],
                      ['sllss2', files('sllss2.f90')],
                      ['sllss3', files('sllss3.f90')],
