@@ -912,11 +912,11 @@ struct sls_inform_type {
 
     /// \brief
     /// the output structure from mc64
-    struct mc64_info mc64_inform;
+    struct mc64_info mc64_info;
 
     /// \brief
     /// the output structure from mc68
-    struct mc68_info mc68_inform;
+    struct mc68_info mc68_info;
 
     /// \brief
     /// the integer output array from mc77

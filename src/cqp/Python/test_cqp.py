@@ -35,8 +35,7 @@ x_u = np.array([1.0,infinity,2.0])
 options = cqp.initialize()
 
 # set some non-default options
-#options = {'print_level' : 1 }
-#options = { }
+options['print_level'] = 1
 #print("options:", options)
 
 # load data (and optionally non-default options)

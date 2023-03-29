@@ -6,6 +6,7 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_ugo.h"
+#include <string.h>
 
 // Test problem objective
 real_wp_ objf(real_wp_ x){
@@ -38,9 +39,10 @@ int main(void) {
     ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options
-    //control.print_level = 1;
+    control.print_level = 1;
     //control.maxit = 100;
     //control.lipschitz_estimate_used = 3;
+           strcpy(control.prefix, "'aargh'");
 
     // Read options from specfile
     char specfile[] = "UGO.SPC";

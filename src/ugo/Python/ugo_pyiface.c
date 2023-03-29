@@ -1,7 +1,7 @@
 //* \file ugo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_UGO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -222,6 +222,12 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
         }
 
         // Parse each bool option
+        if(strcmp(key_name, "second_derivative_available") == 0){
+            if(!parse_bool_option(value, "second_derivative_available",
+                                  &control->space_critical))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "space_critical") == 0){
             if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
@@ -237,14 +243,16 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
-            if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+            if(!parse_char_option(value, "prefix", 
+                                  control->prefix, 
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
-            if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+            if(!parse_char_option(value, "alive_file", 
+                                  control->alive_file, 
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -256,6 +264,74 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within BGO Python interface
+PyObject* ugo_make_options_dict(const struct ugo_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "initial_points",
+                         PyLong_FromLong(control->initial_points));
+    PyDict_SetItemString(py_options, "storage_increment",
+                         PyLong_FromLong(control->storage_increment));
+    PyDict_SetItemString(py_options, "buffer",
+                         PyLong_FromLong(control->buffer));
+    PyDict_SetItemString(py_options, "lipschitz_estimate_used",
+                         PyLong_FromLong(control->lipschitz_estimate_used));
+    PyDict_SetItemString(py_options, "next_interval_selection",
+                         PyLong_FromLong(control->next_interval_selection));
+    PyDict_SetItemString(py_options, "refine_with_newton",
+                         PyLong_FromLong(control->refine_with_newton));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "stop_length",
+                         PyFloat_FromDouble(control->stop_length));
+    PyDict_SetItemString(py_options, "small_g_for_newton",
+                         PyFloat_FromDouble(control->small_g_for_newton));
+    PyDict_SetItemString(py_options, "small_g",
+                         PyFloat_FromDouble(control->small_g));
+    PyDict_SetItemString(py_options, "obj_sufficient",
+                         PyFloat_FromDouble(control->obj_sufficient));
+    PyDict_SetItemString(py_options, "global_lipschitz_constant",
+                         PyFloat_FromDouble(control->global_lipschitz_constant))
+;
+    PyDict_SetItemString(py_options, "reliability_parameter",
+                         PyFloat_FromDouble(control->reliability_parameter));
+    PyDict_SetItemString(py_options, "lipschitz_lower_bound",
+                         PyFloat_FromDouble(control->lipschitz_lower_bound));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "second_derivative_available",
+                         PyBool_FromLong(control->second_derivative_available));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -316,9 +392,13 @@ static PyObject* py_ugo_initialize(PyObject *self){
     // Record that UGO has been initialised
     init_called = true;
 
+    // Return options Python dictionary
+    PyObject *py_options = ugo_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
+
     // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Py_INCREF(Py_None);
+    // return Py_None;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   UGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

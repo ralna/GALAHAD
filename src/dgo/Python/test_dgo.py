@@ -2,12 +2,12 @@ from galahad import dgo
 import numpy as np
 
 # allocate internal data and set default options
-dgo.initialize()
+options = dgo.initialize()
 
 # set some non-default options
-#options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
-options = {'print_level' : 1 }
-print(options)
+options['print_level'] = 1
+options['ugo_options']['print_level'] = 0
+#print("options:", options)
 
 # set parameters
 p = 4

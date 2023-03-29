@@ -1,7 +1,7 @@
 //* \file arc_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-11-22 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ARC PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,18 +21,23 @@
 /* Nested RQS, GLRT, PSLS, LMS and SHA control and inform prototypes */
 //bool rqs_update_control(struct rqs_control_type *control,
 //                        PyObject *py_options);
+//PyObject* rqs_make_options_dict(const struct rqs_control_type *control);
 //PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform);
 //bool glrt_update_control(struct glrt_control_type *control,
 //                         PyObject *py_options);
+//PyObject* glrt_make_options_dict(const struct glrt_control_type *control);
 //PyObject* glrt_make_inform_dict(const struct glrt_inform_type *inform);
 //bool psls_update_control(struct psls_control_type *control,
 //                         PyObject *py_options);
+//PyObject* psls_make_options_dict(const struct psls_control_type *control);
 //PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
 //bool lms_update_control(struct lms_control_type *control,
 //                        PyObject *py_options);
+//PyObject* lms_make_options_dict(const struct lms_control_type *control);
 //PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
 //bool sha_update_control(struct sha_control_type *control,
 //                        PyObject *py_options);
+//PyObject* sha_make_options_dict(const struct sha_control_type *control);
 //PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
 
 /* Module global variables */
@@ -429,13 +434,15 @@ static bool arc_update_control(struct arc_control_type *control,
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix, 
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file, 
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -484,6 +491,118 @@ static bool arc_update_control(struct arc_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+static PyObject* arc_make_options_dict(const struct arc_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "non_monotone",
+                         PyLong_FromLong(control->non_monotone));
+    PyDict_SetItemString(py_options, "model",
+                         PyLong_FromLong(control->model));
+    PyDict_SetItemString(py_options, "norm",
+                         PyLong_FromLong(control->norm));
+    PyDict_SetItemString(py_options, "semi_bandwidth",
+                         PyLong_FromLong(control->semi_bandwidth));
+    PyDict_SetItemString(py_options, "lbfgs_vectors",
+                         PyLong_FromLong(control->lbfgs_vectors));
+    PyDict_SetItemString(py_options, "max_dxg",
+                         PyLong_FromLong(control->max_dxg));
+    PyDict_SetItemString(py_options, "icfs_vectors",
+                         PyLong_FromLong(control->icfs_vectors));
+    PyDict_SetItemString(py_options, "mi28_lsize",
+                         PyLong_FromLong(control->mi28_lsize));
+    PyDict_SetItemString(py_options, "mi28_rsize",
+                         PyLong_FromLong(control->mi28_rsize));
+    PyDict_SetItemString(py_options, "advanced_start",
+                         PyLong_FromLong(control->advanced_start));
+    PyDict_SetItemString(py_options, "stop_g_absolute",
+                         PyFloat_FromDouble(control->stop_g_absolute));
+    PyDict_SetItemString(py_options, "stop_g_relative",
+                         PyFloat_FromDouble(control->stop_g_relative));
+    PyDict_SetItemString(py_options, "stop_s",
+                         PyFloat_FromDouble(control->stop_s));
+    PyDict_SetItemString(py_options, "initial_weight",
+                         PyFloat_FromDouble(control->initial_weight));
+    PyDict_SetItemString(py_options, "minimum_weight",
+                         PyFloat_FromDouble(control->minimum_weight));
+    PyDict_SetItemString(py_options, "reduce_gap",
+                         PyFloat_FromDouble(control->reduce_gap));
+    PyDict_SetItemString(py_options, "tiny_gap",
+                         PyFloat_FromDouble(control->tiny_gap));
+    PyDict_SetItemString(py_options, "large_root",
+                         PyFloat_FromDouble(control->large_root));
+    PyDict_SetItemString(py_options, "eta_successful",
+                         PyFloat_FromDouble(control->eta_successful));
+    PyDict_SetItemString(py_options, "eta_very_successful",
+                         PyFloat_FromDouble(control->eta_very_successful));
+    PyDict_SetItemString(py_options, "eta_too_successful",
+                         PyFloat_FromDouble(control->eta_too_successful));
+    PyDict_SetItemString(py_options, "weight_decrease_min",
+                         PyFloat_FromDouble(control->weight_decrease_min));
+    PyDict_SetItemString(py_options, "weight_decrease",
+                         PyFloat_FromDouble(control->weight_decrease));
+    PyDict_SetItemString(py_options, "weight_increase",
+                         PyFloat_FromDouble(control->weight_increase));
+    PyDict_SetItemString(py_options, "weight_increase_max",
+                         PyFloat_FromDouble(control->weight_increase_max));
+    PyDict_SetItemString(py_options, "obj_unbounded",
+                         PyFloat_FromDouble(control->obj_unbounded));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyBool_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "subproblem_direct",
+                         PyBool_FromLong(control->subproblem_direct));
+    PyDict_SetItemString(py_options, "renormalize_weight",
+                         PyBool_FromLong(control->renormalize_weight));
+    PyDict_SetItemString(py_options, "quadratic_ratio_test",
+                         PyBool_FromLong(control->quadratic_ratio_test));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "rqs_options",
+    //                     rqs_make_options_dict(&control->rqs_control));
+    //PyDict_SetItemString(py_options, "glrt_options",
+    //                     glrt_make_options_dict(&control->glrt_control));
+    //PyDict_SetItemString(py_options, "dps_options",
+    //                     dps_make_options_dict(&control->dps_control));
+    //PyDict_SetItemString(py_options, "psls_options",
+    //                     psls_make_options_dict(&control->psls_control));
+    //PyDict_SetItemString(py_options, "lms_options",
+    //                     lms_make_options_dict(&control->lms_control));
+    //PyDict_SetItemString(py_options, "lms_cont_options",
+    //                     lms_cont_make_options_dict(&control->lms_cont_control));
+    //PyDict_SetItemString(py_options, "sha_options",
+    //                     sha_make_options_dict(&control->sha_control));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -591,9 +710,9 @@ static PyObject* py_arc_initialize(PyObject *self){
     // Record that ARC has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = arc_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   ARC_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

@@ -21,6 +21,7 @@
 /* Nested UGO control and inform prototypes */
 bool ugo_update_control(struct ugo_control_type *control,
                         PyObject *py_options);
+PyObject* ugo_make_options_dict(const struct ugo_control_type *control);
 PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
 //bool trb_update_control(struct trb_control_type *control,
 //                        PyObject *py_options);
@@ -233,15 +234,15 @@ static bool bgo_update_control(struct bgo_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "cpu_time_limit ") == 0){
-            if(!parse_double_option(value, "cpu_time_limit ",
-                                    &control->cpu_time_limit ))
+        if(strcmp(key_name, "cpu_time_limit") == 0){
+            if(!parse_double_option(value, "cpu_time_limit",
+                                    &control->cpu_time_limit))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "clock_time_limit ") == 0){
-            if(!parse_double_option(value, "clock_time_limit ",
-                                    &control->clock_time_limit ))
+        if(strcmp(key_name, "clock_time_limit") == 0){
+            if(!parse_double_option(value, "clock_time_limit",
+                                    &control->clock_time_limit))
                 return false;
             continue;
         }
@@ -275,13 +276,15 @@ static bool bgo_update_control(struct bgo_control_type *control,
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix, 
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file, 
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -310,6 +313,58 @@ static bool bgo_update_control(struct bgo_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+static PyObject* bgo_make_options_dict(const struct bgo_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "attempts_max",
+                         PyLong_FromLong(control->attempts_max));
+    PyDict_SetItemString(py_options, "max_evals",
+                         PyLong_FromLong(control->max_evals));
+    PyDict_SetItemString(py_options, "sampling_strategy",
+                         PyLong_FromLong(control->sampling_strategy));
+    PyDict_SetItemString(py_options, "hypercube_discretization",
+                         PyLong_FromLong(control->hypercube_discretization));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "infinity",
+                         PyFloat_FromDouble(control->infinity));
+    PyDict_SetItemString(py_options, "obj_unbounded",
+                         PyFloat_FromDouble(control->obj_unbounded));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "random_multistart",
+                         PyBool_FromLong(control->random_multistart));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyBool_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    PyDict_SetItemString(py_options, "ugo_options",
+                         ugo_make_options_dict(&control->ugo_control));
+    // PyDict_SetItemString(py_options, "lhs_options",
+    //                     lhs_make_options_dict(&control->lhs_control));
+    // PyDict_SetItemString(py_options, "trb_options",
+    //                     trb_make_options_dict(&control->trb_control));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -389,9 +444,10 @@ static PyObject* py_bgo_initialize(PyObject *self){
     // Record that BGO has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = bgo_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

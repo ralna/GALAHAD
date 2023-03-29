@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-01-15 AT 15:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 11:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,18 +21,23 @@
 /* Nested TRS, GLTR, PSLS, LMS and SHA control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
 //                        PyObject *py_options);
+//PyObject* trs_make_options_dict(const struct trs_control_type *control);
 //PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
 //bool gltr_update_control(struct gltr_control_type *control,
 //                         PyObject *py_options);
+//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
 //PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
 //bool psls_update_control(struct psls_control_type *control,
 //                         PyObject *py_options);
+//PyObject* psls_make_options_dict(const struct psls_control_type *control);
 //PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
 //bool lms_update_control(struct lms_control_type *control,
 //                        PyObject *py_options);
+//PyObject* lms_make_options_dict(const struct lms_control_type *control);
 //PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
 //bool sha_update_control(struct sha_control_type *control,
 //                        PyObject *py_options);
+//PyObject* sha_make_options_dict(const struct sha_control_type *control);
 //PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
 
 /* Module global variables */
@@ -280,7 +285,8 @@ static bool nls_update_subproblem_control(
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file,
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -490,7 +496,8 @@ static bool nls_update_subproblem_control(
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -601,7 +608,8 @@ static bool nls_update_control(struct nls_control_type *control,
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file,
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -811,7 +819,8 @@ static bool nls_update_control(struct nls_control_type *control,
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -854,6 +863,225 @@ static bool nls_update_control(struct nls_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE SUBPROBLEM OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+static PyObject* nls_subproblem_make_options_dict(const struct 
+                                                  nls_subproblem_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "jacobian_available",
+                         PyLong_FromLong(control->jacobian_available));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyLong_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "model",
+                         PyLong_FromLong(control->model));
+    PyDict_SetItemString(py_options, "norm",
+                         PyLong_FromLong(control->norm));
+    PyDict_SetItemString(py_options, "non_monotone",
+                         PyLong_FromLong(control->non_monotone));
+    PyDict_SetItemString(py_options, "weight_update_strategy",
+                         PyLong_FromLong(control->weight_update_strategy));
+    PyDict_SetItemString(py_options, "stop_c_absolute",
+                         PyFloat_FromDouble(control->stop_c_absolute));
+    PyDict_SetItemString(py_options, "stop_c_relative",
+                         PyFloat_FromDouble(control->stop_c_relative));
+    PyDict_SetItemString(py_options, "stop_g_absolute",
+                         PyFloat_FromDouble(control->stop_g_absolute));
+    PyDict_SetItemString(py_options, "stop_g_relative",
+                         PyFloat_FromDouble(control->stop_g_relative));
+    PyDict_SetItemString(py_options, "stop_s",
+                         PyFloat_FromDouble(control->stop_s));
+    PyDict_SetItemString(py_options, "power",
+                         PyFloat_FromDouble(control->power));
+    PyDict_SetItemString(py_options, "initial_weight",
+                         PyFloat_FromDouble(control->initial_weight));
+    PyDict_SetItemString(py_options, "minimum_weight",
+                         PyFloat_FromDouble(control->minimum_weight));
+    PyDict_SetItemString(py_options, "initial_inner_weight",
+                         PyFloat_FromDouble(control->initial_inner_weight));
+    PyDict_SetItemString(py_options, "eta_successful",
+                         PyFloat_FromDouble(control->eta_successful));
+    PyDict_SetItemString(py_options, "eta_very_successful",
+                         PyFloat_FromDouble(control->eta_very_successful));
+    PyDict_SetItemString(py_options, "eta_too_successful",
+                         PyFloat_FromDouble(control->eta_too_successful));
+    PyDict_SetItemString(py_options, "weight_decrease_min",
+                         PyFloat_FromDouble(control->weight_decrease_min));
+    PyDict_SetItemString(py_options, "weight_decrease",
+                         PyFloat_FromDouble(control->weight_decrease));
+    PyDict_SetItemString(py_options, "weight_increase",
+                         PyFloat_FromDouble(control->weight_increase));
+    PyDict_SetItemString(py_options, "weight_increase_max",
+                         PyFloat_FromDouble(control->weight_increase_max));
+    PyDict_SetItemString(py_options, "reduce_gap",
+                         PyFloat_FromDouble(control->reduce_gap));
+    PyDict_SetItemString(py_options, "tiny_gap",
+                         PyFloat_FromDouble(control->tiny_gap));
+    PyDict_SetItemString(py_options, "large_root",
+                         PyFloat_FromDouble(control->large_root));
+    PyDict_SetItemString(py_options, "switch_to_newton",
+                         PyFloat_FromDouble(control->switch_to_newton));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "subproblem_direct",
+                         PyBool_FromLong(control->subproblem_direct));
+    PyDict_SetItemString(py_options, "renormalize_weight",
+                         PyBool_FromLong(control->renormalize_weight));
+    PyDict_SetItemString(py_options, "magic_step",
+                         PyBool_FromLong(control->magic_step));
+    PyDict_SetItemString(py_options, "print_obj",
+                         PyBool_FromLong(control->print_obj));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "rqs_options",
+    //                     rqs_make_options_dict(&control->rqs_control));
+    //PyDict_SetItemString(py_options, "glrt_options",
+    //                     glrt_make_options_dict(&control->glrt_control));
+    //PyDict_SetItemString(py_options, "psls_options",
+    //                     psls_make_options_dict(&control->psls_control));
+    //PyDict_SetItemString(py_options, "bsc_options",
+    //                     bsc_make_options_dict(&control->bsc_control));
+    //PyDict_SetItemString(py_options, "roots_options",
+    //                     roots_make_options_dict(&control->roots_control));
+
+    return py_options;
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+static PyObject* nls_make_options_dict(const struct nls_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "jacobian_available",
+                         PyLong_FromLong(control->jacobian_available));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyLong_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "model",
+                         PyLong_FromLong(control->model));
+    PyDict_SetItemString(py_options, "norm",
+                         PyLong_FromLong(control->norm));
+    PyDict_SetItemString(py_options, "non_monotone",
+                         PyLong_FromLong(control->non_monotone));
+    PyDict_SetItemString(py_options, "weight_update_strategy",
+                         PyLong_FromLong(control->weight_update_strategy));
+    PyDict_SetItemString(py_options, "stop_c_absolute",
+                         PyFloat_FromDouble(control->stop_c_absolute));
+    PyDict_SetItemString(py_options, "stop_c_relative",
+                         PyFloat_FromDouble(control->stop_c_relative));
+    PyDict_SetItemString(py_options, "stop_g_absolute",
+                         PyFloat_FromDouble(control->stop_g_absolute));
+    PyDict_SetItemString(py_options, "stop_g_relative",
+                         PyFloat_FromDouble(control->stop_g_relative));
+    PyDict_SetItemString(py_options, "stop_s",
+                         PyFloat_FromDouble(control->stop_s));
+    PyDict_SetItemString(py_options, "power",
+                         PyFloat_FromDouble(control->power));
+    PyDict_SetItemString(py_options, "initial_weight",
+                         PyFloat_FromDouble(control->initial_weight));
+    PyDict_SetItemString(py_options, "minimum_weight",
+                         PyFloat_FromDouble(control->minimum_weight));
+    PyDict_SetItemString(py_options, "initial_inner_weight",
+                         PyFloat_FromDouble(control->initial_inner_weight));
+    PyDict_SetItemString(py_options, "eta_successful",
+                         PyFloat_FromDouble(control->eta_successful));
+    PyDict_SetItemString(py_options, "eta_very_successful",
+                         PyFloat_FromDouble(control->eta_very_successful));
+    PyDict_SetItemString(py_options, "eta_too_successful",
+                         PyFloat_FromDouble(control->eta_too_successful));
+    PyDict_SetItemString(py_options, "weight_decrease_min",
+                         PyFloat_FromDouble(control->weight_decrease_min));
+    PyDict_SetItemString(py_options, "weight_decrease",
+                         PyFloat_FromDouble(control->weight_decrease));
+    PyDict_SetItemString(py_options, "weight_increase",
+                         PyFloat_FromDouble(control->weight_increase));
+    PyDict_SetItemString(py_options, "weight_increase_max",
+                         PyFloat_FromDouble(control->weight_increase_max));
+    PyDict_SetItemString(py_options, "reduce_gap",
+                         PyFloat_FromDouble(control->reduce_gap));
+    PyDict_SetItemString(py_options, "tiny_gap",
+                         PyFloat_FromDouble(control->tiny_gap));
+    PyDict_SetItemString(py_options, "large_root",
+                         PyFloat_FromDouble(control->large_root));
+    PyDict_SetItemString(py_options, "switch_to_newton",
+                         PyFloat_FromDouble(control->switch_to_newton));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "subproblem_direct",
+                         PyBool_FromLong(control->subproblem_direct));
+    PyDict_SetItemString(py_options, "renormalize_weight",
+                         PyBool_FromLong(control->renormalize_weight));
+    PyDict_SetItemString(py_options, "magic_step",
+                         PyBool_FromLong(control->magic_step));
+    PyDict_SetItemString(py_options, "print_obj",
+                         PyBool_FromLong(control->print_obj));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "rqs_options",
+    //                     rqs_make_options_dict(&control->rqs_control));
+    //PyDict_SetItemString(py_options, "glrt_options",
+    //                     glrt_make_options_dict(&control->glrt_control));
+    //PyDict_SetItemString(py_options, "psls_options",
+    //                     psls_make_options_dict(&control->psls_control));
+    //PyDict_SetItemString(py_options, "bsc_options",
+    //                     bsc_make_options_dict(&control->bsc_control));
+    //PyDict_SetItemString(py_options, "roots_options",
+    //                     roots_make_options_dict(&control->roots_control));
+    PyDict_SetItemString(py_options, "subproblem_options",
+                         nls_subproblem_make_options_dict(&control->subproblem_control));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -1014,7 +1242,6 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-
 static PyObject* py_nls_initialize(PyObject *self){
 
     // Call nls_initialize
@@ -1023,9 +1250,9 @@ static PyObject* py_nls_initialize(PyObject *self){
     // Record that NLS has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = nls_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

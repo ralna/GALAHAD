@@ -538,7 +538,19 @@
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
+
+write(6,*) ' finform from copy_inform_out'
+write(6,*) ' status ', finform%sbls_inform%status, &
+           ' alloc_status ', finform%sbls_inform%alloc_status, &
+           ' bad alloc ', TRIM(finform%sbls_inform%bad_alloc), ' end of string'
+
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
+
+write(6,*) ' cinform from copy_inform_out'
+write(6,*) ' status ', cinform%sbls_inform%status, &
+           ' alloc_status ', cinform%sbls_inform%alloc_status, &
+           ' bad alloc ', cinform%sbls_inform%bad_alloc, ' end of string'
+
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
     CALL copy_scu_inform_out( finform%scu_inform, cinform%scu_inform )
     CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
@@ -860,10 +872,21 @@
 !  obtain DQP solution information
 
   CALL f_dqp_information( fdata, finform, status )
+write(6,*) ' ** finform from dqp_information **' 
+write(6,*) ' fdc status ', finform%fdc_inform%status
+write(6,*) ' sls status ', finform%sls_inform%status
+write(6,*) ' sbls status ', finform%sbls_inform%status, &
+           ' alloc_status ', finform%sbls_inform%alloc_status, &
+           ' bad alloc ', TRIM(finform%sbls_inform%bad_alloc), ' end of string'
 
 !  copy inform out
 
   CALL copy_inform_out( finform, cinform )
+
+write(6,*) ' ** cinform from dqp_information **'
+write(6,*) ' status ', cinform%sbls_inform%status, &
+           ' alloc_status ', cinform%sbls_inform%alloc_status, &
+           ' bad alloc ', cinform%sbls_inform%bad_alloc, ' end of string'
   RETURN
 
   END SUBROUTINE dqp_information

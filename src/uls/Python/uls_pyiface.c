@@ -1,7 +1,7 @@
 //* \file uls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-24 AT 13:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ULS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -36,7 +36,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool uls_update_control(struct uls_control_type *control,
+// NB not static as it is used for nested control within SBLS Python interface
+bool uls_update_control(struct uls_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -200,7 +201,8 @@ static bool uls_update_control(struct uls_control_type *control,
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -211,6 +213,67 @@ static bool uls_update_control(struct uls_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within SBLS Python interface
+PyObject* uls_make_options_dict(const struct uls_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "warning",
+                         PyLong_FromLong(control->warning));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "print_level_solver",
+                         PyLong_FromLong(control->print_level_solver));
+    PyDict_SetItemString(py_options, "initial_fill_in_factor",
+                         PyLong_FromLong(control->initial_fill_in_factor));
+    PyDict_SetItemString(py_options, "min_real_factor_size",
+                         PyLong_FromLong(control->min_real_factor_size));
+    PyDict_SetItemString(py_options, "min_integer_factor_size",
+                         PyLong_FromLong(control->min_integer_factor_size));
+    PyDict_SetItemString(py_options, "max_factor_size",
+                         PyLong_FromLong(control->max_factor_size));
+    PyDict_SetItemString(py_options, "blas_block_size_factorize",
+                         PyLong_FromLong(control->blas_block_size_factorize));
+    PyDict_SetItemString(py_options, "blas_block_size_solve",
+                         PyLong_FromLong(control->blas_block_size_solve));
+    PyDict_SetItemString(py_options, "pivot_control",
+                         PyLong_FromLong(control->pivot_control));
+    PyDict_SetItemString(py_options, "pivot_search_limit",
+                         PyLong_FromLong(control->pivot_search_limit));
+    PyDict_SetItemString(py_options, "minimum_size_for_btf",
+                         PyLong_FromLong(control->minimum_size_for_btf));
+    PyDict_SetItemString(py_options, "max_iterative_refinements",
+                         PyLong_FromLong(control->max_iterative_refinements));
+    PyDict_SetItemString(py_options, "stop_if_singular",
+                         PyBool_FromLong(control->stop_if_singular));
+    PyDict_SetItemString(py_options, "array_increase_factor",
+                         PyFloat_FromDouble(control->array_increase_factor));
+    PyDict_SetItemString(py_options, "switch_to_full_code_density",
+                         PyFloat_FromDouble(control->switch_to_full_code_density));
+    PyDict_SetItemString(py_options, "array_decrease_factor",
+                         PyFloat_FromDouble(control->array_decrease_factor));
+    PyDict_SetItemString(py_options, "relative_pivot_tolerance",
+                         PyFloat_FromDouble(control->relative_pivot_tolerance));
+    PyDict_SetItemString(py_options, "absolute_pivot_tolerance",
+                         PyFloat_FromDouble(control->absolute_pivot_tolerance));
+    PyDict_SetItemString(py_options, "zero_tolerance",
+                         PyFloat_FromDouble(control->zero_tolerance));
+    PyDict_SetItemString(py_options, "acceptable_residual_relative",
+                         PyFloat_FromDouble(control->acceptable_residual_relative));
+    PyDict_SetItemString(py_options, "acceptable_residual_absolute",
+                         PyFloat_FromDouble(control->acceptable_residual_absolute));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -226,7 +289,8 @@ static bool uls_update_control(struct uls_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* uls_make_inform_dict(const struct uls_inform_type *inform){
+// NB not static as it is used for nested control within SBLS Python interface
+PyObject* uls_make_inform_dict(const struct uls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -294,9 +358,9 @@ static PyObject* py_uls_initialize(PyObject *self, PyObject *args){
     // Record that ULS has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = uls_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   ULS_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*

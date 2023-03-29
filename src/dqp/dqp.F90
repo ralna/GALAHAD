@@ -11312,7 +11312,9 @@
 !  recover inform from internal data
 
      inform = data%dqp_inform
-
+write(6,*) ' status ', inform%sbls_inform%status, &
+           ' alloc_status ', inform%sbls_inform%alloc_status, &
+           ' bad alloc ', TRIM(inform%sbls_inform%bad_alloc), ' end of string'
 !  flag a successful call
 
      status = GALAHAD_ok
