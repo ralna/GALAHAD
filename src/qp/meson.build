@@ -1,5 +1,5 @@
 libgalahad_src += files('qp.F90')
-bingalahad_src += [['inqp', files('inqp.F90')]]
+galahad_binaries += [['inqp', files('inqp.F90')]]
 if build_ciface
   libgalahad_c_src += files('C/qp_ciface.F90')
 endif
