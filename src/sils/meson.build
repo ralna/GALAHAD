@@ -5,4 +5,7 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usesils.F90', 'runsils_sif.F90')
 endif
+
+galahad_tests += [['sils', 'silst', files('silst.F90')]]
+
 galahad_examples += [['silss', files('silss.f90')]]

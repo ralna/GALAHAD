@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('usedgo.F90', 'rundgo_sif.F90')
 endif
 
+galahad_tests += [['dgo', 'dgot', files('dgot.F90')],
+                  ['dgo', 'dgoti', files('dgoti.F90')]]
+
 galahad_c_tests += [['dgo', 'dgot_c', files('C/dgot.c')],
                     ['dgo', 'dgotf_c', files('C/dgotf.c')]]
 

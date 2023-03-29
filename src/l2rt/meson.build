@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('usel2rt.F90', 'runl2rt_sif.F90')
 endif
 
+galahad_tests += [['l2rt', 'l2rtt', files('l2rtt.F90')],
+                  ['l2rt', 'l2rtti', files('l2rtti.F90')]]
+
 galahad_c_tests += [['l2rt', 'l2rtt_c', files('C/l2rtt.c')]]
 
 galahad_examples += [['l2rts', files('l2rts.f90')],

@@ -7,6 +7,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('uselpa.F90', 'runlpa_sif.F90')
 endif
 
+galahad_tests += [['lpa', 'lpat', files('lpat.F90')],
+                  ['lpa', 'lpati', files('lpati.F90')]]
+
 galahad_c_tests += [['lpa', 'lpat_c', files('C/lpat.c')],
                     ['lpa', 'lpatf_c', files('C/lpatf.c')]]
 
