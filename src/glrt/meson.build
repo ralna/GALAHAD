@@ -5,4 +5,7 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('useglrt.F90', 'runglrt_sif.F90')
 endif
+
+galahad_c_tests += [['glrt', 'glrtt_c', files('C/glrtt.c')]]
+
 galahad_examples += [['glrts', files('glrts.f90')]]

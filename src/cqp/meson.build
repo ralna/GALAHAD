@@ -6,6 +6,10 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usecqp.F90', 'runcqp_sif.F90')
 endif
+
+galahad_c_tests += [['cqp', 'cqpt_c', files('C/cqpt.c')],
+                    ['cqp', 'cqptf_c', files('C/cqptf.c')]]
+
 galahad_examples += [['cqps', files('cqps.f90')],
                      ['cqps2', files('cqps2.f90')],
                      ['cqps3', files('cqps3.f90')]]

@@ -5,5 +5,9 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usedps.F90', 'rundps_sif.F90')
 endif
+
+galahad_c_tests += [['dps', 'dpst_c', files('C/dpst.c')],
+                    ['dps', 'dpstf_c', files('C/dpstf.c')]]
+
 galahad_examples += [['dpss', files('dpss.f90')],
                      ['dpss2', files('dpss2.f90')]]
