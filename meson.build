@@ -312,6 +312,17 @@ if install_modules
   meson.add_install_script(script_modules)
 endif
 
+# Precisions
+precisions = []
+
+if build_single
+  precisions += [['single', extra_args_single, libgalahad_single]]
+endif
+
+if build_double
+  precisions += [['double', extra_args_double, libgalahad_double]]
+endif
+
 # Fortran tests
 if build_tests
 
@@ -642,218 +653,52 @@ if build_tests
   endforeach
 endif
 
+# C tests
 if build_tests and build_ciface
 
-  c_tests_folder = 'share/tests/C'
-  c_tests = []
-  if build_single
-    c_tests += [['single', extra_args_single, libgalahad_single]]
-  endif
-  if build_double
-    c_tests += [['double', extra_args_double, libgalahad_double]]
-  endif
+  c_tests_folder = 'tests/C'
 
-  foreach val: c_tests
-    arct_c = executable('arct_c_'+val[0], 'src/arc/C/arct.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    arctf_c = executable('arctf_c_'+val[0], 'src/arc/C/arctf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('arct_c_'+val[0], arct_c, suite: ['arc', 'C', val[0]], is_parallel : false)
-    test('arctf_c_'+val[0], arctf_c, suite: ['arc', 'C', val[0]], is_parallel : false)
-
-    bgot_c = executable('bgot_c_'+val[0], 'src/bgo/C/bgot.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    bgotf_c = executable('bgotf_c_'+val[0], 'src/bgo/C/bgotf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('bgot_c_'+val[0], bgot_c, suite: ['bgo', 'C', val[0]], is_parallel : false)
-    test('bgotf_c_'+val[0], bgotf_c, suite: ['bgo', 'C', val[0]], is_parallel : false)
-
-    bllst_c = executable('bllst_c_'+val[0], 'src/blls/C/bllst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    bllstf_c = executable('bllstf_c_'+val[0], 'src/blls/C/bllstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('bllst_c_'+val[0], bllst_c, suite: ['blls', 'C', val[0]], is_parallel : false)
-    test('bllstf_c_'+val[0], bllstf_c, suite: ['blls', 'C', val[0]], is_parallel : false)
-
-    bqpt_c = executable('bqpt_c_'+val[0], 'src/bqp/C/bqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    bqptf_c = executable('bqptf_c_'+val[0], 'src/bqp/C/bqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('bqpt_c_'+val[0], bqpt_c, suite: ['bqp', 'C', val[0]], is_parallel : false)
-    test('bqptf_c_'+val[0], bqptf_c, suite: ['bqp', 'C', val[0]], is_parallel : false)
-
-    bqpbt_c = executable('bqpbt_c_'+val[0], 'src/bqpb/C/bqpbt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    bqpbtf_c = executable('bqpbtf_c_'+val[0], 'src/bqpb/C/bqpbtf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('bqpbt_c_'+val[0], bqpbt_c, suite: ['bqpb', 'C', val[0]], is_parallel : false)
-    test('bqpbtf_c_'+val[0], bqpbtf_c, suite: ['bqpb', 'C', val[0]], is_parallel : false)
-
-    ccqpt_c = executable('ccqpt_c_'+val[0], 'src/ccqp/C/ccqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    ccqptf_c = executable('ccqptf_c_'+val[0], 'src/ccqp/C/ccqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('ccqpt_c_'+val[0], ccqpt_c, suite: ['ccqp', 'C', val[0]], is_parallel : false)
-    test('ccqptf_c_'+val[0], ccqptf_c, suite: ['ccqp', 'C', val[0]], is_parallel : false)
-
-    cqpt_c = executable('cqpt_c_'+val[0], 'src/cqp/C/cqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    cqptf_c = executable('cqptf_c_'+val[0], 'src/cqp/C/cqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('cqpt_c_'+val[0], cqpt_c, suite: ['cqp', 'C', val[0]], is_parallel : false)
-    test('cqptf_c_'+val[0], cqptf_c, suite: ['cqp', 'C', val[0]], is_parallel : false)
-
-    dgot_c = executable('dgot_c_'+val[0], 'src/dgo/C/dgot.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    dgotf_c = executable('dgotf_c_'+val[0], 'src/dgo/C/dgotf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('dgot_c_'+val[0], dgot_c, suite: ['dgo', 'C', val[0]], is_parallel : false)
-    test('dgotf_c_'+val[0], dgotf_c, suite: ['dgo', 'C', val[0]], is_parallel : false)
-
-    dpst_c = executable('dpst_c_'+val[0], 'src/dps/C/dpst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    dpstf_c = executable('dpstf_c_'+val[0], 'src/dps/C/dpstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('dpst_c_'+val[0], dpst_c, suite: ['dps', 'C', val[0]], is_parallel : false)
-    test('dpstf_c_'+val[0], dpstf_c, suite: ['dps', 'C', val[0]], is_parallel : false)
-
-    dqpt_c = executable('dqpt_c_'+val[0], 'src/dqp/C/dqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    dqptf_c = executable('dqptf_c_'+val[0], 'src/dqp/C/dqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('dqpt_c_'+val[0], dqpt_c, suite: ['dqp', 'C', val[0]], is_parallel : false)
-    test('dqptf_c_'+val[0], dqptf_c, suite: ['dqp', 'C', val[0]], is_parallel : false)
-
-    eqpt_c = executable('eqpt_c_'+val[0], 'src/eqp/C/eqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    eqptf_c = executable('eqptf_c_'+val[0], 'src/eqp/C/eqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('eqpt_c_'+val[0], eqpt_c, suite: ['eqp', 'C', val[0]], is_parallel : false)
-    test('eqptf_c_'+val[0], eqptf_c, suite: ['eqp', 'C', val[0]], is_parallel : false)
-
-    fdct_c = executable('fdct_c_'+val[0], 'src/fdc/C/fdct.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    fdctf_c = executable('fdctf_c_'+val[0], 'src/fdc/C/fdctf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('fdct_c_'+val[0], fdct_c, suite: ['fdc', 'C', val[0]], is_parallel : false)
-    test('fdctf_c_'+val[0], fdctf_c, suite: ['fdc', 'C', val[0]], is_parallel : false)
-
-    glrtt_c = executable('glrtt_c_'+val[0], 'src/glrt/C/glrtt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('glrtt_c_'+val[0], glrtt_c, suite: ['glrt', 'C', val[0]], is_parallel : false)
-
-    gltrt_c = executable('gltrt_c_'+val[0], 'src/gltr/C/gltrt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('gltrt_c_'+val[0], gltrt_c, suite: ['gltr', 'C', val[0]], is_parallel : false)
-
-    l2rtt_c = executable('l2rtt_c_'+val[0], 'src/l2rt/C/l2rtt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('l2rtt_c_'+val[0], l2rtt_c, suite: ['l2rt', 'C', val[0]], is_parallel : false)
-
-    lhst_c = executable('lhst_c_'+val[0], 'src/lhs/C/lhst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lhst_c_'+val[0], lhst_c, suite: ['lhs', 'C', val[0]], is_parallel : false)
-
-    lpat_c = executable('lpat_c_'+val[0], 'src/lpa/C/lpat.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    lpatf_c = executable('lpatf_c_'+val[0], 'src/lpa/C/lpatf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lpat_c_'+val[0], lpat_c, suite: ['lpa', 'C', val[0]], is_parallel : false)
-    test('lpatf_c_'+val[0], lpatf_c, suite: ['lpa', 'C', val[0]], is_parallel : false)
-
-    lpbt_c = executable('lpbt_c_'+val[0], 'src/lpb/C/lpbt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    lpbtf_c = executable('lpbtf_c_'+val[0], 'src/lpb/C/lpbtf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lpbt_c_'+val[0], lpbt_c, suite: ['lpb', 'C', val[0]], is_parallel : false)
-    test('lpbtf_c_'+val[0], lpbtf_c, suite: ['lpb', 'C', val[0]], is_parallel : false)
-
-    lsqpt_c = executable('lsqpt_c_'+val[0], 'src/lsqp/C/lsqpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    lsqptf_c = executable('lsqptf_c_'+val[0], 'src/lsqp/C/lsqptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lsqpt_c_'+val[0], lsqpt_c, suite: ['lsqp', 'C', val[0]], is_parallel : false)
-    test('lsqptf_c_'+val[0], lsqptf_c, suite: ['lsqp', 'C', val[0]], is_parallel : false)
-
-    lsrtt_c = executable('lsrtt_c_'+val[0], 'src/lsrt/C/lsrtt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lsrtt_c_'+val[0], lsrtt_c, suite: ['lsrt', 'C', val[0]], is_parallel : false)
-
-    lstrt_c = executable('lstrt_c_'+val[0], 'src/lstr/C/lstrt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('lstrt_c_'+val[0], lstrt_c, suite: ['lstr', 'C', val[0]], is_parallel : false)
-
-    nlst_c = executable('nlst_c_'+val[0], 'src/nls/C/nlst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    nlstf_c = executable('nlstf_c_'+val[0], 'src/nls/C/nlstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('nlst_c_'+val[0], nlst_c, suite: ['nls', 'C', val[0]], is_parallel : false)
-    test('nlstf_c_'+val[0], nlstf_c, suite: ['nls', 'C', val[0]], is_parallel : false)
-
-    presolvet_c = executable('presolvet_c_'+val[0], 'src/presolve/C/presolvet.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    presolvetf_c = executable('presolvetf_c_'+val[0], 'src/presolve/C/presolvetf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('presolvet_c_'+val[0], presolvet_c, suite: ['presolve', 'C', val[0]], is_parallel : false)
-    test('presolvetf_c_'+val[0], presolvetf_c, suite: ['presolve', 'C', val[0]], is_parallel : false)
-
-    pslst_c = executable('pslst_c_'+val[0], 'src/psls/C/pslst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    pslstf_c = executable('pslstf_c_'+val[0], 'src/psls/C/pslstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('pslst_c_'+val[0], pslst_c, suite: ['psls', 'C', val[0]], is_parallel : false)
-    test('pslstf_c_'+val[0], pslstf_c, suite: ['psls', 'C', val[0]], is_parallel : false)
-
-    qpat_c = executable('qpat_c_'+val[0], 'src/qpa/C/qpat.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    qpatf_c = executable('qpatf_c_'+val[0], 'src/qpa/C/qpatf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('qpat_c_'+val[0], qpat_c, suite: ['qpa', 'C', val[0]], is_parallel : false)
-    test('qpatf_c_'+val[0], qpatf_c, suite: ['qpa', 'C', val[0]], is_parallel : false)
-
-    qpbt_c = executable('qpbt_c_'+val[0], 'src/qpb/C/qpbt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    qpbtf_c = executable('qpbtf_c_'+val[0], 'src/qpb/C/qpbtf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('qpbt_c_'+val[0], qpbt_c, suite: ['qpb', 'C', val[0]], is_parallel : false)
-    test('qpbtf_c_'+val[0], qpbtf_c, suite: ['qpb', 'C', val[0]], is_parallel : false)
-
-    rpdt_c = executable('rpdt_c_'+val[0], 'src/rpd/C/rpdt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    rpdtf_c = executable('rpdtf_c_'+val[0], 'src/rpd/C/rpdtf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('rpdt_c_'+val[0], rpdt_c, suite: ['rpd', 'C', val[0]], is_parallel : false)
-    test('rpdtf_c_'+val[0], rpdtf_c, suite: ['rpd', 'C', val[0]], is_parallel : false)
-
-    rqst_c = executable('rqst_c_'+val[0], 'src/rqs/C/rqst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    rqstf_c = executable('rqstf_c_'+val[0], 'src/rqs/C/rqstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('rqst_c_'+val[0], rqst_c, suite: ['rqs', 'C', val[0]], is_parallel : false)
-    test('rqstf_c_'+val[0], rqstf_c, suite: ['rqs', 'C', val[0]], is_parallel : false)
-
-    sblst_c = executable('sblst_c_'+val[0], 'src/sbls/C/sblst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    sblstf_c = executable('sblstf_c_'+val[0], 'src/sbls/C/sblstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('sblst_c_'+val[0], sblst_c, suite: ['sbls', 'C', val[0]], is_parallel : false)
-    test('sblstf_c_'+val[0], sblstf_c, suite: ['sbls', 'C', val[0]], is_parallel : false)
-
-    sllst_c = executable('sllst_c_'+val[0], 'src/slls/C/sllst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    sllstf_c = executable('sllstf_c_'+val[0], 'src/slls/C/sllstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('sllst_c_'+val[0], sllst_c, suite: ['slls', 'C', val[0]], is_parallel : false)
-    test('sllstf_c_'+val[0], sllstf_c, suite: ['slls', 'C', val[0]], is_parallel : false)
-
-    slst_c = executable('slst_c_'+val[0], 'src/sls/C/slst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    slstf_c = executable('slstf_c_'+val[0], 'src/sls/C/slstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('slst_c_'+val[0], slst_c, suite: ['sls', 'C', val[0]], is_parallel : false)
-    test('slstf_c_'+val[0], slstf_c, suite: ['sls', 'C', val[0]], is_parallel : false)
-
-    trbt_c = executable('trbt_c_'+val[0], 'src/trb/C/trbt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    trbtf_c = executable('trbtf_c_'+val[0], 'src/trb/C/trbtf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('trbt_c_'+val[0], trbt_c, suite: ['trb', 'C', val[0]], is_parallel : false)
-    test('trbtf_c_'+val[0], trbtf_c, suite: ['trb', 'C', val[0]], is_parallel : false)
-
-    trst_c = executable('trst_c_'+val[0], 'src/trs/C/trst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    trstf_c = executable('trstf_c_'+val[0], 'src/trs/C/trstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('trst_c_'+val[0], trst_c, suite: ['trs', 'C', val[0]], is_parallel : false)
-    test('trstf_c_'+val[0], trstf_c, suite: ['trs', 'C', val[0]], is_parallel : false)
-
-    trut_c = executable('trut_c_'+val[0], 'src/tru/C/trut.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    trutf_c = executable('trutf_c_'+val[0], 'src/tru/C/trutf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('trut_c_'+val[0], trut_c, suite: ['tru', 'C', val[0]], is_parallel : false)
-    test('trutf_c_'+val[0], trutf_c, suite: ['tru', 'C', val[0]], is_parallel : false)
-
-    ugot_c = executable('ugot_c_'+val[0], 'src/ugo/C/ugot.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('ugot_c_'+val[0], ugot_c, suite: ['ugo', 'C', val[0]], is_parallel : false)
-
-    ulst_c = executable('ulst_c_'+val[0], 'src/uls/C/ulst.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    ulstf_c = executable('ulstf_c_'+val[0], 'src/uls/C/ulstf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('ulst_c_'+val[0], ulst_c, suite: ['uls', 'C', val[0]], is_parallel : false)
-    test('ulstf_c_'+val[0], ulstf_c, suite: ['uls', 'C', val[0]], is_parallel : false)
-
-    wcpt_c = executable('wcpt_c_'+val[0], 'src/wcp/C/wcpt.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    wcptf_c = executable('wcptf_c_'+val[0], 'src/wcp/C/wcptf.c', c_args : val[1], link_with : val[2], link_language: 'c', link_args : '-lm', include_directories: libgalahad_include)
-    test('wcpt_c_'+val[0], wcpt_c, suite: ['wcp', 'C', val[0]], is_parallel : false)
-    test('wcptf_c_'+val[0], wcptf_c, suite: ['wcp', 'C', val[0]], is_parallel : false)
+  foreach test: galahad_c_tests
+    foreach val: precisions
+      precision = val[0]
+      args_precision = val[1]
+      libgalahad_precision = val[2]
+      package = test[0]
+      name = test[1] + '_' + precision
+      file = test[2]
+      test(name,
+           executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language: 'c', include_directories: libgalahad_include , install : true, install_dir : c_tests_folder),
+           suite : [package, precision, 'C'],
+           is_parallel : false)
+    endforeach
   endforeach
 endif
 
-# Example programs
-
+# Fortran examples
 if build_examples and build_double
 
   fortran_examples_folder = 'examples/Fortran'
 
   foreach example: galahad_examples
-    executable(example[0], example[1], link_with : libgalahad_double, dependencies : libgalahad_deps, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
+    name = example[0]
+    file = example[1]
+    executable(name, file, link_with : libgalahad_double, dependencies : libgalahad_deps, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
   endforeach
 endif
-# executable('ma48ss', 'src/external/ma48/ma48ss.f90', link_with : libgalahad_hsl_single, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
-# executable('ma48ds', 'src/external/ma48/ma48ds.f90', link_with : libgalahad_hsl_double, link_language: 'fortran', install : true, install_dir : fortran_examples_folder)
 
+# C examples
 if build_examples and build_ciface
 
   c_examples_folder = 'examples/C'
-  precisions = []
-  if build_single
-    precisions += [['_single', extra_args_single, libgalahad_single]]
-  endif
-  if build_double
-    precisions += [['_double', extra_args_double, libgalahad_double]]
-  endif
 
   foreach example: galahad_c_examples
     foreach val: precisions
-      executable(example[0]+val[0], example[1], c_args : val[1], link_with : val[2], dependencies: lm, link_language: 'c', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
+      precision = val[0]
+      args_precision = val[1]
+      libgalahad_precision = val[2]
+      name = example[0] + '_' + precision
+      file = example[1]
+      executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies: lm, link_language: 'c', include_directories: libgalahad_include, install : true, install_dir : c_examples_folder)
     endforeach
   endforeach
 endif

@@ -5,10 +5,15 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usearc.F90', 'runarc_sif.F90')
 endif
+
+galahad_c_tests += [['arc', 'arct_c', files('C/arct.c')],
+                    ['arc', 'arctf_c', files('C/arctf.c')]]
+
 galahad_examples += [['arcs', files('arcs.f90')],
                      ['arcs2', files('arcs2.f90')],
                      ['arcs3', files('arcs3.f90')],
                      ['arcs4', files('arcs4.f90')]]
+
 galahad_c_examples += [['arcs_c', files('C/arcs.c')],
                        ['arcs2_c', files('C/arcs2.c')],
                        ['arcs3_c', files('C/arcs3.c')],
