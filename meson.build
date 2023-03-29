@@ -103,6 +103,7 @@ libgalahad_double_src = []
 libgalahad_integer_src = []
 libgalahad_src = []
 
+galahad_headers = []
 galahad_binaries = []
 
 libgalahad_c_single_src = []
@@ -131,6 +132,7 @@ extra_args_single = extra_args + '-DGALAHAD_SINGLE' + '-DSPRAL_SINGLE'
 extra_args_double = extra_args + '-DGALAHAD_DOUBLE' + '-DSPRAL_DOUBLE'
 
 subdir('bin')
+subdir('include')
 
 ## 1. Module requires for single and double precision
 subdir('src/kinds')
@@ -306,6 +308,9 @@ foreach val: galahad_binaries
                install : true)
   endif
 endforeach
+
+# Headers
+install_headers(galahad_headers)
 
 # Fortran modules
 if install_modules
