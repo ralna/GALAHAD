@@ -1,7 +1,7 @@
 //* \file dqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-23 AT 12:40 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:15 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,18 +21,23 @@
 /* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
 //                        PyObject *py_options);
+//PyObject* trs_make_options_dict(const struct trs_control_type *control);
 //PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
-//bool sbls_update_control(struct sbls_control_type *control,
-//                         PyObject *py_options);
-//PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
+bool sbls_update_control(struct sbls_control_type *control,
+                         PyObject *py_options);
+PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
+PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
 //bool roots_update_control(struct roots_control_type *control,
 //                         PyObject *py_options);
+//PyObject* roots_make_options_dict(const struct roots_control_type *control);
 //PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
 //bool fit_update_control(struct fit_control_type *control,
 //                        PyObject *py_options);
+//PyObject* fit_make_options_dict(const struct fit_control_type *control);
 //PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
 //bool cro_update_control(struct cro_control_type *control,
 //                        PyObject *py_options);
+//PyObject* cro_make_options_dict(const struct cro_control_type *control);
 //PyObject* cro_make_inform_dict(const struct cro_inform_type *inform);
 
 /* Module global variables */
@@ -335,37 +340,43 @@ static bool dqp_update_control(struct dqp_control_type *control,
         }
         if(strcmp(key_name, "symmetric_linear_solver") == 0){
             if(!parse_char_option(value, "symmetric_linear_solver",
-                                  control->symmetric_linear_solver))
+                                  control->symmetric_linear_solver,
+                                  sizeof(control->symmetric_linear_solver)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "definite_linear_solver") == 0){
             if(!parse_char_option(value, "definite_linear_solver",
-                                  control->definite_linear_solver))
+                                  control->definite_linear_solver,
+                                  sizeof(control->definite_linear_solver)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "unsymmetric_linear_solver") == 0){
             if(!parse_char_option(value, "unsymmetric_linear_solver",
-                                  control->unsymmetric_linear_solver))
+                                  control->unsymmetric_linear_solver,
+                                  sizeof(control->unsymmetric_linear_solver)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "sif_file_name") == 0){
             if(!parse_char_option(value, "sif_file_name",
-                                  control->sif_file_name))
+                                  control->sif_file_name,
+                                  sizeof(control->sif_file_name)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "qplib_file_name") == 0){
             if(!parse_char_option(value, "qplib_file_name",
-                                  control->qplib_file_name))
+                                  control->qplib_file_name,
+                                  sizeof(control->qplib_file_name)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -379,11 +390,11 @@ static bool dqp_update_control(struct dqp_control_type *control,
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "sbls_options") == 0){
-        //    if(!sbls_update_control(&control->sbls_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "sbls_options") == 0){
+            if(!sbls_update_control(&control->sbls_control, value))
+                return false;
+            continue;
+        }
         //if(strcmp(key_name, "gltr_options") == 0){
         //    if(!gltr_update_control(&control->gltr_control, value))
         //        return false;
@@ -396,6 +407,127 @@ static bool dqp_update_control(struct dqp_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within QP Python interface
+PyObject* dqp_make_options_dict(const struct dqp_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "dual_starting_point",
+                         PyLong_FromLong(control->dual_starting_point));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "max_sc",
+                         PyLong_FromLong(control->max_sc));
+    PyDict_SetItemString(py_options, "cauchy_only",
+                         PyLong_FromLong(control->cauchy_only));
+    PyDict_SetItemString(py_options, "arc_search_maxit",
+                         PyLong_FromLong(control->arc_search_maxit));
+    PyDict_SetItemString(py_options, "cg_maxit",
+                         PyLong_FromLong(control->cg_maxit));
+    PyDict_SetItemString(py_options, "explore_optimal_subspace",
+                         PyLong_FromLong(control->explore_optimal_subspace));
+    PyDict_SetItemString(py_options, "restore_problem",
+                         PyLong_FromLong(control->restore_problem));
+    PyDict_SetItemString(py_options, "sif_file_device",
+                         PyLong_FromLong(control->sif_file_device));
+    PyDict_SetItemString(py_options, "qplib_file_device",
+                         PyLong_FromLong(control->qplib_file_device));
+    PyDict_SetItemString(py_options, "rho",
+                         PyFloat_FromDouble(control->rho));
+    PyDict_SetItemString(py_options, "infinity",
+                         PyFloat_FromDouble(control->infinity));
+    PyDict_SetItemString(py_options, "stop_abs_p",
+                         PyFloat_FromDouble(control->stop_abs_p));
+    PyDict_SetItemString(py_options, "stop_rel_p",
+                         PyFloat_FromDouble(control->stop_rel_p));
+    PyDict_SetItemString(py_options, "stop_abs_d",
+                         PyFloat_FromDouble(control->stop_abs_d));
+    PyDict_SetItemString(py_options, "stop_rel_d",
+                         PyFloat_FromDouble(control->stop_rel_d));
+    PyDict_SetItemString(py_options, "stop_abs_c",
+                         PyFloat_FromDouble(control->stop_abs_c));
+    PyDict_SetItemString(py_options, "stop_rel_c",
+                         PyFloat_FromDouble(control->stop_rel_c));
+    PyDict_SetItemString(py_options, "stop_cg_relative",
+                         PyFloat_FromDouble(control->stop_cg_relative));
+    PyDict_SetItemString(py_options, "stop_cg_absolute",
+                         PyFloat_FromDouble(control->stop_cg_absolute));
+    PyDict_SetItemString(py_options, "cg_zero_curvature",
+                         PyFloat_FromDouble(control->cg_zero_curvature));
+    PyDict_SetItemString(py_options, "max_growth",
+                         PyFloat_FromDouble(control->max_growth));
+    PyDict_SetItemString(py_options, "identical_bounds_tol",
+                         PyFloat_FromDouble(control->identical_bounds_tol));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "initial_perturbation",
+                         PyFloat_FromDouble(control->initial_perturbation));
+    PyDict_SetItemString(py_options, "perturbation_reduction",
+                         PyFloat_FromDouble(control->perturbation_reduction));
+    PyDict_SetItemString(py_options, "final_perturbation",
+                         PyFloat_FromDouble(control->final_perturbation));
+    PyDict_SetItemString(py_options, "factor_optimal_matrix",
+                         PyBool_FromLong(control->factor_optimal_matrix));
+    PyDict_SetItemString(py_options, "remove_dependencies",
+                         PyBool_FromLong(control->remove_dependencies));
+    PyDict_SetItemString(py_options, "treat_zero_bounds_as_general",
+                         PyBool_FromLong(control->treat_zero_bounds_as_general));
+    PyDict_SetItemString(py_options, "exact_arc_search",
+                         PyBool_FromLong(control->exact_arc_search));
+    PyDict_SetItemString(py_options, "subspace_direct",
+                         PyBool_FromLong(control->subspace_direct));
+    PyDict_SetItemString(py_options, "subspace_alternate",
+                         PyBool_FromLong(control->subspace_alternate));
+    PyDict_SetItemString(py_options, "subspace_arc_search",
+                         PyBool_FromLong(control->subspace_arc_search));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "generate_sif_file",
+                         PyBool_FromLong(control->generate_sif_file));
+    PyDict_SetItemString(py_options, "generate_qplib_file",
+                         PyBool_FromLong(control->generate_qplib_file));
+    PyDict_SetItemString(py_options, "symmetric_linear_solver",
+                         PyUnicode_FromString(control->symmetric_linear_solver));
+    PyDict_SetItemString(py_options, "definite_linear_solver",
+                         PyUnicode_FromString(control->definite_linear_solver));
+    PyDict_SetItemString(py_options, "unsymmetric_linear_solver",
+                         PyUnicode_FromString(control->unsymmetric_linear_solver));
+    PyDict_SetItemString(py_options, "sif_file_name",
+                         PyUnicode_FromString(control->sif_file_name));
+    PyDict_SetItemString(py_options, "qplib_file_name",
+                         PyUnicode_FromString(control->qplib_file_name));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "fdc_options",
+    //                     fdc_make_options_dict(&control->fdc_control));
+    //PyDict_SetItemString(py_options, "sls_options",
+    //                     sls_make_options_dict(&control->sls_control));
+    PyDict_SetItemString(py_options, "sbls_options",
+                         sbls_make_options_dict(&control->sbls_control));
+    //PyDict_SetItemString(py_options, "gltr_options",
+    //                     gltr_make_options_dict(&control->gltr_control));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -482,12 +614,14 @@ static PyObject* dqp_make_inform_dict(const struct dqp_inform_type *inform){
     //                      PyFloat_FromDouble(inform->checkpointsTime));
     PyDict_SetItemString(py_inform, "time",
                          dqp_make_time_dict(&inform->time));
+    printf("here\n");
     // PyDict_SetItemString(py_inform, "fdc_inform",
     //                      fdc_make_inform_dict(&inform->fdc_inform));
     // PyDict_SetItemString(py_inform, "sls_inform",
     //                      sls_make_inform_dict(&inform->sls_inform));
-    // PyDict_SetItemString(py_inform, "sbls_inform",
-    //                      sbls_make_inform_dict(&inform->sbls_inform));
+     PyDict_SetItemString(py_inform, "sbls_inform",
+                          sbls_make_inform_dict(&inform->sbls_inform));
+    printf("here\n");
     // PyDict_SetItemString(py_inform, "gltr_inform",
     //                      gltr_make_inform_dict(&inform->gltr_inform));
     // PyDict_SetItemString(py_inform, "scu_status",
@@ -510,9 +644,9 @@ static PyObject* py_dqp_initialize(PyObject *self){
     // Record that DQP has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = dqp_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -851,9 +985,12 @@ static PyObject* py_dqp_information(PyObject *self){
     if(!check_init(init_called))
         return NULL;
 
+    printf("in\n");
     // Call dqp_information
     dqp_information(&data, &inform, &status);
-
+    printf("sbls status %i\n", inform.sbls_inform.status);
+    printf("sbls alloc_status %i\n", inform.sbls_inform.alloc_status);
+    printf("sbls bad_alloc %s\n", inform.sbls_inform.bad_alloc);
     // Return status and inform Python dictionary
     PyObject *py_inform = dqp_make_inform_dict(&inform);
     return Py_BuildValue("O", py_inform);

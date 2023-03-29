@@ -2,11 +2,12 @@ from galahad import ugo
 import numpy as np
 
 # allocate internal data and set default options
-ugo.initialize()
+options = ugo.initialize()
 
 # set some non-default options
-options = {'print_level' : 3}
-print(options)
+options['print_level'] = 3
+options['prefix'] = "'aargh'"
+print("options:", options)
 
 # load data (and optionally non-default options)
 x_l = -1

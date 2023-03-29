@@ -2,12 +2,14 @@ from galahad import nls
 import numpy as np
 
 # allocate internal data and set default options
-nls.initialize()
+options = nls.initialize()
 
 # set some non-default options
-options = {'print_level' : 1, 'jacobian_available' : 2,
-           'hessian_available' : 2, 'model' : 6 }
-print(options)
+options['print_level'] = 1
+options['jacobian_available'] = 2
+options['hessian_available'] = 2
+options['model'] = 6
+#print("options:", options)
 
 # set parameters
 p = 1.0

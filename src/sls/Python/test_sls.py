@@ -17,14 +17,11 @@ b = np.array([1.0,3.0,4.0])
 
 # set solver name, allocate internal data and set default options
 solver = 'sytr'
-sls.initialize(solver)
-#options = sls.initialize(solver)
-#sls.initialize()
+options = sls.initialize(solver)
 
 # set some non-default options
-#options = {'print_level' : 1 }
-options = { }
-#print(options)
+options['print_level'] = 1
+#print("options:", options
 
 # load data (and optionally non-default options), and analyse matrix structure
 sls.analyse_matrix(n, A_type, A_ne, A_row, A_col, A_ptr, options)

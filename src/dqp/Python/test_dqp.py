@@ -35,10 +35,11 @@ x_u = np.array([1.0,infinity,2.0])
 options = dqp.initialize()
 
 # set some non-default options
-#options = {'sbls_options' : {'symmetric_linear_solver' : 'sytr', 
-#                             'definite_linear_solver' : 'sytr'}}
-#options = {'print_level' : 1 }
-#options = { }
+options['print_level'] = 1
+options['symmetric_linear_solver'] = 'sytr'
+options['definite_linear_solver'] = 'sytr'
+options['sbls_options']['symmetric_linear_solver'] = 'sytr'
+options['sbls_options']['definite_linear_solver'] = 'sytr'
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -64,8 +65,11 @@ print("x_stat:",x_stat_copy)
 print("c_stat:",c_stat_copy)
 
 # get information
+print("getting inform")
 inform = dqp.information()
+print("we have inform")
 print("f:",inform['obj'])
+print("factor_status:",inform['factor_status'])
 
 # deallocate internal data
 

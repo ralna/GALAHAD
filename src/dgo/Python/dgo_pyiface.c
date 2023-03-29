@@ -1,7 +1,7 @@
 //* \file dgo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 16:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DGO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,6 +21,7 @@
 /* Nested UGO control and inform prototypes */
 bool ugo_update_control(struct ugo_control_type *control, 
                         PyObject *py_options);
+PyObject* ugo_make_options_dict(const struct ugo_control_type *control);
 PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
 //bool trb_update_control(struct trb_control_type *control,
 //                        PyObject *py_options);
@@ -275,15 +276,15 @@ static bool dgo_update_control(struct dgo_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "cpu_time_limit ") == 0){
-            if(!parse_double_option(value, "cpu_time_limit ",
-                                    &control->cpu_time_limit ))
+        if(strcmp(key_name, "cpu_time_limit") == 0){
+            if(!parse_double_option(value, "cpu_time_limit",
+                                    &control->cpu_time_limit))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "clock_time_limit ") == 0){
-            if(!parse_double_option(value, "clock_time_limit ",
-                                    &control->clock_time_limit ))
+        if(strcmp(key_name, "clock_time_limit") == 0){
+            if(!parse_double_option(value, "clock_time_limit",
+                                    &control->clock_time_limit))
                 return false;
             continue;
         }
@@ -323,13 +324,15 @@ static bool dgo_update_control(struct dgo_control_type *control,
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix, 
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file, 
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -358,6 +361,74 @@ static bool dgo_update_control(struct dgo_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+static PyObject* dgo_make_options_dict(const struct dgo_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "max_evals",
+                         PyLong_FromLong(control->max_evals));
+    PyDict_SetItemString(py_options, "dictionary_size",
+                         PyLong_FromLong(control->dictionary_size));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "infinity",
+                         PyFloat_FromDouble(control->infinity));
+    PyDict_SetItemString(py_options, "lipschitz_lower_bound",
+                         PyFloat_FromDouble(control->lipschitz_lower_bound));
+    PyDict_SetItemString(py_options, "lipschitz_reliability",
+                         PyFloat_FromDouble(control->lipschitz_reliability));
+    PyDict_SetItemString(py_options, "lipschitz_control",
+                         PyFloat_FromDouble(control->lipschitz_control));
+    PyDict_SetItemString(py_options, "stop_length",
+                         PyFloat_FromDouble(control->stop_length));
+    PyDict_SetItemString(py_options, "stop_f",
+                         PyFloat_FromDouble(control->stop_f));
+    PyDict_SetItemString(py_options, "obj_unbounded",
+                         PyFloat_FromDouble(control->obj_unbounded));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyBool_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "prune",
+                         PyBool_FromLong(control->prune));
+    PyDict_SetItemString(py_options, "perform_local_optimization",
+                         PyBool_FromLong(control->perform_local_optimization));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "hash_options",
+    //                     hash_make_options_dict(&control->hash_control));
+    PyDict_SetItemString(py_options, "ugo_options",
+                         ugo_make_options_dict(&control->ugo_control));
+    // PyDict_SetItemString(py_options, "trb_options",
+    //                     trb_make_options_dict(&control->trb_control));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -444,9 +515,9 @@ static PyObject* py_dgo_initialize(PyObject *self){
     // Record that DGO has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = dgo_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

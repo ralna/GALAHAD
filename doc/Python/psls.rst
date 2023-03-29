@@ -378,7 +378,7 @@ functions
           mi28_options : dict
              default control options for HSL_MI28 (see ``mi28.initialize``).
 
-   .. function:: psls.import(n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+   .. function:: psls.load(n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
       Import problem data into internal storage prior to factorization.
 

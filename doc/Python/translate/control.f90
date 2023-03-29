@@ -67,10 +67,11 @@ program control
           '            continue;', /,                                          &
           '        }')
         case ( 'c' )
-          write( out, 4 ) trim( name ), trim( name ), trim( name )
+          write( out, 4 ) trim( name ), trim( name ), trim( name ), trim( name )
 4 format( '        if(strcmp(key_name, "', A, '") == 0){', /,                  &
           '            if(!parse_char_option(value, "', A, '",', /,            &
-          '                                  control->', A, '))', /,           &
+          '                                  control->', A, ',', /,            &
+          '                                  sizeof(control->', A, ')))', /,   &
           '                return false;', /,                                  &
           '            continue;', /,                                          &
           '        }')

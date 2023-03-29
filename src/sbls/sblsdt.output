@@ -1,18 +1,18 @@
+ C sparse matrix indexing
 
-Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+ basic tests of storage formats
 
-Backtrace for this error:
-#0  0x14652d160d21 in ???
-#1  0x14652d15fef5 in ???
-#2  0x14652cde308f in ???
-	at /build/glibc-SzIz7B/glibc-2.31/signal/../sysdeps/unix/sysv/linux/x86_64/sigaction.c:0
-#3  0x564f15aaec7c in __galahad_sls_double_MOD_sls_solve_ir
-	at /home/nimg/fortran/optrove_standalone/galahad/objects/pc64.lnx.gfo/double/sls.f90:5129
-#4  0x564f15a2f2ca in __galahad_sbls_double_MOD_sbls_solve_explicit
-	at /home/nimg/fortran/optrove_standalone/galahad/objects/pc64.lnx.gfo/double/sbls.f90:5257
-#5  0x564f15a3df7a in __galahad_sbls_double_MOD_sbls_solve
-	at /home/nimg/fortran/optrove_standalone/galahad/objects/pc64.lnx.gfo/double/sbls.f90:5007
-#6  0x564f159dec6b in galahad_sbls_example
-	at /home/nimg/fortran/optrove_standalone/galahad/objects/pc64.lnx.gfo/double/sblst.f90:748
-#7  0x564f159e486d in main
-	at /home/nimg/fortran/optrove_standalone/galahad/objects/pc64.lnx.gfo/double/sblst.f90:3
+C: residual =   4.4e-16 status = 0
+R: residual =   4.4e-16 status = 0
+D: residual =   4.4e-16 status = 0
+L: residual =   8.9e-16 status = 0
+S: residual =   1.1e-16 status = 0
+I: residual =   0.0e+00 status = 0
+  solver is sytr                          
+  solver is sytr                          
+  solver is sytr                          
+  solver is sytr                          
+  solver is sytr                          
+  solver is sytr                          
+  solver is sytr                          
+Z: residual =   1.1e-16 status = 0

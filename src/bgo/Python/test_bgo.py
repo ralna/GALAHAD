@@ -3,12 +3,12 @@ import numpy as np
 import sys
 
 # allocate internal data and set default options
-bgo.initialize()
+options = bgo.initialize()
 
 # set some non-default options
-#options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
-options = {'print_level' : 1, 'ugo_options' : {'print_level' : 0}}
-print(options)
+options['print_level'] = 1
+options['ugo_options']['print_level'] = 0
+#print("options:", options)
 
 # set parameters
 p = 4

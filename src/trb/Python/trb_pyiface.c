@@ -21,18 +21,23 @@
 /* Nested TRS, GLTR, PSLS, LMS and SHA control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
 //                        PyObject *py_options);
+//PyObject* trs_make_options_dict(const struct trs_control_type *control);
 //PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
 //bool gltr_update_control(struct gltr_control_type *control,
 //                         PyObject *py_options);
+//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
 //PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
 //bool psls_update_control(struct psls_control_type *control,
 //                         PyObject *py_options);
+//PyObject* psls_make_options_dict(const struct psls_control_type *control);
 //PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
 //bool lms_update_control(struct lms_control_type *control,
 //                        PyObject *py_options);
+//PyObject* lms_make_options_dict(const struct lms_control_type *control);
 //PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
 //bool sha_update_control(struct sha_control_type *control,
 //                        PyObject *py_options);
+//PyObject* sha_make_options_dict(const struct sha_control_type *control);
 //PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
 
 /* Module global variables */
@@ -166,8 +171,6 @@ static bool trb_update_control(struct trb_control_type *control,
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     const char* key_name;
-
-
 
     // Iterate over Python options dictionary
     while(PyDict_Next(py_options, &pos, &key, &value)) {
@@ -449,13 +452,15 @@ static bool trb_update_control(struct trb_control_type *control,
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  control->alive_file,
+                                  sizeof(control->alive_file)))
                 return false;
             continue;
         }
@@ -499,6 +504,120 @@ static bool trb_update_control(struct trb_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within BGO Python interface
+PyObject* trb_make_options_dict(const struct trb_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "print_gap",
+                         PyLong_FromLong(control->print_gap));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "alive_unit",
+                         PyLong_FromLong(control->alive_unit));
+    PyDict_SetItemString(py_options, "alive_file",
+                         PyUnicode_FromString(control->alive_file));
+    PyDict_SetItemString(py_options, "more_toraldo",
+                         PyLong_FromLong(control->more_toraldo));
+    PyDict_SetItemString(py_options, "non_monotone",
+                         PyLong_FromLong(control->non_monotone));
+    PyDict_SetItemString(py_options, "model",
+                         PyLong_FromLong(control->model));
+    PyDict_SetItemString(py_options, "norm",
+                         PyLong_FromLong(control->norm));
+    PyDict_SetItemString(py_options, "semi_bandwidth",
+                         PyLong_FromLong(control->semi_bandwidth));
+    PyDict_SetItemString(py_options, "lbfgs_vectors",
+                         PyLong_FromLong(control->lbfgs_vectors));
+    PyDict_SetItemString(py_options, "max_dxg",
+                         PyLong_FromLong(control->max_dxg));
+    PyDict_SetItemString(py_options, "icfs_vectors",
+                         PyLong_FromLong(control->icfs_vectors));
+    PyDict_SetItemString(py_options, "mi28_lsize",
+                         PyLong_FromLong(control->mi28_lsize));
+    PyDict_SetItemString(py_options, "mi28_rsize",
+                         PyLong_FromLong(control->mi28_rsize));
+    PyDict_SetItemString(py_options, "advanced_start",
+                         PyLong_FromLong(control->advanced_start));
+    PyDict_SetItemString(py_options, "infinity",
+                         PyFloat_FromDouble(control->infinity));
+    PyDict_SetItemString(py_options, "stop_pg_absolute",
+                         PyFloat_FromDouble(control->stop_pg_absolute));
+    PyDict_SetItemString(py_options, "stop_pg_relative",
+                         PyFloat_FromDouble(control->stop_pg_relative));
+    PyDict_SetItemString(py_options, "stop_s",
+                         PyFloat_FromDouble(control->stop_s));
+    PyDict_SetItemString(py_options, "initial_radius",
+                         PyFloat_FromDouble(control->initial_radius));
+    PyDict_SetItemString(py_options, "maximum_radius",
+                         PyFloat_FromDouble(control->maximum_radius));
+    PyDict_SetItemString(py_options, "stop_rel_cg",
+                         PyFloat_FromDouble(control->stop_rel_cg));
+    PyDict_SetItemString(py_options, "eta_successful",
+                         PyFloat_FromDouble(control->eta_successful));
+    PyDict_SetItemString(py_options, "eta_very_successful",
+                         PyFloat_FromDouble(control->eta_very_successful));
+    PyDict_SetItemString(py_options, "eta_too_successful",
+                         PyFloat_FromDouble(control->eta_too_successful));
+    PyDict_SetItemString(py_options, "radius_increase",
+                         PyFloat_FromDouble(control->radius_increase));
+    PyDict_SetItemString(py_options, "radius_reduce",
+                         PyFloat_FromDouble(control->radius_reduce));
+    PyDict_SetItemString(py_options, "radius_reduce_max",
+                         PyFloat_FromDouble(control->radius_reduce_max));
+    PyDict_SetItemString(py_options, "obj_unbounded",
+                         PyFloat_FromDouble(control->obj_unbounded));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "hessian_available",
+                         PyBool_FromLong(control->hessian_available));
+    PyDict_SetItemString(py_options, "subproblem_direct",
+                         PyBool_FromLong(control->subproblem_direct));
+    PyDict_SetItemString(py_options, "retrospective_trust_region",
+                         PyBool_FromLong(control->retrospective_trust_region));
+    PyDict_SetItemString(py_options, "renormalize_radius",
+                         PyBool_FromLong(control->renormalize_radius));
+    PyDict_SetItemString(py_options, "two_norm_tr",
+                         PyBool_FromLong(control->two_norm_tr));
+    PyDict_SetItemString(py_options, "exact_gcp",
+                         PyBool_FromLong(control->exact_gcp));
+    PyDict_SetItemString(py_options, "accurate_bqp",
+                         PyBool_FromLong(control->accurate_bqp));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "trs_options",
+    //                     trs_make_options_dict(&control->trs_control));
+    //PyDict_SetItemString(py_options, "gltr_options",
+    //                     gltr_make_options_dict(&control->gltr_control));
+    //PyDict_SetItemString(py_options, "psls_options",
+    //                     psls_make_options_dict(&control->psls_control));
+    //PyDict_SetItemString(py_options, "lms_options",
+    //                     lms_make_options_dict(&control->lms_control));
+    //PyDict_SetItemString(py_options, "lms_cont_options",
+    //                     lms_cont_make_options_dict(&control->lms_cont_control));
+    //PyDict_SetItemString(py_options, "sha_options",
+    //                     sha_make_options_dict(&control->sha_control));
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -606,7 +725,6 @@ static PyObject* trb_make_inform_dict(const struct trb_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   TRB_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-
 static PyObject* py_trb_initialize(PyObject *self){
 
     // Call trb_initialize
@@ -615,9 +733,9 @@ static PyObject* py_trb_initialize(PyObject *self){
     // Record that TRB has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = trb_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   TRB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

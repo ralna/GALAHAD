@@ -18,14 +18,11 @@ b = np.array([1.0,4.0,4.0])
 
 # set solver name, allocate internal data and set default options
 solver = 'getr'
-uls.initialize(solver)
-#options = uls.initialize(solver)
-#uls.initialize()
+options = uls.initialize(solver)
 
 # set some non-default options
-#options = {'print_level' : 1 }
-options = { }
-#print(options)
+options['print_level'] = 1
+#print("options:", options
 
 # load data (and optionally non-default options), and factorize matrix
 uls.factorize_matrix(m, n, A_type, A_ne, A_row, A_col, A_ptr, A_val, options)
