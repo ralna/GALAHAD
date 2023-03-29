@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('useblls.F90', 'runblls_sif.F90')
 endif
 
+galahad_tests += [['blls', 'bllst', files('bllst.F90')],
+                  ['blls', 'bllsti', files('bllsti.F90')]]
+
 galahad_c_tests += [['blls', 'bllst_c', files('C/bllst.c')],
                     ['blls', 'bllstf_c', files('C/bllstf.c')]]
 

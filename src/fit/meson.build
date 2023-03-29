@@ -2,4 +2,7 @@ libgalahad_src += files('fit.F90')
 if build_ciface
   libgalahad_c_src += files('C/fit_ciface.F90')
 endif
+
+galahad_tests += [['fit', 'fitt', files('fitt.F90')]]
+
 galahad_examples += [['fits', files('fits.f90')]]

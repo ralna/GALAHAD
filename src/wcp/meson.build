@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('usewcp.F90', 'runwcp_sif.F90')
 endif
 
+galahad_tests += [['wcp', 'wcpt', files('wcpt.F90')],
+                  ['wcp', 'wcpti', files('wcpti.F90')]]
+
 galahad_c_tests += [['wcp', 'wcpt_c', files('C/wcpt.c')],
                     ['wcp', 'wcptf_c', files('C/wcptf.c')]]
 
