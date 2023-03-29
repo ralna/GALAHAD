@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('usetru.F90', 'runtru_sif.F90')
 endif
 
+galahad_tests += [['tru', 'trut', files('trut.F90')],
+                  ['tru', 'truti', files('truti.F90')]]
+
 galahad_c_tests += [['tru', 'trut_c', files('C/trut.c')],
                     ['tru', 'trutf_c', files('C/trutf.c')]]
 

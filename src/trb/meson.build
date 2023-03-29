@@ -6,6 +6,9 @@ if libcutest.found()
   libgalahad_cutest_src += files('usetrb.F90', 'runtrb_sif.F90')
 endif
 
+galahad_tests += [['trb', 'trbt', files('trbt.F90')],
+                  ['trb', 'trbti', files('trbti.F90')]]
+
 galahad_c_tests += [['trb', 'trbt_c', files('C/trbt.c')],
                     ['trb', 'trbtf_c', files('C/trbtf.c')]]
 

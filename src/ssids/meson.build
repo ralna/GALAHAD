@@ -12,6 +12,9 @@ if build_ssids
   if build_ciface
     libgalahad_c_src += files('C/ssids_ciface.F90')
   endif
+
+  galahad_tests += [['ssids', 'ssidst', files('ssidst.F90')]]
+
   galahad_examples += [['ssidss', files('ssidss.f90')]]
 endif
 
