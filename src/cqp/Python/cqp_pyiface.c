@@ -1,7 +1,7 @@
 //* \file cqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-20 AT 08:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 12:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,18 +21,23 @@
 /* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
 //                        PyObject *py_options);
+//PyObject* trs_make_options_dict(const struct trs_control_type *control);
 //PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
 //bool sbls_update_control(struct sbls_control_type *control,
 //                         PyObject *py_options);
+//PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 //PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
 //bool roots_update_control(struct roots_control_type *control,
 //                         PyObject *py_options);
+//PyObject* roots_make_options_dict(const struct roots_control_type *control);
 //PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
 //bool fit_update_control(struct fit_control_type *control,
 //                        PyObject *py_options);
+//PyObject* fit_make_options_dict(const struct fit_control_type *control);
 //PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
 //bool cro_update_control(struct cro_control_type *control,
 //                        PyObject *py_options);
+//PyObject* cro_make_options_dict(const struct cro_control_type *control);
 //PyObject* cro_make_inform_dict(const struct cro_inform_type *inform);
 
 /* Module global variables */
@@ -377,19 +382,22 @@ static bool cqp_update_control(struct cqp_control_type *control,
         }
         if(strcmp(key_name, "sif_file_name") == 0){
             if(!parse_char_option(value, "sif_file_name",
-                                  control->sif_file_name))
+                                  control->sif_file_name,
+                                  sizeof(control->sif_file_name)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "qplib_file_name") == 0){
             if(!parse_char_option(value, "qplib_file_name",
-                                  control->qplib_file_name))
+                                  control->qplib_file_name,
+                                  sizeof(control->qplib_file_name)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -427,6 +435,138 @@ static bool cqp_update_control(struct cqp_control_type *control,
 
     return true; // success
 }
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within QP Python interface
+PyObject* cqp_make_options_dict(const struct cqp_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "start_print",
+                         PyLong_FromLong(control->start_print));
+    PyDict_SetItemString(py_options, "stop_print",
+                         PyLong_FromLong(control->stop_print));
+    PyDict_SetItemString(py_options, "maxit",
+                         PyLong_FromLong(control->maxit));
+    PyDict_SetItemString(py_options, "infeas_max",
+                         PyLong_FromLong(control->infeas_max));
+    PyDict_SetItemString(py_options, "muzero_fixed",
+                         PyLong_FromLong(control->muzero_fixed));
+    PyDict_SetItemString(py_options, "restore_problem",
+                         PyLong_FromLong(control->restore_problem));
+    PyDict_SetItemString(py_options, "indicator_type",
+                         PyLong_FromLong(control->indicator_type));
+    PyDict_SetItemString(py_options, "arc",
+                         PyLong_FromLong(control->arc));
+    PyDict_SetItemString(py_options, "series_order",
+                         PyLong_FromLong(control->series_order));
+    PyDict_SetItemString(py_options, "sif_file_device",
+                         PyLong_FromLong(control->sif_file_device));
+    PyDict_SetItemString(py_options, "qplib_file_device",
+                         PyLong_FromLong(control->qplib_file_device));
+    PyDict_SetItemString(py_options, "infinity",
+                         PyFloat_FromDouble(control->infinity));
+    PyDict_SetItemString(py_options, "stop_abs_p",
+                         PyFloat_FromDouble(control->stop_abs_p));
+    PyDict_SetItemString(py_options, "stop_rel_p",
+                         PyFloat_FromDouble(control->stop_rel_p));
+    PyDict_SetItemString(py_options, "stop_abs_d",
+                         PyFloat_FromDouble(control->stop_abs_d));
+    PyDict_SetItemString(py_options, "stop_rel_d",
+                         PyFloat_FromDouble(control->stop_rel_d));
+    PyDict_SetItemString(py_options, "stop_abs_c",
+                         PyFloat_FromDouble(control->stop_abs_c));
+    PyDict_SetItemString(py_options, "stop_rel_c",
+                         PyFloat_FromDouble(control->stop_rel_c));
+    PyDict_SetItemString(py_options, "perturb_h",
+                         PyFloat_FromDouble(control->perturb_h));
+    PyDict_SetItemString(py_options, "prfeas",
+                         PyFloat_FromDouble(control->prfeas));
+    PyDict_SetItemString(py_options, "dufeas",
+                         PyFloat_FromDouble(control->dufeas));
+    PyDict_SetItemString(py_options, "muzero",
+                         PyFloat_FromDouble(control->muzero));
+    PyDict_SetItemString(py_options, "tau",
+                         PyFloat_FromDouble(control->tau));
+    PyDict_SetItemString(py_options, "gamma_c",
+                         PyFloat_FromDouble(control->gamma_c));
+    PyDict_SetItemString(py_options, "gamma_f",
+                         PyFloat_FromDouble(control->gamma_f));
+    PyDict_SetItemString(py_options, "reduce_infeas",
+                         PyFloat_FromDouble(control->reduce_infeas));
+    PyDict_SetItemString(py_options, "obj_unbounded",
+                         PyFloat_FromDouble(control->obj_unbounded));
+    PyDict_SetItemString(py_options, "potential_unbounded",
+                         PyFloat_FromDouble(control->potential_unbounded));
+    PyDict_SetItemString(py_options, "identical_bounds_tol",
+                         PyFloat_FromDouble(control->identical_bounds_tol));
+    PyDict_SetItemString(py_options, "mu_lunge",
+                         PyFloat_FromDouble(control->mu_lunge));
+    PyDict_SetItemString(py_options, "indicator_tol_p",
+                         PyFloat_FromDouble(control->indicator_tol_p));
+    PyDict_SetItemString(py_options, "indicator_tol_pd",
+                         PyFloat_FromDouble(control->indicator_tol_pd));
+    PyDict_SetItemString(py_options, "indicator_tol_tapia",
+                         PyFloat_FromDouble(control->indicator_tol_tapia));
+    PyDict_SetItemString(py_options, "cpu_time_limit",
+                         PyFloat_FromDouble(control->cpu_time_limit));
+    PyDict_SetItemString(py_options, "clock_time_limit",
+                         PyFloat_FromDouble(control->clock_time_limit));
+    PyDict_SetItemString(py_options, "remove_dependencies",
+                         PyBool_FromLong(control->remove_dependencies));
+    PyDict_SetItemString(py_options, "treat_zero_bounds_as_general",
+                         PyBool_FromLong(control->treat_zero_bounds_as_general));
+    PyDict_SetItemString(py_options, "treat_separable_as_general",
+                         PyBool_FromLong(control->treat_separable_as_general));
+    PyDict_SetItemString(py_options, "just_feasible",
+                         PyBool_FromLong(control->just_feasible));
+    PyDict_SetItemString(py_options, "getdua",
+                         PyBool_FromLong(control->getdua));
+    PyDict_SetItemString(py_options, "puiseux",
+                         PyBool_FromLong(control->puiseux));
+    PyDict_SetItemString(py_options, "every_order",
+                         PyBool_FromLong(control->every_order));
+    PyDict_SetItemString(py_options, "feasol",
+                         PyBool_FromLong(control->feasol));
+    PyDict_SetItemString(py_options, "balance_initial_complentarity",
+                         PyBool_FromLong(control->balance_initial_complentarity));
+    PyDict_SetItemString(py_options, "crossover",
+                         PyBool_FromLong(control->crossover));
+    PyDict_SetItemString(py_options, "space_critical",
+                         PyBool_FromLong(control->space_critical));
+    PyDict_SetItemString(py_options, "deallocate_error_fatal",
+                         PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "generate_sif_file",
+                         PyBool_FromLong(control->generate_sif_file));
+    PyDict_SetItemString(py_options, "generate_qplib_file",
+                         PyBool_FromLong(control->generate_qplib_file));
+    PyDict_SetItemString(py_options, "sif_file_name",
+                         PyUnicode_FromString(control->sif_file_name));
+    PyDict_SetItemString(py_options, "qplib_file_name",
+                         PyUnicode_FromString(control->qplib_file_name));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+    //PyDict_SetItemString(py_options, "fdc_options",
+    //                     fdc_make_options_dict(&control->fdc_control));
+    //PyDict_SetItemString(py_options, "sbls_options",
+    //                     sbls_make_options_dict(&control->sbls_control));
+    //PyDict_SetItemString(py_options, "fit_options",
+    //                     fit_make_options_dict(&control->fit_control));
+    //PyDict_SetItemString(py_options, "roots_options",
+    //                     roots_make_options_dict(&control->roots_control));
+    //PyDict_SetItemString(py_options, "cro_options",
+    //                     cro_make_options_dict(&control->cro_control));
+
+    return py_options;
+}
+
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
 
@@ -543,9 +683,9 @@ static PyObject* py_cqp_initialize(PyObject *self){
     // Record that CQP has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = cqp_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   CQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*

@@ -121,6 +121,7 @@ $(PACKAGE)CDS5 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs5_double.o
 $(PACKAGE)CDS6 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs6_double.o
 $(PACKAGE)CDS7 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs7_double.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct_double.o
+$(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2_double.o
 $(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti_double.o
 $(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf_double.o
 
@@ -144,6 +145,7 @@ R$(PACKAGE)CDS5 = $(OBJD)/$(package)cs5_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS6 = $(OBJD)/$(package)cs6_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS7 = $(OBJD)/$(package)cs7_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf_double.o -L$(OBJD) $(CLIBS)
 
@@ -848,6 +850,16 @@ $(package)cdt: $($(PACKAGE)CDT)
 	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
+	rm ./run_$(package)
+
+$(package)cdt2: $($(PACKAGE)CDT2)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dt.output 2>&1
 	cat $(package)dt.output

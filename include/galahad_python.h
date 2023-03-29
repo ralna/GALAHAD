@@ -1,3 +1,5 @@
+// This version 2023-03-29 at 09:15 GMT
+
 #define NPY_NO_DEPRECATED_API NPY_1_20_API_VERSION
 
 #include <stdbool.h>
@@ -10,7 +12,6 @@
 // Python and NumPy C APIs
 #include <Python.h>
 #include <numpy/arrayobject.h>
-
 
 /*
  * Check and handle general status error codes
@@ -173,9 +174,11 @@ static inline bool check_callable(PyObject *arg){
 
 /* Check that ndarray is 1D, double and of correct length */
 static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
-    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) && PyArray_TYPE(arr)==NPY_DOUBLE
-         && PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
-        PyErr_Format(PyExc_TypeError, "%s must be a 1D double array of length %i", name, n);
+    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) && 
+         PyArray_TYPE(arr)==NPY_DOUBLE &&
+         PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
+        PyErr_Format(PyExc_TypeError, 
+                     "%s must be a 1D double array of length %i", name, n);
         return false;
     }
     return true;
@@ -185,9 +188,11 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
 static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
-    if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) && PyArray_TYPE(arr)==NPY_INT64
-         && PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
-        PyErr_Format(PyExc_TypeError, "%s must be a 1D int array of length %i", name, n);
+    if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) && 
+         PyArray_TYPE(arr)==NPY_INT64 &&
+         PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
+        PyErr_Format(PyExc_TypeError, 
+                     "%s must be a 1D int array of length %i", name, n);
         return false;
     }
     return true;
@@ -215,46 +220,55 @@ static inline bool parse_double(char *name, PyObject *value, double *out){
 static inline bool parse_options_key(PyObject *key, const char **key_name){
     *key_name = PyUnicode_AsUTF8AndSize(key, NULL);
     if(!*key_name){
-        PyErr_SetString(PyExc_TypeError, "the keys in the options dictionary must be strings");
+        PyErr_SetString(PyExc_TypeError, 
+                        "the keys in the options dictionary must be strings");
         return false;
     }
     return true;
 }
 
 /* Parse int option from Python value to C out */
-static inline bool parse_int_option(PyObject *value, char *option_name, int *out){
+static inline bool parse_int_option(PyObject *value, char *option_name, 
+                                    int *out){
     *out = PyLong_AsLong(value);
     if(*out == -1 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, "options['%s'] must be an integer", option_name);
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] must be an integer", option_name);
         return false;
     }
     return true;
 }
 
 /* Parse int64_t option from Python value to C out */
-static inline bool parse_int64_t_option(PyObject *value, char *option_name, int64_t *out){
+static inline bool parse_int64_t_option(PyObject *value, char *option_name, 
+                                        int64_t *out){
     *out = PyLong_AsLong(value);
     if(*out == -1 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, "options['%s'] must be an 64 bit integer", option_name);
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] must be an 64 bit integer", option_name);
         return false;
     }
     return true;
 }
 
 /* Parse double option from Python value to C out */
-static inline bool parse_double_option(PyObject *value, char *option_name, double *out){
+static inline bool parse_double_option(PyObject *value, char *option_name,
+                                       double *out){
     *out = PyFloat_AsDouble(value);
     if(*out == -1.0 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, "options['%s'] must be a float", option_name);
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] must be a float", option_name);
         return false;
     }
     return true;
 }
 
 /* Parse bool option from Python value to C out */
-static inline bool parse_bool_option(PyObject *value, char *option_name, bool *out){
+static inline bool parse_bool_option(PyObject *value, char *option_name, 
+                                     bool *out){
     if(!PyBool_Check(value)){
-        PyErr_Format(PyExc_TypeError, "options['%s'] must be a bool", option_name);
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] must be a bool", option_name);
         return false;
     }
     int vint = PyObject_IsTrue(value);
@@ -263,19 +277,29 @@ static inline bool parse_bool_option(PyObject *value, char *option_name, bool *o
 	}else if(vint == 0){
 	    *out = false;
 	}else{ // returns -1 on error, should never reach this
-        PyErr_Format(PyExc_TypeError, "error parsing bool options['%s']", option_name);
+        PyErr_Format(PyExc_TypeError, 
+                     "error parsing bool options['%s']", option_name);
         return false;
     }
     return true;
 }
 
 /* Parse char option from Python value to C out */
-static inline bool parse_char_option(PyObject *value, char *option_name, const char out[]){
-    out = PyUnicode_AsUTF8AndSize(value, NULL);
-    if(!out){
-        PyErr_Format(PyExc_TypeError, "options['%s'] must be a string", option_name);
+static inline bool parse_char_option(PyObject *value, char *option_name, 
+                                     char *out, size_t outsize){
+    Py_ssize_t pylen; // excludes terminating null char
+    const char* pystring = PyUnicode_AsUTF8AndSize(value, &pylen);
+    if(!pystring){
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] must be a string", option_name);
+        return false;
+    }else if(pylen+1 > outsize){ // outsize includes terminating null char
+        PyErr_Format(PyExc_TypeError, 
+                     "options['%s'] too long, max size is %d characters",
+                     option_name, outsize-1);
         return false;
     }
+    strcpy(out, pystring);
     return true;
 }
 

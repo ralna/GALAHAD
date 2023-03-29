@@ -1,7 +1,7 @@
 //* \file sls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-23 AT 15:40 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:15 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -43,8 +43,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool sls_update_control(struct sls_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within SBLS Python interface
+bool sls_update_control(struct sls_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -315,49 +316,57 @@ static bool sls_update_control(struct sls_control_type *control,
         }
         if(strcmp(key_name, "matrix_file_name") == 0){
             if(!parse_char_option(value, "matrix_file_name",
-                                  control->matrix_file_name))
+                                  control->matrix_file_name,
+                                  sizeof(control->matrix_file_name)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_directory") == 0){
             if(!parse_char_option(value, "out_of_core_directory",
-                                  control->out_of_core_directory))
+                                  control->out_of_core_directory,
+                                  sizeof(control->out_of_core_directory)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_integer_factor_file") == 0){
             if(!parse_char_option(value, "out_of_core_integer_factor_file",
-                                  control->out_of_core_integer_factor_file))
+                                  control->out_of_core_integer_factor_file,
+                                  sizeof(control->out_of_core_integer_factor_file)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_real_factor_file") == 0){
             if(!parse_char_option(value, "out_of_core_real_factor_file",
-                                  control->out_of_core_real_factor_file))
+                                  control->out_of_core_real_factor_file,
+                                  sizeof(control->out_of_core_real_factor_file)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_real_work_file") == 0){
             if(!parse_char_option(value, "out_of_core_real_work_file",
-                                  control->out_of_core_real_work_file))
+                                  control->out_of_core_real_work_file,
+                                  sizeof(control->out_of_core_real_work_file)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_indefinite_file") == 0){
             if(!parse_char_option(value, "out_of_core_indefinite_file",
-                                  control->out_of_core_indefinite_file))
+                                  control->out_of_core_indefinite_file,
+                                  sizeof(control->out_of_core_indefinite_file)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out_of_core_restart_file") == 0){
             if(!parse_char_option(value, "out_of_core_restart_file",
-                                  control->out_of_core_restart_file))
+                                  control->out_of_core_restart_file,
+                                  sizeof(control->out_of_core_restart_file)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  control->prefix,
+                                  sizeof(control->prefix)))
                 return false;
             continue;
         }
@@ -368,6 +377,117 @@ static bool sls_update_control(struct sls_control_type *control,
     }
 
     return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the control struct from C and turn it into a python options dict */
+// NB not static as it is used for nested inform within SBLS Python interface
+PyObject* sls_make_options_dict(const struct sls_control_type *control){
+    PyObject *py_options = PyDict_New();
+
+    PyDict_SetItemString(py_options, "error",
+                         PyLong_FromLong(control->error));
+    PyDict_SetItemString(py_options, "warning",
+                         PyLong_FromLong(control->warning));
+    PyDict_SetItemString(py_options, "out",
+                         PyLong_FromLong(control->out));
+    PyDict_SetItemString(py_options, "statistics",
+                         PyLong_FromLong(control->statistics));
+    PyDict_SetItemString(py_options, "print_level",
+                         PyLong_FromLong(control->print_level));
+    PyDict_SetItemString(py_options, "print_level_solver",
+                         PyLong_FromLong(control->print_level_solver));
+    PyDict_SetItemString(py_options, "bits",
+                         PyLong_FromLong(control->bits));
+    PyDict_SetItemString(py_options, "block_size_kernel",
+                         PyLong_FromLong(control->block_size_kernel));
+    PyDict_SetItemString(py_options, "block_size_elimination",
+                         PyLong_FromLong(control->block_size_elimination));
+    PyDict_SetItemString(py_options, "blas_block_size_factorize",
+                         PyLong_FromLong(control->blas_block_size_factorize));
+    PyDict_SetItemString(py_options, "blas_block_size_solve",
+                         PyLong_FromLong(control->blas_block_size_solve));
+    PyDict_SetItemString(py_options, "node_amalgamation",
+                         PyLong_FromLong(control->node_amalgamation));
+    PyDict_SetItemString(py_options, "initial_pool_size",
+                         PyLong_FromLong(control->initial_pool_size));
+    PyDict_SetItemString(py_options, "min_real_factor_size",
+                         PyLong_FromLong(control->min_real_factor_size));
+    PyDict_SetItemString(py_options, "min_integer_factor_size",
+                         PyLong_FromLong(control->min_integer_factor_size));
+    PyDict_SetItemString(py_options, "max_real_factor_size",
+                         PyLong_FromLong(control->max_real_factor_size));
+    PyDict_SetItemString(py_options, "max_integer_factor_size",
+                         PyLong_FromLong(control->max_integer_factor_size));
+    PyDict_SetItemString(py_options, "max_in_core_store",
+                         PyLong_FromLong(control->max_in_core_store));
+    PyDict_SetItemString(py_options, "array_increase_factor",
+                         PyFloat_FromDouble(control->array_increase_factor));
+    PyDict_SetItemString(py_options, "array_decrease_factor",
+                         PyFloat_FromDouble(control->array_decrease_factor));
+    PyDict_SetItemString(py_options, "pivot_control",
+                         PyLong_FromLong(control->pivot_control));
+    PyDict_SetItemString(py_options, "ordering",
+                         PyLong_FromLong(control->ordering));
+    PyDict_SetItemString(py_options, "full_row_threshold",
+                         PyLong_FromLong(control->full_row_threshold));
+    PyDict_SetItemString(py_options, "row_search_indefinite",
+                         PyLong_FromLong(control->row_search_indefinite));
+    PyDict_SetItemString(py_options, "scaling",
+                         PyLong_FromLong(control->scaling));
+    PyDict_SetItemString(py_options, "scale_maxit",
+                         PyLong_FromLong(control->scale_maxit));
+    PyDict_SetItemString(py_options, "scale_thresh",
+                         PyFloat_FromDouble(control->scale_thresh));
+    PyDict_SetItemString(py_options, "relative_pivot_tolerance",
+                         PyFloat_FromDouble(control->relative_pivot_tolerance));
+    PyDict_SetItemString(py_options, "minimum_pivot_tolerance",
+                         PyFloat_FromDouble(control->minimum_pivot_tolerance));
+    PyDict_SetItemString(py_options, "absolute_pivot_tolerance",
+                         PyFloat_FromDouble(control->absolute_pivot_tolerance));
+    PyDict_SetItemString(py_options, "zero_tolerance",
+                         PyFloat_FromDouble(control->zero_tolerance));
+    PyDict_SetItemString(py_options, "zero_pivot_tolerance",
+                         PyFloat_FromDouble(control->zero_pivot_tolerance));
+    PyDict_SetItemString(py_options, "negative_pivot_tolerance",
+                         PyFloat_FromDouble(control->negative_pivot_tolerance));
+    PyDict_SetItemString(py_options, "static_pivot_tolerance",
+                         PyFloat_FromDouble(control->static_pivot_tolerance));
+    PyDict_SetItemString(py_options, "static_level_switch",
+                         PyFloat_FromDouble(control->static_level_switch));
+    PyDict_SetItemString(py_options, "consistency_tolerance",
+                         PyFloat_FromDouble(control->consistency_tolerance));
+    PyDict_SetItemString(py_options, "max_iterative_refinements",
+                         PyLong_FromLong(control->max_iterative_refinements));
+    PyDict_SetItemString(py_options, "acceptable_residual_relative",
+                         PyFloat_FromDouble(control->acceptable_residual_relative));
+    PyDict_SetItemString(py_options, "acceptable_residual_absolute",
+                         PyFloat_FromDouble(control->acceptable_residual_absolute));
+    PyDict_SetItemString(py_options, "multiple_rhs",
+                         PyBool_FromLong(control->multiple_rhs));
+    PyDict_SetItemString(py_options, "generate_matrix_file",
+                         PyBool_FromLong(control->generate_matrix_file));
+    PyDict_SetItemString(py_options, "matrix_file_device",
+                         PyLong_FromLong(control->matrix_file_device));
+    PyDict_SetItemString(py_options, "matrix_file_name",
+                         PyUnicode_FromString(control->matrix_file_name));
+    PyDict_SetItemString(py_options, "out_of_core_directory",
+                         PyUnicode_FromString(control->out_of_core_directory));
+    PyDict_SetItemString(py_options, "out_of_core_integer_factor_file",
+                         PyUnicode_FromString(control->out_of_core_integer_factor_file));
+    PyDict_SetItemString(py_options, "out_of_core_real_factor_file",
+                         PyUnicode_FromString(control->out_of_core_real_factor_file));
+    PyDict_SetItemString(py_options, "out_of_core_real_work_file",
+                         PyUnicode_FromString(control->out_of_core_real_work_file));
+    PyDict_SetItemString(py_options, "out_of_core_indefinite_file",
+                         PyUnicode_FromString(control->out_of_core_indefinite_file));
+    PyDict_SetItemString(py_options, "out_of_core_restart_file",
+                         PyUnicode_FromString(control->out_of_core_restart_file));
+    PyDict_SetItemString(py_options, "prefix",
+                         PyUnicode_FromString(control->prefix));
+
+    return py_options;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
@@ -416,7 +536,8 @@ static PyObject* sls_make_time_dict(const struct sls_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
+// NB not static as it is used for nested control within SBLS Python interface
+PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -590,9 +711,9 @@ static PyObject* py_sls_initialize(PyObject *self, PyObject *args){
     // Record that SLS has been initialised
     init_called = true;
 
-    // Return None boilerplate
-    Py_INCREF(Py_None);
-    return Py_None;
+    // Return options Python dictionary
+    PyObject *py_options = sls_make_options_dict(&control);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLS_ANALYSE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
