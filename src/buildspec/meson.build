@@ -1,1 +1,1 @@
-bingalahad_src += [['buildspec', files('buildspec.F90')]]
+galahad_binaries += [['buildspec', files('buildspec.F90')]]
