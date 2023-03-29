@@ -5,4 +5,8 @@ endif
 if libcutest.found()
   libgalahad_cutest_src += files('usepresolve.F90', 'runpresolve_sif.F90')
 endif
+
+galahad_c_tests += [['presolve', 'presolvet_c', files('C/presolvet.c')],
+                    ['presolve', 'presolvetf_c', files('C/presolvetf.c')]]
+
 galahad_examples += [['presolves', files('presolves.f90')]]
