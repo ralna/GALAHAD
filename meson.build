@@ -103,7 +103,7 @@ libgalahad_double_src = []
 libgalahad_integer_src = []
 libgalahad_src = []
 
-bingalahad_src = []
+galahad_binaries = []
 
 libgalahad_c_single_src = []
 libgalahad_c_double_src = []
@@ -251,6 +251,7 @@ subdir('src/cutest_functions')
 subdir('src/ssids')
 subdir('src/spral')
 
+# Libraries
 if build_single
   sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src,
                     libgalahad_c_single_src, libgalahad_c_integer_src, libgalahad_c_src,
@@ -283,13 +284,8 @@ if build_double
                               install : true)
 endif
 
-# Fortran modules
-if install_modules
-  meson.add_install_script(script_modules)
-endif
-
-# Executables
-foreach val: bingalahad_src
+# Binaries
+foreach val: galahad_binaries
   binname = val[0]
   binfile = val[1]
 
@@ -311,8 +307,12 @@ foreach val: bingalahad_src
   endif
 endforeach
 
-# Unit tests
+# Fortran modules
+if install_modules
+  meson.add_install_script(script_modules)
+endif
 
+# Fortran tests
 if build_tests
 
   fortran_tests_folder = 'share/tests/fortran'

@@ -1,1 +1,1 @@
-bingalahad_src += [['lsrbmain', files('lsrbmain.F90')]]
+galahad_binaries += [['lsrbmain', files('lsrbmain.F90')]]
