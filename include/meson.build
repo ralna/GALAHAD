@@ -1,15 +1,43 @@
-galahad_headers = files('galahad_arc.h', 'galahad_bgo.h', 'galahad_blls.h', 'galahad_bqpb.h',
-                        'galahad_bqp.h', 'galahad_bsc.h', 'galahad_ccqp.h', 'galahad_cfunctions.h',
-                        'galahad_clls.h', 'galahad_convert.h', 'galahad_cqp.h', 'galahad_cro.h',
-                        'galahad_dgo.h', 'galahad_double.h', 'galahad_dps.h', 'galahad_dqp.h',
-                        'galahad_eqp.h', 'galahad_fdc.h', 'galahad_fit.h', 'galahad_glrt.h',
-                        'galahad_gls.h', 'galahad_gltr.h', 'galahad.h', 'galahad_hash.h',
-                        'galahad_icfs.h', 'galahad_ir.h', 'galahad_l2rt.h', 'galahad_lhs.h',
-                        'galahad_lms.h', 'galahad_lpa.h', 'galahad_lpb.h', 'galahad_lsqp.h',
-                        'galahad_lsrt.h', 'galahad_lstr.h', 'galahad_modules.h', 'galahad_nls.h',
-                        'galahad_precision.h', 'galahad_presolve.h', 'galahad_psls.h', 'galahad_python.h',
-                        'galahad_qpa.h', 'galahad_qpb.h', 'galahad_roots.h', 'galahad_rpd.h',
-                        'galahad_rqs.h', 'galahad_sbls.h', 'galahad_scu.h', 'galahad_sec.h',
-                        'galahad_sha.h', 'galahad_sils.h', 'galahad_single.h', 'galahad_slls.h',
-                        'galahad_sls_defaults.h', 'galahad_sls.h', 'galahad_trb.h', 'galahad_trs.h',
-                        'galahad_tru.h', 'galahad_ugo.h', 'galahad_uls.h', 'galahad_wcp.h')
+galahad_headers += files('spral_config.h', 'spral_procedures.h', 'spral_ssids.h',
+                         'spral_compat.hxx', 'spral_guess_topology.hxx', 'spral_hwloc_wrapper.hxx', 'spral_omp.hxx')
+
+if build_ciface
+    galahad_headers += files('galahad_arc.h', 'galahad_bgo.h', 'galahad_blls.h', 'galahad_bqpb.h',
+                             'galahad_bqp.h', 'galahad_bsc.h', 'galahad_ccqp.h', 'galahad_cfunctions.h',
+                             'galahad_clls.h', 'galahad_convert.h', 'galahad_cqp.h', 'galahad_cro.h',
+                             'galahad_dgo.h', 'galahad_double.h', 'galahad_dps.h', 'galahad_dqp.h',
+                             'galahad_eqp.h', 'galahad_fdc.h', 'galahad_fit.h', 'galahad_glrt.h',
+                             'galahad_gls.h', 'galahad_gltr.h', 'galahad.h', 'galahad_hash.h',
+                             'galahad_icfs.h', 'galahad_ir.h', 'galahad_l2rt.h', 'galahad_lhs.h',
+                             'galahad_lms.h', 'galahad_lpa.h', 'galahad_lpb.h', 'galahad_lsqp.h',
+                             'galahad_lsrt.h', 'galahad_lstr.h', 'galahad_modules.h', 'galahad_nls.h',
+                             'galahad_precision.h', 'galahad_presolve.h', 'galahad_psls.h',
+                             'galahad_qpa.h', 'galahad_qpb.h', 'galahad_roots.h', 'galahad_rpd.h',
+                             'galahad_rqs.h', 'galahad_sbls.h', 'galahad_scu.h', 'galahad_sec.h',
+                             'galahad_sha.h', 'galahad_sils.h', 'galahad_single.h', 'galahad_slls.h',
+                             'galahad_sls_defaults.h', 'galahad_sls.h', 'galahad_trb.h', 'galahad_trs.h',
+                             'galahad_tru.h', 'galahad_ugo.h', 'galahad_uls.h', 'galahad_wcp.h')
+endif
+
+if build_pythoniface
+  galahad_headers += files('galahad_python.h')
+endif
+
+if build_ssids
+  galahad_headers += files('ssids_contrib.h',
+                           'ssids_cpu_AppendAlloc.hxx', 'ssids_cpu_BlockPool.hxx', 'ssids_cpu_BuddyAllocator.hxx',
+                           'ssids_cpu_cpu_iface.hxx', 'ssids_cpu_factor.hxx', 'ssids_cpu_kernels_assemble.hxx',
+                           'ssids_cpu_kernels_block_ldlt.hxx', 'ssids_cpu_kernels_calc_ld.hxx', 'ssids_cpu_kernels_cholesky.hxx',
+                           'ssids_cpu_kernels_common.hxx', 'ssids_cpu_kernels_ldlt_app.hxx', 'ssids_cpu_kernels_ldlt_app.hxx',
+                           'ssids_cpu_kernels_ldlt_nopiv.hxx', 'ssids_cpu_kernels_ldlt_tpp.hxx', 'ssids_cpu_kernels_SimdVec.hxx',
+                           'ssids_cpu_kernels_verify.hxx', 'ssids_cpu_kernels_wrappers.hxx', 'ssids_cpu_NumericNode.hxx',
+                           'ssids_cpu_NumericSubtree.hxx', 'ssids_cpu_SmallLeafNumericSubtree.hxx', 'ssids_cpu_SmallLeafSymbolicSubtree.hxx',
+                           'ssids_cpu_SymbolicNode.hxx', 'ssids_cpu_SymbolicSubtree.hxx', 'ssids_cpu_ThreadStats.hxx',
+                           'ssids_cpu_Workspace.hxx', 'ssids_profile.hxx')
+endif
+
+if not libhsl.found()
+  galahad_headers += files('hsl_ma48.h', 'hsl_ma57.h', 'hsl_ma77.h', 'hsl_ma86.h',
+                           'hsl_ma87.h', 'hsl_ma97.h', 'hsl_mc64.h', 'hsl_mc68.h',
+                           'hsl_mi20.h', 'hsl_mi28.h')
+endif
