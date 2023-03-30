@@ -14,7 +14,6 @@ project(
   ],
 )
 
-
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 fc = meson.get_compiler('fortran')
@@ -156,6 +155,7 @@ galahad_examples = []
 galahad_c_examples = []
 galahad_tests = []
 galahad_c_tests = []
+galahad_python_tests = []
 
 # Headers and Fortran modules
 libgalahad_include = [include_directories('include'),
@@ -338,6 +338,16 @@ if build_double
                               install : true)
 endif
 
+if build_pythoniface and build_ciface and build_double
+  libgalahad_python = py.extension_module('libgalahad_python',
+                                          sources : libgalahad_python_src,
+                                          link_with : libgalahad_double,
+                                          link_language : 'c',
+                                          dependencies: py.dependency(),
+                                          include_directories: libgalahad_include,
+                                          install : true)
+endif
+
 # Binaries
 foreach binary: galahad_binaries
   binname = binary[0]
@@ -429,6 +439,43 @@ if build_tests and build_ciface
   endforeach
 endif
 
+# Python tests
+if build_tests and build_pythoniface and build_ciface and build_double
+
+  python_tests_folder = 'tests/Python'
+
+  foreach test: galahad_python_tests
+    package = test[0]
+    name = test[1]
+    file = test[2]
+    test(name,
+         executable(name, file, link_with : libgalahad_python, link_language : 'c', include_directories : libgalahad_include,
+                                install : true, install_dir : python_tests_folder),
+         suite : [package, 'Python'],
+         is_parallel : false)
+  endforeach
+endif
+
+#   arc_py = executable('arc_py', 'src/arc/Python/test_arc.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('arc_py', arc_py, suite: ['arc', 'Python'], is_parallel : false)
+#   bgo_py = executable('bgo_py', 'src/bgo/Python/test_bgo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('bgo_py', bgo_py, suite: ['bgo', 'Python'], is_parallel : false)
+#   bgo_quadratic_py = executable('bgo_quadratic_py', 'src/bgo/Python/test_bgo_quadratic.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('bgo_quadratic_py', bgo_quadratic_py, suite: ['bgo', 'Python'], is_parallel : false)
+#   dgo_py = executable('dgo_py', 'src/dgo/Python/test_dgo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('dgo_py', dgo_py, suite: ['dgo', 'Python'], is_parallel : false)
+#   dgo_quadratic_py = executable('dgo_quadratic_py', 'src/dgo/Python/test_dgo_quadratic.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('dgo_quadratic_py', dgo_quadratic_py, suite: ['dgo', 'Python'], is_parallel : false)
+#   nls_py = executable('nls_py', 'src/nls/Python/test_nls.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('nls_py', nls_py, suite: ['nls', 'Python'], is_parallel : false)
+#   trb_py = executable('trb_py', 'src/trb/Python/test_trb.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('trb_py', trb_py, suite: ['trb', 'Python'], is_parallel : false)
+#   tru_py = executable('tru_py', 'src/tru/Python/test_tru.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('tru_py', tru_py, suite: ['tru', 'Python'], is_parallel : false)
+#   ugo_py = executable('ugo_py', 'src/ugo/Python/test_ugo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
+#   test('ugo_py', ugo_py, suite: ['ugo', 'Python'], is_parallel : false)
+# endif
+
 # Fortran examples
 if build_examples and build_double
 
@@ -459,37 +506,3 @@ if build_examples and build_ciface
     endforeach
   endforeach
 endif
-
-if build_pythoniface
-  libgalahad_python = py.extension_module('galahad_python',
-                                          sources : libgalahad_python_src,
-                                          link_with : libgalahad_c_double,
-                                          link_language : 'c',
-                                          dependencies: py.dependency(),
-                                          include_directories: libgalahad_include,
-                                          install : true)
-endif
-
-# if build_tests and build_pythoniface
-
-#   python_tests_folder = 'share/tests/Python'
-
-#   arc_py = executable('arc_py', 'src/arc/Python/test_arc.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('arc_py', arc_py, suite: ['arc', 'Python'], is_parallel : false)
-#   bgo_py = executable('bgo_py', 'src/bgo/Python/test_bgo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('bgo_py', bgo_py, suite: ['bgo', 'Python'], is_parallel : false)
-#   bgo_quadratic_py = executable('bgo_quadratic_py', 'src/bgo/Python/test_bgo_quadratic.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('bgo_quadratic_py', bgo_quadratic_py, suite: ['bgo', 'Python'], is_parallel : false)
-#   dgo_py = executable('dgo_py', 'src/dgo/Python/test_dgo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('dgo_py', dgo_py, suite: ['dgo', 'Python'], is_parallel : false)
-#   dgo_quadratic_py = executable('dgo_quadratic_py', 'src/dgo/Python/test_dgo_quadratic.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('dgo_quadratic_py', dgo_quadratic_py, suite: ['dgo', 'Python'], is_parallel : false)
-#   nls_py = executable('nls_py', 'src/nls/Python/test_nls.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('nls_py', nls_py, suite: ['nls', 'Python'], is_parallel : false)
-#   trb_py = executable('trb_py', 'src/trb/Python/test_trb.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('trb_py', trb_py, suite: ['trb', 'Python'], is_parallel : false)
-#   tru_py = executable('tru_py', 'src/tru/Python/test_tru.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('tru_py', tru_py, suite: ['tru', 'Python'], is_parallel : false)
-#   ugo_py = executable('ugo_py', 'src/ugo/Python/test_ugo.py', link_with : libgalahad_python, link_language: 'cython', include_directories: libgalahad_include)
-#   test('ugo_py', ugo_py, suite: ['ugo', 'Python'], is_parallel : false)
-# endif
