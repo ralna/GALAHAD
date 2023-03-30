@@ -339,6 +339,12 @@ if build_double
 endif
 
 if build_pythoniface and build_ciface and build_double
+  incdir_numpy = run_command(py,
+    ['-c', 'import numpy; print(numpy.get_include())'],
+    check : true
+  ).stdout().strip()
+  libgalahad_include += [incdir_numpy]
+  
   libgalahad_python = py.extension_module('libgalahad_python',
                                           sources : libgalahad_python_src,
                                           link_with : libgalahad_double,

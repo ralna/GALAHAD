@@ -47,7 +47,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Meson and Ninja
-        run: pip install meson ninja
+        run: pip install meson ninja numpy
 
       - name: Set environment variables
         shell: bash
