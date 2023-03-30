@@ -62,10 +62,12 @@ endif
 
 if not libsmumps.found()
   libgalahad_single_src += files('mumps.F90')
+  galahad_headers += files('include/smumps_struc.h')
 endif
 
 if not libdmumps.found()
   libgalahad_double_src += files('mumps.F90')
+  galahad_headers += files('include/dmumps_struc.h')
 endif
 
 if not libmkl_pardiso.found()
