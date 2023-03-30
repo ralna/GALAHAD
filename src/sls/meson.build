@@ -18,4 +18,6 @@ galahad_tests += [['sls', 'slst', files('slst.F90')],
 galahad_c_tests += [['sls', 'slst_c', files('C/slst.c')],
                     ['sls', 'slstf_c', files('C/slstf.c')]]
 
+galahad_python_tests += [['sls', 'sls_py', files('Python/test_sls.py')]]
+
 galahad_examples += [['slss', files('slss.f90')]]

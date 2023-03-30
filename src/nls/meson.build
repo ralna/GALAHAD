@@ -18,6 +18,8 @@ galahad_tests += [['nls', 'nlst', files('nlst.F90')],
 galahad_c_tests += [['nls', 'nlst_c', files('C/nlst.c')],
                     ['nls', 'nlstf_c', files('C/nlstf.c')]]
 
+galahad_python_tests += [['nls', 'nls_py', files('Python/test_nls.py')]]
+
 galahad_examples += [['nlss', files('nlss.f90')],
                      ['nlss2', files('nlss2.f90')],
                      ['nlss3', files('nlss3.f90')]]

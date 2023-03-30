@@ -18,6 +18,8 @@ galahad_tests += [['arc', 'arct', files('arct.F90')],
 galahad_c_tests += [['arc', 'arct_c', files('C/arct.c')],
                     ['arc', 'arctf_c', files('C/arctf.c')]]
 
+galahad_python_tests += [['arc', 'arc_py', files('Python/test_arc.py')]]
+
 galahad_examples += [['arcs', files('arcs.f90')],
                      ['arcs2', files('arcs2.f90')],
                      ['arcs3', files('arcs3.f90')],

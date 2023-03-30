@@ -18,6 +18,8 @@ galahad_tests += [['trb', 'trbt', files('trbt.F90')],
 galahad_c_tests += [['trb', 'trbt_c', files('C/trbt.c')],
                     ['trb', 'trbtf_c', files('C/trbtf.c')]]
 
+galahad_python_tests += [['trb', 'trb_py', files('Python/test_trb.py')]]
+
 galahad_examples += [['trbs', files('trbs.f90')],
                      ['trbs2', files('trbs2.f90')],
                      ['trbs3', files('trbs3.f90')]]

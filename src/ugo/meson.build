@@ -16,6 +16,8 @@ galahad_tests += [['ugo', 'ugot', files('ugot.F90')]]
 
 galahad_c_tests += [['ugo', 'ugot_c', files('C/ugot.c')]]
 
+galahad_python_tests += [['ugo', 'ugo_py', files('Python/test_ugo.py')]]
+
 galahad_examples += [['ugos', files('ugos.f90')],
                      ['ugos2', files('ugos2.f90')],
                      ['ugos3', files('ugos3.f90')]]

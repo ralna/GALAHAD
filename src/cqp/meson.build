@@ -20,6 +20,8 @@ galahad_tests += [['cqp', 'cqpt', files('cqpt.F90')],
 galahad_c_tests += [['cqp', 'cqpt_c', files('C/cqpt.c')],
                     ['cqp', 'cqptf_c', files('C/cqptf.c')]]
 
+galahad_python_tests += [['cqp', 'cqp_py', files('Python/test_cqp.py')]]
+
 galahad_examples += [['cqps', files('cqps.f90')],
                      ['cqps2', files('cqps2.f90')],
                      ['cqps3', files('cqps3.f90')]]

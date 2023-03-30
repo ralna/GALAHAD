@@ -18,6 +18,8 @@ galahad_tests += [['tru', 'trut', files('trut.F90')],
 galahad_c_tests += [['tru', 'trut_c', files('C/trut.c')],
                     ['tru', 'trutf_c', files('C/trutf.c')]]
 
+galahad_python_tests += [['tru', 'tru_py', files('Python/test_tru.py')]]
+
 galahad_examples += [['trus', files('trus.f90')],
                      ['trus2', files('trus2.f90')],
                      ['trus3', files('trus3.f90')],

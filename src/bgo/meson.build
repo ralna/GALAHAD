@@ -18,6 +18,9 @@ galahad_tests += [['bgo', 'bgot', files('bgot.F90')],
 galahad_c_tests += [['bgo', 'bgot_c', files('C/bgot.c')],
                     ['bgo', 'bgotf_c', files('C/bgotf.c')]]
 
+galahad_python_tests += [['bgo', 'bgo_py', files('Python/test_bgo.py')],
+                         ['bgo', 'bgo_quadratic_py', files('Python/test_bgo_quadratic.py')]]
+
 galahad_examples += [['bgos', files('bgos.f90')],
                      ['bgos2', files('bgos2.f90')]]
 

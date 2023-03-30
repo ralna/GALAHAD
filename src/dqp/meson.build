@@ -21,6 +21,8 @@ galahad_c_tests += [['dqp', 'dqpt_c', files('C/dqpt.c')],
                     ['dqp', 'dqpt2_c', files('C/dqpt2.c')],
                     ['dqp', 'dqptf_c', files('C/dqptf.c')]]
 
+galahad_python_tests += [['dqp', 'dqp_py', files('Python/test_dqp.py')]]
+
 galahad_examples += [['dqps', files('dqps.f90')],
                      ['dqps2', files('dqps2.f90')],
                      ['dqps3', files('dqps3.f90')]]
