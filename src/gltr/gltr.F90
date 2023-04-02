@@ -2030,6 +2030,7 @@
 !                   accuracy specified by rtol,
 !         info = 2  The Newton search direction is too small to make
 !                   further progress, and
+!         info = 3  n is not positive
 !         info = 4  Failure to converge after itmax iterations.
 !                   On exit x is the best available approximation
 
@@ -2087,13 +2088,18 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: indef, i, it
-      REAL ( KIND = rp_ ) :: lambda_pert, utx, rxnorm2, distx, xnorm, tol,      &
+      REAL ( KIND = rp_ ) :: lambda_pert, utx, rxnorm2, distx, xnorm, tol,     &
                             leftmost, delta_lambda, macheps, pert_l
 
 !  Initialization
 
       iter = 1
       hard_case = .FALSE. ; hard_case_step = zero
+      IF ( n <= 0 ) THEN
+        f = zero
+        info = 3
+        RETURN
+      END IF
       macheps = EPSILON( one )
 !     pert_l = macheps ** 0.5 ; tol = macheps ** 0.66
       pert_l = macheps ** 0.75 ; tol = macheps ** 0.66
