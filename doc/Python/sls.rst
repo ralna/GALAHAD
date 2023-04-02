@@ -875,13 +875,13 @@ functions
              see ma57_ainfo.
           ma57_sinfo : dict
              see ma57_ainfo.
-          ma77_inform : dict
+          ma77_info : dict
              the output structure from ma77.
-          ma86_inform : dict
+          ma86_info : dict
              the output structure from ma86.
-          ma87_inform : dict
+          ma87_info : dict
              the output structure from ma87.
-          ma97_inform : dict
+          ma97_info : dict
              the output structure from ma97.
           ssids_inform : dict
              the output structure from ssids.
@@ -889,9 +889,9 @@ functions
              the integer and real output arrays from mc61.
           mc61_rinfo : float
              see mc61_info.
-          mc64_inform : dict
+          mc64_info : dict
              the output structure from mc64.
-          mc68_inform : dict
+          mc68_info : dict
              the output structure from mc68.
           mc77_info : int
              the integer output array from mc77.

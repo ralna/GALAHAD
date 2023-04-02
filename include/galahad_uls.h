@@ -390,6 +390,10 @@ struct uls_inform_type {
     bool alternative;
 
     /// \brief
+    /// name of external solver used to factorize and solve
+    char solver[21];
+
+    /// \brief
     /// the output arrays from GLS
     struct gls_ainfo gls_ainfo;
     /// see gls_ainfo

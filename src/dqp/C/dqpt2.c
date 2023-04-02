@@ -72,17 +72,22 @@ int main(void) {
     printf("fdc sls nodes %i\n", inform.fdc_inform.sls_inform.nodes_assembly_tree);
     printf("fdc sls flops %li\n", inform.fdc_inform.sls_inform.flops_blas);
     printf("fdc sls alt %d\n", inform.fdc_inform.sls_inform.alternative);
-    printf("fdc sls ssids %i\n", inform.fdc_inform.sls_inform.ssids_inform.flag);
-    printf("fdc sls mc61 %i\n", inform.fdc_inform.sls_inform.mc61_info[0]);
-    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.flag);
-    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.more);
-    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.strucrank);
-    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.stat);
-    printf("fdc sls mc68 %i\n", inform.fdc_inform.sls_inform.mc68_info.flag);
+
+    printf("fdc sls ma97 %i\n", inform.fdc_inform.sls_inform.ma97_info.flag);
+
+//    printf("fdc sls ssids %i\n", inform.fdc_inform.sls_inform.ssids_inform.flag);
+      printf("fdc sls mc61(0) %i\n", inform.fdc_inform.sls_inform.mc61_info[0]);
+      printf("fdc sls mc61(1) %i\n", inform.fdc_inform.sls_inform.mc61_info[1]);
+      printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.flag);
+//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.more);
+//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.strucrank);
+//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.stat);
+      printf("fdc sls mc68 %i\n", inform.fdc_inform.sls_inform.mc68_info.flag);
 
     printf("fdc sls mumps %i\n", inform.fdc_inform.sls_inform.mumps_error);
-    printf("fdc sls pard %i\n", inform.fdc_inform.sls_inform.pardiso_error);
+//    printf("fdc sls pard %i\n", inform.fdc_inform.sls_inform.pardiso_error);
     printf("fdc sls wsmp %i\n", inform.fdc_inform.sls_inform.wsmp_error);
+    printf("fdc sls pastix %i\n", inform.fdc_inform.sls_inform.pastix_info);
     printf("fdc sls mpi %i\n", inform.fdc_inform.sls_inform.mpi_ierr);
     printf("fdc sls lapack %i\n", inform.fdc_inform.sls_inform.lapack_error);
 

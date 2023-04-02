@@ -30,17 +30,13 @@ uls.factorize_matrix(m, n, A_type, A_ne, A_row, A_col, A_ptr, A_val, options)
 # solve system
 trans = False
 x = uls.solve_system(m, n, b, trans)
-
-x_copy=x.copy()
-print("x:",x_copy)
+print("x:",x)
 
 # solve transpose system
 b = np.array([1.0,3.0,5.0])
 trans = True
 xt = uls.solve_system(m, n, b, trans)
-
-xt_copy=xt.copy()
-print("transpose x:",x_copy)
+print("transpose x:",xt)
 
 # get information
 inform = uls.information()

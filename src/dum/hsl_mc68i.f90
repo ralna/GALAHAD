@@ -31,7 +31,7 @@
         INTEGER :: duplicate = 0 ! holds number of duplicate entries
         INTEGER :: n_compressions = 0 ! holds number of compressions in order
         INTEGER :: n_zero_eigs = -1 ! holds the number of zero eigs from ma47
-        INTEGER :: l_workspace = 0 ! holds length of workspace iw used in
+        INTEGER ( KIND = long ) :: l_workspace = 0 ! holds length of workspace
         INTEGER :: zb01_info = 0 ! holds flag from zb01_expand1 call
         INTEGER :: n_dense_rows = 0 ! holds number of dense rows from amdd
       END TYPE mc68_info

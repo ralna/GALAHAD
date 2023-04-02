@@ -67,9 +67,10 @@ print("c_stat:",c_stat_copy)
 # get information
 print("getting inform")
 inform = dqp.information()
+print(inform)
 print("we have inform")
 print("f:",inform['obj'])
-print("factor_status:",inform['factor_status'])
+print("factor_status:",inform['factorization_status'])
 
 # deallocate internal data
 
