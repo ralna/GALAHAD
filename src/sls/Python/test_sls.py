@@ -32,8 +32,7 @@ sls.factorize_matrix(A_ne, A_val)
 # solve system
 x = sls.solve_system(n, b)
 
-x_copy=x.copy()
-print("x:",x_copy)
+print("x:",x)
 
 # get information
 inform = sls.information()

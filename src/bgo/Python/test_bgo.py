@@ -46,14 +46,8 @@ x = np.array([0.,0.,0.])
 # find optimum
 x, g = bgo.solve(n, H_ne, x, eval_f, eval_g, eval_h )
 
-x_copy = x.copy()
-g_copy = g.copy()
-print("x:",x_copy)
-print("g:",g_copy)
-#print("g:",g)
-#print("g:",g)
-#print("ref count x", sys.getrefcount(x))
-#print("ref count g", sys.getrefcount(g))
+print("x:",x)
+print("g:",g)
 
 # get information
 inform = bgo.information()

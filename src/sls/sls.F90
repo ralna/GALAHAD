@@ -680,8 +680,8 @@
 
 !  the integer and real output arrays from mc61
 
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_info
-       REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_info = 0
+       REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo = - 1.0_rp_
 
 !  the output structure from mc64
 
@@ -693,11 +693,11 @@
 
 !  the integer output array from mc77
 
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc77_info
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc77_info = 0
 
 !  the real output status from mc77
 
-        REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo
+        REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo  = -1.0_rp_
 
 !  the output scalars and arrays from mumps
 
@@ -1195,6 +1195,7 @@
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
 
      CALL SLS_initialize( solver, data%sls_data, control, inform )
+     data%sls_inform%solver = inform%solver
 
      RETURN
 
@@ -10316,18 +10317,18 @@
 !       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS',
 !       has been violated.
 !
-!  n is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
+!  n is a scalar variable of type default integer, that holds the number of
 !   rows (and columns) of the matrix A
 !
 !  matrix_type is a character string that specifies the storage scheme used
 !   for A. It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
 !   lower or upper case variants are allowed.
 !
-!  matrix_ne is a scalar variable of type default integer ( KIND = ip_ ), that holds the
+!  matrix_ne is a scalar variable of type default integer, that holds the
 !   number of entries in the  lower triangular part of A in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other schemes.
 !
-!  matrix_row is a rank-one array of type default integer ( KIND = ip_ ), that holds
+!  matrix_row is a rank-one array of type default integer, that holds
 !   the row indices of the  lower triangular part of A in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
@@ -10339,7 +10340,7 @@
 !   are used, and in this case can be of length 0
 !
 !  matrix_ptr is a rank-one array of dimension n+1 and type default
-!   integer ( KIND = ip_ ), that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the  lower
 !   triangular part of A, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0

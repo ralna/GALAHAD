@@ -6,6 +6,7 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_dqp.h"
+#include <string.h>
 
 int main(void) {
 
@@ -22,6 +23,11 @@ int main(void) {
     int H_col[] = {0, 1, 2};    // column indices, NB lower triangle
     int H_ptr[] = {0, 1, 2, 3}; // row pointers
     real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
+//    int H_ne = 4; // Hesssian elements
+//    int H_row[] = {0, 1, 2, 2 };   // row indices, NB lower triangle
+//    int H_col[] = {0, 1, 1, 2};    // column indices, NB lower triangle
+//    int H_ptr[] = {0, 1, 3, 4}; // row pointers
+//    real_wp_ H_val[] = {1.0, 2.0, 1.0, 3.0 };   // values
     real_wp_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
     real_wp_ f = 1.0;  // constant term in the objective
     int A_ne = 4; // Jacobian elements
@@ -52,6 +58,8 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
+        strcpy(control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.definite_linear_solver, "sytr ") ;
 
         // Start from 0
         real_wp_ x[] = {0.0,0.0,0.0};
@@ -140,7 +148,8 @@ int main(void) {
     }
 
     // test shifted least-distance interface
-    for( int d=1; d <= 1; d++){
+//    for( int d=1; d <= 0; d++){
+      for( int d=1; d <= 1; d++){
 
         // Initialize DQP
         dqp_initialize( &data, &control, &status );

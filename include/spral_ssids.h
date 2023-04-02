@@ -28,6 +28,7 @@ struct spral_ssids_options {
    int nemin;
    bool ignore_numa;
    bool use_gpu;
+   bool gpu_only;
    int64_t min_gpu_work;
    float max_load_inbalance;
    float gpu_perf_coeff;
@@ -38,7 +39,11 @@ struct spral_ssids_options {
    int pivot_method;
    real_wp_ small;
    real_wp_ u;
-   char unused[80]; // Allow for future expansion
+   int nstream;
+   real_wp_ multiplier;
+   float min_loadbalance;
+   int failed_pivot_method;
+   // char unused[80]; // Allow for future expansion
 };
 
 struct spral_ssids_inform {
@@ -58,7 +63,12 @@ struct spral_ssids_inform {
    int stat;
    int cuda_error;
    int cublas_error;
-   char unused[80]; // Allow for future expansion
+   int not_first_pass;
+   int not_second_pass;
+   int nparts;
+   int64_t cpu_flops;
+   int64_t gpu_flops;
+   // char unused[80]; // Allow for future expansion
 };
 
 /************************************

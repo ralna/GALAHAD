@@ -101,6 +101,7 @@
       INTEGER ( KIND = ipc_ ) :: pivot_control
       INTEGER ( KIND = ipc_ ) :: iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: alternative
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 21 ) :: solver
       TYPE ( gls_ainfo ) :: gls_ainfo
       TYPE ( gls_finfo ) :: gls_finfo
       TYPE ( gls_sinfo ) :: gls_sinfo
@@ -252,9 +253,13 @@
     CALL copy_gls_sinfo_in( cinform%gls_sinfo, finform%gls_sinfo )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    DO i = 1, LEN( finform%solver )
+      IF ( cinform%solver( i ) == C_NULL_CHAR ) EXIT
+      finform%solver( i : i ) = cinform%solver( i )
     END DO
     RETURN
 
@@ -265,7 +270,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_uls_inform_type ), INTENT( IN ) :: finform
     TYPE ( uls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER ( KIND = ip_ ) :: i
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -294,10 +299,16 @@
     CALL copy_ma48_sinfo_out( finform%ma48_sinfo, cinform%ma48_sinfo )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+    l = LEN( finform%solver )
+    DO i = 1, l
+      cinform%solver( i ) = finform%solver( i : i )
+    END DO
+    cinform%solver( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
