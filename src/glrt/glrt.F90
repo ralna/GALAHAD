@@ -2134,6 +2134,7 @@
 !                   further progress
 !         inform = 2  Failure to converge after itmax iterations.
 !                   On exit x is the best available approximation.
+!         inform = 3  n is not positive
 
 !    iter is an integer variable.
 !      On entry iter need not be specified.
@@ -2219,6 +2220,11 @@
 
       iter = 1
       hard_case = .FALSE. ; hard_case_step = zero
+      IF ( n <= 0 ) THEN
+        f = zero ; f_regularized = zero
+        inform = 3
+        RETURN
+      END IF
       debug = print_level > 0
 !     pert_l = epsmch ** 0.5 ; tol = epsmch ** 0.66
       pert_l = epsmch ** 0.75 ; tol = epsmch ** 0.66
