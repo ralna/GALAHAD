@@ -223,6 +223,7 @@
       REAL ( KIND = rpc_ ) :: backward_error_2
       REAL ( KIND = rpc_ ) :: forward_error
       LOGICAL ( KIND = C_BOOL ) :: alternative
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 21 ) :: solver
       TYPE ( sls_time_type ) :: time
       TYPE ( sils_ainfo ) :: sils_ainfo
       TYPE ( sils_finfo ) :: sils_finfo
@@ -612,12 +613,16 @@
     CALL copy_sils_ainfo_in( cinform%sils_ainfo, finform%sils_ainfo )
     CALL copy_sils_finfo_in( cinform%sils_finfo, finform%sils_finfo )
     CALL copy_sils_sinfo_in( cinform%sils_sinfo, finform%sils_sinfo )
-!    CALL copy_ssids_inform_in( cinform%ssids_inform, finform%ssids_inform )
+!   CALL copy_ssids_inform_in( cinform%ssids_inform, finform%ssids_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    DO i = 1, LEN( finform%solver )
+      IF ( cinform%solver( i ) == C_NULL_CHAR ) EXIT
+      finform%solver( i : i ) = cinform%solver( i )
     END DO
     RETURN
 
@@ -690,8 +695,8 @@
     cinform%forward_error = finform%forward_error
     cinform%mc61_rinfo = finform%mc61_rinfo
     cinform%mc77_rinfo = finform%mc77_rinfo
-    cinform%pardiso_DPARM = finform%pardiso_DPARM
     cinform%mumps_rinfo = finform%mumps_rinfo
+    cinform%pardiso_DPARM = finform%pardiso_DPARM
     cinform%wsmp_dparm = finform%wsmp_dparm
 
     ! Logicals
@@ -712,13 +717,17 @@
     CALL copy_ssids_inform_out( finform%ssids_inform, cinform%ssids_inform )
     CALL copy_mc64_info_out( finform%mc64_info, cinform%mc64_info )
     CALL copy_mc68_info_out( finform%mc68_info, cinform%mc68_info )
-
     ! Strings
     l = LEN( finform%bad_alloc )
     DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
     cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+    l = LEN( finform%solver )
+    DO i = 1, l
+      cinform%solver( i ) = finform%solver( i : i )
+    END DO
+    cinform%solver( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out

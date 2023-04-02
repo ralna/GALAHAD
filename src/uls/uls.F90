@@ -476,6 +476,7 @@
      TYPE ( ULS_inform_type ), INTENT( OUT ) :: inform
 
      CALL ULS_initialize( solver, data%uls_data, control, inform )
+     data%uls_inform%solver = inform%solver
 
      RETURN
 

@@ -8,11 +8,4 @@ D: residual =   4.4e-16 status = 0
 L: residual =   8.9e-16 status = 0
 S: residual =   1.1e-16 status = 0
 I: residual =   0.0e+00 status = 0
-  solver is sytr                          
-  solver is sytr                          
-  solver is sytr                          
-  solver is sytr                          
-  solver is sytr                          
-  solver is sytr                          
-  solver is sytr                          
 Z: residual =   1.1e-16 status = 0

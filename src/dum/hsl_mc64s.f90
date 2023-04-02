@@ -10,20 +10,19 @@ MODULE hsl_mc64_single
    INTEGER, PARAMETER, PRIVATE :: wp = kind(0.0e0)
 
    TYPE mc64_control
-!     real(wp) :: relax     ! Relaxes matching
-      integer :: lp     ! Unit for error messages
-      integer :: wp     ! Unit for warning messages
-      integer :: sp     ! Unit for statistical output
-      integer :: ldiag  ! Controls level of diagnostic output
-      integer :: checking  ! Control for checking input
-
+!     real(wp) :: relax = 0.0e0    ! Relaxes matching
+      integer :: lp = 6    ! Unit for error messages
+      integer :: wp = 6    ! Unit for warning messages
+      integer :: sp = -1    ! Unit for statistical output
+      integer :: ldiag = 2 ! Controls level of diagnostic output
+      integer :: checking = 0 ! Control for checking input
    END TYPE mc64_control
 
    TYPE mc64_info
-      integer :: flag   ! Flags success or failure case
-      integer :: more    ! More information on failure
-      integer :: strucrank ! Structural rank
-      integer :: stat    ! STAT value after allocate failure
+      integer :: flag = 0  ! Flags success or failure case
+      integer :: more = -1   ! More information on failure
+      integer :: strucrank = -1 ! Structural rank
+      integer :: stat = 0  ! STAT value after allocate failure
    END TYPE mc64_info
 
 CONTAINS

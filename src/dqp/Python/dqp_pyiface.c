@@ -1,7 +1,7 @@
 //* \file dqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:15 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 09:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -810,7 +810,7 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args){
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
 
-    // Create empty C arrays for c and g
+    // Create C intermediary output arrays
     double x[n];
     double c[m];
     double y[m];
@@ -834,43 +834,46 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-    // Wrap C arrays as NumPy arrays
-    npy_intp ndim[] = {n};  // size of x, z and x_stat
-    PyObject *py_x = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) x); // create NumPy x array
-    npy_intp zdim[] = {n};
-    PyObject *py_z = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) z); // create NumPy z array
-    // long int x_stat_long[n];
-    // for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
-    PyObject *py_x_stat = PyArray_SimpleNewFromData(1, ndim,
-                NPY_INT, (void *) x_stat); // create NumPy x_stat array
-    //          NPY_INT, (void *) x_stat_long); // create NumPy x_stat array
 
-    npy_intp mdim[] = {m}; // size of c, y and c_stat
-    PyObject *py_c = PyArray_SimpleNewFromData(1, mdim,
-                        NPY_DOUBLE, (void *) c); // create NumPy c array
-    PyObject *py_y = PyArray_SimpleNewFromData(1, mdim,
-                        NPY_DOUBLE, (void *) y); // create NumPy y array
-    // long int c_stat_long[m];
-    // for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
-    PyObject *py_c_stat = PyArray_SimpleNewFromData(1, mdim,
-                  NPY_INT, (void *) c_stat); // create NumPy c_stat array
-    //            NPY_INT, (void *) c_stat_long); // create NumPy c_stat array
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x, z, x_stat
+    npy_intp mdim[] = {m}; // size of c, y, c_stat
+    PyArrayObject *py_x = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    PyArrayObject *py_c = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    PyArrayObject *py_y = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    PyArrayObject *py_z = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    PyArrayObject *py_x_stat = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+    PyArrayObject *py_c_stat = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+
+    // Create actual output arrays
+    double *x_out = (double *) PyArray_DATA(py_x);
+    double *c_out = (double *) PyArray_DATA(py_c);
+    double *y_out = (double *) PyArray_DATA(py_y);
+    double *z_out = (double *) PyArray_DATA(py_z);
+    int *x_stat_out = (int *) PyArray_DATA(py_x_stat);
+    int *c_stat_out = (int *) PyArray_DATA(py_c_stat);
+
+    // copy C intermediary output arrays to actual outputs
+    for( int i = 0; i < n; i++) x_out[i] = x[i];
+    for( int i = 0; i < m; i++) c_out[i] = c[i];
+    for( int i = 0; i < m; i++) y_out[i] = y[i];
+    for( int i = 0; i < n; i++) z_out[i] = z[i];
+    for( int i = 0; i < n; i++) x_stat_out[i] = x_stat[i];
+    for( int i = 0; i < n; i++) c_stat_out[i] = c_stat[i];
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
+
     // solve_qp_return = Py_BuildValue("O", py_x);
     solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
                                               py_x_stat, py_c_stat);
-    // solve_qp_return = Py_BuildValue("iOOOO", n, py_x, py_c, py_y, py_z);
     Py_INCREF(solve_qp_return);
-
-    //PyArray_SetBaseObject(py_x,solve_qp_return);
-    //PyArray_SetBaseObject(py_c,solve_qp_return);
-    //PyArray_SetBaseObject(py_y,solve_qp_return);
-    //PyArray_SetBaseObject(py_z,solve_qp_return);
-
     return solve_qp_return;
 
 }
@@ -921,7 +924,7 @@ static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args){
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
 
-    // Create empty C arrays for c and g
+    // Create C intermediary output arrays
     double x[n];
     double c[m];
     double y[m];
@@ -946,28 +949,38 @@ static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-    // Wrap C arrays as NumPy arrays
-    npy_intp ndim[] = {n}; // size of x, z, x_stat
-    PyObject *py_x = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) x); // create NumPy x array
-    PyObject *py_z = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) z); // create NumPy z array
-    // long int x_stat_long[n];
-    // for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
-    PyObject *py_x_stat = PyArray_SimpleNewFromData(1, ndim,
-                  NPY_INT, (void *) x_stat); // create NumPy x_stat array
-    //            NPY_INT, (void *) x_stat_long); // create NumPy x_stat array
 
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x, z, x_stat
     npy_intp mdim[] = {m}; // size of c, y, c_stat
-    PyObject *py_c = PyArray_SimpleNewFromData(1, mdim,
-                        NPY_DOUBLE, (void *) c); // create NumPy c array
-    PyObject *py_y = PyArray_SimpleNewFromData(1, mdim,
-                        NPY_DOUBLE, (void *) y); // create NumPy y array
-    // long int c_stat_long[m];
-    // for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
-    PyObject *py_c_stat = PyArray_SimpleNewFromData(1, mdim,
-                  NPY_INT, (void *) c_stat); // create NumPy c_stat array
-    //            NPY_INT, (void *) c_stat_long); // create NumPy c_stat array
+    PyArrayObject *py_x = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    PyArrayObject *py_c = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    PyArrayObject *py_y = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    PyArrayObject *py_z = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    PyArrayObject *py_x_stat = 
+        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+    PyArrayObject *py_c_stat = 
+        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+
+    // Create actual output arrays
+    double *x_out = (double *) PyArray_DATA(py_x);
+    double *c_out = (double *) PyArray_DATA(py_c);
+    double *y_out = (double *) PyArray_DATA(py_y);
+    double *z_out = (double *) PyArray_DATA(py_z);
+    int *x_stat_out = (int *) PyArray_DATA(py_x_stat);
+    int *c_stat_out = (int *) PyArray_DATA(py_c_stat);
+
+    // copy C intermediary output arrays to actual outputs
+    for( int i = 0; i < n; i++) x_out[i] = x[i];
+    for( int i = 0; i < m; i++) c_out[i] = c[i];
+    for( int i = 0; i < m; i++) y_out[i] = y[i];
+    for( int i = 0; i < n; i++) z_out[i] = z[i];
+    for( int i = 0; i < n; i++) x_stat_out[i] = x_stat[i];
+    for( int i = 0; i < n; i++) c_stat_out[i] = c_stat[i];
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_sldqp_return;

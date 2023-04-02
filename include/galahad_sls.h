@@ -865,6 +865,10 @@ struct sls_inform_type {
     bool alternative;
 
     /// \brief
+    /// name of external solver used to factorize and solve
+    char solver[21];
+
+    /// \brief
     /// timings (see above)
     struct sls_time_type time;
 
@@ -886,19 +890,19 @@ struct sls_inform_type {
 
     /// \brief
     /// the output structure from ma77
-    struct ma77_info ma77_inform;
+    struct ma77_info ma77_info;
 
     /// \brief
     /// the output structure from ma86
-    struct ma86_info ma86_inform;
+    struct ma86_info ma86_info;
 
     /// \brief
     /// the output structure from ma87
-    struct ma87_info ma87_inform;
+    struct ma87_info ma87_info;
 
     /// \brief
     /// the output structure from ma97
-    struct ma97_info ma97_inform;
+    struct ma97_info ma97_info;
 
     /// \brief
     /// the output structure from ssids
@@ -930,7 +934,7 @@ struct sls_inform_type {
     /// the output scalars and arrays from mumps
     int mumps_error;
     /// see mumps_error
-    int mump_info[80];
+    int mumps_info[80];
     /// see mumps_error
     real_wp_ mumps_rinfo[40];
 
@@ -967,6 +971,7 @@ struct sls_inform_type {
     /// \brief
     /// the output flag from LAPACK routines
     int lapack_error;
+
 };
 
 // *-*-*-*-*-*-*-*-*-*-    S L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

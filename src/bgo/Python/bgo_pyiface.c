@@ -576,8 +576,13 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     Py_XDECREF(py_eval_h);      /* Dispose of previous callback */
     py_eval_h = temp_h;         /* Remember new callback */
 
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of g
+    PyArrayObject *py_g = (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    double *g;
+    g = (double *) PyArray_DATA(py_g);
     // Create empty C array for g
-    double g[n];
+    //double g[n];
 
     // Call bgo_solve_direct
     status = 1; // set status to 1 on entry
@@ -592,19 +597,12 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // double g_copy[n];
-    // for(int i = 0; i < n; i++) g_copy[i] = g[i];
-
-    Py_XDECREF(py_g);
     // Wrap C array as NumPy array
-    npy_intp ndim[] = {n}; // size of g
-    py_g = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) g); // create NumPy g array
-    //                  NPY_DOUBLE, (void *) g_copy); // create NumPy g array
-    Py_XINCREF(py_g);
+    //npy_intp ndim[] = {n}; // size of g
+    //py_g = PyArray_SimpleNewFromData(1, ndim,
+    //                    NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
-    Py_XDECREF(bgo_solve_return);
     bgo_solve_return = Py_BuildValue("OO", py_x, py_g);
     Py_XINCREF(bgo_solve_return);
     return bgo_solve_return;

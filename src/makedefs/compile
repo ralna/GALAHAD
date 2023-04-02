@@ -341,6 +341,16 @@ $(OBJ)/$(package)ct2_$(PRECIS).o: ../$(package)/C/$(package)t2.c
 	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'
 
+$(package)ct3.o: $(OBJ)/$(package)ct3_$(PRECIS).o
+
+$(OBJ)/$(package)ct3_$(PRECIS).o: ../$(package)/C/$(package)t2.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct3 "
+	$(CP) ../$(package)/C/$(package)t2.c $(OBJ)/$(package)ct3.c
+	cd $(OBJ) ; $(CC) -o $(package)ct3_$(PRECIS).o $(CFLAGS) \
+                      $(package)ct3.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
 $(package)cti.o: $(OBJ)/$(package)cti_$(PRECIS).o
 
 $(OBJ)/$(package)cti_$(PRECIS).o: ../$(package)/C/$(package)ti.c
