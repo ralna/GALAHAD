@@ -1,4 +1,4 @@
-.TH "galahad_nls.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "galahad_nls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_nls.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_rqs\&.h'\fP
 .br
@@ -89,6 +93,8 @@ This package uses a \fBregularization method to find a (local) unconstrained min
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 October 2016, C interface August 2021\&.
 .SS "Terminology"
@@ -189,9 +195,9 @@ The matrix A is stored as a compact dense matrix by columns, that is, the values
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Sparse column-wise storage format"
-Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format\&.
+Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format\&.
 .SS "Symmetric matrix storage formats"
 Likewise, the symmetric n by n weighted-residual Hessian matrix H = H(x,y) may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .SS "Dense storage format"
@@ -199,7 +205,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Diagonal storage format"
 If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
 .SS "Multiples of the identity storage format"
@@ -298,9 +304,9 @@ int \fInorm\fP the regularization norm used\&. The norm is defined via ||v||^2 =
 .IP "\(bu" 2
 0 automatic (\fInot yet implemented\fP) 
 .IP "\(bu" 2
-1 diagonal, S = diag( max( J^TJ Hessian, \&.PSLS_contro\&.min_diagonal ) ) 
+1 diagonal, S = diag( max( J^TJ Hessian, \&.PSLS_control\&.min_diagonal ) ) 
 .IP "\(bu" 2
-2 diagonal, S = diag( max( Hessian, \&.PSLS_contro\&.min_diagonal ) ) 
+2 diagonal, S = diag( max( Hessian, \&.PSLS_control\&.min_diagonal ) ) 
 .IP "\(bu" 2
 3 banded, S = band( Hessian ) with semi-bandwidth \&.PSLS_control\&.semi_bandwidth 
 .IP "\(bu" 2
@@ -360,7 +366,7 @@ real_wp_ \fIminimum_weight\fP minimum permitted regularization weight
 real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
 .br
 .PP
-real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+real_wp_ \fIeta_successful\fP a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful 
 .br
 .PP
 real_wp_ \fIeta_very_successful\fP see eta_successful 
@@ -372,13 +378,13 @@ real_wp_ \fIeta_too_successful\fP see eta_successful
 real_wp_ \fIweight_decrease_min\fP on very successful iterations, the regularization weight will be reduced by the factor \&.weight_decrease but no more than \&.weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor \&.weight_increase but no more than \&.weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) 
 .br
 .PP
-real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
+real_wp_ \fIweight_decrease\fP see weight_decrease_min 
 .br
 .PP
-real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&. 
+real_wp_ \fIweight_increase\fP see weight_decrease_min 
 .br
 .PP
-real_wp_ \fIweight_increase_max\fP see weight_increase 
+real_wp_ \fIweight_increase_max\fP see weight_decrease_min 
 .br
 .PP
 real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
@@ -529,9 +535,9 @@ int \fInorm\fP the regularization norm used\&. The norm is defined via ||v||^2 =
 .IP "\(bu" 2
 0 automatic (\fInot yet implemented\fP) 
 .IP "\(bu" 2
-1 diagonal, S = diag( max( J^TJ Hessian, \&.PSLS_contro\&.min_diagonal ) ) 
+1 diagonal, S = diag( max( J^TJ Hessian, \&.PSLS_control\&.min_diagonal ) ) 
 .IP "\(bu" 2
-2 diagonal, S = diag( max( Hessian, \&.PSLS_contro\&.min_diagonal ) ) 
+2 diagonal, S = diag( max( Hessian, \&.PSLS_control\&.min_diagonal ) ) 
 .IP "\(bu" 2
 3 banded, S = band( Hessian ) with semi-bandwidth \&.PSLS_control\&.semi_bandwidth 
 .IP "\(bu" 2
@@ -591,7 +597,7 @@ real_wp_ \fIminimum_weight\fP minimum permitted regularization weight
 real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
 .br
 .PP
-real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+real_wp_ \fIeta_successful\fP a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful 
 .br
 .PP
 real_wp_ \fIeta_very_successful\fP see eta_successful 
@@ -603,17 +609,17 @@ real_wp_ \fIeta_too_successful\fP see eta_successful
 real_wp_ \fIweight_decrease_min\fP on very successful iterations, the regularization weight will be reduced by the factor \&.weight_decrease but no more than \&.weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor \&.weight_increase but no more than \&.weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) 
 .br
 .PP
-real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
+real_wp_ \fIweight_decrease\fP see weight_decrease_min 
 .br
 .PP
-real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&. 
+real_wp_ \fIweight_increase\fP see weight_decrease_min 
 .br
 .PP
-real_wp_ \fIweight_increase_max\fP see weight_increase 
+real_wp_ \fIweight_increase_max\fP see weight_decrease_min 
 .br
 .PP
-real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
-regularization parameter in the adaptive cubic regularization algorithm' RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
+real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating the regularization parameter in the adaptive cubic
+ regularization algorithm', RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
 .br
 .PP
 real_wp_ \fItiny_gap\fP see reduce_gap 
@@ -640,7 +646,7 @@ bool \fIrenormalize_weight\fP should the weight be renormalized to account for a
 bool \fImagic_step\fP allow the user to perform a 'magic' step to improve the objective 
 .br
 .PP
-bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradien 
+bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradient 
 .br
 .PP
 bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
@@ -684,7 +690,7 @@ real_sp_ \fItotal\fP the total CPU time spent in the package
 real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
 .br
 .PP
-real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorizatio 
+real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
@@ -699,7 +705,7 @@ real_wp_ \fIclock_total\fP the total clock time spent in the package
 real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
 .br
 .PP
-real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
@@ -725,7 +731,7 @@ int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
 .br
 .PP
-char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocur 
+char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocurred 
 .br
 .PP
 int \fIiter\fP the total number of iterations performed 
@@ -749,13 +755,13 @@ int \fIfactorization_max\fP the maximum number of factorizations in a sub-proble
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-long int \fImax_entries_factors\fP the maximum number of entries in the factors 
+int64_t \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
@@ -808,7 +814,7 @@ int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
 .br
 .PP
-char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocur 
+char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocurred 
 .br
 .PP
 int \fIiter\fP the total number of iterations performed 
@@ -832,13 +838,13 @@ int \fIfactorization_max\fP the maximum number of factorizations in a sub-proble
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fImax_entries_factors\fP the maximum number of entries in the factors 
+int64_t \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
@@ -939,7 +945,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIJ_col\fP is a one-dimensional array of size J_ne and type int, that holds the column indices of J in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIJ_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of J, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+\fIJ_ptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of J, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
 \fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian, H\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to H is via matrix-vector products; lower or upper case variants are allowed\&.
 .br
@@ -949,7 +955,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
 \fIP_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the residual-Hessians-vector product matrix, P\&. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to P is via matrix-vector products; lower or upper case variants are allowed\&.
 .br
@@ -959,9 +965,9 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIP_col\fP is a one-dimensional array of size P_ne and type int, that holds the row indices of P in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
 .br
-\fIP_ptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of P, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+\fIP_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of P, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
-\fIw\fP is a one-dimensional array of size m and type double, that holds the values w of the weights on the residuals in the least-squares objective function\&. It need not be set if the weights are all ones, and in this case can be NULL 
+\fIw\fP is a one-dimensional array of size m and type double, that holds the values w of the weights on the residuals in the least-squares objective function\&. It need not be set if the weights are all ones, and in this case can be NULL\&. 
 .RE
 .PP
 

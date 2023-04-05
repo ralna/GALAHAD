@@ -80,29 +80,35 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -11:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "the solution of a set of linear equations using factors from the"
-            " factorization package failed; the return status from the factorization"
-            " package is given in inform['factor_status']."
+            "the solution of a set of linear equations using factors from the "
+            "factorization package failed; the return status from the "
+            "factorization package is given in inform['factor_status']."
             ,2); // raise in module
             return true; // warnings return true
+
         case -12:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the analysis phase of the unsymmetric factorization failed;"
+            " the return status from the factorization package is given"
+            " in inform['factor_status']."
             ,2); // raise in module
             return true; // warnings return true
         case -13:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the unsymmetric factorization failed; the return status from the "
+            "factorization package is given in inform['factor_status']."
             ,2); // raise in module
             return true; // warnings return true
         case -14:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the solution of a set of linear equations using factors from the "
+            "unsymmetric factorization package failed; the return status from "
+            "the factorization package is given in inform['factor_status']."
             ,2); // raise in module
             return true; // warnings return true
         case -15:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the provided preconditioner is flawed"
             ,2); // raise in module
             return true; // warnings return true
         case -16:
@@ -112,7 +118,7 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -17:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the computed step is too small to make further progress"
             ,2); // raise in module
             return true; // warnings return true
         case -18:
@@ -131,7 +137,52 @@ static inline bool check_error_codes(int status){
             return true; // warnings return true
         case -20:
             PyErr_WarnEx(PyExc_RuntimeWarning,
-            "TODO"
+            "the preconditioner has the wrong inertia"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -21:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "a file-handling error occurred"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -22:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "an input/output error occurred"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -23:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "there is a matrix entry in the upper triangle"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -24:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "an error occurred when sorting"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -25:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "error with input status"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -26:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "The requested solver is unavailable"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -27:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the requested option has not yet been implemented"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -28:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the QP solver failed: check the QP solver status"
+            ,2); // raise in module
+            return true; // warnings return true
+        case -29:
+            PyErr_WarnEx(PyExc_RuntimeWarning,
+            "the requested option is unavailable"
             ,2); // raise in module
             return true; // warnings return true
         case -40:
@@ -189,7 +240,7 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
     if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) && 
-         PyArray_TYPE(arr)==NPY_INT64 &&
+         PyArray_TYPE(arr)==NPY_LONG &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError, 
                      "%s must be a 1D int array of length %i", name, n);
@@ -300,6 +351,38 @@ static inline bool parse_char_option(PyObject *value, char *option_name,
         return false;
     }
     strcpy(out, pystring);
+    return true;
+}
+
+/* Parse int array from Python value to C out */
+static inline bool parse_int_array_option(PyArrayObject *value, 
+                                          char *option_name, int *out, 
+                                          int outsize){
+    if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) && 
+         PyArray_TYPE(value)==NPY_LONG &&
+         PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
+           PyErr_Format(PyExc_TypeError, 
+              "%s must be a 1D int array of length %i", option_name, outsize);
+        return false;
+    }
+    const int *data = (int *) PyArray_DATA(value);
+    for(int i=0; i<outsize; i++) out[i] = data[i];
+    return true;
+}
+
+/* Parse double array from Python value to C out */
+static inline bool parse_double_array_option(PyArrayObject *value, 
+                                             char *option_name, double *out, 
+                                             int outsize){
+    if(!(PyArray_Check(value) && PyArray_ISFLOAT(value) && 
+         PyArray_TYPE(value)==NPY_DOUBLE &&
+         PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
+           PyErr_Format(PyExc_TypeError, 
+             "%s must be a 1D double array of length %i", option_name, outsize);
+        return false;
+    }
+    const double *data = (double *) PyArray_DATA(value);
+    for(int i=0; i<outsize; i++) out[i] = data[i];
     return true;
 }
 

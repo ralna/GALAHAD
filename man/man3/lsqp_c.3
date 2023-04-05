@@ -1,4 +1,4 @@
-.TH "galahad_lsqp.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD LSQP" \" -*- nroff -*-
+.TH "galahad_lsqp.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD LSQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_lsqp.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_fdc\&.h'\fP
 .br
@@ -80,6 +84,8 @@ The more-modern GALAHAD package CQP offers similar functionality, and is often t
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England, and Philippe L\&. Toint, University of Namur, Belgium\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 October 2001, C interface January 2022\&.
 .SS "Terminology"
@@ -93,11 +99,11 @@ The required solution x necessarily satisfies the primal optimality conditions \
   \n
  the dual optimality conditions \[\mbox{(2a) $\hspace{3mm} W^{2} (x -x^0) + g = A^T y + z $}\]  
   \n
-  (2a) W^2 (x -x^0) + g = A^T y + z 
+  (2a) W^2 (x -x^0) + g = A^T y + z
   \n
  where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
  and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
@@ -162,7 +168,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct lsqp_control_type"
@@ -240,11 +246,11 @@ int \fIindicator_type\fP specifies the type of indicator function used\&. Possib
 .PD 0
 
 .IP "\(bu" 2
-primal indicator: constraint active if and only if the distance to nearest bound $<= \&.indicator_p_tol 
+1 primal indicator: constraint active if and only if the distance to nearest bound <= \&.indicator_p_tol 
 .IP "\(bu" 2
-2 primal-dual indicator: constraint active if and only if the distance to nearest bound $<= \&.indicator_tol_pd * size of corresponding multiplier 
+2 primal-dual indicator: constraint active if and only if the distance to nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
 .IP "\(bu" 2
-3 primal-dual indicator: constraint active if and only if the distance to the nearest bound $<= \&.indicator_tol_tapia * distance to same bound at previous iteration 
+3 primal-dual indicator: constraint active if and only if the distance to the nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
 .PP
 
 .br
@@ -446,10 +452,10 @@ int \fIiter\fP the total number of iterations required
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 int \fInfacts\fP the total number of factorizations performed 
@@ -546,7 +552,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

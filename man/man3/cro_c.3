@@ -1,4 +1,4 @@
-.TH "galahad_cro.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD CRO" \" -*- nroff -*-
+.TH "galahad_cro.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD CRO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_cro.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sls\&.h'\fP
 .br
@@ -73,6 +77,8 @@ Provides a \fBcrossover\fP from a solution to the \fBconvex quadratic programmin
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 August 2010, C interface January 2022\&.
 .SS "Terminology"
@@ -86,11 +92,11 @@ Any required solution x necessarily satisfies the primal optimality conditions \
   \n
  the dual optimality conditions \[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\]  
   \n
-  (2a) H x + g = A^T y + z 
+  (2a) H x + g = A^T y + z
   \n
  where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
  and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
@@ -103,7 +109,7 @@ Any required solution x necessarily satisfies the primal optimality conditions \
 Denote the active constraints by A_A x = c_A and the active bounds by I_A x = x_A\&. Then any optimal solution satisfies the linear system \[\left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}x \\ y_A \\ z_A\end{array}\right) = \left(\begin{array}{c}- g \\ c_A \\ x_A\end{array}\right).\]  
   \n
        ( H   - A_A^T - I_A^T ) (  x  )   ( - g )
-       ( A_A     0       0   ) ( y_A ) = ( c_A ), 
+       ( A_A     0       0   ) ( y_A ) = ( c_A ),
        ( I_A     0       0   ) ( z_A )   ( x_A )
   \n
  where y_A and z_A are the corresponding active Lagrange multipliers and dual variables respectively\&. Consequently the difference between any two solutions (Delta x, Delta y, Delta z) must satisfy \[\mbox{(4)}\;\; \left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}Delta x \\ Delta y_A \\ Delta z_A\end{array}\right) = 0.\]  
@@ -120,9 +126,9 @@ Denote the active constraints by A_A x = c_A and the active bounds by I_A x = x_
   \n
  is non-singular and the \fBnon-basic\fP constraints A_N^T and I_N^T are linearly dependent on the \fBbasic\fP ones ( A_B^T \\;\\; I_B^T)\&. In this case (4) is equivalent to \[\mbox{(5)}\;\; \left(\begin{array}{ccc}H & - A_B^T & - I_B^T \\ A_B & 0 & 0 \\ I_B & 0 & 0 \end{array}\right) = \left(\begin{array}{c}A_N^T \\ 0 \\ 0\end{array}\right) Delta y_N + \left(\begin{array}{c}I_N^T \\ 0 \\ 0\end{array}\right) Delta z_N\]  
   \n
-          ( H   - A_B^T - I_B^T ) (  Delta x  )   
-  (5)     ( A_B     0       0   ) ( Delta y_A ) = 
-          ( I_B     0       0   ) ( Delta z_A )   
+          ( H   - A_B^T - I_B^T ) (  Delta x  )
+  (5)     ( A_B     0       0   ) ( Delta y_A ) =
+          ( I_B     0       0   ) ( Delta z_A )
 
             ( A_N^T )             ( I_N^T )
             (   0   ) Delta y_N + (   0   ) Delta z_N.

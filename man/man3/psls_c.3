@@ -1,4 +1,4 @@
-.TH "galahad_psls.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD PSLS" \" -*- nroff -*-
+.TH "galahad_psls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD PSLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_psls.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sls\&.h'\fP
 .br
@@ -73,12 +77,14 @@ Given an n by n sparse symmetric matrix A =a_{ij}, this package \fBbuilds a suit
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 April 2008, C interface January 2022\&.
 .SS "Method and references"
-The basic preconditioners are described in detail in Section 3\&.3\&.10 of
+The basic preconditioners are described in detail in
 .PP
-A\&. R\&. Conn, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint (1992)\&. LANCELOT\&. A fortran package for large-scale nonlinear optimization (release A)\&. Springer Verlag Series in Computational Mathematics 17, Berlin,
+A\&. R\&. Conn, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint (1992)\&. LANCELOT\&. A fortran package for large-scale nonlinear optimization (release A)\&. Springer Verlag Series in Computational Mathematics 17, Berlin, Section 3\&.3\&.10,
 .PP
 along with the more modern versions implements in ICFS due to
 .PP
@@ -93,7 +99,7 @@ The factorization methods used by the GALAHAD package SLS in conjunction with so
  
 (ignore next paragraph - doxygen bug!)
 .PP
-External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
+External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCMUMPS\fP multifrontal yes optionally MPI \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCPaStix\fP left-right-looking yes no OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
 .PP
  
 External solver characteristics (ooc = out-of-core factorization)
@@ -106,8 +112,10 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
  SSIDS       multifrontal          yes   no    CUDA core
+ MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
+ PaStix      left-right-looking    yes   no    OpenMP fully
  WSMP        left-right-looking    yes   no    OpenMP fully
  POTR        dense                  no   no    with parallel LAPACK
  SYTR        dense                 yes   no    with parallel LAPACK
@@ -151,7 +159,7 @@ one of
 .PP
    
   See the examples section for illustrations of use.
-   
+  
 .SS "Symmetric matrix storage formats"
 The symmetric n by n coefficient matrix A may be presented and stored in a variety of convenient input formats\&. Crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .PP
@@ -163,7 +171,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct psls_control_type"
@@ -252,7 +260,7 @@ bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no b
 bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
 .br
 .PP
-char \fIdefinite_linear_solver[31]\fP the definite linear equation solver used when \&.preconditioner = 3,4\&. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, pardiso, mkl_pardiso, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4\&.0-compliant compilers, ssids are installed by default\&. 
+char \fIdefinite_linear_solver[31]\fP the definite linear equation solver used when \&.preconditioner = 3,4\&. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4\&.0-compliant compilers, ssids are installed by default\&. 
 .br
 .PP
 char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
@@ -343,10 +351,10 @@ int \fIfactorize_status\fP status return from factorization
 int \fIsolve_status\fP status return from solution phase 
 .br
 .PP
-int \fIfactorization_integer\fP number of integer words to hold factors 
+int64_t \fIfactorization_integer\fP number of integer words to hold factors 
 .br
 .PP
-int \fIfactorization_real\fP number of real words to hold factors 
+int64_t \fIfactorization_real\fP number of real words to hold factors 
 .br
 .PP
 int \fIpreconditioner\fP code for the actual preconditioner used (see control\&.preconditioner) 
@@ -471,7 +479,7 @@ Import structural matrix data into internal storage prior to solution\&.
 .br
 \fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense storage scheme is used, and in this case can be NULL\&.
 .br
-\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

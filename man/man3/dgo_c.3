@@ -1,4 +1,4 @@
-.TH "galahad_dgo.h" 3 "Tue Aug 30 2022" "C interfaces to GALAHAD DGO" \" -*- nroff -*-
+.TH "galahad_dgo.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD DGO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_dgo.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_trb\&.h'\fP
 .br
@@ -75,6 +79,8 @@ The dgo package uses a \fBdeterministic partition-and-bound trust-region method 
 Although there are theoretical guarantees, these may require a large number of evaluations as the dimension and nonconvexity increase\&. The alternative GALAHAD package bgo may sometimes be preferred\&.
 .SS "Authors"
 J\&. Fowkes and N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 July 2021, C interface August 2021\&.
 .SS "Terminology"
@@ -140,7 +146,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value H_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values H_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values H_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct dgo_control_type"
@@ -328,7 +334,7 @@ struct hash_inform_type \fIhash_inform\fP inform parameters for HASH
 struct ugo_inform_type \fIugo_inform\fP inform parameters for UGO 
 .br
 .PP
-struct trb_inform_type \fItrb_inform\fP inform parameters for UGO 
+struct trb_inform_type \fItrb_inform\fP inform parameters for TRB 
 .br
 .PP
 .RE
@@ -400,7 +406,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_col\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL 
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL 
 .RE
 .PP
 
@@ -465,7 +471,9 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&. 
+.IP "\(bu" 2
+-91\&. The hash table used to store the dictionary of vertices of the sub-boxes is full, and there is no room to increase it further\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -479,7 +487,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 \fIeval_f\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_f( int n, const double x[], double *f, const void *userdata ) 
+int eval_f( int n, const double x[], double *f, const void *userdata )
 
 .fi
 .PP
@@ -559,7 +567,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -571,7 +579,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 \fIeval_f\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_f( int n, const double x[], double *f, const void *userdata ) 
+int eval_f( int n, const double x[], double *f, const void *userdata )
 
 .fi
 .PP
@@ -589,7 +597,7 @@ int eval_g( int n, const double x[], double g[], const void *userdata )
 \fIeval_hprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_hprod( int n, const double x[], double u[], const double v[], 
+int eval_hprod( int n, const double x[], double u[], const double v[],
                 bool got_h, const void *userdata )
 
 .fi
@@ -599,9 +607,9 @@ int eval_hprod( int n, const double x[], double u[], const double v[],
 \fIeval_shprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_shprod( int n, const double x[], int nnz_v, 
-                 const int index_nz_v[], const double v[], 
-                 int *nnz_u, int index_nz_u[], double u[], 
+int eval_shprod( int n, const double x[], int nnz_v,
+                 const int index_nz_v[], const double v[],
+                 int *nnz_u, int index_nz_u[], double u[],
                  bool got_h, const void *userdata )
 
 .fi
@@ -661,7 +669,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, but
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIstatus\fP (continued) 
@@ -748,7 +756,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIstatus\fP (continued) 

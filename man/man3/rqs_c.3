@@ -1,4 +1,4 @@
-.TH "galahad_rqs.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
+.TH "galahad_rqs.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_rqs.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sls\&.h'\fP
 .br
@@ -68,9 +72,7 @@ galahad_rqs.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Given real n by n symmetric matrices H and M (with M diagonally dominant), another real m by n matrix A, a real n vector c and scalars sigma>0, p>2 and f, this package finds an \fBapproximate minimizer of the regularised quadratic objective function 1/2 x^T H x + c^T x + f + \\frac{1}{p} sigma ||x||_M^p, where the vector x may additionally be required to satisfy A x = 0,\fP and where the M-norm of x is ||x||_M = sqrt{x^T M x}\&. 
-.br
- This problem commonly occurs as a subproblem in nonlinear optimization calculations\&. The matrix M need not be provided in the commonly-occurring l_2-regularisation case for which M = I, the n by n identity matrix\&.
+Given real n by n symmetric matrices H and M (with M diagonally dominant), another real m by n matrix A, a real n vector c and scalars sigma>0, p>2 and f, this package finds an \fBapproximate minimizer of the regularised quadratic objective function 1/2 x^T H x + c^T x + f + \\frac{1}{p} sigma ||x||_M^p, where the vector x may additionally be required to satisfy A x = 0,\fP and where the M-norm of x is ||x||_M = sqrt{x^T M x}\&. This problem commonly occurs as a subproblem in nonlinear optimization calculations\&. The matrix M need not be provided in the commonly-occurring l_2-regularisation case for which M = I, the n by n identity matrix\&.
 .PP
 Factorization of matrices of the form H + lambda M---or \[\mbox{(1)}\;\;\; \mat{cc}{ H + lambda M & A^T \\ A & 0}\]  
 \n
@@ -82,6 +84,8 @@ Factorization of matrices of the form H + lambda M---or \[\mbox{(1)}\;\;\; \mat{
 N\&. I\&. M\&. Gould and H\&. S\&. Thorne, STFC-Rutherford Appleton Laboratory, England, and D\&. P\&. Robinson, Oxford University, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 November 2008, C interface December 2021\&.
 .SS "Method"
@@ -136,7 +140,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Symmetric matrix storage formats"
 Likewise, the symmetric n by n objective Hessian matrix H and scaling matrix M may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&. In what follows, we refer to H but this applies equally to M\&.
 .SS "Dense storage format"
@@ -144,7 +148,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Diagonal storage format"
 If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&. 
 .SH "Data Structure Documentation"
@@ -361,7 +365,7 @@ int \fIalloc_status\fP STAT value after allocate failure\&.
 int \fIfactorizations\fP the number of factorizations performed 
 .br
 .PP
-int \fImax_entries_factors\fP the maximum number of entries in the factors 
+int64_t \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
 int \fIlen_history\fP the number of (||x||_M,lambda) pairs in the history 
@@ -466,11 +470,9 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_row\fP is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
 .br
-\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, 
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
- and in this case can be NULL\&.
-.br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 
@@ -504,7 +506,7 @@ Import data for the scaling matrix M into internal storage prior to solution\&.
 .br
 \fIM_col\fP is a one-dimensional array of size M_ne and type int, that holds the column indices of the lower triangular part of M in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL\&.
 .br
-\fIM_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of M, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIM_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of M, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 
@@ -538,7 +540,7 @@ Import data for the constraint matrix A into internal storage prior to solution\
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 
@@ -622,7 +624,7 @@ Solve the regularised quadratic problem\&.
 .br
 \fIA_val\fP is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A, if used, in any of the available storage schemes\&. If A_val is NULL, no constraints will be enforced\&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the equality constraints A x = 0 if used\&. The i-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+\fIy\fP is a one-dimensional array of size m and type double, that holds the values y of the Lagrange multipliers for the equality constraints A x = 0 if used\&. The i-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
 .RE
 .PP
 

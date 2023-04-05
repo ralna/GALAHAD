@@ -43,6 +43,8 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
+static PyObject *dgo_solve_return = NULL;
+static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -646,8 +648,11 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args){
     Py_XDECREF(py_eval_h);      /* Dispose of previous callback */
     py_eval_h = temp_h;         /* Remember new callback */
 
-    // Create empty C array for g
-    double g[n];
+    // Create NumPy output array
+    npy_intp ndim[] = {n}; // size of g
+    PyArrayObject *py_g = 
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    double *g = (double *) PyArray_DATA(py_g);
 
     // Call dgo_solve_direct
     status = 1; // set status to 1 on entry
@@ -662,13 +667,10 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Wrap C array as NumPy array
-    npy_intp ndim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim, 
-                        NPY_DOUBLE, (void *) g); // create NumPy g array
-
     // Return x and g
-    return Py_BuildValue("OO", py_x, py_g);
+    dgo_solve_return = Py_BuildValue("OO", py_x, py_g);
+    Py_XINCREF(dgo_solve_return);
+    return dgo_solve_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DGO_INFORMATION   -*-*-*-*-*-*-*-*

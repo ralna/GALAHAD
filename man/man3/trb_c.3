@@ -1,4 +1,4 @@
-.TH "galahad_trb.h" 3 "Tue Aug 30 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
+.TH "galahad_trb.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_trb.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_trs\&.h'\fP
 .br
@@ -79,6 +83,8 @@ The trb package uses a \fBtrust-region method to find a (local) minimizer of a d
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 July 2021, C interface August 2021\&.
 .SS "Terminology"
@@ -140,7 +146,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value H_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values H_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values H_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct trb_control_type"
@@ -218,7 +224,7 @@ int \fImodel\fP the model used\&. Possible values are
 
 .br
 .PP
-int \fInorm\fP The norm is defined via ||v||^2 = v^T P v, and will define the preconditioner used for iterative methods\&. Possible values for P are 
+int \fInorm\fP The norm is defined via ||v||^2 = v^T P v, and will define the preconditioner used for iterative methods\&. Possible values for P are\&. 
 .PD 0
 
 .IP "\(bu" 2
@@ -269,13 +275,13 @@ int \fImi28_lsize\fP the maximum number of fill entries within each column of th
 int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on \&.mi28_rsize\&. Setting \&.mi28_rsize > 0 generally leads to a higher quality preconditioner than using \&.mi28_rsize = 0, and choosing \&.mi28_rsize >= \&.mi28_lsize is generally recommended 
 .br
 .PP
-int \fIadvanced_start\fP iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1 
+int \fIadvanced_start\fP iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803 
 .br
 .PP
 real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
 .br
 .PP
-real_wp_ \fIstop_pg_absolute\fP overall convergence tolerances\&. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( \&.stop_pg_absolute, \&.stop_pg_relative * norm of the initial gradient or if the step is less than \&.stop_s 
+real_wp_ \fIstop_pg_absolute\fP overall convergence tolerances\&. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( \&.stop_pg_absolute, \&.stop_pg_relative * norm of the initial gradient ) or if the step is less than \&.stop_s 
 .br
 .PP
 real_wp_ \fIstop_pg_relative\fP see stop_pg_absolute 
@@ -329,16 +335,16 @@ bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) it
 bool \fIretrospective_trust_region\fP is a retrospective strategy to be used to update the trust-region radius 
 .br
 .PP
-bool \fIrenormalize_radius\fP should the radius be renormalized to account for a change in preconditio 
+bool \fIrenormalize_radius\fP should the radius be renormalized to account for a change in preconditioner? 
 .br
 .PP
-bool \fItwo_norm_tr\fP should an ellipsoidal trust-region be used rather than an infinity norm 
+bool \fItwo_norm_tr\fP should an ellipsoidal trust-region be used rather than an infinity norm one? 
 .br
 .PP
 bool \fIexact_gcp\fP is the exact Cauchy point required rather than an approximation? 
 .br
 .PP
-bool \fIaccurate_bqp\fP should the minimizer of the quadratic model within the intersection of t trust-region and feasible box be found (to a prescribed accuracy) rather than a (much) cheaper approximation? 
+bool \fIaccurate_bqp\fP should the minimizer of the quadratic model within the intersection of the trust-region and feasible box be found (to a prescribed accuracy) rather than a (much) cheaper approximation? 
 .br
 .PP
 bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
@@ -362,7 +368,7 @@ struct psls_control_type \fIpsls_control\fP control parameters for PSLS
 struct lms_control_type \fIlms_control\fP control parameters for LMS 
 .br
 .PP
-struct lms_control_type \fIlms_control_prec\fP 
+struct lms_control_type \fIlms_control_prec\fP control parameters for LMS used for preconditioning 
 .br
 .PP
 struct sha_control_type \fIsha_control\fP control parameters for SHA 
@@ -382,7 +388,7 @@ real_sp_ \fItotal\fP the total CPU time spent in the package
 real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
 .br
 .PP
-real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorizatio 
+real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
@@ -397,7 +403,7 @@ real_wp_ \fIclock_total\fP the total clock time spent in the package
 real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
 .br
 .PP
-real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
@@ -435,7 +441,7 @@ int \fIcg_maxit\fP the maximum number of CG iterations allowed per iteration
 int \fIf_eval\fP the total number of evaluations of the objective function 
 .br
 .PP
-int \fIg_eval\fP the total number of evaluations of the gradient of the objective functio 
+int \fIg_eval\fP the total number of evaluations of the gradient of the objective function 
 .br
 .PP
 int \fIh_eval\fP the total number of evaluations of the Hessian of the objective function 
@@ -450,13 +456,13 @@ int \fIfactorization_max\fP the maximum number of factorizations in a sub-proble
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-long \fImax_entries_factors\fP the maximum number of entries in the factors 
+int64_t \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by TRB_solve 
@@ -483,7 +489,7 @@ struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS
 struct lms_inform_type \fIlms_inform\fP inform parameters for LMS 
 .br
 .PP
-struct lms_inform_type \fIlms_inform_prec\fP 
+struct lms_inform_type \fIlms_inform_prec\fP inform parameters for LMS used for preconditioning 
 .br
 .PP
 struct sha_inform_type \fIsha_inform\fP inform parameters for SHA 
@@ -558,7 +564,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_col\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL 
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL 
 .RE
 .PP
 
@@ -623,7 +629,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -637,7 +643,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 \fIeval_f\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_f( int n, const double x[], double *f, const void *userdata ) 
+int eval_f( int n, const double x[], double *f, const void *userdata )
 
 .fi
 .PP
@@ -717,7 +723,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -729,25 +735,28 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 \fIeval_f\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_f( int n, const double x[], double *f, const void *userdata ) 
+int eval_f( int n, const double x[], double *f, const void *userdata )
 
 .fi
 .PP
  The value of the objective function f(x) evaluated at x=x must be assigned to f, and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. Data may be passed into \fCeval_f\fP via the structure \fCuserdata\fP\&.
 .br
-\fIeval_g\fP is a user-supplied function that must have the following signature: 
+\fIeval_g\fP is a user-supplied function that must have the following signature:
+.RE
+.PP
 .PP
 .nf
 int eval_g( int n, const double x[], double g[], const void *userdata )
-
 .fi
 .PP
  The components of the gradient g = nabla_x f(x) of the objective function evaluated at x=x must be assigned to g, and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. Data may be passed into \fCeval_g\fP via the structure \fCuserdata\fP\&.
-.br
+.PP
+\fBParameters\fP
+.RS 4
 \fIeval_hprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_hprod( int n, const double x[], double u[], const double v[], 
+int eval_hprod( int n, const double x[], double u[], const double v[],
                 bool got_h, const void *userdata )
 
 .fi
@@ -757,9 +766,9 @@ int eval_hprod( int n, const double x[], double u[], const double v[],
 \fIeval_shprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_shprod( int n, const double x[], int nnz_v, 
-                 const int index_nz_v[], const double v[], 
-                 int *nnz_u, int index_nz_u[], double u[], 
+int eval_shprod( int n, const double x[], int nnz_v,
+                 const int index_nz_v[], const double v[],
+                 int *nnz_u, int index_nz_u[], double u[],
                  bool got_h, const void *userdata )
 
 .fi
@@ -819,7 +828,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, but
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIstatus\fP (continued) 
@@ -896,7 +905,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
 .br
 \fIstatus\fP (continued) 

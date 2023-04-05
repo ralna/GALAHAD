@@ -1,4 +1,4 @@
-.TH "galahad_fdc.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD FDC" \" -*- nroff -*-
+.TH "galahad_fdc.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD FDC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_fdc.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sls\&.h'\fP
 .br
@@ -55,6 +59,8 @@ Given an under-determined set of linear equations/constraints a_i^T x = b_i^{}, 
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 August 2006, C interface January 2021
 .SS "Method"
@@ -154,7 +160,7 @@ time derived type as a C struct
 real_wp_ \fItotal\fP the total CPU time spent in the package 
 .br
 .PP
-real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorizatio 
+real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
@@ -163,7 +169,7 @@ real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices
 real_wp_ \fIclock_total\fP the total clock time spent in the package 
 .br
 .PP
-real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
 .br
 .PP
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
@@ -189,10 +195,10 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
@@ -282,7 +288,7 @@ Find dependent rows and, if any, check if A x = b is consistent
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in a row-wise storage scheme\&. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one\&.
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries\&.
 .br
 \fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the A ordered as in A_col and A_ptr\&.
 .br

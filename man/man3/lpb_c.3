@@ -1,4 +1,4 @@
-.TH "galahad_lpb.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD LPB" \" -*- nroff -*-
+.TH "galahad_lpb.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD LPB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_lpb.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_fdc\&.h'\fP
 .br
@@ -84,6 +88,8 @@ This package uses a primal-dual interior-point method to solve the \fBlinear pro
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 August 2018, C interface September 2021\&.
 .SS "Terminology"
@@ -97,11 +103,11 @@ The required solution x necessarily satisfies the primal optimality conditions \
   \n
  the dual optimality conditions \[\mbox{(2a) $\hspace{3mm} g = A^T y + z$}\]  
   \n
-  (2a) g = A^T y + z 
+  (2a) g = A^T y + z
   \n
  where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
  and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
@@ -163,7 +169,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct lpb_control_type"
@@ -252,7 +258,7 @@ int \fIqplib_file_device\fP specifies the unit number to write generated QPLIB f
 real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
 .br
 .PP
-real_wp_ \fIstop_abs_p\fP the required absolute and relative accuracies for the primal infeasibili 
+real_wp_ \fIstop_abs_p\fP the required absolute and relative accuracies for the primal infeasibility 
 .br
 .PP
 real_wp_ \fIstop_rel_p\fP see stop_abs_p 
@@ -279,7 +285,7 @@ real_wp_ \fIdufeas\fP initial dual variables will not be closer than dufeas from
 real_wp_ \fImuzero\fP the initial value of the barrier parameter\&. If muzero is not positive, it will be reset to an appropriate value 
 .br
 .PP
-real_wp_ \fItau\fP the weight attached to primal-dual infeasibility compared to complementa when assessing step acceptance 
+real_wp_ \fItau\fP the weight attached to primal-dual infeasibility compared to complementarity when assessing step acceptance 
 .br
 .PP
 real_wp_ \fIgamma_c\fP individual complementarities will not be allowed to be smaller than gamma_c times the average value 
@@ -448,10 +454,10 @@ int \fIiter\fP the total number of iterations required
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 int \fInfacts\fP the total number of factorizations performed 
@@ -487,7 +493,7 @@ real_wp_ \fIinit_complementary_slackness\fP see init_primal_infeasibility
 real_wp_ \fIpotential\fP the value of the logarithmic potential function sum -log(distance to constraint boundary) 
 .br
 .PP
-real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
+real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linearly dependent constraints 
 .br
 .PP
 bool \fIfeasible\fP is the returned 'solution' feasible? 
@@ -534,8 +540,6 @@ Set default control values and initialize private data
 \fIcontrol\fP is a struct containing control information (see \fBlpb_control_type\fP)
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.br
- 
 .PD 0
 
 .IP "\(bu" 2
@@ -589,7 +593,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

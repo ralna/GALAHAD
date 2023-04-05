@@ -1,4 +1,4 @@
-.TH "galahad_sls.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
+.TH "galahad_sls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_sls.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sils\&.h'\fP
 .br
@@ -81,11 +85,13 @@ galahad_sls.h
 .SS "Purpose"
 This package \fB solves dense or sparse symmetric systems of linear equations\fP using variants of Gaussian elimination\&. Given a sparse symmetric n \\times n matrix A, and an n-vector b, this subroutine solves the system A x = b\&. The matrix A need not be definite\&.
 .PP
-The package provides a common interface to a variety of well-known solvers from HSL and elsewhere\&. Currently supported solvers include \fCMA27/SILS\fP, \fCHSL_MA57\fP, \fCHSL_MA77\fP, \fCHSL_MA86\fP, \fCHSL_MA87\fP and \fCHSL_MA97\fP from HSL, \fCSSIDS\fP from SPRAL, \fCPARDISO\fP both from the Pardiso Project and Intel's MKL and \fCWSMP\fP from the IBM alpha Works, as well as \fCPOTR\fP, \fCSYTR\fP and \fCSBTR\fP from LAPACK\&. Note that \fB the solvers themselves do not form part of this package and must be obtained separately\&.\fP Dummy instances are provided for solvers that are unavailable\&. Also note that additional flexibility may be obtained by calling the solvers directly rather that via this package\&.
+The package provides a common interface to a variety of well-known solvers from HSL and elsewhere\&. Currently supported solvers include \fCMA27/SILS\fP, \fCHSL_MA57\fP, \fCHSL_MA77\fP, \fCHSL_MA86\fP, \fCHSL_MA87\fP and \fCHSL_MA97\fP from HSL, \fCSSIDS\fP from SPRAL, \fCMUMPS\fP from Mumps Technologies, \fCPARDISO\fP both from the Pardiso Project and Intel's MKL, \fCPaStix\fP from Inria and \fCWSMP\fP from the IBM alpha Works, as well as \fCPOTR\fP, \fCSYTR\fP and \fCSBTR\fP from LAPACK\&. Note that \fB the solvers themselves do not form part of this package and must be obtained separately\&.\fP Dummy instances are provided for solvers that are unavailable\&. Also note that additional flexibility may be obtained by calling the solvers directly rather that via this package\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 August 2009, C interface December 2021\&.
 .SS "Terminology"
@@ -96,7 +102,7 @@ The key features of the external solvers supported by sls are given in the follo
  
 (ignore next paragraph - doxygen bug!)
 .PP
-External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
+External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCMUMPS\fP multifrontal yes optionally MPI \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCPaStix\fP left-right-looking yes no OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
 .PP
  
 External solver characteristics (ooc = out-of-core factorization)
@@ -109,8 +115,10 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
  SSIDS       multifrontal          yes   no    CUDA core
+ MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
+ PaStix      left-right-looking    yes   no    OpenMP fully
  WSMP        left-right-looking    yes   no    OpenMP fully
  POTR        dense                  no   no    with parallel LAPACK
  SYTR        dense                 yes   no    with parallel LAPACK
@@ -128,6 +136,10 @@ http://hsl.rl.ac.uk
 .PP
 The solver \fCSSIDS\fP is from the SPRAL sparse-matrix collection, and is available as part of GALAHAD\&.
 .PP
+The solver \fCMUMPS\fP is available from Mumps Technologies in France, and version 5\&.5\&.1 or above is sufficient\&. To obtain \fCMUMPS\fP, see
+.PP
+https://mumps-solver.org \&.
+.PP
 The solver \fCPARDISO\fP is available from the Pardiso Project; version 4\&.0\&.0 or above is required\&. To obtain \fCPARDISO\fP, see
 .PP
 http://www.pardiso-project.org/ \&.
@@ -136,13 +148,17 @@ The solver \fCMKL\fP PARDISO is available as part of Intel's oneAPI Math Kernel 
 .PP
 https://software.intel.com/content/www/us/en/develop/tools/oneapi.html \&.
 .PP
+The solver \fCPaStix\fP is available from Inria in France, and version 6\&.2 or above is sufficient\&. To obtain \fCPaStiX\fP, see
+.PP
+https://solverstack.gitlabpages.inria.fr/pastix \&.
+.PP
 The solver \fCWSMP\fP is available from the IBM alpha Works; version 10\&.9 or above is required\&. To obtain \fCWSMP\fP, see
 .PP
 http://www.alphaworks.ibm.com/tech/wsmp \&.
 .PP
 The solvers \fCPOTR\fP, \fCSYTR\fP and \fCPBTR\fP, are available as \fCS/DPOTRF/S\fP, \fCS/DSYTRF/S\fP and \fCS/DPBTRF/S\fP as part of LAPACK\&. Reference versions are provided by GALAHAD, but for good performance machined-tuned versions should be used\&.
 .PP
-Explicit sparsity re-orderings are obtained by calling the HSL package \fCHSL_MC68\fP\&. Both this, \fCHSL_MA57\fP and \fCPARDISO\fP rely optionally on the ordering package \fCMETIS\fP from the Karypis Lab\&. To obtain \fCMETIS\fP, see
+Explicit sparsity re-orderings are obtained by calling the HSL package \fCHSL_MC68\fP\&. Both this, \fCHSL_MA57\fP and \fCPARDISO\fP rely optionally on the ordering package \fCMeTiS\fP (version 4) from the Karypis Lab\&. To obtain \fCMETIS\fP, see
 .PP
 http://glaros.dtc.umn.edu/gkhome/views/metis/ \&.
 .PP
@@ -154,11 +170,19 @@ HSL 2011, A collection of Fortran codes for large-scale scientific computation (
 .PP
 and papers
 .PP
-O\&. Schenk and K\&. Ga\*(4rtner, ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''\&. Journal of Future Generation Computer Systems \fB\fP, 20(3) (2004) 475--487,
+E\&. Agullo, P\&. R\&. Amestoy, A\&. Buttari, J\&.-Y\&. L'Excellent, A\&. Guermouche and F\&.-H\&. Rouet, ``Robust memory-aware mappings for parallel multifrontal factorizations''\&. SIAM Journal on Scientific Computing, \fB38\fP(3) (2016), C256--C279,
 .PP
-O\&. Schenk and K\&. Ga\*(4rtner, ``On fast factorization pivoting methods for symmetric indefinite systems''\&. Electronic Transactions on Numerical Analysis \fB23\fP (2006) 158--179, and
+P\&. R\&. Amestoy, I\&. S\&. Duff, J\&. Koster and J\&.-Y\&. L'Excellent\&. ``A fully asynchronous multifrontal solver using distributed dynamic scheduling''\&. SIAM Journal on Matrix Analysis and Applications \fB23\fP(1) (2001) 15-41,
 .PP
-A\&. Gupta, ``WSMP: Watson Sparse Matrix Package Part I - direct solution of symmetric sparse systems''\&. IBM Research Report RC 21886, IBM T\&. J\&. Watson Research Center, NY 10598, USA (2010)\&.
+A\&. Gupta, ``WSMP: Watson Sparse Matrix Package Part I - direct solution of symmetric sparse systems''\&. IBM Research Report RC 21886, IBM T\&. J\&. Watson Research Center, NY 10598, USA (2010),
+.PP
+P\&. Henon, P\&. Ramet and J\&. Roman, ``PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric Definite Systems''\&. Parallel Computing, \fB28\fP(2) (2002) 301--321,
+.PP
+J\&.D\&. Hogg, E\&. Ovtchinnikov and J\&.A\&. Scott\&. ``A sparse symmetric indefinite direct solver for GPU architectures''\&. ACM Transactions on Mathematical Software \fB42\fP(1) (2014), Article 1,
+.PP
+O\&. Schenk and K\&. Ga\*(4rtner, ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''\&. Journal of Future Generation Computer Systems \fB\fP, 20(3) (2004) 475--487, and
+.PP
+O\&. Schenk and K\&. Ga\*(4rtner, ``On fast factorization pivoting methods for symmetric indefinite systems''\&. Electronic Transactions on Numerical Analysis \fB23\fP (2006) 158--179\&.
 .SS "Call order"
 To solve a given problem, functions from the sls package must be called in the following order:
 .PP
@@ -200,7 +224,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct sls_control_type"
@@ -257,13 +281,13 @@ int \fImin_real_factor_size\fP initial size for real array for the factors and o
 int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data 
 .br
 .PP
-long int \fImax_real_factor_size\fP maximum size for real array for the factors and other data 
+int64_t \fImax_real_factor_size\fP maximum size for real array for the factors and other data 
 .br
 .PP
-long int \fImax_integer_factor_size\fP maximum size for integer array for the factors and other data 
+int64_t \fImax_integer_factor_size\fP maximum size for integer array for the factors and other data 
 .br
 .PP
-long int \fImax_in_core_store\fP amount of in-core storage to be used for out-of-core factorization 
+int64_t \fImax_in_core_store\fP amount of in-core storage to be used for out-of-core factorization 
 .br
 .PP
 real_wp_ \fIarray_increase_factor\fP factor by which arrays sizes are to be increased if they are too small 
@@ -507,25 +531,25 @@ int \fImax_depth_assembly_tree\fP maximum depth of the assembly tree
 int \fInodes_assembly_tree\fP nodes in the assembly tree (= number of elimination steps) 
 .br
 .PP
-long int \fIreal_size_desirable\fP desirable or actual size for real array for the factors and other data 
+int64_t \fIreal_size_desirable\fP desirable or actual size for real array for the factors and other data 
 .br
 .PP
-long int \fIinteger_size_desirable\fP desirable or actual size for integer array for the factors and other dat 
+int64_t \fIinteger_size_desirable\fP desirable or actual size for integer array for the factors and other dat 
 .br
 .PP
-long int \fIreal_size_necessary\fP necessary size for real array for the factors and other data 
+int64_t \fIreal_size_necessary\fP necessary size for real array for the factors and other data 
 .br
 .PP
-long int \fIinteger_size_necessary\fP necessary size for integer array for the factors and other data 
+int64_t \fIinteger_size_necessary\fP necessary size for integer array for the factors and other data 
 .br
 .PP
-long int \fIreal_size_factors\fP predicted or actual number of reals to hold factors 
+int64_t \fIreal_size_factors\fP predicted or actual number of reals to hold factors 
 .br
 .PP
-long int \fIinteger_size_factors\fP predicted or actual number of integers to hold factors 
+int64_t \fIinteger_size_factors\fP predicted or actual number of integers to hold factors 
 .br
 .PP
-long int \fIentries_in_factors\fP number of entries in factors 
+int64_t \fIentries_in_factors\fP number of entries in factors 
 .br
 .PP
 int \fImax_task_pool_size\fP maximum number of tasks in the factorization task pool 
@@ -570,13 +594,13 @@ int \fInum_zero\fP number of pivots that are considered zero (and ignored)
 int \fIiterative_refinements\fP number of iterative refinements performed 
 .br
 .PP
-long int \fIflops_assembly\fP anticipated or actual number of floating-point operations in assembly 
+int64_t \fIflops_assembly\fP anticipated or actual number of floating-point operations in assembly 
 .br
 .PP
-long int \fIflops_elimination\fP anticipated or actual number of floating-point operations in elimination 
+int64_t \fIflops_elimination\fP anticipated or actual number of floating-point operations in elimination 
 .br
 .PP
-long int \fIflops_blas\fP additional number of floating-point operations for BLAS 
+int64_t \fIflops_blas\fP additional number of floating-point operations for BLAS 
 .br
 .PP
 real_wp_ \fIlargest_modified_pivot\fP largest diagonal modification when static pivoting or ensuring definiten 
@@ -606,6 +630,9 @@ real_wp_ \fIforward_error\fP estimate of forward error
 bool \fIalternative\fP has an 'alternative' y: A y = 0 and yT b > 0 been found when trying to solve A x = b ? 
 .br
 .PP
+char \fIsolver[21]\fP name of external solver used to factorize and solve 
+.br
+.PP
 struct \fBsls_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
@@ -627,16 +654,16 @@ struct ma57_finfo \fIma57_finfo\fP see ma57_ainfo
 struct ma57_sinfo \fIma57_sinfo\fP see ma57_ainfo 
 .br
 .PP
-struct ma77_info \fIma77_inform\fP the output structure from ma77 
+struct ma77_info \fIma77_info\fP the output structure from ma77 
 .br
 .PP
-struct ma86_info \fIma86_inform\fP the output structure from ma86 
+struct ma86_info \fIma86_info\fP the output structure from ma86 
 .br
 .PP
-struct ma87_info \fIma87_inform\fP the output structure from ma87 
+struct ma87_info \fIma87_info\fP the output structure from ma87 
 .br
 .PP
-struct ma97_info \fIma97_inform\fP the output structure from ma97 
+struct ma97_info \fIma97_info\fP the output structure from ma97 
 .br
 .PP
 struct spral_ssids_inform \fIssids_inform\fP the output structure from ssids 
@@ -648,16 +675,25 @@ int \fImc61_info[10]\fP the integer and real output arrays from mc61
 real_wp_ \fImc61_rinfo[15]\fP see mc61_info 
 .br
 .PP
-struct mc64_info \fImc64_inform\fP the output structure from mc64 
+struct mc64_info \fImc64_info\fP the output structure from mc64 
 .br
 .PP
-struct mc68_info \fImc68_inform\fP the output structure from mc68 
+struct mc68_info \fImc68_info\fP the output structure from mc68 
 .br
 .PP
 int \fImc77_info[10]\fP the integer output array from mc77 
 .br
 .PP
 real_wp_ \fImc77_rinfo[10]\fP the real output status from mc77 
+.br
+.PP
+int \fImumps_error\fP the output scalars and arrays from mumps 
+.br
+.PP
+int \fImumps_info[80]\fP see mumps_error 
+.br
+.PP
+real_wp_ \fImumps_rinfo[40]\fP see mumps_error 
 .br
 .PP
 int \fIpardiso_error\fP the output scalars and arrays from pardiso 
@@ -675,6 +711,9 @@ int \fImkl_pardiso_error\fP the output scalars and arrays from mkl_pardiso
 int \fImkl_pardiso_IPARM[64]\fP see mkl_pardiso_error 
 .br
 .PP
+int \fIpastix_info\fP the output flag from pastix 
+.br
+.PP
 int \fIwsmp_error\fP the output scalars and arrays from wsmp 
 .br
 .PP
@@ -684,7 +723,10 @@ int \fIwsmp_iparm[64]\fP see wsmp_error
 real_wp_ \fIwsmp_dparm[64]\fP see wsmp_error 
 .br
 .PP
-int \fIlapack_error\fP the output scalars and arrays from LAPACK routines 
+int \fImpi_ierr\fP the output flag from MPI routines 
+.br
+.PP
+int \fIlapack_error\fP the output flag from LAPACK routines 
 .br
 .PP
 .RE
@@ -696,7 +738,7 @@ Select solver, set default control values and initialize private data
 .PP
 \fBParameters\fP
 .RS 4
-\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed\&.
+\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed\&.
 .br
 \fIdata\fP holds private internal data
 .br
@@ -780,7 +822,7 @@ Import structural matrix data into internal storage prior to solution
 .br
 \fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense storage scheme is used, and in this case can be NULL\&.
 .br
-\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

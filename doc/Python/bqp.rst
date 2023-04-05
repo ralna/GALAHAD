@@ -55,7 +55,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
-while H_ptr(n) holds the total number of entries plus one.
+while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
@@ -223,13 +223,13 @@ functions
           are used, and in this case can be None.
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries plus one,
+          part of $H$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       options : dict, optional
           dictionary of control options (see ``bqp.initialize``).
 
-   .. function:: bqp.solve_qp(n, f, g, h_ne, H_val, x_l, x_u)
+   .. function:: bqp.solve_qp(n, f, g, h_ne, H_val, x_l, x_u, x, z)
 
       Find a solution to the bound-constrained convex quadratic program 
       involving the quadratic objective function $q(x)$.
@@ -257,6 +257,15 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 

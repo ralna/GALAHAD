@@ -30,7 +30,7 @@ For this, only the nonzero entries are stored, and they are
 ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries plus one.
+while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
 l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
@@ -45,7 +45,7 @@ Only the nonzero entries from the lower triangle are stored, and
 these are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
-while H_ptr(n) holds the total number of entries plus one.
+while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
@@ -147,7 +147,7 @@ functions
           part of $H$ in the sparse co-ordinate storage scheme.
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries plus one.
+          part of $H$, as well as the total number of entries.
       A_val : ndarray(A_ptr(m)-1)
           holds the values of the nonzeros of $A$ in the sparse co-ordinate
           storage scheme.
@@ -156,7 +156,7 @@ functions
           co-ordinate  storage scheme.
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one.
+          total number of entries.
       c_l : ndarray(m)
           holds the values of the lower bounds $c_l$ on the constraints
           The lower bound on any component of $A x$ that is unbounded from 

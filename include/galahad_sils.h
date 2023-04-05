@@ -97,7 +97,7 @@
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array ptr holds the position of the first entry in this row,
-  while ptr(n) holds the total number of entries plus one.
+  while ptr(n) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$A_{ij}\f$ of the  entries in the i-th row are stored in components
   l = ptr(i), \f$\ldots\f$, ptr(i+1)-1 of the

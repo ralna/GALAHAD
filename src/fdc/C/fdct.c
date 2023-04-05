@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_fdc.h"
@@ -35,6 +36,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
+    control.use_sls = true;
+    strcpy(control.symmetric_linear_solver, "sytr ");
 
     // Start from 0
 

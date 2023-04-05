@@ -301,7 +301,7 @@ for i,j=1,...,n\endmanonly
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
-  while A_ptr(m) holds the total number of entries plus one.
+  while A_ptr(m) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
@@ -315,7 +315,7 @@ for i,j=1,...,n\endmanonly
   they are ordered so that those in column j appear directly before those
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
-  while A_ptr(n) holds the total number of entries plus one.
+  while A_ptr(n) holds the total number of entries.
   The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th columnsare stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1, \f$0 \leq j \leq n-1\f$,
@@ -360,7 +360,7 @@ for i,j=1,...,n\endmanonly
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
-  while H_ptr(n) holds the total number of entries plus one.
+  while H_ptr(n) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
@@ -909,10 +909,6 @@ struct nls_control_type {
     char prefix[31];
 
     /// \brief
-    /// control parameters for the step-finding subproblem
-    struct nls_subproblem_control_type subproblem_control;
-
-    /// \brief
     /// control parameters for RQS
     struct rqs_control_type rqs_control;
 
@@ -931,6 +927,11 @@ struct nls_control_type {
     /// \brief
     /// control parameters for ROOTS
     struct roots_control_type roots_control;
+
+    /// \brief
+    /// control parameters for the step-finding subproblem
+    struct nls_subproblem_control_type subproblem_control;
+
 };
 
 /**
@@ -1316,7 +1317,7 @@ void nls_import( struct nls_control_type *control,
 
  @param[in]  J_ptr is a one-dimensional array of size m+1 and type int,
    that holds the starting position of each row of \f$J\f$, as well as the
-   total number of entries plus one, in the sparse row-wise storage scheme.
+   total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 
@@ -1344,7 +1345,7 @@ void nls_import( struct nls_control_type *control,
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of  each row of the lower
-   triangular part of \f$H\f$, as well as the total number of entries plus one,
+   triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
    other schemes are used, and in this case can be NULL.
 
@@ -1372,7 +1373,7 @@ void nls_import( struct nls_control_type *control,
 
  @param[in]  P_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of each row of \f$P\f$, as well as the
-   total number of entries plus one, in the sparse row-wise storage scheme.
+   total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 
