@@ -157,7 +157,7 @@
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
-  while A_ptr(m) holds the total number of entries plus one.
+  while A_ptr(m) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
@@ -541,7 +541,7 @@ void uls_factorize_matrix( struct uls_control_type *control,
 
  @param[in]  ptr is a one-dimensional array of size m+1 and type int,
    that holds the starting position of  each row of the matrix
-   \f$A\f$, as well as the total number of entries plus one,
+   \f$A\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
    other schemes are used, and in this case can be NULL.
 

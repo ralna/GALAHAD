@@ -1,4 +1,4 @@
-.TH "galahad_l2rt.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD L2RT" \" -*- nroff -*-
+.TH "galahad_l2rt.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD L2RT" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_l2rt.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -58,6 +62,8 @@ Given a real m by n matrix A, a real m vector b and scalars sigma>0, \\mu>= 0 an
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England and M\&. Porcelli, Universita degli Studi di Firenze\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 January 2008, C interface December 2021\&.
 .SS "Terminology"

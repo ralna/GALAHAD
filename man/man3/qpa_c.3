@@ -1,4 +1,4 @@
-.TH "galahad_qpa.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
+.TH "galahad_qpa.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_qpa.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sls\&.h'\fP
 .br
@@ -65,7 +69,7 @@ galahad_qpa.h
 .SS "Purpose"
 This package uses a working-set method to solve the \fBl_1 quadratic programming problem\fP    
   \n
-  (1)   min_{x in R^n} q(x) + rho_g v_g(x) + rho_b v_b(x)
+  (1) min_{x in R^n} q(x) + rho_g v_g(x) + rho_b v_b(x)
   \n
  involving the quadratic objective    
   \n
@@ -73,12 +77,12 @@ This package uses a working-set method to solve the \fBl_1 quadratic programming
   \n
  and the infeasibilities    
   \n
-   v_g(x) = sum_{i=1}^m max(c_i^l - a_i^T x, 0) + 
+   v_g(x) = sum_{i=1}^m max(c_i^l - a_i^T x, 0) +
             sum_{i=1}^m max(a_i^T x - c_i^u, 0)
   \n
  and    
   \n
-   v_b(x) = sum_{j=1}^{n} max(x_j^l - x_j, 0) + 
+   v_b(x) = sum_{j=1}^{n} max(x_j^l - x_j, 0) +
             sum_{j=1}^{n} max(x_j - x_j^u, 0),
   \n
  where the n by n symmetric matrix H, the vectors g, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
@@ -112,6 +116,8 @@ If the matrix H is positive semi-definite, a global solution is found\&. However
 N\&. I\&. M\&. Gould and D\&. P\&. Robinson, STFC-Rutherford Appleton Laboratory, England, and Philippe L\&. Toint, University of Namur, Belgium\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 October 2001, C interface January 2022\&.
 .SS "Terminology"
@@ -125,11 +131,11 @@ The required solution x to (2)-(4) necessarily satisfies the primal optimality c
   \n
  the dual optimality conditions \[\mbox{$\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\]  
   \n
-  H x + g = A^T y + z 
+  H x + g = A^T y + z
   \n
  where \[\mbox{$\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
   \n
-   y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
        z^l \[>=] 0 and z^u \[<=] 0,
   \n
  and the complementary slackness conditions \[\mbox{$\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
@@ -153,7 +159,7 @@ The search direction is defined by a subset of the 'active' terms in v(x), i\&.e
   \n
  where    
   \n
-  l_g^{(k)}(s) = - sum_{i=1,a_i^T x < c_i^l}^m a_i^T s 
+  l_g^{(k)}(s) = - sum_{i=1,a_i^T x < c_i^l}^m a_i^T s
                  + sum_{i=1,a_i^T x > c_i^u}^m a_i^T s
   \n
  and    
@@ -225,7 +231,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Symmetric matrix storage formats"
 Likewise, the symmetric n by n objective Hessian matrix H may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .SS "Dense storage format"
@@ -233,7 +239,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Diagonal storage format"
 If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
 .SS "Multiples of the identity storage format"
@@ -280,13 +286,13 @@ int \fImax_col\fP the maximum number of nonzeros in a column of A which is permi
 int \fImax_sc\fP the maximum permitted size of the Schur complement before a refactorization is performed 
 .br
 .PP
-int \fIindmin\fP an initial guess as to the integer workspace required by SLS (OBSOL 
+int \fIindmin\fP an initial guess as to the integer workspace required by SLS (OBSOLETE) 
 .br
 .PP
-int \fIvalmin\fP an initial guess as to the real workspace required by SLS (OBSOL 
+int \fIvalmin\fP an initial guess as to the real workspace required by SLS (OBSOLETE) 
 .br
 .PP
-int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOL 
+int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOLETE) 
 .br
 .PP
 int \fIinfeas_check_interval\fP the infeasibility will be checked for improvement every infeas_check_interval iterations (see infeas_g_improved_by_factor and infeas_b_improved_by_factor below) 
@@ -313,7 +319,7 @@ int \fIrestore_problem\fP indicate whether and how much of the input problem sho
 int \fImonitor_residuals\fP the frequency at which residuals will be monitored 
 .br
 .PP
-int \fIcold_start\fP indicates whether a cold or warm start should be made\&. Possible values a 0 warm start - the values set in C_stat and B_stat indicate which constraints will be included in the initial working set\&. 1 cold start from the value set in X; constraints active at X will determine the initial working set\&. 2 cold start with no active constraints 3 cold start with only equality constraints active 4 cold start with as many active constraints as possible 
+int \fIcold_start\fP indicates whether a cold or warm start should be made\&. Possible values are 0 warm start - the values set in C_stat and B_stat indicate which constraints will be included in the initial working set\&. 1 cold start from the value set in X; constraints active at X will determine the initial working set\&. 2 cold start with no active constraints 3 cold start with only equality constraints active 4 cold start with as many active constraints as possible 
 .br
 .PP
 int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem 
@@ -325,10 +331,10 @@ real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regard
 real_wp_ \fIfeas_tol\fP any constraint violated by less than feas_tol will be considered to be satisfied 
 .br
 .PP
-real_wp_ \fIobj_unbounded\fP if the objective function value is smaller than obj_unbounded, it will b flagged as unbounded from below\&. 
+real_wp_ \fIobj_unbounded\fP if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below\&. 
 .br
 .PP
-real_wp_ \fIincrease_rho_g_factor\fP if the problem is currently infeasible and solve_qp (see below) is \&.TRUE the current penalty parameter for the general constraints will be increased by increase_rho_g_factor when needed 
+real_wp_ \fIincrease_rho_g_factor\fP if the problem is currently infeasible and solve_qp (see below) is \&.TRUE\&. the current penalty parameter for the general constraints will be increased by increase_rho_g_factor when needed 
 .br
 .PP
 real_wp_ \fIinfeas_g_improved_by_factor\fP if the infeasibility of the general constraints has not dropped by a fac of infeas_g_improved_by_factor over the previous infeas_check_interval iterations, the current corresponding penalty parameter will be increase 
@@ -367,16 +373,16 @@ real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve mean
 bool \fItreat_zero_bounds_as_general\fP any problem bound with the value zero will be treated as if it were a general value if true 
 .br
 .PP
-bool \fIsolve_qp\fP if solve_qp is \&.TRUE\&., the value of prob\&.rho_g and prob\&.rho_b will be increased as many times as are needed to ensure that the output solution is feasible, and thus aims to solve the qoadraic program (2)-(4) 
+bool \fIsolve_qp\fP if solve_qp is \&.TRUE\&., the value of prob\&.rho_g and prob\&.rho_b will be increased as many times as are needed to ensure that the output solution is feasible, and thus aims to solve the quadratic program (2)-(4) 
 .br
 .PP
-bool \fIsolve_within_bounds\fP if solve_within_bounds is \&.TRUE\&., the value of prob\&.rho_b will be increased as many times as are needed to ensure that the output solution is feasible with respect to the simple bounds, and thus aims to solve the bound-constrained qoadraic program (4)-(5) 
+bool \fIsolve_within_bounds\fP if solve_within_bounds is \&.TRUE\&., the value of prob\&.rho_b will be increased as many times as are needed to ensure that the output solution is feasible with respect to the simple bounds, and thus aims to solve the bound-constrained quadratic program (4)-(5) 
 .br
 .PP
 bool \fIrandomize\fP if randomize is \&.TRUE\&., the constraint bounds will be perturbed by small random quantities during the first stage of the solution process\&. Any randomization will ultimately be removed\&. Randomization helps when solving degenerate problems 
 .br
 .PP
-bool \fIarray_syntax_worse_than_do_loop\fP if \&.array_syntax_worse_than_do_loop is true, f77-style do loops will be used rather than f90-style array syntax for vector operations (OBSOLE 
+bool \fIarray_syntax_worse_than_do_loop\fP if \&.array_syntax_worse_than_do_loop is true, f77-style do loops will be used rather than f90-style array syntax for vector operations (OBSOLETE) 
 .br
 .PP
 bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
@@ -391,7 +397,10 @@ bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file
 char \fIsymmetric_linear_solver[31]\fP indefinite linear equation solver 
 .br
 .PP
-char \fIsif_file_name[31]\fP definite linear equation solver CHARACTER ( LEN = 30 ) :: definite_linear_solver = & 'sils' // REPEAT( ' ', 26 ) name of generated SIF file containing input problem 
+char \fIdefinite_linear_solver[31]\fP definite linear equation solver 
+.br
+.PP
+char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
 .br
 .PP
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
@@ -470,10 +479,10 @@ int \fIcg_iter\fP the total number of conjugate gradient iterations required
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 int \fInfacts\fP the total number of factorizations performed 
@@ -575,7 +584,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
 \fIA_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed\&.
 .br
@@ -585,7 +594,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

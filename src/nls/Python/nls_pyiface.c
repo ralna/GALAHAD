@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 11:40 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 12:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -27,10 +27,10 @@
 //                         PyObject *py_options);
 //PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
 //PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
-//bool psls_update_control(struct psls_control_type *control,
-//                         PyObject *py_options);
-//PyObject* psls_make_options_dict(const struct psls_control_type *control);
-//PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
+bool psls_update_control(struct psls_control_type *control,
+                         PyObject *py_options);
+PyObject* psls_make_options_dict(const struct psls_control_type *control);
+PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
 //bool lms_update_control(struct lms_control_type *control,
 //                        PyObject *py_options);
 //PyObject* lms_make_options_dict(const struct lms_control_type *control);
@@ -54,6 +54,9 @@ static PyObject *py_eval_c = NULL;
 static PyObject *py_eval_j = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *py_eval_hprods = NULL;
+static PyObject *nls_solve_return = NULL;
+static PyObject *py_c = NULL;
+static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_c(int n, int m, const double x[], double c[],
@@ -512,11 +515,11 @@ static bool nls_update_subproblem_control(
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "psls_options") == 0){
-        //    if(!psls_update_control(&control->psls_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "psls_options") == 0){
+            if(!psls_update_control(&control->psls_control, value))
+                return false;
+            continue;
+        }
         //if(strcmp(key_name, "bsc_options") == 0){
         //    if(!bsc_update_control(&control->bsc_control, value))
         //        return false;
@@ -824,12 +827,6 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "subproblem_options") == 0){
-            if(!nls_update_subproblem_control(&control->subproblem_control,
-                                              value))
-                return false;
-            continue;
-        }
         //if(strcmp(key_name, "rqs_options") == 0){
         //    if(!rqs_update_control(&control->rqs_control, value))
         //        return false;
@@ -840,11 +837,11 @@ static bool nls_update_control(struct nls_control_type *control,
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "psls_options") == 0){
-        //    if(!psls_update_control(&control->psls_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "psls_options") == 0){
+            if(!psls_update_control(&control->psls_control, value))
+                return false;
+            continue;
+        }
         //if(strcmp(key_name, "bsc_options") == 0){
         //    if(!bsc_update_control(&control->bsc_control, value))
         //        return false;
@@ -855,6 +852,12 @@ static bool nls_update_control(struct nls_control_type *control,
         //        return false;
         //    continue;
         //}
+        if(strcmp(key_name, "subproblem_options") == 0){
+            if(!nls_update_subproblem_control(&control->subproblem_control,
+                                              value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -868,7 +871,7 @@ static bool nls_update_control(struct nls_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE SUBPROBLEM OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* nls_subproblem_make_options_dict(const struct 
+static PyObject* nls_make_subproblem_options_dict(const struct 
                                                   nls_subproblem_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -964,8 +967,8 @@ static PyObject* nls_subproblem_make_options_dict(const struct
     //                     rqs_make_options_dict(&control->rqs_control));
     //PyDict_SetItemString(py_options, "glrt_options",
     //                     glrt_make_options_dict(&control->glrt_control));
-    //PyDict_SetItemString(py_options, "psls_options",
-    //                     psls_make_options_dict(&control->psls_control));
+    PyDict_SetItemString(py_options, "psls_options",
+                         psls_make_options_dict(&control->psls_control));
     //PyDict_SetItemString(py_options, "bsc_options",
     //                     bsc_make_options_dict(&control->bsc_control));
     //PyDict_SetItemString(py_options, "roots_options",
@@ -1072,14 +1075,14 @@ static PyObject* nls_make_options_dict(const struct nls_control_type *control){
     //                     rqs_make_options_dict(&control->rqs_control));
     //PyDict_SetItemString(py_options, "glrt_options",
     //                     glrt_make_options_dict(&control->glrt_control));
-    //PyDict_SetItemString(py_options, "psls_options",
-    //                     psls_make_options_dict(&control->psls_control));
+    PyDict_SetItemString(py_options, "psls_options",
+                         psls_make_options_dict(&control->psls_control));
     //PyDict_SetItemString(py_options, "bsc_options",
     //                     bsc_make_options_dict(&control->bsc_control));
     //PyDict_SetItemString(py_options, "roots_options",
     //                     roots_make_options_dict(&control->roots_control));
     PyDict_SetItemString(py_options, "subproblem_options",
-                         nls_subproblem_make_options_dict(&control->subproblem_control));
+                         nls_make_subproblem_options_dict(&control->subproblem_control));
 
     return py_options;
 }
@@ -1167,8 +1170,8 @@ static PyObject* nls_make_subproblem_inform_dict(
     //                      rqs_make_inform_dict(&inform->rqs_inform));
     // PyDict_SetItemString(py_inform, "glrt_inform",
     //                      glrt_make_inform_dict(&inform->glrt_inform));
-    // PyDict_SetItemString(py_inform, "psls_inform",
-    //                      psls_make_inform_dict(&inform->psls_inform));
+    PyDict_SetItemString(py_inform, "psls_inform",
+                         psls_make_inform_dict(&inform->psls_inform));
     // PyDict_SetItemString(py_inform, "bsc_inform",
     //                      bsc_make_inform_dict(&inform->bsc_inform));
     // PyDict_SetItemString(py_inform, "roots_inform",
@@ -1230,8 +1233,8 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
     //                      rqs_make_inform_dict(&inform->rqs_inform));
     // PyDict_SetItemString(py_inform, "glrt_inform",
     //                      glrt_make_inform_dict(&inform->glrt_inform));
-    // PyDict_SetItemString(py_inform, "psls_inform",
-    //                      psls_make_inform_dict(&inform->psls_inform));
+    PyDict_SetItemString(py_inform, "psls_inform",
+                         psls_make_inform_dict(&inform->psls_inform));
     // PyDict_SetItemString(py_inform, "bsc_inform",
     //                      bsc_make_inform_dict(&inform->bsc_inform));
     // PyDict_SetItemString(py_inform, "roots_inform",
@@ -1465,9 +1468,15 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
     Py_XDECREF(py_eval_hprods);    /* Dispose of previous callback */
     py_eval_hprods = temp_hprods;  /* Remember new callback */
 
-    // Create empty C arrays for c and g
-    double c[m];
-    double g[n];
+   // Create NumPy output arrays
+    npy_intp mdim[] = {m}; // size of c
+    PyArrayObject *py_c = 
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    double *c = (double *) PyArray_DATA(py_c);
+    npy_intp ndim[] = {n}; // size of g
+    PyArrayObject *py_g = 
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    double *g = (double *) PyArray_DATA(py_g);
 
     // Call nls_solve_direct
     status = 1; // set status to 1 on entry
@@ -1481,16 +1490,11 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-    // Wrap C arrays as NumPy arrays
-    npy_intp mdim[] = {m}; // size of c
-    PyObject *py_c = PyArray_SimpleNewFromData(1, mdim,
-                        NPY_DOUBLE, (void *) c); // create NumPy c array
-    npy_intp ndim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, ndim,
-                        NPY_DOUBLE, (void *) g); // create NumPy g array
 
-    // Return x and g
-    return Py_BuildValue("OOO", py_x, py_c, py_g);
+    // Return x, c and g
+    nls_solve_return = Py_BuildValue("OOO", py_x, py_c, py_g);
+    Py_XINCREF(nls_solve_return);
+    return nls_solve_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_INFORMATION   -*-*-*-*-*-*-*-*

@@ -181,7 +181,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(n) holds the total number of entries plus one.
+while A_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $A_{ij}$ of the  entries in the i-th row are stored in components
 l = A_ptr(i), ..., A_ptr(i+1)-1 of the
@@ -406,7 +406,7 @@ functions
           are used, and in this case can be None.
       A_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $A$, as well as the total number of entries plus one,
+          part of $A$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       options : dict, optional

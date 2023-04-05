@@ -1,4 +1,4 @@
-.TH "galahad_lstr.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD LSTR" \" -*- nroff -*-
+.TH "galahad_lstr.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD LSTR" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_lstr.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -54,6 +58,8 @@ Given a real m by n matrix A, a real m vector b and a scalar Delta>0, this packa
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 November 2007, C interface December 2021\&.
 .SS "Terminology"
@@ -234,9 +240,7 @@ real_wp_ \fIr_norm\fP the Euclidean norm of Ax-b
 real_wp_ \fIAtr_norm\fP the Euclidean norm of A^T (Ax-b) + lambda x 
 .br
 .PP
-real_wp_ \fIbiter_mean\fP the average number of inner iterations performed during an outer 
-.br
- iteration 
+real_wp_ \fIbiter_mean\fP the average number of inner iterations performed during an outer iteration 
 .br
 .PP
 .RE
@@ -253,8 +257,6 @@ Set default control values and initialize private data
 \fIcontrol\fP is a struct containing control information (see \fBlstr_control_type\fP)
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.br
- 
 .PD 0
 
 .IP "\(bu" 2

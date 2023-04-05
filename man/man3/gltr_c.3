@@ -1,4 +1,4 @@
-.TH "galahad_gltr.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD GLTR" \" -*- nroff -*-
+.TH "galahad_gltr.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD GLTR" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_gltr.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -56,6 +60,8 @@ The package may also be used to solve the related problem in which x is instead 
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 April 1997, C interface December 2021\&.
 .SS "Terminology"
@@ -68,7 +74,7 @@ The method is iterative\&. Starting with the vector M^{-1} c, a matrix of Lanczo
 \n
  where y_k solves the ``tridiagonal'' subproblem of minimizing \[(1) \;\;\; 1/2 y^T T_k y + ||c||_{M^{-1}} e_1^T y\;\mbox{subject to the constraint}\; ||y||_2 <= Delta,\]  
 \n
-  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y  
+  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y
          subject to the constraint ||y||_2  leq  Delta,
 \n
  and where e_1 is the first unit vector\&.

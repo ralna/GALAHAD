@@ -47,7 +47,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
-while H_ptr(n) holds the total number of entries plus one.
+while H_ptr(n) holds the total number of entries.
 The column indices j, $0 <= j <= i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
@@ -342,7 +342,7 @@ functions
           storage schemes are used, and in this case can be None
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries plus one,
+          part of $H$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None
       options : dict, optional

@@ -42,11 +42,17 @@ options['print_level'] = 1
 cqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
+#  provide starting values (not crucial)
+
+x = np.array([0.0,0.0,0.0])
+y = np.array([0.0,0.0])
+z = np.array([0.0,0.0,0.0])
+
 # find optimum of qp
 print("\n 1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
-  = cqp.solve_qp(n, m, f, g, H_ne, H_val, 
-                 A_ne, A_val, c_l, c_u, x_l, x_u)
+  = cqp.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
+                 c_l, c_u, x_l, x_u, x, y, z)
 print("x:",x)
 print("c:",c)
 print("y:",y)
@@ -80,11 +86,17 @@ cqp.initialize()
 cqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
+#  provide starting values (not crucial)
+
+x = np.array([0.0,0.0,0.0])
+y = np.array([0.0,0.0])
+z = np.array([0.0,0.0,0.0])
+
 # find optimum of sldqp
 print("\n 2nd problem: solve sldqp")
 x, c, y, z, x_stat, c_stat \
-  = cqp.solve_sldqp(n, m, f, g, w, x0, 
-                    A_ne, A_val, c_l, c_u, x_l, x_u)
+  = cqp.solve_sldqp(n, m, f, g, w, x0, A_ne, A_val, 
+                    c_l, c_u, x_l, x_u, x, y, z)
 print("x:",x)
 print("c:",c)
 print("y:",y)

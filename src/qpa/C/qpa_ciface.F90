@@ -107,10 +107,10 @@
       REAL ( KIND = rpc_ ) :: factorize
       REAL ( KIND = rpc_ ) :: solve
       REAL ( KIND = rpc_ ) :: clock_total
-      REAL ( KIND = spc_ ) :: clock_preprocess
-      REAL ( KIND = spc_ ) :: clock_analyse
-      REAL ( KIND = spc_ ) :: clock_factorize
-      REAL ( KIND = spc_ ) :: clock_solve
+      REAL ( KIND = rpc_ ) :: clock_preprocess
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE qpa_time_type
 
     TYPE, BIND( C ) :: qpa_inform_type

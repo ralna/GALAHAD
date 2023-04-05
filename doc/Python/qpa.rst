@@ -83,7 +83,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries plus one.
+while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
 l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
@@ -97,7 +97,7 @@ Once again only the nonzero entries are stored, but this time
 they are ordered so that those in column j appear directly before those
 in column j+1. For the j-th column of $A$ the j-th component of the
 integer array A_ptr holds the position of the first entry in this column,
-while A_ptr(n) holds the total number of entries plus one.
+while A_ptr(n) holds the total number of entries.
 The row indices i, $0 \leq i \leq m-1$, and values $A_{ij}$
 of the  nonzero entries in the j-th columnsare stored in components
 l = A_ptr(j), $\ldots$, A_ptr(j+1)-1, $0 \leq j \leq n-1$,
@@ -139,7 +139,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
-while H_ptr(n) holds the total number of entries plus one.
+while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
@@ -445,7 +445,7 @@ functions
           are used, and in this case can be None.
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries plus one,
+          part of $H$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       A_type : string
@@ -466,13 +466,13 @@ functions
           dense storage scheme is used, and in this case can be None.
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one, in the sparse row-wise storage 
+          total number of entries, in the sparse row-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       options : dict, optional
           dictionary of control options (see ``qpa.initialize``).
 
-   .. function:: qpa.solve_qp(n, m, f, g, h_ne, H_val, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: qpa.solve_qp(n, m, f, g, h_ne, H_val, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the standard non-convex quadratic program 
       involving the quadratic objective function $q(x)$.
@@ -516,6 +516,20 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      y : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y$
+          associated with the general constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 
@@ -541,7 +555,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: qpa.solve_l1qp(n, m, f, g, h_ne, H_val, rho_g, rho_b, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: qpa.solve_l1qp(n, m, f, g, h_ne, H_val, rho_g, rho_b, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the non-convex quadratic program involving the
       $\mathbf{\ell_1}$ quadratic objective function $f(x;\rho_g,\rho_b)$
@@ -592,6 +606,20 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      y : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y$
+          associated with the general constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 
@@ -617,7 +645,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: qpa.solve_bcl1qp(n, m, f, g, h_ne, H_val, rho_g, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: qpa.solve_bcl1qp(n, m, f, g, h_ne, H_val, rho_g, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the non-convex quadratic program involving the
       bound-constrained $\mathbf{\ell_1}$ quadratic objective function 
@@ -665,6 +693,20 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      y : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y$
+          associated with the general constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 
