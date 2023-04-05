@@ -19,14 +19,14 @@
 #include "galahad_cqp.h"
 
 /* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
-//bool trs_update_control(struct trs_control_type *control,
-//                        PyObject *py_options);
-//PyObject* trs_make_options_dict(const struct trs_control_type *control);
-//PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
-//bool sbls_update_control(struct sbls_control_type *control,
-//                         PyObject *py_options);
-//PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
-//PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
+bool fdc_update_control(struct fdc_control_type *control,
+                        PyObject *py_options);
+PyObject* fdc_make_options_dict(const struct fdc_control_type *control);
+PyObject* fdc_make_inform_dict(const struct fdc_inform_type *inform);
+bool sbls_update_control(struct sbls_control_type *control,
+                         PyObject *py_options);
+PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
+PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
 //bool roots_update_control(struct roots_control_type *control,
 //                         PyObject *py_options);
 //PyObject* roots_make_options_dict(const struct roots_control_type *control);
@@ -401,16 +401,16 @@ static bool cqp_update_control(struct cqp_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "fdc_options") == 0){
-        //    if(!fdc_update_control(&control->fdc_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "sbls_options") == 0){
-        //    if(!sbls_update_control(&control->sbls_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "fdc_options") == 0){
+            if(!fdc_update_control(&control->fdc_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sbls_options") == 0){
+            if(!sbls_update_control(&control->sbls_control, value))
+                return false;
+            continue;
+        }
         //if(strcmp(key_name, "fit_options") == 0){
         //    if(!fit_update_control(&control->fit_control, value))
         //        return false;
@@ -553,10 +553,10 @@ PyObject* cqp_make_options_dict(const struct cqp_control_type *control){
                          PyUnicode_FromString(control->qplib_file_name));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "fdc_options",
-    //                     fdc_make_options_dict(&control->fdc_control));
-    //PyDict_SetItemString(py_options, "sbls_options",
-    //                     sbls_make_options_dict(&control->sbls_control));
+    PyDict_SetItemString(py_options, "fdc_options",
+                         fdc_make_options_dict(&control->fdc_control));
+    PyDict_SetItemString(py_options, "sbls_options",
+                         sbls_make_options_dict(&control->sbls_control));
     //PyDict_SetItemString(py_options, "fit_options",
     //                     fit_make_options_dict(&control->fit_control));
     //PyDict_SetItemString(py_options, "roots_options",
@@ -650,17 +650,29 @@ static PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
                          PyFloat_FromDouble(inform->non_negligible_pivot));
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
-    //PyDict_SetItemString(py_inform, "checkpointsIter",
-    //                     PyLong_FromLong(inform->checkpointsIter));
-    //PyDict_SetItemString(py_inform, "checkpointsTime",
-    //                     PyFloat_FromDouble(inform->checkpointsTime));
+
+    // include checkpoint arrays
+    npy_intp cdim[] = {16}; 
+    PyArrayObject *py_iter = 
+      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
+    int *iter = (int *) PyArray_DATA(py_iter); 
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
+    PyArrayObject *py_time = 
+      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_DOUBLE);
+    double *time = (double *) PyArray_DATA(py_time); 
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
+
     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time",
                          cqp_make_time_dict(&inform->time));
-    //PyDict_SetItemString(py_inform, "fdc_inform",
-    //                     fdc_make_inform_dict(&inform->fdc_inform));
-    //PyDict_SetItemString(py_inform, "sbls_inform",
-    //                    sbls_make_inform_dict(&inform->sbls_inform));
+
+    // Set dictionaries from subservient packages
+    PyDict_SetItemString(py_inform, "fdc_inform",
+                         fdc_make_inform_dict(&inform->fdc_inform));
+    PyDict_SetItemString(py_inform, "sbls_inform",
+                        sbls_make_inform_dict(&inform->sbls_inform));
     //PyDict_SetItemString(py_inform, "fit_inform",
     //                     fit_make_inform_dict(&inform->fit_inform));
     //PyDict_SetItemString(py_inform, "roots_inform",
@@ -811,7 +823,8 @@ static PyObject* py_cqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_H_val, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u;
+    PyArrayObject *py_x, *py_y, *py_z;
+    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
     int n, m, H_ne, A_ne;
     double f;
 
@@ -820,9 +833,10 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u))
+                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
+                         &py_x, &py_y, &py_z))
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -839,6 +853,12 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("x_u", py_x_u, n))
         return NULL;
+    if(!check_array_double("x", py_x, n))
+        return NULL;
+    if(!check_array_double("y", py_y, m))
+        return NULL;
+    if(!check_array_double("z", py_z, n))
+        return NULL;
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
@@ -848,14 +868,22 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     c_u = (double *) PyArray_DATA(py_c_u);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
+    x = (double *) PyArray_DATA(py_x);
+    y = (double *) PyArray_DATA(py_y);
+    z = (double *) PyArray_DATA(py_z);
 
-    // Create C intermediary output arrays
-    double x[n];
-    double c[m];
-    double y[m];
-    double z[n];
-    int x_stat[n];
-    int c_stat[m];
+   // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x_stat
+    npy_intp mdim[] = {m}; // size of c and c_ztar
+    PyArrayObject *py_c = 
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    double *c = (double *) PyArray_DATA(py_c);
+    PyArrayObject *py_x_stat = 
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+    int *x_stat = (int *) PyArray_DATA(py_x_stat);
+    PyArrayObject *py_c_stat = 
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call cqp_solve_direct
     status = 1; // set status to 1 on entry
@@ -874,38 +902,6 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x, z, x_stat
-    npy_intp mdim[] = {m}; // size of c, y, c_stat
-    PyArrayObject *py_x = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    PyArrayObject *py_c = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    PyArrayObject *py_y = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    PyArrayObject *py_z = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    PyArrayObject *py_x_stat = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
-    PyArrayObject *py_c_stat = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-
-    // Create actual output arrays
-    double *x_out = (double *) PyArray_DATA(py_x);
-    double *c_out = (double *) PyArray_DATA(py_c);
-    double *y_out = (double *) PyArray_DATA(py_y);
-    double *z_out = (double *) PyArray_DATA(py_z);
-    int *x_stat_out = (int *) PyArray_DATA(py_x_stat);
-    int *c_stat_out = (int *) PyArray_DATA(py_c_stat);
-
-    // copy C intermediary output arrays to actual outputs
-    for( int i = 0; i < n; i++) x_out[i] = x[i];
-    for( int i = 0; i < m; i++) c_out[i] = c[i];
-    for( int i = 0; i < m; i++) y_out[i] = y[i];
-    for( int i = 0; i < n; i++) z_out[i] = z[i];
-    for( int i = 0; i < n; i++) x_stat_out[i] = x_stat[i];
-    for( int i = 0; i < n; i++) c_stat_out[i] = c_stat[i];
-
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
 
@@ -921,7 +917,8 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args){
 static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u;
+    PyArrayObject *py_x, *py_y, *py_z;
+    double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
     int n, m, H_ne, A_ne;
     double f;
 
@@ -930,9 +927,10 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g, 
                          &py_w, &py_x0, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u))
+                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
+                         &py_x, &py_y, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -952,14 +950,12 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("x_u", py_x_u, n))
         return NULL;
-
-    // Create C intermediary output arrays
-    double x[n];
-    double c[m];
-    double y[m];
-    double z[n];
-    int x_stat[n];
-    int c_stat[m];
+    if(!check_array_double("x", py_x, n))
+        return NULL;
+    if(!check_array_double("y", py_y, m))
+        return NULL;
+    if(!check_array_double("z", py_z, n))
+        return NULL;
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
@@ -970,6 +966,22 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     c_u = (double *) PyArray_DATA(py_c_u);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
+    x = (double *) PyArray_DATA(py_x);
+    y = (double *) PyArray_DATA(py_y);
+    z = (double *) PyArray_DATA(py_z);
+
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of x_stat
+    npy_intp mdim[] = {m}; // size of c and c_ztar
+    PyArrayObject *py_c = 
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    double *c = (double *) PyArray_DATA(py_c);
+    PyArrayObject *py_x_stat = 
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+    int *x_stat = (int *) PyArray_DATA(py_x_stat);
+    PyArrayObject *py_c_stat = 
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
+    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call cqp_solve_direct
     status = 1; // set status to 1 on entry
@@ -988,38 +1000,6 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-
-    // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x, z, x_stat
-    npy_intp mdim[] = {m}; // size of c, y, c_stat
-    PyArrayObject *py_x = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    PyArrayObject *py_c = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    PyArrayObject *py_y = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    PyArrayObject *py_z = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
-    PyArrayObject *py_x_stat = 
-        (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
-    PyArrayObject *py_c_stat = 
-        (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-
-    // Create actual output arrays
-    double *x_out = (double *) PyArray_DATA(py_x);
-    double *c_out = (double *) PyArray_DATA(py_c);
-    double *y_out = (double *) PyArray_DATA(py_y);
-    double *z_out = (double *) PyArray_DATA(py_z);
-    int *x_stat_out = (int *) PyArray_DATA(py_x_stat);
-    int *c_stat_out = (int *) PyArray_DATA(py_c_stat);
-
-    // copy C intermediary output arrays to actual outputs
-    for( int i = 0; i < n; i++) x_out[i] = x[i];
-    for( int i = 0; i < m; i++) c_out[i] = c[i];
-    for( int i = 0; i < m; i++) y_out[i] = y[i];
-    for( int i = 0; i < n; i++) z_out[i] = z[i];
-    for( int i = 0; i < n; i++) x_stat_out[i] = x_stat[i];
-    for( int i = 0; i < n; i++) c_stat_out[i] = c_stat[i];
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_sldqp_return;

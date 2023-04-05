@@ -242,7 +242,7 @@
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
-  while H_ptr(n) holds the total number of entries plus one.
+  while H_ptr(n) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
@@ -753,7 +753,7 @@ struct bqpb_inform_type {
 
     /// \brief
     /// checkpoints(i) records the iteration at which the criticality measures
-    /// first fall below \f$10^{-i}\f$, i = 1, ..., 16 (-1 means not achieved)
+    /// first fall below \f$10^{-i-1}\f$, i = 0, ..., 15 (-1 means not achieved)
     int checkpointsIter[16];
     /// see checkpointsIter
     real_wp_ checkpointsTime[16];
@@ -894,7 +894,7 @@ void bqpb_import( struct bqpb_control_type *control,
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of  each row of the lower
-   triangular part of \f$H\f$, as well as the total number of entries plus one,
+   triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
    other schemes are used, and in this case can be NULL.
 */

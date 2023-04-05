@@ -540,7 +540,7 @@ PyDoc_STRVAR(uls_module_doc,
 
 "The uls package solves dense or sparse symmetric systems of linear \n"
 "equations using variants of Gaussian elimination. \n"
-"Given a sparse matrix A = {a_ij}_mxn,  and an n-vector $b$,\n"
+"Given a sparse matrix A = {a_ij}_mxn,  and an n-vector b,\n"
 "this function solves the system Ax=b or its transpose A^Tx=b.\n"
 "Both square (m=n) and rectangular (m/=n) matrices are handled;\n"
 "one of an infinite class of solutions for consistent systems will\n"

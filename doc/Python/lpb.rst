@@ -55,7 +55,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries plus one.
+while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
 l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
@@ -69,7 +69,7 @@ Once again only the nonzero entries are stored, but this time
 they are ordered so that those in column j appear directly before those
 in column j+1. For the j-th column of $A$ the j-th component of the
 integer array A_ptr holds the position of the first entry in this column,
-while A_ptr(n) holds the total number of entries plus one.
+while A_ptr(n) holds the total number of entries.
 The row indices i, $0 \leq i \leq m-1$, and values $A_{ij}$
 of the  nonzero entries in the j-th columnsare stored in components
 l = A_ptr(j), $\ldots$, A_ptr(j+1)-1, $0 \leq j \leq n-1$,
@@ -357,7 +357,7 @@ functions
           dense storage scheme is used, and in this case can be None.
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one, in the sparse row-wise storage 
+          total number of entries, in the sparse row-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       options : dict, optional
@@ -553,14 +553,14 @@ functions
              detecting linearly dependent constraints.
           feasible : bool
              is the returned "solution" feasible?.
-          checkpointsIter : ndarray(17)
+          checkpointsIter : ndarray(16)
              checkpointsIter(i) records the iteration at which the
              criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
-          checkpointsTime : ndarray(17)
+             $10^{-i-1}, i = 0, \ldots 15$ (where -1 means not achieved).
+          checkpointsTime : ndarray(16)
              checkpointsTime(i) records the CPU time at which the
              criticality measures first fall below 
-             $10^{-i}, i = 0, \ldots 16$ (where -1 means not achieved).
+             $10^{-i-1}, i = 0, \ldots 15$ (where -1 means not achieved).
           time : dict
              dictionary containing timing information:
                total : float

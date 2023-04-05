@@ -1,4 +1,4 @@
-.TH "galahad_rpd.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
+.TH "galahad_rpd.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_rpd.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -107,6 +111,8 @@ Read and write data for the linear program (LP) \[\mbox{minimize}\;\; g^T x + f 
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 January 2006, C interface January 2022\&.
 .SS "Reference"

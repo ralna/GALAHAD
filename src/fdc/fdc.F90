@@ -1780,6 +1780,7 @@
          DEPEN( : n_depen ) = data%DEPEN( : n_depen ) - 1
        END IF
      END IF
+!    WRITE( 6, * ) ' fortran n_depen = ', n_depen
 
      RETURN
 

@@ -24,7 +24,7 @@ For this, only the nonzero entries are stored, and they are
 ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries plus one.
+while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
 l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
@@ -97,7 +97,7 @@ functions
           uls_options : dict
              default control options for ULS (see ``uls.initialize``).
 
-   .. function:: fdc.find_dependent_rows(m, n, A_val, A_col, A_ptr, b, options=None)
+   .. function:: fdc.find_dependent_rows(m, n, A_ptr, A_col, A_val, b, options=None)
 
       Find dependent rows of $A$ and, if any, check if $Ax = b$ is consistent.
 
@@ -107,15 +107,15 @@ functions
           holds the number of constraints (rows of $A$).
       n : int
           holds the number of variables (columns of $A$).
-      A_val : ndarray(A_ptr(m)-1)
-          holds the values of the nonzeros of $A$ in the sparse co-ordinate
-          storage scheme.
+      A_ptr : ndarray(m+1)
+          holds the starting position of each row of $A$, as well as the 
+          total number of entries.
       A_col : ndarray(A_ptr(m)-1)
           holds the column indices of the nonzeros of $A$ in the sparse 
           co-ordinate  storage scheme.
-      A_ptr : ndarray(m+1)
-          holds the starting position of each row of $A$, as well as the 
-          total number of entries plus one.
+      A_val : ndarray(A_ptr(m)-1)
+          holds the values of the nonzeros of $A$ in the sparse co-ordinate
+          storage scheme.
       b : ndarray(m)
           holds the values of the llinear term $b$ in the constraints.
       options : dict, optional

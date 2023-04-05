@@ -1,4 +1,4 @@
-.TH "galahad_eqp.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD EQP" \" -*- nroff -*-
+.TH "galahad_eqp.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD EQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_eqp.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_fdc\&.h'\fP
 .br
@@ -82,6 +86,8 @@ The package may alternatively be used to minimize the (shifted) squared- least-d
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 March 2006, C interface January 2021\&.
 .SS "Terminology"
@@ -156,7 +162,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Symmetric matrix storage formats"
 Likewise, the symmetric n by n objective Hessian matrix H may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .SS "Dense storage format"
@@ -164,7 +170,7 @@ The matrix H is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Diagonal storage format"
 If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
 .SS "Multiples of the identity storage format"
@@ -191,31 +197,47 @@ int \fIout\fP general output occurs on stream out
 int \fIprint_level\fP the level of output required is specified by print_level 
 .br
 .PP
-int \fIfactorization\fP the factorization to be used\&. Possible values are 0 automatic 1 Schur-complement factorization 2 augmented-system factorization (OBSOLETE 
+int \fIfactorization\fP the factorization to be used\&. Possible values are /li 0 automatic /li 1 Schur-complement factorization /li 2 augmented-system factorization (OBSOLETE) 
 .br
 .PP
-int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLE 
+int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLETE) 
 .br
 .PP
-int \fIindmin\fP an initial guess as to the integer workspace required by SBLS (OBSOL 
+int \fIindmin\fP an initial guess as to the integer workspace required by SBLS (OBSOLETE) 
 .br
 .PP
-int \fIvalmin\fP an initial guess as to the real workspace required by SBLS (OBSOL 
+int \fIvalmin\fP an initial guess as to the real workspace required by SBLS (OBSOLETE) 
 .br
 .PP
-int \fIlen_ulsmin\fP an initial guess as to the workspace required by ULS (OBSOL 
+int \fIlen_ulsmin\fP an initial guess as to the workspace required by ULS (OBSOLETE) 
 .br
 .PP
-int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOL 
+int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOLETE) 
 .br
 .PP
 int \fIcg_maxit\fP the maximum number of CG iterations allowed\&. If cg_maxit < 0, this number will be reset to the dimension of the system + 1 
 .br
 .PP
-int \fIpreconditioner\fP the preconditioner to be used for the CG is defined by precon\&. Possible values are 0 automatic 1 no preconditioner, i\&.e, the identity within full factorization 2 full factorization 3 band within full factorization 4 diagonal using the barrier terms within full factorization (OBSOLETE 5 optionally supplied diagonal, G = D 
+int \fIpreconditioner\fP the preconditioner to be used for the CG\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 automatic 
+.IP "\(bu" 2
+1 no preconditioner, i\&.e, the identity within full factorization 
+.IP "\(bu" 2
+2 full factorization 
+.IP "\(bu" 2
+3 band within full factorization 
+.IP "\(bu" 2
+4 diagonal using the barrier terms within full factorization (OBSOLETE) 
+.IP "\(bu" 2
+5 optionally supplied diagonal, G = D 
+.PP
+
 .br
 .PP
-int \fIsemi_bandwidth\fP the semi-bandwidth of a band preconditioner, if appropriate (OBSOL 
+int \fIsemi_bandwidth\fP the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE) 
 .br
 .PP
 int \fInew_a\fP how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed 
@@ -227,22 +249,22 @@ int \fInew_h\fP how much has H changed since last problem solved: 0 = not change
 int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem 
 .br
 .PP
-real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLE 
+real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLETE) 
 .br
 .PP
-real_wp_ \fIpivot_tol_for_basis\fP the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLE 
+real_wp_ \fIpivot_tol_for_basis\fP the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLETE) 
 .br
 .PP
-real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE 
+real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLETE) 
 .br
 .PP
-real_wp_ \fIinner_fraction_opt\fP the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLE 
+real_wp_ \fIinner_fraction_opt\fP the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLETE) 
 .br
 .PP
 real_wp_ \fIradius\fP an upper bound on the permitted step (-ve will be reset to an appropriat large value by eqp_solve) 
 .br
 .PP
-real_wp_ \fImin_diagonal\fP diagonal preconditioners will have diagonals no smaller than min_diagona (OBSOLETE) 
+real_wp_ \fImin_diagonal\fP diagonal preconditioners will have diagonals no smaller than min_diagonal (OBSOLETE) 
 .br
 .PP
 real_wp_ \fImax_infeasibility_relative\fP if the constraints are believed to be rank defficient and the residual at a 'typical' feasible point is larger than max( max_infeasibility_relative * norm A, max_infeasibility_absolute ) the problem will be marked as infeasible 
@@ -260,7 +282,7 @@ real_wp_ \fIinner_stop_absolute\fP see inner_stop_relative
 real_wp_ \fIinner_stop_inter\fP see inner_stop_relative 
 .br
 .PP
-bool \fIfind_basis_by_transpose\fP if \&.find_basis_by_transpose is true, implicit factorization precondition will be based on a basis of A found by examining A's transpose (OBSOLE 
+bool \fIfind_basis_by_transpose\fP if \&.find_basis_by_transpose is true, implicit factorization precondition will be based on a basis of A found by examining A's transpose (OBSOLETE) 
 .br
 .PP
 bool \fIremove_dependencies\fP if \&.remove_dependencies is true, the equality constraints will be preprocessed to remove any linear dependencies 
@@ -348,10 +370,10 @@ int \fIcg_iter\fP the total number of conjugate gradient iterations required
 int \fIcg_iter_inter\fP see cg_iter 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int64_t \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int64_t \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by QPB_solve 
@@ -438,7 +460,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
 \fIA_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed\&.
 .br
@@ -448,7 +470,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

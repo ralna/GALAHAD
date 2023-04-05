@@ -112,7 +112,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $A$ the i-th component of the
 integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries plus one.
+while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
 l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
@@ -125,7 +125,7 @@ Once again only the nonzero entries are stored, but this time
 they are ordered so that those in column j appear directly before those
 in column j+1. For the j-th column of $A$ the j-th component of the
 integer array A_ptr holds the position of the first entry in this column,
-while A_ptr(n) holds the total number of entries plus one.
+while A_ptr(n) holds the total number of entries.
 The row indices i, $0 \leq i \leq m-1$, and values $A_{ij}$
 of the  nonzero entries in the j-th columnsare stored in components
 l = A_ptr(j), $\ldots$, A_ptr(j+1)-1, $0 \leq j \leq n-1$,
@@ -164,7 +164,7 @@ Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
-while H_ptr(n) holds the total number of entries plus one.
+while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
@@ -462,6 +462,16 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
+          rqs_options : dict
+             default control options for RQS (see ``rqs.initialize``).
+          glrt_options : dict
+             default control options for GLRT (see ``glrt.initialize``).
+          psls_options : dict
+             default control options for PSLS (see ``psls.initialize``).
+          bsc_options : dict
+             default control options for BSC (see ``bsc.initialize``).
+          roots_options : dict
+             default control options for ROOTS (see ``roots.initialize``).
           subproblem_options : dict
            default control options for the step-finding subproblem:
             error : int
@@ -734,16 +744,6 @@ functions
                default control options for BSC (see ``bsc.initialize``).
             roots_options : dict
                default control options for ROOTS (see ``roots.initialize``).
-          rqs_options : dict
-             default control options for RQS (see ``rqs.initialize``).
-          glrt_options : dict
-             default control options for GLRT (see ``glrt.initialize``).
-          psls_options : dict
-             default control options for PSLS (see ``psls.initialize``).
-          bsc_options : dict
-             default control options for BSC (see ``bsc.initialize``).
-          roots_options : dict
-             default control options for ROOTS (see ``roots.initialize``).
 
    .. function:: nls.load(n, m, J_type, J_ne, J_row, J_col, J_ptr, H_type, H_ne,                          H_row, H_col, H_ptr, P_type, P_ne, P_row, P_col, P_ptr, w, options=None)
 
@@ -773,7 +773,7 @@ functions
           dense storage scheme is used, and in this case can be None.
       J_ptr : ndarray(m+1)
           holds the starting position of each row of $J$, as well as the 
-          total number of entries plus one, in the sparse row-wise storage 
+          total number of entries, in the sparse row-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       H_type : string, optional
@@ -799,7 +799,7 @@ functions
           storage schemes are used, and in this case can be None.
       H_ptr : ndarray(n+1), optional
           holds the starting position of each row of the lower triangular
-          part of $H$, as well as the total number of entries plus one,
+          part of $H$, as well as the total number of entries,
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       P_type : string, optional
@@ -824,7 +824,7 @@ functions
           dense storage scheme is used, and in this case can be None.
       P_ptr : ndarray(n+1), optional
           holds the starting position of each column of $P$, as well as the 
-          total number of entries plus one, in the sparse column-wise storage 
+          total number of entries, in the sparse column-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       w : ndarray(n), optional

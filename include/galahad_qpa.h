@@ -492,7 +492,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
-  while A_ptr(m) holds the total number of entries plus one.
+  while A_ptr(m) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
@@ -537,7 +537,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
-  while H_ptr(n) holds the total number of entries plus one.
+  while H_ptr(n) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
@@ -851,7 +851,7 @@ struct qpa_control_type {
 
     /// \brief
     /// definite linear equation solver
-    char definite_linear_solver[31];
+    //char definite_linear_solver[31];
 
     // \brief
     /// name of generated SIF file containing input problem
@@ -903,19 +903,19 @@ struct qpa_time_type {
 
     /// \brief
     /// the clock time spent preprocessing the problem
-    real_sp_ clock_preprocess;
+    real_wp_ clock_preprocess;
 
     /// \brief
     /// the clock time spent analysing the required matrices prior to factorizat
-    real_sp_ clock_analyse;
+    real_wp_ clock_analyse;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_sp_ clock_factorize;
+    real_wp_ clock_factorize;
 
     /// \brief
     /// the clock time spent computing the search direction
-    real_sp_ clock_solve;
+    real_wp_ clock_solve;
 };
 
 /**
@@ -1117,7 +1117,7 @@ void qpa_import( struct qpa_control_type *control,
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of  each row of the lower
-   triangular part of \f$H\f$, as well as the total number of entries plus one,
+   triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
    other schemes are used, and in this case can be NULL.
 
@@ -1142,7 +1142,7 @@ void qpa_import( struct qpa_control_type *control,
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of each row of \f$A\f$, as well as the
-   total number of entries plus one, in the sparse row-wise storage scheme.
+   total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 */

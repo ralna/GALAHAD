@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_dqp.h"
-#include <string.h>
 
 int main(void) {
 
@@ -60,6 +60,10 @@ int main(void) {
         control.f_indexing = false; // C sparse matrix indexing
         strcpy(control.symmetric_linear_solver, "sytr ") ;
         strcpy(control.definite_linear_solver, "sytr ") ;
+        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") ;
+        control.fdc_control.use_sls = true;
+        strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
         // Start from 0
         real_wp_ x[] = {0.0,0.0,0.0};
@@ -147,15 +151,23 @@ int main(void) {
         dqp_terminate( &data, &control, &inform );
     }
 
+    printf(" test of sldqp\n\n");
+
     // test shifted least-distance interface
-//    for( int d=1; d <= 0; d++){
-      for( int d=1; d <= 1; d++){
+//  for( int d=1; d <= 0; d++){
+    for( int d=1; d <= 1; d++){
 
         // Initialize DQP
         dqp_initialize( &data, &control, &status );
-
+    
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
+        strcpy(control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.definite_linear_solver, "sytr ") ;
+        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") ;
+        control.fdc_control.use_sls = true;
+        strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
         // Start from 0
         real_wp_ x[] = {0.0,0.0,0.0};
@@ -170,15 +182,18 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'W';
+        printf(" going in\n\n");
                 dqp_import( &control, &data, &status, n, m,
                            "shifted_least_distance", H_ne, NULL, NULL, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
+        printf(" going in\n\n");
                 dqp_solve_sldqp( &data, &status, n, m, w, x_0, g, f, 
                                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
                                  x_stat, c_stat );
                 break;
 
             }
+        printf(" come out\n\n");
         dqp_information( &data, &inform, &status );
 
         if(inform.status == 0){

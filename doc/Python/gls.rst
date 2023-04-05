@@ -147,6 +147,6 @@ functions
           stat : int
              Status value after allocate failure.
 
-   .. function:: gls.terminate()
+   .. function:: gls.finalize()
 
      Deallocate all internal private storage.

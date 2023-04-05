@@ -265,6 +265,6 @@ functions
              Estimate of forward error.
 
 
-   .. function:: sils.terminate()
+   .. function:: sils.finalize()
 
      Deallocate all internal private storage.

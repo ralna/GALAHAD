@@ -1,7 +1,7 @@
 //* \file trb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 14:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -53,6 +53,8 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
+static PyObject *trb_solve_return = NULL;
+static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -865,8 +867,11 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args){
     Py_XDECREF(py_eval_h);      /* Dispose of previous callback */
     py_eval_h = temp_h;         /* Remember new callback */
 
-    // Create empty C array for g
-    double g[n];
+   // Create NumPy output array
+    npy_intp ndim[] = {n}; // size of g
+    PyArrayObject *py_g = 
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    double *g = (double *) PyArray_DATA(py_g);
 
     // Call trb_solve_direct
     status = 1; // set status to 1 on entry
@@ -880,13 +885,11 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
-    // Wrap C array as NumPy array
-    npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
-                        NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
-    return Py_BuildValue("OO", py_x, py_g);
+    trb_solve_return = Py_BuildValue("OO", py_x, py_g);
+    Py_XINCREF(trb_solve_return);
+    return trb_solve_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRB_INFORMATION   -*-*-*-*-*-*-*-*

@@ -382,7 +382,7 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of each row of \f$A\f$, as well as the
-   total number of entries plus one.
+   total number of entries.
 
  @param[in] A_val is a one-dimensional array of size a_ne and type double,
     that holds the values of the entries of the \f$A\f$ ordered as in A_col

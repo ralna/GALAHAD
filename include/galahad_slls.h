@@ -205,7 +205,7 @@
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
-  while A_ptr(m) holds the total number of entries plus one.
+  while A_ptr(m) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
@@ -219,7 +219,7 @@
   they are ordered so that those in column j appear directly before those
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
-  while A_ptr(n) holds the total number of entries plus one.
+  while A_ptr(n) holds the total number of entries.
   The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th column are stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1,  \f$0 \leq j \leq n-1\f$,
@@ -587,9 +587,9 @@ void slls_import( struct slls_control_type *control,
 
  @param[in] A_ptr is a one-dimensional array of size n+1 or m+1 and type int,
    that holds the starting position of each row of \f$A\f$, as well as the
-   total number of entries plus one, in the sparse row-wise storage scheme, or
+   total number of entries, in the sparse row-wise storage scheme, or
    the starting position of each column of \f$A\f$, as well as the
-   total number of entries plus one, in the sparse column-wise storage scheme.
+   total number of entries, in the sparse column-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 

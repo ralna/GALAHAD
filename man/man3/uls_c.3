@@ -1,4 +1,4 @@
-.TH "galahad_uls.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD ULS" \" -*- nroff -*-
+.TH "galahad_uls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD ULS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_uls.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_gls\&.h'\fP
 .br
@@ -58,11 +62,13 @@ galahad_uls.h
 .SS "Purpose"
 This package \fB solves dense or sparse unsymmetric systems of linear equations\fP using variants of Gaussian elimination\&. Given a sparse symmetric m \\times n matrix A = a_{ij}, and an m-vector b, this subroutine solves the system A x = b\&. If b is an n-vector, the package may solve instead the system A^T x = b\&. Both square (m=n) and rectangular (m /= n) matrices are handled; one of an infinite class of solutions for consistent systems will be returned whenever A is not of full rank\&.
 .PP
-The method provides a common interface to a variety of well-known solvers from HSL\&. Currently supported solvers include \fCMA28/GLS\fP and \fCHSL_MA48\fP\&. Note that \fB the solvers themselves do not form part of this package and must be obtained separately\&.\fP Dummy instances are provided for solvers that are unavailable\&. Also note that additional flexibility may be obtained by calling the solvers directly rather that via this package\&.
+The method provides a common interface to a variety of well-known solvers from HSL and elsewhere\&. Currently supported solvers include \fCMA28/GLS\fP and \fCHSL_MA48\fP from HSL, as well as \fCGETR\fP from LAPACK\&. Note that, with the exception of he Netlib reference LAPACK code, \fB the solvers themselves do not form part of this package and must be obtained separately\&.\fP Dummy instances are provided for solvers that are unavailable\&. Also note that additional flexibility may be obtained by calling the solvers directly rather that via this package\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 August 2009, C interface December 2021\&.
 .SS "Terminology"
@@ -83,6 +89,8 @@ The methods used are described in the user-documentation for
 HSL 2007, A collection of {F}ortran codes for large-scale scientific computation (2007)\&. 
 .br
  http://www.cse.clrc.ac.uk/nag/hsl
+.PP
+The solver \fCGETR\fP is available as \fCS/DGETRF/S\fP as part of LAPACK\&. Reference versions are provided by GALAHAD, but for good performance machined-tuned versions should be used\&.
 .SS "Call order"
 To solve a given problem, functions from the uls package must be called in the following order:
 .PP
@@ -116,7 +124,7 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct uls_control_type"
@@ -152,7 +160,7 @@ int \fImin_real_factor_size\fP initial size for real array for the factors and o
 int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data 
 .br
 .PP
-int \fImax_factor_size\fP maximum size for real array for the factors and other data 
+int64_t \fImax_factor_size\fP maximum size for real array for the factors and other data 
 .br
 .PP
 int \fIblas_block_size_factorize\fP level 3 blocking in factorize 
@@ -261,22 +269,22 @@ char \fIbad_alloc[81]\fP name of array which provoked an allocate failure
 int \fImore_info\fP further information on failure 
 .br
 .PP
-int \fIout_of_range\fP number of indices out-of-range 
+int64_t \fIout_of_range\fP number of indices out-of-range 
 .br
 .PP
-int \fIduplicates\fP number of duplicates 
+int64_t \fIduplicates\fP number of duplicates 
 .br
 .PP
-int \fIentries_dropped\fP number of entries dropped during the factorization 
+int64_t \fIentries_dropped\fP number of entries dropped during the factorization 
 .br
 .PP
-int \fIworkspace_factors\fP predicted or actual number of reals and integers to hold factors 
+int64_t \fIworkspace_factors\fP predicted or actual number of reals and integers to hold factors 
 .br
 .PP
 int \fIcompresses\fP number of compresses of data required 
 .br
 .PP
-int \fIentries_in_factors\fP number of entries in factors 
+int64_t \fIentries_in_factors\fP number of entries in factors 
 .br
 .PP
 int \fIrank\fP estimated rank of the matrix 
@@ -308,6 +316,9 @@ int \fIiterative_refinements\fP number of iterative refinements performed
 bool \fIalternative\fP has an 'alternative' y: A^T y = 0 and yT b > 0 been found when trying to solve A x = b ? 
 .br
 .PP
+char \fIsolver[21]\fP name of external solver used to factorize and solve 
+.br
+.PP
 struct gls_ainfo \fIgls_ainfo\fP the output arrays from GLS 
 .br
 .PP
@@ -326,6 +337,9 @@ struct ma48_finfo \fIma48_finfo\fP see ma48_ainfo
 struct ma48_sinfo \fIma48_sinfo\fP see ma48_ainfo 
 .br
 .PP
+int \fIlapack_error\fP the LAPACK error return code 
+.br
+.PP
 .RE
 .PP
 .SH "Function Documentation"
@@ -337,7 +351,7 @@ Select solver, set default control values and initialize private data
 .PP
 \fBParameters\fP
 .RS 4
-\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'gls', 'ma28' or 'ma48; lower or upper case variants are allowed\&.
+\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed\&.
 .br
 \fIdata\fP holds private internal data
 .br
@@ -413,7 +427,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .br
 \fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the matrix A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense storage schemes is used, and in this case can be NULL\&.
 .br
-\fIptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix A, as well as the total number of entries, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 

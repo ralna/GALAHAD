@@ -1,4 +1,4 @@
-.TH "galahad_ugo.h" 3 "Tue Aug 30 2022" "C interfaces to GALAHAD UGO" \" -*- nroff -*-
+.TH "galahad_ugo.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD UGO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_ugo.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -63,6 +67,8 @@ The ugo package aims to find the \fBglobal minimizer of a univariate twice-conti
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 July 2016, C interface August 2021\&.
 .SS "Method"
@@ -112,8 +118,6 @@ int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
 int \fIout\fP general output occurs on stream out 
-.br
- 
 .br
 .PP
 int \fIprint_level\fP the level of output required\&. Possible values are: 
@@ -388,17 +392,15 @@ This version is for the case where all function/derivative information is availa
 .br
 \fIg\fP is a scalar variable of type double, that holds the the value of the gradient of the objective function f^{\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
 .br
-\fIh\fP is a scalar variable of type double, that holds the the value 
-.br
- of the second derivative of the objective function f^{\\prime\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
+\fIh\fP is a scalar variable of type double, that holds the the value of the second derivative of the objective function f^{\\prime\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
 .br
 \fIeval_fgh\fP is a user-provided function that must have the following signature: 
 .PP
 .nf
-int eval_fgh( double x, 
-              double *f, 
-              double *g, 
-              double *h, 
+int eval_fgh( double x,
+              double *f,
+              double *g,
+              double *h,
               const void *userdata)
 
 .fi

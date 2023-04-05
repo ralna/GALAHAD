@@ -1,4 +1,4 @@
-.TH "galahad_blls.h" 3 "Sat Jul 16 2022" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
+.TH "galahad_blls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -8,7 +8,11 @@ galahad_blls.h
 .PP
 \fC#include <stdbool\&.h>\fP
 .br
+\fC#include <stdint\&.h>\fP
+.br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
 .br
 \fC#include 'galahad_sbls\&.h'\fP
 .br
@@ -47,10 +51,10 @@ galahad_blls.h
 .RI "void \fBblls_reset_control\fP (struct \fBblls_control_type\fP *control, void **data, int *status)"
 .br
 .ti -1c
-.RI "void \fBblls_solve_given_a\fP (void **data, void *userdata, int *status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*eval_prec)(int, const real_wp_[], real_wp_[], const void *))"
+.RI "void \fBblls_solve_given_a\fP (void **data, void *userdata, int *status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], const real_wp_ w[], int(*eval_prec)(int, const real_wp_[], real_wp_[], const void *))"
 .br
 .ti -1c
-.RI "void \fBblls_solve_reverse_a_prod\fP (void **data, int *status, int *eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int *nz_v_start, int *nz_v_end, const int nz_p[], int nz_p_end)"
+.RI "void \fBblls_solve_reverse_a_prod\fP (void **data, int *status, int *eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int *nz_v_start, int *nz_v_end, const int nz_p[], int nz_p_end, const real_wp_ w[])"
 .br
 .ti -1c
 .RI "void \fBblls_information\fP (void **data, struct \fBblls_inform_type\fP *inform, int *status)"
@@ -65,7 +69,7 @@ galahad_blls.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-This package uses a preconditioned, projected-gradient method to solve the \fBbound-constrained regularized linear least-squares problem\fP \[\mbox{minimize}\;\; q(x) = q(x) = 1/2 || A x - b||_2^2 + 1/2 sigma ||x||^2\]  
+This package uses a preconditioned, projected-gradient method to solve the \fBbound-constrained regularized linear least-squares problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 || A x - b||_2^2 + 1/2 sigma ||x||^2\]  
   \n
   minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
   \n
@@ -78,6 +82,8 @@ This package uses a preconditioned, projected-gradient method to solve the \fBbo
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
 October 2019, C interface March 2022\&.
 .SS "Terminology"
@@ -87,7 +93,7 @@ The required solution x necessarily satisfies the primal optimality conditions \
   \n
  the dual optimality conditions \[(A^T A + sigma I ) x = A^T b + z\]  
   \n
-   ( A^T A + sigma I ) x = A^T b + z 
+   ( A^T A + sigma I ) x = A^T b + z
   \n
  where \[ z = z^l + z^u, \,\, z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\]  
   \n
@@ -151,9 +157,9 @@ The matrix A is stored as a compact dense matrix by columns, that is, the values
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessors\&.
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessors\&.
 .SS "Sparse column-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th column are stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. Once again, for sparse matrices, this scheme almost always requires less storage than the dense of coordinate formats\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th column are stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. Once again, for sparse matrices, this scheme almost always requires less storage than the dense of coordinate formats\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct blls_control_type"
@@ -303,8 +309,6 @@ inform derived type as a C struct
 .RS 4
 int \fIstatus\fP reported return status\&. 
 .br
- 
-.br
 .PP
 int \fIalloc_status\fP Fortran STAT value after allocate failure\&. 
 .br
@@ -403,7 +407,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 or m+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme, or the starting position of each column of A, as well as the total number of entries plus one, in the sparse column-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 or m+1 and type int, that holds the starting position of each row of A, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of A, as well as the total number of entries, in the sparse column-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
 .RE
 .PP
 
@@ -453,7 +457,7 @@ Reset control parameters after import if required\&.
 .RE
 .PP
 
-.SS "void blls_solve_given_a (void ** data, void * userdata, int * status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*)(int, const real_wp_[], real_wp_[], const void *) eval_prec)"
+.SS "void blls_solve_given_a (void ** data, void * userdata, int * status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], const real_wp_ w[], int(*)(int, const real_wp_[], real_wp_[], const void *) eval_prec)"
 Solve the bound-constrained linear least-squares problem when the Jacobian A is available\&.
 .PP
 \fBParameters\fP
@@ -515,10 +519,12 @@ Solve the bound-constrained linear least-squares problem when the Jacobian A is 
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
+\fIw\fP is an optional one-dimensional array of size m and type double, that holds the values w of the weights on the residuals in the least-squares objective function\&. It need not be set if the weights are all ones, and in this case can be NULL\&.
+.br
 \fIeval_prec\fP is an optional user-supplied function that may be NULL\&. If non-NULL, it must have the following signature: 
 .PP
 .nf
-int eval_prec( int n, const double v[], double p[], 
+int eval_prec( int n, const double v[], double p[],
                const void *userdata )
 
 .fi
@@ -527,7 +533,7 @@ int eval_prec( int n, const double v[], double p[],
 .RE
 .PP
 
-.SS "void blls_solve_reverse_a_prod (void ** data, int * status, int * eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int * nz_v_start, int * nz_v_end, const int nz_p[], int nz_p_end)"
+.SS "void blls_solve_reverse_a_prod (void ** data, int * status, int * eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int * nz_v_start, int * nz_v_end, const int nz_p[], int nz_p_end, const real_wp_ w[])"
 Solve the bound-constrained linear least-squares problem when the products of the Jacobian A and its transpose with specified vectors may be computed by the calling program\&.
 .PP
 \fBParameters\fP
@@ -612,19 +618,21 @@ Solve the bound-constrained linear least-squares problem when the products of th
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)\&.
 .br
-\fIp\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+\fIp\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)\&.
 .br
-\fInz_v\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=3-4 above for details)
+\fInz_v\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=3-4 above for details)\&.
 .br
-\fInz_v_start\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+\fInz_v_start\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)\&.
 .br
-\fInz_v_end\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+\fInz_v_end\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)\&.
 .br
-\fInz_p\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=4 above for details)
+\fInz_p\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=4 above for details)\&.
 .br
-\fInz_p_end\fP is a scalar of type int, that is used for reverse communication (see status=4 above for details) 
+\fInz_p_end\fP is a scalar of type int, that is used for reverse communication (see status=4 above for details)\&.
+.br
+\fIw\fP is an optional one-dimensional array of size m and type double, that holds the values w of the weights on the residuals in the least-squares objective function\&. It need not be set if the weights are all ones, and in this case can be NULL\&. 
 .RE
 .PP
 

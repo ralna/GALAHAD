@@ -974,7 +974,7 @@ PyDoc_STRVAR(sls_module_doc,
 "The sls package solves dense or sparse symmetric systems of linear \n"
 "equations using variants of Gaussian elimination. \n"
 "Given a sparse symmetric matrix \n"
-"A = {a_ij}_nxn,  and an n-vector $b$ or a matrix B = {b_ij}_mxn,\n"
+"A = {a_ij}_nxn,  and an n-vector b or a matrix B = {b_ij}_mxn,\n"
 "this function solves the system Ax=b or the system AX=B.\n"
 "The matrix A need not be definite.\n"
 "\n"

@@ -266,7 +266,7 @@ void icfs_factorize_matrix( void **data,
  @param[in]  ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of each column of the strictly
    lower triangular part of \f$A\f$ (i.e., \f$a_{i,j}\f$ for \f$i > j\f$),
-   as well as the total number of entries plus one. The entries for
+   as well as the total number of entries. The entries for
    column i will occur in positions matrix_ptr(i),...,matrix_ptr(i+1)-1 of
    the arrays matrix_row and matrix_val.
 
