@@ -3,10 +3,19 @@ task:
     - name: FreeBSD
       freebsd_instance:
         image: freebsd-13-1-release-amd64
+      env:
+        CC: gcc
+        CXX: g++
+        FC: gfortran
     - name: MacOS M1
       macos_instance:
         image: ghcr.io/cirruslabs/macos-monterey-base:latest
+      env:
+        CC: gcc
+        CXX: g++
+        FC: gfortran
   dependencies_script: |
+    echo $(uname)
     if [ "$(uname -s)" = "FreeBSD" ]; then
       pkg install -y meson bash gcc12
     else
