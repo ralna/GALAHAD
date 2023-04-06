@@ -3,7 +3,8 @@ freebsd_instance:
 task:
   name: FreeBSD
   dependencies_script: |
-    pkg install -y meson bash gcc12
+    pkg install -y meson bash
+    pkg install -y gcc12
   configure_script: |
     meson setup builddir --prefix=~/
   build_script: |
@@ -18,7 +19,8 @@ macos_instance:
 task:
   name: MacOS M1
   dependencies_script: |
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+    ./install.sh
     brew install meson
   configure_script: |
     meson setup builddir --prefix=~/galahad
