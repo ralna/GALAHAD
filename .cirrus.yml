@@ -8,11 +8,10 @@ task:
         image: ghcr.io/cirruslabs/macos-monterey-base:latest
   dependencies_script: |
     echo $(uname)
-    if [ "$(uname -s)" = "FreeBSD" ]; then
+    if [ "$(uname)" = "FreeBSD" ]; then
       pkg install -y meson bash gcc12
     else
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      brew install meson
+      brew install meson gcc
     fi
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
