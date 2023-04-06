@@ -1,23 +1,18 @@
-freebsd_instance:
-  image: freebsd-13-1-release-amd64
-  name: FreeBSD
+task:
+  matrix:
+    - name: FreeBSD
+      freebsd_instance:
+        image: freebsd-13-1-release-amd64
+    - name: MacOS M1
+      macos_instance:
+        image: ghcr.io/cirruslabs/macos-monterey-base:latest
   dependencies_script: |
-    pkg install -y meson bash gcc12
-  configure_script: |
-    meson setup builddir --prefix=~/
-  build_script: |
-    meson compile -C builddir
-  install_script: |
-    meson install -C builddir
-  test_script: |
-    meson test -C builddir
-
-macos_instance:
-  image: ghcr.io/cirruslabs/macos-monterey-base:latest
-  name: MacOS M1
-  dependencies_script: |
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    brew install meson
+    if [ "$(uname -s)" = "FreeBSD" ]; then
+      pkg install -y meson bash gcc12
+    else
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      brew install meson
+    fi
   configure_script: |
     meson setup builddir --prefix=~/galahad
   build_script: |
