@@ -1195,6 +1195,7 @@
 !  project the initial point into the feasible region
 
      prob%X = MAX( MIN( prob%X, prob%X_u ), prob%X_l )
+     B_stat = 0
 
 !  allocate workspace arrays
 
@@ -1600,20 +1601,20 @@
 !  test for an approximate first-order critical point
 
        IF ( inform%norm_pg <= control%stop_d ) THEN
-         inform%status = GALAHAD_ok ; GO TO 910
+         inform%status = GALAHAD_ok ; GO TO 900
        END IF
 
 !  test to see if more than maxit iterations have been performed
 
        IF ( inform%iter > data%maxit ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+         inform%status = GALAHAD_error_max_iterations ; GO TO 910
        END IF
 
 !  check that the CPU time limit has not been reached
 
        IF ( control%cpu_time_limit >= zero .AND.                               &
             inform%time%total > control%cpu_time_limit ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 910
        END IF
 
 !  ----------------------------------------------------------------------------
@@ -1829,7 +1830,7 @@
 !write(6,*) ' curvature ', data%curvature
 !stop
            inform%status = GALAHAD_error_inertia
-           GO TO 900
+           GO TO 910
          END IF
 
 !  update the objective value
@@ -2005,7 +2006,7 @@
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
              prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
            inform%status = GALAHAD_error_inertia   
-           GO TO 900
+           GO TO 910
 
 !  form the matrix-vector product H * v
 
@@ -2044,6 +2045,18 @@
 !  Successful return
 
  900 CONTINUE
+
+!  assign the status of the variables
+
+     DO i = 1, prob%n
+       IF ( ABS( prob%X( i ) - prob%X_l( i ) ) < control%stop_p ) THEN
+         B_stat( i ) = - 1
+       ELSE IF ( ABS( prob%X( i ) - prob%X_u( i ) ) < control%stop_p ) THEN
+         B_stat( i ) = 1
+       ELSE
+         B_stat( i ) = 0
+       END IF
+     END DO
      CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
      RETURN
