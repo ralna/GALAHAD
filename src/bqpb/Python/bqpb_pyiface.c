@@ -401,16 +401,16 @@ static bool bqpb_update_control(struct bqpb_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "fdc_options") == 0){
-        //    if(!fdc_update_control(&control->fdc_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "sbls_options") == 0){
-        //    if(!sbls_update_control(&control->sbls_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "fdc_options") == 0){
+            if(!fdc_update_control(&control->fdc_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sbls_options") == 0){
+            if(!sbls_update_control(&control->sbls_control, value))
+                return false;
+            continue;
+        }
         //if(strcmp(key_name, "fit_options") == 0){
         //    if(!fit_update_control(&control->fit_control, value))
         //        return false;
@@ -703,31 +703,23 @@ static PyObject* py_bqpb_initialize(PyObject *self){
 
 static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
-    PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
-    PyArrayObject *py_w;
     PyObject *py_options = NULL;
     int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
-    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
-    const char *A_type, *H_type;
-    double *w;
-    int n, m, A_ne, H_ne;
+    const char *H_type;
+    int n, H_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
-                             "H_type","H_ne","H_row","H_col","H_ptr",
-                             "A_type","A_ne","A_row","A_col","A_ptr",
+    static char *kwlist[] = {"n","H_type","H_ne","H_row","H_col","H_ptr",
                              "options"};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOO|O",
-                                    kwlist, &n, &m,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O",
+                                    kwlist, &n,
                                     &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr,
-                                    &A_type, &A_ne, &py_A_row,
-                                    &py_A_col, &py_A_ptr,
                                     &py_options))
         return NULL;
 
@@ -737,12 +729,6 @@ static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&
         check_array_int("H_ptr", py_H_ptr, n+1)
-        ))
-        return NULL;
-    if(!(
-        check_array_int("A_row", py_A_row, A_ne) &&
-        check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1)
         ))
         return NULL;
 
@@ -767,27 +753,6 @@ static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
         for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
     }
 
-    // Convert 64bit integer A_row array to 32bit
-    if((PyObject *) py_A_row != Py_None){
-        A_row = malloc(A_ne * sizeof(int));
-        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
-        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
-    }
-
-    // Convert 64bit integer A_col array to 32bit
-    if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
-    }
-
-    // Convert 64bit integer A_ptr array to 32bit
-    if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
-    }
-
     // Reset control options
     bqpb_reset_control(&control, &data, &status);
 
@@ -796,17 +761,13 @@ static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call bqpb_import
-    bqpb_import(&control, &data, &status, n, m,
-               H_type, H_ne, H_row, H_col, H_ptr,
-               A_type, A_ne, A_row, A_col, A_ptr);
+    bqpb_import(&control, &data, &status, n,
+                H_type, H_ne, H_row, H_col, H_ptr);
 
     // Free allocated memory
     if(H_row != NULL) free(H_row);
     if(H_col != NULL) free(H_col);
     if(H_ptr != NULL) free(H_ptr);
-    if(A_row != NULL) free(A_row);
-    if(A_col != NULL) free(A_col);
-    if(A_ptr != NULL) free(A_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -820,11 +781,11 @@ static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_SOLVE_QP   -*-*-*-*-*-*-*-*
 
 static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
-    PyArrayObject *py_g, *py_H_val, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    PyArrayObject *py_g, *py_H_val;
+    PyArrayObject *py_x_l, *py_x_u;
+    PyArrayObject *py_x, *py_z;
+    double *g, *H_val, *x_l, *x_u, *x, *z;
+    int n, H_ne;
     double f;
 
     // Check that package has been initialised
@@ -832,21 +793,14 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
-                         &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g, 
+                         &H_ne, &py_H_val, &py_x_l, &py_x_u,
+                         &py_x, &py_z))
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
         return NULL;
     if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
-    if(!check_array_double("A_val", py_A_val, A_ne))
-        return NULL;
-    if(!check_array_double("c_l", py_c_l, m))
-        return NULL;
-    if(!check_array_double("c_u", py_c_u, m))
         return NULL;
     if(!check_array_double("x_l", py_x_l, n))
         return NULL;
@@ -854,44 +808,29 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("x", py_x, n))
         return NULL;
-    if(!check_array_double("y", py_y, m))
-        return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
     H_val = (double *) PyArray_DATA(py_H_val);
-    A_val = (double *) PyArray_DATA(py_A_val);
-    c_l = (double *) PyArray_DATA(py_c_l);
-    c_u = (double *) PyArray_DATA(py_c_u);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
-    y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat = 
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call bqpb_solve_direct
     status = 1; // set status to 1 on entry
-    bqpb_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
-                 c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
+    bqpb_solve_qp(&data, &status, n, H_ne, H_val, g, f, 
+                   x_l, x_u, x, z, x_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
     
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -901,12 +840,11 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, c, y, z, x_stat and c_stat
+    // Return x, z and x_stat
     PyObject *solve_qp_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
-                                              py_x_stat, py_c_stat);
+    solve_qp_return = Py_BuildValue("OOO", py_x, py_z, py_x_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
 
@@ -914,11 +852,11 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
 
 static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
-    PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    PyArrayObject *py_g, *py_w, *py_x0;
+    PyArrayObject *py_x_l, *py_x_u;
+    PyArrayObject *py_x, *py_z;
+    double *g, *w, *x0, *x_l, *x_u, *x, *z;
+    int n, H_ne;
     double f;
 
     // Check that package has been initialised
@@ -926,10 +864,9 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g, 
-                         &py_w, &py_x0, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+    if(!PyArg_ParseTuple(args, "idOOOOOOO", &n, &f, &py_g, 
+                         &py_w, &py_x0, &py_x_l, &py_x_u,
+                         &py_x, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -939,19 +876,11 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("x0", py_x0, n))
         return NULL;
-    if(!check_array_double("A_val", py_A_val, A_ne))
-        return NULL;
-    if(!check_array_double("c_l", py_c_l, m))
-        return NULL;
-    if(!check_array_double("c_u", py_c_u, m))
-        return NULL;
     if(!check_array_double("x_l", py_x_l, n))
         return NULL;
     if(!check_array_double("x_u", py_x_u, n))
         return NULL;
     if(!check_array_double("x", py_x, n))
-        return NULL;
-    if(!check_array_double("y", py_y, m))
         return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
@@ -960,37 +889,24 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
     g = (double *) PyArray_DATA(py_g);
     w = (double *) PyArray_DATA(py_w);
     x0 = (double *) PyArray_DATA(py_x0);
-    A_val = (double *) PyArray_DATA(py_A_val);
-    c_l = (double *) PyArray_DATA(py_c_l);
-    c_u = (double *) PyArray_DATA(py_c_u);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
-    y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_x_stat = 
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call bqpb_solve_direct
     status = 1; // set status to 1 on entry
-    bqpb_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
-                    c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
+    bqpb_solve_sldqp(&data, &status, n, w, x0, g, f,
+                     x_l, x_u, x, z, x_stat);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -1000,10 +916,9 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, c, y, z, x_stat and c_stat
+    // Return x, z, and x_stat
     PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
-                                                 py_x_stat, py_c_stat);
+    solve_sldqp_return = Py_BuildValue("OOO", py_x, py_z, py_x_stat);
     Py_INCREF(solve_sldqp_return);
     return solve_sldqp_return;
 }

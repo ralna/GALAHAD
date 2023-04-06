@@ -39,7 +39,8 @@ CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
 PYDEPENDENCIES = make_pyiface_sils make_pyiface_gls \
                  make_pyiface_sls make_pyiface_uls make_pyiface_psls \
                  make_pyiface_sbls make_pyiface_fdc \
-                 make_pyiface_cqp make_pyiface_dqp
+                 make_pyiface_cqp make_pyiface_dqp \
+                 make_pyiface_qpa make_pyiface_qpb
 #                make_pyiface_sls_deps
 
 #  auxiliary packages that are needed for tests (prepend with make_)
