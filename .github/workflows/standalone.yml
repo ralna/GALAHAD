@@ -77,6 +77,7 @@ jobs:
       # Uncomment this section to obtain ssh access to VM
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
+      #
 
       - name: Build GALAHAD
         shell: bash
