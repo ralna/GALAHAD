@@ -17,7 +17,7 @@ task:
     if [ "$(uname -s)" = "FreeBSD" ]; then
       FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --prefix=~/galahad
     else
-      FC=gfortran CC=gcc CXX=g++ meson setup builddir --prefix=~/galahad
+      FC=gfortran-12 CC=gcc-12 CXX=g++-12 meson setup builddir --prefix=~/galahad
     fi
   build_script: |
     meson compile -C builddir
