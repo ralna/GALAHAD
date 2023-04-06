@@ -571,7 +571,6 @@ static PyObject* lsqp_make_time_dict(const struct lsqp_time_type *time){
 static PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
-
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
     PyDict_SetItemString(py_inform, "alloc_status",
@@ -630,15 +629,11 @@ static PyObject* py_lsqp_initialize(PyObject *self){
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LSQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
-    PyArrayObject *py_w;
     PyObject *py_options = NULL;
-    int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
-    const char *A_type, *H_type;
-    double *w;
-    int n, m, A_ne, H_ne;
+    const char *A_type;
+    int n, m, A_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
@@ -646,14 +641,11 @@ static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","m",
-                             "H_type","H_ne","H_row","H_col","H_ptr",
                              "A_type","A_ne","A_row","A_col","A_ptr",
                              "options"};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
-                                    &H_type, &H_ne, &py_H_row,
-                                    &py_H_col, &py_H_ptr,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
                                     &py_options))
@@ -662,38 +654,11 @@ static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Check that array inputs are of correct type, size, and shape
 
     if(!(
-        check_array_int("H_row", py_H_row, H_ne) &&
-        check_array_int("H_col", py_H_col, H_ne) &&
-        check_array_int("H_ptr", py_H_ptr, n+1)
-        ))
-        return NULL;
-    if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
         check_array_int("A_ptr", py_A_ptr, n+1)
         ))
         return NULL;
-
-    // Convert 64bit integer H_row array to 32bit
-    if((PyObject *) py_H_row != Py_None){
-        H_row = malloc(H_ne * sizeof(int));
-        long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-        for(int i = 0; i < H_ne; i++) H_row[i] = (int) H_row_long[i];
-    }
-
-    // Convert 64bit integer H_col array to 32bit
-    if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(H_ne * sizeof(int));
-        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
-    }
-
-    // Convert 64bit integer H_ptr array to 32bit
-    if((PyObject *) py_H_ptr != Py_None){
-        H_ptr = malloc((n+1) * sizeof(int));
-        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
-    }
 
     // Convert 64bit integer A_row array to 32bit
     if((PyObject *) py_A_row != Py_None){
@@ -725,13 +690,9 @@ static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Call lsqp_import
     lsqp_import(&control, &data, &status, n, m,
-               H_type, H_ne, H_row, H_col, H_ptr,
                A_type, A_ne, A_row, A_col, A_ptr);
 
     // Free allocated memory
-    if(H_row != NULL) free(H_row);
-    if(H_col != NULL) free(H_col);
-    if(H_ptr != NULL) free(H_ptr);
     if(A_row != NULL) free(A_row);
     if(A_col != NULL) free(A_col);
     if(A_ptr != NULL) free(A_ptr);
@@ -748,100 +709,6 @@ static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_SOLVE_QP   -*-*-*-*-*-*-*-*
 
 static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
-    PyArrayObject *py_g, *py_H_val, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
-    double f;
-
-    // Check that package has been initialised
-    if(!check_init(init_called))
-        return NULL;
-
-    // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
-                         &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
-
-    // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("g", py_g, n))
-        return NULL;
-    if(!check_array_double("H_val", py_H_val, H_ne))
-        return NULL;
-    if(!check_array_double("A_val", py_A_val, A_ne))
-        return NULL;
-    if(!check_array_double("c_l", py_c_l, m))
-        return NULL;
-    if(!check_array_double("c_u", py_c_u, m))
-        return NULL;
-    if(!check_array_double("x_l", py_x_l, n))
-        return NULL;
-    if(!check_array_double("x_u", py_x_u, n))
-        return NULL;
-    if(!check_array_double("x", py_x, n))
-        return NULL;
-    if(!check_array_double("y", py_y, m))
-        return NULL;
-    if(!check_array_double("z", py_z, n))
-        return NULL;
-
-    // Get array data pointer
-    g = (double *) PyArray_DATA(py_g);
-    H_val = (double *) PyArray_DATA(py_H_val);
-    A_val = (double *) PyArray_DATA(py_A_val);
-    c_l = (double *) PyArray_DATA(py_c_l);
-    c_u = (double *) PyArray_DATA(py_c_u);
-    x_l = (double *) PyArray_DATA(py_x_l);
-    x_u = (double *) PyArray_DATA(py_x_u);
-    x = (double *) PyArray_DATA(py_x);
-    y = (double *) PyArray_DATA(py_y);
-    z = (double *) PyArray_DATA(py_z);
-
-   // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
-    int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-    int *c_stat = (int *) PyArray_DATA(py_c_stat);
-
-    // Call lsqp_solve_direct
-    status = 1; // set status to 1 on entry
-    lsqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
-                 c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
-    // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
-    // Propagate any errors with the callback function
-    if(PyErr_Occurred())
-        return NULL;
-
-    // Raise any status errors
-    if(!check_error_codes(status))
-        return NULL;
-
-    // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
-                                              py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
-}
-//  *-*-*-*-*-*-*-*-*-*-   LSQP_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
-
-static PyObject* py_lsqp_solve_sldqp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
@@ -912,7 +779,7 @@ static PyObject* py_lsqp_solve_sldqp(PyObject *self, PyObject *args){
 
     // Call lsqp_solve_direct
     status = 1; // set status to 1 on entry
-    lsqp_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
+    lsqp_solve_qp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
                     c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
@@ -929,11 +796,11 @@ static PyObject* py_lsqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    PyObject *solve_qp_return;
+    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
                                                  py_x_stat, py_c_stat);
-    Py_INCREF(solve_sldqp_return);
-    return solve_sldqp_return;
+    Py_INCREF(solve_qp_return);
+    return solve_qp_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_INFORMATION   -*-*-*-*-*-*-*-*
@@ -975,7 +842,6 @@ static PyMethodDef lsqp_module_methods[] = {
     {"initialize", (PyCFunction) py_lsqp_initialize, METH_NOARGS,NULL},
     {"load", (PyCFunction) py_lsqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_qp", (PyCFunction) py_lsqp_solve_qp, METH_VARARGS, NULL},
-    {"solve_sldqp", (PyCFunction) py_lsqp_solve_sldqp, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_lsqp_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_lsqp_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

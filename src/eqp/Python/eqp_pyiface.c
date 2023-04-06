@@ -574,9 +574,8 @@ static PyObject* py_eqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_H_val, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
+    PyArrayObject *py_c, *py_x, *py_y;
+    double *g, *H_val, *A_val, *c, *x, *y;
     int n, m, H_ne, A_ne;
     double f;
 
@@ -585,10 +584,9 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOiOOOO", &n, &m, &f, &py_g, 
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+                         &py_c, &py_x, &py_y))
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -597,54 +595,25 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
-    if(!check_array_double("c_l", py_c_l, m))
-        return NULL;
-    if(!check_array_double("c_u", py_c_u, m))
-        return NULL;
-    if(!check_array_double("x_l", py_x_l, n))
-        return NULL;
-    if(!check_array_double("x_u", py_x_u, n))
+    if(!check_array_double("c", py_c, m))
         return NULL;
     if(!check_array_double("x", py_x, n))
         return NULL;
     if(!check_array_double("y", py_y, m))
-        return NULL;
-    if(!check_array_double("z", py_z, n))
         return NULL;
 
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
     H_val = (double *) PyArray_DATA(py_H_val);
     A_val = (double *) PyArray_DATA(py_A_val);
-    c_l = (double *) PyArray_DATA(py_c_l);
-    c_u = (double *) PyArray_DATA(py_c_u);
-    x_l = (double *) PyArray_DATA(py_x_l);
-    x_u = (double *) PyArray_DATA(py_x_u);
+    c = (double *) PyArray_DATA(py_c);
     x = (double *) PyArray_DATA(py_x);
     y = (double *) PyArray_DATA(py_y);
-    z = (double *) PyArray_DATA(py_z);
-
-   // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
-    int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call eqp_solve_direct
     status = 1; // set status to 1 on entry
-    eqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
-                 c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
+    eqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, c, x, y);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
     
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -654,12 +623,11 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, c, y, z, x_stat and c_stat
+    // Return x and y
     PyObject *solve_qp_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
-                                              py_x_stat, py_c_stat);
+    solve_qp_return = Py_BuildValue("OO", py_x, py_y);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
 
@@ -668,10 +636,9 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
 
 static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
-    PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    PyArrayObject *py_c, *py_x, *py_y;
+    double *g, *w, *x0, *A_val, *c, *x, *y;
+    int n, m, A_ne;
     double f;
 
     // Check that package has been initialised
@@ -679,10 +646,9 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOOOiOOOO", &n, &m, &f, &py_g, 
                          &py_w, &py_x0, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+                         &py_c, &py_x, &py_y))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -694,19 +660,11 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
-    if(!check_array_double("c_l", py_c_l, m))
-        return NULL;
-    if(!check_array_double("c_u", py_c_u, m))
-        return NULL;
-    if(!check_array_double("x_l", py_x_l, n))
-        return NULL;
-    if(!check_array_double("x_u", py_x_u, n))
+    if(!check_array_double("c", py_c, m))
         return NULL;
     if(!check_array_double("x", py_x, n))
         return NULL;
     if(!check_array_double("y", py_y, m))
-        return NULL;
-    if(!check_array_double("z", py_z, n))
         return NULL;
 
     // Get array data pointer
@@ -714,36 +672,15 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
     w = (double *) PyArray_DATA(py_w);
     x0 = (double *) PyArray_DATA(py_x0);
     A_val = (double *) PyArray_DATA(py_A_val);
-    c_l = (double *) PyArray_DATA(py_c_l);
-    c_u = (double *) PyArray_DATA(py_c_u);
-    x_l = (double *) PyArray_DATA(py_x_l);
-    x_u = (double *) PyArray_DATA(py_x_u);
+    c = (double *) PyArray_DATA(py_c);
     x = (double *) PyArray_DATA(py_x);
     y = (double *) PyArray_DATA(py_y);
-    z = (double *) PyArray_DATA(py_z);
-
-    // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
-    int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
-    int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call eqp_solve_direct
     status = 1; // set status to 1 on entry
-    eqp_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
-                    c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
+    eqp_solve_sldqp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, c, x, y);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -755,8 +692,7 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
-                                                 py_x_stat, py_c_stat);
+    solve_sldqp_return = Py_BuildValue("OO", py_x, py_y);
     Py_INCREF(solve_sldqp_return);
     return solve_sldqp_return;
 }
