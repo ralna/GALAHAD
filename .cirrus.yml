@@ -3,17 +3,9 @@ task:
     - name: FreeBSD
       freebsd_instance:
         image: freebsd-13-1-release-amd64
-      env:
-        CC: gcc
-        CXX: g++
-        FC: gfortran
     - name: MacOS M1
       macos_instance:
         image: ghcr.io/cirruslabs/macos-monterey-base:latest
-      env:
-        CC: gcc
-        CXX: g++
-        FC: gfortran
   dependencies_script: |
     echo $(uname)
     if [ "$(uname -s)" = "FreeBSD" ]; then
@@ -23,7 +15,11 @@ task:
       brew install meson
     fi
   configure_script: |
-    meson setup builddir --prefix=~/galahad
+    if [ "$(uname -s)" = "FreeBSD" ]; then
+      FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --prefix=~/galahad
+    else
+      FC=gfortran CC=gcc CXX=g++ meson setup builddir --prefix=~/galahad
+    fi
   build_script: |
     meson compile -C builddir
   install_script: |
