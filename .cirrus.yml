@@ -1,32 +1,32 @@
 freebsd_instance:
   image: freebsd-13-1-release-amd64
-task:
-  name: FreeBSD
-  dependencies_script: |
-    pkg install -y meson bash
-    pkg install -y gcc12
-  configure_script: |
-    meson setup builddir --prefix=~/
-  build_script: |
-    meson compile -C builddir
-  install_script: |
-    meson install -C builddir
-  test_script: |
-    meson test -C builddir
+  task:
+    name: FreeBSD
+    dependencies_script: |
+      pkg install -y meson bash
+      pkg install -y gcc12
+    configure_script: |
+      meson setup builddir --prefix=~/
+    build_script: |
+      meson compile -C builddir
+    install_script: |
+      meson install -C builddir
+    test_script: |
+      meson test -C builddir
 
 macos_instance:
   image: ghcr.io/cirruslabs/macos-monterey-base:latest
-task:
-  name: MacOS M1
-  dependencies_script: |
-    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
-    ./install.sh
-    brew install meson
-  configure_script: |
-    meson setup builddir --prefix=~/galahad
-  build_script: |
-    meson compile -C builddir
-  install_script: |
-    meson install -C builddir
-  test_script: |
-    meson test -C builddir
+  task:
+    name: MacOS M1
+    dependencies_script: |
+      curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+      ./install.sh
+      brew install meson
+    configure_script: |
+      meson setup builddir --prefix=~/galahad
+    build_script: |
+      meson compile -C builddir
+    install_script: |
+      meson install -C builddir
+    test_script: |
+      meson test -C builddir
