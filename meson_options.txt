@@ -33,6 +33,11 @@ option('double',
        value : true,
        description : 'whether to generate the double precision libraries, tests and examples')
 
+option('ssids',
+       type : 'boolean',
+       value : false,
+       description : 'whether to build ssids as well as the related tests and examples')
+
 option('libblas',
        type : 'string',
        value : 'blas',
@@ -158,7 +163,7 @@ option('libampl_path',
        value : [],
        description : 'Additional directories to search AMPL library library')
 
-option('ssids',
-       type : 'boolean',
-       value : false,
-       description : 'whether to build ssids as well as the related tests and examples')
+option('libhsl_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search HSL modules')
