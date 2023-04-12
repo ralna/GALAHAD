@@ -71,6 +71,8 @@ libpastix_path = get_option('libpastix_path')
 libmkl_pardiso_path = get_option('libmkl_pardiso_path')
 libampl_path = get_option('libampl_path')
 
+libhsl_modules = get_option('libhsl_modules')
+
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
@@ -119,7 +121,8 @@ galahad_c_examples = []
 galahad_tests = []
 galahad_c_tests = []
 
-libgalahad_include = ['include', 'src/dum/include', 'src/ampl']
+# Headers and Fortran modules
+libgalahad_include = ['include', 'src/dum/include', 'src/ampl'] + libhsl_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
@@ -293,6 +296,7 @@ foreach val: galahad_binaries
 
   if build_single
     executable(binname+'_single', binfile,
+               dependencies : libgalahad_single_deps + libgalahad_deps,
                fortran_args : extra_args_single,
                link_with : libgalahad_single,
                link_language : 'fortran',
@@ -301,6 +305,7 @@ foreach val: galahad_binaries
   endif
   if build_double
     executable(binname+'_double', binfile,
+               dependencies : libgalahad_double_deps + libgalahad_deps,
                fortran_args : extra_args_double,
                link_with : libgalahad_double,
                link_language : 'fortran',
