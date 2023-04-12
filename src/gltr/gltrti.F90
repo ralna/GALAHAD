@@ -5,6 +5,7 @@
    USE GALAHAD_GLTR_precision
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 100             ! problem dimension
+!  INTEGER ( KIND = ip_ ), PARAMETER :: n = 5             ! problem dimension
    INTEGER ( KIND = ip_ ) :: i, status, unit_m, new_radius
    REAL ( KIND = rp_ ) :: radius
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X, R, VECTOR, H_vector
@@ -15,6 +16,7 @@
    CALL GLTR_initialize( data, control, inform )
    DO unit_m = 0, 1 ! use a unit M ?
      control%unitm = unit_m == 1
+!    control%print_level = 1
      CALL GLTR_import_control( control, data, status )
      DO new_radius = 0, 1 ! resolve with a smaller radius ?
        IF ( new_radius == 0 ) THEN
@@ -29,7 +31,7 @@
          CASE( 2 ) !  form the preconditioned gradient
            VECTOR = VECTOR / 2.0_rp_
          CASE ( 3 ) !  form the Hessian-vector product
-           H_vector( 1 ) =  2.0_rp_ * VECTOR( 1 ) + VECTOR( 2 )
+           H_vector( 1 ) = 2.0_rp_ * VECTOR( 1 ) + VECTOR( 2 )
            DO i = 2, n - 1
              H_vector( i ) = VECTOR( i - 1 ) + 2.0_rp_ * VECTOR( i ) +         &
                              VECTOR( i + 1 )
