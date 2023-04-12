@@ -15,6 +15,8 @@
    TYPE ( LSRT_inform_type ) :: inform
 
    CALL LSRT_initialize( data, control, inform )
+   control%print_level = 0
+   CALL LSRT_import_control( control, data, status )
    power = 3.0_rp_ ; weight = 1.0_rp_ ; status = 1
    U = 1.0_rp_
    DO

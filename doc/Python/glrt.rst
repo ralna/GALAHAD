@@ -8,7 +8,7 @@ approximation of the global minimizer of
 **regularized quadratic objective function**. 
 The aim is to minimize the regularized quadratic objective function
 $$r(x) = f + g^T x + \frac{1}{2} x^T H x + \frac{\sigma}{p} \|x\|_{M}^p,$$ 
-where the **weight** $\sigma > 0$, the **power** $p \geq 2$, 
+where the **weight** $\sigma \geq 0$, the **power** $p \geq 2$, 
 and where the $M$-norm of $x$ is defined to be $\|x\|_{M} = \sqrt{x^T M x}$.
 The method may be suitable for large problems as no factorization of $H$ is
 required. Reverse communication is used to obtain
@@ -139,9 +139,10 @@ functions
 
           an initial entry with r set to $g$.
 
-          * **4**
+          * **6**
 
-          a restart entry with $g$ unchanged but a smaller radius $\Delta$.
+          a restart entry with $p$ and $g$ unchanged but a larger weight 
+          $\sigma$.
 
           * **other**
 
@@ -155,7 +156,7 @@ functions
           holds the strinctly positive regularization weight $\sigma$.
       r : ndarray(n)
           holds the values of the linear term $g$ in the objective function
-          when initial or return status = 1, 4 or 5  (see below).
+          when initial or return status = 1, 4 or 6 (see below).
       v : ndarray(n)
           holds the result vector when return status = 2 or 3 (see below).
 
@@ -180,10 +181,10 @@ functions
           the result placed in v, and the function recalled with status
           set to 3.
 
-          * **5**
+          * **4**
 
           the iteration must be restarted by setting r to $g$,
-          and the function recalled with status set to 5.
+          and the function recalled with status set to 4.
 
           * **<0**
 
