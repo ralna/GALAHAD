@@ -17,6 +17,8 @@
    CALL L2RT_initialize( data, control, inform )
    power = 3.0_rp_ ; weight = 1.0_rp_ ; shift = 1.0_rp_ ; status = 1
    U = 1.0_rp_
+   control%print_level = 0
+   CALL L2RT_import_control( control, data, status )
    DO
      CALL L2RT_solve_problem( data, status, m, n, power, weight, shift,        &
                               X, U, V )

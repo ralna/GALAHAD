@@ -111,7 +111,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``l2rt.initialize``).
 
-   .. function:: l2rt.solve_problem(status, m, n, shift, weight, power, u, v)
+   .. function:: l2rt.solve_problem(status, m, n, power, weight, shift, u, v)
 
       Find the global moinimizer of the regularized objective 
       function $r(x)$.
@@ -133,12 +133,12 @@ functions
           holds the number of residuals, i.e., the number of rows of $A$.
       n : int
           holds the number of variables, i.e., the number of columns of $A$.
-      shift : float
-          holds the positive shift, $\mu$.
-      weight : float
-          holds the strictly positive regularization weight, $\sigma$.
       power : float
           holds the regularization power, $p \geq 2$.
+      weight : float
+          holds the strictly positive regularization weight, $\sigma$.
+      shift : float
+          holds the positive shift, $\mu$.
       u : ndarray(m)
           holds the result vector when initial or return status = 1, 2, 
           4 or 5 (see below).

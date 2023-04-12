@@ -110,7 +110,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``lsrt.initialize``).
 
-   .. function:: lsrt.solve_problem(status, m, n, weight, power, u, v)
+   .. function:: lsrt.solve_problem(status, m, n, power, weight, u, v)
 
       Find the global moinimizer of the regularized quadratic objective 
       function $r(x)$.
@@ -124,10 +124,6 @@ functions
 
           an initial entry with u set to $b$.
 
-          * **5**
-
-          a restart entry with u reset to $b$, but a smaller larger $\sigma$.
-
           * **other**
 
           the value returned from the previous call, see Returns below.
@@ -136,13 +132,13 @@ functions
           holds the number of residuals, i.e., the number of rows of $A$.
       n : int
           holds the number of variables, i.e., the number of columns of $A$.
-      weight : float
-          holds the strictly positive regularization weight, $\sigma$.
       power : float
           holds the regularization power, $p \geq 2$.
+      weight : float
+          holds the strictly positive regularization weight, $\sigma$.
       u : ndarray(m)
-          holds the result vector when initial or return status = 1, 2, 
-          4 or 5 (see below).
+          holds the result vector when initial or return status = 1, 2 or
+          4 (see below).
       v : ndarray(n)
           holds the result vector when return status = 3 (see below).
 
@@ -248,7 +244,7 @@ functions
           obj : float
              the value of the objective function.
           multiplier : float
-             the multiplier, $\lambda = sigma \|x\|^(p-2)$.
+             the multiplier, $\lambda = \sigma \|x\|^(p-2)$.
           x_norm : float
              the Euclidean norm of $x$.
           r_norm : float

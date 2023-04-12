@@ -353,7 +353,7 @@ void gltr_initialize( void **data,
 // *-*-*-*-*-*-*-*-*-    G L T R  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
 void gltr_read_specfile( struct gltr_control_type *control,
-                        const char specfile[] );
+                         const char specfile[] );
 
 /*!<
   Read the content of a specification file, and assign values associated
