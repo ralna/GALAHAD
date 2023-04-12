@@ -1,0 +1,1191 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>TRS &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trs';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RQS" href="rqs.html" />
+    <link rel="prev" title="Regularization subproblems" href="reg.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">TRS - global minization of a quadratic function within an ellipsoid using matrix factorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rqs.html">RQS - global minization of a regularized quadratic function using matrix factorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dps.html">DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gltr.html">GLTR - global minization of a quadratic function within an ellipsoid using an iterative method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glrt.html">GLRT - global minization of a regularized quadratic function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lstr.html">LSTR - global minization of a linear least-squares objective within a sphere using an iterative method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lsrt.html">LSRT - global minization of a regularized linear least-squares objective using an iterative method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l2rt.html">L2RT - global minization of a regularized linear least-Euclidean-norm objective using an iterative method</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.trs">
+<span id="trs"></span><h1>TRS<a class="headerlink" href="#module-galahad.trs" title="Permalink to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">trs</span></code> package uses <strong>matrix factorization</strong> to find the
+global minimizer of <strong>quadratic objective function</strong> within
+an <strong>ellipsoidal region</strong>; this is commonly known as the
+<strong>trust-region subproblem</strong>.
+The aim is to minimize the quadratic objective function
+<div class="math notranslate nohighlight">
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
+
+where the vector <span class="math notranslate nohighlight">\(x\)</span> is required to satisfy
+the ellipsoidal  <strong>trust-region constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_{M} \leq  \Delta\)</span>,
+and optionally  <strong>affine constraints</strong> <span class="math notranslate nohighlight">\(A x = 0\)</span>,
+where the <span class="math notranslate nohighlight">\(M\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is defined to be <span class="math notranslate nohighlight">\(\|x\|_{M} = \sqrt{x^T M x}\)</span>,
+and where the <strong>radius</strong> <span class="math notranslate nohighlight">\(\Delta &gt; 0\)</span>.</p>
+<p>The package may also be used to solve the related problem in which <span class="math notranslate nohighlight">\(x\)</span> is
+instead required to satisfy the <strong>equality constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_{M} = \Delta\)</span>.
+The matrix <span class="math notranslate nohighlight">\(M\)</span> need not be provided in the commonly-occurring
+<span class="math notranslate nohighlight">\(\ell_2\)</span>-trust-region case for which <span class="math notranslate nohighlight">\(M = I\)</span>, the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
+identity matrix.</p>
+<p>Factorization of matrices of the form <span class="math notranslate nohighlight">\(H + \lambda M\)</span>, or
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cc} H + \lambda M &amp; A^T \\ A &amp; 0 \end{array}\right)\end{split}\]</div>
+
+in cases where <span class="math notranslate nohighlight">\(A x = 0\)</span> is imposed, for a succession
+of scalars <span class="math notranslate nohighlight">\(\lambda\)</span> will be required, so this package is most suited
+for the case where such a factorization may be found efficiently. If
+this is not the case, the package <code class="docutils literal notranslate"><span class="pre">gltr</span></code> may be preferred.</p>
+<p>See Section 4 of $GALAHAD/doc/trs.pdf for a brief description of the
+method employed and other details.</p>
+<section id="matrix-storage">
+<h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>, if it is needed, may be presented
+and stored in a variety of convenient input formats.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,  <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m) holds the total number of entries.
+The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n) holds the total number of entries.
+The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrices <span class="math notranslate nohighlight">\(H\)</span> and, optionally. <span class="math notranslate nohighlight">\(M\)</span> may also
+be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the <em>lower triangular</em> part
+(i.e, those entries that lie on or below the leading diagonal).</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(H\)</span> is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since <span class="math notranslate nohighlight">\(H\)</span> is
+symmetric, only the lower triangular part (that is the part
+<span class="math notranslate nohighlight">\(H_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq j \leq i \leq n-1\)</span>) need be held.
+In this case the lower triangle should be stored by rows, that is
+component <span class="math notranslate nohighlight">\(i * i / 2 + j\)</span>  of the storage array H_val
+will hold the value <span class="math notranslate nohighlight">\(H_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(H_{ji}\)</span>)
+for <span class="math notranslate nohighlight">\(0 \leq j \leq i \leq n-1\)</span>.
+The string H_type = ‘dense’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(H\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(H_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(0 \leq j \leq i \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays H_row and H_col and real array H_val,
+respectively, while the number of nonzeros is recorded as
+H_ne = <span class="math notranslate nohighlight">\(ne\)</span>. Note that only the entries in the lower triangle
+should be stored.
+The string H_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise</em> storage format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(H\)</span> the i-th component of the
+integer array H_ptr holds the position of the first entry in this row,
+while H_ptr(n) holds the total number of entries.
+The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq i\)</span>, and values
+<span class="math notranslate nohighlight">\(H_{ij}\)</span> of the  entries in the i-th row are stored in components
+l = H_ptr(i), …, H_ptr(i+1)-1 of the
+integer array H_col, and real array H_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string H_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Diagonal</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(H_{ij} = 0\)</span> for all
+<span class="math notranslate nohighlight">\(0 \leq i \neq j \leq n-1\)</span>) only the diagonals entries
+<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1\)</span> need be stored,
+and the first n components of the array H_val may be used for the purpose.
+The string H_type = ‘diagonal’ should be specified.</p>
+<p><em>Multiples of the identity</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
+where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.
+The string H_type = ‘scaled_identity’ should be specified.</p>
+<p>The <em>identity matrix</em> format:
+If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.
+The string H_type = ‘identity’ should be specified.</p>
+<p>The <em>zero matrix</em> format:
+The same is true if <span class="math notranslate nohighlight">\(H\)</span> is the zero matrix, but now
+the string H_type = ‘zero’ or ‘none’ should be specified.</p>
+</section>
+<section id="functions">
+<h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.initialize">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.initialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Set default option values and initialize private data</p>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
+<dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
+</dd>
+<dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
+</dd>
+<dt>problem<span class="classifier">int</span></dt><dd><p>unit to write problem data into file problem_file.</p>
+</dd>
+<dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required is specified by print_level.
+Possible values are</p>
+<ul>
+<li><p><strong>&lt;=0</strong></p>
+<p>gives no output,</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>gives a one-line summary for every iteration.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>gives a summary of the inner iteration for each iteration.</p>
+</li>
+<li><p><strong>&gt;=3</strong></p>
+<p>gives increasingly verbose (debugging) output.</p>
+</li>
+</ul>
+</dd>
+<dt>dense_factorization<span class="classifier">int</span></dt><dd><p>should the problem be solved by dense factorization?
+Possible values are</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>sparse factorization will be used</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>dense factorization will be used</p>
+</li>
+<li><p><strong>other</strong></p>
+<p>the choice is made automatically depending on the
+dimension  &amp; sparsity.</p>
+</li>
+</ul>
+</dd>
+<dt>new_h<span class="classifier">int</span></dt><dd><p>how much of <span class="math notranslate nohighlight">\(H\)</span> has changed since the previous call.
+Possible values are</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>unchanged</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>values but not indices have changed</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>values and indices have changed.</p>
+</li>
+</ul>
+</dd>
+<dt>new_m<span class="classifier">int</span></dt><dd><p>how much of <span class="math notranslate nohighlight">\(M\)</span> has changed since the previous call.
+Possible values are</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>unchanged</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>values but not indices have changed</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>values and indices have changed.</p>
+</li>
+</ul>
+</dd>
+<dt>new_a<span class="classifier">int</span></dt><dd><p>how much of <span class="math notranslate nohighlight">\(A\)</span> has changed since the previous call.
+Possible values are</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>unchanged</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>values but not indices have changed</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>values and indices have changed.</p>
+</li>
+</ul>
+</dd>
+<dt>max_factorizations<span class="classifier">int</span></dt><dd><p>the maximum number of factorizations (=iterations)
+allowed. -ve implies no limit.</p>
+</dd>
+<dt>inverse_itmax<span class="classifier">int</span></dt><dd><p>the number of inverse iterations performed in the “maybe
+hard” case.</p>
+</dd>
+<dt>taylor_max_degree<span class="classifier">int</span></dt><dd><p>maximum degree of Taylor approximant allowed.</p>
+</dd>
+<dt>initial_multiplier<span class="classifier">float</span></dt><dd><p>initial estimate of the Lagrange multipler.</p>
+</dd>
+<dt>lower<span class="classifier">float</span></dt><dd><p>lower and upper bounds on the multiplier, if known.</p>
+</dd>
+<dt>upper<span class="classifier">float</span></dt><dd><p>see lower.</p>
+</dd>
+<dt>stop_normal<span class="classifier">float</span></dt><dd><p>stop when <span class="math notranslate nohighlight">\(| ||x|| - \Delta | \leq\)</span> max( stop_normal *
+<span class="math notranslate nohighlight">\(\Delta\)</span>, stop_absolute_normal ).</p>
+</dd>
+<dt>stop_absolute_normal<span class="classifier">float</span></dt><dd><p>see stop_normal.</p>
+</dd>
+<dt>stop_hard<span class="classifier">float</span></dt><dd><p>stop when bracket on optimal multiplier &lt;= stop_hard *
+max( bracket ends ).</p>
+</dd>
+<dt>start_invit_tol<span class="classifier">float</span></dt><dd><p>start inverse iteration when bracket on optimal multiplier
+&lt;= stop_start_invit_tol * max( bracket ends ).</p>
+</dd>
+<dt>start_invitmax_tol<span class="classifier">float</span></dt><dd><p>start full inverse iteration when bracket on multiplier &lt;=
+stop_start_invitmax_tol * max( bracket ends).</p>
+</dd>
+<dt>equality_problem<span class="classifier">bool</span></dt><dd><p>is the solution is <strong>required</strong> to lie on the boundary
+(i.e., is the constraint an equality)?.</p>
+</dd>
+<dt>use_initial_multiplier<span class="classifier">bool</span></dt><dd><p>ignore initial_multiplier?.</p>
+</dd>
+<dt>initialize_approx_eigenvector<span class="classifier">bool</span></dt><dd><p>should a suitable initial eigenvector should be chosen or
+should a previous eigenvector may be used?.</p>
+</dd>
+<dt>force_Newton<span class="classifier">bool</span></dt><dd><p>ignore the trust-region if <span class="math notranslate nohighlight">\(H\)</span> is positive definite.</p>
+</dd>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
+bigger than needed.</p>
+</dd>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+</dd>
+<dt>problem_file<span class="classifier">str</span></dt><dd><p>name of file into which to write problem data.</p>
+</dd>
+<dt>symmetric_linear_solver<span class="classifier">str</span></dt><dd><p>symmetric (indefinite) linear equation solver.</p>
+</dd>
+<dt>definite_linear_solver<span class="classifier">str</span></dt><dd><p>definite linear equation solver.</p>
+</dd>
+<dt>prefix<span class="classifier">str</span></dt><dd><p>all output lines will be prefixed by the string contained
+in quotes within <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, e.g. ‘word’ (note the qutoes)
+will result in the prefix word.</p>
+</dd>
+<dt>sls_options<span class="classifier">dict</span></dt><dd><p>default control options for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.initialize</span></code>).</p>
+</dd>
+<dt>ir_options<span class="classifier">dict</span></dt><dd><p>default control options for IR (see <code class="docutils literal notranslate"><span class="pre">ir.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.load">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.load" title="Permalink to this definition">#</a></dt>
+<dd><p>Import problem data into internal storage prior to solution.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
+</dd>
+<dt>H_type<span class="classifier">string</span></dt><dd><p>specifies the symmetric storage scheme used for the Hessian <span class="math notranslate nohighlight">\(H\)</span>.
+It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’,
+‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’  or ‘none’;
+lower or upper case variants are allowed.</p>
+</dd>
+<dt>H_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the  lower triangular part of
+<span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need
+not be set for any of the other schemes.</p>
+</dd>
+<dt>H_row<span class="classifier">ndarray(H_ne)</span></dt><dd><p>holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>
+in the sparse co-ordinate storage scheme. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>H_col<span class="classifier">ndarray(H_ne)</span></dt><dd><p>holds the column indices of the  lower triangular part of
+<span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise
+storage scheme. It need not be set when the other storage schemes
+are used, and in this case can be None.</p>
+</dd>
+<dt>H_ptr<span class="classifier">ndarray(n+1)</span></dt><dd><p>holds the starting position of each row of the lower triangular
+part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries,
+in the sparse row-wise storage scheme. It need not be set when the
+other schemes are used, and in this case can be None.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">trs.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.load_m">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">load_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.load_m" title="Permalink to this definition">#</a></dt>
+<dd><p>Import problem data for the scaling matrix <span class="math notranslate nohighlight">\(M\)</span>, if needed,
+into internal storage prior to solution.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
+</dd>
+<dt>M_type<span class="classifier">string</span></dt><dd><p>specifies the symmetric storage scheme used for the Hessian <span class="math notranslate nohighlight">\(H\)</span>.
+It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’,
+‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’  or ‘none’;
+lower or upper case variants are allowed.</p>
+</dd>
+<dt>M_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the  lower triangular part of
+<span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need
+not be set for any of the other schemes.</p>
+</dd>
+<dt>M_row<span class="classifier">ndarray(M_ne)</span></dt><dd><p>holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>
+in the sparse co-ordinate storage scheme. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>M_col<span class="classifier">ndarray(M_ne)</span></dt><dd><p>holds the column indices of the  lower triangular part of
+<span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise
+storage scheme. It need not be set when the other storage schemes
+are used, and in this case can be None.</p>
+</dd>
+<dt>M_ptr<span class="classifier">ndarray(n+1)</span></dt><dd><p>holds the starting position of each row of the lower triangular
+part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries,
+in the sparse row-wise storage scheme. It need not be set when the
+other schemes are used, and in this case can be None.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">trs.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.load_a">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">load_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.load_a" title="Permalink to this definition">#</a></dt>
+<dd><p>Import problem data for the constraint matrix <span class="math notranslate nohighlight">\(A\)</span>, if needed,
+into internal storage prior to solution.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of constraints.</p>
+</dd>
+<dt>A_type<span class="classifier">string</span></dt><dd><p>specifies the unsymmetric storage scheme used for the Hessian <span class="math notranslate nohighlight">\(A\)</span>.
+It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’;
+lower or upper case variants are allowed.</p>
+</dd>
+<dt>A_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in
+<span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need
+not be set for any of the other schemes.</p>
+</dd>
+<dt>A_row<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage
+scheme. It need not be set for any of the other schemes,
+and in this case can be None.</p>
+</dd>
+<dt>A_col<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate,
+or the sparse row-wise storage scheme. It need not be set when
+the other storage schemes are used, and in this case can be None.</p>
+</dd>
+<dt>A_ptr<span class="classifier">ndarray(m+1)</span></dt><dd><p>holds the starting position of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number
+of entries, in the sparse row-wise storage scheme.
+It need not be set when the other schemes are used,
+and in this case can be None.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">trs.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.solve_problem">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.solve_problem" title="Permalink to this definition">#</a></dt>
+<dd><p>Find the global moinimizer of the quadratic objective function <span class="math notranslate nohighlight">\(q(x)\)</span>
+within the intersection of the trust-region and affine constraints.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
+</dd>
+<dt>radius<span class="classifier">float</span></dt><dd><p>holds the strictly positive trust-region radius, <span class="math notranslate nohighlight">\(\Delta\)</span>.</p>
+</dd>
+<dt>f<span class="classifier">float</span></dt><dd><p>holds the constant term <span class="math notranslate nohighlight">\(f\)</span> in the objective function.</p>
+</dd>
+<dt>g<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the linear term <span class="math notranslate nohighlight">\(g\)</span> in the objective function.</p>
+</dd>
+<dt>h_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the lower triangular part of
+the Hessian <span class="math notranslate nohighlight">\(H\)</span>.</p>
+</dd>
+<dt>H_val<span class="classifier">ndarray(h_ne)</span></dt><dd><p>holds the values of the nonzeros in the lower triangle of the Hessian
+<span class="math notranslate nohighlight">\(H\)</span> in the same order as specified in the sparsity pattern in
+<code class="docutils literal notranslate"><span class="pre">trs.load</span></code>.</p>
+</dd>
+<dt>m_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the lower triangular part of
+the scaling matrix <span class="math notranslate nohighlight">\(M\)</span> if it is not the identity matrix.
+Otherwise it should be None.</p>
+</dd>
+<dt>M_val<span class="classifier">ndarray(m_ne)</span></dt><dd><p>holds the values of the nonzeros in the lower triangle of the scaling
+matrix <span class="math notranslate nohighlight">\(M\)</span> in the same order as specified in the sparsity pattern in
+<code class="docutils literal notranslate"><span class="pre">trs.load_m</span></code> if needed. Otherwise it should be None.</p>
+</dd>
+<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of constraints.</p>
+</dd>
+<dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the lower triangular part of
+the constraint matrix <span class="math notranslate nohighlight">\(A\)</span> if <span class="math notranslate nohighlight">\(m &gt; 0\)</span>.
+Otherwise it should be None.</p>
+</dd>
+<dt>A_val<span class="classifier">ndarray(a_ne)</span></dt><dd><p>holds the values of the nonzeros in the lower triangle of the
+constraint matrix <span class="math notranslate nohighlight">\(A\)</span> in the same order as specified in the
+sparsity pattern in <code class="docutils literal notranslate"><span class="pre">trs.load_a</span></code> if needed.
+Otherwise it should be None.</p>
+</dd>
+</dl>
+<p><strong>Returns:</strong></p>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the approximate minimizer <span class="math notranslate nohighlight">\(x\)</span> after
+a successful call.</p>
+</dd>
+<dt>y<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the Lagrange multipliers associated with the
+affine constraints, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">trs.information()</span></span></dt>
+<dd><p>Provide optional output information</p>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The run was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong>
+The restriction n &gt; 0, m &gt; 0, radius &gt; 0,
+or requirement that type contains
+its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’,
+‘diagonal’, ‘scaled_identity’,  ‘identity’, ‘zero’ or ‘none’
+has been violated.</p></li>
+<li><p><strong>-9</strong></p>
+<p>The analysis phase of the factorization failed; the return
+status from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>The factorization failed; the return status from the
+factorization package is given by inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-11</strong></p>
+<p>The solution of a set of linear equations using factors
+from the factorization package failed; the return status
+from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-15</strong></p>
+<p><span class="math notranslate nohighlight">\(M\)</span> does not appear to be strictly diagonally dominant</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>The problem is so ill-conditioned that further progress
+is impossible.</p>
+</li>
+<li><p><strong>-19</strong></p>
+<p>The CPU time limit has been reached. This may happen if
+control[‘cpu_time_limit’] is too small, but may also be
+symptomatic of a badly scaled problem.</p>
+</li>
+<li><p><strong>-23</strong></p>
+<p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has been
+specified.</p>
+</li>
+</ul>
+</dd>
+<dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
+</dd>
+<dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
+error ocurred.</p>
+</dd>
+<dt>factorizations<span class="classifier">int</span></dt><dd><p>the number of factorizations performed.</p>
+</dd>
+<dt>max_entries_factors<span class="classifier">long</span></dt><dd><p>the maximum number of entries in the factors.</p>
+</dd>
+<dt>len_history<span class="classifier">int</span></dt><dd><p>the number of <span class="math notranslate nohighlight">\((||x||_M,\lambda)\)</span> pairs in the history.</p>
+</dd>
+<dt>obj<span class="classifier">float</span></dt><dd><p>the value of the quadratic function.</p>
+</dd>
+<dt>x_norm<span class="classifier">float</span></dt><dd><p>the <span class="math notranslate nohighlight">\(M\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(||x||_M\)</span>.</p>
+</dd>
+<dt>multiplier<span class="classifier">float</span></dt><dd><p>the Lagrange multiplier corresponding to the trust-region
+constraint.</p>
+</dd>
+<dt>pole<span class="classifier">float</span></dt><dd><p>a lower bound <span class="math notranslate nohighlight">\(\max(0,-\lambda_1)\)</span>, where <span class="math notranslate nohighlight">\(\lambda_1\)</span>
+is the left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</span>.</p>
+</dd>
+<dt>dense_factorization<span class="classifier">bool</span></dt><dd><p>was a dense factorization used?.</p>
+</dd>
+<dt>hard_case<span class="classifier">bool</span></dt><dd><p>has the hard case occurred?.</p>
+</dd>
+<dt>time<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>dictionary containing timing information:</dt><dd><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>total CPU time spent in the package.</p>
+</dd>
+<dt>assemble<span class="classifier">float</span></dt><dd><p>CPU time spent building <span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+<dt>analyse<span class="classifier">float</span></dt><dd><p>CPU time spent reordering <span class="math notranslate nohighlight">\(H + \lambda M\)</span> prior to
+factorization.</p>
+</dd>
+<dt>factorize<span class="classifier">float</span></dt><dd><p>CPU time spent factorizing <span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+<dt>solve<span class="classifier">float</span></dt><dd><p>CPU time spent solving linear systems inolving
+<span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+<dt>clock_total<span class="classifier">float</span></dt><dd><p>total clock time spent in the package.</p>
+</dd>
+<dt>clock_assemble<span class="classifier">float</span></dt><dd><p>clock time spent building <span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+<dt>clock_analyse<span class="classifier">float</span></dt><dd><p>clock time spent reordering <span class="math notranslate nohighlight">\(H + \lambda M\)</span> prior to
+factorization.</p>
+</dd>
+<dt>clock_factorize<span class="classifier">float</span></dt><dd><p>clock time spent factorizing <span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+<dt>clock_solve<span class="classifier">float</span></dt><dd><p>clock time spent solving linear systems inolving
+<span class="math notranslate nohighlight">\(H + \lambda M\)</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>history<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>dictionary containing information recording the history of the iterates:</dt><dd><dl class="simple">
+<dt>lambda<span class="classifier">float</span></dt><dd><p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+</dd>
+<dt>x_norm<span class="classifier">float</span></dt><dd><p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sbls.information</span></code>).</p>
+</dd>
+<dt>ir_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for IR (see <code class="docutils literal notranslate"><span class="pre">ir.information</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.trs.trs.terminate">
+<span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.terminate" title="Permalink to this definition">#</a></dt>
+<dd><p>Deallocate all internal private storage.</p>
+</dd></dl>
+
+</div></blockquote>
+</section>
+<section id="example-code">
+<h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<p>This example code is available in $GALAHAD/src/trs/Python/test_trs.py .</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="reg.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Regularization subproblems</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="rqs.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">RQS</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#functions">
+   functions
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.initialize">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.initialize()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.load">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.load()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.load_m">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.load_m()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.load_a">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.load_a()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.solve_problem">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.solve_problem()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.trs.trs.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       trs.terminate()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-code">
+   example code
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/trs.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,842 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>FDC &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'fdc';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Global Optimization" href="go.html" />
+    <link rel="prev" title="GLS" href="gls.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uls.html">ULS - solve unsymmetric systems of linear equations (übersolver)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sbls.html">SBLS - precondition and solve block symmetric systems of linear equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sils.html">SILS - solve symmetric systems of linear equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gls.html">GLS - solve unsymmetric systems of linear equations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">FDC - find an equivalent linearly independent subset of a system of linear equations</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.fdc">
+<span id="fdc"></span><h1>FDC<a class="headerlink" href="#module-galahad.fdc" title="Permalink to this heading">#</a></h1>
+<p>Given an under-determined set of linear equations/constraints <span class="math notranslate nohighlight">\(a_i^T x =
+b_i^{}\)</span>, <span class="math notranslate nohighlight">\(i = 1, \ldots, m\)</span> involving <span class="math notranslate nohighlight">\(n \geq m\)</span> unknowns <span class="math notranslate nohighlight">\(x\)</span>, the <code class="docutils literal notranslate"><span class="pre">fdc</span></code>
+package <strong>determines whether the constraints are consistent, and if
+so how many of the constraints are dependent</strong>; a list of dependent
+constraints, that is, those which may be removed without changing the
+solution set, will be found and the remaining <span class="math notranslate nohighlight">\(a_i\)</span> will be linearly
+independent.  Full advantage is taken of any zero coefficients in the
+matrix <span class="math notranslate nohighlight">\(A\)</span> whose columns are the vectors <span class="math notranslate nohighlight">\(a_i^T\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/fdc.pdf for a brief description of the
+method employed and other details.</p>
+<section id="matrix-storage">
+<h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> must be presented
+and stored in <em>sparse row-wise storage</em> format.
+For this, only the nonzero entries are stored, and they are
+ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m) holds the total number of entries.
+The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+of the integer array A_col, and real array A_val, respectively.</p>
+</section>
+<section id="functions">
+<h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><dl class="py function">
+<dt class="sig sig-object py" id="galahad.fdc.fdc.initialize">
+<span class="sig-prename descclassname"><span class="pre">fdc.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.fdc.fdc.initialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Set default option values and initialize private data</p>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
+<dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
+</dd>
+<dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
+</dd>
+<dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required is specified by print_level.
+Possible values are</p>
+<ul>
+<li><p><strong>&lt;=0</strong></p>
+<p>gives no output.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>a summary of the progress made.</p>
+</li>
+<li><p><strong>&gt;=2</strong></p>
+<p>an ever increasing amount of debugging information.</p>
+</li>
+</ul>
+</dd>
+<dt>indmin<span class="classifier">int</span></dt><dd><p>initial estimate of integer workspace for sls (obsolete).</p>
+</dd>
+<dt>valmin<span class="classifier">int</span></dt><dd><p>initial estimate of real workspace for sls (obsolete).</p>
+</dd>
+<dt>pivot_tol<span class="classifier">float</span></dt><dd><p>the relative pivot tolerance (obsolete).</p>
+</dd>
+<dt>zero_pivot<span class="classifier">float</span></dt><dd><p>the absolute pivot tolerance used (obsolete).</p>
+</dd>
+<dt>max_infeas<span class="classifier">float</span></dt><dd><p>the largest permitted residual.</p>
+</dd>
+<dt>use_sls<span class="classifier">bool</span></dt><dd><p>choose whether <code class="docutils literal notranslate"><span class="pre">sls</span></code> or <code class="docutils literal notranslate"><span class="pre">uls</span></code> is used to determine
+dependencies.</p>
+</dd>
+<dt>scale<span class="classifier">bool</span></dt><dd><p>should the rows of A be scaled to have unit infinity norm
+or should no scaling be applied?</p>
+</dd>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
+bigger than needed.</p>
+</dd>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+</dd>
+<dt>symmetric_linear_solver<span class="classifier">str</span></dt><dd><p>symmetric (indefinite) linear equation solver.
+For current choices, see <code class="docutils literal notranslate"><span class="pre">sls.initialize</span></code>.</p>
+</dd>
+<dt>unsymmetric_linear_solver<span class="classifier">str</span></dt><dd><p>unsymmetric linear equation solver.
+For current choices, see <code class="docutils literal notranslate"><span class="pre">uls.initialize</span></code>.</p>
+</dd>
+<dt>prefix<span class="classifier">str</span></dt><dd><p>all output lines will be prefixed by the string contained
+in quotes within <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, e.g. ‘word’ (note the qutoes)
+will result in the prefix word.</p>
+</dd>
+<dt>sls_options<span class="classifier">dict</span></dt><dd><p>default control options for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.initialize</span></code>).</p>
+</dd>
+<dt>uls_options<span class="classifier">dict</span></dt><dd><p>default control options for ULS (see <code class="docutils literal notranslate"><span class="pre">uls.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.fdc.fdc.find_dependent_rows">
+<span class="sig-prename descclassname"><span class="pre">fdc.</span></span><span class="sig-name descname"><span class="pre">find_dependent_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.fdc.fdc.find_dependent_rows" title="Permalink to this definition">#</a></dt>
+<dd><p>Find dependent rows of <span class="math notranslate nohighlight">\(A\)</span> and, if any, check if <span class="math notranslate nohighlight">\(Ax = b\)</span> is consistent.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of constraints (rows of <span class="math notranslate nohighlight">\(A\)</span>).</p>
+</dd>
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables (columns of <span class="math notranslate nohighlight">\(A\)</span>).</p>
+</dd>
+<dt>A_ptr<span class="classifier">ndarray(m+1)</span></dt><dd><p>holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the
+total number of entries.</p>
+</dd>
+<dt>A_col<span class="classifier">ndarray(A_ptr(m)-1)</span></dt><dd><p>holds the column indices of the nonzeros of <span class="math notranslate nohighlight">\(A\)</span> in the sparse
+co-ordinate  storage scheme.</p>
+</dd>
+<dt>A_val<span class="classifier">ndarray(A_ptr(m)-1)</span></dt><dd><p>holds the values of the nonzeros of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate
+storage scheme.</p>
+</dd>
+<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the llinear term <span class="math notranslate nohighlight">\(b\)</span> in the constraints.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">fdc.initialize</span></code>).</p>
+</dd>
+</dl>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>m_depen<span class="classifier">int</span></dt><dd><p>holds the number of dependent constraints, if any.</p>
+</dd>
+<dt>depen<span class="classifier">ndarray(m)</span></dt><dd><p>the first m_depen components hold the indices of the dependent
+comstraints.</p>
+</dd>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The run was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<blockquote>
+<div><p>The restriction n &gt; 0 or m &gt; 0 or requirement that type contains
+its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’,
+‘diagonal’, ‘scaled_identity’,  ‘identity’, ‘zero’ or ‘none’
+has been violated.</p>
+</div></blockquote>
+</li>
+<li><p><strong>-5</strong></p>
+<p>The constraints appear to be inconsistent.</p>
+</li>
+<li><p><strong>-9</strong></p>
+<p>The analysis phase of the factorization failed; the return
+status from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>The factorization failed; the return status from the
+factorization package is given by inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-11</strong></p>
+<p>The solution of a set of linear equations using factors
+from the factorization package failed; the return status
+from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-12</strong></p>
+<p>The analysis phase of an unsymmetric factorization failed; the
+return status from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-13</strong></p>
+<p>An unsymmetric factorization failed; the return status from the
+factorization package is given by inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-14</strong></p>
+<p>The solution of a set of linear equations using factors
+from an unsymmetric factorization package failed; the return
+status from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>The resuduals are large, the factorization may be unsatisfactory.</p>
+</li>
+</ul>
+</dd>
+<dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
+</dd>
+<dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
+error ocurred.</p>
+</dd>
+<dt>factorization_status<span class="classifier">int</span></dt><dd><p>the return status from the factorization.</p>
+</dd>
+<dt>factorization_integer<span class="classifier">long</span></dt><dd><p>the total integer workspace required for the factorization.</p>
+</dd>
+<dt>factorization_real<span class="classifier">long</span></dt><dd><p>the total real workspace required for the factorization.</p>
+</dd>
+<dt>non_negligible_pivot<span class="classifier">float</span></dt><dd><p>the smallest pivot which was not judged to be zero when
+detecting linear dependent constraints.</p>
+</dd>
+<dt>time<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>dictionary containing timing information:</dt><dd><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>the total CPU time spent in the package.</p>
+</dd>
+<dt>analyse<span class="classifier">float</span></dt><dd><p>the CPU time spent analysing the required matrices prior
+to factorization.</p>
+</dd>
+<dt>factorize<span class="classifier">float</span></dt><dd><p>the CPU time spent factorizing the required matrices.</p>
+</dd>
+<dt>clock_total<span class="classifier">float</span></dt><dd><p>the total clock time spent in the package.</p>
+</dd>
+<dt>clock_analyse<span class="classifier">float</span></dt><dd><p>the clock time spent analysing the required matrices prior
+to factorization.</p>
+</dd>
+<dt>clock_factorize<span class="classifier">float</span></dt><dd><p>the clock time spent factorizing the required matrices.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.information</span></code>).</p>
+</dd>
+<dt>uls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for ULS (see <code class="docutils literal notranslate"><span class="pre">uls.information</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.fdc.fdc.terminate">
+<span class="sig-prename descclassname"><span class="pre">fdc.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.fdc.fdc.terminate" title="Permalink to this definition">#</a></dt>
+<dd><p>Deallocate all internal private storage.</p>
+</dd></dl>
+
+</div></blockquote>
+</section>
+<section id="example-code">
+<h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">fdc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#  describe problem:</span>
+<span class="c1">#  ( 1  2 3  4 )     (  5 )</span>
+<span class="c1">#  ( 2 -4 6 -8 ) x = ( 10 )</span>
+<span class="c1">#  (    5   10 )     (  0 )</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">A_ptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+<span class="n">A_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">A_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">,</span><span class="mf">4.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="o">-</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+
+<span class="c1"># allocate internal data and set default options</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">fdc</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># set some non-default options</span>
+<span class="c1">#options[&#39;print_level&#39;] = 1</span>
+<span class="n">options</span><span class="p">[</span><span class="s1">&#39;use_sls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">options</span><span class="p">[</span><span class="s1">&#39;symmetric_linear_solver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sytr &quot;</span>
+<span class="c1">#print(&quot;options:&quot;, options)</span>
+
+<span class="c1"># load data (and optionally non-default options), and find dependent rows</span>
+<span class="n">n_depen</span><span class="p">,</span> <span class="n">depen</span><span class="p">,</span> <span class="n">inform</span> <span class="o">=</span> <span class="n">fdc</span><span class="o">.</span><span class="n">find_dependent_rows</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">A_ptr</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span>
+                                                 <span class="n">b</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# dependent rows:&quot;</span><span class="p">,</span> <span class="n">n_depen</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;these are:&quot;</span><span class="p">,</span> <span class="n">depen</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_depen</span><span class="p">])</span>
+
+<span class="c1"># deallocate internal data</span>
+
+<span class="n">fdc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example code is available in $GALAHAD/src/fdc/Python/test_fdc.py .</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="gls.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">GLS</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="go.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Global Optimization</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#functions">
+   functions
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.fdc.fdc.initialize">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       fdc.initialize()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.fdc.fdc.find_dependent_rows">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       fdc.find_dependent_rows()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.fdc.fdc.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       fdc.terminate()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-code">
+   example code
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/fdc.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
