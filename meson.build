@@ -349,8 +349,9 @@ if build_pythoniface and build_ciface and build_double
                                           sources : libgalahad_python_src,
                                           link_with : libgalahad_double,
                                           link_language : 'c',
-                                          dependencies: py.dependency(),
-                                          include_directories: libgalahad_include,
+                                          dependencies : py.dependency(),
+                                          include_directories : libgalahad_include,
+                                          subdir : 'galahad',
                                           install : true)
 endif
 
