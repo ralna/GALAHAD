@@ -395,7 +395,7 @@ functions
 
    .. function:: rqs.solve_problem(n, weight, power, f, g, h_ne, H_val, m_ne, M_val, m, A_ne, A_val)
 
-      Find the global moinimizer of the regularized quadratic objective 
+      Find the global minimizer of the regularized quadratic objective 
       function $r(x)$ subject to the affine constraints.
 
       **Parameters:**
@@ -445,6 +445,7 @@ functions
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
           affine constraints, if any.
+          Absent if ``trs.load_a`` has not been called.
 
    .. function:: [optional] rqs.information()
 

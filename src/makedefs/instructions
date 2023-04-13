@@ -228,7 +228,7 @@ $(package)py_double: $($(PACKAGE)OBJECTSPYD)
 	$(RANLIB) $(CLGD)
 	$(RANLIB) $(PYLGD)
 
-$(package)_pyiface: $(package)_pyiface_$(PRECIS)
+$(package)_pyiface: $(package)_ciface_$(PRECIS) $(package)_pyiface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
 $(package)_pyiface_single: $($(PACKAGE)OBJECTSPYS)
 	$(RANLIB) $(LGS)
