@@ -595,9 +595,9 @@ void sils_information( void **data,
   \li  0. The values were recorded succesfully
 */
 
-// *-*-*-*-*-*-*-*-*-*-    S I L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    S I L S  _ F I N A L I Z E   -*-*-*-*-*-*-*-*-*-*
 
-void sils_terminate( void **data,
+void sils_finalize( void **data,
                      struct sils_control_type *control,
                      int *status );
 
