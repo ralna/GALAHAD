@@ -890,7 +890,7 @@ void trs_solve_problem( void **data,
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
  @param[in] M_ne is a scalar variable of type int, that holds the number of
-    entries in the scaling matrix \f$M\f$ if it not the iedntity matrix.
+    entries in the scaling matrix \f$M\f$ if it not the identity matrix.
 
  @param[in] M_val is a one-dimensional array of size M_ne and type double,
     that holds the values of the entries of the scaling matrix

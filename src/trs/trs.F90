@@ -1750,8 +1750,6 @@
                                       data%SLS_data, inform%SLS_inform,        &
                                       check = .TRUE. )
         ELSE
-
-write(6,*) control%definite_linear_solver
           CALL SLS_initialize_solver( control%definite_linear_solver,          &
                                       data%SLS_data, inform%SLS_inform,        &
                                       check = .TRUE. )

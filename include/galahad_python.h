@@ -210,6 +210,16 @@ static inline bool check_init(bool init_called){
     return true;
 }
 
+/* Check that structure has been initialised */
+static inline bool check_load(bool load_called){
+    if(!load_called){
+        PyErr_SetString(PyExc_Exception, 
+                        "matrix structure has not been initialised");
+        return false;
+    }
+    return true;
+}
+
 /* Check that argument is callable */
 static inline bool check_callable(PyObject *arg){
     if(!PyCallable_Check(arg)){
