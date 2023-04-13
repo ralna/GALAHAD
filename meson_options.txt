@@ -10,7 +10,7 @@ option('ciface',
 
 option('pythoniface',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'whether to build the Python interface in double precision')
 
 option('examples',
