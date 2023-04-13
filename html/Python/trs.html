@@ -395,7 +395,7 @@
   <section id="module-galahad.trs">
 <span id="trs"></span><h1>TRS<a class="headerlink" href="#module-galahad.trs" title="Permalink to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">trs</span></code> package uses <strong>matrix factorization</strong> to find the
-global minimizer of <strong>quadratic objective function</strong> within
+global minimizer of a <strong>quadratic objective function</strong> within
 an <strong>ellipsoidal region</strong>; this is commonly known as the
 <strong>trust-region subproblem</strong>.
 The aim is to minimize the quadratic objective function
@@ -796,7 +796,7 @@ and in this case can be None.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="galahad.trs.trs.solve_problem">
 <span class="sig-prename descclassname"><span class="pre">trs.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.trs.trs.solve_problem" title="Permalink to this definition">#</a></dt>
-<dd><p>Find the global moinimizer of the quadratic objective function <span class="math notranslate nohighlight">\(q(x)\)</span>
+<dd><p>Find the global minimizer of the quadratic objective function <span class="math notranslate nohighlight">\(q(x)\)</span>
 within the intersection of the trust-region and affine constraints.</p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
@@ -841,7 +841,8 @@ Otherwise it should be None.</p>
 a successful call.</p>
 </dd>
 <dt>y<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the Lagrange multipliers associated with the
-affine constraints, if any.</p>
+affine constraints, if any.
+Absent if <code class="docutils literal notranslate"><span class="pre">trs.load_a</span></code> has not been called.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -998,6 +999,96 @@ factorization.</p>
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">trs</span>
+<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+
+<span class="comment single"># set parameters</span>
+<span class="name">p</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
+<span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="name">infinity</span> <span class="operator">=</span> <span class="name builtin">float</span><span class="punctuation">(</span><span class="literal string double">&quot;inf&quot;</span><span class="punctuation">)</span>
+
+<span class="comment single">#  describe objective function</span>
+
+<span class="name">f</span> <span class="operator">=</span> <span class="literal number float">0.96</span>
+<span class="name">g</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">H_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">H_ne</span> <span class="operator">=</span> <span class="literal number integer">4</span>
+<span class="name">H_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">H_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
+<span class="name">H_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">H_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">3.0</span><span class="punctuation">,</span><span class="literal number float">4.0</span><span class="punctuation">])</span>
+
+<span class="comment single">#  describe norm</span>
+
+<span class="name">M_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">M_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">M_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">M_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">M_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">M_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+
+<span class="comment single">#  describe constraint</span>
+
+<span class="name">A_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">A_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">A_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
+<span class="name">A_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">A_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">A_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+
+<span class="comment single"># set trust-region radius</span>
+
+<span class="name">radius</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
+
+<span class="comment single"># allocate internal data and set default options</span>
+<span class="name">options</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
+
+<span class="comment single"># set some non-default options</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+<span class="comment single">#print(&quot;options:&quot;, options)</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">trs</span><span class="operator">.</span><span class="name">load</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">H_type</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_row</span><span class="punctuation">,</span> <span class="name">H_col</span><span class="punctuation">,</span> <span class="name">H_ptr</span><span class="punctuation">,</span> <span class="name">options</span><span class="punctuation">)</span>
+
+<span class="comment single"># find minimum of quadratic within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 1&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">trs</span><span class="operator">.</span><span class="name">load_m</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">M_type</span><span class="punctuation">,</span> <span class="name">M_ne</span><span class="punctuation">,</span> <span class="name">M_row</span><span class="punctuation">,</span> <span class="name">M_col</span><span class="punctuation">,</span> <span class="name">M_ptr</span><span class="punctuation">)</span>
+
+<span class="comment single"># find minimum of quadratic within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 2 with additional non-unit norm&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_val</span><span class="punctuation">,</span> <span class="name">M_ne</span><span class="punctuation">,</span> <span class="name">M_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">trs</span><span class="operator">.</span><span class="name">load_a</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">A_type</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_row</span><span class="punctuation">,</span> <span class="name">A_col</span><span class="punctuation">,</span> <span class="name">A_ptr</span><span class="punctuation">)</span>
+
+<span class="comment single"># find minimum of quadratic within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 3 with additional linear constraint&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span><span class="punctuation">,</span> <span class="name">y</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_val</span><span class="punctuation">,</span>
+                         <span class="name">M_ne</span><span class="punctuation">,</span> <span class="name">M_val</span><span class="punctuation">,</span> <span class="name">m</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; y:&quot;</span><span class="punctuation">,</span><span class="name">y</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+
+<span class="comment single"># deallocate internal data</span>
+
+<span class="name">trs</span><span class="operator">.</span><span class="name">terminate</span><span class="punctuation">()</span></code></pre>
 <p>This example code is available in $GALAHAD/src/trs/Python/test_trs.py .</p>
 </section>
 </section>

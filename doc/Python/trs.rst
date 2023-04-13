@@ -4,7 +4,7 @@ TRS
 .. module:: galahad.trs
 
 The ``trs`` package uses **matrix factorization** to find the 
-global minimizer of **quadratic objective function** within
+global minimizer of a **quadratic objective function** within
 an **ellipsoidal region**; this is commonly known as the
 **trust-region subproblem**.
 The aim is to minimize the quadratic objective function
@@ -418,7 +418,7 @@ functions
 
    .. function:: trs.solve_problem(n, radius, f, g, h_ne, H_val, m_ne, M_val, m, A_ne, A_val)
 
-      Find the global moinimizer of the quadratic objective function $q(x)$
+      Find the global minimizer of the quadratic objective function $q(x)$
       within the intersection of the trust-region and affine constraints.
 
       **Parameters:**
@@ -465,7 +465,8 @@ functions
           a successful call.
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
-          affine constraints, if any.
+          affine constraints, if any. 
+          Absent if ``trs.load_a`` has not been called.
 
    .. function:: [optional] trs.information()
 
