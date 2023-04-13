@@ -3,7 +3,7 @@ project(
   'c', 'cpp', 'fortran',
   version: '5.0.0',
   license: 'BSD-3',
-  meson_version: '>= 0.61.0',
+  meson_version: '>= 1.1.0',
   default_options: [
     'buildtype=debug',
     'libdir=lib',
@@ -122,7 +122,9 @@ galahad_tests = []
 galahad_c_tests = []
 
 # Headers and Fortran modules
-libgalahad_include = ['include', 'src/dum/include', 'src/ampl'] + libhsl_modules
+libgalahad_include = [include_directories('include'),
+                      include_directories('src/dum/include'),
+                      include_directories('src/ampl')] + libhsl_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
@@ -251,9 +253,15 @@ subdir('src/zd11')
 
 # Libraries
 if build_single
-  sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_single_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  pp_sources_single = fc.preprocess([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src],
+                                    dependencies : libgalahad_double_deps + libgalahad_deps,
+                                    compile_args : extra_args_single,
+                                    include_directories: libgalahad_include,
+                                    output: '@PLAINNAME@')
+
+  sources_single = [libgalahad_single_src, libgalahad_integer_src,
+                    libgalahad_c_single_src, libgalahad_c_integer_src,
+                    pp_sources_single]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -267,9 +275,15 @@ if build_single
 endif
 
 if build_double
-  sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_double_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  pp_sources_double = fc.preprocess([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src],
+                                    dependencies : libgalahad_double_deps + libgalahad_deps,
+                                    compile_args : extra_args_double,
+                                    include_directories: libgalahad_include,
+                                    output: '@PLAINNAME@')
+
+  sources_double = [libgalahad_double_src, libgalahad_integer_src,
+                    libgalahad_c_double_src, libgalahad_c_integer_src,
+                    pp_sources_double]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,

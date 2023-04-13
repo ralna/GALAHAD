@@ -1,6 +1,6 @@
 option('modules',
        type : 'boolean',
-       value : 'true',
+       value : true,
        description : 'option to install Fortran modules and submodules')
 
 option('ciface',
