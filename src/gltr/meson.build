@@ -1,7 +1,13 @@
 libgalahad_src += files('gltr.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/gltr_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += files('Python/gltr_pyiface.c')
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usegltr.F90', 'rungltr_sif.F90')
 endif
@@ -10,6 +16,8 @@ galahad_tests += [['gltr', 'gltrt', files('gltrt.F90')],
                   ['gltr', 'gltrti', files('gltrti.F90')]]
 
 galahad_c_tests += [['gltr', 'gltrt_c', files('C/gltrt.c')]]
+
+galahad_python_tests += [['gltr', 'gltr_py', files('Python/test_gltr.py')]]
 
 galahad_examples += [['gltrs', files('gltrs.f90')],
                      ['gltrs2', files('gltrs2.f90')],
