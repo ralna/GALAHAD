@@ -139,9 +139,9 @@ GPUDcuda = $(RLGD)(gpu_alloc_double.o) $(RLGD)(cpu_solve_double.o) \
            $(RLGD)(dense_factor_double.o) $(RLGD)(reorder_double.o) \
            $(RLGD)(solve_double.o) $(RLGD)(syrk_double.o)
 
-SPRALRBS = $(RLGS)(kinds.o) $(RLGS)(matrix_util_single.o) \
+SPRALRBS = $(RLGS)(spral_kinds.o) $(RLGS)(matrix_util_single.o) \
            $(RLGS)(random_single.o) $(RLGS)(rutherford_boeing_single.o)
-SPRALRBD = $(RLGD)(kinds.o) $(RLGD)(matrix_util_double.o) \
+SPRALRBD = $(RLGD)(spral_kinds.o) $(RLGD)(matrix_util_double.o) \
            $(RLGD)(random_double.o) $(RLGD)(rutherford_boeing_double.o)
 
 SSIDSS = $(SPRALRBS) $(CUDASUSE) $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
@@ -152,7 +152,7 @@ SSIDSS = $(SPRALRBS) $(CUDASUSE) $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
          $(RLGS)(wrappers_single.o) \
          $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
          $(RLGS)(metis4_wrapper.o) \
-         $(RLGS)(scaling_single.o) \
+         $(RLGS)(spral_scaling_single.o) \
          $(RLGS)(match_order_single.o) $(RLGS)(datatypes_single.o) \
          $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) \
          $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
@@ -170,7 +170,7 @@ SSIDSD = $(SPRALRBD) $(CUDADUSE) $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
          $(RLGD)(metis4_wrapper.o) \
-         $(RLGD)(scaling_double.o) \
+         $(RLGD)(spral_scaling_double.o) \
          $(RLGD)(match_order_double.o) $(RLGD)(datatypes_double.o) \
          $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) \
          $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
@@ -311,15 +311,15 @@ ssidsst: $(SSIDSST)
 
 #  individual compilations
 
-kinds.o: $(RLG)(kinds.o)
+spral_kinds.o: $(RLG)(spral_kinds.o)
 
-$(RLG)(kinds.o): ../spral/kinds.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "kinds  "
-	$(CP) ../spral/kinds.F90 $(OBJ)/kinds.F90
-	cd $(OBJ) ; $(FORTRAN) -o kinds.o $(FFLAGSOMP) kinds.F90 \
+$(RLG)(spral_kinds.o): ../spral/spral_kinds.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "spral_kinds  "
+	$(CP) ../spral/spral_kinds.F90 $(OBJ)/spral_kinds.F90
+	cd $(OBJ) ; $(FORTRAN) -o spral_kinds.o $(FFLAGSOMP) spral_kinds.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o kinds.o $(FFLAGSNOMP) kinds.F90 )
-	cd $(OBJ) ; $(RARR) kinds.o ; $(RM) kinds.F90 kinds.o
+                    $(FORTRAN) -o spral_kinds.o $(FFLAGSNOMP) spral_kinds.F90 )
+	cd $(OBJ) ; $(RARR) spral_kinds.o ; $(RM) spral_kinds.F90 spral_kinds.o
 	$(RRMARFILE) cuda_single.o
 	$(RRMARFILE) cuda_double.o
 	$(RRMARFILE) cuda_nocuda_single.o
@@ -339,7 +339,7 @@ $(RLG)(matrix_util_$(PRECIS).o): ../spral/matrix_util.F90
                       $(FFLAGSNOMP) matrix_util.F90 )
 	cd $(OBJ) ; $(RARR) matrix_util_$(PRECIS).o ; \
                       $(RM) matrix_util.F90 matrix_util_$(PRECIS).o
-	$(RRMARFILE) scaling_$(PRECIS).o
+	$(RRMARFILE) spral_scaling_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -594,18 +594,18 @@ $(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-scaling.o: $(RLG)(scaling_$(PRECIS).o)
+spral_scaling.o: $(RLG)(spral_scaling_$(PRECIS).o)
 
-$(RLG)(scaling_$(PRECIS).o): ../spral/scaling.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "scaling  "
-	$(CP) ../spral/scaling.F90 $(OBJ)/scaling.F90
-	cd $(OBJ) ; $(FORTRAN) -o scaling_$(PRECIS).o \
-                      $(FFLAGSOMP) scaling.F90 \
+$(RLG)(spral_scaling_$(PRECIS).o): ../spral/spral_scaling.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "spral_scaling  "
+	$(CP) ../spral/spral_scaling.F90 $(OBJ)/spral_scaling.F90
+	cd $(OBJ) ; $(FORTRAN) -o spral_scaling_$(PRECIS).o \
+                      $(FFLAGSOMP) spral_scaling.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o scaling_$(PRECIS).o \
-                      $(FFLAGSNOMP) scaling.F90 )
-	cd $(OBJ) ; $(RARR) scaling_$(PRECIS).o ; \
-                      $(RM) scaling.F90 scaling_$(PRECIS).o
+                    $(FORTRAN) -o spral_scaling_$(PRECIS).o \
+                      $(FFLAGSNOMP) spral_scaling.F90 )
+	cd $(OBJ) ; $(RARR) spral_scaling_$(PRECIS).o ; \
+                      $(RM) spral_scaling.F90 spral_scaling_$(PRECIS).o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
