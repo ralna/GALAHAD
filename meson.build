@@ -448,6 +448,8 @@ endif
 
 # Python tests
 if false
+  # TO DO: Add a check to insure that the shared library for the Python interfaces
+  # is installed in a relevant location.
   if build_tests and build_pythoniface and build_ciface and build_double
 
     python_tests_folder = 'tests/Python'
@@ -457,8 +459,8 @@ if false
       name = test[1]
       file = test[2]
       test(name,
-           executable(name, file, link_with : libgalahad_python, link_language : 'c', include_directories : libgalahad_include,
-                                  install : true, install_dir : python_tests_folder),
+           py,
+           args : file,
            suite : [package, 'Python'],
            is_parallel : false)
     endforeach
