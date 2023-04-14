@@ -14,6 +14,7 @@ task:
       brew install meson gcc
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
+    pip install numpy
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
       FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --prefix=~/galahad -Dpythoniface=true -Dlibblas= -Dliblapack=
