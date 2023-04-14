@@ -6,12 +6,12 @@ if build_ciface
   libgalahad_c_src += files('C/bqpb_ciface.F90')
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('usebqpb.F90', 'runbqpb_sif.F90')
+if build_pythoniface
+  libgalahad_python_src += [['bqpb', files('Python/bqpb_pyiface.c')]]
 endif
 
-if build_pythoniface
-  libgalahad_python_src += files('Python/bqpb_pyiface.c')
+if libcutest.found()
+  libgalahad_cutest_src += files('usebqpb.F90', 'runbqpb_sif.F90')
 endif
 
 galahad_tests += [['bqpb', 'bqpbt', files('bqpbt.F90')],

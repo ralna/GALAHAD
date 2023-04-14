@@ -5,7 +5,7 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += files('Python/l2rt_pyiface.c')
+  libgalahad_python_src += [['l2rt', files('Python/l2rt_pyiface.c')]]
 endif
 
 if libcutest.found()

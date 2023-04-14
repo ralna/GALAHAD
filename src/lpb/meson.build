@@ -6,12 +6,12 @@ if build_ciface
   libgalahad_c_src += files('C/lpb_ciface.F90')
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('uselpb.F90', 'runlpb_sif.F90')
+if build_pythoniface
+  libgalahad_python_src += [['lpb', files('Python/lpb_pyiface.c')]]
 endif
 
-if build_pythoniface
-  libgalahad_python_src += files('Python/lpb_pyiface.c')
+if libcutest.found()
+  libgalahad_cutest_src += files('uselpb.F90', 'runlpb_sif.F90')
 endif
 
 galahad_tests += [['lpb', 'lpbt', files('lpbt.F90')],

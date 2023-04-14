@@ -5,7 +5,7 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += files('Python/uls_pyiface.c')
+  libgalahad_python_src += [['uls', files('Python/uls_pyiface.c')]]
 endif
 
 galahad_tests += [['uls', 'ulst', files('ulst.F90')],

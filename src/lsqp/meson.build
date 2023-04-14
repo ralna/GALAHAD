@@ -5,7 +5,7 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += files('Python/lsqp_pyiface.c')
+  libgalahad_python_src += [['lsqp', files('Python/lsqp_pyiface.c')]]
 endif
 
 galahad_tests += [['lsqp', 'lsqpt', files('lsqpt.F90')],

@@ -345,14 +345,19 @@ if build_pythoniface and build_ciface and build_double
   ).stdout().strip()
   libgalahad_include += [incdir_numpy]
   
-  libgalahad_python = py.extension_module('libgalahad_python',
-                                          sources : libgalahad_python_src,
-                                          link_with : libgalahad_double,
-                                          link_language : 'c',
-                                          dependencies : py.dependency(),
-                                          include_directories : libgalahad_include,
-                                          subdir : 'galahad',
-                                          install : true)
+  foreach interface: libgalahad_python_src
+    name = interface[0]
+    file = interface[1]
+
+    libgalahad_python = py.extension_module(name,
+                                            sources : file,
+                                            link_with : libgalahad_double,
+                                            link_language : 'c',
+                                            dependencies : py.dependency(),
+                                            include_directories : libgalahad_include,
+                                            subdir : 'galahad',
+                                            install : true)
+  endforeach
 endif
 
 # Binaries
