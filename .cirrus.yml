@@ -9,9 +9,9 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y meson bash gcc12
+      pkg install -y python meson bash gcc12
     else
-      brew install meson gcc
+      brew install python meson gcc
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
     pip install numpy
