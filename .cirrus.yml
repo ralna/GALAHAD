@@ -9,12 +9,13 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y python meson bash gcc12
+      pkg install -y py39-pip meson bash gcc12
+      pip install numpy
     else
       brew install python meson gcc
+      pip3 install numpy
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
-    pip3 install numpy
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
       FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --prefix=~/galahad -Dpythoniface=true -Dlibblas= -Dliblapack=
