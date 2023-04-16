@@ -841,6 +841,64 @@ left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</sp
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">dps</span>
+<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+
+<span class="comment single"># set parameters</span>
+<span class="name">p</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
+<span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="name">infinity</span> <span class="operator">=</span> <span class="name builtin">float</span><span class="punctuation">(</span><span class="literal string double">&quot;inf&quot;</span><span class="punctuation">)</span>
+
+<span class="comment single">#  describe objective function</span>
+
+<span class="name">f</span> <span class="operator">=</span> <span class="literal number float">0.96</span>
+<span class="name">g</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">H_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">H_ne</span> <span class="operator">=</span> <span class="literal number integer">4</span>
+<span class="name">H_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">H_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
+<span class="name">H_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">H_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">3.0</span><span class="punctuation">,</span><span class="literal number float">4.0</span><span class="punctuation">])</span>
+
+<span class="comment single"># allocate internal data and set default options</span>
+<span class="name">options</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
+
+<span class="comment single"># set some non-default options</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+<span class="comment single">#print(&quot;options:&quot;, options)</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">dps</span><span class="operator">.</span><span class="name">load</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">H_type</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_row</span><span class="punctuation">,</span> <span class="name">H_col</span><span class="punctuation">,</span> <span class="name">H_ptr</span><span class="punctuation">,</span> <span class="name">options</span><span class="punctuation">)</span>
+
+<span class="comment single"># set trust-region radius</span>
+<span class="name">radius</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
+
+<span class="comment single"># find minimum of quadratic within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve trust-region problem&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">solve_tr_problem</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+
+<span class="comment single"># set regualization weight and power</span>
+<span class="name">weight</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
+<span class="name">power</span> <span class="operator">=</span> <span class="literal number float">3.0</span>
+
+<span class="comment single"># find minimum of regularized quadratic</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve regularization problem&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">solve_rq_problem</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">weight</span><span class="punctuation">,</span> <span class="name">power</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">H_ne</span><span class="punctuation">,</span> <span class="name">H_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+
+<span class="comment single"># deallocate internal data</span>
+
+<span class="name">dps</span><span class="operator">.</span><span class="name">terminate</span><span class="punctuation">()</span></code></pre>
 <p>This example code is available in $GALAHAD/src/dps/Python/test_dps.py .</p>
 </section>
 </section>

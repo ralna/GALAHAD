@@ -1,8 +1,8 @@
 from galahad import dqp
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # set parameters
-p = 1.0
 n = 3
 m = 2
 infinity = float("inf")
@@ -35,7 +35,7 @@ x_u = np.array([1.0,infinity,2.0])
 options = dqp.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 options['symmetric_linear_solver'] = 'sytr '
 options['definite_linear_solver'] = 'sytr '
 options['sbls_options']['symmetric_linear_solver'] = 'sytr '
@@ -57,26 +57,16 @@ print("\n 1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
   = dqp.solve_qp(n, m, f, g, H_ne, H_val, 
                  A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
-x_copy=x.copy()
-c_copy=c.copy()
-y_copy=y.copy()
-z_copy=z.copy()
-x_stat_copy=x_stat.copy()
-c_stat_copy=c_stat.copy()
-print("x:",x_copy)
-print("c:",c_copy)
-print("y:",y_copy)
-print("z:",z_copy)
-print("x_stat:",x_stat_copy)
-print("c_stat:",c_stat_copy)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
-print("getting inform")
 inform = dqp.information()
-print(inform)
-print("we have inform")
-print("f:",inform['obj'])
-print("factor_status:",inform['factorization_status'])
+print(" f:",inform['obj'])
 
 # deallocate internal data
 
@@ -110,22 +100,16 @@ print("\n 2nd problem: solve sldqp")
 x, c, y, z, x_stat, c_stat \
   = dqp.solve_sldqp(n, m, f, g, w, x0, 
                     A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
-x_copy=x.copy()
-c_copy=c.copy()
-y_copy=y.copy()
-z_copy=z.copy()
-x_stat_copy=x_stat.copy()
-c_stat_copy=c_stat.copy()
-print("x:",x_copy)
-print("c:",c_copy)
-print("y:",y_copy)
-print("z:",z_copy)
-print("x_stat:",x_stat_copy)
-print("c_stat:",c_stat_copy)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = dqp.information()
-print("f:",inform['obj'])
+print(" f:",inform['obj'])
 
 # deallocate internal data
 

@@ -6090,7 +6090,7 @@
             IF ( control%record_c_status ) inform%C_status( i ) = 1
           ELSE IF ( i < dims%c_u_start .AND.                                   &
                     ABS( Y_l( i ) ) < control%implicit_tol ) THEN
-            inform%z_implicit = inform%y_implicit + 1
+            inform%y_implicit = inform%y_implicit + 1
             IF ( control%record_c_status ) inform%C_status( i ) = - 2
           ELSE IF ( i > dims%c_l_end .AND.                                     &
                     ABS( Y_u( i ) ) < control%implicit_tol ) THEN

@@ -392,18 +392,19 @@
 a given <strong>bound-constrained linear least-squares problem</strong>.
 The aim is to minimize the regularized linear least-squares objective function
 <div class="math notranslate nohighlight">
-\[q(x) =  \frac{1}{2} \| A x - b\|_W^2 + \frac{1}{2} \sigma \|x\|_2^2\]</div>
+\[r(x) = q(x) + \frac{1}{2} \sigma \|x\|_2^2, \;\; \mbox{where} \;\;
+q(x) =  \frac{1}{2} \| A x - b\|_W^2,\]</div>
 
 subject to the simple bounds
 <div class="math notranslate nohighlight">
 \[x_l \leq x \leq x_u,\]</div>
 
 where the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>, the vectors
-<span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(x^{l}\)</span>, <span class="math notranslate nohighlight">\(x^{u}\)</span> and the non-negative weights <span class="math notranslate nohighlight">\(w\)</span> and
+<span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span>, <span class="math notranslate nohighlight">\(x_u\)</span> and the non-negative weights <span class="math notranslate nohighlight">\(w\)</span> and
 <span class="math notranslate nohighlight">\(\sigma\)</span> are given, and where the Euclidean and weighted-Euclidean norms
 are given by <span class="math notranslate nohighlight">\(\|v\|_2^2 = v^T v\)</span> and <span class="math notranslate nohighlight">\(\|v\|_W^2 = v^T W v\)</span>,
 respectively, with <span class="math notranslate nohighlight">\(W = \mbox{diag}(w)\)</span>. Any of the components of
-the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -536,17 +537,19 @@ reverts to n+1).</p>
 arcsearch (-ve=infini.</p>
 </dd>
 <dt>sif_file_device<span class="classifier">int</span></dt><dd><p>the unit number to write generated SIF file describing the
-current probl.</p>
+current problem.</p>
 </dd>
-<dt>weight<span class="classifier">float</span></dt><dd><p>the objective function will be regularized by adding
-1/2 weight ||x||^2.</p>
+<dt>weight<span class="classifier">float</span></dt><dd><p>the value of the non-negative regularization weight <span class="math notranslate nohighlight">\(\sigma\)</span>,
+i.e., the quadratic objective function <span class="math notranslate nohighlight">\(q(x)\)</span> will be regularized
+by adding <span class="math notranslate nohighlight">\(1/2 \sigma \|x\|_2^2\)</span>; any value of weight smaller
+than zero will be regarded as zero.</p>
 </dd>
 <dt>infinity<span class="classifier">float</span></dt><dd><p>any bound larger than infinity in modulus will be regarded
 as infinite.</p>
 </dd>
 <dt>stop_d<span class="classifier">float</span></dt><dd><p>the required accuracy for the dual infeasibility.</p>
 </dd>
-<dt>identical_bounds_tol<span class="classifier">float</span></dt><dd><p>any pair of constraint bounds (x_l,x_u) that are closer
+<dt>identical_bounds_tol<span class="classifier">float</span></dt><dd><p>any pair of constraint bounds <span class="math notranslate nohighlight">\((x_l,x_u)\)</span> that are closer
 than identical_bounds_tol will be reset to the average of
 their values.</p>
 </dd>
@@ -651,7 +654,7 @@ this case can be None.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="galahad.blls.blls.solve_ls">
-<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">solve_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.solve_ls" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">solve_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.solve_ls" title="Permalink to this definition">#</a></dt>
 <dd><p>Find a solution to the bound-constraind regularized linear least-squares
 problem involving the least-squares objective function <span class="math notranslate nohighlight">\(q(x)\)</span>.</p>
 <p><strong>Parameters:</strong></p>
@@ -660,15 +663,15 @@ problem involving the least-squares objective function <span class="math notrans
 </dd>
 <dt>m<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
 </dd>
-<dt>sigma<span class="classifier">float</span></dt><dd><p>holds the regularization weight <span class="math notranslate nohighlight">\(\sigma\)</span> in the objective function.</p>
-</dd>
-<dt>w<span class="classifier">ndarray(n)</span></dt><dd><p>holds the weights <span class="math notranslate nohighlight">\(w\)</span> in the objective function.</p>
+<dt>w<span class="classifier">ndarray(m)</span></dt><dd><p>holds the weights <span class="math notranslate nohighlight">\(w\)</span> in the objective function.</p>
 </dd>
 <dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the constraint Jacobian <span class="math notranslate nohighlight">\(A\)</span>.</p>
 </dd>
 <dt>A_val<span class="classifier">ndarray(a_ne)</span></dt><dd><p>holds the values of the nonzeros in the constraint Jacobian
 <span class="math notranslate nohighlight">\(A\)</span> in the same order as specified in the sparsity pattern in
 <code class="docutils literal notranslate"><span class="pre">blls.load</span></code>.</p>
+</dd>
+<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of vector <span class="math notranslate nohighlight">\(b\)</span> in the objective function.</p>
 </dd>
 <dt>x_l<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the lower bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
 The lower bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
@@ -677,6 +680,15 @@ below should be set no larger than minus <code class="docutils literal notransla
 <dt>x_u<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the upper bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
 The upper bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
 above should be set no smaller than <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the minimizer <span class="math notranslate nohighlight">\(x\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(x=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>z<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the dual variables <span class="math notranslate nohighlight">\(z\)</span>
+associated with the simple bound constraints, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(z=0\)</span>, suffices and will be adjusted accordingly.</p>
 </dd>
 </dl>
 <p><strong>Returns:</strong></p>
@@ -768,9 +780,10 @@ error ocurred.</p>
 </dd>
 <dt>cg_iter<span class="classifier">int</span></dt><dd><p>number of CG iterations required.</p>
 </dd>
-<dt>obj<span class="classifier">float</span></dt><dd><p>current value of the objective function.</p>
+<dt>obj<span class="classifier">float</span></dt><dd><p>current value of the objective function, <span class="math notranslate nohighlight">\(r(x)\)</span>.</p>
 </dd>
-<dt>norm_pg<span class="classifier">float</span></dt><dd><p>current value of the projected gradient.</p>
+<dt>norm_pg<span class="classifier">float</span></dt><dd><p>current value of the Euclidean norm of projected gradient
+of <span class="math notranslate nohighlight">\(r(x)\)</span>.</p>
 </dd>
 <dt>time<span class="classifier">dict</span></dt><dd><dl class="simple">
 <dt>dictionary containing timing information:</dt><dd><dl class="simple">
@@ -808,6 +821,91 @@ to factorization.</p>
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">blls</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">floatmode</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+
+<span class="c1"># set parameters</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">infinity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+
+<span class="c1">#  describe A = (  I  ) and b = ( i * e )</span>
+<span class="c1">#               ( e^T )         ( n + 1 )</span>
+
+<span class="n">A_type</span> <span class="o">=</span> <span class="s1">&#39;coordinate&#39;</span>
+<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span>
+<span class="n">A_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="n">A_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="n">A_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">)</span>
+<span class="n">A_ptr</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">b</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+  <span class="n">A_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">A_row</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">A_col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">A_col</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">A_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+  <span class="n">A_val</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+  <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c1">#  set the weights</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
+  <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1">#  specify the bounds on the variables</span>
+
+<span class="n">x_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">x_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">x_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">1.0</span>
+<span class="n">x_u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">x_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">infinity</span>
+<span class="n">x_u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">infinity</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+  <span class="n">x_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">infinity</span>
+  <span class="n">x_u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># allocate internal data and set default options</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">blls</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># set some non-default options</span>
+<span class="c1">#options[&#39;print_level&#39;] = 1</span>
+<span class="c1">#print(&quot;options:&quot;, options)</span>
+
+<span class="c1"># load data (and optionally non-default options)</span>
+<span class="n">blls</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">A_type</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+<span class="c1">#  provide starting values (not crucial)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+  <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="c1"># find optimum of</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> solve blls&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_stat</span> \
+  <span class="o">=</span> <span class="n">blls</span><span class="o">.</span><span class="n">solve_ls</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; c:&quot;</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; z:&quot;</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; g:&quot;</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x_stat:&quot;</span><span class="p">,</span><span class="n">x_stat</span><span class="p">)</span>
+
+<span class="c1"># get information</span>
+<span class="n">inform</span> <span class="o">=</span> <span class="n">blls</span><span class="o">.</span><span class="n">information</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; r:&quot;</span><span class="p">,</span><span class="n">inform</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+
+<span class="c1"># deallocate internal data</span>
+
+<span class="n">blls</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>This example code is available in $GALAHAD/src/blls/Python/test_blls.py .</p>
 </section>
 </section>

@@ -1,6 +1,7 @@
 from galahad import bgo
 import numpy as np
 import sys
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # allocate internal data and set default options
 options = bgo.initialize()

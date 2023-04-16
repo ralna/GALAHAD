@@ -501,11 +501,11 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   LPA_SOLVE_LP   -*-*-*-*-*-*-*-*
 
 static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args){
-    PyArrayObject *py_g, *py_H_val, *py_A_val;
+    PyArrayObject *py_g, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
-    double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    double *g, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
+    int n, m, A_ne;
     double f;
 
     // Check that package has been initialised

@@ -795,7 +795,7 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
@@ -979,12 +979,9 @@ static PyObject* py_dqp_information(PyObject *self){
     if(!check_init(init_called))
         return NULL;
 
-    printf("in\n");
     // Call dqp_information
     dqp_information(&data, &inform, &status);
-    printf("sbls status %i\n", inform.sbls_inform.status);
-    printf("sbls alloc_status %i\n", inform.sbls_inform.alloc_status);
-    printf("sbls bad_alloc %s\n", inform.sbls_inform.bad_alloc);
+
     // Return status and inform Python dictionary
     PyObject *py_inform = dqp_make_inform_dict(&inform);
     return Py_BuildValue("O", py_inform);

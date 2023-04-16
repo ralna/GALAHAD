@@ -12,7 +12,8 @@ where $A$ is a given $m$ by $n$ matrix, and any of the components
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
-involving a large number of unknowns $x$.
+involving a large number of unknowns $x$, since full advantage is taken of
+"any zero coefficients in the matrix $A$.
 The package identifies infeasible problems, and problems for which there is 
 no strict interior.
 
@@ -369,7 +370,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``wcp.initialize``).
 
-   .. function:: wcp.find_wcp(n, m, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: wcp.find_wcp(n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u)
 
       Find a well-centered point for a given polyhedral set of linear 
       inequalities.
@@ -380,10 +381,6 @@ functions
           holds the number of variables.
       m : int
           holds the number of residuals.
-      f : float
-          holds the constant term $f$ in the objective function.
-      g : ndarray(n)
-          holds the values of the linear term $g$ in the objective function.
       a_ne : int
           holds the number of entries in the constraint Jacobian $A$.
       A_val : ndarray(a_ne)
@@ -406,6 +403,37 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      y_l : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y_l$
+          associated with the lower general constraints, 
+          $A x \geq c_l$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y_l=0$, suffices and will be adjusted accordingly.
+      y_u : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y_u$
+          associated with the upper general constraints, 
+          $A x \leq c_u$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y_u=0$, suffices and will be adjusted accordingly.
+      z_l : ndarray(n)
+          holds the initial estimate of the dual variables $z_l$
+          associated with the lower simple bound constraints, 
+          $x \geq x_l$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z_l=0$, suffices and will be adjusted accordingly.
+      z_u : ndarray(n)
+          holds the initial estimate of the dual variables $z_u$
+          associated with the upper simple bound constraints, 
+          $x \leq x_u$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z_u=0$, suffices and will be adjusted accordingly.
+      g : ndarray(n)
+          holds an optional dual target vector, if this is required 
+          (for experts); normally a vetor of zero suffices.
 
       **Returns:**
 
@@ -552,7 +580,7 @@ functions
              the smallest pivot which was not judged to be zero when
              detecting linear dependent constraints.
           feasible : bool
-             is the returned "solution" feasible?.
+             is the returned primal-dual "solution" strictly feasible?
           time : dict
              dictionary containing timing information:
                total : float

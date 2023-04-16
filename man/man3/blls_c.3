@@ -1,4 +1,4 @@
-.TH "galahad_blls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
+.TH "galahad_blls.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -69,9 +69,9 @@ galahad_blls.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-This package uses a preconditioned, projected-gradient method to solve the \fBbound-constrained regularized linear least-squares problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 || A x - b||_2^2 + 1/2 sigma ||x||^2\]  
+This package uses a preconditioned, projected-gradient method to solve the \fBbound-constrained regularized linear least-squares problem\fP \[\mbox{minimize}\;\; r(x) = q(x) + 1/2 sigma ||x||^2\], \\;\\;\\mbox{where}\\;\\; q(x) = 1/2 || A x - b||_2^2  
   \n
-  minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
+  minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2, 
   \n
  subject to the simple bound constraints \[x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]  
   \n
@@ -213,7 +213,7 @@ int \fIarcsearch_max_steps\fP the maximum number of steps allowed in a piecewise
 int \fIsif_file_device\fP the unit number to write generated SIF file describing the current probl 
 .br
 .PP
-real_wp_ \fIweight\fP the objective function will be regularized by adding 1/2 weight ||x||^2 
+real_wp_ \fIweight\fP the value of the non-negative regularization weight sigma, i\&.e\&., the quadratic objective function q(x) will be regularized by adding 1/2 weight ||x||^2; any value smaller than zero will be regarded as zero\&. 
 .br
 .PP
 real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
@@ -287,16 +287,28 @@ time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_sp_ \fItotal\fP total time 
+real_wp_ \fItotal\fP the total CPU time spent in the package 
 .br
 .PP
-real_sp_ \fIanalyse\fP time for the analysis phase 
+real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
 .br
 .PP
-real_sp_ \fIfactorize\fP time for the factorization phase 
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
 .br
 .PP
-real_sp_ \fIsolve\fP time for the linear solution phase 
+real_wp_ \fIsolve\fP the CPU time spent in the linear solution phase 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIclock_solve\fP the clock time spent in the linear solution phase 
 .br
 .PP
 .RE
@@ -322,10 +334,10 @@ int \fIiter\fP number of iterations required
 int \fIcg_iter\fP number of CG iterations required 
 .br
 .PP
-real_wp_ \fIobj\fP current value of the objective function 
+real_wp_ \fIobj\fP current value of the objective function, r(x)\&. 
 .br
 .PP
-real_wp_ \fInorm_pg\fP current value of the projected gradient 
+real_wp_ \fInorm_pg\fP current value of the Euclidean norm of projected gradient of r(x)\&. 
 .br
 .PP
 char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 

@@ -1,8 +1,8 @@
 from galahad import cqp
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # set parameters
-p = 1.0
 n = 3
 m = 2
 infinity = float("inf")
@@ -35,7 +35,7 @@ x_u = np.array([1.0,infinity,2.0])
 options = cqp.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -53,16 +53,16 @@ print("\n 1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
   = cqp.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = cqp.information()
-print("f:",inform['obj'])
+print(" f:",inform['obj'])
 
 # deallocate internal data
 
@@ -97,16 +97,16 @@ print("\n 2nd problem: solve sldqp")
 x, c, y, z, x_stat, c_stat \
   = cqp.solve_sldqp(n, m, f, g, w, x0, A_ne, A_val, 
                     c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = cqp.information()
-print("f:",inform['obj'])
+print(" f:",inform['obj'])
 
 # deallocate internal data
 
