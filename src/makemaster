@@ -96,6 +96,8 @@ all_ciface_single:
                          all_ciface PRECIS=single PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_ciface PRECIS=single PWD=$(PWD)/all_rq )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         wcp_ciface PRECIS=single PWD=$(PWD)/wcp )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_ciface PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -112,6 +114,8 @@ all_ciface_double:
                          all_ciface PRECIS=double PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                         all_ciface PRECIS=double PWD=$(PWD)/all_rq )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          wcp_ciface PRECIS=double PWD=$(PWD)/wcp )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           tru_ciface PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -134,12 +138,16 @@ all_pyiface_single: all_ciface_single
                          all_qp_pyiface PRECIS=single PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_rq_pyiface PRECIS=single PWD=$(PWD)/all_rq )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         wcp_pyiface PRECIS=single PWD=$(PWD)/wcp )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          arc_pyiface PRECIS=single PWD=$(PWD)/arc )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          trb_pyiface PRECIS=single PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         nls_pyiface PRECIS=single PWD=$(PWD)/nls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_pyiface PRECIS=single PWD=$(PWD)/all_go )
 
@@ -148,12 +156,16 @@ all_pyiface_double: all_ciface_double
                          all_qp_pyiface PRECIS=double PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_rq_pyiface PRECIS=double PWD=$(PWD)/all_rq )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         wcp_pyiface PRECIS=double PWD=$(PWD)/wcp )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          arc_pyiface PRECIS=double PWD=$(PWD)/arc )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          trb_pyiface PRECIS=double PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         nls_pyiface PRECIS=double PWD=$(PWD)/nls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface PRECIS=double PWD=$(PWD)/all_go )
 

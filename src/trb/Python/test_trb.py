@@ -1,5 +1,6 @@
 from galahad import trb
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # allocate internal data and set default options
 options = trb.initialize()

@@ -16,8 +16,8 @@
 \galsummary
 This package uses a preconditioned, projected-gradient method
 to solve the {\bf bound-constrained regularized linear least-squares problem}
-\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_W^2
-+ \half \sigma \|\bmx\|_2^2}
+\disp{\mbox{minimize}\;\; r(\bmx) = q(\bmx) + \half \sigma \|\bmx\|_2^2,
+\;\;\mbox{where}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_W^2}
 subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $m$ by $n$ real matrix $\bmA$, the vectors 
@@ -437,8 +437,9 @@ The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
 removes the limit.
 
 \itt{weight} is a scalar variable of type default \realdp, that is used to
-specify the weight $\sigma$ that controls regularization of the objective 
-function. Any value smaller than $0$ will be regarded as zero.
+specify the non-negative regularization weight $\sigma$ that controls 
+regularization of the objective function. Any value smaller than $0$ will
+be regarded as zero.
 The default is {\tt weight =} $0.0$.
 
 \itt{infinity} is a scalar variable of type default \realdp, that is used to
@@ -608,7 +609,12 @@ gives the return status from the matrix factorization.
 gives the number of iterations performed.
 
 \ittf{obj} is a scalar variable of type default \realdp, that holds the
-value of the objective function at the best estimate of the solution found.
+value of the objective function $r(\bmx)$ at the best estimate of the 
+solution found.
+
+\itt{norm_pg} is a scalar variable of type default \realdp, that holds the
+Euclidean norm of the projected gradient of $r(\bmx)$ at the best 
+estimate of the solution found.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed CPU times for the various parts

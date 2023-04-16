@@ -1,4 +1,4 @@
-.TH "galahad_wcp.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD WCP" \" -*- nroff -*-
+.TH "galahad_wcp.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD WCP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -94,7 +94,7 @@ This package uses a primal-dual interior-point method to \fBfind a well-centered
   (7) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
       y^l \[>=] 0, y^u \[<=] 0, z^l \[>=] 0 and z^u \[<=] 0
   \n
- Here A is the matrix whose rows are the a_i^T, i = 1, \&.\&.\&. , m, \\mu_c^l, \\mu_c^u, \\mu_x^l and \\mu_x^u are vectors of strictly positive {\fItargets}\fP, g is another given vector, and (y^l, y^u) and (z^l, z^u) are dual variables for the linear constraints and simple bounds respectively; c gives the constraint value A x\&. Since (5)-(7) normally imply that    
+ Here A is the matrix whose rows are the a_i^T, i = 1, \&.\&.\&. , m, \\mu_c^l, \\mu_c^u, \\mu_x^l and \\mu_x^u are vectors of strictly positive {\fItargets}\fP, g is another given target vector, and (y^l, y^u) and (z^l, z^u) are dual variables for the linear constraints and simple bounds respectively; c gives the constraint value A x\&. Since (5)-(7) normally imply that    
   \n
   (8) c^l < c < c^u, x^l <; x < x^u,
       y^l > 0, y^u < 0, z^l > 0 and z^u < 0
@@ -534,7 +534,7 @@ real_wp_ \fImu_final_target_max\fP the largest target value on termination
 real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
 .br
 .PP
-bool \fIfeasible\fP is the returned 'solution' feasible? 
+bool \fIfeasible\fP is the returned primal-dual 'solution' strictly feasible? 
 .br
 .PP
 struct \fBwcp_time_type\fP \fItime\fP timings (see above) 
@@ -681,7 +681,7 @@ Find a well-centered point in the feasible region
 .br
 \fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
 .br
-\fIg\fP is a one-dimensional array of size n and type double, that holds the vectorg\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+\fIg\fP is a one-dimensional array of size n and type double, that holds the target vectorg\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
 .br
 \fIa_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A\&.
 .br

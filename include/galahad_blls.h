@@ -23,10 +23,11 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2\f], 
+  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 
 \manonly
   \n
-  minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
+  minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2, 
   \n
 \endmanonly
   subject to the simple bound constraints
@@ -325,7 +326,10 @@ struct blls_control_type {
     int sif_file_device;
 
     /// \brief
-    /// the objective function will be regularized by adding 1/2 weight ||x||^2
+    /// the value of the non-negative regularization weight sigma, i.e., the 
+    /// quadratic objective function q(x) will be regularized by adding 
+    /// 1/2 weight ||x||^2; any value smaller than zero will be regarded 
+    /// as zero.
     real_wp_ weight;
 
     /// \brief
@@ -432,20 +436,38 @@ struct blls_control_type {
 struct blls_time_type {
 
     /// \brief
-    /// total time
-    real_sp_ total;
+    /// the total CPU time spent in the package
+    real_wp_ total;
 
     /// \brief
-    /// time for the analysis phase
-    real_sp_ analyse;
+    /// the CPU time spent analysing the required matrices prior to
+    /// factorization
+    real_wp_ analyse;
 
     /// \brief
-    /// time for the factorization phase
-    real_sp_ factorize;
+    /// the CPU time spent factorizing the required matrices
+    real_wp_ factorize;
 
     /// \brief
-    /// time for the linear solution phase
-    real_sp_ solve;
+    /// the CPU time spent in the linear solution phase
+    real_wp_ solve;
+
+    /// \brief
+    /// the total clock time spent in the package
+    real_wp_ clock_total;
+
+    /// \brief
+    /// the clock time spent analysing the required matrices prior to
+    /// factorization
+    real_wp_ clock_analyse;
+
+    /// \brief
+    /// the clock time spent factorizing the required matrices
+    real_wp_ clock_factorize;
+
+    /// \brief
+    /// the clock time spent in the linear solution phase
+    real_wp_ clock_solve;
 };
 
 /**
@@ -474,11 +496,11 @@ struct blls_inform_type {
     int cg_iter;
 
     /// \brief
-    /// current value of the objective function
+    /// current value of the objective function, r(x).
     real_wp_ obj;
 
     /// \brief
-    /// current value of the projected gradient
+    /// current value of the Euclidean norm of projected gradient of r(x).
     real_wp_ norm_pg;
 
     /// \brief

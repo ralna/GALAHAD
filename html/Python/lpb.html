@@ -779,6 +779,20 @@ below should be set no larger than minus <code class="docutils literal notransla
 The upper bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
 above should be set no smaller than <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
 </dd>
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the minimizer <span class="math notranslate nohighlight">\(x\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(x=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>y<span class="classifier">ndarray(m)</span></dt><dd><p>holds the initial estimate of the Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span>
+associated with the general constraints, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(y=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>z<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the dual variables <span class="math notranslate nohighlight">\(z\)</span>
+associated with the simple bound constraints, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(z=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
 </dl>
 <p><strong>Returns:</strong></p>
 <dl class="simple">
@@ -995,7 +1009,6 @@ to factorization.</p>
 <span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
 
 <span class="comment single"># set parameters</span>
-<span class="name">p</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
 <span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
 <span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">2</span>
 <span class="name">infinity</span> <span class="operator">=</span> <span class="name builtin">float</span><span class="punctuation">(</span><span class="literal string double">&quot;inf&quot;</span><span class="punctuation">)</span>

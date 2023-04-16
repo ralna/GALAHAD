@@ -1,5 +1,6 @@
 from galahad import bqpb
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # set parameters
 n = 3

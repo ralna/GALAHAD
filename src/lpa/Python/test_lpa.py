@@ -2,7 +2,6 @@ from galahad import lpa
 import numpy as np
 
 # set parameters
-p = 1.0
 n = 3
 m = 2
 infinity = float("inf")

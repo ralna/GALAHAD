@@ -400,7 +400,8 @@ where <span class="math notranslate nohighlight">\(A\)</span> is a given <span c
 of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
-involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.
+involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>, since full advantage is taken of
+“any zero coefficients in the matrix <span class="math notranslate nohighlight">\(A\)</span>.
 The package identifies infeasible problems, and problems for which there is
 no strict interior.</p>
 <p>See Section 4 of $GALAHAD/doc/wcp.pdf for a brief description of the
@@ -747,7 +748,7 @@ this case can be None.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="galahad.wcp.wcp.find_wcp">
-<span class="sig-prename descclassname"><span class="pre">wcp.</span></span><span class="sig-name descname"><span class="pre">find_wcp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.wcp.wcp.find_wcp" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">wcp.</span></span><span class="sig-name descname"><span class="pre">find_wcp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.wcp.wcp.find_wcp" title="Permalink to this definition">#</a></dt>
 <dd><p>Find a well-centered point for a given polyhedral set of linear
 inequalities.</p>
 <p><strong>Parameters:</strong></p>
@@ -755,10 +756,6 @@ inequalities.</p>
 <dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
 </dd>
 <dt>m<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
-</dd>
-<dt>f<span class="classifier">float</span></dt><dd><p>holds the constant term <span class="math notranslate nohighlight">\(f\)</span> in the objective function.</p>
-</dd>
-<dt>g<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the linear term <span class="math notranslate nohighlight">\(g\)</span> in the objective function.</p>
 </dd>
 <dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the constraint Jacobian <span class="math notranslate nohighlight">\(A\)</span>.</p>
 </dd>
@@ -781,6 +778,37 @@ below should be set no larger than minus <code class="docutils literal notransla
 <dt>x_u<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the upper bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
 The upper bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
 above should be set no smaller than <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the minimizer <span class="math notranslate nohighlight">\(x\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(x=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>y_l<span class="classifier">ndarray(m)</span></dt><dd><p>holds the initial estimate of the Lagrange multipliers <span class="math notranslate nohighlight">\(y_l\)</span>
+associated with the lower general constraints,
+<span class="math notranslate nohighlight">\(A x \geq c_l\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(y_l=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>y_u<span class="classifier">ndarray(m)</span></dt><dd><p>holds the initial estimate of the Lagrange multipliers <span class="math notranslate nohighlight">\(y_u\)</span>
+associated with the upper general constraints,
+<span class="math notranslate nohighlight">\(A x \leq c_u\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(y_u=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>z_l<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the dual variables <span class="math notranslate nohighlight">\(z_l\)</span>
+associated with the lower simple bound constraints,
+<span class="math notranslate nohighlight">\(x \geq x_l\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(z_l=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>z_u<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the dual variables <span class="math notranslate nohighlight">\(z_u\)</span>
+associated with the upper simple bound constraints,
+<span class="math notranslate nohighlight">\(x \leq x_u\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(z_u=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>g<span class="classifier">ndarray(n)</span></dt><dd><p>holds an optional dual target vector, if this is required
+(for experts); normally a vetor of zero suffices.</p>
 </dd>
 </dl>
 <p><strong>Returns:</strong></p>
@@ -919,7 +947,7 @@ of the solution determined by WCP_solve.</p>
 <dt>non_negligible_pivot<span class="classifier">float</span></dt><dd><p>the smallest pivot which was not judged to be zero when
 detecting linear dependent constraints.</p>
 </dd>
-<dt>feasible<span class="classifier">bool</span></dt><dd><p>is the returned “solution” feasible?.</p>
+<dt>feasible<span class="classifier">bool</span></dt><dd><p>is the returned primal-dual “solution” strictly feasible?</p>
 </dd>
 <dt>time<span class="classifier">dict</span></dt><dd><dl class="simple">
 <dt>dictionary containing timing information:</dt><dd><dl class="simple">
@@ -974,6 +1002,69 @@ to  factorization.</p>
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">wcp</span>
+<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+<span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+
+<span class="comment single"># set parameters</span>
+<span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">2</span>
+<span class="name">infinity</span> <span class="operator">=</span> <span class="name builtin">float</span><span class="punctuation">(</span><span class="literal string double">&quot;inf&quot;</span><span class="punctuation">)</span>
+
+<span class="comment single">#  describe constraints</span>
+
+<span class="name">A_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">A_ne</span> <span class="operator">=</span> <span class="literal number integer">4</span>
+<span class="name">A_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">])</span>
+<span class="name">A_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">A_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">A_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+<span class="name">c_l</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">])</span>
+<span class="name">c_u</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">])</span>
+<span class="name">x_l</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="operator">-</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="operator">-</span><span class="name">infinity</span><span class="punctuation">,</span><span class="operator">-</span><span class="name">infinity</span><span class="punctuation">])</span>
+<span class="name">x_u</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="name">infinity</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">])</span>
+
+<span class="comment single"># allocate internal data and set default options</span>
+<span class="name">options</span> <span class="operator">=</span> <span class="name">wcp</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
+
+<span class="comment single"># set some non-default options</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="comment single">#print(&quot;options:&quot;, options)</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">wcp</span><span class="operator">.</span><span class="name">load</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">m</span><span class="punctuation">,</span> <span class="name">A_type</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_row</span><span class="punctuation">,</span> <span class="name">A_col</span><span class="punctuation">,</span> <span class="name">A_ptr</span><span class="punctuation">,</span> <span class="name">options</span><span class="punctuation">)</span>
+
+<span class="comment single">#  provide starting values (not crucial)</span>
+
+<span class="name">x</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">g</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">y_l</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">y_u</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">z_l</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+<span class="name">z_u</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
+
+<span class="comment single"># find optimum of lp</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> find well-centred point&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span><span class="punctuation">,</span> <span class="name">c</span><span class="punctuation">,</span> <span class="name">y_l</span><span class="punctuation">,</span> <span class="name">y_u</span><span class="punctuation">,</span> <span class="name">z_l</span><span class="punctuation">,</span> <span class="name">z_u</span><span class="punctuation">,</span> <span class="name">x_stat</span><span class="punctuation">,</span> <span class="name">c_stat</span> \
+  <span class="operator">=</span> <span class="name">wcp</span><span class="operator">.</span><span class="name">find_wcp</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">m</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span> <span class="name">c_l</span><span class="punctuation">,</span> <span class="name">c_u</span><span class="punctuation">,</span> <span class="name">x_l</span><span class="punctuation">,</span> <span class="name">x_u</span><span class="punctuation">,</span> <span class="name">x</span><span class="punctuation">,</span> <span class="name">y_l</span><span class="punctuation">,</span> <span class="name">y_u</span><span class="punctuation">,</span>
+                 <span class="name">z_l</span><span class="punctuation">,</span> <span class="name">z_u</span><span class="punctuation">)</span>
+<span class="comment single">#                z_l, z_u, g)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; c:&quot;</span><span class="punctuation">,</span><span class="name">c</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; y_l:&quot;</span><span class="punctuation">,</span><span class="name">y_l</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; y_u:&quot;</span><span class="punctuation">,</span><span class="name">y_u</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; z_l:&quot;</span><span class="punctuation">,</span><span class="name">z_l</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; z_u:&quot;</span><span class="punctuation">,</span><span class="name">z_u</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x_stat:&quot;</span><span class="punctuation">,</span><span class="name">x_stat</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; c_stat:&quot;</span><span class="punctuation">,</span><span class="name">c_stat</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">wcp</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; strictly feasible:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'feasible'</span><span class="punctuation">])</span>
+
+<span class="comment single"># deallocate internal data</span>
+
+<span class="name">wcp</span><span class="operator">.</span><span class="name">terminate</span><span class="punctuation">()</span></code></pre>
 <p>This example code is available in $GALAHAD/src/wcp/Python/test_wcp.py .</p>
 </section>
 </section>

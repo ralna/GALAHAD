@@ -1,4 +1,4 @@
-.TH "galahad_nls.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "galahad_nls.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -658,9 +658,6 @@ bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any arra
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct \fBnls_subproblem_control_type\fP \fIsubproblem_control\fP control parameters for the step-finding subproblem 
-.br
-.PP
 struct rqs_control_type \fIrqs_control\fP control parameters for RQS 
 .br
 .PP
@@ -674,6 +671,9 @@ struct bsc_control_type \fIbsc_control\fP control parameters for BSC
 .br
 .PP
 struct roots_control_type \fIroots_control\fP control parameters for ROOTS 
+.br
+.PP
+struct \fBnls_subproblem_control_type\fP \fIsubproblem_control\fP control parameters for the step-finding subproblem 
 .br
 .PP
 .RE
