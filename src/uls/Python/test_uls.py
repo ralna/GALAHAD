@@ -1,5 +1,6 @@
 from galahad import uls
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 #  describe problem:
 #  ( 1     )     ( 1 )

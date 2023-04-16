@@ -1,8 +1,8 @@
 from galahad import qpa
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # set parameters
-p = 1.0
 n = 3
 m = 2
 infinity = float("inf")

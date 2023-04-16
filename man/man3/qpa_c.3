@@ -1,4 +1,4 @@
-.TH "galahad_qpa.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
+.TH "galahad_qpa.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -397,10 +397,7 @@ bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file
 char \fIsymmetric_linear_solver[31]\fP indefinite linear equation solver 
 .br
 .PP
-char \fIdefinite_linear_solver[31]\fP definite linear equation solver 
-.br
-.PP
-char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
+char \fIsif_file_name[31]\fP definite linear equation solver name of generated SIF file containing input problem 
 .br
 .PP
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
@@ -438,16 +435,16 @@ real_wp_ \fIsolve\fP the CPU time spent computing the search direction
 real_wp_ \fIclock_total\fP the total clock time spent in the package 
 .br
 .PP
-real_sp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
 .br
 .PP
-real_sp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
 .br
 .PP
-real_sp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
 .br
 .PP
-real_sp_ \fIclock_solve\fP the clock time spent computing the search direction 
+real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
 .br
 .PP
 .RE

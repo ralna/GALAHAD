@@ -1316,7 +1316,7 @@
 
      IF ( data%preconditioner == 2  .AND. .NOT. PRESENT( eval_prec ) .AND.     &
           .NOT. data%reverse ) THEN
-       inform%status = GALAHAD_error_optional ; GO TO 900
+       inform%status = GALAHAD_error_optional ; GO TO 910
      END IF
 
      IF ( control%maxit < 0 ) THEN
@@ -1910,20 +1910,20 @@
 !  test for an approximate first-order critical point
 
        IF ( inform%norm_pg <= control%stop_d ) THEN
-         inform%status = GALAHAD_ok ; GO TO 910
+         inform%status = GALAHAD_ok ; GO TO 900
        END IF
 
 !  test to see if more than maxit iterations have been performed
 
        IF ( inform%iter > data%maxit ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+         inform%status = GALAHAD_error_max_iterations ; GO TO 910
        END IF
 
 !  check that the CPU time limit has not been reached
 
        IF ( control%cpu_time_limit >= zero .AND.                               &
             inform%time%total > control%cpu_time_limit ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 910
        END IF
 
 !  ----------------------------------------------------------------------------
@@ -2405,6 +2405,15 @@
 !  successful return
 
  900 CONTINUE
+     DO i = 1, prob%n
+       IF ( data%X_status( i ) == 0 ) THEN
+         X_stat( i ) = 0
+       ELSE IF ( data%X_status( i ) == 1 ) THEN
+         X_stat( i ) = - 1
+       ELSE
+         X_stat( i ) = 1
+       END IF
+     END DO 
      CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
      inform%time%total = time - data%time_start
      inform%time%clock_total = clock_now - data%clock_start

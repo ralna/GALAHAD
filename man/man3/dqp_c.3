@@ -1,4 +1,4 @@
-.TH "galahad_dqp.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
+.TH "galahad_dqp.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -520,7 +520,7 @@ real_wp_ \fInon_negligible_pivot\fP the smallest pivot that was not judged to be
 bool \fIfeasible\fP is the returned 'solution' feasible? 
 .br
 .PP
-int \fIcheckpointsIter[16]\fP checkpoints(i) records the iteration at which the criticality measures first fall below 10^{-i}, i = 1, \&.\&.\&., 16 (-1 means not achieved) 
+int \fIcheckpointsIter[16]\fP checkpoints(i) records the iteration at which the criticality measures first fall below 10^{-i-1}, i = 0, \&.\&.\&., 15 (-1 means not achieved) 
 .br
 .PP
 real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter 
@@ -541,7 +541,10 @@ struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS
 struct gltr_inform_type \fIgltr_inform\fP return information from GLTR 
 .br
 .PP
-struct scu_inform_type \fIscu_inform\fP inform parameters for SCU int scu_status; see scu_status 
+int \fIscu_status\fP inform parameters for SCU 
+.br
+.PP
+struct scu_inform_type \fIscu_inform\fP see scu_status 
 .br
 .PP
 struct rpd_inform_type \fIrpd_inform\fP inform parameters for RPD 

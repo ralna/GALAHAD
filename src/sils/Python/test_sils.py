@@ -1,5 +1,6 @@
 from galahad import sls
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 #  describe problem (only the lower triangle of matrix is required)
 #  ( 1     )     ( 1 )
@@ -24,15 +25,14 @@ options['print_level'] = 1
 #print("options:", options
 
 # load data (and optionally non-default options), and analyse matrix structure
-sls.analyse_matrix(n, A_type, A_ne, A_row, A_col, A_ptr, options)
+#sls.analyse_matrix(n, A_type, A_ne, A_row, A_col, A_ptr, options)
 
 # factorize matrix
-sls.factorize_matrix(A_ne, A_val)
+#sls.factorize_matrix(A_ne, A_val)
 
 # solve system
-x = sls.solve_system(n, b)
-
-print("x:",x)
+#x = sls.solve_system(n, b)
+#print("x:",x)
 
 # get information
 inform = sls.information()

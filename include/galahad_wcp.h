@@ -98,7 +98,7 @@ y^l \geq 0 , \;\; y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   Here \f$A\f$ is the matrix whose rows are the \f$a_i^T\f$, \f$i = 1,
   \ldots , m\f$, \f$\mu_c^l\f$, \f$\mu_c^u\f$, \f$\mu_x^l\f$ and
   \f$\mu_x^u\f$ are vectors of strictly positive {\em targets}, \f$g\f$
-  is another given vector, and \f$(y^l, y^u)\f$ and \f$(z^l,
+  is another given target vector, and \f$(y^l, y^u)\f$ and \f$(z^l,
   z^u)\f$ are dual variables for the linear constraints and simple
   bounds respectively; \f$c\f$ gives the constraint value \f$A x\f$.
   Since (5)-(7) normally imply that
@@ -867,7 +867,7 @@ struct wcp_inform_type {
     real_wp_ non_negligible_pivot;
 
     /// \brief
-    /// is the returned "solution" feasible?
+    /// is the returned primal-dual "solution" strictly feasible?
     bool feasible;
 
     /// \brief
@@ -1084,8 +1084,8 @@ void wcp_find_wcp( void **data,
     general linear constraints.
 
  @param[in] g is a one-dimensional array of size n and type double, that
-    holds the vector\f$g\f$.
-    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+    holds the target vector\f$g\f$.
+    The j-th component of g, j = 0, ... ,  n-1, contains \f$g_j \f$.
 
  @param[in] a_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.

@@ -784,7 +784,7 @@ struct dqp_inform_type {
 
     /// \brief
     /// inform parameters for SCU
-    /// int scu_status;
+    int scu_status;
     /// see scu_status
     struct scu_inform_type scu_inform;
 

@@ -1,5 +1,6 @@
 from galahad import trs
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 
 # set parameters
 p = 1.0

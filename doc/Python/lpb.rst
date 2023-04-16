@@ -400,6 +400,20 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      y : ndarray(m)
+          holds the initial estimate of the Lagrange multipliers $y$
+          associated with the general constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $y=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 

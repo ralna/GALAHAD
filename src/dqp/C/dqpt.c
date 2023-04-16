@@ -151,7 +151,7 @@ int main(void) {
         dqp_terminate( &data, &control, &inform );
     }
 
-    printf(" test of sldqp\n\n");
+    printf("\n separate test of sldqp\n\n");
 
     // test shifted least-distance interface
 //  for( int d=1; d <= 0; d++){
@@ -182,18 +182,15 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'W';
-        printf(" going in\n\n");
                 dqp_import( &control, &data, &status, n, m,
                            "shifted_least_distance", H_ne, NULL, NULL, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-        printf(" going in\n\n");
                 dqp_solve_sldqp( &data, &status, n, m, w, x_0, g, f, 
                                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
                                  x_stat, c_stat );
                 break;
 
             }
-        printf(" come out\n\n");
         dqp_information( &data, &inform, &status );
 
         if(inform.status == 0){

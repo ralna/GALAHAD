@@ -47,7 +47,8 @@ for which
  \bmz^{l} \geq \bmzero \;\; \mbox{and} \;\;  \bmz^{u} \leq \bmzero .}
 Here $\bmA$ is the matrix whose rows are the $\bma_i^T$, $i = 1, \ldots , m$,
 $\bmmu_c^{l}$, $\bmmu_c^{u}$, $\bmmu_x^{l}$ and $\bmmu_x^{u}$ are
-vectors of strictly positive {\em targets}, $\bmg$ is another given vector,
+vectors of strictly positive {\em targets}, $\bmg$ is another given 
+target vector (which is often zero),
 and $(\bmy^{l}, \bmy^{u})$ and $(\bmz^{l}, \bmz^{u})$ are dual variables
 for the linear constraints and simple bounds respectively; 
 $\bmc$ gives the constraint value $\bmA \bmx$.
@@ -249,7 +250,7 @@ are:
  that holds the number of general linear constraints, $m$.
               
 \itt{gradient\_kind} is a scalar variable of type default \integer, 
-that is used to indicate whether the components of the gradient $\bmg$ 
+that is used to indicate whether the components of the target vector $\bmg$ 
 have special or general values. Possible values for {\tt gradient\_kind} are:
 \begin{description}
 \itt{0}  In this case, $\bmg = 0$.
@@ -261,8 +262,7 @@ have special or general values. Possible values for {\tt gradient\_kind} are:
 \end{description}
 
 \ittf{G} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds the gradient $\bmg$ 
-of the linear term of the quadratic objective function.
+default \realdp, that holds the target vector $\bmg$.
 The $j$-th component of 
 {\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
 If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
@@ -990,8 +990,9 @@ it may be worth increasing {\tt control\%zero\_pivot} above
 {\tt non\_negligible\_pivot} and solving again.
 
 \itt{feasible} is a scalar variable of type default \logical, that has the
-value \true\ if the output value of $\bmx$ satisfies the constraints,
-and the value \false\ otherwise.
+value \true\ if the output values of $\bmx$ and the Lagrange multipliers and
+dual variables lie in the strict interior of the primal-dual feasible
+region, and the value \false\ otherwise.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type} 
 whose components are used to hold elapsed CPU and system clock times for 

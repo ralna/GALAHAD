@@ -1,4 +1,4 @@
-.TH "galahad_rqs.h" 3 "Sun Apr 2 2023" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
+.TH "galahad_rqs.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -614,7 +614,7 @@ Solve the regularised quadratic problem\&.
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
-\fIM_ne\fP is a scalar variable of type int, that holds the number of entries in the scaling matrix M if it not the iedntity matrix\&.
+\fIM_ne\fP is a scalar variable of type int, that holds the number of entries in the scaling matrix M if it not the identity matrix\&.
 .br
 \fIM_val\fP is a one-dimensional array of size M_ne and type double, that holds the values of the entries of the scaling matrix M, if it is not the identity matrix, in any of the available storage schemes\&. If M_val is NULL, M will be taken to be the identity matrix\&.
 .br

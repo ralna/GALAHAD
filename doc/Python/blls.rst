@@ -6,15 +6,16 @@ BLLS
 The ``blls`` package uses a **preconditioned project-gradient method** to solve
 a given **bound-constrained linear least-squares problem**.
 The aim is to minimize the regularized linear least-squares objective function
-$$q(x) =  \frac{1}{2} \| A x - b\|_W^2 + \frac{1}{2} \sigma \|x\|_2^2$$ 
+$$r(x) = q(x) + \frac{1}{2} \sigma \|x\|_2^2, \;\; \mbox{where} \;\;
+q(x) =  \frac{1}{2} \| A x - b\|_W^2,$$ 
 subject to the simple bounds
 $$x_l \leq x \leq x_u,$$
 where the $m$ by $n$ matrix $A$, the vectors 
-$b$, $x^{l}$, $x^{u}$ and the non-negative weights $w$ and 
+$b$, $x_l$, $x_u$ and the non-negative weights $w$ and 
 $\sigma$ are given, and where the Euclidean and weighted-Euclidean norms
 are given by $\|v\|_2^2 = v^T v$ and $\|v\|_W^2 = v^T W v$,
 respectively, with $W = \mbox{diag}(w)$. Any of the components of 
-the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
+the vectors $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns $x$.
@@ -162,17 +163,19 @@ functions
              arcsearch (-ve=infini.
           sif_file_device : int
              the unit number to write generated SIF file describing the
-             current probl.
+             current problem.
           weight : float
-             the objective function will be regularized by adding 
-             1/2 weight ||x||^2.
+             the value of the non-negative regularization weight $\sigma$, 
+             i.e., the quadratic objective function $q(x)$ will be regularized 
+             by adding $1/2 \sigma \|x\|_2^2$; any value of weight smaller
+             than zero will be regarded as zero.
           infinity : float
              any bound larger than infinity in modulus will be regarded
              as infinite.
           stop_d : float
              the required accuracy for the dual infeasibility.
           identical_bounds_tol : float
-             any pair of constraint bounds (x_l,x_u) that are closer
+             any pair of constraint bounds $(x_l,x_u)$ that are closer
              than identical_bounds_tol will be reset to the average of
              their values.
           stop_cg_relative : float
@@ -266,7 +269,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``blls.initialize``).
 
-   .. function:: blls.solve_ls(n, m, sigma, w, a_ne, A_val, b, x_l, x_u)
+   .. function:: blls.solve_ls(n, m, w, a_ne, A_val, b, x_l, x_u, x, z)
 
       Find a solution to the bound-constraind regularized linear least-squares
       problem involving the least-squares objective function $q(x)$.
@@ -277,9 +280,7 @@ functions
           holds the number of variables.
       m : int
           holds the number of residuals.
-      sigma : float
-          holds the regularization weight $\sigma$ in the objective function.
-      w : ndarray(n)
+      w : ndarray(m)
           holds the weights $w$ in the objective function.
       a_ne : int
           holds the number of entries in the constraint Jacobian $A$.
@@ -287,6 +288,8 @@ functions
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``blls.load``.
+      b : ndarray(m)
+          holds the values of vector $b$ in the objective function.
       x_l : ndarray(n)
           holds the values of the lower bounds $x_l$ on the variables.
           The lower bound on any component of $x$ that is unbounded from 
@@ -295,6 +298,15 @@ functions
           holds the values of the upper bounds $x_l$ on the variables.
           The upper bound on any component of $x$ that is unbounded from 
           above should be set no smaller than ``options.infinity``.
+      x : ndarray(n)
+          holds the initial estimate of the minimizer $x$, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $x=0$, suffices and will be adjusted accordingly.
+      z : ndarray(n)
+          holds the initial estimate of the dual variables $z$
+          associated with the simple bound constraints, if known.
+          This is not crucial, and if no suitable value is known, then any
+          value, such as $z=0$, suffices and will be adjusted accordingly.
 
       **Returns:**
 
@@ -393,9 +405,10 @@ functions
           cg_iter : int
              number of CG iterations required.
           obj : float
-             current value of the objective function.
+             current value of the objective function, $r(x)$.
           norm_pg : float
-             current value of the projected gradient.
+             current value of the Euclidean norm of projected gradient 
+             of $r(x)$.
           time : dict
              dictionary containing timing information:
                total : float
