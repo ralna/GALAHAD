@@ -433,8 +433,8 @@
       CALL CPU_TIME( time4 )
 
       IF ( PRESOLVE_inform%status < 0 ) THEN
-         write( out, * ) '  ERROR return from PRESOLVE ( exitc =', &
-              PRESOLVE_inform%status, ')'
+         WRITE( out, "( ' ERROR return from PRESOLVE (status =', I6, ')' )" ) &
+            PRESOLVE_inform%status
          STOP
       END IF
 

@@ -27,6 +27,26 @@ method employed and other details.
 The more-modern package ``cqp`` offers similar functionality, and
 is often to be preferred.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$A x = c$$
+and
+$$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$W^2 ( x - x^0) + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,$$
+and
+$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where $W$ is the diagonal matrix whose entries are the $w_j$,
+where the vectors $y$ and $z$ are known as the **Lagrange multipliers** for
+the general linear constraints, and the **dual variables** for the bounds,
+respectively, and where the vector inequalities hold component-wise.
+
 matrix storage
 --------------
 

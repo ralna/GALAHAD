@@ -455,17 +455,17 @@ void cro_read_specfile( struct cro_control_type *control,
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    C R O  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
-
-void cro_crossover_solution( struct cro_control_type *control,
-                             void **data,
+void cro_crossover_solution( void **data,
+                             struct cro_control_type *control,
                              struct cro_inform_type *inform,
                              int n,
                              int m,
                              int m_equal,
+                             int h_ne,
                              const real_wp_ H_val[],
                              const int H_col[],
                              const int H_ptr[],
+                             int a_ne,
                              const real_wp_ A_val[],
                              const int A_col[],
                              const int A_ptr[],
@@ -514,21 +514,23 @@ void cro_crossover_solution( struct cro_control_type *control,
   \li -14 an error has occured in ULS_solve.
   \li -16 the residuals are large; the factorization may be unsatisfactory.
 
-
  @param[in] n is a scalar variable of type int, that holds the number of
-    variables.
+   variables.
 
  @param[in] m is a scalar variable of type int, that holds the number of
-    general linear constraints.
+   general linear constraints.
 
  @param[in] m_equal is a scalar variable of type int, that holds the number of
-    general linear equality constraints. Such constraints must occur first in
-    \f$A\f$.
+   general linear equality constraints. Such constraints must occur first in
+   \f$A\f$.
+
+ @param[in] h_ne is a scalar variable of type int, that holds the number of
+   entries in the <b>lower triangular</b> part of the Hessian matrix \f$H\f$.
 
  @param[in] H_val is a one-dimensional array of type double,
-    that holds the values of the entries of the <b>lower triangular </b>part
-    of the Hessian matrix \f$H\f$. The entries are stored by consecutive rows,
-    the order within each row is unimportant.
+   that holds the values of the entries of the lower triangular part
+   of the Hessian matrix \f$H\f$. The entries are stored by consecutive rows,
+   the order within each row is unimportant.
 
  @param[in]  H_col is a one-dimensional array of type int,
    that holds the column indices of the lower triangular part of \f$H\f$,
@@ -539,11 +541,14 @@ void cro_crossover_solution( struct cro_control_type *control,
    triangular part of \f$H\f$. The n+1-st component holds the total number of
    entries (plus one if fortran indexing is used).
 
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
+   entries in the constraint Jacobian matrix \f$A\f$.
+
  @param[in] A_val is a one-dimensional array of type double,
-    that holds the values of the entries of the constraint Jacobian matrix
-    \f$A\f$. The entries are stored by consecutive rows,
-    the order within each row is unimportant. <b>Equality constraints must be
-    ordered first.</b>
+   that holds the values of the entries of the constraint Jacobian matrix
+   \f$A\f$. The entries are stored by consecutive rows,
+   the order within each row is unimportant. <b>Equality constraints must be
+   ordered first.</b>
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
    that holds the column indices of \f$A\f$ in the same order as those in A_val.

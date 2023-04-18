@@ -22,6 +22,28 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/cqp.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$A x = c$$
+and
+$$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,$$
+and
+$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where the vectors $y$ and $z$ are known as the **Lagrange multipliers** for
+the general linear constraints, and the **dual variables** for the bounds,
+respectively, and where the vector inequalities hold component-wise.
+
+In the shifted-least-distance case, $g$ is shifted by $-W^2 x^0$,
+and $H = W^2$, where $W$ is the diagonal matrix whose entries are the $w_j$.
+
 matrix storage
 --------------
 
@@ -48,7 +70,7 @@ The string A_type = 'dense_by_columns' should be specified.
 Only the nonzero entries of the matrices are stored.
 For the $l$-th entry, $0 \leq l \leq ne-1$, of $A$,
 its row index i, column index j and value $A_{ij}$,
-$0 \leq i \leq m-1$,  $0 \leq j \leq n-1$,  are stored as the $l$-th 
+$0 \leq i \leq m-1$, $0 \leq j \leq n-1$,  are stored as the $l$-th 
 components of the integer arrays A_row and A_col and real array A_val, 
 respectively, while the number of nonzeros is recorded as A_ne = $ne$.
 The string A_type = 'coordinate'should be specified.
@@ -61,7 +83,7 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
+l = A_ptr(i), $\ldots$, A_ptr(i+1)-1, $0 \leq i \leq m-1,$
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -117,7 +139,7 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
-l = H_ptr(i), ..., H_ptr(i+1)-1 of the
+l = H_ptr(i), ..., H_ptr(i+1)-1, $0 \leq i \leq n-1,$ of the
 integer array H_col, and real array H_val, respectively. Note that as before
 only the entries in the lower triangle should be stored. For sparse matrices, 
 this scheme almost always requires less storage than its predecessor.
@@ -421,7 +443,7 @@ functions
           'diagonal', 'scaled_identity', 'identity', 'zero'  or 'none'; 
           lower or upper case variants are allowed.
       H_ne : int
-          holds the number of entries in the  lower triangular part of
+          holds the number of entries in the lower triangular part of
           $H$ in the sparse co-ordinate storage scheme. It need
           not be set for any of the other schemes.
       H_row : ndarray(H_ne)
@@ -429,7 +451,7 @@ functions
           in the sparse co-ordinate storage scheme. It need not be set for
           any of the other schemes, and in this case can be None.
       H_col : ndarray(H_ne)
-          holds the column indices of the  lower triangular part of
+          holds the column indices of the lower triangular part of
           $H$ in either the sparse co-ordinate, or the sparse row-wise
           storage scheme. It need not be set when the other storage schemes
           are used, and in this case can be None.
