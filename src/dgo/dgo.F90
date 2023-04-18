@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-04-17 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -60,16 +60,12 @@
        MODULE PROCEDURE DGO_terminate, DGO_full_terminate
      END INTERFACE DGO_terminate
 
-!--------------------
-
-     INTEGER ( KIND = ip_ ), PARAMETER :: sp = KIND( 1.0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
      INTEGER ( KIND = ip_ ), PARAMETER :: rwidth = 24 ! space required for 
-     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_ !   a double-precision #
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_ ! a double-precision #
      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
@@ -236,15 +232,15 @@
 
 !  the total CPU time spent in the package
 
-       REAL ( KIND = sp ) :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  the CPU time spent performing univariate global optimization
 
-       REAL ( KIND = sp ) :: univariate_global = 0.0
+       REAL ( KIND = sp_ ) :: univariate_global = 0.0
 
 !  the CPU time spent performing multivariate local optimization
 
-       REAL ( KIND = sp ) :: multivariate_local = 0.0
+       REAL ( KIND = sp_ ) :: multivariate_local = 0.0
 
 !  the total clock time spent in the package
 

@@ -13,13 +13,33 @@ subject to the general linear constraints and simple bounds
 $$c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,$$
 where $H$ and $A$ are, respectively, given 
 $n$ by $n$ symmetric postive-semi-definite and $m$ by $n$ matrices,  
-$g$, $w$ and $x^0$ are vectors, $f$ is a scalar, and any of the components 
+$g$ is a vector, $f$ is a scalar, and any of the components 
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method is most suitable for problems involving a large number of 
 unknowns $x$.
 
 See Section 4 of $GALAHAD/doc/cro.pdf for a brief description of the
 method employed and other details.
+
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$A x = c$$
+and
+$$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,$$
+and
+$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where the vectors $y$ and $z$ are known as the **Lagrange multipliers** for
+the general linear constraints, and the **dual variables** for the bounds,
+respectively, and where the vector inequalities hold component-wise.
+
 
 matrix storage
 --------------
@@ -122,7 +142,7 @@ functions
           ir_options : dict
              default control options for IR (see ``ir.initialize``).
 
-   .. function:: cro.crossover_solution(n, m, m_equal, f, g, H_val, H_col, H_ptr, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, x, y, z, c_stat, x_stat, options=None)
+   .. function:: cro.crossover_solution(n, m, m_equal, g, H_ne, H_val, H_col, H_ptr, A_ne, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, x, y, z, c_stat, x_stat, options=None)
 
       Crossover a primal-dual interior-point solution to a basic one.
 
@@ -133,27 +153,29 @@ functions
       m : int
           holds the number of constraints.
       m_equal : int
-          holds the number of equality constraints. These must occur first in
-          $A$.
-      f : float
-          holds the constant term $f$ in the objective function.
+          holds the number of equality constraints. These **must** occur 
+          first in $A$.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
+      H_ne : int
+          holds the number of entries in the lower triangular part of $H$.
       H_val : ndarray(H_ptr(n)-1)
           holds the values of the nonzeros of the lower triangular 
-          part of $H$ in the sparse co-ordinate storage scheme.
+          part of $H$ in the sparse row-wise storage scheme.
       H_col : ndarray(H_ptr(n)-1)
           holds the column indices of the nonzeros of the lower triangular 
-          part of $H$ in the sparse co-ordinate storage scheme.
+          part of $H$ in the sparse row-wise storage scheme.
       H_ptr : ndarray(n+1)
           holds the starting position of each row of the lower triangular
           part of $H$, as well as the total number of entries.
+      A_ne : int
+          holds the number of entries in $A$.
       A_val : ndarray(A_ptr(m)-1)
-          holds the values of the nonzeros of $A$ in the sparse co-ordinate
+          holds the values of the nonzeros of $A$ in the sparse row-wise
           storage scheme.
       A_col : ndarray(A_ptr(m)-1)
           holds the column indices  of the nonzeros of $A$ in the sparse 
-          co-ordinate  storage scheme.
+          row-wise storage scheme.
       A_ptr : ndarray(m+1)
           holds the starting position of each row of $A$, as well as the 
           total number of entries.
@@ -175,8 +197,6 @@ functions
           above should be set no smaller than ``options.infinity``.
       x : ndarray(n)
           holds the values of the approximate minimizer $x$.
-      c : ndarray(m)
-          holds the values of the residuals $c(x) = Ax$.
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
           general linear constraints.

@@ -4852,8 +4852,8 @@
 
       SUBROUTINE CRO_crossover_solution( n, m, m_equal, H_val, H_col,          &
                                          H_ptr, A_val, A_col, A_ptr,           &
-                                         G, C_l, C_u, X_l, X_u, C, X,          &
-                                         Y, Z, C_stat, X_stat, data,           &
+                                         G, C_l, C_u, X_l, X_u, X, C,          &
+                                         Y, Z, X_stat, C_stat, data,           &
                                          control, inform )
 
 !  interface to CRO_crossover for H stored by rows. For argument details,
@@ -4862,23 +4862,19 @@
 !  Dummy arguments
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
-                              DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
-                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
-                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: X, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: C, Y
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: C_stat
       TYPE ( CRO_full_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform

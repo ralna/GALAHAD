@@ -19,6 +19,19 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/bqp.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$H x + g = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where the vector $z$ is known as the **dual variables** for the bounds,
+and where the vector inequalities hold component-wise.
+
 matrix storage
 --------------
 

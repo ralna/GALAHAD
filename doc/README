@@ -441,7 +441,8 @@ In order to get GALAHAD working, here is what you need to do.
     Man pages for sdgal and gal (as well as dgal and rbgal) are in
     $GALAHAD/man/man1, while individual C interfaces have additional
     documentation in $GALAHAD/man/man3. You may wish to add $GALAHAD/man
-    to your MANPATH environment variable.
+    to your MANPATH environment variable. HTML Python documentation can be
+    found in $GALAHAD/html/Python/index.html and links from this.
 
 23. If you like using graphical user-interfaces, why not try the GALAHAD
      python GUI(see $GAHALAD/doc/README.gui for details). This has not
@@ -457,6 +458,17 @@ In order to get GALAHAD working, here is what you need to do.
 
     for updates/bug fixes/news.
 
+    ================
+    REPORTING ISSUES
+    ================
+
+25. If you have issues that you would like to report, such as potential bugs
+    or extensons that might be useful, please use the issues page
+
+       https://github.com/ralna/GALAHAD/issues
+
+    and we will respond as quickly as we can.
+
 Best of luck
 
  Nick Gould
@@ -470,4 +482,4 @@ This version (4.0), additionally with
 
  Jari Fowkes
 
-18 March 2022
+17 April 2023

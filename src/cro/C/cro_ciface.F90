@@ -425,40 +425,32 @@
 
   END SUBROUTINE cro_read_specfile
 
-!  ---------------------------------------------
-!  C interface to fortran cro_crossover_solution
-!  ---------------------------------------------
-
-  SUBROUTINE cro_crossover_solution( ccontrol, cdata, cinform,                 &
-                                     n, m, mequal, hval, hcol, hptr,           &
-                                     aval, acol, aptr, g, cl, cu, xl, xu,      &
-                                     c, x, y, z, cstat, xstat ) BIND( C )
+  SUBROUTINE cro_crossover_solution( cdata, ccontrol, cinform,                 &
+                                     n, m, mequal, hne, hval, hcol, hptr,      &
+                                     ane, aval, acol, aptr, g, cl, cu, xl,     &
+                                     xu, x, c, y, z, xstat, cstat ) BIND( C )
   USE GALAHAD_CRO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  TYPE ( cro_control_type ), INTENT( IN ) :: ccontrol
-  INTEGER ( KIND = ipc_ ), INTENT( IN ) :: n, m, mequal
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, mequal, hne, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: hptr
-  INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
-                           DIMENSION( hptr( n + 1 ) - 1 ) :: hcol
-  REAL ( KIND = rpc_ ), INTENT( IN ),                                           &
-                       DIMENSION( hptr( n + 1 ) - 1 ) :: hval
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( hne ) :: hcol
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( hne ) :: hval
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m + 1 ) :: aptr
-  INTEGER ( KIND = ipc_ ), INTENT( INOUT ),                                    &
-                           DIMENSION( aptr( m + 1 ) - 1 ) :: acol
-  REAL ( KIND = rpc_ ), INTENT( IN ),                                           &
-                       DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( ane ) :: acol
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
-  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
-  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m ) :: cstat
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ), DIMENSION( m ) :: cstat
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( cro_inform_type ), INTENT( INOUT ) :: cinform
+  TYPE ( cro_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( cro_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -486,8 +478,8 @@
 !  import the problem data into the required CRO structure
 
   CALL f_cro_crossover_solution( n, m, mequal, hval, hcol, hptr, aval,         &
-                                 acol, aptr, g, cl, cu, xl, xu, c, x, y, z,    &
-                                 cstat, xstat, fdata, fcontrol, finform )
+                                 acol, aptr, g, cl, cu, xl, xu, x, c, y, z,    &
+                                 xstat, cstat, fdata, fcontrol, finform )
 
 !  copy inform out
 

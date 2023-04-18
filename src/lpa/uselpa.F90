@@ -627,7 +627,7 @@
         CALL SMT_put( prob%H%type, 'ZERO', smt_stat )
         CALL PRESOLVE_apply( prob, PRE_control, PRE_inform, PRE_data )
         IF ( PRE_inform%status < 0 ) THEN
-          WRITE( out, "( '  ERROR return from PRESOLVE (exitc =', I6, ')' )" ) &
+          WRITE( out, "( ' ERROR return from PRESOLVE (status =', I6, ')' )" ) &
             PRE_inform%status
           STOP
         END IF

@@ -416,6 +416,22 @@ The method is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
 <p>See Section 4 of $GALAHAD/doc/eqp.pdf for a brief description of the
 method employed and other details.</p>
+<section id="terminolgy">
+<h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
+the <strong>primal optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[A x + c = 0\]</div>
+
+and the <strong>dual optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[H x + g = A^T y,\]</div>
+
+where the vector <span class="math notranslate nohighlight">\(y\)</span> is known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints.</p>
+<p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
+and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
@@ -1187,6 +1203,11 @@ of the solution determined by QPB_solve.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminolgy">
+   terminolgy
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage
