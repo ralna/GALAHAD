@@ -406,6 +406,45 @@ The package identifies infeasible problems, and problems for which there is
 no strict interior.</p>
 <p>See Section 4 of $GALAHAD/doc/wcp.pdf for a brief description of the
 method employed and other details.</p>
+<section id="terminolgy">
+<h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
+<p>More specifically, if possible, the package finds a solution to the
+system of  <strong>primal optimality equations</strong>
+<div class="math notranslate nohighlight">
+\[A x = c,\]</div>
+
+the <strong>dual optimality equations</strong>
+<div class="math notranslate nohighlight">
+\[g = A^{T} y + z,\;\; y = y^{l} + y^{u} \;\;\mbox{and}\;\; z = z^{l} + z^{u},\]</div>
+
+and <strong>perturbed complementary slackness equations</strong>
+<div class="math notranslate nohighlight">
+\[( c_i^{} - c^l_i ) y^{l}_i = (\mu_c^{l})_i^{} \;\;\mbox{and}\;\; ( c_i^{} - c_i^u ) y^{u}_i = (\mu_c^{u})_i^{}, \;\;\; i = 1, \ldots , m,\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[((x^{}_j - x^l_j ) z_j^{l} = (\mu_x^{l})_j^{} \;\;\mbox{and}\;\; ( x^{}_j - x^u_j ) z_j^{u} = (\mu_x^{u})_j^{}, \;\;\;  j = 1, \ldots , n,\]</div>
+
+for which
+<div class="math notranslate nohighlight">
+\[c^{l} \leq c \leq c^{u}, \;\; x^{l} \leq x \leq x^{u}, \;\;  y^{l} \geq 0, \;\;  y^{u} \leq 0, \;\;  z^{l} \geq 0 \;\; \mbox{and} \;\;  z^{u} \leq 0.\]</div>
+
+Here <span class="math notranslate nohighlight">\(\mu_c^{l}\)</span>, <span class="math notranslate nohighlight">\(\mu_c^{u}\)</span>, <span class="math notranslate nohighlight">\(\mu_x^{l}\)</span> and <span class="math notranslate nohighlight">\(\mu_x^{u}\)</span> are
+vectors of strictly positive <strong>targets</strong>, <span class="math notranslate nohighlight">\(g\)</span> is another given
+target vector (which is often zero),
+<span class="math notranslate nohighlight">\((y^{l}, y^{u})\)</span> and <span class="math notranslate nohighlight">\((z^{l}, z^{u})\)</span> are <strong>Lagrange multipliers</strong>
+for the linear constraints and <strong>dual variables</strong> for the simple bounds
+respectively, and vector inequalities hold component-wise;
+<span class="math notranslate nohighlight">\(c\)</span> gives the constraint value <span class="math notranslate nohighlight">\(A x\)</span>.
+Since the perturbed complementarity equations normally imply that
+<div class="math notranslate nohighlight">
+\[c^{l} &lt; c &lt; c^{u}, \;\; x^{l} &lt; x &lt; x^{u}, \;\;  y^{l} &gt; 0, \;\;  y^{u} &lt; 0, \;\;  z^{l} &gt; 0 \;\; \mbox{and} \;\;  z^{u} &lt; 0,\]</div>
+
+such a primal-dual point <span class="math notranslate nohighlight">\((x, c, y^{l}, y^{u}, z^{l}, z^{l})\)</span>
+may be used, for example, as a feasible starting point for primal-dual
+interior-point methods for solving the linear programming problem
+of minimizing <span class="math notranslate nohighlight">\(g^T x\)</span> within the given polyhedral set.</p>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
@@ -1107,6 +1146,11 @@ to  factorization.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminolgy">
+   terminolgy
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

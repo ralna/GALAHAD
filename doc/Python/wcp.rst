@@ -20,6 +20,34 @@ no strict interior.
 See Section 4 of $GALAHAD/doc/wcp.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+More specifically, if possible, the package finds a solution to the 
+system of  **primal optimality equations**
+$$A x = c,$$
+the **dual optimality equations**
+$$g = A^{T} y + z,\;\; y = y^{l} + y^{u} \;\;\mbox{and}\;\; z = z^{l} + z^{u},$$
+and **perturbed complementary slackness equations**
+$$( c_i^{} - c^l_i ) y^{l}_i = (\mu_c^{l})_i^{} \;\;\mbox{and}\;\; ( c_i^{} - c_i^u ) y^{u}_i = (\mu_c^{u})_i^{}, \;\;\; i = 1, \ldots , m,$$
+and
+$$((x^{}_j - x^l_j ) z_j^{l} = (\mu_x^{l})_j^{} \;\;\mbox{and}\;\; ( x^{}_j - x^u_j ) z_j^{u} = (\mu_x^{u})_j^{}, \;\;\;  j = 1, \ldots , n,$$
+for which
+$$c^{l} \leq c \leq c^{u}, \;\; x^{l} \leq x \leq x^{u}, \;\;  y^{l} \geq 0, \;\;  y^{u} \leq 0, \;\;  z^{l} \geq 0 \;\; \mbox{and} \;\;  z^{u} \leq 0.$$
+Here $\mu_c^{l}$, $\mu_c^{u}$, $\mu_x^{l}$ and $\mu_x^{u}$ are
+vectors of strictly positive **targets**, $g$ is another given 
+target vector (which is often zero),
+$(y^{l}, y^{u})$ and $(z^{l}, z^{u})$ are **Lagrange multipliers**
+for the linear constraints and **dual variables** for the simple bounds 
+respectively, and vector inequalities hold component-wise;  
+$c$ gives the constraint value $A x$.
+Since the perturbed complementarity equations normally imply that
+$$c^{l} < c < c^{u}, \;\; x^{l} < x < x^{u}, \;\;  y^{l} > 0, \;\;  y^{u} < 0, \;\;  z^{l} > 0 \;\; \mbox{and} \;\;  z^{u} < 0,$$
+such a primal-dual point $(x, c, y^{l}, y^{u}, z^{l}, z^{l})$
+may be used, for example, as a feasible starting point for primal-dual 
+interior-point methods for solving the linear programming problem 
+of minimizing $g^T x$ within the given polyhedral set.
+
 matrix storage
 --------------
 

@@ -705,7 +705,7 @@ static PyObject* py_dqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1)
+        check_array_int("A_ptr", py_A_ptr, m+1)
         ))
         return NULL;
 
@@ -746,9 +746,9 @@ static PyObject* py_dqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert 64bit integer A_ptr array to 32bit
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
+        A_ptr = malloc((m+1) * sizeof(int));
         long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
     }
 
     // Reset control options

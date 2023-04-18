@@ -23,6 +23,28 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/dqp.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$A x = c$$
+and
+$$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,$$
+and
+$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where the vectors $y$ and $z$ are known as the **Lagrange multipliers** for
+the general linear constraints, and the **dual variables** for the bounds,
+respectively, and where the vector inequalities hold component-wise.
+
+In the shifted-least-distance case, $g$ is shifted by $-W^2 x^0$,
+and $H = W^2$, where $W$ is the diagonal matrix whose entries are the $w_j$.
+
 matrix storage
 --------------
 
@@ -62,7 +84,7 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
+l = A_ptr(i), $\ldots$, A_ptr(i+1)-1, $0 \leq i \leq m-1,$
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -118,7 +140,7 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
-l = H_ptr(i), ..., H_ptr(i+1)-1 of the
+l = H_ptr(i), ..., H_ptr(i+1)-1, $0 \leq i \leq n-1,$ of the
 integer array H_col, and real array H_val, respectively. Note that as before
 only the entries in the lower triangle should be stored. For sparse matrices, 
 this scheme almost always requires less storage than its predecessor.

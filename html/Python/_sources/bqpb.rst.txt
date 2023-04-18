@@ -21,6 +21,22 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/bqpb.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$x_l \leq x \leq x_u,$$
+the **dual optimality conditions**
+$$H x + g = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,$$
+and the **complementary slackness conditions**
+$$(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
+where the vector $z$ is known as the **dual variables** for the bounds,
+and where the vector inequalities hold component-wise.
+
+In the shifted-least-distance case, $g$ is shifted by $-W^2 x^0$,
+and $H = W^2$, where $W$ is the diagonal matrix whose entries are the $w_j$.
+
 matrix storage
 --------------
 

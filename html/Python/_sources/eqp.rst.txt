@@ -20,6 +20,20 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/eqp.pdf for a brief description of the
 method employed and other details.
 
+terminolgy
+----------
+
+Any required solution $x$ necessarily satisfies
+the **primal optimality conditions**
+$$A x + c = 0$$
+and the **dual optimality conditions**
+$$H x + g = A^T y,$$
+where the vector $y$ is known as the **Lagrange multipliers** for
+the general linear constraints.
+
+In the shifted-least-distance case, $g$ is shifted by $-W^2 x^0$,
+and $H = W^2$, where $W$ is the diagonal matrix whose entries are the $w_j$.
+
 matrix storage
 --------------
 
