@@ -14,7 +14,7 @@ authors:
 affiliations:
   - name: Science and Technology Facilities Council, Rutherford Appleton Laboratory, Harwell Campus, Didcot, Oxfordshire, OX11 0QX, UK
     index: 1
-date: March 2022
+date: April 2023
 bibliography: paper.bib
 ---
 # Summary
@@ -49,7 +49,7 @@ different needs of its users by providing software tuned to a variety of
 commonly-occurring subclasses of problems. This is the aim of
 [`GALAHAD`](https://github.com/ralna/GALAHAD). `GALAHAD` provides
 packages for basic subproblem solvers (such as for linear systems,
-trust-region and regularization of quadratic and linear least-sqaures
+trust-region and regularization of quadratic and linear least-squares
 functions), linear and quadratic programming, unconstrained and
 bound-constrained optimization, nonlinear least-squares fitting, general
 nonlinear programming and both approximate univariate and multivariate
@@ -66,7 +66,7 @@ aimed to  expand the functionality of the earlier Fortran 77
 `LANCELOT` package [@ConnGoulToin92] for nonlinear optimization.
 Subsequent releases focused on increasing the scope of solvers provided,
 but aside from limited interfaces to Matlab and to the
-[`CUTEst`](https://github.com/ralna/GALAHAD) modeling library
+[`CUTEst`](https://github.com/ralna/CUTEst) modeling library
 [@GoulOrbaToin15], little effort was made to
 bridge the gap between Fortran and other, often more recent and popular,
 programming languages. `GALAHAD 4.0` addresses this deficiency.
