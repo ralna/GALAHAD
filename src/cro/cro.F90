@@ -182,19 +182,19 @@
 
 !  the total CPU time spent in the package
 
-        REAL :: total = 0.0
+        REAL ( KIND = sp_ ) :: total = 0.0
 
 !  the CPU time spent reordering the matrix prior to factorization
 
-        REAL :: analyse = 0.0
+        REAL ( KIND = sp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL :: factorize = 0.0
+        REAL ( KIND = sp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing corrections
 
-        REAL :: solve = 0.0
+        REAL ( KIND = sp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 

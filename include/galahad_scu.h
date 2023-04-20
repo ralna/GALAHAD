@@ -157,6 +157,11 @@ struct scu_control_type {
 struct scu_inform_type {
 
     /// \brief
+    /// return status. A non-zero value indicates an error or a request for
+    /// further information. See SCU_solve for details.
+    int status;
+
+    /// \brief
     /// the return status from the last attempted internal workspace array
     /// allocation or deallocation. A non-zero value indicates that the
     /// allocation or deallocation was unsuccessful, and corresponds to the

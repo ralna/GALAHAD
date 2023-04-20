@@ -494,10 +494,16 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
     }
 
     // Convert 64bit integer A_ptr array to 32bit
+    int a_ptr_len;
+    if(!strcmp(A_type, "sparse_by_columns")){
+      a_ptr_len = m + 1;
+    } else {
+      a_ptr_len = n + 1;
+    }
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
+        A_ptr = malloc(a_ptr_len * sizeof(int));
         long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+        for(int i = 0; i < a_ptr_len; i++) A_ptr[i] = (int) A_ptr_long[i];
     }
 
     // Reset control options

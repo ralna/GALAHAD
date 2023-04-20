@@ -35,7 +35,7 @@
 !-------------------------------------------------
 
      TYPE, BIND( C ) :: scu_control_type
-      INTEGER ( KIND = ipc_ ) :: dummy
+      LOGICAL ( KIND = C_BOOL ) :: f_indexing
 !  no components at present
      END TYPE scu_control_type
 

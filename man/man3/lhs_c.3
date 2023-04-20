@@ -1,0 +1,130 @@
+.TH "galahad_lhs.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD LHS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+galahad_lhs.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBlhs_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBlhs_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBlhs_initialize\fP (void **data, struct \fBlhs_control_type\fP *control, struct \fBlhs_inform_type\fP *inform)"
+.br
+.ti -1c
+.RI "void \fBlhs_read_specfile\fP (struct \fBlhs_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBlhs_ihs\fP (int n_dimen, int n_points, int *seed, int **X, const struct \fBlhs_control_type\fP *control, struct \fBlhs_inform_type\fP *inform, void **data)"
+.br
+.ti -1c
+.RI "void \fBlhs_get_seed\fP (int *seed)"
+.br
+.ti -1c
+.RI "void \fBlhs_terminate\fP (void **data, struct \fBlhs_control_type\fP *control, struct \fBlhs_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+This package \fBcomputes an array of Latin Hypercube samples\&.\fP\&.
+.PP
+Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
+.SS "Authors"
+J\&. Burkardt, University of Pittsburgh (LGPL) adapted for GALAHAD by N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
+.SS "Originally released"
+June 2016, C interface March 2022\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct lhs_control_type"
+.PP 
+\fBData Fields:\fP
+.RS 4
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+< 1 no output 
+.IP "\(bu" 2
+> 0 debugging 
+.PP
+
+.br
+.PP
+int \fIduplication\fP the duplication factor\&. This must be at least 1, a value of 5 is reasonable 
+.br
+.PP
+bool \fIspace_critical\fP if space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct lhs_inform_type"
+.PP 
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See LHS_solve for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void lhs_initialize (void ** data, struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform)"
+
+.SS "void lhs_read_specfile (struct \fBlhs_control_type\fP * control, const char specfile[])"
+
+.SS "void lhs_ihs (int n_dimen, int n_points, int * seed, int ** X, const struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform, void ** data)"
+
+.SS "void lhs_get_seed (int * seed)"
+
+.SS "void lhs_terminate (void ** data, struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD LHS from the source code\&.

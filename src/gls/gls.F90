@@ -1754,43 +1754,43 @@
        DEALLOCATE( FACTORS%IFIRST, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IP ) )     THEN
+     IF ( ALLOCATED( FACTORS%IP ) ) THEN
        DEALLOCATE( FACTORS%IP, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IPC ) )    THEN
+     IF ( ALLOCATED( FACTORS%IPC ) ) THEN
        DEALLOCATE( FACTORS%IPC, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IPC2 ) )    THEN
+     IF ( ALLOCATED( FACTORS%IPC2 ) ) THEN
        DEALLOCATE( FACTORS%IPC2, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IPTR ) )   THEN
+     IF ( ALLOCATED( FACTORS%IPTR ) ) THEN
        DEALLOCATE( FACTORS%IPTR, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IQ ) )     THEN
+     IF ( ALLOCATED( FACTORS%IQ ) ) THEN
        DEALLOCATE( FACTORS%IQ, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%IRN ) )    THEN
+     IF ( ALLOCATED( FACTORS%IRN ) ) THEN
        DEALLOCATE( FACTORS%IRN, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%LASTC ) )  THEN
+     IF ( ALLOCATED( FACTORS%LASTC ) ) THEN
        DEALLOCATE( FACTORS%LASTC, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%LASTR ) )  THEN
+     IF ( ALLOCATED( FACTORS%LASTR ) ) THEN
        DEALLOCATE( FACTORS%LASTR, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%LENC ) )   THEN
+     IF ( ALLOCATED( FACTORS%LENC ) ) THEN
        DEALLOCATE( FACTORS%LENC, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%LENR ) )   THEN
+     IF ( ALLOCATED( FACTORS%LENR ) ) THEN
        DEALLOCATE( FACTORS%LENR, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
@@ -1798,15 +1798,15 @@
        DEALLOCATE( FACTORS%LENRL, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%NEXTC ) )  THEN
+     IF ( ALLOCATED( FACTORS%NEXTC ) ) THEN
        DEALLOCATE( FACTORS%NEXTC, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%NEXTR ) )  THEN
+     IF ( ALLOCATED( FACTORS%NEXTR ) ) THEN
        DEALLOCATE( FACTORS%NEXTR, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%A ) )      THEN
+     IF ( ALLOCATED( FACTORS%A ) ) THEN
        DEALLOCATE( FACTORS%A, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
@@ -1814,11 +1814,11 @@
        DEALLOCATE( FACTORS%LENOFF, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%W ) )      THEN
+     IF ( ALLOCATED( FACTORS%W ) ) THEN
        DEALLOCATE( FACTORS%W, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
-     IF ( ALLOCATED( FACTORS%R ) )      THEN
+     IF ( ALLOCATED( FACTORS%R ) ) THEN
        DEALLOCATE( FACTORS%R, stat = alloc_stat )
        IF ( alloc_stat /= 0 ) info = alloc_stat
      END IF
