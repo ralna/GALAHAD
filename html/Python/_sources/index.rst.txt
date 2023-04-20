@@ -28,6 +28,7 @@ transparently to the underlying fortran.
    reg
    sys
    go
+   aux
 
 * :ref:`genindex`
 
