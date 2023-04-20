@@ -157,23 +157,23 @@
 !   -4 = other read error,
 !   -5 = unrecognised type
 
-        INTEGER ( KIND = ip_ ) :: status
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  status from last allocation attempt
 
-        INTEGER ( KIND = ip_ ) :: alloc_status
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  status from last read attempt
 
-        INTEGER ( KIND = ip_ ) :: io_status
+        INTEGER ( KIND = ip_ ) :: io_status = 0
 
 !  number of last line read from i/o file
 
-        INTEGER ( KIND = ip_ ) :: line
+        INTEGER ( KIND = ip_ ) :: line = 0
 
 !  problem type
 
-        CHARACTER ( LEN = 3 ) :: p_type
+        CHARACTER ( LEN = 3 ) :: p_type = REPEAT( ' ', 3 )
 
 !  the name of the array for which an allocation/deallocation error ocurred
 

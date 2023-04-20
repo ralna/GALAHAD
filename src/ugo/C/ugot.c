@@ -42,7 +42,7 @@ int main(void) {
     control.print_level = 1;
     //control.maxit = 100;
     //control.lipschitz_estimate_used = 3;
-           strcpy(control.prefix, "'aargh'");
+    strcpy(control.prefix, "'ugo: '");
 
     // Read options from specfile
     char specfile[] = "UGO.SPC";

@@ -954,8 +954,6 @@
 
    CONTAINS
 
-!-*-*-*-*-*-   S L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
-
      SUBROUTINE SLS_initialize( solver, data, control, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -975,13 +973,13 @@
 
 !  local variables
 
-    INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
-    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
-    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
-    INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
-    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
-    TYPE ( mc68_control ) :: control_mc68
-    TYPE ( mc68_info ) :: info_mc68
+     INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
+     INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
+     TYPE ( mc68_control ) :: control_mc68
+     TYPE ( mc68_info ) :: info_mc68
 
      LOGICAL :: check_available, hsl_available, metis_available
 
@@ -989,7 +987,6 @@
 !  initialize the solver-specific data
 
      CALL SLS_initialize_solver( solver, data, inform, check )
-
      IF ( inform%status == GALAHAD_error_unknown_solver ) RETURN
 
 !  check to see if HSL ordering packages are available

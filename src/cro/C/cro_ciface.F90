@@ -465,7 +465,7 @@
 
 !  copy inform in
 
-  CALL copy_inform_in( cinform, finform )
+! CALL copy_inform_in( cinform, finform )
 
 !  associate data pointer
 
