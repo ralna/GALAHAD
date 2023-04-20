@@ -1748,9 +1748,19 @@ make_ciface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_ciface_sls_deps: make_ciface_sils make_ciface_$(SSIDS) make_ciface_ma57 \
-                      make_ciface_ma77 make_ciface_ma86 make_ciface_ma87 \
-                      make_ciface_ma97 make_ciface_mc64 make_ciface_mc68
+make_ciface_sls_deps: make_ciface_sls_deps_$(PRECIS)
+
+make_ciface_sls_deps_single: make_ciface_sils make_ciface_ssids_dum \
+                      make_ciface_ma57 make_ciface_ma77 \
+                      make_ciface_ma86 make_ciface_ma87 \
+                      make_ciface_ma97 make_ciface_mc64 \
+                      make_ciface_mc68
+
+make_ciface_sls_deps_double: make_ciface_sils make_ciface_$(SSIDS) \
+                      make_ciface_ma57 make_ciface_ma77 \
+                      make_ciface_ma86 make_ciface_ma87 \
+                      make_ciface_ma97 make_ciface_mc64 \
+                      make_ciface_mc68
 
 make_ciface_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -2360,7 +2370,14 @@ make_pyiface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_pyiface_sls_deps: make_pyiface_sils make_pyiface_$(SSIDS) \
+make_pyiface_sls_deps: make_pyiface_sls_$(PRECIS)
+
+make_pyiface_sls_deps_single: make_pyiface_sils make_pyiface_ssids_dum \
+                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
+                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
+                       make_pyiface_mc68
+
+make_pyiface_sls_deps_double: make_pyiface_sils make_pyiface_$(SSIDS) \
                        make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
                        make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
                        make_pyiface_mc68

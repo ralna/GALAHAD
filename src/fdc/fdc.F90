@@ -224,6 +224,7 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
         TYPE ( SMT_type ) :: A, K
+        TYPE ( SLS_data_type ) :: SLS_dummy ! needed to prevent gfortran bug
         TYPE ( SLS_data_type ) :: SLS_data
         TYPE ( ULS_data_type ) :: ULS_data
         TYPE ( FDC_control_type ) :: control
