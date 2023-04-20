@@ -9,6 +9,7 @@ project(
     'libdir=lib',
     'default_library=both',
     'warning_level=0',
+    'c_std=c99',
     'cpp_std=c++17',
   ],
 )
