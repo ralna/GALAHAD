@@ -217,7 +217,7 @@ struct bsc_control_type {
 struct bsc_inform_type {
 
     /// \brief
-    /// return status. See SBLS_form_and_factorize for details
+    /// return status. See BSC_form for details
     int status;
 
     /// \brief

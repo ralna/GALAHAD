@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -470,7 +484,7 @@ The string A_type = ‘dense_by_columns’ should be specified.</p>
 Only the nonzero entries of the matrices are stored.
 For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
 its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
-<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,  <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
 components of the integer arrays A_row and A_col and real array A_val,
 respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
 The string A_type = ‘coordinate’should be specified.</p>
@@ -482,7 +496,7 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
 <span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1,\)</span>
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -533,7 +547,7 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq i\)</span>, and values
 <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the  entries in the i-th row are stored in components
-l = H_ptr(i), …, H_ptr(i+1)-1 of the
+l = H_ptr(i), …, H_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1,\)</span> of the
 integer array H_col, and real array H_val, respectively. Note that as before
 only the entries in the lower triangle should be stored. For sparse matrices,
 this scheme almost always requires less storage than its predecessor.
@@ -826,7 +840,7 @@ It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’,
 ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’  or ‘none’;
 lower or upper case variants are allowed.</p>
 </dd>
-<dt>H_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the  lower triangular part of
+<dt>H_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the lower triangular part of
 <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need
 not be set for any of the other schemes.</p>
 </dd>
@@ -834,7 +848,7 @@ not be set for any of the other schemes.</p>
 in the sparse co-ordinate storage scheme. It need not be set for
 any of the other schemes, and in this case can be None.</p>
 </dd>
-<dt>H_col<span class="classifier">ndarray(H_ne)</span></dt><dd><p>holds the column indices of the  lower triangular part of
+<dt>H_col<span class="classifier">ndarray(H_ne)</span></dt><dd><p>holds the column indices of the lower triangular part of
 <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise
 storage scheme. It need not be set when the other storage schemes
 are used, and in this case can be None.</p>

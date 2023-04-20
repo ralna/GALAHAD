@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -483,7 +497,7 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
 <span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1,\)</span>
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -534,7 +548,7 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq i\)</span>, and values
 <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the  entries in the i-th row are stored in components
-l = H_ptr(i), …, H_ptr(i+1)-1 of the
+l = H_ptr(i), …, H_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1,\)</span> of the
 integer array H_col, and real array H_val, respectively. Note that as before
 only the entries in the lower triangle should be stored. For sparse matrices,
 this scheme almost always requires less storage than its predecessor.

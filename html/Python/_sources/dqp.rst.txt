@@ -84,7 +84,7 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, $0 \leq j \leq n-1$, and values
 $A_{ij}$ of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), $\ldots$, A_ptr(i+1)-1,  $0 \leq i \leq m-1$,
+l = A_ptr(i), $\ldots$, A_ptr(i+1)-1, $0 \leq i \leq m-1,$
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -140,7 +140,7 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, $0 \leq j \leq i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
-l = H_ptr(i), ..., H_ptr(i+1)-1 of the
+l = H_ptr(i), ..., H_ptr(i+1)-1, $0 \leq i \leq n-1,$ of the
 integer array H_col, and real array H_val, respectively. Note that as before
 only the entries in the lower triangle should be stored. For sparse matrices, 
 this scheme almost always requires less storage than its predecessor.
