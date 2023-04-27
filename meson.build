@@ -33,6 +33,15 @@ elif fc.get_id() == 'intel' or fc.get_id() == 'nagfor'
   add_global_arguments('-fpp', language : 'fortran')
 endif
 
+pp_options = []
+if fc.get_id() == 'gcc'
+  pp_options += ['-cpp', '-E']
+elif fc.get_id() == 'intel'
+  pp_options += ['-fpp', '-EP']
+elif fc.get_id() == 'nagfor'
+  pp_options += ['-fpp']
+endif
+
 # Options
 install_modules = get_option('modules')
 
@@ -256,10 +265,10 @@ subdir('src/zd11')
 if build_single
   gen_single = generator(fc_compiler,
                          output : 'single_@PLAINNAME@',
-                         arguments : ['-cpp', '-E', '-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
-                                      '-I', '@CURRENT_SOURCE_DIR@/include',
-                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                      '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : pp_options + ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
+                                     '-I', '@CURRENT_SOURCE_DIR@/include',
+                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                     '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
@@ -287,10 +296,10 @@ endif
 if build_double
   gen_double = generator(fc_compiler,
                          output : 'double_@PLAINNAME@',
-                         arguments : ['-cpp', '-E', '-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
-                                      '-I', '@CURRENT_SOURCE_DIR@/include',
-                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                      '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : pp_options + ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
+                                     '-I', '@CURRENT_SOURCE_DIR@/include',
+                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                     '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
