@@ -255,7 +255,9 @@ subdir('src/zd11')
 if build_single
   gen_single = generator(fc_compiler,
                          output : 'single_@PLAINNAME@',
-                         arguments : ['-cpp', '-E', '-DGALAHAD_SINGLE', '-DSPRAL_SINGLE', '-I', '@CURRENT_SOURCE_DIR@/include', '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : ['-cpp', '-E', '-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
+                                      '-I', '@CURRENT_SOURCE_DIR@/include', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
@@ -277,7 +279,9 @@ endif
 if build_double
   gen_double = generator(fc_compiler,
                          output : 'double_@PLAINNAME@',
-                         arguments : ['-cpp', '-E', '-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE', '-I', '@CURRENT_SOURCE_DIR@/include', '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : ['-cpp', '-E', '-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
+                                      '-I', '@CURRENT_SOURCE_DIR@/include', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
