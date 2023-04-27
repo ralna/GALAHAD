@@ -17,6 +17,7 @@ project(
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 fc = meson.get_compiler('fortran')
+fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
 
 extra_args = []
@@ -26,12 +27,10 @@ if fc.get_id() == 'nagfor'
 endif
 
 # Preprocessing
-if fc.get_id() == 'gcc'
+if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
   add_global_arguments('-cpp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'nagfor'
   add_global_arguments('-fpp', language : 'fortran')
-elif fc.get_id() == 'flang'
-  add_global_arguments('-c', language : 'fortran')
 endif
 
 # Options
@@ -123,7 +122,9 @@ galahad_tests = []
 galahad_c_tests = []
 
 # Headers and Fortran modules
-libgalahad_include = ['include', 'src/dum/include', 'src/ampl'] + libhsl_modules
+libgalahad_include = [include_directories('include'),
+                      include_directories('src/dum/include'),
+                      include_directories('src/ampl')] + libhsl_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
@@ -252,9 +253,15 @@ subdir('src/zd11')
 
 # Libraries
 if build_single
-  sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_single_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  gen_single = generator(fc_compiler,
+                         output : 'single_@PLAINNAME@',
+                         arguments : ['-cpp', '-E', '-DGALAHAD_SINGLE', '-DSPRAL_SINGLE', '-I', '@CURRENT_SOURCE_DIR@/include', '@INPUT@', '-o', '@OUTPUT@'])
+
+  pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
+
+  sources_single = [libgalahad_single_src, libgalahad_integer_src,
+                    libgalahad_c_single_src, libgalahad_c_integer_src,
+                    pp_sources_single]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -268,9 +275,15 @@ if build_single
 endif
 
 if build_double
-  sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_double_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  gen_double = generator(fc_compiler,
+                         output : 'double_@PLAINNAME@',
+                         arguments : ['-cpp', '-E', '-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE', '-I', '@CURRENT_SOURCE_DIR@/include', '@INPUT@', '-o', '@OUTPUT@'])
+
+  pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
+
+  sources_double = [libgalahad_double_src, libgalahad_integer_src,
+                    libgalahad_c_double_src, libgalahad_c_integer_src,
+                    pp_sources_double]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
