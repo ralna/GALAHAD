@@ -113,6 +113,7 @@ libgalahad_c_double_src = []
 libgalahad_c_integer_src = []
 libgalahad_c_src = []
 
+libgalahad_cpp_src = []
 libgalahad_cutest_src = []
 libgalahad_ampl_src = []
 
@@ -256,14 +257,21 @@ if build_single
   gen_single = generator(fc_compiler,
                          output : 'single_@PLAINNAME@',
                          arguments : ['-cpp', '-E', '-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
-                                      '-I', '@CURRENT_SOURCE_DIR@/include', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
+  # pp_sources_cpp_single = cxx.preprocess(libgalahad_cpp_src,
+  #                                        dependencies : libgalahad_single_deps + libgalahad_deps,
+  #                                        compile_args : extra_args_single,
+  #                                        include_directories: libgalahad_include,
+  #                                        output: 'single_@PLAINNAME@')
+
   sources_single = [libgalahad_single_src, libgalahad_integer_src,
                     libgalahad_c_single_src, libgalahad_c_integer_src,
-                    pp_sources_single]
+                    pp_sources_single, libgalahad_cpp_src]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -280,14 +288,21 @@ if build_double
   gen_double = generator(fc_compiler,
                          output : 'double_@PLAINNAME@',
                          arguments : ['-cpp', '-E', '-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
-                                      '-I', '@CURRENT_SOURCE_DIR@/include', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
+  # pp_sources_cpp_double = cxx.preprocess(libgalahad_cpp_src,
+  #                                        dependencies : libgalahad_double_deps + libgalahad_deps,
+  #                                        compile_args : extra_args_double,
+  #                                        include_directories: libgalahad_include,
+  #                                        output: 'double_@PLAINNAME@')
+
   sources_double = [libgalahad_double_src, libgalahad_integer_src,
                     libgalahad_c_double_src, libgalahad_c_integer_src,
-                    pp_sources_double]
+                    pp_sources_double, libgalahad_cpp_src]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
