@@ -417,9 +417,18 @@ if build_tests
       package = test[0]
       name = test[1] + '_' + precision
       file = test[2]
+
+      deps_tests = libgalahad_deps
+      if precision == 'single'
+        deps_tests += libgalahad_single_deps
+      endif
+      if precision == 'double'
+        deps_tests += libgalahad_double_deps
+      endif
+
       if not (name == 'croti_single')
         test(name,
-             executable(name, file, fortran_args : args_precision, link_with : libgalahad_precision, dependencies : libgalahad_deps,
+             executable(name, file, fortran_args : args_precision, link_with : libgalahad_precision, dependencies : deps_tests,
                                     link_language : 'fortran', include_directories: libgalahad_include , install : true,
                                     install_dir : fortran_tests_folder),
              suite : [package, precision, 'fortran'],
