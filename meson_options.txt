@@ -25,7 +25,7 @@ option('tests',
 
 option('single',
        type : 'boolean',
-       value : false,
+       value : true,
        description : 'whether to generate the single precision libraries, tests and examples')
 
 option('double',
