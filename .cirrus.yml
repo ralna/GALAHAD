@@ -24,4 +24,5 @@ task:
   install_script: |
     meson install -C builddir
   test_script: |
+    echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
     meson test -C builddir
