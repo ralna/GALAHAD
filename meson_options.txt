@@ -1,6 +1,6 @@
 option('modules',
        type : 'boolean',
-       value : 'true',
+       value : true,
        description : 'option to install Fortran modules and submodules')
 
 option('ciface',
@@ -25,7 +25,7 @@ option('tests',
 
 option('single',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'whether to generate the single precision libraries, tests and examples')
 
 option('double',

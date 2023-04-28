@@ -17,6 +17,7 @@ project(
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 fc = meson.get_compiler('fortran')
+fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
 
 extra_args = []
@@ -26,12 +27,13 @@ if fc.get_id() == 'nagfor'
 endif
 
 # Preprocessing
-if fc.get_id() == 'gcc'
+pp_options = []
+if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
+  pp_options += ['-cpp', '-E']
   add_global_arguments('-cpp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'nagfor'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl' or fc.get_id() == 'nagfor'
+  pp_options += ['-fpp', '-P']
   add_global_arguments('-fpp', language : 'fortran')
-elif fc.get_id() == 'flang'
-  add_global_arguments('-c', language : 'fortran')
 endif
 
 # Options
@@ -114,6 +116,7 @@ libgalahad_c_double_src = []
 libgalahad_c_integer_src = []
 libgalahad_c_src = []
 
+libgalahad_cpp_src = []
 libgalahad_cutest_src = []
 libgalahad_ampl_src = []
 
@@ -123,7 +126,9 @@ galahad_tests = []
 galahad_c_tests = []
 
 # Headers and Fortran modules
-libgalahad_include = ['include', 'src/dum/include', 'src/ampl'] + libhsl_modules
+libgalahad_include = [include_directories('include'),
+                      include_directories('src/dum/include'),
+                      include_directories('src/ampl')] + libhsl_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
@@ -135,133 +140,135 @@ endif
 extra_args_single = extra_args + '-DGALAHAD_SINGLE' + '-DSPRAL_SINGLE'
 extra_args_double = extra_args + '-DGALAHAD_DOUBLE' + '-DSPRAL_DOUBLE'
 
+# Sources
 subdir('bin')
 subdir('include')
-
-## 1. Module requires for single and double precision
-subdir('src/kinds')
-subdir('src/buildspec')
-subdir('src/lsrb')
-
-## 2. the following modules have no dependencies inside libgalahad; they appear in alphabetical order
-subdir('src/zd11')
+subdir('src/amd')
+subdir('src/ampl')
+subdir('src/arc')
 subdir('src/band')
-subdir('src/clock')
+subdir('src/bgo')
+subdir('src/blls')
+subdir('src/bqp')
+subdir('src/bqpb')
+subdir('src/bsc')
+subdir('src/buildspec')
+subdir('src/ccqp')
+subdir('src/cdqp')
+subdir('src/check')
 subdir('src/checkpoint')
+subdir('src/clock')
 subdir('src/common')
-subdir('src/dum')
+subdir('src/convert')
 subdir('src/copyright')
+subdir('src/cqp')
+subdir('src/cro')
+subdir('src/cutest_functions')
+subdir('src/demo')
+subdir('src/dgo')
+subdir('src/dlp')
+subdir('src/dps')
+subdir('src/dqp')
+subdir('src/dum')
+subdir('src/eqp')
 subdir('src/extend')
 subdir('src/external')
-subdir('src/lapack')
-subdir('src/lmt')
-subdir('src/norms')
-subdir('src/rand')
-subdir('src/scu')
-subdir('src/sort')
-subdir('src/string')
-subdir('src/symbols')
-subdir('src/tools')
-subdir('src/userdata')
-
-## 3. the following modules have dependencies
-## Order matters!
-subdir('src/ampl')
-subdir('src/smt')
-subdir('src/convert')
-subdir('src/qpt')
-subdir('src/space')
-subdir('src/specfile')
-subdir('src/bsc')
-subdir('src/fit')
-subdir('src/hash')
-subdir('src/roots')
-subdir('src/gltr')
-subdir('src/glrt')
-subdir('src/lstr')
-subdir('src/lsrt')
-subdir('src/l2rt')
-subdir('src/lhs')
-subdir('src/lms')
-subdir('src/presolve')
-subdir('src/rpd')
-subdir('src/sec')
-subdir('src/sha')
-subdir('src/nlpt')
-subdir('src/ugo')
-subdir('src/amd')
-subdir('src/mop')
-subdir('src/check')
+subdir('src/fdc')
 subdir('src/fdh')
 subdir('src/filter')
+subdir('src/filtrane')
+subdir('src/fit')
+subdir('src/glrt')
+subdir('src/gls')
+subdir('src/gltr')
+subdir('src/hash')
+subdir('src/icfs')
+subdir('src/ir')
+subdir('src/kinds')
+subdir('src/l1qp')
+subdir('src/l2rt')
+subdir('src/lancelot')
+subdir('src/lancelot_simple')
+subdir('src/lapack')
+subdir('src/lhs')
+subdir('src/lls')
+subdir('src/llst')
+subdir('src/lms')
+subdir('src/lmt')
+subdir('src/lpa')
+subdir('src/lpb')
+subdir('src/lpqp')
 subdir('src/lqr')
 subdir('src/lqt')
 subdir('src/lsp')
-subdir('src/miqr')
-subdir('src/opt')
-subdir('src/trans')
-subdir('src/qpp')
-subdir('src/scale')
-subdir('src/scaling')
-subdir('src/gls')
-subdir('src/sils')
-subdir('src/sls')
-subdir('src/uls')
-subdir('src/sbls')
-subdir('src/lls')
-subdir('src/ir')
-subdir('src/trs')
-subdir('src/icfs')
-subdir('src/lpqp')
-subdir('src/fdc')
-subdir('src/cro')
-subdir('src/qpd')
-subdir('src/slls')
-subdir('src/wcp')
-subdir('src/problem')
-subdir('src/rqs')
-subdir('src/blls')
-subdir('src/bqp')
-subdir('src/cqp')
-subdir('src/dqp')
-subdir('src/dlp')
-subdir('src/dps')
-subdir('src/eqp')
-subdir('src/demo')
-subdir('src/l1qp')
-subdir('src/psls')
-
-subdir('src/lancelot')
-subdir('src/lancelot_simple')
-subdir('src/filtrane')
-subdir('src/trb')
-subdir('src/tru')
-subdir('src/bgo')
-subdir('src/nls')
-subdir('src/arc')
-subdir('src/dgo')
-subdir('src/bqpb')
-subdir('src/ccqp')
-subdir('src/cdqp')
-subdir('src/llst')
-subdir('src/lpa')
-subdir('src/lpb')
 subdir('src/lsqp')
+subdir('src/lsrb')
+subdir('src/lsrt')
+subdir('src/lstr')
+subdir('src/miqr')
+subdir('src/mop')
+subdir('src/nlpt')
+subdir('src/nls')
+subdir('src/norms')
+subdir('src/opt')
+subdir('src/presolve')
+subdir('src/problem')
+subdir('src/psls')
+subdir('src/ptrans')
+subdir('src/qp')
 subdir('src/qpa')
 subdir('src/qpb')
 subdir('src/qpc')
-subdir('src/qp')
-subdir('src/warm')
-subdir('src/ptrans')
-subdir('src/cutest_functions')
-subdir('src/ssids')
+subdir('src/qpd')
+subdir('src/qpp')
+subdir('src/qpt')
+subdir('src/rand')
+subdir('src/roots')
+subdir('src/rpd')
+subdir('src/rqs')
+subdir('src/sbls')
+subdir('src/scale')
+subdir('src/scaling')
+subdir('src/scu')
+subdir('src/sec')
+subdir('src/sha')
+subdir('src/sils')
+subdir('src/slls')
+subdir('src/sls')
+subdir('src/smt')
+subdir('src/sort')
+subdir('src/space')
+subdir('src/specfile')
 subdir('src/spral')
+subdir('src/ssids')
+subdir('src/string')
+subdir('src/symbols')
+subdir('src/tools')
+subdir('src/trans')
+subdir('src/trb')
+subdir('src/trs')
+subdir('src/tru')
+subdir('src/ugo')
+subdir('src/uls')
+subdir('src/userdata')
+subdir('src/warm')
+subdir('src/wcp')
+subdir('src/zd11')
 
 # Libraries
 if build_single
-  sources_single = [libgalahad_single_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_single_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  gen_single = generator(fc_compiler,
+                         output : 'single_@PLAINNAME@',
+                         arguments : pp_options + ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
+                                     '-I', '@CURRENT_SOURCE_DIR@/include',
+                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                     '@INPUT@', '-o', '@OUTPUT@'])
+
+  pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
+
+  sources_single = [libgalahad_single_src, libgalahad_integer_src,
+                    libgalahad_c_single_src, libgalahad_c_integer_src,
+                    pp_sources_single, libgalahad_cpp_src]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -275,9 +282,18 @@ if build_single
 endif
 
 if build_double
-  sources_double = [libgalahad_double_src, libgalahad_integer_src, libgalahad_src,
-                    libgalahad_c_double_src, libgalahad_c_integer_src, libgalahad_c_src,
-                    libgalahad_cutest_src, libgalahad_ampl_src]
+  gen_double = generator(fc_compiler,
+                         output : 'double_@PLAINNAME@',
+                         arguments : pp_options + ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
+                                     '-I', '@CURRENT_SOURCE_DIR@/include',
+                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                     '@INPUT@', '-o', '@OUTPUT@'])
+
+  pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
+
+  sources_double = [libgalahad_double_src, libgalahad_integer_src,
+                    libgalahad_c_double_src, libgalahad_c_integer_src,
+                    pp_sources_double, libgalahad_cpp_src]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
@@ -291,9 +307,9 @@ if build_double
 endif
 
 # Binaries
-foreach val: galahad_binaries
-  binname = val[0]
-  binfile = val[1]
+foreach binary: galahad_binaries
+  binname = binary[0]
+  binfile = binary[1]
 
   if build_single
     executable(binname+'_single', binfile,
