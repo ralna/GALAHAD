@@ -1,13 +1,13 @@
 if build_ssids
-  libgalahad_src += files('cholesky.cxx', 'ldlt_app.cxx', 'ldlt_nopiv.cxx',
-                          'ldlt_tpp.cxx', 'NumericSubtree.cxx', 'profile.cxx',
-                          'SymbolicSubtree.cxx', 'ThreadStats.cxx', 'wrappers.cxx',
-                          'akeep.F90', 'anal.F90', 'blas_iface.F90',
+  libgalahad_cpp_src += files('cholesky.cxx', 'ldlt_app.cxx', 'ldlt_nopiv.cxx',
+                              'ldlt_tpp.cxx', 'NumericSubtree.cxx', 'profile.cxx',
+                              'SymbolicSubtree.cxx', 'ThreadStats.cxx', 'wrappers.cxx')
+
+  libgalahad_src += files('akeep.F90', 'anal.F90', 'blas_iface.F90', 'ssids.F90',
                           'contrib.F90', 'contrib_free.F90', 'cpu_iface.F90',
                           'cpu_solve.F90', 'cpu_subtree.F90', 'datatypes.F90',
                           'fkeep.F90', 'gpu_subtree_no_cuda.F90', 'inform.F90',
-                          'lapack_iface.F90', 'profile_iface.F90', 'ssids.F90',
-                          'subtree.F90')
+                          'lapack_iface.F90', 'profile_iface.F90', 'subtree.F90')
 
   if build_ciface
     libgalahad_c_src += files('C/ssids_ciface.F90')
