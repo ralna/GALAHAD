@@ -27,19 +27,13 @@ if fc.get_id() == 'nagfor'
 endif
 
 # Preprocessing
-if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
-  add_global_arguments('-cpp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'nagfor'
-  add_global_arguments('-fpp', language : 'fortran')
-endif
-
 pp_options = []
-if fc.get_id() == 'gcc'
+if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
   pp_options += ['-cpp', '-E']
-elif fc.get_id() == 'intel'
+  add_global_arguments('-cpp', language : 'fortran')
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl' or fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-P']
-elif fc.get_id() == 'nagfor'
-  pp_options += ['-fpp']
+  add_global_arguments('-fpp', language : 'fortran')
 endif
 
 # Options
