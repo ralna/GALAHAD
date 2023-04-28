@@ -37,7 +37,7 @@ pp_options = []
 if fc.get_id() == 'gcc'
   pp_options += ['-cpp', '-E']
 elif fc.get_id() == 'intel'
-  pp_options += ['-fpp', '-EP']
+  pp_options += ['-fpp', '-P']
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp']
 endif
@@ -272,12 +272,6 @@ if build_single
 
   pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
-  # pp_sources_cpp_single = cxx.preprocess(libgalahad_cpp_src,
-  #                                        dependencies : libgalahad_single_deps + libgalahad_deps,
-  #                                        compile_args : extra_args_single,
-  #                                        include_directories: libgalahad_include,
-  #                                        output: 'single_@PLAINNAME@')
-
   sources_single = [libgalahad_single_src, libgalahad_integer_src,
                     libgalahad_c_single_src, libgalahad_c_integer_src,
                     pp_sources_single, libgalahad_cpp_src]
@@ -302,12 +296,6 @@ if build_double
                                      '@INPUT@', '-o', '@OUTPUT@'])
 
   pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
-
-  # pp_sources_cpp_double = cxx.preprocess(libgalahad_cpp_src,
-  #                                        dependencies : libgalahad_double_deps + libgalahad_deps,
-  #                                        compile_args : extra_args_double,
-  #                                        include_directories: libgalahad_include,
-  #                                        output: 'double_@PLAINNAME@')
 
   sources_double = [libgalahad_double_src, libgalahad_integer_src,
                     libgalahad_c_double_src, libgalahad_c_integer_src,
