@@ -9,7 +9,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_uls.h"
 
-int maxabsarray(double a[],int n, real_wp_ *maxabs);
+int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs);
 
 int main(void) {
 
@@ -49,7 +49,7 @@ int main(void) {
 
     for( int d=1; d <= 3; d++){
         // Initialize ULS - use the gls solver
-        uls_initialize( "gls", &data, &control, &status );
+        uls_initialize( "getr", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // Fortran sparse matrix indexing
@@ -156,14 +156,14 @@ int main(void) {
     }
 }
 
-int maxabsarray(double a[],int n, real_wp_ *maxabs)
+int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs)
  {
     int i;
     real_wp_ b, max;
     max=abs(a[0]);
     for(i=1; i<n; i++)
     {
-        b = abs(a[i]);
+        b = fabs(a[i]);
 	if(max<b)
           max=b;       
     }
