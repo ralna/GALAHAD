@@ -9,7 +9,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sls.h"
 
-int maxabsarray(double a[],int n, real_wp_ *maxabs);
+int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs);
 
 int main(void) {
 
@@ -134,14 +134,14 @@ int main(void) {
     }
 }
 
-int maxabsarray(double a[],int n, real_wp_ *maxabs)
+int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs)
  {
     int i;
-    real_wp_ b,max;
+    real_wp_ b, max;
     max=abs(a[0]);
     for(i=1; i<n; i++)
     {
-        b = abs(a[i]);
+        b = fabs(a[i]);
 	if(max<b)
           max=b;       
     }
