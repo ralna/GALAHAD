@@ -3,20 +3,21 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_bgo.h"
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   real_wp_ p;
 };
 
 // Function prototypes
-int fun( int n, const double x[], double *f, const void * );
-int grad( int n, const double x[], double g[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[],
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
-int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[],
-               const double v[], int *nnz_u, int index_nz_u[], double u[],
+int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
+               const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
                bool got_h, const void * );
 
 int main(void) {
@@ -35,7 +36,7 @@ int main(void) {
     control.attempts_max = 1000;
     control.max_evals = 1000;
     control.trb_control.maxit = 10;
-    control.print_level = 1;
+    //control.print_level = 1;
 
     // Set user data
     struct userdata_type userdata;
@@ -44,14 +45,14 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1.,1.,1.}; // start from one
-    double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.};
-    double x_u[] = {1.1,1.1,1.1};
+    real_wp_ x[] = {1.,1.,1.}; // start from one
+    real_wp_ infty = 1e20; // infinity
+    real_wp_ x_l[] = {-infty,-infty, 0.};
+    real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "absent"; // specify Hessian-vector products
 
     // Set storage
-    double g[n]; // gradient
+    real_wp_ g[n]; // gradient
 
     // Set Hessian storage format, structure and problem bounds
     bgo_import( &control, &data, &status, n, x_l, x_u,
@@ -89,18 +90,18 @@ int main(void) {
 }
 
 // Objective function
-int fun(int n, const double x[], double *f, const void *userdata){
+int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
     return 0;
 }
 
 // Gradient of the objective
-int grad(int n, const double x[], double g[], const void *userdata){
+int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
@@ -109,7 +110,7 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[],
+int hessprod(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
              bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
@@ -118,10 +119,10 @@ int hessprod(int n, const double x[], double u[], const double v[],
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[],
-              const double v[], int *nnz_u, int index_nz_u[], double u[],
+int shessprod(int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
+              const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
               bool got_h, const void *userdata){
-    double p[] = {0., 0., 0.};
+    real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];

@@ -2033,9 +2033,9 @@
          IF ( inform%SBLS_inform%status < 0 ) THEN
            IF ( data%printe )                                                  &
              WRITE( control%error, 2010 ) prefix, inform%SBLS_inform%status,   &
-               'SBSL_form_and_factorize'
+               'SBLS_form_and_factorize'
            CALL SYMBOLS_status( inform%SBLS_inform%status, control%out,        &
-                                prefix, 'SBSL_form_and_factorize' )
+                                prefix, 'SBLS_form_and_factorize' )
            inform%status = GALAHAD_error_factorization ; GO TO 910
          END IF
 

@@ -143,7 +143,11 @@
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
+#ifdef GALAHAD_SINGLE
+   control%stop_c = 10.0_rp_ ** ( - 37 )
+#else
    control%stop_c = 10.0_rp_ ** ( - 80 )
+#endif
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 !  control%maxit = 1000
    CALL LSQP_solve( p, data, control, info )

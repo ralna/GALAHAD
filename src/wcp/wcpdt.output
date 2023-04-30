@@ -1,46 +1,7 @@
+ C sparse matrix indexing
 
- error exit tests 
+ basic tests of wcp storage formats
 
- 1: WCP_solve exit status =     -3
- 4: WCP_solve exit status =    -18
- 5: WCP_solve exit status =     -4
- 6: WCP_solve exit status =    -10
-
- basic tests of storage formats 
-
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
- WCP_solve exit status =    -10
-
- basic tests of options 
-
- 0: WCP_solve exit status =    -10
- 1: WCP_solve exit status =    -10
- 2: WCP_solve exit status =    -10
- 3: WCP_solve exit status =    -10
- 4: WCP_solve exit status =    -10
- 5: WCP_solve exit status =    -10
- 6: WCP_solve exit status =    -10
- 7: WCP_solve exit status =    -10
- 8: WCP_solve exit status =    -10
- 9:    -1 iterations. Optimal objective value =   -1.0 status =      0
-
- full test of generic problems 
-
- 1: WCP_solve exit status =    -10
- 2: WCP_solve exit status =    -10
+C:     6 iterations. Optimal objective value =  0.01 status = 0
+R:     6 iterations. Optimal objective value =  0.01 status = 0
+D:     6 iterations. Optimal objective value =  0.01 status = 0
