@@ -3320,7 +3320,8 @@
                      eval_HPROD = eval_HPROD, eval_PREC = eval_PREC )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( data%dgo_inform%status == GALAHAD_ok )                               &
+     IF ( data%dgo_inform%status == GALAHAD_ok .OR.                            &
+          data%dgo_inform%status == GALAHAD_error_max_iterations )             &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
 
      status = data%dgo_inform%status
@@ -3363,7 +3364,8 @@
                      eval_SHPROD = eval_SHPROD, eval_PREC = eval_PREC )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( data%dgo_inform%status == GALAHAD_ok )                               &
+     IF ( data%dgo_inform%status == GALAHAD_ok .OR.                            &
+          data%dgo_inform%status == GALAHAD_error_max_iterations )             &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
 
      status = data%dgo_inform%status

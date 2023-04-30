@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_tru.h"
 
 int main(void) {
@@ -13,27 +14,28 @@ int main(void) {
     struct tru_inform_type inform;
 
     // Initialize TRU
-    tru_initialize( &data, &control, &inform );
+    int status;
+    tru_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
-    control.print_level = 1;
+    //control.print_level = 1;
 
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1.,1.,1.}; // start from one
-    double infty = 1e20; // infinity
+    real_wp_ x[] = {1.,1.,1.}; // start from one
+    real_wp_ infty = 1e20; // infinity
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
     
     // Reverse-communication input/output
-    int status, eval_status;
-    double f;
-    double g[n];
-    double u[n], v[n];
-    double H_val[ne]; 
+    int eval_status;
+    real_wp_ f;
+    real_wp_ g[n];
+    real_wp_ u[n], v[n];
+    real_wp_ H_val[ne]; 
 
     // Set Hessian storage format, structure and problem bounds
     tru_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );

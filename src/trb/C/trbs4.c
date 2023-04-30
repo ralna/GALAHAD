@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_trb.h"
 
 int main(void) {
@@ -13,30 +14,30 @@ int main(void) {
     struct trb_inform_type inform;
 
     // Initialize TRB
-    trb_initialize( &data, &control, &inform );
+    int status;
+    trb_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
-    control.print_level = 1;
+    //control.print_level = 1;
 
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1.,1.,1.}; // start from one
-    double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
-    double x_u[] = {1.1,1.1,1.1};
+    real_wp_ x[] = {1.,1.,1.}; // start from one
+    real_wp_ infty = 1e20; // infinity
+    real_wp_ x_l[] = {-infty,-infty, 0.}; 
+    real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "absent"; // specify Hessian-vector products
     
     // Reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
-    double f;
-    double g[n];
-    double u[n], v[n];
+    real_wp_ f;
+    real_wp_ g[n];
+    real_wp_ u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
 
     // Set Hessian storage format, structure and problem bounds
-    int status;
     trb_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, NULL, NULL, NULL );
 
@@ -71,7 +72,7 @@ int main(void) {
             u[2] = 0.25 * v[2];
             eval_status = 0; // record successful evaluation
         }else if(status == 7){ // obtain sparse Hessian-vector product
-            double tmp[] = {0., 0., 0.};
+            real_wp_ tmp[] = {0., 0., 0.};
             bool used[] = {false, false, false};
             for(int i = 0; i < nnz_v; i++){
                 int j = index_nz_v[i];
