@@ -35,7 +35,7 @@ option('double',
 
 option('ssids',
        type : 'boolean',
-       value : false,
+       value : true,
        description : 'whether to build ssids as well as the related tests and examples')
 
 option('libblas',
