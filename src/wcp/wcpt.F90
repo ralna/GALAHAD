@@ -102,7 +102,11 @@
    control%restore_problem = 1
    control%maxit = 1
 !  control%print_level = 1
+#ifdef GALAHAD_SINGLE
+   control%stop_c = 10.0_rp_ ** ( - 37 )
+#else
    control%stop_c = 10.0_rp_ ** ( - 80 )
+#endif
    p%X = 0.0_rp_
    p%Y_l = 0.0_rp_ ; p%Z_l = 0.0_rp_ ; p%Y_u = 0.0_rp_ ; p%Z_u = 0.0_rp_
    CALL WCP_solve( p, data, control, info )

@@ -1588,10 +1588,10 @@
                  argmin_psi = argmin_fiip
                  data%UNFATHOMED( i ) = .FALSE.
                ELSE ! i.e. gpiyi > 0 & gpiwi >= 0
-                 write(6,*) ' not possible ?'
-                 write(6,"( ' xi, xip ', 2ES12.4 )" ) xi, xip
-                 write(6,"( ' fi, fip ', 2ES12.4 )" ) fi, fip
-                 write(6,"( ' gi, gip ', 2ES12.4, ' mi ', ES12.4 )" ) gi, gip,mi
+!                write(6,*) ' not possible ?'
+!                write(6,"( ' xi, xip ', 2ES12.4 )" ) xi, xip
+!                write(6,"( ' fi, fip ', 2ES12.4 )" ) fi, fip
+!                write(6,"( ' gi, gip ', 2ES12.4, ' mi ', ES12.4 )" ) gi, gip,mi
                END IF
              END IF
            END IF

@@ -3,18 +3,19 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_dgo.h"
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   real_wp_ p;
 };
 
 // Function prototypes
-int fun( int n, const double x[], double *f, const void * );
-int grad( int n, const double x[], double g[], const void * );
-int hess( int n, int ne, const double x[], double hval[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[],
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
 
 int main(void) {
@@ -32,7 +33,7 @@ int main(void) {
     control.f_indexing = false; // C sparse matrix indexing (default)
     // control.maxit = 20000;
     // control.trb_control.maxit = 10;
-    control.print_level = 1;
+    // control.print_level = 1;
 
     // Set user data
     struct userdata_type userdata;
@@ -41,15 +42,15 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1,1,1}; // start from one
-    double x_l[] = {-10.0,-10.0,-10.0};
-    double x_u[] = {1.0,1.0,1.0};
+    real_wp_ x[] = {1,1,1}; // start from one
+    real_wp_ x_l[] = {-10.0,-10.0,-10.0};
+    real_wp_ x_u[] = {1.0,1.0,1.0};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Set storage
-    double g[n]; // gradient
+    real_wp_ g[n]; // gradient
 
     // Set Hessian storage format, structure and problem bounds
     dgo_import( &control, &data, &status, n, x_l, x_u,
@@ -91,11 +92,11 @@ int main(void) {
 }
 
 // Objective function
-int fun( int n, const double x[], double *f, const void *userdata){
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = 10.0;
-    double mag = 1000.0;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = 10.0;
+    real_wp_ mag = 1000.0;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + mag*cos(freq*x[0])
         + x[0] + x[1] + x[2];
@@ -103,11 +104,11 @@ int fun( int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad( int n, const double x[], double g[], const void *userdata){
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
-    double freq = 10.0;
-    double mag = 1000.0;
+    real_wp_ p = myuserdata->p;
+    real_wp_ freq = 10.0;
+    real_wp_ mag = 1000.0;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - mag*freq*sin(freq*x[0]) + 1.0;
     g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
@@ -116,9 +117,10 @@ int grad( int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const double x[], double hval[], const void *userdata){
-    double freq = 10.0;
-    double mag = 1000.0;
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+          const void *userdata){
+    real_wp_ freq = 10.0;
+    real_wp_ mag = 1000.0;
     hval[0] = 2.0 - mag*freq*freq*cos(freq*x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -128,10 +130,10 @@ int hess( int n, int ne, const double x[], double hval[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod( int n, const double x[], double u[], const double v[],
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void *userdata){
-    double freq = 10.0;
-    double mag = 1000.0;
+    real_wp_ freq = 10.0;
+    real_wp_ mag = 1000.0;
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - mag*freq*freq*cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );

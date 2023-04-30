@@ -3,17 +3,18 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_trb.h"
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   real_wp_ p;
 };
 
 // Function prototypes
-int fun( int n, const double x[], double *f, const void * );
-int grad( int n, const double x[], double g[], const void * );
-int hess( int n, int ne, const double x[], double hval[], const void * );
+int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
+int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
 
 int main(void) {
 
@@ -28,7 +29,7 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
-    control.print_level = 1;
+    //control.print_level = 1;
 
     // Set user data
     struct userdata_type userdata;
@@ -37,16 +38,16 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1,1,1}; // start from one
-    double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
-    double x_u[] = {1.1,1.1,1.1};
+    real_wp_ x[] = {1,1,1}; // start from one
+    real_wp_ infty = 1e20; // infinity
+    real_wp_ x_l[] = {-infty,-infty, 0.}; 
+    real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Set storage
-    double g[n]; // gradient
+    real_wp_ g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
     trb_import( &control, &data, &status, n, x_l, x_u, 
@@ -85,18 +86,18 @@ int main(void) {
 }
 
 // Objective function 
-int fun(int n, const double x[], double *f, const void *userdata){
+int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
     return 0;
 }
 
 // Gradient of the objective
-int grad(int n, const double x[], double g[], const void *userdata){
+int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double p = myuserdata->p;
+    real_wp_ p = myuserdata->p;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
@@ -105,7 +106,8 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess(int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+         const void *userdata){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
