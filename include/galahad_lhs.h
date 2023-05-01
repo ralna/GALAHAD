@@ -62,37 +62,37 @@ extern "C" {
 struct lhs_control_type {
 
     /// \brief
-    /// error and warning diagnostics occur on stream error
+    /// error and warning diagnostics occur on stream error.
     int error;
 
     /// \brief
-    /// general output occurs on stream out
+    /// general output occurs on stream out.
     int out;
 
     /// \brief
     /// the level of output required. Possible values are:
-    ///  \li < 1 no output
-    ///  \li > 0 debugging
+    ///  \li < 1 no output.
+    ///  \li > 0 debugging.
     int print_level;
 
     /// \brief
     /// the duplication factor. This must be at least 1, a value of 5 is
-    /// reasonable
+    /// reasonable.
     int duplication;
 
     /// \brief
-    /// if %space_critical true, every effort will be made to use as little
-    /// space as possible. This may result in longer computation time
+    /// if .space_critical true, every effort will be made to use as little
+    /// space as possible. This may result in longer computation time.
     bool space_critical;
 
     /// \brief
-    /// if %deallocate_error_fatal is true, any array/pointer deallocation error
-    /// will terminate execution. Otherwise, computation will continue
+    /// if .deallocate_error_fatal is true, any array/pointer deallocation error
+    /// will terminate execution. Otherwise, computation will continue.
     bool deallocate_error_fatal;
 
     /// \brief
-    /// all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-    /// where %prefix contains the required string enclosed in
+    /// all output lines will be prefixed by .prefix(2:LEN(TRIM(%prefix))-1)
+    /// where .prefix contains the required string enclosed in
     /// quotes, e.g. "string" or 'string'
     char prefix[31];
 };
@@ -103,15 +103,28 @@ struct lhs_control_type {
 struct lhs_inform_type {
 
     /// \brief
-    ///  return status. See LHS_solve for details
-    int status;
+    /// return status. Possible values are:
+    /// \li 0 the call was successful.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -3. The random number seed has not been set.
+     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
-    int alloc_status ;
+    /// the status of the last attempted allocation/deallocation.
+    int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error
+    ///  occurred.
     char bad_alloc[81];
 };
 

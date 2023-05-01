@@ -1,4 +1,4 @@
-.TH "galahad_cro.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD CRO" \" -*- nroff -*-
+.TH "galahad_cro.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD CRO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -48,7 +48,7 @@ galahad_cro.h
 .RI "void \fBcro_read_specfile\fP (struct \fBcro_control_type\fP *control, const char specfile[])"
 .br
 .ti -1c
-.RI "void \fBcro_crossover_solution\fP (struct \fBcro_control_type\fP *control, void **data, struct \fBcro_inform_type\fP *inform, int n, int m, int m_equal, const real_wp_ H_val[], const int H_col[], const int H_ptr[], const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+.RI "void \fBcro_crossover_solution\fP (void **data, struct \fBcro_control_type\fP *control, struct \fBcro_inform_type\fP *inform, int n, int m, int m_equal, int h_ne, const real_wp_ H_val[], const int H_col[], const int H_ptr[], int a_ne, const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
 .br
 .ti -1c
 .RI "void \fBcro_terminate\fP (void **data, struct \fBcro_control_type\fP *control, struct \fBcro_inform_type\fP *inform)"
@@ -322,7 +322,7 @@ Read the content of a specification file, and assign values associated with give
 .RE
 .PP
 
-.SS "void cro_crossover_solution (struct \fBcro_control_type\fP * control, void ** data, struct \fBcro_inform_type\fP * inform, int n, int m, int m_equal, const real_wp_ H_val[], const int H_col[], const int H_ptr[], const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+.SS "void cro_crossover_solution (void ** data, struct \fBcro_control_type\fP * control, struct \fBcro_inform_type\fP * inform, int n, int m, int m_equal, int h_ne, const real_wp_ H_val[], const int H_col[], const int H_ptr[], int a_ne, const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
 Crosover the solution from a primal-dual to a basic one\&.
 .PP
 \fBParameters\fP
@@ -366,11 +366,15 @@ Crosover the solution from a primal-dual to a basic one\&.
 .br
 \fIm_equal\fP is a scalar variable of type int, that holds the number of general linear equality constraints\&. Such constraints must occur first in A\&.
 .br
-\fIH_val\fP is a one-dimensional array of type double, that holds the values of the entries of the \fBlower triangular \fPpart of the Hessian matrix H\&. The entries are stored by consecutive rows, the order within each row is unimportant\&.
+\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the \fBlower triangular\fP part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H\&. The entries are stored by consecutive rows, the order within each row is unimportant\&.
 .br
 \fIH_col\fP is a one-dimensional array of type int, that holds the column indices of the lower triangular part of H, in the same order as those in H_val\&.
 .br
 \fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H\&. The n+1-st component holds the total number of entries (plus one if fortran indexing is used)\&.
+.br
+\fIa_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A\&.
 .br
 \fIA_val\fP is a one-dimensional array of type double, that holds the values of the entries of the constraint Jacobian matrix A\&. The entries are stored by consecutive rows, the order within each row is unimportant\&. \fBEquality constraints must be ordered first\&.\fP
 .br

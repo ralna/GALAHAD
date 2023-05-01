@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -725,10 +739,13 @@ second attempt succeeds?.</p>
 <dt>check_basis<span class="classifier">bool</span></dt><dd><p>if an implicit or null-space preconditioner is used,
 assess and correct for ill conditioned basis matrices.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
-bigger than needed.</p>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
+use as little space as possible. This may result in longer
+computation time.</p>
 </dd>
-<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
+deallocation error will terminate execution. Otherwise,
+computation will continue.</p>
 </dd>
 <dt>symmetric_linear_solver<span class="classifier">str</span></dt><dd><p>indefinite linear equation solver used.</p>
 </dd>
@@ -977,7 +994,7 @@ status is returned in <code class="docutils literal notranslate"><span class="pr
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 <dt>sort_status<span class="classifier">int</span></dt><dd><p>the return status from the sorting routines.</p>
 </dd>

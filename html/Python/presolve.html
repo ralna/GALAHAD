@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'presolve';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="CONVERT" href="convert.html" />
+    <link rel="prev" title="SHA" href="sha.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -367,6 +367,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -377,7 +378,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -429,14 +429,18 @@ method employed and other details.</p>
 <span class="sig-prename descclassname"><span class="pre">presolve.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.presolve.presolve.initialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Set default option values and initialize private data.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>options<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing default control options:</dt><dd><dl class="simple">
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
 <dt>termination<span class="classifier">int</span></dt><dd><p>Determines the strategy for terminating the presolve
-analysis. Possible values are:
-* 1 presolving is continued as long as one of  the sizes
-of the problem (n, m, a_ne, or h_ne) is  being reduced;
-* 2 presolving is continued as long as problem
+analysis. Possible values are:</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>presolving is continued as long as one of  the sizes
+of the problem (n, m, a_ne, or h_ne) is being reduced;</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>presolving is continued as long as problem
 transformations remain possible. NOTE: the maximum number
 of analysis passes (control.max_nbr_passes) and the
 maximum number of problem transformations
@@ -444,6 +448,8 @@ maximum number of problem transformations
 presolving effort irrespective of the choice of
 control.termination. The only effect of this latter
 parameter is to allow for early termination.</p>
+</li>
+</ul>
 </dd>
 <dt>max_nbr_transforms<span class="classifier">int</span></dt><dd><p>The maximum number of problem transformations, cumulated
 over all calls to p presolve.</p>
@@ -471,13 +477,27 @@ printout.</p>
 ouput.</p>
 </dd>
 <dt>print_level<span class="classifier">int</span></dt><dd><p>The level of printout requested by the user. Can take the
-values:
-* 0 no printout is produced
-* 1 only reports the major steps in the analysis
-* 2 reports the identity of each problem  transformation
-* 3 reports more details
-* 4 reports lots of information.
-* 5 reports a completely silly amount of information.</p>
+values:</p>
+<ul>
+<li><p><strong>&lt;=0</strong></p>
+<p>no printout is produced</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>only reports the major steps in the analysis</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>reports the identity of each problem  transformation</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>reports more details</p>
+</li>
+<li><p><strong>4</strong></p>
+<p>reports lots of information.</p>
+</li>
+<li><p><strong>&gt;=5</strong></p>
+<p>reports a completely silly amount of information.</p>
+</li>
+</ul>
 </dd>
 <dt>dual_transformations<span class="classifier">bool</span></dt><dd><p>True if dual transformations of the problem are allowed.
 Note that this implies that the reduced problem is solved
@@ -547,9 +567,15 @@ saving problem transformations on a disk file.</p>
 at once (that is without being saved on a disk file).</p>
 </dd>
 <dt>transf_file_status<span class="classifier">int</span></dt><dd><p>The exit status of the file where problem transformations
-are saved:
-* 0 the file is not deleted after program termination
-* 1 the file is not deleted after program termination.</p>
+are saved:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the file is not deleted after program termination</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the file is not deleted after program termination.</p>
+</li>
+</ul>
 </dd>
 <dt>transf_file_name<span class="classifier">str</span></dt><dd><p>The name of the file (to be) used for storing problem
 transformation on disk. NOTE: this parameter must be
@@ -558,129 +584,199 @@ presolve_read_specfile. It can then only be changed after
 calling presolve_terminate.</p>
 </dd>
 <dt>y_sign<span class="classifier">int</span></dt><dd><p>Determines the convention of sign used for the multipliers
-associated with the general linear constraints.
-* 1 All multipliers corresponding to active  inequality
+associated with the general linear constraints.</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>All multipliers corresponding to active  inequality
 constraints are non-negative for  lower bound constraints
-and non-positive for  upper bounds constraints.
-* -1 All multipliers corresponding to active  inequality
+and non-positive for  upper bounds constraints.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>All multipliers corresponding to active  inequality
 constraints are non-positive for  lower bound constraints
 and non-negative for  upper bounds constraints.</p>
+</li>
+</ul>
 </dd>
 <dt>inactive_y<span class="classifier">int</span></dt><dd><p>Determines whether or not the multipliers corresponding to
 constraints that are inactive at the unreduced point
 corresponding to the reduced point on input to p
 presolve_restore_solution must be set to zero. Possible
 values are: associated with the general linear
-constraints.
-* 0 All multipliers corresponding to inactive  inequality
+constraints.</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>All multipliers corresponding to inactive  inequality
 constraints are forced to zero,  possibly at the expense
-of deteriorating the  dual feasibility condition.
-* 1 Multipliers corresponding to inactive  inequality
+of deteriorating the  dual feasibility condition.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>Multipliers corresponding to inactive  inequality
 constraints are left unaltered.</p>
+</li>
+</ul>
 </dd>
 <dt>z_sign<span class="classifier">int</span></dt><dd><p>Determines the convention of sign used for the dual
-variables associated with the bound constraints.
-* 1 All dual variables corresponding to  active lower
+variables associated with the bound constraints.</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>All dual variables corresponding to  active lower
 bounds are non-negative, and  non-positive for active
-upper bounds.
-* -1 All dual variables corresponding to  active lower
+upper bounds.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>All dual variables corresponding to  active lower
 bounds are non-positive, and  non-negative for active
 upper bounds.</p>
+</li>
+</ul>
 </dd>
 <dt>inactive_z<span class="classifier">int</span></dt><dd><p>Determines whether or not the dual variables corresponding
 to bounds that are inactive at the unreduced point
-corresponding to the reduced point on input to p
+corresponding to the reduced point on input to
 presolve_restore_solution must be set to zero. Possible
 values are: associated with the general linear
-constraints.
-* 0: All dual variables corresponding to  inactive bounds
+constraints.</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>All dual variables corresponding to  inactive bounds
 are forced to zero,  possibly at the expense of
-deteriorating the  dual feasibility condition.
-* 1 Dual variables corresponding to inactive  bounds are
+deteriorating the  dual feasibility condition.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>Dual variables corresponding to inactive  bounds are
 left unaltered.</p>
+</li>
+</ul>
 </dd>
 <dt>final_x_bounds<span class="classifier">int</span></dt><dd><p>The type of final bounds on the variables returned by the
-package. This parameter can take the values:
-* 0 the final bounds are the tightest bounds  known on the
+package. This parameter can take the values:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the final bounds are the tightest bounds  known on the
 variables (at the risk of  being redundant with other
-constraints,  which may cause degeneracy);
-* 1 the best known bounds that are known to  be
+constraints,  which may cause degeneracy);</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the best known bounds that are known to  be
 non-degenerate. This option implies  that an additional
-real workspace of size  2 * n must be allocated.
-* 2 the loosest bounds that are known to  keep the problem
+real workspace of size  2 * n must be allocated.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the loosest bounds that are known to  keep the problem
 equivalent to the  original problem. This option also
 implies that an additional real  workspace of size 2 * n
 must be  allocated.  NOTE: this parameter must be
 identical for all calls to presolve (except
 presolve_initialize).</p>
+</li>
+</ul>
 </dd>
 <dt>final_z_bounds<span class="classifier">int</span></dt><dd><p>The type of final bounds on the dual variables returned by
-the package. This parameter can take the values:
-* 0 the final bounds are the tightest bounds  known on the
+the package. This parameter can take the values:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the final bounds are the tightest bounds  known on the
 dual variables (at the risk  of being redundant with other
-constraints,  which may cause degeneracy);
-* 1 the best known bounds that are known to  be
+constraints,  which may cause degeneracy);</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the best known bounds that are known to  be
 non-degenerate. This option implies  that an additional
-real workspace of size  2 * n must be allocated.
-* 2 the loosest bounds that are known to  keep the problem
+real workspace of size  2 * n must be allocated.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the loosest bounds that are known to  keep the problem
 equivalent to the  original problem. This option also
-implies that an additional real  workspace of size 2 * n
-must be allocated.  NOTE: this parameter must be identical
+implies that an additional real  workspace of size 2 * n</p>
+</li>
+</ul>
+<p>must be allocated.  NOTE: this parameter must be identical
 for all calls to presolve (except presolve_initialize).</p>
 </dd>
 <dt>final_c_bounds<span class="classifier">int</span></dt><dd><p>The type of final bounds on the constraints returned by
-the package. This parameter can take the values:
-* 0 the final bounds are the tightest bounds  known on the
+the package. This parameter can take the values:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the final bounds are the tightest bounds  known on the
 constraints (at the risk of  being redundant with other
-constraints,  which may cause degeneracy);
-* 1 the best known bounds that are known to  be
+constraints,  which may cause degeneracy);</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the best known bounds that are known to  be
 non-degenerate. This option implies  that an additional
-real workspace of size  2 * m must be allocated.
-* 2 the loosest bounds that are known to  keep the problem
+real workspace of size  2 * m must be allocated.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the loosest bounds that are known to  keep the problem
 equivalent to the  original problem. This option also
 implies that an additional real  workspace of size 2 * n
 must be  allocated.  NOTES: 1) This parameter must be
 identical for all calls to presolve (except
 presolve_initialize). 2) If different from 0, its value
 must be identical to that of control.final_x_bounds.</p>
+</li>
+</ul>
 </dd>
 <dt>final_y_bounds<span class="classifier">int</span></dt><dd><p>The type of final bounds on the multipliers returned by
-the package. This parameter can take the values:
-* 0 the final bounds are the tightest bounds  known on the
+the package. This parameter can take the values:</p>
+<ul>
+<li><p><strong>0</strong>
+the final bounds are the tightest bounds  known on the
 multipliers (at the risk of  being redundant with other
-constraints,  which may cause degeneracy);
-* 1 the best known bounds that are known to  be
+constraints,  which may cause degeneracy);</p></li>
+<li><p><strong>1</strong>
+the best known bounds that are known to  be
 non-degenerate. This option implies  that an additional
-real workspace of size  2 * m must be allocated.
-* 2 the loosest bounds that are known to  keep the problem
+real workspace of size  2 * m must be allocated.</p></li>
+<li><p><strong>2</strong></p>
+<p>the loosest bounds that are known to  keep the problem
 equivalent to the  original problem. This option also
 implies that an additional real  workspace of size 2 * n
 must be  allocated.  NOTE: this parameter must be
 identical for all calls to presolve (except
 presolve_initialize).</p>
+</li>
+</ul>
 </dd>
 <dt>check_primal_feasibility<span class="classifier">int</span></dt><dd><p>The level of feasibility check (on the values of x) at the
 start of the restoration phase. This parameter can take
-the values:
-* 0 no check at all;
-* 1 the primal constraints are recomputed at x  and a
+the values:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>no check at all;</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the primal constraints are recomputed at x  and a
 message issued if the computed value  does not match the
 input value, or if it is  out of bounds (if
-control.print_level &gt;= 2);
-* 2 the same as for 1, but presolve is  terminated if an
+control.print_level &gt;= 2);</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the same as for 1, but presolve is  terminated if an
 incompatibilty is detected.</p>
+</li>
+</ul>
 </dd>
 <dt>check_dual_feasibility<span class="classifier">int</span></dt><dd><p>The level of dual feasibility check (on the values of x, y
 and z) at the start of the restoration phase. This
-parameter can take the values:
-* 0 no check at all;
-* 1 the dual feasibility condition is recomputed  at ( x,
+parameter can take the values:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>no check at all;</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>the dual feasibility condition is recomputed  at ( x,
 y, z ) and a message issued if the  computed value does
-not match the input value  (if control.print_level &gt;= 2);
-* 2 the same as for 1, but presolve is  terminated if an
+not match the input value  (if control.print_level &gt;= 2);</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the same as for 1, but presolve is  terminated if an
 incompatibilty is detected.  The last two values imply the
 allocation of an additional  real workspace vector of size
 equal to the number of  variables in the reduced problem.</p>
+</li>
+</ul>
 </dd>
 <dt>pivot_tol<span class="classifier">float</span></dt><dd><p>The relative pivot tolerance above which pivoting is
 considered as numerically stable in transforming the
@@ -724,372 +820,276 @@ transformation is skipped.</p>
 <dt>dictionary containing output information:</dt><dd><dl>
 <dt>status<span class="classifier">int</span></dt><dd><p>The presolve exit condition. It can take the following
 values (symbol in parentheses is the related Fortran
-code):
-* (OK)  successful exit;
-* 1 (MAX_NBR_TRANSF)  the maximum number of problem</p>
-<blockquote>
-<div><p>transformation has been reached  NOTE:  this exit is not
+code):</p>
+<ul>
+<li><p><strong>0</strong> (OK)</p>
+<p>successful exit;</p>
+</li>
+<li><p><strong>1</strong> (MAX_NBR_TRANSF)</p>
+<p>the maximum number of problem
+transformation has been reached  NOTE:  this exit is not
 really an error, since the problem  can nevertheless be
 permuted and solved. It merely  signals that further
 problem reduction could possibly  be obtained with a
-larger value of the parameter  p
+larger value of the parameter
 control.max_nbr_transforms</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-1 (MEMORY_FULL)  memory allocation failed</p></li>
-<li><p>-2 (FILE_NOT_OPENED)  a file intended for saving problem</p></li>
-</ul>
-<blockquote>
-<div><p>transformations  could not be opened;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-3 (COULD_NOT_WRITE)  an IO error occurred while saving</p></li>
-</ul>
-<blockquote>
-<div><p>transformations on  the relevant disk file;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-4 (TOO_FEW_BITS_PER_BYTE)  an integer contains less</p></li>
-</ul>
-<blockquote>
-<div><p>than NBRH + 1 bits.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-21 (PRIMAL_INFEASIBLE)  the problem is primal</p></li>
-</ul>
-<blockquote>
-<div><p>infeasible;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-22 (DUAL_INFEASIBLE)  the problem is dual infeasible;</p></li>
-<li><p>-23 (WRONG_G_DIMENSION)  the dimension of the gradient</p></li>
-</ul>
-<blockquote>
-<div><p>is incompatible with  the problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-24 (WRONG_HVAL_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the entries of  the Hessian is erroneously
-specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-25 (WRONG_HPTR_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the addresses  of the first entry of each
+</li>
+<li><p><strong>-1</strong> (MEMORY_FULL)</p>
+<p>memory allocation failed</p>
+</li>
+<li><p><strong>-2</strong> (FILE_NOT_OPENED)</p>
+<p>a file intended for saving problem
+transformations  could not be opened;</p>
+</li>
+<li><p><strong>-3</strong> (COULD_NOT_WRITE)</p>
+<p>an IO error occurred while saving
+transformations on  the relevant disk file;</p>
+</li>
+<li><p><strong>-4</strong> (TOO_FEW_BITS_PER_BYTE)</p>
+<p>an integer contains less than NBRH + 1 bits.</p>
+</li>
+<li><p><strong>-21</strong> (PRIMAL_INFEASIBLE)</p>
+<p>the problem is primal infeasible;</p>
+</li>
+<li><p><strong>-22</strong> (DUAL_INFEASIBLE)</p>
+<p>the problem is dual infeasible;</p>
+</li>
+<li><p><strong>-23</strong> (WRONG_G_DIMENSION)</p>
+<p>the dimension of the gradient
+is incompatible with  the problem dimension;</p>
+</li>
+<li><p><strong>-24</strong> (WRONG_HVAL_DIMENSION)</p>
+<p>the dimension of the vector containing the entries of
+the Hessian is erroneously specified;</p>
+</li>
+<li><p><strong>-25</strong> (WRONG_HPTR_DIMENSION)</p>
+<p>the dimension of the vector
+containing the addresses  of the first entry of each
 Hessian row is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-26 (WRONG_HCOL_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the column  indices of the nonzero Hessian
+</li>
+<li><p><strong>-26</strong> (WRONG_HCOL_DIMENSION)</p>
+<p>the dimension of the vector
+containing the column  indices of the nonzero Hessian
 entries is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-27 (WRONG_HROW_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the row indices  of the nonzero Hessian entries
+</li>
+<li><p><strong>-27</strong> (WRONG_HROW_DIMENSION)</p>
+<p>the dimension of the vector
+containing the row indices  of the nonzero Hessian entries
 is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-28 (WRONG_AVAL_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the entries of  the Jacobian is erroneously
+</li>
+<li><p><strong>-28</strong> (WRONG_AVAL_DIMENSION)</p>
+<p>the dimension of the vector
+containing the entries of  the Jacobian is erroneously
 specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-29 (WRONG_APTR_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the addresses  of the first entry of each
+</li>
+<li><p><strong>-29</strong> (WRONG_APTR_DIMENSION)</p>
+<p>the dimension of the vector
+containing the addresses  of the first entry of each
 Jacobian row is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-30 (WRONG_ACOL_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the column  indices of the nonzero Jacobian
+</li>
+<li><p><strong>-30</strong> (WRONG_ACOL_DIMENSION)</p>
+<p>the dimension of the vector
+containing the column  indices of the nonzero Jacobian
 entries is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-31 (WRONG_AROW_DIMENSION)  the dimension of the vector</p></li>
-</ul>
-<blockquote>
-<div><p>containing the row indices  of the nonzero Jacobian
+</li>
+<li><p><strong>-31</strong> (WRONG_AROW_DIMENSION)</p>
+<p>the dimension of the vector
+containing the row indices  of the nonzero Jacobian
 entries is erroneously specified;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-32 (WRONG_X_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>variables is  incompatible with the problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-33 (WRONG_XL_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>lower bounds on the  variables is incompatible with the
+</li>
+<li><p><strong>-32</strong> (WRONG_X_DIMENSION)</p>
+<p>the dimension of the vector of
+variables is  incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-33</strong> (WRONG_XL_DIMENSION)</p>
+<p>the dimension of the vector of
+lower bounds on the  variables is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-34 (WRONG_XU_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>upper bounds on the  variables is incompatible with the
+</li>
+<li><p><strong>-34</strong> (WRONG_XU_DIMENSION)</p>
+<p>the dimension of the vector of
+upper bounds on the  variables is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-35 (WRONG_Z_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>dual variables is  incompatible with the problem
+</li>
+<li><p><strong>-35</strong> (WRONG_Z_DIMENSION)</p>
+<p>the dimension of the vector of
+dual variables is  incompatible with the problem
 dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-36 (WRONG_ZL_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>lower bounds on the dual  variables is incompatible with
+</li>
+<li><p><strong>-36</strong> (WRONG_ZL_DIMENSION)</p>
+<p>the dimension of the vector of
+lower bounds on the dual  variables is incompatible with
 the problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-37 (WRONG_ZU_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>upper bounds on the  dual variables is incompatible with
+</li>
+<li><p><strong>-37</strong> (WRONG_ZU_DIMENSION)</p>
+<p>the dimension of the vector of
+upper bounds on the  dual variables is incompatible with
 the problem dimension;.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-38 (WRONG_C_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>constraints values is  incompatible with the problem
+</li>
+<li><p><strong>-38</strong> (WRONG_C_DIMENSION)</p>
+<p>the dimension of the vector of
+constraints values is  incompatible with the problem
 dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-39 (WRONG_CL_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>lower bounds on the  constraints is incompatible with the
+</li>
+<li><p><strong>-39</strong> (WRONG_CL_DIMENSION)</p>
+<p>the dimension of the vector of
+lower bounds on the  constraints is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-40 (WRONG_CU_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>upper bounds on the  constraints is incompatible with the
+</li>
+<li><p><strong>-40</strong> (WRONG_CU_DIMENSION)</p>
+<p>the dimension of the vector of
+upper bounds on the  constraints is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-41 (WRONG_Y_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>multipliers values is  incompatible with the problem
+</li>
+<li><p><strong>-41</strong> (WRONG_Y_DIMENSION)</p>
+<p>the dimension of the vector of
+multipliers values is  incompatible with the problem
 dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-42 (WRONG_YL_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>lower bounds on the  multipliers is incompatible with the
+</li>
+<li><p><strong>-42</strong> (WRONG_YL_DIMENSION)</p>
+<p>the dimension of the vector of
+lower bounds on the  multipliers is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-43 (WRONG_YU_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>upper bounds on the  multipliers is incompatible with the
+</li>
+<li><p><strong>-43</strong> (WRONG_YU_DIMENSION)</p>
+<p>the dimension of the vector of
+upper bounds on the  multipliers is incompatible with the
 problem dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-44 (STRUCTURE_NOT_SET)  the problem structure has not</p></li>
-</ul>
-<blockquote>
-<div><p>been set or has been  cleaned up before an attempt to
+</li>
+<li><p><strong>-44</strong> (STRUCTURE_NOT_SET)</p>
+<p>the problem structure has not
+been set or has been  cleaned up before an attempt to
 analyze;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-45 (PROBLEM_NOT_ANALYZED)  the problem has not been</p></li>
-</ul>
-<blockquote>
-<div><p>analyzed before an attempt to permute it;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-46 (PROBLEM_NOT_PERMUTED)  the problem has not been</p></li>
-</ul>
-<blockquote>
-<div><p>permuted or fully reduced before an attempt  to restore it</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-47 (H_MISSPECIFIED)  the column indices of a row of the</p></li>
-</ul>
-<blockquote>
-<div><p>sparse Hessian are  not in increasing order, in that they
+</li>
+<li><p><strong>-45</strong> (PROBLEM_NOT_ANALYZED)</p>
+<p>the problem has not been
+analyzed before an attempt to permute it;</p>
+</li>
+<li><p><strong>-46</strong> (PROBLEM_NOT_PERMUTED)</p>
+<p>the problem has not been
+permuted or fully reduced before an attempt  to restore it</p>
+</li>
+<li><p><strong>-47</strong> (H_MISSPECIFIED)</p>
+<p>the column indices of a row of the
+sparse Hessian are  not in increasing order, in that they
 specify an entry  above the diagonal;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-48 (CORRUPTED_SAVE_FILE)  one of the files containing</p></li>
-</ul>
-<blockquote>
-<div><p>saved problem  transformations has been corrupted between
+</li>
+<li><p><strong>-48</strong> (CORRUPTED_SAVE_FILE)</p>
+<p>one of the files containing
+saved problem  transformations has been corrupted between
 writing and reading;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-49 (WRONG_XS_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>variables’ status  is incompatible with the problem
+</li>
+<li><p><strong>-49</strong> (WRONG_XS_DIMENSION)</p>
+<p>the dimension of the vector of
+variables’ status  is incompatible with the problem
 dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-50 (WRONG_CS_DIMENSION)  the dimension of the vector of</p></li>
-</ul>
-<blockquote>
-<div><p>constraints’ status  is incompatible with the problem
+</li>
+<li><p><strong>-50</strong> (WRONG_CS_DIMENSION)</p>
+<p>the dimension of the vector of
+constraints’ status  is incompatible with the problem
 dimension;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-52 (WRONG_N)  the problem does not contain any (active)</p></li>
-</ul>
-<blockquote>
-<div><p>variable;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-53 (WRONG_M)  the problem contains a negative number of</p></li>
-</ul>
-<blockquote>
-<div><p>constraints;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-54 (SORT_TOO_LONG)  the vectors are too long for the</p></li>
-</ul>
-<blockquote>
-<div><p>sorting routine;</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-55 (X_OUT_OF_BOUNDS)  the value of a variable that is</p></li>
-</ul>
-<blockquote>
-<div><p>obtained by  substitution from a constraint is incoherent
+</li>
+<li><p><strong>-52</strong> (WRONG_N)</p>
+<p>the problem does not contain any (active) variable;</p>
+</li>
+<li><p><strong>-53</strong> (WRONG_M)</p>
+<p>the problem contains a negative number of
+constraints;</p>
+</li>
+<li><p><strong>-54</strong> (SORT_TOO_LONG)</p>
+<p>the vectors are too long for the
+sorting routine;</p>
+</li>
+<li><p><strong>-55</strong> (X_OUT_OF_BOUNDS)</p>
+<p>the value of a variable that is
+obtained by  substitution from a constraint is incoherent
 with the  variable’s bounds. This may be due to a
 relatively  loose accuracy on the linear constraints. Try
 to  increase control.c_accuracy.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-56 (X_NOT_FEASIBLE)  the value of a constraint that is</p></li>
-</ul>
-<blockquote>
-<div><p>obtained by  recomputing its value on input of p
+</li>
+<li><p><strong>-56</strong> (X_NOT_FEASIBLE)</p>
+<p>the value of a constraint that is
+obtained by  recomputing its value on input of p
 presolve_restore_solution  from the current x is
 incompatible with its declared value  or its bounds. This
 may caused the restored problem  to be infeasible.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-57 (Z_NOT_FEASIBLE)  the value of a dual variable that</p></li>
-</ul>
-<blockquote>
-<div><p>is obtained by  recomputing its value on input to \p
+</li>
+<li><p><strong>-57</strong> (Z_NOT_FEASIBLE)</p>
+<p>the value of a dual variable that
+is obtained by  recomputing its value on input to \p
 presolve_restore_solution  (assuming dual feasibility)
 from the current values of  <span class="math notranslate nohighlight">\((x, y, z)\)</span> is incompatible
 with its declared value.  This may caused the restored
 problem to be infeasible  or suboptimal.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-58 (Z_CANNOT_BE_ZEROED)  a dual variable whose value is</p></li>
-</ul>
-<blockquote>
-<div><p>nonzero because the  corresponding primal is at an
+</li>
+<li><p><strong>-58</strong> (Z_CANNOT_BE_ZEROED)</p>
+<p>a dual variable whose value is
+nonzero because the  corresponding primal is at an
 artificial bound cannot  be zeroed while maintaining dual
 feasibility  (on restoration). This can happen when
 <span class="math notranslate nohighlight">\(( x, y, z)\)</span> on  input of RESTORE are not (sufficiently)
 optimal.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-60 (UNRECOGNIZED_KEYWORD)  a keyword was not recognized</p></li>
-</ul>
-<blockquote>
-<div><p>in the analysis of the  specification file</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-61 (UNRECOGNIZED_VALUE)  a value was not recognized in</p></li>
-</ul>
-<blockquote>
-<div><p>the analysis of the specification file</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-63 (G_NOT_ALLOCATED)  the vector G has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although it has general values</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-64 (C_NOT_ALLOCATED)  the vector C has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although m &gt; 0</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-65 (AVAL_NOT_ALLOCATED)  the vector A.val has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although m &gt; 0</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-66 (APTR_NOT_ALLOCATED)  the vector A.ptr has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  m &gt; 0 and A is stored in row-wise
+</li>
+<li><p><strong>-60</strong> (UNRECOGNIZED_KEYWORD)</p>
+<p>a keyword was not recognized
+in the analysis of the  specification file</p>
+</li>
+<li><p><strong>-61</strong> (UNRECOGNIZED_VALUE)</p>
+<p>a value was not recognized in
+the analysis of the specification file</p>
+</li>
+<li><p><strong>-63</strong> (G_NOT_ALLOCATED)</p>
+<p>the vector G has not been
+allocated although it has general values</p>
+</li>
+<li><p><strong>-64</strong> (C_NOT_ALLOCATED)</p>
+<p>the vector C has not been
+allocated although m &gt; 0</p>
+</li>
+<li><p><strong>-65</strong> (AVAL_NOT_ALLOCATED)</p>
+<p>the vector A.val has not been
+allocated although m &gt; 0</p>
+</li>
+<li><p><strong>-66</strong> (APTR_NOT_ALLOCATED)</p>
+<p>the vector A.ptr has not been
+allocated although  m &gt; 0 and A is stored in row-wise
 sparse format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-67 (ACOL_NOT_ALLOCATED)  the vector A.col has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  m &gt; 0 and A is stored in row-wise
+</li>
+<li><p><strong>-67</strong> (ACOL_NOT_ALLOCATED)</p>
+<p>the vector A.col has not been
+allocated although  m &gt; 0 and A is stored in row-wise
 sparse format  or sparse coordinate format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-68 (AROW_NOT_ALLOCATED)  the vector A.row has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  m &gt; 0 and A is stored in sparse
+</li>
+<li><p><strong>-68</strong> (AROW_NOT_ALLOCATED)</p>
+<p>the vector A.row has not been
+allocated although  m &gt; 0 and A is stored in sparse
 coordinate format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-69 (HVAL_NOT_ALLOCATED)  the vector H.val has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  H.ne &gt; 0</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-70 (HPTR_NOT_ALLOCATED)  the vector H.ptr has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  H.ne &gt; 0 and H is stored in row-wise
+</li>
+<li><p><strong>-69</strong> (HVAL_NOT_ALLOCATED)</p>
+<p>the vector H.val has not been
+allocated although  H.ne &gt; 0</p>
+</li>
+<li><p><strong>-70</strong> (HPTR_NOT_ALLOCATED)</p>
+<p>the vector H.ptr has not been
+allocated although  H.ne &gt; 0 and H is stored in row-wise
 sparse format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-71 (HCOL_NOT_ALLOCATED) the vector H.col has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  H.ne &gt; 0 and H is stored in row-wise
+</li>
+<li><p><strong>-71</strong> (HCOL_NOT_ALLOCATED)</p>
+<p>the vector H.col has not been
+allocated although  H.ne &gt; 0 and H is stored in row-wise
 sparse format  or sparse coordinate format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-72 (HROW_NOT_ALLOCATED)  the vector H.row has not been</p></li>
-</ul>
-<blockquote>
-<div><p>allocated although  H.ne &gt; 0 and A is stored in sparse
+</li>
+<li><p><strong>-72</strong> (HROW_NOT_ALLOCATED)</p>
+<p>the vector H.row has not been
+allocated although  H.ne &gt; 0 and A is stored in sparse
 coordinate  format</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>-73 (WRONG_ANE)  incompatible value of A_ne</p></li>
-<li><p>-74 (WRONG_HNE)  incompatible value of H_ne.</p></li>
+</li>
+<li><p><strong>-73</strong> (WRONG_ANE)</p>
+<p>incompatible value of A_ne</p>
+</li>
+<li><p><strong>-74</strong> (WRONG_HNE)</p>
+<p>incompatible value of H_ne.</p>
+</li>
 </ul>
 </dd>
 <dt>nbr_transforms<span class="classifier">int</span></dt><dd><p>The final number of problem transformations, as reported
@@ -1126,11 +1126,11 @@ if control.print_level &gt;= 1.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="convert.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="sha.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">CONVERT</p>
+          <p class="prev-next-title">SHA</p>
       </div>
   </a>
 </div>

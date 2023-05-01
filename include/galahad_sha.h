@@ -128,23 +128,28 @@ struct sha_inform_type {
     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// the maximum degree in the adgacency graph
+    /// the maximum degree in the adgacency graph.
     int max_degree;
 
     /// \brief
-    /// the number of differences that will be needed
+    /// the number of differences that will be needed.
     int differences_needed;
 
     /// \brief
-    /// the maximum reduced degree in the adgacency graph
+    /// the maximum reduced degree in the adgacency graph.
     int max_reduced_degree;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// a failure occured when forming the bad_row-th row (0 = no failure).
+    int bad_row;
+
+    /// \brief
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred.
     char bad_alloc[81];
 };
 

@@ -101,20 +101,27 @@ struct fit_inform_type {
 
     /// \brief
     /// return status. Possible values are:
-    /// \li 0 Normal termination with the required fit
-    /// \li -1 An allocation error occured; the status is given in the component
-    ///     .alloc_status
-    /// \li -2 A deallocation error occured; the status is given in the
-    ///        component alloc_status
-    /// \li - 3 the restriction n >= 1 has been violated
+    /// \li 0 Normal termination with the required fit.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li - 3 the restriction n >= 1 has been violated.
     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error
+   ///  occurred.
     char bad_alloc[81];
 };
 

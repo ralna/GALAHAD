@@ -1,4 +1,4 @@
-.TH "galahad_lms.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD LMS" \" -*- nroff -*-
+.TH "galahad_lms.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD LMS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -84,13 +84,13 @@ int \fImethod\fP limited-memory formula required (others may be added in due cou
 .PD 0
 
 .IP "\(bu" 2
-1 BFGS (default) 
+1 BFGS (default)\&. 
 .IP "\(bu" 2
-2 SR1 
+2 Symmetric Rank-One (SR1)\&. 
 .IP "\(bu" 2
-3 The inverse of the BFGS formula 
+3 The inverse of the BFGS formula\&. 
 .IP "\(bu" 2
-4 The inverse of the shifted BFGS formula\&. This should be used instead of \&.method = 3 whenever a shift is planned 
+4 The inverse of the shifted BFGS formula\&. This should be used instead of \&.method = 3 whenever a shift is planned\&. 
 .PP
 
 .br
@@ -147,19 +147,35 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See LMS_setup for details 
+int \fIstatus\fP the return status\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0 the update was successful\&. 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. One of the restrictions n > 0, delta > 0, lambda > 0 or s^T y > 0 has been violated and the update has been skipped\&. 
+.IP "\(bu" 2
+-10\&. The matrix cannot be built from the current vectors {s_k} and {y_k} and values delta_k and lambda_k and the update has been skipped\&. 
+.IP "\(bu" 2
+-31\&. A call to the function lhs_apply has been made without a prior call to lhs_form_shift or lhs_form with lambda specified when control\&.method = 4, or lhs_form_shift has been called when control\&.method = 3, or lhs_change_method has been called after control\&.any_method = false was specified when calling lhs_setup\&. 
+.PP
+
 .br
 .PP
 int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
 .br
 .PP
-int \fIlength\fP the number of pairs (s,y) currently used to represent the limited-memory matrix 
+int \fIlength\fP the number of pairs (s,y) currently used to represent the limited-memory matrix\&. 
 .br
 .PP
-bool \fIupdates_skipped\fP have (s,y) pairs been skipped when forming the limited-memory matrix 
+bool \fIupdates_skipped\fP have (s,y) pairs been skipped when forming the limited-memory matrix? 
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error occurred\&. 
 .br
 .PP
 struct \fBlms_time_type\fP \fItime\fP timings (see above) 

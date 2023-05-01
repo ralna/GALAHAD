@@ -29,16 +29,22 @@ functions
           termination : int
              Determines the strategy for terminating the presolve
              analysis. Possible values are:
-             * 1 presolving is continued as long as one of  the sizes
-             of the problem (n, m, a_ne, or h_ne) is  being reduced;
-             * 2 presolving is continued as long as problem
-             transformations remain possible. NOTE: the maximum number
-             of analysis passes (control.max_nbr_passes) and the
-             maximum number of problem transformations
-             (control.max_nbr_transforms) set an upper limit on the
-             presolving effort irrespective of the choice of
-             control.termination. The only effect of this latter
-             parameter is to allow for early termination.
+
+             * **1** 
+
+               presolving is continued as long as one of  the sizes
+               of the problem (n, m, a_ne, or h_ne) is being reduced;
+
+             * **2** 
+
+               presolving is continued as long as problem
+               transformations remain possible. NOTE: the maximum number
+               of analysis passes (control.max_nbr_passes) and the
+               maximum number of problem transformations
+               (control.max_nbr_transforms) set an upper limit on the
+               presolving effort irrespective of the choice of
+               control.termination. The only effect of this latter
+               parameter is to allow for early termination.
           max_nbr_transforms : int
              The maximum number of problem transformations, cumulated
              over all calls to \p presolve.
@@ -67,12 +73,30 @@ functions
           print_level : int
              The level of printout requested by the user. Can take the
              values:
-             * 0 no printout is produced
-             * 1 only reports the major steps in the analysis
-             * 2 reports the identity of each problem  transformation
-             * 3 reports more details
-             * 4 reports lots of information.
-             * 5 reports a completely silly amount of information.
+
+             * **<=0** 
+
+               no printout is produced
+
+             * **1** 
+
+               only reports the major steps in the analysis
+
+             * **2** 
+
+               reports the identity of each problem  transformation
+
+             * **3** 
+
+               reports more details
+
+             * **4** 
+
+               reports lots of information.
+
+             * **>=5** 
+
+               reports a completely silly amount of information.
           dual_transformations : bool
              True if dual transformations of the problem are allowed.
              Note that this implies that the reduced problem is solved
@@ -143,8 +167,14 @@ functions
           transf_file_status : int
              The exit status of the file where problem transformations
              are saved:
-             * 0 the file is not deleted after program termination
-             * 1 the file is not deleted after program termination.
+
+             * **0** 
+
+               the file is not deleted after program termination
+
+             * **1** 
+
+               the file is not deleted after program termination.
           transf_file_name : str
              The name of the file (to be) used for storing problem
              transformation on disk. NOTE: this parameter must be
@@ -154,12 +184,18 @@ functions
           y_sign : int
              Determines the convention of sign used for the multipliers
              associated with the general linear constraints.
-             * 1 All multipliers corresponding to active  inequality
-             constraints are non-negative for  lower bound constraints
-             and non-positive for  upper bounds constraints.
-             * -1 All multipliers corresponding to active  inequality
-             constraints are non-positive for  lower bound constraints
-             and non-negative for  upper bounds constraints.
+
+             * **1** 
+
+               All multipliers corresponding to active  inequality
+               constraints are non-negative for  lower bound constraints
+               and non-positive for  upper bounds constraints.
+
+             * **-1** 
+
+               All multipliers corresponding to active  inequality
+               constraints are non-positive for  lower bound constraints
+               and non-negative for  upper bounds constraints.
           inactive_y : int
              Determines whether or not the multipliers corresponding to
              constraints that are inactive at the unreduced point
@@ -167,115 +203,186 @@ functions
              presolve_restore_solution must be set to zero. Possible
              values are: associated with the general linear
              constraints.
-             * 0 All multipliers corresponding to inactive  inequality
-             constraints are forced to zero,  possibly at the expense
-             of deteriorating the  dual feasibility condition.
-             * 1 Multipliers corresponding to inactive  inequality
-             constraints are left unaltered.
+
+             * **0** 
+
+               All multipliers corresponding to inactive  inequality
+               constraints are forced to zero,  possibly at the expense
+               of deteriorating the  dual feasibility condition.
+
+             * **1** 
+
+               Multipliers corresponding to inactive  inequality
+               constraints are left unaltered.
           z_sign : int
              Determines the convention of sign used for the dual
              variables associated with the bound constraints.
-             * 1 All dual variables corresponding to  active lower
-             bounds are non-negative, and  non-positive for active
-             upper bounds.
-             * -1 All dual variables corresponding to  active lower
-             bounds are non-positive, and  non-negative for active
-             upper bounds.
+
+             * **1** 
+
+               All dual variables corresponding to  active lower
+               bounds are non-negative, and  non-positive for active
+               upper bounds.
+
+             * **-1** 
+
+               All dual variables corresponding to  active lower
+               bounds are non-positive, and  non-negative for active
+               upper bounds.
           inactive_z : int
              Determines whether or not the dual variables corresponding
              to bounds that are inactive at the unreduced point
-             corresponding to the reduced point on input to \p
+             corresponding to the reduced point on input to
              presolve_restore_solution must be set to zero. Possible
              values are: associated with the general linear
              constraints.
-             * 0: All dual variables corresponding to  inactive bounds
-             are forced to zero,  possibly at the expense of
-             deteriorating the  dual feasibility condition.
-             * 1 Dual variables corresponding to inactive  bounds are
-             left unaltered.
+
+             * **0** 
+
+               All dual variables corresponding to  inactive bounds
+               are forced to zero,  possibly at the expense of
+               deteriorating the  dual feasibility condition.
+
+             * **1** 
+
+               Dual variables corresponding to inactive  bounds are
+               left unaltered.
           final_x_bounds : int
              The type of final bounds on the variables returned by the
              package. This parameter can take the values:
-             * 0 the final bounds are the tightest bounds  known on the
-             variables (at the risk of  being redundant with other
-             constraints,  which may cause degeneracy);
-             * 1 the best known bounds that are known to  be
-             non-degenerate. This option implies  that an additional
-             real workspace of size  2 * n must be allocated.
-             * 2 the loosest bounds that are known to  keep the problem
-             equivalent to the  original problem. This option also
-             implies that an additional real  workspace of size 2 * n
-             must be  allocated.  NOTE: this parameter must be
-             identical for all calls to presolve (except
-             presolve_initialize).
+
+             * **0** 
+
+               the final bounds are the tightest bounds  known on the
+               variables (at the risk of  being redundant with other
+               constraints,  which may cause degeneracy);
+
+             * **1** 
+
+               the best known bounds that are known to  be
+               non-degenerate. This option implies  that an additional
+               real workspace of size  2 * n must be allocated.
+
+             * **2** 
+
+               the loosest bounds that are known to  keep the problem
+               equivalent to the  original problem. This option also
+               implies that an additional real  workspace of size 2 * n
+               must be  allocated.  NOTE: this parameter must be
+               identical for all calls to presolve (except
+               presolve_initialize).
           final_z_bounds : int
              The type of final bounds on the dual variables returned by
              the package. This parameter can take the values:
-             * 0 the final bounds are the tightest bounds  known on the
-             dual variables (at the risk  of being redundant with other
-             constraints,  which may cause degeneracy);
-             * 1 the best known bounds that are known to  be
-             non-degenerate. This option implies  that an additional
-             real workspace of size  2 * n must be allocated.
-             * 2 the loosest bounds that are known to  keep the problem
-             equivalent to the  original problem. This option also
-             implies that an additional real  workspace of size 2 * n
+
+             * **0**
+
+               the final bounds are the tightest bounds  known on the
+               dual variables (at the risk  of being redundant with other
+               constraints,  which may cause degeneracy);
+
+             * **1**
+
+               the best known bounds that are known to  be
+               non-degenerate. This option implies  that an additional
+               real workspace of size  2 * n must be allocated.
+
+             * **2**
+
+               the loosest bounds that are known to  keep the problem
+               equivalent to the  original problem. This option also
+               implies that an additional real  workspace of size 2 * n
+               
              must be allocated.  NOTE: this parameter must be identical
              for all calls to presolve (except presolve_initialize).
           final_c_bounds : int
              The type of final bounds on the constraints returned by
              the package. This parameter can take the values:
-             * 0 the final bounds are the tightest bounds  known on the
-             constraints (at the risk of  being redundant with other
-             constraints,  which may cause degeneracy);
-             * 1 the best known bounds that are known to  be
-             non-degenerate. This option implies  that an additional
-             real workspace of size  2 * m must be allocated.
-             * 2 the loosest bounds that are known to  keep the problem
-             equivalent to the  original problem. This option also
-             implies that an additional real  workspace of size 2 * n
-             must be  allocated.  NOTES: 1) This parameter must be
-             identical for all calls to presolve (except
-             presolve_initialize). 2) If different from 0, its value
-             must be identical to that of control.final_x_bounds.
+
+             * **0**
+
+               the final bounds are the tightest bounds  known on the
+               constraints (at the risk of  being redundant with other
+               constraints,  which may cause degeneracy);
+
+             * **1**
+
+               the best known bounds that are known to  be
+               non-degenerate. This option implies  that an additional
+               real workspace of size  2 * m must be allocated.
+
+             * **2**
+
+               the loosest bounds that are known to  keep the problem
+               equivalent to the  original problem. This option also
+               implies that an additional real  workspace of size 2 * n
+               must be  allocated.  NOTES: 1) This parameter must be
+               identical for all calls to presolve (except
+               presolve_initialize). 2) If different from 0, its value
+               must be identical to that of control.final_x_bounds.
           final_y_bounds : int
              The type of final bounds on the multipliers returned by
              the package. This parameter can take the values:
-             * 0 the final bounds are the tightest bounds  known on the
-             multipliers (at the risk of  being redundant with other
-             constraints,  which may cause degeneracy);
-             * 1 the best known bounds that are known to  be
-             non-degenerate. This option implies  that an additional
-             real workspace of size  2 * m must be allocated.
-             * 2 the loosest bounds that are known to  keep the problem
-             equivalent to the  original problem. This option also
-             implies that an additional real  workspace of size 2 * n
-             must be  allocated.  NOTE: this parameter must be
-             identical for all calls to presolve (except
-             presolve_initialize).
+
+             * **0**
+               the final bounds are the tightest bounds  known on the
+               multipliers (at the risk of  being redundant with other
+               constraints,  which may cause degeneracy);
+
+             * **1**
+               the best known bounds that are known to  be
+               non-degenerate. This option implies  that an additional
+               real workspace of size  2 * m must be allocated.
+
+             * **2**
+
+               the loosest bounds that are known to  keep the problem
+               equivalent to the  original problem. This option also
+               implies that an additional real  workspace of size 2 * n
+               must be  allocated.  NOTE: this parameter must be
+               identical for all calls to presolve (except
+               presolve_initialize).
           check_primal_feasibility : int
              The level of feasibility check (on the values of x) at the
              start of the restoration phase. This parameter can take
              the values:
-             * 0 no check at all;
-             * 1 the primal constraints are recomputed at x  and a
-             message issued if the computed value  does not match the
-             input value, or if it is  out of bounds (if
-             control.print_level >= 2);
-             * 2 the same as for 1, but presolve is  terminated if an
-             incompatibilty is detected.
+
+             * **0**
+
+               no check at all;
+
+             * **1**
+
+               the primal constraints are recomputed at x  and a
+               message issued if the computed value  does not match the
+               input value, or if it is  out of bounds (if
+               control.print_level >= 2);
+
+             * **2**
+
+               the same as for 1, but presolve is  terminated if an
+               incompatibilty is detected.
           check_dual_feasibility : int
              The level of dual feasibility check (on the values of x, y
              and z) at the start of the restoration phase. This
              parameter can take the values:
-             * 0 no check at all;
-             * 1 the dual feasibility condition is recomputed  at ( x,
-             y, z ) and a message issued if the  computed value does
-             not match the input value  (if control.print_level >= 2);
-             * 2 the same as for 1, but presolve is  terminated if an
-             incompatibilty is detected.  The last two values imply the
-             allocation of an additional  real workspace vector of size
-             equal to the number of  variables in the reduced problem.
+
+             * **0**
+
+               no check at all;
+
+             * **1**
+
+               the dual feasibility condition is recomputed  at ( x,
+               y, z ) and a message issued if the  computed value does
+               not match the input value  (if control.print_level >= 2);
+
+             * **2**
+
+               the same as for 1, but presolve is  terminated if an
+               incompatibilty is detected.  The last two values imply the
+               allocation of an additional  real workspace vector of size
+               equal to the number of  variables in the reduced problem.
           pivot_tol : float
              The relative pivot tolerance above which pivoting is
              considered as numerically stable in transforming the
@@ -314,164 +421,331 @@ functions
             The presolve exit condition. It can take the following
             values (symbol in parentheses is the related Fortran
             code):
-            * (OK)  successful exit;
-            * 1 (MAX_NBR_TRANSF)  the maximum number of problem
-             transformation has been reached  NOTE:  this exit is not
-             really an error, since the problem  can nevertheless be
-             permuted and solved. It merely  signals that further
-             problem reduction could possibly  be obtained with a
-             larger value of the parameter  \p
-             control.max_nbr_transforms
-            * -1 (MEMORY_FULL)  memory allocation failed
-            * -2 (FILE_NOT_OPENED)  a file intended for saving problem
-             transformations  could not be opened;
-            * -3 (COULD_NOT_WRITE)  an IO error occurred while saving
-             transformations on  the relevant disk file;
-            * -4 (TOO_FEW_BITS_PER_BYTE)  an integer contains less
-             than NBRH + 1 bits.
-            * -21 (PRIMAL_INFEASIBLE)  the problem is primal
-             infeasible;
-            * -22 (DUAL_INFEASIBLE)  the problem is dual infeasible;
-            * -23 (WRONG_G_DIMENSION)  the dimension of the gradient
-             is incompatible with  the problem dimension;
-            * -24 (WRONG_HVAL_DIMENSION)  the dimension of the vector
-             containing the entries of  the Hessian is erroneously
-             specified;
-            * -25 (WRONG_HPTR_DIMENSION)  the dimension of the vector
-             containing the addresses  of the first entry of each
-             Hessian row is erroneously specified;
-            * -26 (WRONG_HCOL_DIMENSION)  the dimension of the vector
-             containing the column  indices of the nonzero Hessian
-             entries is erroneously specified;
-            * -27 (WRONG_HROW_DIMENSION)  the dimension of the vector
-             containing the row indices  of the nonzero Hessian entries
-             is erroneously specified;
-            * -28 (WRONG_AVAL_DIMENSION)  the dimension of the vector
-             containing the entries of  the Jacobian is erroneously
-             specified;
-            * -29 (WRONG_APTR_DIMENSION)  the dimension of the vector
-             containing the addresses  of the first entry of each
-             Jacobian row is erroneously specified;
-            * -30 (WRONG_ACOL_DIMENSION)  the dimension of the vector
-             containing the column  indices of the nonzero Jacobian
-             entries is erroneously specified;
-            * -31 (WRONG_AROW_DIMENSION)  the dimension of the vector
-             containing the row indices  of the nonzero Jacobian
-             entries is erroneously specified;
-            * -32 (WRONG_X_DIMENSION)  the dimension of the vector of
-             variables is  incompatible with the problem dimension;
-            * -33 (WRONG_XL_DIMENSION)  the dimension of the vector of
-             lower bounds on the  variables is incompatible with the
-             problem dimension;
-            * -34 (WRONG_XU_DIMENSION)  the dimension of the vector of
-             upper bounds on the  variables is incompatible with the
-             problem dimension;
-            * -35 (WRONG_Z_DIMENSION)  the dimension of the vector of
-             dual variables is  incompatible with the problem
-             dimension;
-            * -36 (WRONG_ZL_DIMENSION)  the dimension of the vector of
-             lower bounds on the dual  variables is incompatible with
-             the problem dimension;
-            * -37 (WRONG_ZU_DIMENSION)  the dimension of the vector of
-             upper bounds on the  dual variables is incompatible with
-             the problem dimension;.
-            * -38 (WRONG_C_DIMENSION)  the dimension of the vector of
-             constraints values is  incompatible with the problem
-             dimension;
-            * -39 (WRONG_CL_DIMENSION)  the dimension of the vector of
-             lower bounds on the  constraints is incompatible with the
-             problem dimension;
-            * -40 (WRONG_CU_DIMENSION)  the dimension of the vector of
-             upper bounds on the  constraints is incompatible with the
-             problem dimension;
-            * -41 (WRONG_Y_DIMENSION)  the dimension of the vector of
-             multipliers values is  incompatible with the problem
-             dimension;
-            * -42 (WRONG_YL_DIMENSION)  the dimension of the vector of
-             lower bounds on the  multipliers is incompatible with the
-             problem dimension;
-            * -43 (WRONG_YU_DIMENSION)  the dimension of the vector of
-             upper bounds on the  multipliers is incompatible with the
-             problem dimension;
-            * -44 (STRUCTURE_NOT_SET)  the problem structure has not
-             been set or has been  cleaned up before an attempt to
-             analyze;
-            * -45 (PROBLEM_NOT_ANALYZED)  the problem has not been
-             analyzed before an attempt to permute it;
-            * -46 (PROBLEM_NOT_PERMUTED)  the problem has not been
-             permuted or fully reduced before an attempt  to restore it
-            * -47 (H_MISSPECIFIED)  the column indices of a row of the
-             sparse Hessian are  not in increasing order, in that they
-             specify an entry  above the diagonal;
-            * -48 (CORRUPTED_SAVE_FILE)  one of the files containing
-             saved problem  transformations has been corrupted between
-             writing and reading;
-            * -49 (WRONG_XS_DIMENSION)  the dimension of the vector of
-             variables' status  is incompatible with the problem
-             dimension;
-            * -50 (WRONG_CS_DIMENSION)  the dimension of the vector of
-             constraints' status  is incompatible with the problem
-             dimension;
-            * -52 (WRONG_N)  the problem does not contain any (active)
-             variable;
-            * -53 (WRONG_M)  the problem contains a negative number of
-             constraints;
-            * -54 (SORT_TOO_LONG)  the vectors are too long for the
-             sorting routine;
-            * -55 (X_OUT_OF_BOUNDS)  the value of a variable that is
-             obtained by  substitution from a constraint is incoherent
-             with the  variable's bounds. This may be due to a
-             relatively  loose accuracy on the linear constraints. Try
-             to  increase control.c_accuracy.
-            * -56 (X_NOT_FEASIBLE)  the value of a constraint that is
-             obtained by  recomputing its value on input of \p
-             presolve_restore_solution  from the current x is
-             incompatible with its declared value  or its bounds. This
-             may caused the restored problem  to be infeasible.
-            * -57 (Z_NOT_FEASIBLE)  the value of a dual variable that
-             is obtained by  recomputing its value on input to \p
-             presolve_restore_solution  (assuming dual feasibility)
-             from the current values of  $(x, y, z)$ is incompatible
-             with its declared value.  This may caused the restored
-             problem to be infeasible  or suboptimal.
-            * -58 (Z_CANNOT_BE_ZEROED)  a dual variable whose value is
-             nonzero because the  corresponding primal is at an
-             artificial bound cannot  be zeroed while maintaining dual
-             feasibility  (on restoration). This can happen when
-             $( x, y, z)$ on  input of RESTORE are not (sufficiently)
-             optimal.
-            * -60 (UNRECOGNIZED_KEYWORD)  a keyword was not recognized
-             in the analysis of the  specification file
-            * -61 (UNRECOGNIZED_VALUE)  a value was not recognized in
-             the analysis of the specification file
-            * -63 (G_NOT_ALLOCATED)  the vector G has not been
-             allocated although it has general values
-            * -64 (C_NOT_ALLOCATED)  the vector C has not been
-             allocated although m > 0
-            * -65 (AVAL_NOT_ALLOCATED)  the vector A.val has not been
-             allocated although m > 0
-            * -66 (APTR_NOT_ALLOCATED)  the vector A.ptr has not been
-             allocated although  m > 0 and A is stored in row-wise
-             sparse format
-            * -67 (ACOL_NOT_ALLOCATED)  the vector A.col has not been
-             allocated although  m > 0 and A is stored in row-wise
-             sparse format  or sparse coordinate format
-            * -68 (AROW_NOT_ALLOCATED)  the vector A.row has not been
-             allocated although  m > 0 and A is stored in sparse
-             coordinate format
-            * -69 (HVAL_NOT_ALLOCATED)  the vector H.val has not been
-             allocated although  H.ne > 0
-            * -70 (HPTR_NOT_ALLOCATED)  the vector H.ptr has not been
-             allocated although  H.ne > 0 and H is stored in row-wise
-             sparse format
-            * -71 (HCOL_NOT_ALLOCATED) the vector H.col has not been
-             allocated although  H.ne > 0 and H is stored in row-wise
-             sparse format  or sparse coordinate format
-            * -72 (HROW_NOT_ALLOCATED)  the vector H.row has not been
-             allocated although  H.ne > 0 and A is stored in sparse
-             coordinate  format
-            * -73 (WRONG_ANE)  incompatible value of A_ne
-            * -74 (WRONG_HNE)  incompatible value of H_ne.
+
+            *  **0** (OK)  
+
+               successful exit;
+
+            *  **1** (MAX_NBR_TRANSF)  
+
+               the maximum number of problem
+               transformation has been reached  NOTE:  this exit is not
+               really an error, since the problem  can nevertheless be
+               permuted and solved. It merely  signals that further
+               problem reduction could possibly  be obtained with a
+               larger value of the parameter
+               control.max_nbr_transforms
+
+            * **-1** (MEMORY_FULL)  
+
+              memory allocation failed
+
+            * **-2** (FILE_NOT_OPENED)  
+
+              a file intended for saving problem
+              transformations  could not be opened;
+
+            * **-3** (COULD_NOT_WRITE)  
+
+              an IO error occurred while saving
+              transformations on  the relevant disk file;
+
+            * **-4** (TOO_FEW_BITS_PER_BYTE)  
+
+              an integer contains less than NBRH + 1 bits.
+
+            * **-21** (PRIMAL_INFEASIBLE)  
+
+              the problem is primal infeasible;
+
+            * **-22** (DUAL_INFEASIBLE)  
+
+              the problem is dual infeasible;
+
+            * **-23** (WRONG_G_DIMENSION)  
+
+              the dimension of the gradient
+              is incompatible with  the problem dimension;
+
+            * **-24** (WRONG_HVAL_DIMENSION)  
+
+              the dimension of the vector containing the entries of  
+              the Hessian is erroneously specified;
+
+            * **-25** (WRONG_HPTR_DIMENSION)  
+
+              the dimension of the vector
+              containing the addresses  of the first entry of each
+              Hessian row is erroneously specified;
+
+            * **-26** (WRONG_HCOL_DIMENSION)  
+
+              the dimension of the vector
+              containing the column  indices of the nonzero Hessian
+              entries is erroneously specified;
+
+            * **-27** (WRONG_HROW_DIMENSION) 
+
+              the dimension of the vector
+              containing the row indices  of the nonzero Hessian entries
+              is erroneously specified;
+
+            * **-28** (WRONG_AVAL_DIMENSION) 
+
+              the dimension of the vector
+              containing the entries of  the Jacobian is erroneously
+              specified;
+
+            * **-29** (WRONG_APTR_DIMENSION) 
+
+              the dimension of the vector
+              containing the addresses  of the first entry of each
+              Jacobian row is erroneously specified;
+
+            * **-30** (WRONG_ACOL_DIMENSION) 
+
+              the dimension of the vector
+              containing the column  indices of the nonzero Jacobian
+              entries is erroneously specified;
+
+            * **-31** (WRONG_AROW_DIMENSION) 
+
+              the dimension of the vector
+              containing the row indices  of the nonzero Jacobian
+              entries is erroneously specified;
+
+            * **-32** (WRONG_X_DIMENSION) 
+
+              the dimension of the vector of
+              variables is  incompatible with the problem dimension;
+
+            * **-33** (WRONG_XL_DIMENSION) 
+
+              the dimension of the vector of
+              lower bounds on the  variables is incompatible with the
+              problem dimension;
+
+            * **-34** (WRONG_XU_DIMENSION) 
+
+              the dimension of the vector of
+              upper bounds on the  variables is incompatible with the
+              problem dimension;
+
+            * **-35** (WRONG_Z_DIMENSION) 
+
+              the dimension of the vector of
+              dual variables is  incompatible with the problem
+              dimension;
+
+            * **-36** (WRONG_ZL_DIMENSION) 
+
+              the dimension of the vector of
+              lower bounds on the dual  variables is incompatible with
+              the problem dimension;
+
+            * **-37** (WRONG_ZU_DIMENSION) 
+
+              the dimension of the vector of
+              upper bounds on the  dual variables is incompatible with
+              the problem dimension;.
+
+            * **-38** (WRONG_C_DIMENSION) 
+
+              the dimension of the vector of
+              constraints values is  incompatible with the problem
+              dimension;
+
+            * **-39** (WRONG_CL_DIMENSION) 
+
+              the dimension of the vector of
+              lower bounds on the  constraints is incompatible with the
+              problem dimension;
+
+            * **-40** (WRONG_CU_DIMENSION) 
+
+              the dimension of the vector of
+              upper bounds on the  constraints is incompatible with the
+              problem dimension;
+
+            * **-41** (WRONG_Y_DIMENSION) 
+
+              the dimension of the vector of
+              multipliers values is  incompatible with the problem
+              dimension;
+
+            * **-42** (WRONG_YL_DIMENSION) 
+
+              the dimension of the vector of
+              lower bounds on the  multipliers is incompatible with the
+              problem dimension;
+
+            * **-43** (WRONG_YU_DIMENSION) 
+
+              the dimension of the vector of
+              upper bounds on the  multipliers is incompatible with the
+              problem dimension;
+
+            * **-44** (STRUCTURE_NOT_SET) 
+
+              the problem structure has not
+              been set or has been  cleaned up before an attempt to
+              analyze;
+
+            * **-45** (PROBLEM_NOT_ANALYZED) 
+
+              the problem has not been
+              analyzed before an attempt to permute it;
+
+            * **-46** (PROBLEM_NOT_PERMUTED) 
+
+              the problem has not been
+              permuted or fully reduced before an attempt  to restore it
+
+            * **-47** (H_MISSPECIFIED) 
+
+              the column indices of a row of the
+              sparse Hessian are  not in increasing order, in that they
+              specify an entry  above the diagonal;
+
+            * **-48** (CORRUPTED_SAVE_FILE) 
+
+              one of the files containing
+              saved problem  transformations has been corrupted between
+              writing and reading;
+
+            * **-49** (WRONG_XS_DIMENSION) 
+
+              the dimension of the vector of
+              variables' status  is incompatible with the problem
+              dimension;
+
+            * **-50** (WRONG_CS_DIMENSION) 
+
+              the dimension of the vector of
+              constraints' status  is incompatible with the problem
+              dimension;
+
+            * **-52** (WRONG_N) 
+
+              the problem does not contain any (active) variable;
+
+            * **-53** (WRONG_M) 
+
+              the problem contains a negative number of
+              constraints;
+
+            * **-54** (SORT_TOO_LONG) 
+
+              the vectors are too long for the
+              sorting routine;
+
+            * **-55** (X_OUT_OF_BOUNDS) 
+
+              the value of a variable that is
+              obtained by  substitution from a constraint is incoherent
+              with the  variable's bounds. This may be due to a
+              relatively  loose accuracy on the linear constraints. Try
+              to  increase control.c_accuracy.
+
+            * **-56** (X_NOT_FEASIBLE) 
+
+              the value of a constraint that is
+              obtained by  recomputing its value on input of \p
+              presolve_restore_solution  from the current x is
+              incompatible with its declared value  or its bounds. This
+              may caused the restored problem  to be infeasible.
+
+            * **-57** (Z_NOT_FEASIBLE) 
+
+              the value of a dual variable that
+              is obtained by  recomputing its value on input to \p
+              presolve_restore_solution  (assuming dual feasibility)
+              from the current values of  $(x, y, z)$ is incompatible
+              with its declared value.  This may caused the restored
+              problem to be infeasible  or suboptimal.
+
+            * **-58** (Z_CANNOT_BE_ZEROED) 
+
+              a dual variable whose value is
+              nonzero because the  corresponding primal is at an
+              artificial bound cannot  be zeroed while maintaining dual
+              feasibility  (on restoration). This can happen when
+              $( x, y, z)$ on  input of RESTORE are not (sufficiently)
+              optimal.
+
+            * **-60** (UNRECOGNIZED_KEYWORD) 
+
+              a keyword was not recognized
+              in the analysis of the  specification file
+
+            * **-61** (UNRECOGNIZED_VALUE) 
+
+              a value was not recognized in
+              the analysis of the specification file
+
+            * **-63** (G_NOT_ALLOCATED) 
+
+              the vector G has not been
+              allocated although it has general values
+
+            * **-64** (C_NOT_ALLOCATED) 
+
+              the vector C has not been
+              allocated although m > 0
+
+            * **-65** (AVAL_NOT_ALLOCATED) 
+
+              the vector A.val has not been
+              allocated although m > 0
+
+            * **-66** (APTR_NOT_ALLOCATED) 
+
+              the vector A.ptr has not been
+              allocated although  m > 0 and A is stored in row-wise
+              sparse format
+
+            * **-67** (ACOL_NOT_ALLOCATED) 
+
+              the vector A.col has not been
+              allocated although  m > 0 and A is stored in row-wise
+              sparse format  or sparse coordinate format
+
+            * **-68** (AROW_NOT_ALLOCATED) 
+
+              the vector A.row has not been
+              allocated although  m > 0 and A is stored in sparse
+              coordinate format
+
+            * **-69** (HVAL_NOT_ALLOCATED)  
+
+              the vector H.val has not been
+              allocated although  H.ne > 0
+
+            * **-70** (HPTR_NOT_ALLOCATED)  
+
+              the vector H.ptr has not been
+              allocated although  H.ne > 0 and H is stored in row-wise
+              sparse format
+
+            * **-71** (HCOL_NOT_ALLOCATED)
+
+              the vector H.col has not been
+              allocated although  H.ne > 0 and H is stored in row-wise
+              sparse format  or sparse coordinate format
+
+            * **-72** (HROW_NOT_ALLOCATED)  
+
+              the vector H.row has not been
+              allocated although  H.ne > 0 and A is stored in sparse
+              coordinate  format
+
+            * **-73** (WRONG_ANE)  
+
+              incompatible value of A_ne
+
+            * **-74** (WRONG_HNE)
+
+              incompatible value of H_ne.
           nbr_transforms : int
              The final number of problem transformations, as reported
              to the user at exit.

@@ -1,4 +1,4 @@
-.TH "galahad_cqp.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.TH "galahad_cqp.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -490,13 +490,13 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See CQP_solve for details 
+int \fIstatus\fP return status\&. See CQP_solve for details\&. 
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation\&. 
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error occurred\&. 
 .br
 .PP
 int \fIiter\fP the total number of iterations required 

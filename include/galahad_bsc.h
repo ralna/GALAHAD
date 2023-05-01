@@ -217,7 +217,22 @@ struct bsc_control_type {
 struct bsc_inform_type {
 
     /// \brief
-    /// return status. See BSC_form for details
+    /// the return status from the package. Possible values are:
+    /// \li 0. The call was succesful
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -3. The restrictions n > 0 or m > 0 or requirement that a type 
+    /// contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
+    /// has been violated.
+
     int status;
 
     /// \brief
@@ -225,7 +240,8 @@ struct bsc_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error
+    ///  occurred.
     char bad_alloc[81];
 
     /// \brief

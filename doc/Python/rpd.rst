@@ -68,33 +68,41 @@ functions
 
              * **0**
 
-               successful return.
+               The call was succesful.
 
              * **-1**
 
-               allocation failure.
+               An allocation error occurred. A message indicating the
+               offending array is written on unit control['error'], and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
 
              * **-2**
 
-               deallocation failure.
+               A deallocation error occurred.  A message indicating the
+               offending array is written on unit control['error'] and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
 
-             * **-3**
+             * **-22**
 
-               end of file reached prematurely.
+               An input/outpur error occurred.
 
-             * **-4**
+             * **-25**
 
-               other read error.
+               The end of the input file was reached prematurely.
 
              * **-5**
 
-               unrecognised type.
+               The problem type was not recognised.
 
           alloc_status : int
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           io_status : int
              status from last read attempt.
           line : int

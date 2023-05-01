@@ -101,15 +101,29 @@ struct hash_control_type {
 struct hash_inform_type {
 
     /// \brief
-    /// return status. 0 is a successful call
+    /// return status. Possible values are:
+    /// \li 0 The insertion or deletion was succesful.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -99. The current dictionary is full and should be rebuilt with
+    /// more space.
     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred.
     char bad_alloc[81];
 };
 

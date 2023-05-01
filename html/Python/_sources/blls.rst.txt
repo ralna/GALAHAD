@@ -412,7 +412,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           iter : int
              number of iterations required.
           cg_iter : int

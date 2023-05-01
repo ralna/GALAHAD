@@ -374,7 +374,7 @@ functions
              will be performed along the subspace step. Otherwise the
              search will stop at the firstconstraint encountered.
           space_critical : bool
-             if ``space_critical`` True, every effort will be made to
+             if ``space_critical`` is True, every effort will be made to
              use as little space as possible. This may result in longer
              computation time.
           deallocate_error_fatal : bool
@@ -718,7 +718,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           iter : int
              the total number of iterations required.
           cg_iter : int

@@ -122,7 +122,21 @@ struct roots_control_type {
 struct roots_inform_type {
 
     /// \brief
-    /// return status. See ROOTS_solve for details
+    /// return status. Possible values are:
+    /// \li 0 the call was successful.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -3. Either the specified degree of the polynomial in degree 
+    /// is less than 0, or the declared dimension of the array roots
+    /// is smaller than the specified degree.
     int status;
 
     /// \brief

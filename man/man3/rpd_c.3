@@ -1,4 +1,4 @@
-.TH "galahad_rpd.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
+.TH "galahad_rpd.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -224,17 +224,17 @@ int \fIstatus\fP return status\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0 successful return 
+0 The call was successful\&. 
 .IP "\(bu" 2
--1 allocation failure 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--2 deallocation failure 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--3 end of file reached prematurely 
+-22 An input/outpur error occurred\&. 
 .IP "\(bu" 2
--4 other read error 
+-25 The end of the input file was reached prematurely\&. 
 .IP "\(bu" 2
--5 unrecognised type 
+-29 The problem type was not recognised\&. 
 .PP
 
 .br

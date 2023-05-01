@@ -365,6 +365,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -475,29 +475,37 @@ computation will continue.</p>
 <dt>status<span class="classifier">int</span></dt><dd><p>return status. Possible values are</p>
 <ul>
 <li><p><strong>0</strong></p>
-<p>successful return.</p>
+<p>The call was succesful.</p>
 </li>
 <li><p><strong>-1</strong></p>
-<p>allocation failure.</p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-2</strong></p>
-<p>deallocation failure.</p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
-<li><p><strong>-3</strong></p>
-<p>end of file reached prematurely.</p>
+<li><p><strong>-22</strong></p>
+<p>An input/outpur error occurred.</p>
 </li>
-<li><p><strong>-4</strong></p>
-<p>other read error.</p>
+<li><p><strong>-25</strong></p>
+<p>The end of the input file was reached prematurely.</p>
 </li>
 <li><p><strong>-5</strong></p>
-<p>unrecognised type.</p>
+<p>The problem type was not recognised.</p>
 </li>
 </ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 <dt>io_status<span class="classifier">int</span></dt><dd><p>status from last read attempt.</p>
 </dd>

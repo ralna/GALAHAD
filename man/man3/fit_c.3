@@ -1,4 +1,4 @@
-.TH "galahad_fit.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD FIT" \" -*- nroff -*-
+.TH "galahad_fit.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD FIT" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -83,21 +83,21 @@ int \fIstatus\fP return status\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0 Normal termination with the required fit 
+0 Normal termination with the required fit\&. 
 .IP "\(bu" 2
--1 An allocation error occured; the status is given in the component \&.alloc_status 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--2 A deallocation error occured; the status is given in the component alloc_status 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
-- 3 the restriction n >= 1 has been violated 
+- 3 the restriction n >= 1 has been violated\&. 
 .PP
 
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation\&. 
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error occurred\&. 
 .br
 .PP
 .RE

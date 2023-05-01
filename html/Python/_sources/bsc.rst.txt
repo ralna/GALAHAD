@@ -36,10 +36,22 @@ functions
              \f$A\f$; -ve means unlimit.
           new_a : int
              how much has $A$ changed since it was last accessed:
-             * 0 = not changed,
-             * 1 = values changed,
-             * 2 = structure changed
-             * 3 = structure changed but values not required.
+
+             * **0** 
+
+               unchanged.
+
+             * **1** 
+
+               values changed.
+
+             * **2** 
+
+               structure changed.
+
+             * **3** 
+
+               structure changed but values not required.
           extra_space_s : int
              how much extra space is to be allocated in $S$ above that
              needed to hold the Schur complement.
@@ -47,7 +59,7 @@ functions
              should s.ptr also be set to indicate the first entry in
              each column of $S$.
           space_critical : bool
-             if ``space_critical`` True, every effort will be made to
+             if ``space_critical`` is True, every effort will be made to
              use as little space as possible. This may result in longer
              computation time.
           deallocate_error_fatal : bool
@@ -68,12 +80,38 @@ functions
       inform : dict
          dictionary containing output information:
           status : int
-             return status. See BSC_form for details.
+             the return status.  Possible values are:
+
+             * **0**
+
+               The call was succesful.
+
+             * **-1**
+
+               An allocation error occurred. A message indicating the
+               offending array is written on unit control['error'], and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
+
+             * **-2**
+
+               A deallocation error occurred.  A message indicating the
+               offending array is written on unit control['error'] and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
+
+             * **-3**
+
+               The restriction n > 0 or m > 0 or requirement that type contains
+               its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
+               has been violated.
           alloc_status : int
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           max_col_a : int
              the maximum number of entries in a column of $A$.
           exceeds_max_col : int
