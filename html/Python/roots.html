@@ -365,6 +365,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -441,7 +441,7 @@ will be regarde to be zero.</p>
 <dt>zero_f<span class="classifier">float</span></dt><dd><p>any value of the polynomial smaller in absolute value than
 zero_f will be regarded as giving a root.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> True, every effort will be made to
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
 use as little space as possible. This may result in longer
 computation time.</p>
 </dd>
@@ -465,15 +465,39 @@ will result in the prefix word.</p>
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">roots.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>inform<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing output information:</dt><dd><dl class="simple">
-<dt>status<span class="classifier">int</span></dt><dd><p>return status. See ROOTS_solve for details.</p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>the return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>Either the specified degree of the polynomial in <code class="docutils literal notranslate"><span class="pre">degree</span></code>
+is less than 0, or the declared dimension of the array <code class="docutils literal notranslate"><span class="pre">roots</span></code>
+is smaller than the specified degree.</p>
+</li>
+</ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 </dl>
 </dd>

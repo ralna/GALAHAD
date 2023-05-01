@@ -123,26 +123,37 @@ struct ir_control_type {
 struct ir_inform_type {
 
     /// \brief
-    /// reported return status:
-    /// \li 0 the solution has been found
-    /// \li -1 an array allocation has failed
-    /// \li -2 an array deallocation has failed
+    /// the return status. Possible values are:
+    /// \li 0 the solution has been found.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -11. Iterative refinement has not reduced the
+    /// relative residual by more than control.required_relative_residual.
     int status;
 
     /// \brief
-    /// STAT value after allocate failure
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// name of array which provoked an allocate failure
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred.
     char bad_alloc[81];
 
     /// \brief
-    /// infinity norm of the initial residual
+    /// the infinity norm of the initial residual
     real_wp_ norm_initial_residual;
 
     /// \brief
-    /// infinity norm of the final residual
+    /// the infinity norm of the final residual
     real_wp_ norm_final_residual;
 };
 

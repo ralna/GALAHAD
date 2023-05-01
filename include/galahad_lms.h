@@ -127,11 +127,11 @@ struct lms_control_type {
 
     /// \brief
     /// limited-memory formula required (others may be added in due course):
-    /// \li 1 BFGS (default)
-    /// \li 2 SR1
-    /// \li 3 The inverse of the BFGS formula
+    /// \li 1 BFGS (default).
+    /// \li 2 Symmetric Rank-One (SR1).
+    /// \li 3 The inverse of the BFGS formula.
     /// \li 4 The inverse of the shifted BFGS formula. This should be used
-    ///       instead of .method = 3 whenever a shift is planned
+    ///       instead of .method = 3 whenever a shift is planned.
     int method;
 
     /// \brief
@@ -198,7 +198,29 @@ struct lms_time_type {
 struct lms_inform_type {
 
     /// \brief
-    /// return status. See LMS_setup for details
+    /// the return status. Possible values are:
+    /// \li 0 the update was successful.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -3. One of the restrictions n > 0, delta > 0, lambda > 0 or
+    /// s^T y > 0 has been violated and the update has been skipped.
+    /// \li -10. The matrix cannot be built from the current vectors 
+    /// {s_k} and {y_k} and values delta_k and lambda_k 
+    /// and the update has been skipped.
+    /// \li -31. A call to the function lhs_apply has been made without 
+    /// a prior call to lhs_form_shift or lhs_form with lambda 
+    /// specified when control.method = 4, or lhs_form_shift 
+    /// has been called when control.method = 3, or 
+    /// lhs_change_method has been called after
+    /// control.any_method = false was specified when calling lhs_setup.
     int status;
 
     /// \brief
@@ -207,15 +229,16 @@ struct lms_inform_type {
 
     /// \brief
     /// the number of pairs (s,y) currently used to represent the limited-memory
-    /// matrix
+    /// matrix.
     int length;
 
     /// \brief
-    /// have (s,y) pairs been skipped when forming the limited-memory matrix
+    /// have (s,y) pairs been skipped when forming the limited-memory matrix?
     bool updates_skipped;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred.
     char bad_alloc[81];
 
     /// \brief

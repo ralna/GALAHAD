@@ -389,7 +389,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           factorization_status : int
              status return from factorization.
           iter : int

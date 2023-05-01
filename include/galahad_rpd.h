@@ -262,12 +262,20 @@ struct rpd_control_type {
 struct rpd_inform_type {
     /// \brief
     ///  return status. Possible values are:
-    /// \li  0 successful return
-    /// \li -1 allocation failure
-    /// \li -2 deallocation failure
-    /// \li -3 end of file reached prematurely
-    /// \li -4 other read error
-    /// \li -5 unrecognised type
+    /// \li  0 The call was successful.
+    /// \li -1. An allocation error occurred. A message indicating the
+    /// offending array is written on unit control.error, and the
+    /// returned allocation status and a string containing the name
+    /// of the offending array are held in inform.alloc_status and
+    /// inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    /// offending array is written on unit control.error and the
+    /// returned allocation status and a string containing the
+    /// name of the offending array are held in
+    /// inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -22 An input/outpur error occurred.
+    /// \li -25 The end of the input file was reached prematurely.
+    /// \li -29 The problem type was not recognised.
     int status;
 
     /// \brief

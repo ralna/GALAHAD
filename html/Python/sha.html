@@ -42,7 +42,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'sha';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="CONVERT" href="convert.html" />
+    <link rel="next" title="PRESOLVE" href="presolve.html" />
     <link rel="prev" title="SEC" href="sec.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -365,6 +365,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -424,38 +424,73 @@ method employed and other details.</p>
 <span class="sig-prename descclassname"><span class="pre">sha.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sha.sha.initialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Set default option values and initialize private data.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>options<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing default control options:</dt><dd><dl class="simple">
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
 <dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
 </dd>
 <dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
 </dd>
-<dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required. &lt;= 0 gives no output, = 1
-gives a one-line summary for every iteration, = 2 gives a
-summary of the inner iteration for each iteration, &gt;= 3
-gives increasingly verbose (debugging) output.</p>
+<dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required. Possible values are:</p>
+<ul>
+<li><p><strong>&lt;=0</strong></p>
+<p>no output.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>a one-line summary for every iteration.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>a summary of the inner iteration for each iteration.</p>
+</li>
+<li><p><strong>&gt;=3</strong></p>
+<p>increasingly verbose (debugging) output.</p>
+</li>
+</ul>
 </dd>
-<dt>approximation_algorithm<span class="classifier">int</span></dt><dd><p>which approximation algorithm should be used?
-* 0 : unsymmetric (alg 2.1 in paper)
-* 1 : symmetric (alg 2.2 in paper)
-* 2 : composite (alg 2.3 in paper)
-* 3 : composite 2 (alg 2.2/3 in paper).</p>
+<dt>approximation_algorithm<span class="classifier">int</span></dt><dd><p>which approximation algorithm should be used? Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>unsymmetric (alg 2.1 in paper).</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>symmetric (alg 2.2 in paper).</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>composite (alg 2.3 in paper).</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>composite 2 (alg 2.2/3 in paper).</p>
+</li>
+</ul>
 </dd>
 <dt>dense_linear_solver<span class="classifier">int</span></dt><dd><p>which dense linear equation solver should be used?
-* 1 : Gaussian elimination
-* 2 : QR factorization
-* 3 : singular-value decomposition
-* 4 : singular-value decomposition with divide-and-conquer.</p>
+Possible values are:</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>Gaussian elimination.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>QR factorization.</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>singular-value decomposition.</p>
+</li>
+<li><p><strong>4</strong></p>
+<p>singular-value decomposition with divide-and-conquer.</p>
+</li>
+</ul>
 </dd>
 <dt>max_sparse_degree<span class="classifier">int</span></dt><dd><p>the maximum sparse degree if the combined version is used.</p>
 </dd>
 <dt>extra_differences<span class="classifier">int</span></dt><dd><p>if available use an addition extra_differences differences.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
-bigger than needed.</p>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to use
+as little space as possible. This may result in longer
+computation time.</p>
 </dd>
-<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
+deallocation error will terminate execution. Otherwise,
+computation will continue.</p>
 </dd>
 <dt>prefix<span class="classifier">str</span></dt><dd><p>all output lines will be prefixed by the string contained
 in quotes within <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, e.g. ‘word’ (note the qutoes)
@@ -473,21 +508,55 @@ will result in the prefix word.</p>
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">sha.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>inform<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing output information:</dt><dd><dl class="simple">
-<dt>status<span class="classifier">int</span></dt><dd><p>return status.</p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>the return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restriction n &gt; 0 or nz &gt;= 0 has been violated.</p>
+</li>
+<li><p><strong>-11</strong></p>
+<p>The solution of a set of linear equations using factors
+from the factorization package options[‘dense_linear_solver’]
+failed when forming row <code class="docutils literal notranslate"><span class="pre">bad_row</span></code>.</p>
+</li>
+<li><p><strong>-31</strong></p>
+<p>The call to <code class="docutils literal notranslate"><span class="pre">sha_estimate</span></code> was not preceded by a call to
+<code class="docutils literal notranslate"><span class="pre">sha_analyse</span></code>.</p>
+</li>
+</ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 <dt>max_degree<span class="classifier">int</span></dt><dd><p>the maximum degree in the adgacency graph.</p>
 </dd>
 <dt>differences_needed<span class="classifier">int</span></dt><dd><p>the number of differences that will be needed.</p>
 </dd>
 <dt>max_reduced_degree<span class="classifier">int</span></dt><dd><p>the maximum reduced degree in the adgacency graph.</p>
+</dd>
+<dt>bad_row<span class="classifier">int</span></dt><dd><p>a failure occured when forming the bad_row-th row
+(0 = no failure).</p>
 </dd>
 </dl>
 </dd>
@@ -521,10 +590,10 @@ error ocurred.</p>
           <p class="prev-next-title">SEC</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="convert.html" title="next page">
+  <a class='right-next' id="next-link" href="presolve.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">CONVERT</p>
+      <p class="prev-next-title">PRESOLVE</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

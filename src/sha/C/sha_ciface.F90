@@ -54,6 +54,7 @@
       INTEGER ( KIND = ipc_ ) :: max_degree
       INTEGER ( KIND = ipc_ ) :: differences_needed
       INTEGER ( KIND = ipc_ ) :: max_reduced_degree
+      INTEGER ( KIND = ipc_ ) :: bad_row
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE sha_inform_type
 
@@ -143,6 +144,7 @@
     finform%max_degree = cinform%max_degree
     finform%differences_needed = cinform%differences_needed
     finform%max_reduced_degree = cinform%max_reduced_degree
+    finform%bad_row = cinform%bad_row
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -166,6 +168,7 @@
     cinform%max_degree = finform%max_degree
     cinform%differences_needed = finform%differences_needed
     cinform%max_reduced_degree = finform%max_reduced_degree
+    cinform%bad_row = finform%bad_row
 
     ! Strings
     l = LEN( finform%bad_alloc )

@@ -78,10 +78,13 @@ functions
              should the rows of A be scaled to have unit infinity norm
              or should no scaling be applied?
           space_critical : bool
-             if space is critical, ensure allocated arrays are no
-             bigger than needed.
+             if ``space_critical`` is True, every effort will be made to
+             use as little space as possible. This may result in longer
+             computation time.
           deallocate_error_fatal : bool
-             exit if any deallocation fails.
+             if ``deallocate_error_fatal`` is True, any array/pointer
+             deallocation error will terminate execution. Otherwise,
+             computation will continue.
           symmetric_linear_solver : str
              symmetric (indefinite) linear equation solver. 
              For current choices, see ``sls.initialize``.
@@ -208,7 +211,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           factorization_status : int
              the return status from the factorization.
           factorization_integer : long

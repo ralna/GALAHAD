@@ -260,7 +260,7 @@ Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
-\ittf{position} is a scalar \intentout\ argument of type default \integer\ that
+\itt{position} is a scalar \intentout\ argument of type default \integer\ that
 gives the index of the table that data for the word occupies after insertion.
 If {\tt position=0} on exit, there is no more room in the dictionary, and
 it should be rebuilt (see \S\ref{subrebuild}) with more space before trying 
@@ -310,7 +310,7 @@ Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
-\ittf{position} is a scalar \intentout\ argument of type default \integer\ that
+\itt{position} is a scalar \intentout\ argument of type default \integer\ that
 gives the index of the table that data for the word occupies. If the word is
 not found, {\tt position} will be 0, and if the word has been removed, it will
 be negative (and {\tt - position} was the index that it once occupied).
@@ -494,7 +494,7 @@ are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
 \itt{-99.} The current dictionary is full and should be rebuilt with more space
- (see \S\ref{subrebuild}.
+ (see \S\ref{subrebuild}).
 
 \end{description}
 

@@ -246,7 +246,7 @@ functions
             allocation/deallocation
           bad_alloc : str
             the name of the array for which an internal array
-            allocation/deallocation error ocurred.
+            allocation/deallocation error occurred.
           iter : int
             the total number of iterations performed
           f_eval : int

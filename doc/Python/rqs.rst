@@ -271,11 +271,14 @@ functions
           initialize_approx_eigenvector : bool
              should a suitable initial eigenvector should be chosen or
              should a previous eigenvector may be used?.
-          space_critical : bool
-             if space is critical, ensure allocated arrays are no
-             bigger than needed.
+           space_critical : bool
+             if ``space_critical`` is True, every effort will be made to
+             use as little space as possible. This may result in longer
+             computation time.
           deallocate_error_fatal : bool
-             exit if any deallocation fails.
+             if ``deallocate_error_fatal`` is True, any array/pointer
+             deallocation error will terminate execution. Otherwise,
+             computation will continue.
           problem_file : str
              name of file into which to write problem data.
           symmetric_linear_solver : str
@@ -528,7 +531,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           factorizations : int
              the number of factorizations performed.
           max_entries_factors : long

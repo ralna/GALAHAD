@@ -408,7 +408,7 @@ functions
              do loops will be used rather than f90-style array syntax
              for vector operations (OBSOLETE).
           space_critical : bool
-             if ``space_critical`` True, every effort will be made to
+             if ``space_critical`` is True, every effort will be made to
              use as little space as possible. This may result in longer
              computation time.
           deallocate_error_fatal : bool
@@ -850,7 +850,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           major_iter : int
              the total number of major iterations required.
           iter : int
