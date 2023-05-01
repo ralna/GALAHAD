@@ -47,10 +47,13 @@ functions
           record_residuals : bool
              record the initial and final residual.
           space_critical : bool
-             if space is critical, ensure allocated arrays are no
-             bigger than needed.
+             if ``space_critical`` is True, every effort will be made to
+             use as little space as possible. This may result in longer
+             computation time.
           deallocate_error_fatal : bool
-             exit if any deallocation fails.
+             if ``deallocate_error_fatal`` is True, any array/pointer
+             deallocation error will terminate execution. Otherwise,
+             computation will continue.
           prefix : str
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
@@ -65,19 +68,41 @@ functions
       inform : dict
          dictionary containing output information:
           status : int
-             reported return status:
-             * 0 the solution has been found.
-             * -1 an array allocation has failed.
-             * -2 an array deallocation has failed.
+             the return status.  Possible values are:
+
+             * **0**
+
+               The insertion or deletion was succesful.
+
+             * **-1**
+
+               An allocation error occurred. A message indicating the
+               offending array is written on unit control['error'], and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
+
+             * **-2**
+
+               A deallocation error occurred.  A message indicating the
+               offending array is written on unit control['error'] and
+               the returned allocation status and a string containing
+               the name of the offending array are held in
+               inform['alloc_status'] and inform['bad_alloc'] respectively.
+
+             * **-11**
+
+               Iterative refinement has not reduced the relative residual by 
+               more than control['required_relative_residual'].
           alloc_status : int
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           norm_initial_residual : float
-             infinity norm of the initial residual.
+             the infinity norm of the initial residual.
           norm_final_residual : float
-             infinity norm of the final residual.
+             the infinity norm of the final residual.
 
    .. function:: ir.finalize()
 

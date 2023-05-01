@@ -507,7 +507,7 @@
 !   COEF is a REAL array of length n, which will be set on output to the
 !    coefficients of the polynomial
 !      x(mu) = sum_{i=1}^n COEF(i)*sqrt(mu)^(i-1)
-!    with monomial basis that interpolates the data provided in THETA and F.
+!    with monomial basis that interpolates the data provided in POINTS and F.
 
 !  data is a structure of type FIT_data_type which holds private internal data
 !

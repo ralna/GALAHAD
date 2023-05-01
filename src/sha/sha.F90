@@ -143,6 +143,10 @@
 
        INTEGER ( KIND = ip_ ) :: max_reduced_degree = - 1
 
+!  a failure occured when forming the bad_row-th row or column (0 = no failure)
+
+       INTEGER ( KIND = ip_ ) :: bad_row = 0
+
 !  the name of the array for which an allocation/deallocation error ocurred
 
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
@@ -456,7 +460,7 @@
 !    -1 the allocation of workspace array inform%bad_alloc failed with status
 !       inform%alloc_status
 !    -3 invalid values input for n or nz
-!   -23 if there was an error in the inform%bad_row-th row or column
+!   -11 if there was an error when forming the inform%bad_row-th row or column
 
 !  ***********************************************************************
 
@@ -487,7 +491,7 @@
 
 !  test for errors in the input data
 
-      IF ( n <= 0 ) THEN
+      IF ( n <= 0 .OR. nz < 0 ) THEN
         inform%status = GALAHAD_error_restrictions ; GO TO 900
       END IF
 
@@ -1068,7 +1072,7 @@
 !   component inform%status -
 !     0 if no error was detected
 !    -3 invalid values input for n or nz
-!   -23 if there was an error in the inform%bad_row-th row or column
+!   -11 if there was an error when forming the inform%bad_row-th row or column
 !   -31 if the call to SHA_estimate was not preceded by a call to SHA_analyse
 
 !---------------------------------
@@ -1426,7 +1430,8 @@
 !  check for errors
 
           ELSE IF ( info /= 0 ) THEN
-            inform%status = GALAHAD_error_factorization ; GO TO 900
+            inform%status = GALAHAD_error_factorization
+            inform%bad_row = i ; GO TO 900
           END IF
 
 !  finally, set the unknown B_{ij}
@@ -1550,7 +1555,8 @@
 !  check for errors
 
           ELSE IF ( info /= 0 ) THEN
-            inform%status = GALAHAD_error_factorization ; GO TO 900
+            inform%status = GALAHAD_error_factorization
+            inform%bad_row = i ; GO TO 900
           END IF
 
 !  finally, set the unknown B_{ij}

@@ -1,4 +1,4 @@
-.TH "galahad_sha.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD SHA" \" -*- nroff -*-
+.TH "galahad_sha.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD SHA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -118,19 +118,22 @@ inform derived type as a C struct
 int \fIstatus\fP return status\&. See SHA_solve for details 
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation\&. 
 .br
 .PP
-int \fImax_degree\fP the maximum degree in the adgacency graph 
+int \fImax_degree\fP the maximum degree in the adgacency graph\&. 
 .br
 .PP
-int \fIdifferences_needed\fP the number of differences that will be needed 
+int \fIdifferences_needed\fP the number of differences that will be needed\&. 
 .br
 .PP
-int \fImax_reduced_degree\fP the maximum reduced degree in the adgacency graph 
+int \fImax_reduced_degree\fP the maximum reduced degree in the adgacency graph\&. 
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+int \fIbad_row\fP a failure occured when forming the bad_row-th row (0 = no failure)\&. 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error occurred\&. 
 .br
 .PP
 .RE

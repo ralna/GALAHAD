@@ -368,6 +368,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -378,7 +379,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -452,10 +452,13 @@ checking if required_residual_relative &lt; 0.</p>
 </dd>
 <dt>record_residuals<span class="classifier">bool</span></dt><dd><p>record the initial and final residual.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
-bigger than needed.</p>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
+use as little space as possible. This may result in longer
+computation time.</p>
 </dd>
-<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
+deallocation error will terminate execution. Otherwise,
+computation will continue.</p>
 </dd>
 <dt>prefix<span class="classifier">str</span></dt><dd><p>all output lines will be prefixed by the string contained
 in quotes within <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, e.g. ‘word’ (note the qutoes)
@@ -473,22 +476,42 @@ will result in the prefix word.</p>
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">ir.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>inform<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing output information:</dt><dd><dl class="simple">
-<dt>status<span class="classifier">int</span></dt><dd><p>reported return status:
-* 0 the solution has been found.
-* -1 an array allocation has failed.
-* -2 an array deallocation has failed.</p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>the return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The insertion or deletion was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-11</strong></p>
+<p>Iterative refinement has not reduced the relative residual by
+more than control[‘required_relative_residual’].</p>
+</li>
+</ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
-<dt>norm_initial_residual<span class="classifier">float</span></dt><dd><p>infinity norm of the initial residual.</p>
+<dt>norm_initial_residual<span class="classifier">float</span></dt><dd><p>the infinity norm of the initial residual.</p>
 </dd>
-<dt>norm_final_residual<span class="classifier">float</span></dt><dd><p>infinity norm of the final residual.</p>
+<dt>norm_final_residual<span class="classifier">float</span></dt><dd><p>the infinity norm of the final residual.</p>
 </dd>
 </dl>
 </dd>

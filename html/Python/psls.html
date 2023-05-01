@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="aux.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -738,10 +752,13 @@ submatrix is to be calculated.</p>
 <dt>get_norm_residual<span class="classifier">bool</span></dt><dd><p>set get_norm_residual True if the residual when applying
 the preconditioner are to be calculated.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
-bigger than needed.</p>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
+use as little space as possible. This may result in longer
+computation time.</p>
 </dd>
-<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>exit if any deallocation fails.</p>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
+deallocation error will terminate execution. Otherwise,
+computation will continue.</p>
 </dd>
 <dt>definite_linear_solver<span class="classifier">str</span></dt><dd><p>the definite linear equation solver used when
 <code class="docutils literal notranslate"><span class="pre">preconditioner</span></code> = 3,4. Possible choices are currently:
@@ -956,7 +973,7 @@ See mi28 info%stat for more details.</p>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 <dt>analyse_status<span class="classifier">int</span></dt><dd><p>status return from factorization.</p>
 </dd>

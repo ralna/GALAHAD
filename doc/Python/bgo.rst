@@ -335,7 +335,7 @@ functions
             the status of the last attempted allocation/deallocation.
           bad_alloc : str
             the name of the array for which an allocation/deallocation
-            error ocurred.
+            error occurred.
           f_eval : int
             the total number of evaluations of the objective function.
           g_eval : int

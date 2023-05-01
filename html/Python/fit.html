@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="HASH" href="hash.html" />
-    <link rel="prev" title="BSC" href="bsc.html" />
+    <link rel="prev" title="CONVERT" href="convert.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -365,6 +365,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -410,7 +410,7 @@
               
   <section id="module-galahad.fit">
 <span id="fit"></span><h1>FIT<a class="headerlink" href="#module-galahad.fit" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">fit</span></code> package <a href="#id1"><span class="problematic" id="id2">**</span></a>fits polynomials to function and derivative data$$.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fit</span></code> package <strong>fits polynomials to function and derivative data</strong>.</p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
 <p>See Section 4 of $GALAHAD/doc/fit.pdf for a brief description of the
@@ -432,11 +432,11 @@ method employed and other details.</p>
 </dd>
 <dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required is specified by print_level.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space_critical is True, every effort will be made to
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
 use as little space as possible. This may result in longer
 computation times.</p>
 </dd>
-<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if deallocate_error_fatal is True, any array/pointer
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
 deallocation error will terminate execution. Otherwise,
 computation will continue.</p>
 </dd>
@@ -456,21 +456,37 @@ will result in the prefix word.</p>
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">fit.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>inform<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing output information:</dt><dd><dl class="simple">
-<dt>status<span class="classifier">int</span></dt><dd><p>return status. Possible values are:
-* 0 Normal termination with the required fit
-* -1 An allocation error occured; the status is given in
-the component  <code class="docutils literal notranslate"><span class="pre">alloc_status</span></code>
-* -2 A deallocation error occured; the status is given in
-the  component alloc_status
-* - 3 the restriction n &gt;= 1 has been violated.</p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>the return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The fit was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restriction n &gt; 0 has been violated.</p>
+</li>
+</ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 </dl>
 </dd>
@@ -497,11 +513,11 @@ error ocurred.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="bsc.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="convert.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">BSC</p>
+          <p class="prev-next-title">CONVERT</p>
       </div>
   </a>
   <a class='right-next' id="next-link" href="hash.html" title="next page">

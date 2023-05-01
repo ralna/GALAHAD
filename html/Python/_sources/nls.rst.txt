@@ -451,7 +451,7 @@ functions
              print values of the objective/gradient rather than ||c||
              and its gradient.
           space_critical : bool
-             if ``space_critical`` True, every effort will be made to
+             if ``space_critical`` is True, every effort will be made to
              use as little space as possible. This may result in longer
              computation time.
           deallocate_error_fatal : bool
@@ -722,7 +722,7 @@ functions
                print values of the objective/gradient rather than ||c||
                and its gradient.
             space_critical : bool
-               if ``space_critical`` True, every effort will be made to
+               if ``space_critical`` is True, every effort will be made to
                use as little space as possible. This may result in longer
                computation time.
             deallocate_error_fatal : bool
@@ -991,10 +991,10 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           bad_eval : str
              the name of the user-supplied evaluation routine for which
-             an error ocurred.
+             an error occurred.
           iter : int
              the total number of iterations performed.
           cg_iter : int
@@ -1138,10 +1138,10 @@ functions
                the status of the last attempted allocation/deallocation.
             bad_alloc : str
                the name of the array for which an allocation/deallocation
-               error ocurred.
+               error occurred.
             bad_eval : str
                the name of the user-supplied evaluation routine for which
-               an error ocurred.
+               an error occurred.
             iter : int
                the total number of iterations performed.
             cg_iter : int

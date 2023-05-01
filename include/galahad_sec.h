@@ -22,6 +22,8 @@
   \subsection sec_purpose Purpose
 
   Build and update dense BFGS and SR1 secant approximations to a Hessian.
+  so that the approximation B satisfies the secant condition B s = y
+  for given vectors s and y.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
@@ -81,7 +83,8 @@ struct sec_control_type {
     real_wp_ h_initial;
 
     /// \brief
-    /// an update is skipped if the resulting matrix would have grown too much
+    /// an update is skipped if the resulting matrix would have grown too much;
+    ///  specifically it is skipped when y^T s / y^T y <= update_skip_tol.
     real_wp_ update_skip_tol;
 
     /// \brief

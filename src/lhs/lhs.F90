@@ -333,7 +333,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER ( KIND = ip_ ) :: best, count, i, j, k, point_index, seed, duplication
+      INTEGER ( KIND = ip_ ) :: best, count, i, j, k, point_index
+      INTEGER ( KIND = ip_ ) :: seed, duplication
       REAL ( KIND = rp_ ) :: dist, min_all, min_can, opt
       CHARACTER ( LEN = 80 ) :: array_name
 

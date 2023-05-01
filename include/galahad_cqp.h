@@ -740,15 +740,16 @@ struct cqp_time_type {
 struct cqp_inform_type {
 
     /// \brief
-    /// return status. See CQP_solve for details
+    /// return status. See CQP_solve for details.
     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred.
     char bad_alloc[81];
 
     /// \brief

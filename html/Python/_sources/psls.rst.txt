@@ -358,10 +358,13 @@ functions
              set get_norm_residual True if the residual when applying
              the preconditioner are to be calculated.
           space_critical : bool
-             if space is critical, ensure allocated arrays are no
-             bigger than needed.
+             if ``space_critical`` is True, every effort will be made to
+             use as little space as possible. This may result in longer
+             computation time.
           deallocate_error_fatal : bool
-             exit if any deallocation fails.
+             if ``deallocate_error_fatal`` is True, any array/pointer
+             deallocation error will terminate execution. Otherwise,
+             computation will continue.
           definite_linear_solver : str
              the definite linear equation solver used when
              ``preconditioner`` = 3,4. Possible choices are currently:
@@ -562,7 +565,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           analyse_status : int
              status return from factorization.
           factorize_status : int

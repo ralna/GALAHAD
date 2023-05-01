@@ -370,10 +370,13 @@ functions
              if an implicit or null-space preconditioner is used,
              assess and correct for ill conditioned basis matrices.
           space_critical : bool
-             if space is critical, ensure allocated arrays are no
-             bigger than needed.
+             if ``space_critical`` is True, every effort will be made to
+             use as little space as possible. This may result in longer
+             computation time.
           deallocate_error_fatal : bool
-             exit if any deallocation fails.
+             if ``deallocate_error_fatal`` is True, any array/pointer
+             deallocation error will terminate execution. Otherwise,
+             computation will continue.
           symmetric_linear_solver : str
              indefinite linear equation solver used.
           definite_linear_solver : str
@@ -619,7 +622,7 @@ functions
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
              the name of the array for which an allocation/deallocation
-             error ocurred.
+             error occurred.
           sort_status : int
              the return status from the sorting routines.
           factorization_integer : long

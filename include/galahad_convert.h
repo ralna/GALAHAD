@@ -124,8 +124,8 @@ struct convert_time_type {
 struct convert_inform_type {
 
     /// \brief
-    /// return status. Possible values are:
-    /// \li 0 successful conversion
+    /// the return status. Possible values are:
+    /// \li 0 a successful conversion.
     /// \li -1. An allocation error occurred. A message indicating the
     ///      offending array is written on unit control.error, and the
     ///      returned allocation status and a string containing the name
@@ -148,19 +148,20 @@ struct convert_inform_type {
     int status;
 
     /// \brief
-    /// the status of the last attempted allocation/deallocation
+    /// the status of the last attempted allocation/deallocation.
     int alloc_status;
 
     /// \brief
-    /// the number of duplicates found (-ve = not checked)
+    /// the number of duplicates found (-ve = not checked).
     int duplicates;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// ocurred.
     char bad_alloc[81];
 
     /// \brief
-    /// timings (see above)
+    /// timings (see above).
     struct convert_time_type time;
 };
 

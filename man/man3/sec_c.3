@@ -1,4 +1,4 @@
-.TH "galahad_sec.h" 3 "Sun Apr 16 2023" "C interfaces to GALAHAD SEC" \" -*- nroff -*-
+.TH "galahad_sec.h" 3 "Mon May 1 2023" "C interfaces to GALAHAD SEC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -31,7 +31,7 @@ galahad_sec.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Build and update dense BFGS and SR1 secant approximations to a Hessian\&.
+Build and update dense BFGS and SR1 secant approximations to a Hessian\&. so that the approximation B satisfies the secant condition B s = y for given vectors s and y\&.
 .PP
 Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
 .SS "Authors"
@@ -65,7 +65,7 @@ int \fIprint_level\fP the level of output required\&. <= 0 gives no output, >= 1
 real_wp_ \fIh_initial\fP the initial Hessian approximation will be h_initial * I 
 .br
 .PP
-real_wp_ \fIupdate_skip_tol\fP an update is skipped if the resulting matrix would have grown too much 
+real_wp_ \fIupdate_skip_tol\fP an update is skipped if the resulting matrix would have grown too much; specifically it is skipped when y^T s / y^T y <= update_skip_tol\&. 
 .br
 .PP
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 

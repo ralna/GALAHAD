@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'bsc';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="FIT" href="fit.html" />
+    <link rel="next" title="CONVERT" href="convert.html" />
     <link rel="prev" title="Auxiliary Procedures" href="aux.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -368,6 +368,7 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">BSC - build and use the Schur complement from constituent matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a></li>
@@ -378,7 +379,6 @@
 <li class="toctree-l1"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a></li>
 <li class="toctree-l1"><a class="reference internal" href="presolve.html">PRESOLVE -transform LP/QP data so that the resulting problem is easier to solv</a></li>
 </ul>
 
@@ -429,9 +429,9 @@ method employed and other details.</p>
 <span class="sig-prename descclassname"><span class="pre">bsc.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.bsc.bsc.initialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Set default option values and initialize private data.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>options<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing default control options:</dt><dd><dl class="simple">
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
 <dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
 </dd>
 <dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
@@ -441,11 +441,21 @@ method employed and other details.</p>
 <dt>max_col<span class="classifier">int</span></dt><dd><p>maximum permitted number of nonzeros in a column of
 \f<span class="math notranslate nohighlight">\(A\f\)</span>; -ve means unlimit.</p>
 </dd>
-<dt>new_a<span class="classifier">int</span></dt><dd><p>how much has <span class="math notranslate nohighlight">\(A\)</span> changed since it was last accessed:
-* 0 = not changed,
-* 1 = values changed,
-* 2 = structure changed
-* 3 = structure changed but values not required.</p>
+<dt>new_a<span class="classifier">int</span></dt><dd><p>how much has <span class="math notranslate nohighlight">\(A\)</span> changed since it was last accessed:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>unchanged.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>values changed.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>structure changed.</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>structure changed but values not required.</p>
+</li>
+</ul>
 </dd>
 <dt>extra_space_s<span class="classifier">int</span></dt><dd><p>how much extra space is to be allocated in <span class="math notranslate nohighlight">\(S\)</span> above that
 needed to hold the Schur complement.</p>
@@ -453,7 +463,7 @@ needed to hold the Schur complement.</p>
 <dt>s_also_by_column<span class="classifier">bool</span></dt><dd><p>should s.ptr also be set to indicate the first entry in
 each column of <span class="math notranslate nohighlight">\(S\)</span>.</p>
 </dd>
-<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> True, every effort will be made to
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
 use as little space as possible. This may result in longer
 computation time.</p>
 </dd>
@@ -477,15 +487,39 @@ will result in the prefix word.</p>
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">bsc.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
-<dt>inform<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing output information:</dt><dd><dl class="simple">
-<dt>status<span class="classifier">int</span></dt><dd><p>return status. See BSC_form for details.</p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>the return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was succesful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit control[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit control[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restriction n &gt; 0 or m &gt; 0 or requirement that type contains
+its relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows’
+has been violated.</p>
+</li>
+</ul>
 </dd>
 <dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
 </dd>
 <dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
-error ocurred.</p>
+error occurred.</p>
 </dd>
 <dt>max_col_a<span class="classifier">int</span></dt><dd><p>the maximum number of entries in a column of <span class="math notranslate nohighlight">\(A\)</span>.</p>
 </dd>
@@ -528,10 +562,10 @@ control.max_col entries.</p>
           <p class="prev-next-title">Auxiliary Procedures</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="fit.html" title="next page">
+  <a class='right-next' id="next-link" href="convert.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">FIT</p>
+      <p class="prev-next-title">CONVERT</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
