@@ -646,7 +646,8 @@ struct lpb_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred
     char bad_alloc[81];
 
     /// \brief

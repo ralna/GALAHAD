@@ -284,7 +284,7 @@ struct rpd_inform_type {
 
     /// \brief
     /// the name of the array for which an allocation or deallocation
-    /// error ocurred
+    /// error occurred
     char bad_alloc[81];
 
     /// \brief

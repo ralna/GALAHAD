@@ -157,7 +157,7 @@ struct convert_inform_type {
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error 
-    /// ocurred.
+    /// occurred.
     char bad_alloc[81];
 
     /// \brief
