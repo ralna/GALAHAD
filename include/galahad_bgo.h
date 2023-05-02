@@ -406,7 +406,8 @@ struct bgo_inform_type {
     int alloc_status ;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error
+    /// occurred
     char bad_alloc[81];
 
     /// \brief
@@ -414,7 +415,8 @@ struct bgo_inform_type {
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objective function
+    /// the total number of evaluations of the gradient of the objective 
+    /// function
     int g_eval;
 
     /// \brief

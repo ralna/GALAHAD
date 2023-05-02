@@ -996,12 +996,13 @@ struct nls_subproblem_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred
     char bad_alloc[81];
 
     /// \brief
     /// the name of the user-supplied evaluation routine for which an error
-    /// ocurred
+    /// occurred
     char bad_eval[13];
 
     /// \brief
@@ -1106,12 +1107,13 @@ struct nls_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error ocurred
+    /// the name of the array for which an allocation/deallocation error 
+    /// occurred
     char bad_alloc[81];
 
     /// \brief
     /// the name of the user-supplied evaluation routine for which an error
-    /// ocurred
+    /// occurred
     char bad_eval[13];
 
     /// \brief
