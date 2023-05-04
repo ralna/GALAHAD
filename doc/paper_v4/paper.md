@@ -81,7 +81,7 @@ commercial ones such as
 [`KNITRO`](https:https://www.artelys.com/docs/knitro/) [@ByrdNoceWalt06]
 are written predominantly in C/C++, and this is attractive as there are
 often straightforward bridges from C to other popular languages such as
-Python and Julia. Thus, we have now provided interfaces from Fortran to C
+Python and Julia. Thus, we have now provided interfaces between Fortran and C
 for a significant subset of the Fortran packages. This has been
 made possible using the standardised ISO-C bindings introduced in
 Fortran 2003, and enhanced in more modern revisions. Essentially an
