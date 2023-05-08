@@ -23,8 +23,7 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2\f], 
-  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 \f], 
 \manonly
   \n
   minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2, 

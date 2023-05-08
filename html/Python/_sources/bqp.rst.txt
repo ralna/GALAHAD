@@ -32,6 +32,35 @@ $$(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,$$
 where the vector $z$ is known as the **dual variables** for the bounds,
 and where the vector inequalities hold component-wise.
 
+method
+------
+
+Projected-gradient methods iterate towards a point
+that satisfies these conditions by ultimately aiming to satisfy
+$H x + g = z$ and $z = z_l + z_u$, while satifying the remaining
+optimality conditions at each stage. Appropriate norms of the amounts by 
+which the optimality conditions fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. 
+
+The method is iterative. Each iteration proceeds in two stages.
+Firstly, the so-called generalized Cauchy point for the quadratic
+objective is found.  (The purpose of this point is to ensure that the
+algorithm converges and that the set of bounds which are satisfied as
+equations at the solution is rapidly identified.)  Thereafter an
+improvement to the objective is sought using either a
+direct-matrix or truncated conjugate-gradient algorithm.
+
+reference
+---------
+
+This is a specialised version of the method presented in 
+
+  A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+  Global convergence of a class of trust region algorithms
+  for optimization with simple bounds.
+  *SIAM Journal on Numerical Analysis* **25** (1988) 433-460.
+
 matrix storage
 --------------
 

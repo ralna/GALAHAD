@@ -421,8 +421,93 @@ and where the <strong>shift</strong> <span class="math notranslate nohighlight">
 The method may be suitable for large problems as no factorization is
 required. Reverse communication is used to obtain
 matrix-vector products of the form <span class="math notranslate nohighlight">\(u + A v\)</span> and <span class="math notranslate nohighlight">\(v + A^T u.\)</span></p>
-<p>See Section 4 of $GALAHAD/doc/l2rt.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/l2rt.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(A^T ( A x - b ) + \lambda x = 0\)</span>, where
+<span class="math notranslate nohighlight">\(\lambda = \mu + \sigma \|x\|_2^{p-2}
+\sqrt{\| A x - b \|_2^2 + \mu \|x\|_2^2}.\)</span>$</p>
+<p>The method is iterative. Starting  with the vector <span class="math notranslate nohighlight">\(u_1 = b\)</span>, a
+bi-diagonalisation process is used to generate the vectors <span class="math notranslate nohighlight">\(v_k\)</span> and
+<span class="math notranslate nohighlight">\(u_k+1\)</span> so that the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(k\)</span> matrix <span class="math notranslate nohighlight">\(V_k = ( v_1 \ldots v_k)\)</span>
+and the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\((k+1)\)</span> matrix <span class="math notranslate nohighlight">\(U_k = ( u_1 \ldots u_{k+1})\)</span>
+together satisfy
+<div class="math notranslate nohighlight">
+\[A V_k = U_{k+1} B_k \;\;\mbox{and}\;\; b = \|b\|_2 U_{k+1} e_1,\]</div>
+
+where <span class="math notranslate nohighlight">\(B_k\)</span> is <span class="math notranslate nohighlight">\((k+1)\)</span> by <span class="math notranslate nohighlight">\(k\)</span> and lower bi-diagonal, <span class="math notranslate nohighlight">\(U_k\)</span> and
+<span class="math notranslate nohighlight">\(V_k\)</span> have orthonormal columns and <span class="math notranslate nohighlight">\(e_1\)</span> is the first unit vector.
+The solution sought is of the form <span class="math notranslate nohighlight">\(x_k = V_k y_k\)</span>, where <span class="math notranslate nohighlight">\(y_k\)</span>
+solves the bi-diagonal regularized Euclidean-norm problem
+<div class="math notranslate nohighlight">
+\[\min \sqrt{\| B_k y - \|b\| e_1 \|_2^2 + \mu \|y\|_2^2}
++ \frac{1}{p} \sigma \|  y \|_2^p.\;\;\mbox{(1)}\]</div>
+</p>
+<p>To solve (1), the optimality conditions
+<div class="math notranslate nohighlight">
+\[( B_k^T ( B_k^{} y(\lambda) - \|b\| e_1^{} ) + \lambda y(\lambda) = 0,\]</div>
+
+where
+<div class="math notranslate nohighlight">
+\[\lambda = \mu + \sigma \|y(\lambda)\|_2^{p-2}
+\sqrt{ \| B_k y(\lambda) - \|b\| e_1 \|_2^2
++ \mu \|y(\lambda)\|_2^2},\]</div>
+
+are used as the basis of an iteration.
+The vector <span class="math notranslate nohighlight">\(y(\lambda)\)</span> is equivalently the solution to the
+regularized least-squares problem
+<div class="math notranslate nohighlight">
+\[\begin{split}\min \left \| \left(\begin{array}{c}
+B_k \\ \lambda^{1/2} I
+\end{array}\right) y - \|b\| e_1^{} \right \|_2.\end{split}\]</div>
+
+Thus, given an estimate <span class="math notranslate nohighlight">\(\lambda \geq 0\)</span>, this regularized
+least-squares problem may be efficiently solved to give <span class="math notranslate nohighlight">\(y(\lambda)\)</span>.
+It is then simply a matter of adjusting <span class="math notranslate nohighlight">\(\lambda\)</span>
+(for example by a Newton-like process) to solve the scalar nonlinear equation
+<div class="math notranslate nohighlight">
+\[\theta(\lambda) \equiv
+\sigma \|y(\lambda)\|_2^{p-2} \sqrt{ \| B_k y(\lambda) - \|b\| e_1 \|_2^2 +
+\mu \|y(\lambda)\|_2^2} + \mu - \lambda = 0.\;\;\mbox{(2)}\]</div>
+
+In practice (2) is reformulated, and a more rapidly converging
+iteration is used. Having found  <span class="math notranslate nohighlight">\(y_k\)</span>, a second pass in which
+<span class="math notranslate nohighlight">\(x_k = V_k y_k\)</span> is regenerated is needed—this need only be done
+once <span class="math notranslate nohighlight">\(x_k\)</span> has implicitly deemed to be sufficiently close to optimality.
+As this second pass is an additional expense, a record is kept of the
+optimal objective function values for each value of <span class="math notranslate nohighlight">\(k\)</span>, and the second
+pass is only performed so far as to ensure a given fraction of the
+final optimal objective value. Large savings may be made in the second
+pass by choosing the required fraction to be significantly smaller than one.</p>
+<p>Special code is used in the special case <span class="math notranslate nohighlight">\(p=2\)</span> as in this case the
+equation (2) significantly simplifies.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>A complete description of the un- an quadratically-regularized
+cases is given by</p>
+<blockquote>
+<div><p>C. C. Paige and M. A. Saunders,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>LSQR: an algorithm for sparse linear equations and sparse least  squares’’.
+<em>ACM Transactions on Mathematical Software</em> <strong>8(1</strong> (1982) 43–71,</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>C. C. Paige and M. A. Saunders,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>ALGORITHM 583: LSQR: an algorithm for sparse linear equations and
+sparse least squares’’.
+<em>ACM Transactions on Mathematical Software</em> <strong>8(2)</strong> (1982) 195–209.</p>
+</div></blockquote>
+<p>Additional details on the Newton-like process needed to determine <span class="math notranslate nohighlight">\(\lambda\)</span> and
+other details are described in</p>
+<blockquote>
+<div><p>C. Cartis, N. I. M. Gould and Ph. L. Toint,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>Trust-region and other regularisation of linear
+least-squares problems’’.
+<em>BIT</em> <strong>49(1)</strong> (2009) 21-53.</p>
+</div></blockquote>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -775,6 +860,16 @@ outer iteration.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,8 +31,9 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: SHA_initialize, SHA_read_specfile, SHA_analyse, SHA_estimate,   &
-               SHA_count, SHA_terminate, SHA_full_initialize, SHA_full_terminate
+     PUBLIC :: SHA_initialize, SHA_read_specfile, SHA_analyse,                 &
+               SHA_estimate, SHA_count, SHA_terminate,                         &
+               SHA_full_initialize, SHA_full_terminate, SHA_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -1883,6 +1884,42 @@
 !  End of subroutine SHA_full_terminate
 
      END SUBROUTINE SHA_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  S H A _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE SHA_information( data, inform, status )
+
+!  return solver information during or after solution by SHA
+!  See SHA_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SHA_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%sha_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SHA_information
+
+     END SUBROUTINE SHA_information
 
 !  End of module GALAHAD_SHA
 

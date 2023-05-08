@@ -415,8 +415,25 @@ constraints, that is, those which may be removed without changing the
 solution set, will be found and the remaining <span class="math notranslate nohighlight">\(a_i\)</span> will be linearly
 independent.  Full advantage is taken of any zero coefficients in the
 matrix <span class="math notranslate nohighlight">\(A\)</span> whose columns are the vectors <span class="math notranslate nohighlight">\(a_i^T\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/fdc.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/fdc.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>A choice of two methods is available. In the first, the matrix
+<div class="math notranslate nohighlight">
+\[\begin{split}K = \begin{pmatrix}\alpha I &amp; A^T \\ A &amp; 0 \end{pmatrix}\end{split}\]</div>
+
+is formed and factorized for some small <span class="math notranslate nohighlight">\(\alpha &gt; 0\)</span> using the
+<code class="docutils literal notranslate"><span class="pre">SLS</span></code> package — the factors <span class="math notranslate nohighlight">\(K = P L D L^T P^T\)</span> are
+used to determine whether <span class="math notranslate nohighlight">\(A\)</span> has dependent rows. In particular, in
+exact arithmetic dependencies in <span class="math notranslate nohighlight">\(A\)</span> will correspond to zero pivots
+in the block diagonal matrix <span class="math notranslate nohighlight">\(D\)</span>.</p>
+<p>The second choice of method finds factors <span class="math notranslate nohighlight">\(A = P L U Q\)</span> of the
+rectangular matrix <span class="math notranslate nohighlight">\(A\)</span> using the <code class="docutils literal notranslate"><span class="pre">ULS</span></code> package.  In this case,
+dependencies in <span class="math notranslate nohighlight">\(A\)</span> will be reflected in zero diagonal entries in <span class="math notranslate nohighlight">\(U\)</span> in
+exact arithmetic.</p>
+<p>The factorization in either case may also be used to
+determine whether the system is consistent.</p>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> must be presented
@@ -735,6 +752,11 @@ to factorization.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

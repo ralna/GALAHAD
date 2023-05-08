@@ -25,7 +25,7 @@
         f_fit_read_specfile  => FIT_read_specfile,                             &
 !       f_fit_import         => FIT_import,                                    &
 !       f_fit_reset_control  => FIT_reset_control,                             &
-!       f_fit_information    => FIT_information,                               &
+        f_fit_information    => FIT_information,                               &
         f_fit_terminate      => FIT_terminate
 
     IMPLICIT NONE
@@ -249,6 +249,40 @@
   RETURN
 
   END SUBROUTINE fit_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran fit_information
+!  --------------------------------------
+
+  SUBROUTINE fit_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_FIT_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( fit_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_fit_full_data_type ), POINTER :: fdata
+  TYPE ( f_fit_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain FIT solution information
+
+  CALL f_fit_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE fit_information
 
 !  ------------------------------------
 !  C interface to fortran fit_terminate

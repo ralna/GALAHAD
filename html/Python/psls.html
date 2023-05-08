@@ -417,24 +417,31 @@ without a full re-factorization.</p>
 <section id="method">
 <h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
 <p>The basic preconditioners are described in detail in</p>
-<p>A. R. Conn, N. I. M. Gould and Ph. L. Toint (1992).
+<blockquote>
+<div><p>A. R. Conn, N. I. M. Gould and Ph. L. Toint,
 LANCELOT. A fortran package for large-scale nonlinear optimization
 (release A). Springer Verlag Series in Computational Mathematics 17,
-Berlin, Section 3.3.10,</p>
+Berlin (1992), Section 3.3.10,</p>
+</div></blockquote>
 <p>along with the more modern versions implements in <code class="docutils literal notranslate"><span class="pre">ICFS</span></code> due to</p>
-<p>C.-J. Lin and J. J. More’ (1999).
-Incomplete Cholesky factorizations with limited memory.
-SIAM Journal on Scientific Computing <strong>21</strong> 21-45,</p>
+<blockquote>
+<div><p>C.-J. Lin and J. J. More’,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>Incomplete Cholesky factorizations with limited memory’’.
+<em>SIAM Journal on Scientific Computing</em> <strong>21</strong> (1999) 21-45,</p>
+</div></blockquote>
 <p>and in <code class="docutils literal notranslate"><span class="pre">HSL_MI28</span></code> described by</p>
-<p>J. A. Scott and M. Tuma (2013). HSL_MI28: an efficient and robust
-limited-memory incomplete Cholesky factorization code.
-ACM Transactions on Mathematical Software <strong>40(4)</strong> (2014), Article 24.</p>
-<p>The factorization methods used by the GALAHAD package <code class="docutils literal notranslate"><span class="pre">sls</span></code> in conjunction
+<blockquote>
+<div><p>J. A. Scott and M. Tuma,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>HSL_MI28: an efficient and robust
+limited-memory incomplete Cholesky factorization code’’.
+<em>ACM Transactions on Mathematical Software</em> <strong>40(4)</strong> (2014), Article 24.</p>
+</div></blockquote>
+<p>The factorization methods used by the package <code class="docutils literal notranslate"><span class="pre">sls</span></code> in conjunction
 with some preconditioners are described in the documentation to that
-package. The key features of the external solvers supported by <code class="docutils literal notranslate"><span class="pre">sls</span></code> are
-given in the following table.</p>
-<table class="table" id="id1">
-<caption><span class="caption-text">External solver characteristics</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+package. The key features of the external solvers supported by <code class="docutils literal notranslate"><span class="pre">sls</span></code>
+are given in the following table.</p>
+<table class="table" id="id7">
+<caption><span class="caption-text">External solver characteristics</span><a class="headerlink" href="#id7" title="Permalink to this table">#</a></caption>
 <colgroup>
 <col style="width: 19.2%" />
 <col style="width: 19.2%" />
@@ -547,18 +554,20 @@ given in the following table.</p>
 reference LAPACK codes,
 <strong>the solvers themselves do not form part of this package and
 must be obtained/linked to separately.</strong> See the documentation for <code class="docutils literal notranslate"><span class="pre">sls</span></code>
-for more details.
+for more details and references.
 Dummy instances are provided for solvers that are unavailable.
 Also note that additional flexibility may be obtained by calling the
 solvers directly rather that via this package.</p>
 <p>Orderings to reduce the bandwidth, as implemented in HSL’s <code class="docutils literal notranslate"><span class="pre">MC61</span></code>, are due to</p>
-<p>J. K. Reid and J. A. Scott (1999)
-Ordering symmetric sparse matrices for small profile and wavefront
-International Journal for Numerical Methods in Engineering
-<strong>45</strong> 1737-1755.</p>
+<blockquote>
+<div><p>J. K. Reid and J. A. Scott,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>Ordering symmetric sparse matrices for small profile and wavefront’’.
+<em>International Journal for Numerical Methods in Engineering</em>
+<strong>45</strong>  (1999) 1737-1755.</p>
+</div></blockquote>
 <p>If a subset of the rows and columns are specified, the remaining rows/columns
 are removed before processing. Any subsequent removal of rows and columns
-is achieved using the GALAHAD Schur-complement updating package <code class="docutils literal notranslate"><span class="pre">scu</span></code>
+is achieved using the Schur-complement updating package <code class="docutils literal notranslate"><span class="pre">scu</span></code>
 unless a complete re-factorization is likely more efficient.</p>
 </section>
 <section id="matrix-storage">
@@ -948,25 +957,17 @@ factorization package is given by inform[‘factor_status’].</p>
 solver used expected it to be.</p>
 </li>
 <li><p><strong>-26</strong></p>
-<blockquote>
-<div><p>The requested factorization solver is unavailable.</p>
-</div></blockquote>
+<p>The requested factorization solver is unavailable.</p>
 </li>
 <li><p><strong>-29</strong></p>
-<blockquote>
-<div><p>A requested option is unavailable.</p>
-</div></blockquote>
+<p>A requested option is unavailable.</p>
 </li>
 <li><p><strong>-45</strong></p>
-<blockquote>
-<div><p>The requested preconditioner is unavailable.</p>
-</div></blockquote>
+<p>The requested preconditioner is unavailable.</p>
 </li>
 <li><p><strong>-80</strong></p>
-<blockquote>
-<div><p>An error occurred when calling <code class="docutils literal notranslate"><span class="pre">HSL</span> <span class="pre">MI28</span></code>.
+<p>An error occurred when calling <code class="docutils literal notranslate"><span class="pre">HSL</span> <span class="pre">MI28</span></code>.
 See mi28 info%stat for more details.</p>
-</div></blockquote>
 </li>
 </ul>
 </dd>

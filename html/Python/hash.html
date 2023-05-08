@@ -39,6 +39,9 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'hash';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -411,11 +414,34 @@
   <section id="module-galahad.hash">
 <span id="hash"></span><h1>HASH<a class="headerlink" href="#module-galahad.hash" title="Permalink to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">hash</span></code> package <strong>sets up, inserts into, removes from and searches</strong>
-a chained scatter table  (Williams, CACM 2, 21-24, 1959).</p>
+a chained scatter table (Williams, 1959).</p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
-<p>See Section 4 of $GALAHAD/doc/hash.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/hash.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>To insert a word in the table, the word is first mapped onto an
+integer value, the entry integer.  This mapping is often called
+hashing. As many words may be mapped to the same value (a collision),
+a chain of used locations starting from the entry integer is searched
+until an empty location is found. The word is inserted in the table at
+this point and the chain extended to the next unoccupied entry. The
+hashing routine is intended to reduce the number of collisions.  Words
+are located and flagged as deleted from the table in exactly the same
+way; the word is hashed and the resulting chain searched until the
+word is matched or the end of the chain reached.  Provided there is
+sufficient space in the table, the expected number of operations
+needed to perform an insertion, search or removal is <span class="math notranslate nohighlight">\(O(1)\)</span>.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The chained scatter table search and insertion method is due to</p>
+<blockquote>
+<div><p>F. A.  Williams (1959),
+<a href="#id1"><span class="problematic" id="id2">``</span></a>Handling identifies as internal symbols in language processors’’,
+<em>Communications of the ACM</em> <strong>2(6)</strong> (1959) 21-24.</p>
+</div></blockquote>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -553,6 +579,16 @@ error occurred.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

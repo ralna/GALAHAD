@@ -414,8 +414,26 @@
 to <strong>find all the real roots of a real polynomial.</strong></p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
-<p>See Section 4 of $GALAHAD/doc/roots.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/roots.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Littlewood and Ferrari’s algorithms are used to find estimates of the
+real roots of cubic and quartic polynomials, respectively; a stabilized version
+of the well-known formula is used in the quadratic case. Newton’s
+method and/or methods based on the companion matrix are used to further
+refine the computed roots if necessary. Madsen and Reid’s (1975)
+method is used for polynomials whose degree exceeds four.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The basic method is that given by</p>
+<blockquote>
+<div><p>K. Madsen and J. K. Reid,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>FORTRAN Subroutines for Finding Polynomial Zeros’’.
+Technical Report A.E.R.E. R.7986, Computer Science and System Division,
+A.E.R.E. Harwell, Oxfordshire (1975)</p>
+</div></blockquote>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -554,6 +572,16 @@ error occurred.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

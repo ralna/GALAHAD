@@ -1,7 +1,7 @@
 //* \file galahad_presolve.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-27 AT 11:46 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 11:15 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PRESOLVE C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *

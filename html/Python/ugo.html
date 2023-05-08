@@ -408,8 +408,32 @@ twice-continuously differentiable function <span class="math notranslate nohighl
 variable over the finite interval <span class="math notranslate nohighlight">\(x^l &lt;= x &lt;= x^u\)</span>. Function
 and derivative values are provided via a subroutine call.
 Second derivatives may be used to advantage if they are available.</p>
-<p>See Section 4 of $GALAHAD/doc/ugo.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/ugo.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The algorithm starts by splitting the interval <span class="math notranslate nohighlight">\([x^l,x^u]\)</span> into a specified
+number of subintervals <span class="math notranslate nohighlight">\([x_i,x_{i+1}]\)</span> of equal length, and evaluating
+<span class="math notranslate nohighlight">\(f\)</span> and its derivatives at each <span class="math notranslate nohighlight">\(x_i\)</span>. A surrogate (approximating)
+lower bound function is constructed on each subinterval using the
+function and derivative values at each end, and an estimate of the
+first- and second-derivative Lipschitz constant. This surrogate is
+minimized, the true objective evaluated at the best predicted point,
+and the corresponding interval split again at this point.
+Any interval whose surrogate lower bound value exceeds an evaluated
+actual value is discarded. The method continues until only one interval
+of a maximum permitted width remains.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>Many ingredients in the algorithm are based on the paper</p>
+<blockquote>
+<div><p>D. Lera and Ya. D. Sergeyev,
+“Acceleration of univariate global optimization algorithms working with
+Lipschitz functions and Lipschitz first derivatives”
+<em>SIAM J. Optimization</em> <strong>23(1)</strong>, (2013) 508–529</p>
+</div></blockquote>
+<p>but adapted to use second derivatives.</p>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -769,6 +793,16 @@ function.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

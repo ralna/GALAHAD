@@ -149,6 +149,63 @@ struct roots_inform_type {
     char bad_alloc[81];
 };
 
+// *-*-*-*-*-*-*-*-*-*-    R O O T S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-
+
+void roots_initialize( void **data,
+                     struct roots_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see roots_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    R O O T S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
+
+void roots_information( void **data,
+                      struct roots_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see roots_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    R O O T S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-
+
+void roots_terminate( void **data,
+                    struct roots_control_type *control,
+                    struct roots_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see roots_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see roots_inform_type)
+ */
+
 // end include guard
 #endif
 

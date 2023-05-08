@@ -428,8 +428,68 @@ and the <strong>power</strong> <span class="math notranslate nohighlight">\(p \g
 A factorization of the matrix <span class="math notranslate nohighlight">\(H\)</span> will be required, so this package is
 most suited for the case where such a factorization,
 either dense or sparse, may be found efficiently.</p>
-<p>See Section 4 of $GALAHAD/doc/dps.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/dps.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x_*\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(H x_* + \lambda_* M x_* + g = 0\)</span>,
+where <span class="math notranslate nohighlight">\(\lambda_* \geq 0\)</span> is a Lagrange
+multiplier that corresponds to the constraint
+<span class="math notranslate nohighlight">\(\|x\|_M  \leq  \Delta\)</span> in the trust-region case,
+and is given by <span class="math notranslate nohighlight">\(\lambda_* = \sigma \|x_*\|^{p-2}\)</span>
+for the regularization problem involve <span class="math notranslate nohighlight">\(r(x)\)</span>.
+In addition <span class="math notranslate nohighlight">\(H + \lambda_* M\)</span> will be positive semi-definite; in
+most instances it will actually be positive definite, but in special
+“hard” cases singularity is a possibility.</p>
+<p>The matrix <span class="math notranslate nohighlight">\(H\)</span> is decomposed as
+<div class="math notranslate nohighlight">
+\[H = P L D L^T P^T\]</div>
+
+by calling the matrix factorization package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>. Here <span class="math notranslate nohighlight">\(P\)</span> is a permutation
+matrix, <span class="math notranslate nohighlight">\(L\)</span> is unit lower triangular and <span class="math notranslate nohighlight">\(D\)</span> is block diagonal, with
+blocks of dimension at most two. The spectral decomposition of each diagonal
+block of <span class="math notranslate nohighlight">\(D\)</span> is computed, and each eigenvalue <span class="math notranslate nohighlight">\(\theta\)</span> is replaced by
+<span class="math notranslate nohighlight">\(\max ( | \theta | , \theta_{\min} ) \)</span>,
+where <span class="math notranslate nohighlight">\(\theta_{\min}\)</span> is a positive user-supplied value. The resulting block
+diagonal matrix is <span class="math notranslate nohighlight">\(B\)</span>, from which we define the <strong>modified-absolute-value</strong>
+<div class="math notranslate nohighlight">
+\[M = P L B L^T P^T;\]</div>
+
+an alternative due to Goldfarb uses instead the simpler
+<div class="math notranslate nohighlight">
+\[M = P L L^T P^T.\]</div>
+</p>
+<p>Given the factors of <span class="math notranslate nohighlight">\(H\)</span> (and <span class="math notranslate nohighlight">\(M\)</span>), the required solution is
+found by making the change of variables <span class="math notranslate nohighlight">\(y = B^{1/2} L^T P^T x\)</span>
+(or <span class="math notranslate nohighlight">\(y = L^T P^T x\)</span> in the Goldfarb case)
+which results in <a href="#id1"><span class="problematic" id="id2">``</span></a>diagonal’’ trust-region and regularization subproblems,
+whose solution may be easily obtained suing a Newton or higher-order iteration
+of a resulting “secular” equation. If subsequent problems, for which
+<span class="math notranslate nohighlight">\(H\)</span> and <span class="math notranslate nohighlight">\(g\)</span> are unchanged, are to be attempted, the existing
+factorization and solution may easily be exploited.</p>
+<p>The dominant cost is that for the factorization of the symmetric, but
+potentially indefinite, matrix <span class="math notranslate nohighlight">\(H\)</span> using the package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail for the trust-region case in</p>
+<blockquote>
+<div><p>N. I. M. Gould and J. Nocedal,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>The modified absolute-value factorization for trust-region minimization’’.
+In <a href="#id5"><span class="problematic" id="id6">``</span></a>High Performance Algorithms and Software in Nonlinear Optimization’’
+(R. De Leone, A. Murli, P. M. Pardalos and G. Toraldo, eds.),
+Kluwer Academic Publishers, (1998) 225–241,</p>
+</div></blockquote>
+<p>while the adaptation for the regularization case is obvious. The method used
+to solve the diagonal trust-region and regularization subproblems are as
+given by</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and D. P. Robinson,
+<a href="#id7"><span class="problematic" id="id8">``</span></a>On solving trust-region and other regularised subproblems in optimization’’.
+<em>Mathematical Programming Computation</em> <strong>2(1)</strong> (2010) 21–57</p>
+</div></blockquote>
+<p>with simplifications due to the diagonal Hessian.</p>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span> may
@@ -958,6 +1018,16 @@ left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</sp
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

@@ -33,7 +33,7 @@ if [ $package == "galahad" ]; then
   #doxygen Doxyfile
   ( cd ./$package ; doxygen ../Doxyfile )
   #mogrify -trim $GALAHAD/html/C/$package/*.png
-  ( cd ./$package/latex ; make )
+  ( cd ./$package/latex ; make ; make )
   cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
   #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
   rm $package/$package.h
@@ -42,7 +42,7 @@ else
   #doxygen Doxyfile
   ( cd ./$package ; doxygen ../Doxyfile )
   #mogrify -trim $GALAHAD/html/C/$package/*.png
-  ( cd ./$package/latex ; make )
+  ( cd ./$package/latex ; make ; make )
   cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
   #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
   rm $package/galahad_$package.h

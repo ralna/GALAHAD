@@ -25,7 +25,7 @@
         f_bsc_read_specfile => BSC_read_specfile,                              &
 !       f_bsc_import => BSC_import,                                            &
 !       f_bsc_reset_control => BSC_reset_control,                              &
-!       f_bsc_information => BSC_information,                                  &
+        f_bsc_information => BSC_information,                                  &
         f_bsc_terminate => BSC_terminate
 
     IMPLICIT NONE
@@ -277,6 +277,40 @@
   RETURN
 
   END SUBROUTINE bsc_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran bsc_information
+!  --------------------------------------
+
+  SUBROUTINE bsc_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_BSC_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( bsc_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_bsc_full_data_type ), pointer :: fdata
+  TYPE ( f_bsc_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain BSC solution information
+
+  CALL f_bsc_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE bsc_information
 
 !  ------------------------------------
 !  C interface to fortran bsc_terminate

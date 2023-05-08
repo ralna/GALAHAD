@@ -29,7 +29,7 @@
      PRIVATE
      PUBLIC :: SEC_initialize, SEC_read_specfile, SEC_initial_approximation,   &
                SEC_bfgs_update, SEC_sr1_update, SEC_terminate,                 &
-               SEC_full_terminate
+               SEC_full_terminate, SEC_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -551,6 +551,42 @@
 !  End of subroutine SEC_full_terminate
 
      END SUBROUTINE SEC_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  S E C _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE SEC_information( data, inform, status )
+
+!  return solver information during or after solution by SEC
+!  See SEC_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SEC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SEC_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%sec_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SEC_information
+
+     END SUBROUTINE SEC_information
 
 !  End of module GALAHAD_SEC
 

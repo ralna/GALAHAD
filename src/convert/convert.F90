@@ -37,7 +37,8 @@
                 CONVERT_between_matrix_formats, CONVERT_to_sparse_row_format,  &
                 CONVERT_to_sparse_column_format, CONVERT_to_coordinate_format, &
                 CONVERT_to_dense_row_format, CONVERT_to_dense_column_format,   &
-                CONVERT_transpose, CONVERT_order, SMT_type, SMT_put, SMT_get
+                CONVERT_transpose, CONVERT_order, CONVERT_information,         &
+                SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   P a r a m e t e r s
@@ -2328,6 +2329,48 @@
 !  end of subroutine CONVERT_order
 
       END SUBROUTINE CONVERT_order
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D - C O N V E R T _ i n f o r m a t i o n  S U B R O U T I N E -
+
+     SUBROUTINE CONVERT_information( data, inform, status )
+
+!  return conversion information during or after application of CONVERT
+!  See CONVERT_solve for a description of the required arguments
+!
+!  Arguments:
+!
+!  data     private internal data
+!  inform   a structure containing output information. See preamble
+!  status   return status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( CONVERT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( CONVERT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%convert_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine CONVERT_information
+
+     END SUBROUTINE CONVERT_information
 
 !  end of module GALAHAD_CONVERT_precision
 

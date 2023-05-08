@@ -409,11 +409,11 @@
 <span id="sbls"></span><h1>SBLS<a class="headerlink" href="#module-galahad.sbls" title="Permalink to this heading">#</a></h1>
 <p>Given a <strong>block, symmetric matrix</strong>
 <div class="math notranslate nohighlight">
-\[\begin{split}K_{H} = \left(\begin{matrix}H &amp; A^T \\ A  &amp; - C\end{matrix}\right),\end{split}\]</div>
+\[\begin{split}K_{H} = \begin{pmatrix}H &amp; A^T \\ A  &amp; - C\end{pmatrix},\end{split}\]</div>
 
 the <code class="docutils literal notranslate"><span class="pre">sbls</span></code> package constructs a variety of <strong>preconditioners</strong> of the form
 <div class="math notranslate nohighlight">
-\[\begin{split}K_{G} = \left(\begin{matrix}G &amp; A^T \\ A  &amp; - C\end{matrix}\right).\end{split}\]</div>
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}.\end{split}\]</div>
 
 Here, the leading-block matrix <span class="math notranslate nohighlight">\(G\)</span> is a suitably-chosen
 approximation to <span class="math notranslate nohighlight">\(H\)</span>; it may either be prescribed <strong>explicitly</strong>, in
@@ -424,8 +424,10 @@ be zero. In the latter case, a factorization of <span class="math notranslate no
 obtained implicitly (and more efficiently) without recourse to <code class="docutils literal notranslate"><span class="pre">sls</span></code>.
 In particular, for implicit preconditioners, a reordering
 <div class="math notranslate nohighlight">
-\[\begin{split}K_{G} = P
-\left(\begin{matrix}G_{11}^{} &amp; G_{21}^T &amp; A_1^T \\ G_{21}^{} &amp; G_{22}^{} &amp; A_2^T \\ A_{1}^{} &amp; A_{2}^{} &amp; - C\end{matrix}\right) P^T\end{split}\]</div>
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_1^T \\
+G_{21}^{} &amp; G_{22}^{} &amp; A_2^T \\ A_{1}^{} &amp; A_{2}^{} &amp; - C
+\end{pmatrix} P^T\end{split}\]</div>
 
 involving a suitable permutation <span class="math notranslate nohighlight">\(P\)</span> will be found, for some
 invertible sub-block (“basis”) <span class="math notranslate nohighlight">\(A_1\)</span> of the columns of <span class="math notranslate nohighlight">\(A\)</span>;
@@ -433,12 +435,69 @@ the selection and factorization of <span class="math notranslate nohighlight">\(
 Once the preconditioner has been constructed,
 solutions to the preconditioning system
 <div class="math notranslate nohighlight">
-\[\begin{split}\left(\begin{matrix}G &amp; A^T \\ A  &amp; - C\end{matrix}\right) \left(\begin{matrix}x \\ y\end{matrix}\right)= \left(\begin{matrix}a \\ b\end{matrix}\right)\end{split}\]</div>
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix} =
+\begin{pmatrix}a \\ b\end{pmatrix}\end{split}\]</div>
 
 may be obtained by the package. Full advantage is taken of any zero
 coefficients in the matrices <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(C\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/sbls.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/sbls.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The method used depends on whether an explicit or implicit
+factorization is required. In the explicit case, the
+package is really little more than a wrapper for the
+symmetric, indefinite linear solver <code class="docutils literal notranslate"><span class="pre">SLS</span></code> in
+which the system matrix <span class="math notranslate nohighlight">\(K_G\)</span> is assembled from its constituents
+<span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(C\)</span> and whichever <span class="math notranslate nohighlight">\(G\)</span> is requested by the user.
+Implicit-factorization preconditioners are more involved,
+and there is a large variety of different possibilities. The
+essential ideas are described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and A. J. Wathen.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>On implicit-factorization constraint preconditioners’’.
+In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
+Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
+Springer Verlag (2006) 61–82</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On iterative methods and implicit-factorization preconditioners for
+regularized saddle-point systems’’.
+<em>SIAM Journal on Matrix Analysis and Applications</em> <strong>28(1)</strong> (2006) 170–189.</p>
+</div></blockquote>
+<p>The range-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_G = \begin{pmatrix}G &amp; 0 \\ A &amp; I\end{pmatrix}
+\begin{pmatrix}G^{-1} &amp; 0 \\ 0 &amp; - S\end{pmatrix}
+\begin{pmatrix}G &amp; A^T \\ 0 &amp; I\end{pmatrix},\end{split}\]</div>
+
+where the <a href="#id5"><span class="problematic" id="id6">``</span></a>Schur complement’’ <span class="math notranslate nohighlight">\(S = C + A G^{-1} A^T\)</span>.
+Such a method requires that <span class="math notranslate nohighlight">\(S\)</span> is easily invertible. This is often the
+case when <span class="math notranslate nohighlight">\(G\)</span> is a diagonal matrix, in which case <span class="math notranslate nohighlight">\(S\)</span> is frequently
+sparse, or when <span class="math notranslate nohighlight">\(m \ll n\)</span> in which case <span class="math notranslate nohighlight">\(S\)</span>
+is small and a dense Cholesky factorization may be used.</p>
+<p>When <span class="math notranslate nohighlight">\(C = 0\)</span>, the null-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; 0 &amp; I \\ G_{21}^{} &amp; I &amp; A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} &amp; 0 &amp; 0
+\end{pmatrix} \begin{pmatrix}
+0 &amp; 0 &amp; I \\ \;\;\; 0 \;\; &amp; \;\; R \;\; &amp; 0 \\ I &amp; 0 &amp; - G_{11}^{}
+\end{pmatrix} \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_{1}^T \\ 0 &amp; I &amp; 0 \\ I &amp; A_{1}^{-1} A_{2}^{} &amp; 0
+\end{pmatrix} P^T,\end{split}\]</div>
+
+where the <a href="#id7"><span class="problematic" id="id8">``</span></a>reduced Hessian’’
+<div class="math notranslate nohighlight">
+\[\begin{split}R = ( - A_{2}^{T} A_1^{-T} \;\; I )
+\begin{pmatrix}G_{11}^{} &amp; G_{21}^{T} \\ G_{21}^{} &amp; G_{22}^{}\end{pmatrix}
+\begin{pmatrix}- A_1^{-1} A_2^{} \\ I\end{pmatrix}\end{split}\]</div>
+
+and <span class="math notranslate nohighlight">\(P\)</span> is a suitably-chosen permutation for which <span class="math notranslate nohighlight">\(A_1\)</span> is invertible.
+The method is most useful when <span class="math notranslate nohighlight">\(m \approx n\)</span> as then the dimension
+of <span class="math notranslate nohighlight">\(R\)</span> is small and a dense Cholesky factorization may be used.</p>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
@@ -856,7 +915,7 @@ other schemes are used, and in this case can be None.</p>
 <span class="sig-prename descclassname"><span class="pre">sbls.</span></span><span class="sig-name descname"><span class="pre">factorize_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sbls.sbls.factorize_matrix" title="Permalink to this definition">#</a></dt>
 <dd><p>Form and factorize the block matrix
 <div class="math notranslate nohighlight">
-\[\begin{split}K_{G} = \left(\begin{matrix}G &amp; A^T \\ A  &amp; - C\end{matrix}\right)\end{split}\]</div>
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}\end{split}\]</div>
 
 for some appropriate matrix <span class="math notranslate nohighlight">\(G\)</span>.</p>
 <p><strong>Parameters:</strong></p>
@@ -899,7 +958,8 @@ shuld be set to None.</p>
 <span class="sig-prename descclassname"><span class="pre">sbls.</span></span><span class="sig-name descname"><span class="pre">solve_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sbls.sbls.solve_system" title="Permalink to this definition">#</a></dt>
 <dd><p>Solve the block linear system
 <div class="math notranslate nohighlight">
-\[\begin{split}\left(\begin{matrix}G &amp; A^T \\ A  &amp; - C\end{matrix}\right) \left(\begin{matrix}x \\ y\end{matrix}\right)= \left(\begin{matrix}a \\ b\end{matrix}\right)\end{split}\]</div>
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix}= \begin{pmatrix}a \\ b\end{pmatrix}\end{split}\]</div>
 </p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
@@ -1181,6 +1241,11 @@ been found when trying to solve <span class="math notranslate nohighlight">\(K y
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

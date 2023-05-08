@@ -1,7 +1,7 @@
 //* \file galahad_fit.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 16:58 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 12:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_FIT C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -112,7 +112,7 @@ struct fit_inform_type {
     /// returned allocation status and a string containing the
     /// name of the offending array are held in
     /// inform.alloc_status and inform.bad_alloc respectively.
-    /// \li - 3 the restriction n >= 1 has been violated.
+    /// \li -3. the restriction n >= 1 has been violated.
     int status;
 
     /// \brief
@@ -124,6 +124,63 @@ struct fit_inform_type {
    ///  occurred.
     char bad_alloc[81];
 };
+
+// *-*-*-*-*-*-*-*-*-*-    F I T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+
+void fit_initialize( void **data,
+                     struct fit_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see fit_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    F I T  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void fit_information( void **data,
+                      struct fit_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see fit_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    F I T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+
+void fit_terminate( void **data,
+                    struct fit_control_type *control,
+                    struct fit_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see fit_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see fit_inform_type)
+ */
 
 // end include guard
 #endif

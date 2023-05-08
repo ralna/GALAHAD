@@ -165,6 +165,63 @@ struct convert_inform_type {
     struct convert_time_type time;
 };
 
+// *-*-*-*-*-*-*-*-*-    C O N V E R T  _ I N I T I A L I Z E    -*-*--*-*-*-*-
+
+void convert_initialize( void **data,
+                     struct convert_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see convert_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-   C O N V E R T  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
+
+void convert_information( void **data,
+                      struct convert_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see convert_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-    C O N V E R T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-
+
+void convert_terminate( void **data,
+                    struct convert_control_type *control,
+                    struct convert_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see convert_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see convert_inform_type)
+ */
+
 // end include guard
 #endif
 
