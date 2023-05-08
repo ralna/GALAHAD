@@ -102,7 +102,7 @@ struct hash_inform_type {
 
     /// \brief
     /// return status. Possible values are:
-    /// \li 0 The insertion or deletion was succesful.
+    /// \li 0 The initialization, insertion or deletion was succesful.
     /// \li -1. An allocation error occurred. A message indicating the
     /// offending array is written on unit control.error, and the
     /// returned allocation status and a string containing the name
@@ -127,6 +127,69 @@ struct hash_inform_type {
     char bad_alloc[81];
 };
 
+// *-*-*-*-*-*-*-*-*-    H A S H  _ I N I T I A L I Z E    -*-*--*-*-*-*-
+
+void hash_initialize( int nchar,
+                      int length,
+                      void **data,
+                      struct hash_control_type *control,
+                      struct hash_inform_type *inform );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in] nchar is a scalar variable of type int, that holds the
+    number of characters permitted in each word in the hash table
+
+  @param[in] length is a scalar variable of type int, that holds the
+    maximum number of words that can be held in the dictionary
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see hash_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see hash_inform_type)
+*/
+
+// *-*-*-*-*-*-*-*-*-   H A S H  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
+
+void hash_information( void **data,
+                       struct hash_inform_type *inform,
+                       int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see hash_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-    H A S H  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-
+
+void hash_terminate( void **data,
+                     struct hash_control_type *control,
+                     struct hash_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see hash_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see hash_inform_type)
+ */
 
 // end include guard
 #endif

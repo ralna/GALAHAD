@@ -421,8 +421,32 @@ the <code class="docutils literal notranslate"><span class="pre">lms</span></cod
 using one of a variety of well-established formulae.</p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
-<p>See Section 4 of $GALAHAD/doc/lms.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/lms.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Given a sequence of vectors <span class="math notranslate nohighlight">\(\{s_k\}\)</span> and <span class="math notranslate nohighlight">\(\{y_k\}\)</span> and scale factors
+<span class="math notranslate nohighlight">\(\delta_k\)</span>, a limited-memory secant approximation <span class="math notranslate nohighlight">\(H_k\)</span> is chosen so that
+<span class="math notranslate nohighlight">\(H_{\max(k-m,0)} = \delta_k I\)</span>, <span class="math notranslate nohighlight">\(H_{k-j} s_{k-j} = y_{k-j}\)</span>
+and <span class="math notranslate nohighlight">\(\| H_{k-j+1} - H_{k-j}\|\)</span> is <a href="#id1"><span class="problematic" id="id2">``</span></a>small’’ for
+<span class="math notranslate nohighlight">\(j = \min(k-1,m-1), \ldots, 0\)</span>.
+Different ways of quantifying <a href="#id3"><span class="problematic" id="id4">``</span></a>small’’ distinguish different methods,
+but the crucial observation is that it is possible to construct <span class="math notranslate nohighlight">\(H_k\)</span>
+quickly from <span class="math notranslate nohighlight">\(\{s_k\}\)</span>, <span class="math notranslate nohighlight">\(\{y_k\}\)</span> and <span class="math notranslate nohighlight">\(\delta_k\)</span>, and to apply it and
+its inverse to a given vector <span class="math notranslate nohighlight">\(v\)</span>. It is also possible to apply similar
+formulae to the <a href="#id5"><span class="problematic" id="id6">``</span></a>shifted’’ matrix <span class="math notranslate nohighlight">\(H_k + \lambda_k I\)</span> that occurs in
+trust-region methods.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The basic methods are those given by</p>
+<blockquote>
+<div><p>R. H. Byrd, J. Nocedal and R. B. Schnabel,
+<a href="#id7"><span class="problematic" id="id8">``</span></a>Representations of quasi-Newton matrices and their use in
+limited memory methods’’.
+<em>Mathematical Programming</em> <a href="#id9"><span class="problematic" id="id10">**</span></a>63(2)* (1994) 129–156,</p>
+</div></blockquote>
+<p>with obvious extensions.</p>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -621,6 +645,16 @@ approximation.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

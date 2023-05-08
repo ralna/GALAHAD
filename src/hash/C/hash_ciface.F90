@@ -22,6 +22,7 @@
         f_hash_inform_type => HASH_inform_type,                                &
         f_hash_full_data_type => HASH_full_data_type,                          &
         f_hash_initialize => HASH_initialize,                                  &
+        f_hash_information => HASH_information,                                &
         f_hash_terminate => HASH_terminate
 
     IMPLICIT NONE
@@ -156,7 +157,7 @@
 
 !  dummy arguments
 
-  INTEGER ( KIND = ipc_ ) :: nchar, length
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nchar, length
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( hash_control_type ), INTENT( OUT ) :: ccontrol
   TYPE ( hash_inform_type ), INTENT( OUT ) :: cinform
@@ -185,6 +186,40 @@
   RETURN
 
   END SUBROUTINE hash_initialize
+
+!  --------------------------------------
+!  C interface to fortran hash_information
+!  --------------------------------------
+
+  SUBROUTINE hash_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_HASH_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( hash_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_hash_full_data_type ), POINTER :: fdata
+  TYPE ( f_hash_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain HASH solution information
+
+  CALL f_hash_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE hash_information
 
 !  ------------------------------------
 !  C interface to fortran hash_terminate

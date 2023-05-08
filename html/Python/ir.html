@@ -419,8 +419,16 @@ factorization of <span class="math notranslate nohighlight">\(A\)</span> found b
 iterative refinement.</strong></p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
-<p>See Section 4 of $GALAHAD/doc/ir.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/ir.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Iterative refinement proceeds as follows. First obtain the floating-point
+solution to <span class="math notranslate nohighlight">\(A x = b\)</span> using the factors of <span class="math notranslate nohighlight">\(A\)</span>. Then iterate
+until either the desired residual accuracy (or the iteration limit is
+reached) as follows: evaluate the residual <span class="math notranslate nohighlight">\(r = b - A x\)</span>,
+find the floating-point solution <span class="math notranslate nohighlight">\(\delta x\)</span> to <span class="math notranslate nohighlight">\(A \delta x = r\)</span>,
+and replace <span class="math notranslate nohighlight">\(x\)</span> by <span class="math notranslate nohighlight">\(x + \delta x\)</span>.</p>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -568,6 +576,11 @@ error occurred.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

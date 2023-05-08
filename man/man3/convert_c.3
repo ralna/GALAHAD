@@ -1,4 +1,4 @@
-.TH "galahad_convert.h" 3 "Tue May 2 2023" "C interfaces to GALAHAD CONVERT" \" -*- nroff -*-
+.TH "galahad_convert.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD CONVERT" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -26,6 +26,19 @@ galahad_convert.h
 .br
 .ti -1c
 .RI "struct \fBconvert_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBconvert_initialize\fP (void **data, struct \fBconvert_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBconvert_information\fP (void **data, struct \fBconvert_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBconvert_terminate\fP (void **data, struct \fBconvert_control_type\fP *control, struct \fBconvert_inform_type\fP *inform)"
 .br
 .in -1c
 .SH "Detailed Description"
@@ -144,6 +157,57 @@ struct \fBconvert_time_type\fP \fItime\fP timings (see above)\&.
 .PP
 .RE
 .PP
+.SH "Function Documentation"
+.PP 
+.SS "void convert_initialize (void ** data, struct \fBconvert_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBconvert_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The initialization was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void convert_information (void ** data, struct \fBconvert_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBconvert_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void convert_terminate (void ** data, struct \fBconvert_control_type\fP * control, struct \fBconvert_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBconvert_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBconvert_inform_type\fP) 
+.RE
+.PP
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for C interfaces to GALAHAD CONVERT from the source code\&.

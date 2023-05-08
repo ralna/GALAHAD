@@ -20,8 +20,7 @@ The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns $x$.
 
-See Section 4 of $GALAHAD/doc/dqp.pdf for a brief description of the
-method employed and other details.
+See Section 4 of $GALAHAD/doc/dqp.pdf for additional details.
 
 terminolgy
 ----------
@@ -44,6 +43,55 @@ respectively, and where the vector inequalities hold component-wise.
 
 In the shifted-least-distance case, $g$ is shifted by $-W^2 x^0$,
 and $H = W^2$, where $W$ is the diagonal matrix whose entries are the $w_j$.
+
+method
+------
+Dual gradient-projection methods solve the quadratic programmimg problem
+by instead solving the dual quadratic program
+$$\begin{array}{ll}\mbox{minimize}\;\;
+q^D(y^{l}, y^{u}, z^{l}, z^{u}) = & \!\!\!
+\frac{1}{2} [ ( y^{l0}  + y^{u} )^T A + ( z^{l} + z^{u} ]^T ) H^{-1}
+[ A^T ( y^{l}  + y^{u} ) + z^{l} + z^{u} ] \\
+& - [ ( y^{l}  + y^{u} )^T A + ( z^{l} + z^{u} ]^T ) H^{-1} g
+- ( c^{l T} y^{l} + c^{u T} y^{u} +
+x^{l T} z^{l} + x^{u T} z^{u}) \\
+\mbox{subject to} & ( y^{l}, z^{l} ) \geq 0 \;\;\mbox{and} \;\;
+(y^{u}, z^{u}) \leq 0,\end{array}$$
+and then recovering the required solution from the linear system
+$$H x = - g + A^T ( y^{l}  + y^{u} ) + z^{l} + z^{u}.$$
+The dual problem is solved by an accelerated gradient-projection
+method comprising of alternating phases in which (i) the current
+projected dual gradient is traced downhill (the 'arc search')
+as far as possible and (ii) the  dual variables that
+are currently on their bounds are temporarily fixed and the unconstrained
+minimizer of $q^D(y^{l}, y^{u}, z^{l}, z^{u})$ with respect to the
+remaining variables is sought; the minimizer in the second phase may itself
+need to be projected back into the dual feasible region (either
+using a brute-force backtrack or a second arc search).
+
+Both phases require the solution of sparse systems of symmetric linear
+equations, and these are handled by the matrix factorization package
+``SBLS`` or the conjugate-gradient package ``GLTR``.  The systems are
+commonly singular, and this leads to a requirement to find the Fredholm
+Alternative for the given matrix and its right-hand side.  In the
+non-singular case, there is an option to update existing factorizations
+using the "Schur-complement" approach given by the package ``SCU``.
+
+Optionally, the problem may be pre-processed temporarily to eliminate dependent
+constraints using the package ``FDC``. This may improve the
+performance of the subsequent iteration.
+
+
+reference
+---------
+
+The basic algorithm is described in
+
+  N. I. M. Gould and D. P. Robinson,
+  ``A dual gradient-projection method
+  for large-scale strictly-convex quadratic problems'',
+  *Computational Optimization and Applications*
+  **67(1)** (2017) 1-38.
 
 matrix storage
 --------------

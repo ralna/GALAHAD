@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-03 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,7 +31,8 @@
       PRIVATE
       PUBLIC :: FIT_initialize, FIT_read_specfile, FIT_hermite_interpolation,  &
                 FIT_puiseux_interpolation, FIT_evaluate_polynomial,            &
-                FIT_terminate, FIT_full_initialize, FIT_full_terminate
+                FIT_terminate, FIT_full_initialize, FIT_full_terminate,        &
+                FIT_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -907,6 +908,42 @@
 !  End of subroutine FIT_full_terminate
 
      END SUBROUTINE FIT_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  F I T _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE FIT_information( data, inform, status )
+
+!  return solver information during or after solution by FIT
+!  See FIT_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( FIT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( FIT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%fit_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine FIT_information
+
+     END SUBROUTINE FIT_information
 
 !  End of module FIT
 

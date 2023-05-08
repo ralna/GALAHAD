@@ -422,11 +422,13 @@ involving the quadratic objective
 
 and the infeasibilities
 <div class="math notranslate nohighlight">
-\[v_g(x) = \sum_{i=1}^{m} \max(c_i^l - a_i^T x, 0) + \sum_{i=1}^{m} \max(a_i^T x - c_i^u, 0)\]</div>
+\[v_g(x) = \sum_{i=1}^{m} \max(c_i^l - a_i^T x, 0)
++ \sum_{i=1}^{m} \max(a_i^T x - c_i^u, 0)\]</div>
 
 and
 <div class="math notranslate nohighlight">
-\[v_b(x) = \sum_{j=1}^{n} \max(x_j^l - x_j  , 0) + \sum_{j=1}^{n} \max(x_j  - x_j^u , 0),\]</div>
+\[v_b(x) = \sum_{j=1}^{n} \max(x_j^l - x_j  , 0)
++ \sum_{j=1}^{n} \max(x_j  - x_j^u , 0),\]</div>
 
 where the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric matrix <span class="math notranslate nohighlight">\(H\)</span>, the
 vectors <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(a_i\)</span>, <span class="math notranslate nohighlight">\(c^l\)</span>, <span class="math notranslate nohighlight">\(c^u\)</span>, <span class="math notranslate nohighlight">\(x^l\)</span>, <span class="math notranslate nohighlight">\(x^u\)</span>
@@ -452,8 +454,7 @@ by automatically adjusting <span class="math notranslate nohighlight">\(\rho_b\)
 <p>If the matrix <span class="math notranslate nohighlight">\(H\)</span> is positive semi-definite, a global solution is found.
 However, if <span class="math notranslate nohighlight">\(H\)</span> is indefinite, the procedure may find a (weak second-order)
 critical point that is not the global solution to the given problem.</p>
-<p>See Section 4 of $GALAHAD/doc/qpa.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/qpa.pdf for additional details.</p>
 <p><strong>N.B.</strong> In many cases, the alternative quadratic programming package <code class="docutils literal notranslate"><span class="pre">qpb</span></code>
 is faster, and thus to be preferred.</p>
 <section id="terminolgy">
@@ -483,6 +484,131 @@ and the <strong>complementary slackness conditions</strong>
 where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
 the general linear constraints, and the <strong>dual variables</strong> for the bounds,
 respectively, and where the vector inequalities hold component-wise.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>At the <span class="math notranslate nohighlight">\(k\)</span>-th iteration of the method, an improvement to the value
+of the merit function
+<span class="math notranslate nohighlight">\(m(x, \rho_g, \rho_b ) = q(x) + \rho_g v_g(x) + \rho_b v_b(x)\)</span>
+at <span class="math notranslate nohighlight">\(x = x^{(k)}\)</span> is sought. This is achieved by first
+computing a search direction <span class="math notranslate nohighlight">\(s^{(k)}\)</span>,
+and then setting <span class="math notranslate nohighlight">\(x^{(k+1)} = x^{(k)} + \alpha^{(k)} s^{(k)}\)</span>,
+where the stepsize <span class="math notranslate nohighlight">\(\alpha^{(k)}\)</span> is chosen as the first local minimizer of
+<span class="math notranslate nohighlight">\(\phi ( \alpha ) = m( x^{(k)} + \alpha s^{(k)} , \rho_g, \rho_b )\)</span>
+as <span class="math notranslate nohighlight">\(\alpha\)</span> incesases from zero.
+The stepsize calculation is straightforward, and exploits the fact that
+<span class="math notranslate nohighlight">\(\phi ( \alpha )\)</span> is a piecewise quadratic function of <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>The search direction is defined by a subset of the “active” terms in
+<span class="math notranslate nohighlight">\(v(x)\)</span>, i.e., those for which
+<span class="math notranslate nohighlight">\(a_i^T x = c_i^l\)</span> or <span class="math notranslate nohighlight">\(c_i^u\)</span> (for <span class="math notranslate nohighlight">\(i=1,\ldots,m\)</span>) or
+<span class="math notranslate nohighlight">\(x_j = x_j^l\)</span> or <span class="math notranslate nohighlight">\(x_j^u\)</span> (for (<span class="math notranslate nohighlight">\(j=1,\ldots,n\)</span>).
+The “working” set <span class="math notranslate nohighlight">\(W^{(k)}\)</span> is chosen from the active terms, and is such
+that its members have linearly independent gradients.
+The search direction <span class="math notranslate nohighlight">\(s^{(k)}\)</span> is chosen as an approximate solution of
+the equality-constrained quadratic program
+<div class="math notranslate nohighlight">
+\[\begin{split}
+{\renewcommand{\arraystretch}{0.8}
+\begin{array}[t]{c}
+\mbox{minimize} \\
+\mbox{ $s \in R^n $ }
+\end{array} \;}
+q(x^{(k)} + s) +
+\rho_g l_g^{(k)} (s) + \rho_b l_b^{(k)} (s),\;\;\mbox{(1)}\end{split}\]</div>
+
+subject to
+<div class="math notranslate nohighlight">
+\[a_i^T s = 0,\;\;  i \in \{ 1, \ldots , m \} \cap W^{(k)},
+\;\;\mbox{and}\;\;
+x_j = 0, \;\;  i  \in \{1, \ldots , n \} \cap W^{(k)},\;\;\mbox{(2)}\]</div>
+
+where
+<div class="math notranslate nohighlight">
+\[l_g^{(k)} (s) = - \sum_{\stackrel{i=1}{a_i^T x &lt; c_i^l}}^m a_i^T s
+\; + \sum_{\stackrel{i=1}{a_i^T x &gt; c_i^u}}^m a_i^T s\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[l_b^{(k)} (s) = - \sum_{\stackrel{j=1}{x_j &lt; x_j^l}}^n s_j
+\; + \sum_{\stackrel{j=1}{x_j &gt; x_j^u}}^n s_j. \]</div>
+
+The equality-constrained quadratic program (1)–(2) is solved by
+a projected preconditioned conjugate gradient method. The method terminates
+either after a prespecified number of iterations, or if the solution is found,
+or if a direction of infinite descent, along which
+<span class="math notranslate nohighlight">\(q(x^{(k)} + s) + \rho_g l_g^{(k)} (s) + \rho_b l_b^{(k)} (s)\)</span>
+decreases without bound within the feasible region (2), is located.
+Succesively more accurate approximations are required as suspected
+solutions of the <span class="math notranslate nohighlight">\(\ell_1\)</span>-QP are approached.</p>
+<p>Preconditioning of the conjugate gradient iteration
+requires the solution of one or more linear systems of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cc}
+M^{(k)} &amp; A^{(k)T} \\ A^{(k)} &amp; 0
+\end{array}\right) \left(\begin{array}{c}
+p \\ u
+\end{array}\right) = \left(\begin{array}{c}
+g \\ 0
+\end{array}\right),\;\;\mbox{(3)}\end{split}\]</div>
+
+where <span class="math notranslate nohighlight">\(M^{(k)}\)</span> is a “suitable” approximation to <span class="math notranslate nohighlight">\(H\)</span> and the rows of
+<span class="math notranslate nohighlight">\(A^{(k)}\)</span> comprise the gradients of the terms in the current working
+set. Rather than recomputing a factorization of the preconditioner at
+every iteration, a Schur complement method is used, recognising the fact
+that gradual changes occur to successive working sets. The main
+iteration is divided into a sequence of “major” iterations.  At the
+start of each major iteration (say, at the overall iteration <span class="math notranslate nohighlight">\(l\)</span>), a
+factorization of the current “reference” matrix, that is the matrix
+<div class="math notranslate nohighlight">
+\[\begin{split}K^{(l)} = \left(\begin{array}{cc}
+M^{(l)} &amp; A^{(l)T} \\ A^{(l)} &amp; 0
+\end{array}\right)\end{split}\]</div>
+
+is obtained using the matrix factorization package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>.  This
+reference matrix may be factorized as a whole (the so-called “augmented
+system” approach), or by performing a block elimination first (the
+“Schur-complement” approach). The latter is usually to be preferred when
+a (non-singular) diagonal preconditioner is used, but may be inefficient
+if any of the columns of <span class="math notranslate nohighlight">\(A^{(l)}\)</span> is too dense.  Subsequent iterations
+within the current major iteration obtain solutions to (3) via the
+factors of <span class="math notranslate nohighlight">\(K^{(l)}\)</span> and an appropriate (dense) Schur complement,
+obtained from the package <code class="docutils literal notranslate"><span class="pre">SCU</span></code>.  The major iteration terminates once
+the space required to hold the factors of the (growing) Schur complement
+exceeds a given threshold.</p>
+<p>The working set changes by (a) adding an active term encountered during
+the determination of the stepsize, or (b) the removal of a term if <span class="math notranslate nohighlight">\(s = 0\)</span>
+solves (1)–(2). The  decision on which to remove in the latter
+case is based upon the expected decrease upon the removal of an individual term,
+and this information is available from the magnitude and sign of the components
+of the auxiliary vector <span class="math notranslate nohighlight">\(u\)</span> computed in (3). At optimality, the
+components of <span class="math notranslate nohighlight">\(u\)</span> for <span class="math notranslate nohighlight">\(a_i\)</span> terms will all lie between
+<span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(\rho_g\)</span> — and those for the other terms
+between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span> — and any violation
+of this rule indicates further progress is possible. The components
+of <span class="math notranslate nohighlight">\(u\)</span> corresonding to the terms involving <span class="math notranslate nohighlight">\(a_i^T x\)</span>
+are sometimes known as Lagrange multipliers (or generalized gradients) and
+denoted by <span class="math notranslate nohighlight">\(y\)</span>, while those for the remaining <span class="math notranslate nohighlight">\(x_j\)</span> terms are dual variables
+and denoted by <span class="math notranslate nohighlight">\(z\)</span>.</p>
+<p>To solve the standard quadratic programming problem, a sequence of
+<span class="math notranslate nohighlight">\(\ell_1\)</span>-quadratic programs are solved, each with a larger value of
+<span class="math notranslate nohighlight">\(\rho_g\)</span> and/or <span class="math notranslate nohighlight">\(\rho_b\)</span> than its predecessor. The
+required solution has been found once the infeasibilities
+<span class="math notranslate nohighlight">\(v_g(x)\)</span> and <span class="math notranslate nohighlight">\(v_b(x)\)</span> have been reduced to zero at the solution of
+the <span class="math notranslate nohighlight">\(\ell_1\)</span>-problem for the given <span class="math notranslate nohighlight">\(\rho_g\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span>.</p>
+<p>In order to make the solution as efficient as possible, the variables
+and constraints are reordered internally by the package <code class="docutils literal notranslate"><span class="pre">QPP</span></code> prior
+to solution. In particular, fixed variables and free (unbounded on
+both sides) constraints are temporarily removed.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>N. I. M. Gould and Ph. L. Toint
+<a href="#id1"><span class="problematic" id="id2">``</span></a>An iterative working-set method for large-scale
+non-convex quadratic programming’’.
+<em>Applied Numerical Mathematics</em> <strong>43(1–2)</strong> (2002) 109–128.</p>
+</div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -1523,6 +1649,16 @@ to factorizat.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

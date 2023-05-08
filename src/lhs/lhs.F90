@@ -31,7 +31,20 @@
 
      PRIVATE
      PUBLIC :: LHS_initialize, LHS_read_specfile, LHS_ihs, LHS_get_seed,       &
-               LHS_terminate
+               LHS_terminate, LHS_full_initialize, LHS_full_terminate,         &
+                LHS_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE LHS_initialize
+       MODULE PROCEDURE LHS_initialize, LHS_full_initialize
+     END INTERFACE LHS_initialize
+
+     INTERFACE LHS_terminate
+       MODULE PROCEDURE LHS_terminate, LHS_full_terminate
+     END INTERFACE LHS_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -115,6 +128,16 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VEC
      END TYPE LHS_data_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: LHS_full_data_type
+        TYPE ( LHS_data_type ) :: LHS_data
+        TYPE ( LHS_control_type ) :: LHS_control
+        TYPE ( LHS_inform_type ) :: LHS_inform
+      END TYPE LHS_full_data_type
+
    CONTAINS
 
 !-*-*-  G A L A H A D -  L H S _ I N I T I A L I Z E  S U B R O U T I N E  -*-
@@ -152,6 +175,38 @@
 !  End of subroutine LHS_initialize
 
      END SUBROUTINE LHS_initialize
+
+!- G A L A H A D -  L H S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE LHS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LHS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LHS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LHS_control_type ), INTENT( OUT ) :: control
+     TYPE ( LHS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL LHS_initialize( data%lhs_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LHS_full_initialize
+
+     END SUBROUTINE LHS_full_initialize
 
 !-*-*-*-*-   L H S _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
@@ -803,6 +858,69 @@
 !  end of subroutine LHS_terminate
 
       END SUBROUTINE LHS_terminate
+
+! -  G A L A H A D -  L H S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE LHS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LHS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LHS_control_type ), INTENT( IN ) :: control
+     TYPE ( LHS_inform_type ), INTENT( INOUT ) :: inform
+
+!  deallocate workspace
+
+     CALL LHS_terminate( data%lhs_data, control, inform )
+     RETURN
+
+!  End of subroutine LHS_full_terminate
+
+     END SUBROUTINE LHS_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  L H S _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE LHS_information( data, inform, status )
+
+!  return solver information during or after solution by LHS
+!  See LHS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LHS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LHS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%lhs_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LHS_information
+
+     END SUBROUTINE LHS_information
 
 !  end of module GALAHAD_LHS
 

@@ -1220,11 +1220,12 @@ $\bmH \bmx_* + \lambda_* \bmM \bmx_* + \bmA^T \bmy_* + \bmc = \bmzero$ and
 $\bmA \bmx_* = 0$, where
 $\lambda_* = \sigma \|\bmx_*\|^{p-2}$
 is a Lagrange multiplier corresponding to the regularisation
-and $\bmy_*$ are Lagrange multipliers for the linear constraints $\bmA \bmx = 0$,
-if any.
+and $\bmy_*$ are Lagrange multipliers for the linear constraints 
+$\bmA \bmx = 0$, if any.
 In addition in all cases, the matrix $\bmH + \lambda_* \bmM$ will be positive
 semi-definite on the null=-space of $\bmA$; in most instances it will actually
-be positive definite, but in special ``hard'' cases singularity is a possibility.
+be positive definite, but in special ``hard'' cases singularity is 
+a possibility.
 
 \noindent
 The method is iterative, and proceeds in two phases.
@@ -1242,7 +1243,7 @@ are defined to be a solution of
 Once the terminating $\lambda$ from the first phase has been discovered,
 the second phase consists of applying Newton or higher-order iterations
 to the nonlinear ``secular'' equation
-$\|\bmx(\lambda)\|_{\bmM} = \sigma \|\bmx(\lambda)\|_M^{p-2}$ with
+$\lambda = \sigma \|\bmx(\lambda)\|_M^{p-2}$ with
 the knowledge that such iterations are both globally and ultimately
 rapidly convergent. It is possible in the ``hard'' case that the
 interval in the first-phase will shrink to the single point $\lambda_*$,
@@ -1251,8 +1252,8 @@ acceleration to ensure that this too happens rapidly.
 
 The dominant cost is the requirement that we solve a sequence of linear systems
 \req{ls}. In the absence of linear constraints, an
-efficient sparse Cholesky factorization with precautions to
-detect indefinite $\bmH + \lambda \bmM$ is used. If $\bmA \bmx  = 0$ is required,
+efficient sparse Cholesky factorization with precautions to detect
+indefinite $\bmH + \lambda \bmM$ is used. If $\bmA \bmx  = 0$ is required,
 a sparse symmetric, indefinite factorization of \req{kkt} is used
 rather than a Cholesky factorization.
 

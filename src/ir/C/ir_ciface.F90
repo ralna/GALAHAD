@@ -18,8 +18,13 @@
     USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_IR_precision, ONLY:                                            &
-        f_ir_control_type => IR_control_type,                                  &
-        f_ir_inform_type => IR_inform_type
+        f_ir_control_type   => IR_control_type,                                &
+        f_ir_inform_type    => IR_inform_type,                                 &
+        f_ir_full_data_type => IR_full_data_type,                              &
+        f_ir_initialize     => IR_initialize,                                  &
+        f_ir_read_specfile  => IR_read_specfile,                               &
+        f_ir_information    => IR_information,                                 &
+        f_ir_terminate      => IR_terminate
 
     IMPLICIT NONE
 
@@ -185,3 +190,177 @@
     END SUBROUTINE copy_inform_out
 
   END MODULE GALAHAD_IR_precision_ciface
+
+!  -------------------------------------
+!  C interface to fortran ir_initialize
+!  -------------------------------------
+
+  SUBROUTINE ir_initialize( cdata, ccontrol, status ) BIND( C ) 
+  USE GALAHAD_IR_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( ir_control_type ), INTENT( OUT ) :: ccontrol
+
+!  local variables
+
+  TYPE ( f_ir_full_data_type ), POINTER :: fdata
+  TYPE ( f_ir_control_type ) :: fcontrol
+  TYPE ( f_ir_inform_type ) :: finform
+  LOGICAL :: f_indexing 
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_ir_initialize( fdata, fcontrol, finform )
+  status = finform%status
+
+!  C sparse matrix indexing by default
+
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
+
+!  copy control out 
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE ir_initialize
+
+!  ----------------------------------------
+!  C interface to fortran ir_read_specfile
+!  ----------------------------------------
+
+  SUBROUTINE ir_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_IR_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( ir_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
+
+!  local variables
+
+  TYPE ( f_ir_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+  LOGICAL :: f_indexing
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+  
+!  open specfile for reading
+
+  OPEN( UNIT = device, FILE = fspecfile )
+  
+!  read control parameters from the specfile
+
+  CALL f_ir_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  CLOSE( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE ir_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran ir_information
+!  --------------------------------------
+
+  SUBROUTINE ir_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_IR_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( ir_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_ir_full_data_type ), pointer :: fdata
+  TYPE ( f_ir_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain IR solution information
+
+  CALL f_ir_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE ir_information
+
+!  ------------------------------------
+!  C interface to fortran ir_terminate
+!  ------------------------------------
+
+  SUBROUTINE ir_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_IR_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( ir_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( ir_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_ir_full_data_type ), pointer :: fdata
+  TYPE ( f_ir_control_type ) :: fcontrol
+  TYPE ( f_ir_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  copy inform in
+
+  CALL copy_inform_in( cinform, finform )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+  CALL f_ir_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+
+!  deallocate data
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  RETURN
+
+  END SUBROUTINE ir_terminate

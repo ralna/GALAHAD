@@ -1,7 +1,7 @@
 //* \file galahad_scu.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 08:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SCU C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -174,6 +174,44 @@ struct scu_inform_type {
     /// negative and zero eigenvalues of \f$S\f$ respectively.
     int inertia[3];
 };
+
+// *-*-*-*-*-*-*-*-*-*-    S C U  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void scu_information( void **data,
+                      struct scu_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see scu_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    S C U  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+
+void scu_terminate( void **data,
+                    struct scu_control_type *control,
+                    struct scu_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see scu_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see scu_inform_type)
+ */
 
 // end include guard
 #endif

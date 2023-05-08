@@ -431,8 +431,7 @@ of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span 
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/dqp.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/dqp.pdf for additional details.</p>
 <section id="terminolgy">
 <h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
 <p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
@@ -462,6 +461,56 @@ the general linear constraints, and the <strong>dual variables</strong> for the 
 respectively, and where the vector inequalities hold component-wise.</p>
 <p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
 and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Dual gradient-projection methods solve the quadratic programmimg problem
+by instead solving the dual quadratic program
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{ll}\mbox{minimize}\;\;
+q^D(y^{l}, y^{u}, z^{l}, z^{u}) = &amp; \!\!\!
+\frac{1}{2} [ ( y^{l0}  + y^{u} )^T A + ( z^{l} + z^{u} ]^T ) H^{-1}
+[ A^T ( y^{l}  + y^{u} ) + z^{l} + z^{u} ] \\
+&amp; - [ ( y^{l}  + y^{u} )^T A + ( z^{l} + z^{u} ]^T ) H^{-1} g
+- ( c^{l T} y^{l} + c^{u T} y^{u} +
+x^{l T} z^{l} + x^{u T} z^{u}) \\
+\mbox{subject to} &amp; ( y^{l}, z^{l} ) \geq 0 \;\;\mbox{and} \;\;
+(y^{u}, z^{u}) \leq 0,\end{array}\end{split}\]</div>
+
+and then recovering the required solution from the linear system
+<div class="math notranslate nohighlight">
+\[H x = - g + A^T ( y^{l}  + y^{u} ) + z^{l} + z^{u}.\]</div>
+
+The dual problem is solved by an accelerated gradient-projection
+method comprising of alternating phases in which (i) the current
+projected dual gradient is traced downhill (the ‘arc search’)
+as far as possible and (ii) the  dual variables that
+are currently on their bounds are temporarily fixed and the unconstrained
+minimizer of <span class="math notranslate nohighlight">\(q^D(y^{l}, y^{u}, z^{l}, z^{u})\)</span> with respect to the
+remaining variables is sought; the minimizer in the second phase may itself
+need to be projected back into the dual feasible region (either
+using a brute-force backtrack or a second arc search).</p>
+<p>Both phases require the solution of sparse systems of symmetric linear
+equations, and these are handled by the matrix factorization package
+<code class="docutils literal notranslate"><span class="pre">SBLS</span></code> or the conjugate-gradient package <code class="docutils literal notranslate"><span class="pre">GLTR</span></code>.  The systems are
+commonly singular, and this leads to a requirement to find the Fredholm
+Alternative for the given matrix and its right-hand side.  In the
+non-singular case, there is an option to update existing factorizations
+using the “Schur-complement” approach given by the package <code class="docutils literal notranslate"><span class="pre">SCU</span></code>.</p>
+<p>Optionally, the problem may be pre-processed temporarily to eliminate dependent
+constraints using the package <code class="docutils literal notranslate"><span class="pre">FDC</span></code>. This may improve the
+performance of the subsequent iteration.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The basic algorithm is described in</p>
+<blockquote>
+<div><p>N. I. M. Gould and D. P. Robinson,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>A dual gradient-projection method
+for large-scale strictly-convex quadratic problems’’,
+<em>Computational Optimization and Applications</em>
+<strong>67(1)</strong> (2017) 1-38.</p>
+</div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -1375,6 +1424,16 @@ to factorization.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

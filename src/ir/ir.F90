@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -26,14 +26,27 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SMT_precision
-      USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
+!     USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
       USE GALAHAD_SLS_precision
       USE GALAHAD_SPECFILE_precision
       IMPLICIT NONE
 
       PRIVATE
       PUBLIC :: IR_initialize, IR_read_specfile, IR_terminate, IR_solve,       &
+                IR_full_initialize, IR_full_terminate, IR_information,         &
                 SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE IR_initialize
+       MODULE PROCEDURE IR_initialize, IR_full_initialize
+     END INTERFACE IR_initialize
+
+     INTERFACE IR_terminate
+       MODULE PROCEDURE IR_terminate, IR_full_terminate
+     END INTERFACE IR_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -191,6 +204,38 @@
 !  End of IR_initialize
 
       END SUBROUTINE IR_initialize
+
+!- G A L A H A D -  I R _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE IR_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for IR controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( IR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( IR_control_type ), INTENT( OUT ) :: control
+     TYPE ( IR_inform_type ), INTENT( OUT ) :: inform
+
+     CALL IR_initialize( data%ir_data, control, inform )
+
+     RETURN
+
+!  End of subroutine IR_full_initialize
+
+     END SUBROUTINE IR_full_initialize
 
 !-*-*-*-   I R _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -580,6 +625,69 @@
 !  End of subroutine IR_terminate
 
       END SUBROUTINE IR_terminate
+
+! -  G A L A H A D -  I R _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE IR_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( IR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( IR_control_type ), INTENT( IN ) :: control
+     TYPE ( IR_inform_type ), INTENT( INOUT ) :: inform
+
+!  deallocate workspace
+
+     CALL IR_terminate( data%ir_data, control, inform )
+     RETURN
+
+!  End of subroutine IR_full_terminate
+
+     END SUBROUTINE IR_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  I R _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE IR_information( data, inform, status )
+
+!  return solver information during or after solution by IR
+!  See IR_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( IR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( IR_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%ir_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine IR_information
+
+     END SUBROUTINE IR_information
 
 !  End of module GALAHAD_IR
 

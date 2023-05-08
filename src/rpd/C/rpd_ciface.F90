@@ -34,6 +34,7 @@
         f_rpd_get_x          => RPD_get_x,                                     &
         f_rpd_get_y          => RPD_get_y,                                     &
         f_rpd_get_z          => RPD_get_z,                                     &
+        f_rpd_information    => RPD_information,                               &
         f_rpd_terminate      => RPD_terminate
 
     IMPLICIT NONE
@@ -640,6 +641,40 @@
   RETURN
 
   END SUBROUTINE rpd_get_z
+
+!  --------------------------------------
+!  C interface to fortran rpd_information
+!  --------------------------------------
+
+  SUBROUTINE rpd_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_RPD_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( rpd_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_rpd_full_data_type ), POINTER :: fdata
+  TYPE ( f_rpd_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain RPD solution information
+
+  CALL f_rpd_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE rpd_information
 
 !  ------------------------------------
 !  C interface to fortran rpd_terminate

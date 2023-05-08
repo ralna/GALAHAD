@@ -20,14 +20,15 @@
     USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_LHS_precision, ONLY:                                           &
-        f_lhs_inform_type   => LHS_inform_type,                                &
-        f_lhs_control_type  => LHS_control_type,                               &
-        f_lhs_data_type     => LHS_data_type,                                  &
-        f_lhs_initialize    => LHS_initialize,                                 &
-        f_lhs_read_specfile => LHS_read_specfile,                              &
-        f_lhs_ihs           => LHS_ihs,                                        &
-        f_lhs_get_seed      => LHS_get_seed,                                   &
-        f_lhs_terminate     => LHS_terminate
+        f_lhs_inform_type    => LHS_inform_type,                               &
+        f_lhs_control_type   => LHS_control_type,                              &
+        f_lhs_full_data_type => LHS_full_data_type,                            &
+        f_lhs_initialize     => LHS_initialize,                                &
+        f_lhs_read_specfile  => LHS_read_specfile,                             &
+        f_lhs_ihs            => LHS_ihs,                                       &
+        f_lhs_get_seed       => LHS_get_seed,                                  &
+        f_lhs_information    => LHS_information,                               &
+        f_lhs_terminate      => LHS_terminate
 
     IMPLICIT NONE
 
@@ -167,7 +168,7 @@
 
 !  local variables
 
-  TYPE ( f_lhs_data_type ), POINTER :: fdata
+  TYPE ( f_lhs_full_data_type ), POINTER :: fdata
   TYPE ( f_lhs_control_type ) :: fcontrol
   TYPE ( f_lhs_inform_type ) :: finform
 
@@ -259,9 +260,9 @@
 
 !  local variables
 
+  TYPE ( f_lhs_full_data_type ), POINTER :: fdata
   TYPE ( f_lhs_control_type ) :: fcontrol
   TYPE ( f_lhs_inform_type ) :: finform
-  TYPE ( f_lhs_data_type ), POINTER :: fdata
 
 !  copy control in
 
@@ -269,11 +270,12 @@
 
 !  associate data pointers
 
-  CALL C_F_POINTER(cdata, fdata)
+  CALL C_F_POINTER( cdata, fdata )
 
 !  call the improved distributed hyper-cube sampling (ihs) algorithm
 
-  CALL f_lhs_ihs(n_dimen, n_points, seed, X, fcontrol, finform, fdata )
+  CALL f_lhs_ihs( n_dimen, n_points, seed, X, fcontrol, finform,              &
+                  fdata%LHS_data )
 
 !  copy inform out
 
@@ -299,6 +301,40 @@
 
   END SUBROUTINE lhs_get_seed
 
+!  --------------------------------------
+!  C interface to fortran lhs_information
+!  --------------------------------------
+
+  SUBROUTINE lhs_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_LHS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( lhs_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_lhs_full_data_type ), pointer :: fdata
+  TYPE ( f_lhs_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain LHS solution information
+
+  CALL f_lhs_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE lhs_information
+
 !  ------------------------------------
 !  C interface to fortran lhs_terminate
 !  ------------------------------------
@@ -315,9 +351,9 @@
 
 !  local variables
 
+  TYPE ( f_lhs_full_data_type ), POINTER :: fdata
   TYPE ( f_lhs_control_type ) :: fcontrol
   TYPE ( f_lhs_inform_type ) :: finform
-  TYPE ( f_lhs_data_type ), POINTER :: fdata
 
 !  copy control in
 

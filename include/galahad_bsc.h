@@ -262,6 +262,63 @@ struct bsc_inform_type {
     real_wp_ clock_time;
 };
 
+// *-*-*-*-*-*-*-*-*-    B S C  _ I N I T I A L I Z E    -*-*--*-*-*-*-
+
+void bsc_initialize( void **data,
+                     struct bsc_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see bsc_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-   B S C  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
+
+void bsc_information( void **data,
+                      struct bsc_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see bsc_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-    B S C  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-
+
+void bsc_terminate( void **data,
+                    struct bsc_control_type *control,
+                    struct bsc_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see bsc_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see bsc_inform_type)
+ */
+
 // end include guard
 #endif
 

@@ -428,14 +428,72 @@ The matrix <span class="math notranslate nohighlight">\(M\)</span> need not be p
 identity matrix.</p>
 <p>Factorization of matrices of the form <span class="math notranslate nohighlight">\(H + \lambda M\)</span>, or
 <div class="math notranslate nohighlight">
-\[\begin{split}\left(\begin{array}{cc} H + \lambda M &amp; A^T \\ A &amp; 0 \end{array}\right)\end{split}\]</div>
+\[\begin{split}\left(\begin{array}{cc}
+H + \lambda M &amp; A^T \\ A &amp; 0
+\end{array}\right)\;\;\mbox{(1)}\end{split}\]</div>
 
 in cases where <span class="math notranslate nohighlight">\(A x = 0\)</span> is imposed, for a succession
 of scalars <span class="math notranslate nohighlight">\(\lambda\)</span> will be required, so this package is most suited
 for the case where such a factorization may be found efficiently. If
 this is not the case, the package <code class="docutils literal notranslate"><span class="pre">gltr</span></code> may be preferred.</p>
-<p>See Section 4 of $GALAHAD/doc/trs.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/trs.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x_*\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(H x_* + \lambda_* M x_* + A^T y_* + g = 0\)</span> and
+<span class="math notranslate nohighlight">\(A x_* = 0\)</span>, where <span class="math notranslate nohighlight">\(\lambda_* \geq 0\)</span> is a Lagrange
+multiplier corresponding to the constraint <span class="math notranslate nohighlight">\(\|x\|_{M}  \leq  \Delta\)</span>
+and <span class="math notranslate nohighlight">\(y_*\)</span> are Lagrange multipliers for the linear constraints <span class="math notranslate nohighlight">\(A x = 0\)</span>,
+if any;
+for the equality-constrained problem <span class="math notranslate nohighlight">\(\|x\|_{M} = \Delta\)</span>,
+the multiplier is unconstrained.
+In addition in all cases, the matrix <span class="math notranslate nohighlight">\(H + \lambda_* M\)</span> will be positive
+semi-definite on the null-space of <span class="math notranslate nohighlight">\(A\)</span>; in most instances it will actually
+be positive definite, but in special <a href="#id1"><span class="problematic" id="id2">``</span></a>hard’’ cases singularity is a
+possibility.</p>
+<p>The method is iterative, and proceeds in two phases.
+Firstly, lower and upper bounds, <span class="math notranslate nohighlight">\(\lambda_L\)</span> and
+<span class="math notranslate nohighlight">\(\lambda_U\)</span>, on <span class="math notranslate nohighlight">\(\lambda_*\)</span> are computed
+using Gershgorin’s theorems and other eigenvalue bounds. The
+first phase of the computation proceeds by progressively shrinking  the bound
+interval <span class="math notranslate nohighlight">\([\lambda_L,\lambda_U]\)</span>
+until a value <span class="math notranslate nohighlight">\(\lambda\)</span> for which
+<span class="math notranslate nohighlight">\(\|x(\lambda)\|_{M}  \geq  \Delta\)</span> is found.
+Here <span class="math notranslate nohighlight">\(x(\lambda)\)</span> and its companion <span class="math notranslate nohighlight">\(y(\lambda)\)</span>
+are defined to be a solution of
+<div class="math notranslate nohighlight">
+\[(H + \lambda M)x(\lambda) + A^T y(\lambda) =
+- g \;\;\mbox{and}\;\; A x(\lambda) = 0;\;\;\mbox{(2)}\]</div>
+
+along the way the possibility that <span class="math notranslate nohighlight">\(H\)</span> might be positive definite on
+the null-space of <span class="math notranslate nohighlight">\(A\)</span> and
+<span class="math notranslate nohighlight">\(\|x(0)\|_{M}  \leq  \Delta\)</span> is examined, and if this transpires
+the process is terminated with <span class="math notranslate nohighlight">\(x_* = x(0)\)</span>.
+Once the terminating <span class="math notranslate nohighlight">\(\lambda\)</span> from the first phase has been discovered,
+the second phase
+consists of applying Newton or higher-order iterations to the nonlinear
+“secular” equation <span class="math notranslate nohighlight">\(\|x(\lambda)\|_{M}  =  \Delta\)</span> with
+the knowledge that such iterations are both globally and ultimately
+rapidly convergent. It is possible in the “hard” case that the
+interval in the first-phase will shrink to the single point <span class="math notranslate nohighlight">\(\lambda_*\)</span>,
+and precautions are taken, using inverse iteration with Rayleigh-quotient
+acceleration to ensure that this too happens rapidly.</p>
+<p>The dominant cost is the requirement that we solve a sequence of
+linear systems (2). In the absence of linear constraints, an
+efficient sparse Cholesky factorization with precautions to
+detect indefinite <span class="math notranslate nohighlight">\(H + \lambda M\)</span> is used. If <span class="math notranslate nohighlight">\(A x  = 0\)</span> is required,
+a sparse symmetric, indefinite factorization of (1) is used
+rather than a Cholesky factorization.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and D. P. Robinson.
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On solving trust-region and other regularised subproblems in optimization’’.
+<em>Mathematical Programming Computation</em> <strong>2(1)</strong> (2010) 21–57.</p>
+</div></blockquote>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>, if it is needed, may be presented
@@ -1149,6 +1207,16 @@ factorization.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

@@ -445,6 +445,33 @@ and the <strong>complementary slackness conditions</strong>
 where the vector <span class="math notranslate nohighlight">\(z\)</span> is known as the <strong>dual variables</strong> for the bounds,
 and where the vector inequalities hold component-wise.</p>
 </section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Projected-gradient methods iterate towards a point
+that satisfies these conditions by ultimately aiming to satisfy
+<span class="math notranslate nohighlight">\(H x + g = z\)</span> and <span class="math notranslate nohighlight">\(z = z_l + z_u\)</span>, while satifying the remaining
+optimality conditions at each stage. Appropriate norms of the amounts by
+which the optimality conditions fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively.</p>
+<p>The method is iterative. Each iteration proceeds in two stages.
+Firstly, the so-called generalized Cauchy point for the quadratic
+objective is found.  (The purpose of this point is to ensure that the
+algorithm converges and that the set of bounds which are satisfied as
+equations at the solution is rapidly identified.)  Thereafter an
+improvement to the objective is sought using either a
+direct-matrix or truncated conjugate-gradient algorithm.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>This is a specialised version of the method presented in</p>
+<blockquote>
+<div><p>A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+Global convergence of a class of trust region algorithms
+for optimization with simple bounds.
+<em>SIAM Journal on Numerical Analysis</em> <strong>25</strong> (1988) 433-460.</p>
+</div></blockquote>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span> may
@@ -930,6 +957,16 @@ error occurred.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
