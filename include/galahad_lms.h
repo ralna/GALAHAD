@@ -1,7 +1,7 @@
 //* \file galahad_lms.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 16:59 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 16:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LMS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -245,6 +245,63 @@ struct lms_inform_type {
     /// timings (see above)
     struct lms_time_type time;
 };
+
+// *-*-*-*-*-*-*-*-*-*-    L M S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+
+void lms_initialize( void **data,
+                     struct lms_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see lms_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    L M S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void lms_information( void **data,
+                      struct lms_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see lms_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    L M S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+
+void lms_terminate( void **data,
+                    struct lms_control_type *control,
+                    struct lms_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see lms_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see lms_inform_type)
+ */
 
 // end include guard
 #endif

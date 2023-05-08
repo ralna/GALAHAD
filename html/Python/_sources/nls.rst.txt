@@ -13,8 +13,7 @@ regularization subproblems, and is most suitable for large problems.
 First derivatives of the residual function $c(x)$ are required, and if
 second derivatives of the $c_i(x)$ can be calculated, they may be exploited.
 
-See Section 4 of $GALAHAD/doc/nls.pdf for a brief description of the
-method employed and other details.
+See Section 4 of $GALAHAD/doc/nls.pdf for additional details.
 
 terminology
 -----------
@@ -75,6 +74,80 @@ The models $t_k(s)$ provided are,
    shorthand for the scalar $s^T H_i(x_k) s$,
    where $W$ is the diagonal matrix of weights
    $w_i$, $i = 1, \ldots m$0.
+
+method
+------
+
+An adaptive regularization method is used.
+In this, an improvement to a current
+estimate of the required minimizer, $x_k$ is sought by computing a
+step $s_k$. The step is chosen to approximately minimize a model $t_k(s)$
+of $f_{\rho,r}(x_k+s)$
+that includes a weighted regularization term
+$\frac{\sigma_k}{p} \|s\|_{S_k}^p$
+for some specified positive weight $\sigma_k$. The quality of the
+resulting step $s_k$ is assessed by computing the "ratio"
+$(f(x_k) - f(x_k + s_k))/(t_k(0) - t_k(s_k))$.
+The step is deemed to have succeeded if the ratio exceeds a given $\eta_s > 0$,
+and in this case $x_{k+1} = x_k + s_k$. Otherwise
+$x_{k+1} = x_k$, and the weight is increased by powers of a given
+increase factor up to a given limit. If the ratio is larger than
+$\eta_v \geq \eta_d$, the weight will be decreased by powers of a given
+decrease factor again up to a given limit. The method will terminate
+as soon as $f(x_k)$ or
+$\|\nabla_x f(x_k)\|$ is smaller than a specified value.
+
+A choice of linear, quadratic or quartic models $t_k(s)$ is available
+(see the previous section), and normally a two-norm regularization will
+be used, but this may change if preconditioning is employed.
+
+If linear or quadratic models are employed, an appropriate,
+approximate model minimizer is found using either a direct approach
+involving factorization of a shift of the model Hessian $B_k$ or an
+iterative (conjugate-gradient/Lanczos) approach based on approximations
+to the required solution from a so-called Krlov subspace. The direct
+approach is based on the knowledge that the required solution
+satisfies the linear system of equations $(B_k + \lambda_k I) s_k
+= - \nabla_x f(x_k)$ involving a scalar Lagrange multiplier $\lambda_k$.
+This multiplier is found by uni-variate root finding, using a safeguarded
+Newton-like process, by ``RQS``. The iterative approach
+uses ``GLRT``, and is best accelerated by preconditioning with
+good approximations to the Hessian of the model using ``PSLS``. The
+iterative approach has the advantage that only Hessian matrix-vector products
+are required, and thus the Hessian $B_k$ is not required explicitly.
+However when factorizations of the Hessian are possible, the direct approach
+is often more efficient.
+
+When a quartic model is used, the model is itself of least-squares form,
+and the package calls itself recursively to approximately minimize its
+model. The quartic model often gives a better approximation, but at the
+cost of more involved derivative requirements.
+
+references
+----------
+
+The generic adaptive cubic regularization method is described in detail in
+
+  C. Cartis,  N. I. M. Gould and Ph. L. Toint,
+  ``Adaptive cubic regularisation methods for unconstrained optimization.
+  Part I: motivation, convergence and numerical results''
+  *Mathematical Programming* **127(2)** (2011) 245--295,
+
+and uses ``tricks'' as suggested in
+
+  N. I. M. Gould, M. Porcelli and Ph. L. Toint,
+  ``Updating the regularization parameter in the adaptive cubic regularization
+  algorithm''.
+  *Computational Optimization and Applications*
+  **53(1)** (2012) 1--22.
+
+The specific methods employed here are discussed in
+
+  N. I. M. Gould, J. A. Scott and T. Rees,
+  ``Convergence and evaluation-complexity analysis of a regularized
+  tensor-Newton method for solving nonlinear least-squares problems''.
+  *Computational Optimization and Applications*
+  **73(1)** (2019) 1--35.
 
 matrix storage
 --------------

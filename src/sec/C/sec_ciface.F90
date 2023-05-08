@@ -25,7 +25,7 @@
         f_sec_read_specfile  => SEC_read_specfile,                             &
 !       f_sec_import         => SEC_import,                                    &
 !       f_sec_reset_control  => SEC_reset_control,                             &
-!       f_sec_information    => SEC_information,                               &
+        f_sec_information    => SEC_information,                               &
         f_sec_terminate      => SEC_terminate
 
     IMPLICIT NONE
@@ -143,14 +143,13 @@
 !  C interface to fortran sec_initialize
 !  -------------------------------------
 
-  SUBROUTINE sec_initialize( cdata, ccontrol, status ) BIND( C )
+  SUBROUTINE sec_initialize( ccontrol, status ) BIND( C )
   USE GALAHAD_SEC_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sec_control_type ), INTENT( OUT ) :: ccontrol
 
 !  local variables
@@ -230,6 +229,44 @@
   RETURN
 
   END SUBROUTINE sec_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran sec_information
+!  --------------------------------------
+
+  SUBROUTINE sec_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_SEC_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( sec_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_sec_full_data_type ), POINTER :: fdata
+  TYPE ( f_sec_inform_type ) :: finform
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+! associate data pointer
+
+! CALL C_F_POINTER( cdata, fdata )
+
+!  obtain SEC solution information
+
+  CALL f_sec_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE sec_information
 
 !  ------------------------------------
 !  C interface to fortran sec_terminate

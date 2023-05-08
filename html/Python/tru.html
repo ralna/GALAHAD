@@ -408,8 +408,59 @@ many variables <span class="math notranslate nohighlight">\(x\)</span>. The meth
 and iterative solution of the key subproblems, and is most
 suitable for large problems. First derivatives are required, and
 if second derivatives can be calculated, they will be exploited.</p>
-<p>See Section 4 of $GALAHAD/doc/tru.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/tru.pdf for additional  details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>A trust-region method is used. In this, an improvement to a current
+estimate of the required minimizer, <span class="math notranslate nohighlight">\(x_k\)</span> is sought by computing a
+step <span class="math notranslate nohighlight">\(s_k\)</span>. The step is chosen to approximately minimize a model <span class="math notranslate nohighlight">\(m_k(s)\)</span>
+of <span class="math notranslate nohighlight">\(f(x_k + s)\)</span> within a trust region <span class="math notranslate nohighlight">\(\|s_k\| \leq \Delta_k\)</span>
+for some specified positive “radius” <span class="math notranslate nohighlight">\(\Delta_k\)</span>. The quality of the
+resulting step <span class="math notranslate nohighlight">\(s_k\)</span> is assessed by computing the “ratio”
+<span class="math notranslate nohighlight">\((f(x_k) - f(x_k + s_k))/ (m_k(0) - m_k(s_k))\)</span>.
+The step is deemed to have succeeded if the ratio exceeds a given <span class="math notranslate nohighlight">\(\eta_s &gt; 0\)</span>,
+and in this case <span class="math notranslate nohighlight">\(x_{k+1} = x_k + s_k\)</span>. Otherwise
+<span class="math notranslate nohighlight">\(x_{k+1} = x_k\)</span>, and the radius is reduced by powers of a given
+reduction factor until it is smaller than <span class="math notranslate nohighlight">\(\|s_k\|\)</span>. If the ratio
+is larger than  <span class="math notranslate nohighlight">\(\eta_v \geq \eta_d\)</span>, the radius will be increased so that
+it exceeds <span class="math notranslate nohighlight">\(\|s_k\|\)</span> by a given increase factor. The method will terminate
+as soon as <span class="math notranslate nohighlight">\(\|\nabla_x f(x_k)\|\)</span> is smaller than a specified value.</p>
+<p>Either linear or quadratic models <span class="math notranslate nohighlight">\(m_k(s)\)</span> may be used. The former will be
+taken as the first two terms <span class="math notranslate nohighlight">\(f(x_k) + s^T \nabla_x f(x_k)\)</span>
+of a Taylor series about <span class="math notranslate nohighlight">\(x_k\)</span>, while the latter uses an
+approximation to the first three terms
+<span class="math notranslate nohighlight">\(f(x_k) + s^T \nabla_x f(x_k) + \frac{1}{2} s^T B_k s\)</span>,
+for which <span class="math notranslate nohighlight">\(B_k\)</span> is a symmetric approximation to the Hessian
+<span class="math notranslate nohighlight">\(\nabla_{xx} f(x_k)\)</span>; possible approximations include the true Hessian,
+limited-memory secant and sparsity approximations and a scaled identity matrix.
+Normally a two-norm trust region will be used, but this may change
+if preconditioning is employed.</p>
+<p>An approximate minimizer of the model within the trust region
+is found using either a direct approach involving factorization or an
+iterative (conjugate-gradient/Lanczos) approach based on approximations
+to the required solution from a so-called Krlov subspace. The direct
+approach is based on the knowledge that the required solution
+satisfies the linear system of equations <span class="math notranslate nohighlight">\((B_k + \lambda_k I) s_k
+= - \nabla_x f(x_k)\)</span> involving a scalar Lagrange multiplier <span class="math notranslate nohighlight">\(\lambda_k\)</span>.
+This multiplier is found by uni-variate root finding, using a safeguarded
+Newton-like process, by <code class="docutils literal notranslate"><span class="pre">TRS</span></code> or <code class="docutils literal notranslate"><span class="pre">DPS</span></code>
+(depending on the norm chosen). The iterative approach
+uses <code class="docutils literal notranslate"><span class="pre">GLTR</span></code>, and is best accelerated by preconditioning
+with good approximations to <span class="math notranslate nohighlight">\(B_k\)</span> using <code class="docutils literal notranslate"><span class="pre">PSLS</span></code>. The
+iterative approach has the advantage that only matrix-vector products
+<span class="math notranslate nohighlight">\(B_k v\)</span> are required, and thus <span class="math notranslate nohighlight">\(B_k\)</span> is not required explicitly.
+However when factorizations of <span class="math notranslate nohighlight">\(B_k\)</span> are possible, the direct approach
+is often more efficient.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The generic trust-region method is described in detail in</p>
+<blockquote>
+<div><p>A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+Trust-region methods.
+SIAM/MPS Series on Optimization (2000).</p>
+</div></blockquote>
+</section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The symmetric <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H = \nabla^2_{xx}f\)</span> may
@@ -459,15 +510,13 @@ its predecessor.</p>
 <p><strong>Returns:</strong></p>
 <dl>
 <dt>options<span class="classifier">dict</span></dt><dd><dl>
-<dt>dictionary containing default control options:</dt><dd><blockquote>
-<div><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
 <dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
 </dd>
 <dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
 </dd>
 <dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required. Possible values are:</p>
-<blockquote>
-<div><ul>
+<ul>
 <li><p><strong>&lt;= 0</strong></p>
 <p>no output</p>
 </li>
@@ -481,7 +530,6 @@ its predecessor.</p>
 <p>increasingly verbose (debugging) output.</p>
 </li>
 </ul>
-</div></blockquote>
 </dd>
 <dt>start_print<span class="classifier">int</span></dt><dd><p>any printing will start on this iteration.</p>
 </dd>
@@ -530,11 +578,7 @@ history) (<em>not yet implemented</em>)</p>
 </li>
 </ul>
 </dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>norm<span class="classifier">int</span></dt><dd><blockquote>
-<div><p>The norm is defined via <span class="math notranslate nohighlight">\(||v||^2 = v^T P v\)</span>, and will define
+<dt>norm<span class="classifier">int</span></dt><dd><p>The norm is defined via <span class="math notranslate nohighlight">\(||v||^2 = v^T P v\)</span>, and will define
 the preconditioner used for iterative methods. Possible
 values for <span class="math notranslate nohighlight">\(P\)</span> are</p>
 <ul>
@@ -582,8 +626,7 @@ values for <span class="math notranslate nohighlight">\(P\)</span> are</p>
 <p>expanding band of Hessian (<em>not yet implemented</em>).</p>
 </li>
 </ul>
-</div></blockquote>
-<dl class="simple">
+</dd>
 <dt>semi_bandwidth<span class="classifier">int</span></dt><dd><p>specify the semi-bandwidth of the band matrix <span class="math notranslate nohighlight">\(P\)</span> if required.</p>
 </dd>
 <dt>lbfgs_vectors<span class="classifier">int</span></dt><dd><p>number of vectors used by the L-BFGS matrix <span class="math notranslate nohighlight">\(P\)</span> if required.</p>
@@ -692,8 +735,6 @@ will result in the prefix word.</p>
 <dt>lms_prec_options<span class="classifier">dict</span></dt><dd><p>default control options for LMS (see <code class="docutils literal notranslate"><span class="pre">lms.initialize</span></code>).</p>
 </dd>
 <dt>sha_options<span class="classifier">dict</span></dt><dd><p>default control options for SHA (see <code class="docutils literal notranslate"><span class="pre">sha.initialize</span></code>).</p>
-</dd>
-</dl>
 </dd>
 </dl>
 </dd>
@@ -1046,6 +1087,16 @@ factorization.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#matrix-storage">
    matrix storage

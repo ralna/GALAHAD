@@ -420,8 +420,69 @@ and where the <span class="math notranslate nohighlight">\(M\)</span>-norm of <s
 The method may be suitable for large problems as no factorization of <span class="math notranslate nohighlight">\(H\)</span> is
 required. Reverse communication is used to obtain
 matrix-vector products of the form <span class="math notranslate nohighlight">\(H z\)</span> and <span class="math notranslate nohighlight">\(M^{-1} z.\)</span></p>
-<p>See Section 4 of $GALAHAD/doc/glrt.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/glrt.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(H x + \lambda M x + g = 0\)</span>, where
+<span class="math notranslate nohighlight">\(\lambda = \sigma \|x\|_{M}^{p-2}\)</span>.
+In addition, the matrix <span class="math notranslate nohighlight">\(H + \lambda M\)</span> will be positive semi-definite.</p>
+<p>The method is iterative. Starting  with the vector <span class="math notranslate nohighlight">\(M^{-1} g\)</span>,
+a matrix of Lanczos vectors is built one column at a time
+so that the <span class="math notranslate nohighlight">\(k\)</span>-th column is generated during
+iteration <span class="math notranslate nohighlight">\(k\)</span>. These columns span a so-called Krylov space.
+The resulting <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(k\)</span> matrix <span class="math notranslate nohighlight">\(Q_k \)</span> has the
+property that <span class="math notranslate nohighlight">\(Q_{k}^T H Q_k^{}  =  T_{k}^{}\)</span>,
+where <span class="math notranslate nohighlight">\(T_k\)</span> is tridiagonal. An approximation to the
+required solution may then be expressed formally as
+<div class="math notranslate nohighlight">
+\[x_{k+1}  =  Q_k y_k\]</div>
+
+where <span class="math notranslate nohighlight">\(y_k \)</span> solves the <a href="#id1"><span class="problematic" id="id2">``</span></a>tridiagonal’’ subproblem of minimizing
+<div class="math notranslate nohighlight">
+\[\frac{1}{2} y^T T_k y  + \|g\|_{M^{-1} } e_{1}^T y +
+\frac{1}{p} \sigma \| y \|_2^p,\;\;\mbox{(1)}\]</div>
+
+where <span class="math notranslate nohighlight">\(e_1\)</span> is the first unit vector.</p>
+<p>To minimize (1), the optimality conditions
+<div class="math notranslate nohighlight">
+\[( T_k + \lambda I ) y(\lambda) = - g,\;\;\mbox{(2)}\]</div>
+
+where <span class="math notranslate nohighlight">\(\lambda = \sigma \|y(\lambda)\|_{M}^{p-2}\)</span>
+are used as the basis of an iteration. Specifically, given an estimate
+<span class="math notranslate nohighlight">\(\lambda\)</span> for which <span class="math notranslate nohighlight">\(T_k + \lambda I\)</span> is positive definite,
+the tridiagonal system (2) may be efficiently solved to give
+<span class="math notranslate nohighlight">\(y(\lambda)\)</span>. It is then simply a matter of adjusting <span class="math notranslate nohighlight">\(\lambda\)</span>
+(for example by a Newton-like process) to solve the scalar nonlinear equation
+<div class="math notranslate nohighlight">
+\[\theta(\lambda) \equiv \|y(\lambda)\|_{M}^{p-2}
+- \frac{\lambda}{\sigma} = 0.\;\;\mbox{(3)}\]</div>
+
+In practice (3) is reformulated, and
+a more rapidly converging iteration is used.</p>
+<p>It is possible to measure the optimality measure
+<span class="math notranslate nohighlight">\(\|H x + \lambda M x + g\|_{M^{-1}}\)</span>
+without computing <span class="math notranslate nohighlight">\(x_{k+1}\)</span>, and thus without
+needing <span class="math notranslate nohighlight">\(Q_k \)</span>. Once this measure is sufficiently small, a second pass
+is required to obtain the estimate <span class="math notranslate nohighlight">\(x_{k+1} \)</span> from <span class="math notranslate nohighlight">\(y_k \)</span>.
+As this second pass is an additional expense, a record is kept of the
+optimal objective function values for each value of <span class="math notranslate nohighlight">\(k\)</span>, and the second
+pass is only performed so far as to ensure a given fraction of the
+final optimal objective value. Large savings may be made in the second
+pass by choosing the required fraction to be significantly smaller than one.</p>
+<p>Special code is used in the special case <span class="math notranslate nohighlight">\(p=2\)</span>, as in this case a single
+pass suffices.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>C. Cartis, N. I. M. Gould and Ph. L. Toint,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>Adaptive cubic regularisation methods for unconstrained
+optimization. Part {I}: motivation, convergence and numerical results’’.
+<em>Mathematical Programming</em> <strong>127(2)</strong> (2011) 245-295.</p>
+</div></blockquote>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -814,6 +875,16 @@ pencil <span class="math notranslate nohighlight">\((H,M)\)</span>.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

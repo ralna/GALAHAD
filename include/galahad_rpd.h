@@ -1,7 +1,7 @@
 //* \file galahad_rpd.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-05-05 AT 09:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RPD C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -764,7 +764,27 @@ void rpd_get_z( void **data,
 
 */
 
-// *-*-*-*-*-*-*-*-*-*-    C Q P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    R P D  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void rpd_information( void **data,
+                      struct rpd_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see rpd_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    R P D  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void rpd_terminate( void **data,
                     struct rpd_control_type *control,

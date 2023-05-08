@@ -153,6 +153,63 @@ struct sha_inform_type {
     char bad_alloc[81];
 };
 
+// *-*-*-*-*-*-*-*-*-*-    S H A  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+
+void sha_initialize( void **data,
+                     struct sha_control_type *control,
+                     int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see sha_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    S H A  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void sha_information( void **data,
+                      struct sha_inform_type *inform,
+                      int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see sha_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    S H A  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+
+void sha_terminate( void **data,
+                    struct sha_control_type *control,
+                    struct sha_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see sha_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see sha_inform_type)
+ */
+
 // end include guard
 #endif
 

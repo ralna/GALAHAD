@@ -427,8 +427,7 @@ where <span class="math notranslate nohighlight">\(H\)</span> and <span class="m
 of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method is most suitable for problems involving a large number of
 unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/cro.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/cro.pdf for additional details.</p>
 <section id="terminolgy">
 <h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
 <p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
@@ -446,7 +445,8 @@ the <strong>dual optimality conditions</strong>
 
 and
 <div class="math notranslate nohighlight">
-\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0
+\;\;\mbox{and}\;\; z_u \leq 0,\;\;\mbox{(1)}\]</div>
 
 and the <strong>complementary slackness conditions</strong>
 <div class="math notranslate nohighlight">
@@ -456,6 +456,75 @@ and the <strong>complementary slackness conditions</strong>
 where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
 the general linear constraints, and the <strong>dual variables</strong> for the bounds,
 respectively, and where the vector inequalities hold component-wise.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Denote the active constraints by <span class="math notranslate nohighlight">\(A_A x = c_A\)</span> and the
+active bounds by <span class="math notranslate nohighlight">\(I_A x = x_A\)</span>. Then any optimal solution satisfies
+the linear system
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccc}
+H &amp; - A_A^T &amp; - I^T_A \\ A_A &amp; 0 &amp; 0 \\ I_A &amp; 0 &amp; 0
+\end{array}\right) \left(\begin{array}{c}
+x \\ y_A \\ z_A
+\end{array}\right) = \left(\begin{array}{c}
+- g \\ c_A \\ x_A
+\end{array}\right), \end{split}\]</div>
+
+where <span class="math notranslate nohighlight">\(y_A\)</span> and <span class="math notranslate nohighlight">\(z_A\)</span> are the corresponding active Lagrange multipliers
+and dual variables respectively. Consequently the difference between
+any two solutions <span class="math notranslate nohighlight">\((\Delta x, \Delta y, \Delta z)\)</span> must satisfy
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccc}
+H &amp; - A_A^T &amp; - I^T_A \\ A_A &amp; 0 &amp; 0 \\ I_A &amp; 0 &amp; 0
+\end{array}\right) \left(\begin{array}{c}
+\Delta x \\ \Delta y_A \\ \Delta z_A
+\end{array}\right) = 0.\;\;\mbox{(2)}\end{split}\]</div>
+
+Thus there can only be multiple solution if the coefficient matrix <span class="math notranslate nohighlight">\(K\)</span>
+of (2) is singular. The algorithm used in \fullpackagename\
+exploits this. The matrix <span class="math notranslate nohighlight">\(K\)</span> is checked for singularity
+using the package <code class="docutils literal notranslate"><span class="pre">ULS</span></code>. If <span class="math notranslate nohighlight">\(K\)</span> is
+non singular, the solution is unique and the solution input by the user
+provides a linearly independent active set. Otherwise <span class="math notranslate nohighlight">\(K\)</span> is singular,
+and partitions <span class="math notranslate nohighlight">\(A_A^T = ( A_{AB}^T \;\; A_{AN}^T)\)</span> and
+<span class="math notranslate nohighlight">\(I_A^T = ( I_{AB}^T \;\; I_{AN}^T)\)</span> are found so that
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccc}
+H &amp; - A_{AB}^T &amp; - I^T_{AB} \\ A_{AB} &amp; 0 &amp; 0 \\  I_{AB} &amp; 0 &amp; 0
+\end{array}\right)\end{split}\]</div>
+
+is non-singular and the <em>non-basic</em> constraints <span class="math notranslate nohighlight">\(A_{AN}^T\)</span>
+and <span class="math notranslate nohighlight">\(I_{AN}^T\)</span> are linearly dependent on the <em>basic</em> ones
+<span class="math notranslate nohighlight">\(( A_{AB}^T \;\; I_{AB}^T)\)</span>. In this case (2) is equivalent to
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{ccc}
+H &amp; - A_{AB}^T &amp; - I^T_{AB} \\ A_{AB} &amp; 0 &amp; 0 \\ I_{AB} &amp; 0 &amp; 0
+\end{array}\right) \left(\begin{array}{c}
+\Delta x \\ \Delta y_{AB} \\ \Delta z_{AB}
+\end{array}\right) = \left(\begin{array}{c}
+A_{AN}^T \\ 0 \\ 0
+\end{array}\right) \Delta y_{AN} + \left(\begin{array}{c}
+I^T_{AN} \\ 0 \\ 0
+\end{array}\right) \Delta z_{AN} .\;\;\mbox{(3)}\end{split}\]</div>
+
+Thus, starting from the user’s <span class="math notranslate nohighlight">\((x, y, z)\)</span>
+and with a factorization of the coefficient matrix of (3)
+found by the package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>,
+the alternative solution <span class="math notranslate nohighlight">\((x + \alpha x, y + \alpha y, z + \alpha z)\)</span>,
+featuring <span class="math notranslate nohighlight">\((\Delta x, \Delta y_{AB}, \Delta z_{AB})\)</span> from (3)
+in which successively one of the components of <span class="math notranslate nohighlight">\(\Delta y_{AN}\)</span>
+and <span class="math notranslate nohighlight">\(\Delta z_{AN}\)</span> in turn is non zero, is taken.
+The scalar <span class="math notranslate nohighlight">\(\alpha\)</span> at each stage
+is chosen to be the largest possible that guarantees (1);
+this may happen when a non-basic multiplier/dual variable reaches zero,
+in which case the corresponding constraint is disregarded, or when this
+happens for a basic multiplier/dual variable, in which case this constraint is
+exchanged with the non-basic one under consideration and disregarded.
+The latter corresponds to changing the basic-non-basic partition
+in (3), and subsequent solutions may be found by updating
+the factorization of the coefficient matrix in (3)
+following the basic-non-basic swap using the package <code class="docutils literal notranslate"><span class="pre">SCU</span></code>.</p>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -912,6 +981,11 @@ to factorizat.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

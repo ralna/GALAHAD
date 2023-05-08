@@ -733,7 +733,7 @@ $\bmu_k+1$ so that the $n$ by $k$ matrix $\bmV_k = ( \bmv_1 \ldots \bmv_k)$
 and the $m$ by $(k+1)$ matrix $\bmU_k = ( \bmu_1 \ldots \bmu_{k+1})$
 together satisfy
 \disp{\bmA \bmV_k = \bmU_{k+1} \bmB_k \tim{and}
- \bmb = \|\bmb\| \bmU_{k+1} \bme_1}
+ \bmb = \|\bmb\| \bmU_{k+1} \bme_1,}
 where $\bmB_k$ is $(k+1)$ by $k$ and lower bi-diagonal, $\bmU_k$ and
 $\bmV_k$ have orthonormal columns and $\bme_1$ is the first unit vector.
 The solution sought is of the form $\bmx_k = \bmV_k \bmy_k$, where $\bmy_k$
@@ -758,8 +758,8 @@ the last interior iterate with the newly discovered exterior one to find the
 boundary point---the so-called Steihaug-Toint point---between them.
 Once the solution is known to lie on the trust-region boundary,
 further improvement may be made by solving
-\eqn{cls}{ \min \| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2 \tim{subject to}
-|\|\bmy\|_2 = \Delta,}
+\disp{ \min \| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2 \tim{subject to}
+\|\bmy\|_2 = \Delta,}
 for which the optimality conditions require that $\bmy_k = \bmy(\lambda_k)$
 where $\lambda_k$ is the positive root of
 \disp{\bmB_k^T ( \bmB_k^{} \bmy(\lambda) - \|\bmb\| \bme_1^{} ) + \lambda

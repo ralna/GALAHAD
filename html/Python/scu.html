@@ -414,14 +414,16 @@
   <section id="module-galahad.scu">
 <span id="scu"></span><h1>SCU<a class="headerlink" href="#module-galahad.scu" title="Permalink to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">scu</span></code> package computes the <strong>solution to an extended system of <span class="math notranslate nohighlight">\(n + m\)</span>
-sparse real linear equations in $n + m\ unknowns,</strong>
+sparse real linear equations in <span class="math notranslate nohighlight">\(n + m\)</span> unknowns,</strong>
 <div class="math notranslate nohighlight">
-\[\begin{split}\left(\begin{matrix}A &amp; B \\ C  &amp; D\end{matrix}\right) \left(\begin{matrix}x_1 \\ x_2\end{matrix}\right)= \left(\begin{matrix}b_1 \\ b2\end{matrix}\right)\end{split}\]</div>
+\[\begin{split}\begin{pmatrix}A &amp; B \\ C  &amp; D\end{pmatrix}
+\begin{pmatrix}x_1 \\ x_2\end{pmatrix} =
+\begin{pmatrix}b_1 \\ b_2\end{pmatrix}\end{split}\]</div>
 
 in the case where the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> is nonsingular
 and solutions to the systems
 <div class="math notranslate nohighlight">
-\[A x  =  b \;\mbox{and}\; A^T y  =  c\]</div>
+\[A x  =  b \;\;\mbox{and}\;\; A^T y  =  c\]</div>
 
 may be obtained from an external source, such as an existing
 factorization.  The subroutine uses reverse communication to obtain
@@ -435,11 +437,31 @@ and the subroutine is thus appropriate only if there is
 sufficient storage for this matrix. Special advantage is taken
 of symmetry and definiteness in the coefficient matrices.
 Provision is made for introducing additional rows and columns
-to, and removing existing rows and columns from, the extended</p>
+to, and removing existing rows and columns from, the extended.</p>
 <p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
 provided and used by other GALAHAD packages with Python interfaces.</p>
-<p>See Section 4 of $GALAHAD/doc/scu.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/scu.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The function <code class="docutils literal notranslate"><span class="pre">scu_factorize</span></code> forms the Schur complement
+<span class="math notranslate nohighlight">\(S\)</span> of <span class="math notranslate nohighlight">\(A\)</span> in the extended matrix by repeated
+reverse communication to obtain the columns of  <span class="math notranslate nohighlight">\(A^{-1} B\)</span>.
+The Schur complement or its negative is then factorized
+into its <em>QR</em> or, if possible, Cholesky factors.</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">scu_solve</span></code> solves the extended system using
+the following well-known scheme:</p>
+<ul class="simple">
+<li><p><strong>(i)</strong> Compute the solution to <span class="math notranslate nohighlight">\(A u = b_1\)</span>;</p></li>
+<li><p><strong>(ii)</strong> Compute <span class="math notranslate nohighlight">\(x_2\)</span> from <span class="math notranslate nohighlight">\(S x_2 = b_2 - C u\)</span>;</p></li>
+<li><p><strong>(iii)</strong> Compute the solution to <span class="math notranslate nohighlight">\(A v = B x_2\)</span>; and</p></li>
+<li><p><strong>(iv)</strong> Compute <span class="math notranslate nohighlight">\(x_1 = u - v\)</span>.</p></li>
+</ul>
+<p>The functions <code class="docutils literal notranslate"><span class="pre">scu__append</span></code> and <code class="docutils literal notranslate"><span class="pre">scu_delete</span></code> compute the
+factorization of the Schur complement after a row and column have been
+appended to, and removed from, the extended matrix, respectively.
+The existing factorization is updated to obtain the new one; this is
+normally more efficient than forming the factorization from scratch.</p>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -601,6 +623,11 @@ respectively.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

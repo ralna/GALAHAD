@@ -1,7 +1,7 @@
 //* \file galahad_ir.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:55 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 12:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_IR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -156,6 +156,63 @@ struct ir_inform_type {
     /// the infinity norm of the final residual
     real_wp_ norm_final_residual;
 };
+
+// *-*-*-*-*-*-*-*-*-*-    I R  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+
+void ir_initialize( void **data,
+                    struct ir_control_type *control,
+                    int *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see ir_control_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    I R  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+
+void ir_information( void **data,
+                     struct ir_inform_type *inform,
+                     int *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data holds private internal data
+
+  @param[out] inform is a struct containing output information
+              (see ir_inform_type)
+
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+// *-*-*-*-*-*-*-*-*-*-    I R  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+
+void ir_terminate( void **data,
+                   struct ir_control_type *control,
+                   struct ir_inform_type *inform );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see ir_control_type)
+
+  @param[out] inform is a struct containing output information
+              (see ir_inform_type)
+ */
 
 // end include guard
 #endif

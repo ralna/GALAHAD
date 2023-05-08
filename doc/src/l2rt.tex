@@ -16,13 +16,13 @@
 Given a real $m$ by $n$ matrix $\bmA$,
 a real $m$ vector $\bmb$ and scalars $\sigma>0$, $\mu \geq 0$ and $p \geq 2$,
 this package finds an
-{\bf approximate minimizer of the regularised linear-least-$\ell_2$-norm
+{\bf approximate minimizer of the regularized linear-least-$\ell_2$-norm
 objective function
 $\sqrt{\| \bmA \bmx - \bmb\|_2^2 + \mu \| \bmx \|_2^2}
  + \sfrac{1}{p} \sigma \| \bmx \|_2^p$.}
 This problem commonly occurs as a subproblem in nonlinear
-optimization calculations involving quadratic or cubic regularisation,
-and may be used to regularise the solution
+optimization calculations involving quadratic or cubic regularization,
+and may be used to regularize the solution
 of under-determined or ill-conditioned linear least-squares problems.
 The method may be suitable for large $m$ and/or $n$ as no factorization
 involving $\bmA$ is required. Reverse communication is used to obtain
@@ -331,13 +331,13 @@ set to the number of unknowns, $n$. {\bf Restriction: } $n > 0$.
 
 \ittf{p} is a scalar \intentin\ variable of type default
 \realdp,
-that must be set on initial entry to the desired order $p$ of regularisation.
+that must be set on initial entry to the desired order $p$ of regularization.
 {\bf Restriction: } $p \geq 2$.
 
 \itt{sigma} is a scalar \intentin\ variable of type default
 \realdp,
 that must be set on initial entry
-to the value of the weight $\sigma$ associated with the regularisation term.
+to the value of the weight $\sigma$ associated with the regularization term.
 {\bf Restriction: } $\sigma > 0$.
 
 \ittf{mu} is a scalar \intentin\ variable of type default
@@ -504,9 +504,9 @@ not $>$ 0 on entry.
 
 %%%%%%%%%%%%%%%%%%%%%% Re-entry %%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Weighted least-$\ell_2$-norms, scaled regularisation and
+\subsection{Weighted least-$\ell_2$-norms, scaled regularization and
 preconditioning}
-The package may also be used to solve a weighted regularisation
+The package may also be used to solve a weighted regularization
 least-$\ell_2$-norm problem
 \disp{ \min \| \bmW( \bmA\bmx - \bmb)\|_2^{}
  + \sfrac{1}{p} \sigma \|\bmS\bmx\|_2^p}
@@ -737,15 +737,16 @@ $\bmu_k+1$ so that the $n$ by $k$ matrix $\bmV_k = ( \bmv_1 \ldots \bmv_k)$
 and the $m$ by $(k+1)$ matrix $\bmU_k = ( \bmu_1 \ldots \bmu_{k+1})$
 together satisfy
 \disp{\bmA \bmV_k = \bmU_{k+1} \bmB_k \tim{and}
- \bmb = \|\bmb\|_2 \bmU_{k+1} \bme_1}
+ \bmb = \|\bmb\|_2 \bmU_{k+1} \bme_1,}
 where $\bmB_k$ is $(k+1)$ by $k$ and lower bi-diagonal, $\bmU_k$ and
 $\bmV_k$ have orthonormal columns and $\bme_1$ is the first unit vector.
 The solution sought is of the form $\bmx_k = \bmV_k \bmy_k$, where $\bmy_k$
-solves the bi-diagonal regularised least-squares problem
-\eqn{4.1}{ \min \| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2
+solves the bi-diagonal regularized Euclidean-norm problem
+\eqn{4.1}{ \min
+\sqrt{\| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2^2 + \mu \|\bmy\|_2^2}
 + \sfrac{1}{p} \sigma \|  \bmy \|_2^p.}
 
-To minimize \req{4.1}, the optimality conditions
+To solve \req{4.1}, the optimality conditions
 \eqn{4.2}{ ( \bmB_k^T ( \bmB_k^{} \bmy(\lambda) - \|\bmb\| \bme_1^{} ) + \lambda
 \bmy(\lambda) = 0,}
 where
@@ -754,7 +755,7 @@ where
 + \mu \|\bmy(\lambda)\|_2^2},}
 are used as the basis of an iteration.
 The vector $\bmy(\lambda)$ is equivalently the solution to the
-regularised least-squares problem
+regularized least-squares problem
 \eqn{4.3}{ \min  \left \| \vect{ \bmB_k \\ \lambda^{\half} \bmI } y
  - \|\bmb\| \bme_1^{} \right \|_2.}
 Thus, given an estimate $\lambda \geq 0$, \req{4.3} may be efficiently
@@ -779,7 +780,7 @@ Special code is used in the special case $p=2$ as in this case the
 equation \req{4.4} significantly simplifies.
 
 \galreferences
-A complete description of the underlying quadratically-regularised
+A complete description of the underlying quadratically-regularized
 least-squares problem is given by
 \vspace*{1mm}
 
@@ -818,7 +819,7 @@ Suppose we wish to solve a problem in 50 unknowns, whose data is
 } \;\;
 \tim{and}
 \bmb  =  \vect{ 1 \\ . \\ . \\ . \\ . \\ . \\ . \\ . \\ 1 },}
-with regularisation weight $\sigma = 1$, shift $\mu = 0$ and order $p = 3$.
+with regularization weight $\sigma = 1$, shift $\mu = 0$ and order $p = 3$.
 Suppose further that we are content with
 an approximation which is within 99\% of the best.
 Then we may use the following code:

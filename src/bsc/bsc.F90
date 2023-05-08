@@ -38,7 +38,7 @@
       PRIVATE
       PUBLIC :: BSC_initialize, BSC_read_specfile, BSC_form,                   &
                 BSC_terminate, BSC_full_initialize, BSC_full_terminate,        &
-                SMT_type, SMT_put, SMT_get
+                BSC_information, SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   I n t e r f a c e s
@@ -1418,6 +1418,48 @@
 !  End of subroutine BSC_full_terminate
 
      END SUBROUTINE BSC_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D - B S C _ i n f o r m a t i o n  S U B R O U T I N E -*-
+
+     SUBROUTINE BSC_information( data, inform, status )
+
+!  return conversion information during or after application of BSC
+!  See BSC_solve for a description of the required arguments
+!
+!  Arguments:
+!
+!  data     private internal data
+!  inform   a structure containing output information. See preamble
+!  status   return status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BSC_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%bsc_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine BSC_information
+
+     END SUBROUTINE BSC_information
 
 !  End of module BSC
 

@@ -430,37 +430,106 @@ of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span 
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/cqp.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/cqp.pdf for additional details.</p>
 <section id="terminolgy">
 <h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
 <p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
 the <strong>primal optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[A x = c\]</div>
+\[A x = c\;\;\mbox{(1a)}\]</div>
 
 and
 <div class="math notranslate nohighlight">
-\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\]</div>
+\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(1b)}\]</div>
 
 the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,\]</div>
+\[H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\;
+z = z_l + z_u,\;\;\mbox{(2a)}\]</div>
 
 and
 <div class="math notranslate nohighlight">
-\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\;
+z_u \leq 0,\;\;\mbox{(2b)}\]</div>
 
 and the <strong>complementary slackness conditions</strong>
 <div class="math notranslate nohighlight">
 \[( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
-(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\]</div>
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(3)}\]</div>
 
 where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
 the general linear constraints, and the <strong>dual variables</strong> for the bounds,
 respectively, and where the vector inequalities hold component-wise.</p>
 <p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
 and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Primal-dual interior point methods iterate towards a point that satisfies
+these optimality conditions by ultimately aiming to satisfy
+(1a), (2a) and (3), while ensuring that (1b) and (2b) are
+satisfied as strict inequalities at each stage.
+Appropriate norms of the amounts by
+which (1a), (2a) and (3) fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that (1b) and (2b) are satisfied as strict
+inequalities gives such methods their other title, namely
+interior-point methods.</p>
+<p>The method aims at each stage to reduce the
+overall violation of (1a), (2a) and (3),
+rather than reducing each of the terms individually. Given an estimate
+<span class="math notranslate nohighlight">\(v = (x, \; c, \; y, \; y^{l}, \; y^{u}, \; z, \; z^{l}, \; z^{u})\)</span>
+of the primal-dual variables, a correction
+<span class="math notranslate nohighlight">\(\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \;
+y^{u} ,\;z,\;z^{l} ,\;z^{u} )\)</span>
+is obtained by solving a suitable linear system of Newton equations for the
+nonlinear systems (1a), (2a) and a parameterized <a href="#id1"><span class="problematic" id="id2">``</span></a>residual
+trajectory’’ perturbation of (3); residual trajectories
+proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
+An improved estimate <span class="math notranslate nohighlight">\(v + \alpha \Delta v\)</span>
+is then used, where the step-size <span class="math notranslate nohighlight">\(\alpha\)</span>
+is chosen as close to 1.0 as possible while ensuring both that
+(1b) and (2b) continue to hold and that the individual components
+which make up the complementary slackness
+(3) do not deviate too significantly
+from their average value. The parameter that controls the perturbation
+of (3) is ultimately driven to zero.</p>
+<p>The Newton equations are solved  by applying the matrix factorization
+package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, but there are options
+to factorize the matrix as a whole (the so-called “augmented system”
+approach), to perform a block elimination first (the “Schur-complement”
+approach), or to let the method itself decide which of the two
+previous options is more appropriate.
+The “Schur-complement” approach is usually to be preferred when all the
+weights are nonzero or when every variable is bounded (at least one side),
+but may be inefficient if any of the columns of <span class="math notranslate nohighlight">\(A\)</span> is too dense.</p>
+<p>Optionally, the problem may be pre-processed temporarily to eliminate dependent
+constraints using the package <code class="docutils literal notranslate"><span class="pre">FDC</span></code>. This may improve the
+performance of the subsequent iteration.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The basic algorithm is a generalisation of those of</p>
+<blockquote>
+<div><p>Y. Zhang,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On the convergence of a class of infeasible interior-point methods
+for the horizontal linear complementarity problem’’.
+<em>SIAM J. Optimization</em> <strong>4(1)</strong> (1994) 208-227,</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>G. Zhao and J. Sun,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>On the rate of local convergence of high-order infeasible
+path-following algorithms for <span class="math notranslate nohighlight">\(P_*\)</span> linear complementarity problems’’.
+<em>Computational Optimization and Applications</em> <a href="#id7"><span class="problematic" id="id8">**</span></a>14(1)* (1999) 293-307,</p>
+</div></blockquote>
+<p>with many enhancements described by</p>
+<blockquote>
+<div><p>N. I. M. Gould, D. Orban and D. P. Robinson,
+<a href="#id9"><span class="problematic" id="id10">``</span></a>Trajectory-following methods for large-scale degenerate
+convex quadratic programming’’,
+<em>Mathematical Programming Computation</em> <strong>5(2)</strong> (2013) 113-142.</p>
+</div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -1404,6 +1473,16 @@ to factorization.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

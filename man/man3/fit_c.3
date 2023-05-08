@@ -1,4 +1,4 @@
-.TH "galahad_fit.h" 3 "Tue May 2 2023" "C interfaces to GALAHAD FIT" \" -*- nroff -*-
+.TH "galahad_fit.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD FIT" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,6 +23,19 @@ galahad_fit.h
 .br
 .ti -1c
 .RI "struct \fBfit_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBfit_initialize\fP (void **data, struct \fBfit_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBfit_information\fP (void **data, struct \fBfit_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBfit_terminate\fP (void **data, struct \fBfit_control_type\fP *control, struct \fBfit_inform_type\fP *inform)"
 .br
 .in -1c
 .SH "Detailed Description"
@@ -89,7 +102,7 @@ int \fIstatus\fP return status\&. Possible values are:
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
-- 3 the restriction n >= 1 has been violated\&. 
+-3\&. the restriction n >= 1 has been violated\&. 
 .PP
 
 .br
@@ -102,6 +115,57 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 .PP
 .RE
 .PP
+.SH "Function Documentation"
+.PP 
+.SS "void fit_initialize (void ** data, struct \fBfit_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBfit_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The initialization was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void fit_information (void ** data, struct \fBfit_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBfit_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void fit_terminate (void ** data, struct \fBfit_control_type\fP * control, struct \fBfit_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBfit_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBfit_inform_type\fP) 
+.RE
+.PP
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for C interfaces to GALAHAD FIT from the source code\&.

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -25,7 +25,7 @@
 !       f_scu_read_specfile  => SCU_read_specfile,                             &
 !       f_scu_import         => SCU_import,                                    &
 !       f_scu_reset_control  => SCU_reset_control,                             &
-!       f_scu_information    => SCU_information,                               &
+        f_scu_information    => SCU_information,                               &
         f_scu_terminate => SCU_terminate
 
     IMPLICIT NONE
@@ -78,6 +78,40 @@
     END SUBROUTINE copy_inform_out
 
   END MODULE GALAHAD_SCU_precision_ciface
+
+!  --------------------------------------
+!  C interface to fortran scu_information
+!  --------------------------------------
+
+  SUBROUTINE scu_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_SCU_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( scu_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_scu_full_data_type ), POINTER :: fdata
+  TYPE ( f_scu_inform_type ) :: finform
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  obtain SCU solution information
+
+  CALL f_scu_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE scu_information
 
 !  ------------------------------------
 !  C interface to fortran scu_terminate

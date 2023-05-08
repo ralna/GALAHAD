@@ -428,14 +428,13 @@ where <span class="math notranslate nohighlight">\(H\)</span> and <span class="m
 <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(x^0\)</span> and <span class="math notranslate nohighlight">\(c\)</span> are vectors, and  <span class="math notranslate nohighlight">\(f\)</span> is a scalar.
 The method is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/eqp.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/eqp.pdf for additional details.</p>
 <section id="terminolgy">
 <h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
 <p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
 the <strong>primal optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[A x + c = 0\]</div>
+\[A x + c = 0 \;\;\mbox{(1)}\]</div>
 
 and the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
@@ -445,6 +444,54 @@ where the vector <span class="math notranslate nohighlight">\(y\)</span> is know
 the general linear constraints.</p>
 <p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
 and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>A solution to the problem is found in two phases.
+In the first, a point <span class="math notranslate nohighlight">\(x_F\)</span> satisfying (1) is found.
+In the second, the required solution <span class="math notranslate nohighlight">\(x = x_F + s\)</span>
+is determined by finding <span class="math notranslate nohighlight">\(s\)</span> to minimize
+<span class="math notranslate nohighlight">\(q(s) = \frac{1}{2} s^T H s + g_F^T s + f_F^{}\)</span>
+subject to the homogeneous constraints <span class="math notranslate nohighlight">\(A s = 0\)</span>,
+where <span class="math notranslate nohighlight">\(g_F^{} = H x_F^{} + g\)</span> and
+<span class="math notranslate nohighlight">\(f_F^{} = \frac{1}{2} x_F^T H x_F^{} + g^T x_F^{} + f\)</span>.
+The required constrained minimizer of <span class="math notranslate nohighlight">\(q(s)\)</span> is obtained
+by implictly applying the preconditioned conjugate-gradient method
+in the null space of <span class="math notranslate nohighlight">\(A\)</span>. Any preconditioner of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = \left(\begin{array}{cc} G &amp; A^T \\ A  &amp; 0 \end{array}\right)\end{split}\]</div>
+
+is suitable, and the package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>
+provides a number of possibilities. In order to ensure that the
+minimizer obtained is finite, an additional, precautionary trust-region
+constraint <span class="math notranslate nohighlight">\(\|s\| \leq \Delta\)</span> for some suitable positive radius
+<span class="math notranslate nohighlight">\(\Delta\)</span> is imposed, and the package <code class="docutils literal notranslate"><span class="pre">GLTR</span></code> is used to solve
+this additionally-constrained problem.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The preconditioning aspcets are described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and A. J. Wathen.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>On implicit-factorization constraint preconditioners’’.
+In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
+Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
+Springer Verlag (2006) 61–82</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On iterative methods and implicit-factorization preconditioners for
+regularized saddle-point systems’’.
+<em>SIAM Journal on Matrix Analysis and Applications</em>
+<strong>28(1)</strong> (2006) 170–189,</p>
+</div></blockquote>
+<p>while the constrained conjugate-gradient method is discussed in</p>
+<blockquote>
+<div><p>N. I. M. Gould, S. Lucidi, M. Roma and Ph. L. Toint,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>Solving the trust-region subproblem using the Lanczos method’’.
+<em>SIAM Journal on Optimization</em> <strong>9(2)</strong> (1999), 504–525.</p>
+</div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -1220,6 +1267,16 @@ of the solution determined by QPB_solve.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

@@ -425,23 +425,30 @@ method employed and other details.</p>
 <p>More specifically, if possible, the package finds a solution to the
 system of  <strong>primal optimality equations</strong>
 <div class="math notranslate nohighlight">
-\[A x = c,\]</div>
+\[A x = c,\;\;\mbox{(1)}\]</div>
 
 the <strong>dual optimality equations</strong>
 <div class="math notranslate nohighlight">
-\[g = A^{T} y + z,\;\; y = y^{l} + y^{u} \;\;\mbox{and}\;\; z = z^{l} + z^{u},\]</div>
+\[g = A^{T} y + z,\;\; y = y^{l} + y^{u} \;\;\mbox{and}\;\;
+z = z^{l} + z^{u},\;\;\mbox{(2)}\]</div>
 
 and <strong>perturbed complementary slackness equations</strong>
 <div class="math notranslate nohighlight">
-\[( c_i^{} - c^l_i ) y^{l}_i = (\mu_c^{l})_i^{} \;\;\mbox{and}\;\; ( c_i^{} - c_i^u ) y^{u}_i = (\mu_c^{u})_i^{}, \;\;\; i = 1, \ldots , m,\]</div>
+\[( c_i^{} - c^l_i ) y^{l}_i = (\mu_c^{l})_i^{} \;\;\mbox{and}\;\;
+( c_i^{} - c_i^u ) y^{u}_i = (\mu_c^{u})_i^{}, \;\;\;
+i = 1, \ldots , m,\;\;\mbox{(3)}\]</div>
 
 and
 <div class="math notranslate nohighlight">
-\[((x^{}_j - x^l_j ) z_j^{l} = (\mu_x^{l})_j^{} \;\;\mbox{and}\;\; ( x^{}_j - x^u_j ) z_j^{u} = (\mu_x^{u})_j^{}, \;\;\;  j = 1, \ldots , n,\]</div>
+\[((x^{}_j - x^l_j ) z_j^{l} = (\mu_x^{l})_j^{} \;\;\mbox{and}\;\;
+( x^{}_j - x^u_j ) z_j^{u} = (\mu_x^{u})_j^{}, \;\;\;
+j = 1, \ldots , n,\;\;\mbox{(4)}\]</div>
 
 for which
 <div class="math notranslate nohighlight">
-\[c^{l} \leq c \leq c^{u}, \;\; x^{l} \leq x \leq x^{u}, \;\;  y^{l} \geq 0, \;\;  y^{u} \leq 0, \;\;  z^{l} \geq 0 \;\; \mbox{and} \;\;  z^{u} \leq 0.\]</div>
+\[c^{l} \leq c \leq c^{u}, \;\; x^{l} \leq x \leq x^{u}, \;\;  y^{l} \geq 0,
+\;\;  y^{u} \leq 0, \;\;  z^{l} \geq 0 \;\; \mbox{and} \;\;  z^{u} \leq 0.
+\;\;\mbox{(5)}\]</div>
 
 Here <span class="math notranslate nohighlight">\(\mu_c^{l}\)</span>, <span class="math notranslate nohighlight">\(\mu_c^{u}\)</span>, <span class="math notranslate nohighlight">\(\mu_x^{l}\)</span> and <span class="math notranslate nohighlight">\(\mu_x^{u}\)</span> are
 vectors of strictly positive <strong>targets</strong>, <span class="math notranslate nohighlight">\(g\)</span> is another given
@@ -452,12 +459,153 @@ respectively, and vector inequalities hold component-wise;
 <span class="math notranslate nohighlight">\(c\)</span> gives the constraint value <span class="math notranslate nohighlight">\(A x\)</span>.
 Since the perturbed complementarity equations normally imply that
 <div class="math notranslate nohighlight">
-\[c^{l} &lt; c &lt; c^{u}, \;\; x^{l} &lt; x &lt; x^{u}, \;\;  y^{l} &gt; 0, \;\;  y^{u} &lt; 0, \;\;  z^{l} &gt; 0 \;\; \mbox{and} \;\;  z^{u} &lt; 0,\]</div>
+\[c^{l} &lt; c &lt; c^{u}, \;\; x^{l} &lt; x &lt; x^{u}, \;\;  y^{l} &gt; 0, \;\;  y^{u} &lt; 0,
+\;\;  z^{l} &gt; 0 \;\; \mbox{and} \;\;  z^{u} &lt; 0,
+\;\;\mbox{(6)}\]</div>
 
 such a primal-dual point <span class="math notranslate nohighlight">\((x, c, y^{l}, y^{u}, z^{l}, z^{l})\)</span>
 may be used, for example, as a feasible starting point for primal-dual
 interior-point methods for solving the linear programming problem
-of minimizing <span class="math notranslate nohighlight">\(g^T x\)</span> within the given polyhedral set.</p>
+of minimizing <span class="math notranslate nohighlight">\(g^T x\)</span> within the given polyhedral set.
+method</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The algorithm is iterative, and at each major iteration attempts
+to find a solution to the perturbed system (1), (2),
+<div class="math notranslate nohighlight">
+\[( c_i^{} - c^l_i + (\theta_c^l)_i^{} ) ( y^{l}_i + (\theta_y^l)_i^{} )
+= (\mu_c^{l})_i^{} \;\;\mbox{and}\;\;
+( c_i^{} - c_i^u - (\theta_c^u)_i^{} ) y^{u}_i - (\theta_y^u)_i^{} )
+= (\mu_c^{u})_i^{}, \;\;\; i = 1, \ldots , m,\;\;\mbox{(7)}\]</div>
+
+<div class="math notranslate nohighlight">
+\[
+( x_j^{} - x^l_j + (\theta_x^l)_j^{} ) ( z^{l}_j + (\theta_z^l)_j^{} )
+= (\mu_x^{l})_j^{} \;\;\mbox{and}\;\;
+( x_j^{} - x_j^u - (\theta_x^u)_j^{} ) ( z^{u}_j - (\theta_z^u)_j^{} )
+= (\mu_x^{u})_j^{}, \;\;\;
+j = 1, \ldots , n,\;\;\mbox{(8)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[c^{l} - \theta_c^l &lt; c &lt; c^{u} + \theta_c^u, \;\;
+x^{l} - \theta_x^l &lt; x &lt; x^{u} + \theta_x^u, \;\;
+y^{l} &gt; - \theta_y^l , \;\;
+y^{u} &lt; \theta_y^u , \;\;
+z^{l} &gt; - \theta_z^l \;\; \mbox{and} \;\;
+z^{u} &lt; \theta_z^u ,\;\;\mbox{(9)}\]</div>
+
+where the vectors of perturbations
+<span class="math notranslate nohighlight">\(\theta^l_c\)</span>, <span class="math notranslate nohighlight">\(\theta^u_c\)</span>, <span class="math notranslate nohighlight">\(\theta^l_x\)</span>, <span class="math notranslate nohighlight">\(\theta^u_x\)</span>, <span class="math notranslate nohighlight">\(\theta^l_x\)</span>,
+<span class="math notranslate nohighlight">\(\theta^u_x\)</span>, <span class="math notranslate nohighlight">\(\theta^l_y\)</span>, <span class="math notranslate nohighlight">\(\theta^u_y\)</span>, <span class="math notranslate nohighlight">\(\theta^l_z\)</span> and <span class="math notranslate nohighlight">\(\theta^u_z\)</span>,
+are non-negative. Rather than solve (1), (2) and (7)–(9)
+exactly, we instead seek a feasible point for the easier relaxation
+(1), (2) and
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{cccccl}
+\gamma (\mu_c^{l})_i^{} &amp; \leq &amp;
+( c_i^{} - c^l_i + (\theta_c^l)_i^{} ) ( y^{l}_i + (\theta_y^l)_i^{} )
+&amp; \leq &amp; (\mu_c^{l})_i^{} / \gamma &amp; \;\;\mbox{and}\;\; \\
+\gamma (\mu_c^{u})_i^{} &amp; \leq &amp;
+( c_i^{} - c_i^u - (\theta_c^u)_i^{} ) ( y^{u}_i - (\theta_y^u)_i^{} )
+&amp; \leq &amp; (\mu_c^{u})_i^{}, /\gamma &amp;
+\;\;\;  i = 1, \ldots , m, \;\;\mbox{and}\;\; \\
+\gamma (\mu_x^{l})_j^{} &amp; \leq &amp;
+( x_j^{} - x^l_j + (\theta_x^l)_j^{} ) ( z^{l}_j + (\theta_z^l)_j^{} )
+&amp; \leq &amp; (\mu_x^{l})_j^{} /\gamma &amp; \;\;\mbox{and}\;\; \\
+\gamma (\mu_x^{u})_j^{}  &amp; \leq &amp;
+( x_j^{} - x_j^u - (\theta_x^u)_j^{} )
+( z^{u}_j - (\theta_z^u)_j^{} )
+&amp; \leq &amp; (\mu_x^{u})_j^{} /\gamma , &amp; \;\;\; j = 1, \ldots , n,
+\end{array} \;\;\mbox{(10)}\end{split}\]</div>
+
+for some <span class="math notranslate nohighlight">\(\gamma \in (0,1]\)</span> which is allowed to be smaller than one
+if there is a nonzero perturbation.</p>
+<p>Given any solution to (1)–(2) and (10) satisfying (9),
+the perturbations are reduced (sometimes to zero) so as to ensure that the
+current solution is feasible for the next perturbed problem. Specifically,
+the perturbation <span class="math notranslate nohighlight">\((\theta^l_c)_i^{}\)</span> for the constraint <span class="math notranslate nohighlight">\(c_i^{} \geq c^l_i\)</span>
+is set to zero if <span class="math notranslate nohighlight">\(c_i\)</span> is larger than some given parameter <span class="math notranslate nohighlight">\(\epsilon &gt; 0\)</span>.
+If not, but <span class="math notranslate nohighlight">\(c_i\)</span> is strictly positive, the perturbation will be
+reduced by a multiplier <span class="math notranslate nohighlight">\(\rho \in (0,1)\)</span>. Otherwise, the new perturbation
+will be set to <span class="math notranslate nohighlight">\(\xi (\theta^l_c)_i^{} + ( 1 - \xi ) ( c_i^l - c_i^{} )\)</span>
+for some factor <span class="math notranslate nohighlight">\(\xi \in (0,1)\)</span>. Identical rules are used to reduce the
+remaining primal and dual perturbations.
+The targets <span class="math notranslate nohighlight">\(\mu_c^{l}\)</span>, <span class="math notranslate nohighlight">\(\mu_c^{u}\)</span>, <span class="math notranslate nohighlight">\(\mu_x^{l}\)</span> and <span class="math notranslate nohighlight">\(\mu_x^{u}\)</span>
+will also be increased by the factor <span class="math notranslate nohighlight">\(\beta \geq 1\)</span> for those
+(primal and/or dual) variables with strictly
+positive perturbations so as to try to accelerate the convergence.</p>
+<p>Ultimately the intention is to drive all the perturbations to zero.
+It can be shown that if the original problem (1)–(4) and (6) has
+a solution, the perturbations will be zero after a finite
+number of major iterations. Equally, if there is no interior solution (6),
+the sets of (primal and dual) variables that are necessarily at (one of) their
+bounds for all feasible points—we refer to these as <em>implicit</em>
+equalities—will be identified, as will the possibility that there is
+no point (interior or otherwise) in the primal and/or dual feasible regions.</p>
+<p>Each major iteration requires the solution <span class="math notranslate nohighlight">\(v = (x,c,z^l,z^u,y^l,y^u)\)</span>
+of the nonlinear system (1), (2) and (7)–(9)
+for fixed perturbations, using a minor iteration. The minor iteration
+uses a stabilized (predictor-corrector) Newton method,
+in which the arc
+<span class="math notranslate nohighlight">\(v(\alpha) = v + \alpha \dot{v} + \alpha^2 \ddot{v}\)</span>, <span class="math notranslate nohighlight">\(\alpha \in [0,1]\)</span>,
+involving the standard Newton step <span class="math notranslate nohighlight">\(\dot{v}\)</span>
+for the equations (1), (2), (7) and (8), optionally augmented by a
+corrector <span class="math notranslate nohighlight">\(\ddot{v}\)</span> to account for the nonlinearity in (7) and (8),
+is truncated so as to ensure that
+<div class="math notranslate nohighlight">
+\[( c_i^{}(\alpha) - c^l_i + (\theta_c^l)_i^{} )
+( y^{l}_i(\alpha) + (\theta_y^l)_i^{} )
+\geq \tau (\mu_c^{l})_i^{}, \;\;\; i = 1, \ldots , m,\]</div>
+
+<div class="math notranslate nohighlight">
+\[( c_i^{}(\alpha) - c_i^u - (\theta_c^u)_i^{} )
+( y^{u}_i(\alpha) - (\theta_y^u)_i^{} )
+\geq \tau (\mu_c^{u})_i^{}, \;\;\; i = 1, \ldots , m,\]</div>
+
+<div class="math notranslate nohighlight">
+\[( x_j^{}(\alpha) - x^l_j + (\theta_x^l)_j^{} )
+( z^{l}_j(\alpha) + (\theta_z^l)_j^{} )
+\geq \tau (\mu_x^{l})_j^{}, \;\;\; j = 1, \ldots , n,\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[( x_j^{}(\alpha) - x_j^u - (\theta_x^u)_j^{} )
+( z^{u}_j(\alpha) - (\theta_z^u)_j^{} )
+\geq \tau (\mu_x^{u})_j^{}, \;\;\; j = 1, \ldots , n,\]</div>
+
+for some <span class="math notranslate nohighlight">\(\tau \in (0,1)\)</span>, always holds, and also so that the norm
+of the residuals to
+(1), (2), (7) and (8) is reduced as much as possible.
+The Newton and corrector systems are solved using a factorization of
+the Jacobian of its defining functions (the so-called “augmented system”
+approach) or of a reduced system in which some of the trivial equations are
+eliminated (the “Schur-complement” approach).
+The factors are obtained using the package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>.</p>
+<p>In order to make the solution as efficient as possible, the
+variables and constraints are reordered internally
+by the package <code class="docutils literal notranslate"><span class="pre">QPP</span></code> prior to solution.
+In particular, fixed variables, and
+free (unbounded on both sides) constraints are temporarily removed.
+In addition, an attempt to identify and remove linearly dependent
+equality constraints may be made by factorizing
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cc}\alpha I &amp; A^T_{\cal E} \\ A^{}_{\cal E} &amp; 0,
+\end{array}\right)\end{split}\]</div>
+, where <span class="math notranslate nohighlight">\(A_{\cal E}\)</span> denotes the gradients of
+the equality constraints and <span class="math notranslate nohighlight">\(\alpha &gt; 0\)</span> is a given scaling factor,
+using <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, and examining small pivot blocks.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The basic algorithm, its convergence analysis and results of
+numerical experiments are given in</p>
+<blockquote>
+<div><p>C. Cartis and N. I. M. Gould,
+Finding a point n the relative interior of a polyhedron.
+Technical Report TR-2006-016, Rutherford Appleton Laboratory (2006).</p>
+</div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
@@ -1163,6 +1311,16 @@ to  factorization.</p>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminolgy">
    terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

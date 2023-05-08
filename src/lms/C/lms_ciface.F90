@@ -24,6 +24,7 @@
         f_lms_full_data_type => LMS_full_data_type,                            &
         f_lms_initialize     => LMS_initialize,                                &
         f_lms_read_specfile  => LMS_read_specfile,                             &
+        f_lms_information    => LMS_information,                               &
         f_lms_terminate      => LMS_terminate
 
     IMPLICIT NONE
@@ -322,6 +323,40 @@
   RETURN
 
   END SUBROUTINE lms_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran lms_information
+!  --------------------------------------
+
+  SUBROUTINE lms_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_LMS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( lms_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_lms_full_data_type ), POINTER :: fdata
+  TYPE ( f_lms_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain LMS solution information
+
+  CALL f_lms_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE lms_information
 
 !  ------------------------------------
 !  C interface to fortran lms_terminate

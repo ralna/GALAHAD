@@ -43,7 +43,7 @@
                 LMS_data_type, LMS_initialize, LMS_read_specfile, LMS_setup,   &
                 LMS_form, LMS_form_shift, LMS_change_method, LMS_apply,        &
                 LMS_apply_lbfgs, LMS_terminate, LMS_full_initialize,           &
-                LMS_full_terminate
+                LMS_full_terminate, LMS_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -2273,6 +2273,42 @@
 !  End of subroutine LMS_full_terminate
 
      END SUBROUTINE LMS_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  L M S _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE LMS_information( data, inform, status )
+
+!  return solver information during or after solution by LMS
+!  See LMS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LMS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LMS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%lms_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LMS_information
+
+     END SUBROUTINE LMS_information
 
 !  end of module GALAHAD_LMS_precision
 

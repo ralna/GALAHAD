@@ -37,7 +37,7 @@
                 ROOTS_polynomial, ROOTS_smallest_root_in_interval,             &
                 ROOTS_polynomial_value,                                        &
                 ROOTS_initialize, ROOTS_terminate, ROOTS_read_specfile,        &
-                ROOTS_full_initialize, ROOTS_full_terminate
+                ROOTS_full_initialize, ROOTS_full_terminate, ROOTS_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -2705,6 +2705,42 @@
 !  End of subroutine ROOTS_full_terminate
 
      END SUBROUTINE ROOTS_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  R O O T S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE ROOTS_information( data, inform, status )
+
+!  return solver information during or after solution by ROOTS
+!  See ROOTS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ROOTS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( ROOTS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%roots_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine ROOTS_information
+
+     END SUBROUTINE ROOTS_information
 
 !  End of module ROOTS
 

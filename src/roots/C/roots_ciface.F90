@@ -25,7 +25,7 @@
         f_roots_read_specfile  => ROOTS_read_specfile,                         &
 !       f_roots_import         => ROOTS_import,                                &
 !       f_roots_reset_control  => ROOTS_reset_control,                         &
-!       f_roots_information    => ROOTS_information,                           &
+        f_roots_information    => ROOTS_information,                           &
         f_roots_terminate      => ROOTS_terminate
 
     IMPLICIT NONE
@@ -262,6 +262,40 @@
   RETURN
 
   END SUBROUTINE roots_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran roots_information
+!  --------------------------------------
+
+  SUBROUTINE roots_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_ROOTS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( roots_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_roots_full_data_type ), POINTER :: fdata
+  TYPE ( f_roots_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain ROOTS solution information
+
+  CALL f_roots_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE roots_information
 
 !  ------------------------------------
 !  C interface to fortran roots_terminate

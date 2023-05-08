@@ -424,8 +424,101 @@ and where the <strong>radius</strong> <span class="math notranslate nohighlight"
 The method may be suitable for large problems as no factorization is
 required. Reverse communication is used to obtain
 matrix-vector products of the form <span class="math notranslate nohighlight">\(u + A v\)</span> and <span class="math notranslate nohighlight">\(v + A^T u.\)</span></p>
-<p>See Section 4 of $GALAHAD/doc/lstr.pdf for a brief description of the
-method employed and other details.</p>
+<p>See Section 4 of $GALAHAD/doc/lstr.pdf for additional details.</p>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(A^T ( A x - b ) + \lambda x = 0\)</span>, where <span class="math notranslate nohighlight">\(\lambda \geq 0\)</span>
+is a Lagrange multiplier corresponding to the trust-region constraint
+<span class="math notranslate nohighlight">\(\|x\|_2  \leq  \Delta\)</span>.</p>
+<p>The method is iterative. Starting  with the vector <span class="math notranslate nohighlight">\(u_1 = b\)</span>, a
+bi-diagonalisation process is used to generate the vectors <span class="math notranslate nohighlight">\(v_k\)</span> and
+<span class="math notranslate nohighlight">\(u_k+1\)</span> so that the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(k\)</span> matrix <span class="math notranslate nohighlight">\(V_k = ( v_1 \ldots v_k)\)</span>
+and the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\((k+1)\)</span> matrix <span class="math notranslate nohighlight">\(U_k = ( u_1 \ldots u_{k+1})\)</span>
+together satisfy
+<div class="math notranslate nohighlight">
+\[A V_k = U_{k+1} B_k \;\;\mbox{and}\;\;  b = \|b\| U_{k+1} e_1,\]</div>
+
+where <span class="math notranslate nohighlight">\(B_k\)</span> is <span class="math notranslate nohighlight">\((k+1)\)</span> by <span class="math notranslate nohighlight">\(k\)</span> and lower bi-diagonal, <span class="math notranslate nohighlight">\(U_k\)</span> and
+<span class="math notranslate nohighlight">\(V_k\)</span> have orthonormal columns and <span class="math notranslate nohighlight">\(e_1\)</span> is the first unit vector.
+The solution sought is of the form <span class="math notranslate nohighlight">\(x_k = V_k y_k\)</span>, where <span class="math notranslate nohighlight">\(y_k\)</span>
+solves the bi-diagonal least-squares trust-region problem
+<div class="math notranslate nohighlight">
+\[\min \| B_k y - \|b\| e_1 \|_2 \;\;\mbox{subject to}\;\;
+\|y\|_2 \leq \Delta.\;\;\mbox{(1)}\]</div>
+</p>
+<p>If the trust-region constraint is inactive, the solution <span class="math notranslate nohighlight">\(y_k\)</span>
+may be found, albeit indirectly, via the LSQR algorithm of Paige and Saunders
+which solves the bi-diagonal least-squares problem
+<div class="math notranslate nohighlight">
+\[\min \| B_k y - \|b\| e_1 \|_2\]</div>
+
+using a QR factorization of <span class="math notranslate nohighlight">\(B_k\)</span>. Only the most recent <span class="math notranslate nohighlight">\(v_k\)</span> and <span class="math notranslate nohighlight">\(u_{k+1}\)</span>
+are required, and their predecessors discarded, to compute <span class="math notranslate nohighlight">\(x_k\)</span> from
+<span class="math notranslate nohighlight">\(x_{k-1}\)</span>. This method has the important property that the iterates
+<span class="math notranslate nohighlight">\(y\)</span> (and thus <span class="math notranslate nohighlight">\(x_k\)</span>) generated increase in norm with <span class="math notranslate nohighlight">\(k\)</span>. Thus
+as soon as an LSQR iterate lies outside the trust-region, the required solution
+to (1) and thus to the original problem must lie on the boundary of the
+trust-region.</p>
+<p>If the solution is so constrained, the simplest strategy is to interpolate
+the last interior iterate with the newly discovered exterior one to find the
+boundary point — the so-called Steihaug-Toint point — between them.
+Once the solution is known to lie on the trust-region boundary,
+further improvement may be made by solving
+<div class="math notranslate nohighlight">
+\[\min \| B_k y - \|b\| e_1 \|_2
+\;\;\mbox{subject to}\;\; \|y\|_2 = \Delta,\]</div>
+
+for which the optimality conditions require that <span class="math notranslate nohighlight">\(y_k = y(\lambda_k)\)</span>
+where <span class="math notranslate nohighlight">\(\lambda_k\)</span> is the positive root of
+<div class="math notranslate nohighlight">
+\[B_k^T ( B_k^{} y(\lambda) - \|b\| e_1^{} ) + \lambda
+y(\lambda) = 0 \;\;\mbox{and}\;\;  \|y(\lambda)\|_2 = \Delta\]</div>
+
+The vector <span class="math notranslate nohighlight">\(y(\lambda)\)</span> is equivalently the solution to the
+regularized least-squares problem
+<div class="math notranslate nohighlight">
+\[\begin{split}\min \left \| \left(\begin{array}{c}
+B_k \\ \lambda^{1/2} I
+\end{array}\right) y - \|b\| e_1^{} \right \|_2\end{split}\]</div>
+
+and may be found efficiently. Given  <span class="math notranslate nohighlight">\(y(\lambda)\)</span>, Newton’s method
+is then used to find <span class="math notranslate nohighlight">\(\lambda_k\)</span> as the positive root of
+<span class="math notranslate nohighlight">\(\|y(\lambda)\|_2 = \Delta\)</span>. Unfortunately, unlike when the solution
+lies in the interior of the trust-region, it is not known how to recur
+<span class="math notranslate nohighlight">\(x_k\)</span> from <span class="math notranslate nohighlight">\(x_{k-1}\)</span> given <span class="math notranslate nohighlight">\(y_k\)</span>, and a second pass in which
+<span class="math notranslate nohighlight">\(x_k = V_k y_k\)</span> is regenerated is needed — this need only be done
+once <span class="math notranslate nohighlight">\(x_k\)</span> has implicitly deemed to be sufficiently close to optimality.
+As this second pass is an additional expense, a record is kept of the
+optimal objective function values for each value of <span class="math notranslate nohighlight">\(k\)</span>, and the second
+pass is only performed so far as to ensure a given fraction of the
+final optimal objective value. Large savings may be made in the second
+pass by choosing the required fraction to be significantly smaller than one.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>A complete description of the unconstrained case is given by</p>
+<blockquote>
+<div><p>C. C. Paige and M. A. Saunders,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>LSQR: an algorithm for sparse linear equations and sparse least  squares’’.
+<em>ACM Transactions on Mathematical Software</em> <strong>8(1</strong> (1982) 43–71,</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>C. C. Paige and M. A. Saunders,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>ALGORITHM 583: LSQR: an algorithm for sparse linear equations and
+sparse least squares’’.
+<em>ACM Transactions on Mathematical Software</em> <strong>8(2)</strong> (1982) 195–209.</p>
+</div></blockquote>
+<p>Additional details on how to proceed once the trust-region constraint is
+encountered are described in detail in</p>
+<blockquote>
+<div><p>C. Cartis, N. I. M. Gould and Ph. L. Toint,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>Trust-region and other regularisation of linear
+least-squares problems’’.
+<em>BIT</em> <strong>49(1)</strong> (2009) 21-53.</p>
+</div></blockquote>
+</section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -798,6 +891,16 @@ outer iteration.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions

@@ -17,6 +17,7 @@
   MODULE GALAHAD_SCU_precision
             
      USE GALAHAD_KINDS_precision
+     USE GALAHAD_SYMBOLS
 
 !      -------------------------------------------
 !      |                                         |
@@ -36,7 +37,8 @@
     PRIVATE
     PUBLIC :: SCU_restart_m_eq_0, SCU_factorize, SCU_solve,                    &
               SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate,    &
-              SCU_full_terminate, SCU_triangular, SCU_sign_determinant
+              SCU_full_terminate, SCU_triangular, SCU_sign_determinant,        &
+              SCU_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -239,7 +241,7 @@
 
       data%got_factors = .FALSE.
       IF ( matrix%m_max < 0 .OR.  matrix%class < 1 .OR.  matrix%class > 4 )    &
-        THEN ; status = - 1 ; RETURN ; ELSE ; status = 0 ; END IF
+        THEN ; status = - 1 ; RETURN ; ELSE ; status = GALAHAD_ok ; END IF
 
 !  Ensure that there is sufficient space
 
@@ -612,7 +614,7 @@
  100  CONTINUE
       data%m = matrix%m
       data%got_factors = .TRUE.
-      status = 0 ; RETURN
+      status = GALAHAD_ok ; RETURN
 
 !  End of SCU_factorize
 
@@ -798,7 +800,7 @@
       CASE ( 3 )
         X( : matrix%n ) = X( : matrix%n ) - VECTOR( : matrix%n )
       END SELECT
-      status = 0 ; RETURN
+      status = GALAHAD_ok ; RETURN
 
 !  End of SCU_solve
 
@@ -1145,7 +1147,7 @@
 
       data%m = data%m + 1
       matrix%m = data%m
-      status = 0 ; RETURN
+      status = GALAHAD_ok ; RETURN
 
 !  End of SCU_append
 
@@ -1595,7 +1597,7 @@
 
       data%m = data%m - 1
       matrix%m = data%m
-      status = 0 ; RETURN
+      status = GALAHAD_ok ; RETURN
 
 !  END OF SCU_delete
 
@@ -1773,7 +1775,7 @@
       R( mnew * ( mnew + 1 ) / 2 ) = SPIKE( mnew )
 !     write(6,*) ' new diag = ', abs( SPIKE( mnew ) )
       IF ( ABS( SPIKE( mnew ) ) > epsmch ) THEN
-        status = 0
+        status = GALAHAD_ok
       ELSE
         status = - 9
       END IF
@@ -1935,7 +1937,7 @@
 
 !  Deallocate the data arrays Q, R and W
 
-      status = 0 ; inform%alloc_status = 0
+      status = GALAHAD_ok ; inform%alloc_status = 0
       IF ( data%class <= 2 ) THEN
         IF ( ALLOCATED( data%Q ) ) DEALLOCATE( data%Q, STAT = status )
         IF ( status /= 0 ) inform%alloc_status = status
@@ -1995,6 +1997,42 @@
 !  End of subroutine SCU_full_terminate
 
      END SUBROUTINE SCU_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  S C U _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE SCU_information( data, inform, status )
+
+!  return solver information during or after solution by SCU
+!  See SCU_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SCU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%scu_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SCU_information
+
+     END SUBROUTINE SCU_information
 
 !  End of module GALAHAD_SCU
 

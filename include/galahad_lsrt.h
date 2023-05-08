@@ -23,13 +23,13 @@
 
   Given a real \f$m\f$ by \f$n\f$ matrix \f$A\f$, a real \f$m\f$ vector \f$b\f$ and
   scalars \f$\sigma>0\f$ and \f$p \geq 2\f$, this package finds an
-  <b>approximate minimizer of the regularised linear-least-squares
+  <b>approximate minimizer of the regularized linear-least-squares
   objective function
   \f$\frac{1}{2}\| A x - b\|_2^2 + \frac{1}{p} \sigma \| x \|_2^p\f$.
   </b>
   This problem commonly occurs as a subproblem in nonlinear
-  optimization calculations involving cubic regularisation,
-  and may be used to regularise the solution
+  optimization calculations involving cubic regularization,
+  and may be used to regularize the solution
   of under-determined or ill-conditioned linear least-squares problems.
   The method may be suitable for large \f$m\f$ and/or \f$n\f$ as no factorization
   involving \f$A\f$ is required. Reverse communication is used to obtain
@@ -71,11 +71,11 @@
   \f$U_k\f$ and  \f$V_k\f$ have orthonormal columns
   and \f$e_1\f$ is the first unit vector.  The solution sought is of the
   form \f$x_k = V_k y_k\f$, where \f$y_k\f$
-  solves the bi-diagonal regularised least-squares problem
-  \f[(1) \;\;\; \min \| B_k y - \|b\| e_1 \|_2 + \frac{1}{p} \sigma \|  y \|_2^p.\f]
+  solves the bi-diagonal regularized least-squares problem
+  \f[(1) \;\;\; \min \frac{1}{2} \| B_k y - \|b\| e_1 \|_2^2 + \frac{1}{p} \sigma \|  y \|_2^p.\f]
 \manonly
 \n
-   (1) min || B_k y - ||b|| e_1 ||_2  + 1/p sigma || y||^p_2.
+   (1) min 1/2 || B_k y - ||b|| e_1 ||_2^2  + 1/p sigma || y||^p_2.
 \n
 \endmanonly
   To minimize (1), the optimality conditions
@@ -84,10 +84,10 @@
 \n
 \n
 \endmanonly
-  where \f$\lambda = \sigma \|y(\lambda)\|_2^{p-2} \|\f$,
+  where \f$\lambda = \sigma \|y(\lambda)\|_2^{p-2} \f$,
   are used as the basis of an iteration.
   The vector \f$y(\lambda)\f$ is equivalently the solution to the
-  regularised least-squares problem
+  regularized least-squares problem
   \f[(2) \;\;\; \min  \left \| \vect{ B_k \\ \lambda^{\frac{1}{2}} I } y - \|b\| e_1^{} \right \|_2.\f]
 \manonly
 \n
@@ -120,7 +120,7 @@
 
   \subsection lsrt_references Reference
 
-  A complete description of the un- and quadratically-regularised
+  A complete description of the un- and quadratically-regularized
   cases is given by
 
   C. C. Paige and M. A. Saunders,

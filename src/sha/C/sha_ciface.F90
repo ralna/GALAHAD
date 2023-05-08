@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -25,7 +25,7 @@
         f_sha_read_specfile  => SHA_read_specfile,                             &
 !       f_sha_import         => SHA_import,                                    &
 !       f_sha_reset_control  => SHA_reset_control,                             &
-!       f_sha_information    => SHA_information,                               &
+        f_sha_information    => SHA_information,                               &
         f_sha_terminate      => SHA_terminate
 
     IMPLICIT NONE
@@ -273,6 +273,40 @@
   RETURN
 
   END SUBROUTINE sha_read_specfile
+
+!  --------------------------------------
+!  C interface to fortran sha_information
+!  --------------------------------------
+
+  SUBROUTINE sha_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_SHA_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( sha_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_sha_full_data_type ), POINTER :: fdata
+  TYPE ( f_sha_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain SHA solution information
+
+  CALL f_sha_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE sha_information
 
 !  ------------------------------------
 !  C interface to fortran sha_terminate

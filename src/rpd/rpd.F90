@@ -76,6 +76,7 @@
                 RPD_get_xlu, RPD_get_clu,                                      &
                 RPD_get_H, RPD_get_A, RPD_get_H_c, RPD_get_x_type,             &
                 RPD_get_x, RPD_get_y, RPD_get_z, RPD_terminate,                &
+                RPD_full_initialize, RPD_full_terminate, RPD_information,      &
                 QPT_problem_type
 
 !----------------------
@@ -2838,6 +2839,42 @@
 !  end of subroutine RPD_get_z
 
      END SUBROUTINE RPD_get_z
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  R P D _ i n f o r m a t i o n   S U B R O U T I N E  -*-
+
+     SUBROUTINE RPD_information( data, inform, status )
+
+!  return solver information during or after solution by RPD
+!  See RPD_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( RPD_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%rpd_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine RPD_information
+
+     END SUBROUTINE RPD_information
 
 !  End of module RPD
 
