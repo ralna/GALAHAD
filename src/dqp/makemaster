@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD DQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2022-01-06
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -28,12 +28,22 @@ DEPENDS = cdqp dlp l1qp qp
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_sls \
-                make_ciface_sbls make_ciface_gltr \
-                make_ciface_scu make_ciface_rpd
+                make_ciface_sbls make_ciface_gltr make_ciface_scu \
+                make_ciface_rpd
 
 #  other C interface packages that depend on current interface package 
 
 CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_sls make_pyiface_sbls make_pyiface_gltr \
+                 make_pyiface_scu make_pyiface_rpd
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

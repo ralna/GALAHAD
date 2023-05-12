@@ -28,7 +28,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool lhs_update_control(struct lhs_control_type *control,
+// NB not static as it is used for nested control within BGO Python interfaces
+bool lhs_update_control(struct lhs_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -101,7 +102,7 @@ static bool lhs_update_control(struct lhs_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within BGO Python interface
 PyObject* lhs_make_options_dict(const struct lhs_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -125,7 +126,8 @@ PyObject* lhs_make_options_dict(const struct lhs_control_type *control){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* lhs_make_inform_dict(const struct lhs_inform_type *inform){
+// NB not static as it is used for nested control within BGO Python interfaces
+PyObject* lhs_make_inform_dict(const struct lhs_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

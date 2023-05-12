@@ -1,7 +1,7 @@
 //* \file dqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 09:40 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 15:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -18,7 +18,7 @@
 #include "galahad_python.h"
 #include "galahad_dqp.h"
 
-/* Nested FDC, SLS, SBLS, SCU and RPD control and inform prototypes */
+/* Nested FDC, SLS, SBLS, GLTR, SCU and RPD control and inform prototypes */
 bool fdc_update_control(struct fdc_control_type *control,
                         PyObject *py_options);
 PyObject* fdc_make_options_dict(const struct fdc_control_type *control);
@@ -31,18 +31,12 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool roots_update_control(struct roots_control_type *control,
-//                         PyObject *py_options);
-//PyObject* roots_make_options_dict(const struct roots_control_type *control);
-//PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
-//bool scu_update_control(struct scu_control_type *control,
-//                        PyObject *py_options);
-//PyObject* scu_make_options_dict(const struct scu_control_type *control);
-//PyObject* scu_make_inform_dict(const struct scu_inform_type *inform);
-//bool rpd_update_control(struct rpd_control_type *control,
-//                        PyObject *py_options);
-//PyObject* rpd_make_options_dict(const struct rpd_control_type *control);
-//PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
+bool gltr_update_control(struct gltr_control_type *control,
+                         PyObject *py_options);
+PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
+PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
+PyObject* scu_make_inform_dict(const struct scu_inform_type *inform);
+PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -639,12 +633,12 @@ static PyObject* dqp_make_inform_dict(const struct dqp_inform_type *inform){
                           sbls_make_inform_dict(&inform->sbls_inform));
     // PyDict_SetItemString(py_inform, "gltr_inform",
     //                      gltr_make_inform_dict(&inform->gltr_inform));
-    // PyDict_SetItemString(py_inform, "scu_status",
-    //                      PyLong_FromLong(inform->scu_status));
-    // PyDict_SetItemString(py_inform, "scu_inform",
-    //                      scu_make_inform_dict(&inform->scu_inform));
-    // PyDict_SetItemString(py_inform, "rpd_inform",
-    //                      rpd_make_inform_dict(&inform->rpd_inform));
+    PyDict_SetItemString(py_inform, "scu_status",
+                         PyLong_FromLong(inform->scu_status));
+    //PyDict_SetItemString(py_inform, "scu_inform",
+    //                     scu_make_inform_dict(&inform->scu_inform));
+    PyDict_SetItemString(py_inform, "rpd_inform",
+                         rpd_make_inform_dict(&inform->rpd_inform));
 
     return py_inform;
 }

@@ -1,7 +1,7 @@
 //* \file rqs_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-13 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 15:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RQS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -18,15 +18,15 @@
 #include "galahad_python.h"
 #include "galahad_rqs.h"
 
-/* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
+/* Nested SLS and IR control and inform prototypes */
 bool sls_update_control(struct sls_control_type *control,
                         PyObject *py_options);
 PyObject* sls_make_options_dict(const struct sls_control_type *control);
 PyObject* sls_make_inform_dict(const struct sls_inform_type *inform);
-//bool ir_update_control(struct ir_control_type *control,
-//                        PyObject *py_options);
-//PyObject* ir_make_options_dict(const struct ir_control_type *control);
-//PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
+bool ir_update_control(struct ir_control_type *control,
+                        PyObject *py_options);
+PyObject* ir_make_options_dict(const struct ir_control_type *control);
+PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -41,8 +41,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool rqs_update_control(struct rqs_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within ARC Python interface
+bool rqs_update_control(struct rqs_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -224,11 +225,11 @@ static bool rqs_update_control(struct rqs_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "ir_options") == 0){
-        //    if(!ir_update_control(&control->ir_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "ir_options") == 0){
+            if(!ir_update_control(&control->ir_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -242,7 +243,7 @@ static bool rqs_update_control(struct rqs_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within ARC Python interface
 PyObject* rqs_make_options_dict(const struct rqs_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -300,8 +301,8 @@ PyObject* rqs_make_options_dict(const struct rqs_control_type *control){
                          PyUnicode_FromString(control->prefix));
     PyDict_SetItemString(py_options, "sls_options",
                          sls_make_options_dict(&control->sls_control));
-    //PyDict_SetItemString(py_options, "ir_options",
-    //                     ir_make_options_dict(&control->ir_control));
+    PyDict_SetItemString(py_options, "ir_options",
+                         ir_make_options_dict(&control->ir_control));
 
     return py_options;
 }
@@ -354,7 +355,8 @@ static PyObject* rqs_make_history_dict(const struct rqs_history_type *history){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform){
+// NB not static as it is used for nested control within ARC Python interface
+PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -404,8 +406,8 @@ static PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform){
     // Set dictionaries from subservient packages
     PyDict_SetItemString(py_inform, "sls_inform",
                          sls_make_inform_dict(&inform->sls_inform));
-    //PyDict_SetItemString(py_inform, "ir_inform",
-    //                     ir_make_inform_dict(&inform->ir_inform));
+    PyDict_SetItemString(py_inform, "ir_inform",
+                         ir_make_inform_dict(&inform->ir_inform));
 
     return py_inform;
 }

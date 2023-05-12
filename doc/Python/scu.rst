@@ -120,7 +120,8 @@ functions
            BD_val and BD_row are no smaller than 
            BD_col_start(m+1)-1, and re-enter. 
            (BD_col_start(m+2)-1 for scu_append} 
-           and BD_col_start(m+1)+ |col_delmatrixrow_del|-1} for scu_delete ). 
+           and BD_col_start(m+1) 
+           + $|$col_delmatrix.row_del$|$-1} for scu_delete ). 
 
          * **-7**
 
@@ -132,7 +133,7 @@ functions
            CD_row_start(m+1)-1 
            CD_row_start(m+2)-1 for scu_append
            and CD_row_start(m+1)+ 
-           (|col_del-matrix.row_del|-1} for scu__delete ). 
+           ($|$col_delmatrix.row_del$|$-1} for scu_delete ). 
 
          * **-8**
 

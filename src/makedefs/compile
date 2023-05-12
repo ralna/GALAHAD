@@ -1,7 +1,7 @@
 #  standard GALAHAD package compilation
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-01-29
+#  This version: 2023-05-11
 
 #  package compilation
 
@@ -59,8 +59,10 @@ $(package)_pyiface.o: $(LG)($(package)_$(PRECIS).o) \
 
 $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
-	$(SED) -f $(CISEDS) ../$(package)/Python/$(package)_pyiface.c \
-           > $(OBJ)/$(package)_pyiface.c
+	$(CP) ../$(package)/Python/$(package)_pyiface.c \
+           $(OBJ)/$(package)_pyiface.c
+#	$(SED) -f $(CISEDS) ../$(package)/Python/$(package)_pyiface.c \
+#          > $(OBJ)/$(package)_pyiface.c
 	cd $(OBJ); $(CC) -o $(package)_pyiface.o $(CFLAGS) \
            $(package)_pyiface.c $(PYINCLUDES) \
             || ( printf ' %-26s' "=> Disabling optimization " ; \

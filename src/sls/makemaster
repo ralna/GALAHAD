@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD SLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-29
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -31,7 +31,16 @@ CDEPENDENCIES = make_ciface_sls_deps
 
 #  other C interface packages that depend on current interface package
 
-CDEPENDS = ir sbls trs rqs
+CDEPENDS = ir_ciface sbls_ciface trs_ciface rqs_ciface
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES =
+
+#  other python interface packages that depend on current interface package
+
+PYEPENDS = ir_pyiface sbls_pyiface trs_pyiface rqs_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

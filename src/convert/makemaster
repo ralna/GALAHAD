@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD CONVERT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -23,6 +23,24 @@ DEPENDENCIES = make_dummy make_zd11 make_space make_specfile
 #  other packages that depend on package
 
 DEPENDS = miqr
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common
+
+#  other C interface packages that depend on current interface package 
+
+CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES =
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

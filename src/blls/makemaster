@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD BLLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-28
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -27,13 +27,22 @@ DEPENDS =
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
-CDEPENDENCIES = make_ciface_common make_sbls_deps make_ciface_sbls \
+CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps make_ciface_sbls \
                 make_ciface_gltr make_ciface_convert make_ciface_fdc \
                 make_ciface_fit make_ciface_scu make_ciface_ir make_ciface_cro
 
 #  other C interface packages that depend on current interface package
 
 CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_sbls_pyiface_deps make_pyiface_sbls make_pyiface_convert
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

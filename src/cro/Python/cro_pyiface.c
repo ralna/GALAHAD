@@ -1,7 +1,7 @@
 //* \file cro_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-16 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 14:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CRO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -33,11 +33,11 @@ PyObject* uls_make_options_dict(const struct uls_control_type *control);
 PyObject* uls_make_inform_dict(const struct uls_inform_type *inform);
 bool uls_update_control(struct uls_control_type *control,
                         PyObject *py_options);
-//bool ir_update_control(struct ir_control_type *control,
-//                        PyObject *py_options);
-//PyObject* scu_make_inform_dict(const struct scu_inform_type *inform);
-//PyObject* ir_make_options_dict(const struct ir_control_type *control);
-//PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
+bool ir_update_control(struct ir_control_type *control,
+                        PyObject *py_options);
+PyObject* ir_make_options_dict(const struct ir_control_type *control);
+PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
+PyObject* scu_make_inform_dict(const struct scu_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -49,8 +49,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool cro_update_control(struct cro_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within QP Python interfaces
+bool cro_update_control(struct cro_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -163,11 +164,11 @@ static bool cro_update_control(struct cro_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "ir_options") == 0){
-        //    if(!ir_update_control(&control->ir_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "ir_options") == 0){
+            if(!ir_update_control(&control->ir_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -181,7 +182,7 @@ static bool cro_update_control(struct cro_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within QP Python interfaces
 PyObject* cro_make_options_dict(const struct cro_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -217,8 +218,8 @@ PyObject* cro_make_options_dict(const struct cro_control_type *control){
                          sbls_make_options_dict(&control->sbls_control));
     PyDict_SetItemString(py_options, "uls_options",
                          uls_make_options_dict(&control->uls_control));
-    //PyDict_SetItemString(py_options, "ir_options",
-    //                     ir_make_options_dict(&control->ir_control));
+    PyDict_SetItemString(py_options, "ir_options",
+                         ir_make_options_dict(&control->ir_control));
 
     return py_options;
 }
@@ -255,7 +256,8 @@ static PyObject* cro_make_time_dict(const struct cro_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* cro_make_inform_dict(const struct cro_inform_type *inform){
+// NB not static as it is used for nested control within QP Python interfaces
+PyObject* cro_make_inform_dict(const struct cro_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -278,12 +280,12 @@ static PyObject* cro_make_inform_dict(const struct cro_inform_type *inform){
                          sbls_make_inform_dict(&inform->sbls_inform));
     PyDict_SetItemString(py_inform, "uls_inform",
                          uls_make_inform_dict(&inform->uls_inform));
-    //PyDict_SetItemString(py_inform, "scu_status",
-    //                     PyLong_FromLong(inform->scu_status));
+    PyDict_SetItemString(py_inform, "scu_status",
+                         PyLong_FromLong(inform->scu_status));
     //PyDict_SetItemString(py_inform, "scu_inform",
     //                     scu_make_inform_dict(&inform->scu_inform));
-    //PyDict_SetItemString(py_inform, "ir_inform",
-    //                     ir_make_inform_dict(&inform->ir_inform));
+    PyDict_SetItemString(py_inform, "ir_inform",
+                         ir_make_inform_dict(&inform->ir_inform));
 
     return py_inform;
 }
