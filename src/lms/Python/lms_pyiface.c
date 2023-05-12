@@ -1,7 +1,7 @@
 //* \file lms_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-03 AT 07:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 08:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LMS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -28,7 +28,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool lms_update_control(struct lms_control_type *control,
+// NB not static as it is used for nested control within TRU Python interfaces
+bool lms_update_control(struct lms_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -113,7 +114,7 @@ static bool lms_update_control(struct lms_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within TRU Python interface
 PyObject* lms_make_options_dict(const struct lms_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -167,7 +168,8 @@ static PyObject* lms_make_time_dict(const struct lms_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* lms_make_inform_dict(const struct lms_inform_type *inform){
+// NB not static as it is used for nested control within TRU Python interfaces
+PyObject* lms_make_inform_dict(const struct lms_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD LPB package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2022-01-06
+#  This version: 2023-05-12
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -35,6 +35,17 @@ CDEPENDENCIES = make_ciface_common make_sbls_deps make_ciface_sbls \
 #  other C interface packages that depend on current interface package 
 
 CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls make_pyiface_fdc \
+                 make_pyiface_scu make_pyiface_fit make_pyiface_ir \
+                 make_pyiface_cro make_pyiface_rpd
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

@@ -1,7 +1,7 @@
 //* \file tru_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-04-02 AT 12:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 14:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRU PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -18,27 +18,35 @@
 #include "galahad_python.h"
 #include "galahad_tru.h"
 
-/* Nested TRS, GLTR, PSLS, LMS and SHA control and inform prototypes */
-//bool trs_update_control(struct trs_control_type *control,
-//                        PyObject *py_options);
-//PyObject* trs_make_options_dict(const struct trs_control_type *control);
-//PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
-//bool gltr_update_control(struct gltr_control_type *control,
-//                         PyObject *py_options);
-//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
-//PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
-//bool psls_update_control(struct psls_control_type *control,
-//                         PyObject *py_options);
-//PyObject* psls_make_options_dict(const struct psls_control_type *control);
-//PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
-//bool lms_update_control(struct lms_control_type *control,
-//                        PyObject *py_options);
-//PyObject* lms_make_options_dict(const struct lms_control_type *control);
-//PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
-//bool sha_update_control(struct sha_control_type *control,
-//                        PyObject *py_options);
-//PyObject* sha_make_options_dict(const struct sha_control_type *control);
-//PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
+/* Nested TRS, GLTR, DPS, PSLS, LMS, SEC & SHA control and inform prototypes */
+bool trs_update_control(struct trs_control_type *control,
+                        PyObject *py_options);
+PyObject* trs_make_options_dict(const struct trs_control_type *control);
+PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
+bool gltr_update_control(struct gltr_control_type *control,
+                         PyObject *py_options);
+PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
+PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
+bool dps_update_control(struct dps_control_type *control,
+                         PyObject *py_options);
+PyObject* dps_make_options_dict(const struct dps_control_type *control);
+PyObject* dps_make_inform_dict(const struct dps_inform_type *inform);
+bool psls_update_control(struct psls_control_type *control,
+                         PyObject *py_options);
+PyObject* psls_make_options_dict(const struct psls_control_type *control);
+PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
+bool lms_update_control(struct lms_control_type *control,
+                        PyObject *py_options);
+PyObject* lms_make_options_dict(const struct lms_control_type *control);
+PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
+bool sec_update_control(struct sec_control_type *control,
+                        PyObject *py_options);
+PyObject* sec_make_options_dict(const struct sec_control_type *control);
+PyObject* sec_make_inform_dict(const struct sec_inform_type *inform);
+bool sha_update_control(struct sha_control_type *control,
+                        PyObject *py_options);
+PyObject* sha_make_options_dict(const struct sha_control_type *control);
+PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -426,46 +434,46 @@ static bool tru_update_control(struct tru_control_type *control,
         }
 
         // Parse nested control options
-        //if(strcmp(key_name, "trs_options") == 0){
-        //    if(!trs_update_control(&control->trs_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "dps_options") == 0){
-        //    if(!dps_update_control(&control->dps_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "gltr_options") == 0){
-        //    if(!gltr_update_control(&control->gltr_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "psls_options") == 0){
-        //    if(!psls_update_control(&control->psls_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "lms_options") == 0){
-        //    if(!lms_update_control(&control->lms_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "lms_cont_options") == 0){
-        //    if(!lms_update_control(&control->lms_control_prec, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "sec_options") == 0){
-        //    if(!sec_update_control(&control->sec_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "sha_options") == 0){
-        //    if(!sha_update_control(&control->sha_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "trs_options") == 0){
+            if(!trs_update_control(&control->trs_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "dps_options") == 0){
+            if(!dps_update_control(&control->dps_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "gltr_options") == 0){
+            if(!gltr_update_control(&control->gltr_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "psls_options") == 0){
+            if(!psls_update_control(&control->psls_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "lms_options") == 0){
+            if(!lms_update_control(&control->lms_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "lms_prec_options") == 0){
+            if(!lms_update_control(&control->lms_control_prec, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sec_options") == 0){
+            if(!sec_update_control(&control->sec_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sha_options") == 0){
+            if(!sha_update_control(&control->sha_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -563,22 +571,22 @@ PyObject* tru_make_options_dict(const struct tru_control_type *control){
                          PyBool_FromLong(control->deallocate_error_fatal));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "trs_options",
-    //                     trs_make_options_dict(&control->trs_control));
-    //PyDict_SetItemString(py_options, "gltr_options",
-    //                     gltr_make_options_dict(&control->gltr_control));
-    //PyDict_SetItemString(py_options, "dps_options",
-    //                     dps_make_options_dict(&control->dps_control));
-    //PyDict_SetItemString(py_options, "psls_options",
-    //                     psls_make_options_dict(&control->psls_control));
-    //PyDict_SetItemString(py_options, "lms_options",
-    //                     lms_make_options_dict(&control->lms_control));
-    //PyDict_SetItemString(py_options, "lms_cont_options",
-    //                     lms_cont_make_options_dict(&control->lms_cont_control));
-    //PyDict_SetItemString(py_options, "sec_options",
-    //                     sec_make_options_dict(&control->sec_control));
-    //PyDict_SetItemString(py_options, "sha_options",
-    //                     sha_make_options_dict(&control->sha_control));
+    PyDict_SetItemString(py_options, "trs_options",
+                         trs_make_options_dict(&control->trs_control));
+    PyDict_SetItemString(py_options, "gltr_options",
+                         gltr_make_options_dict(&control->gltr_control));
+    PyDict_SetItemString(py_options, "dps_options",
+                         dps_make_options_dict(&control->dps_control));
+    PyDict_SetItemString(py_options, "psls_options",
+                         psls_make_options_dict(&control->psls_control));
+    PyDict_SetItemString(py_options, "lms_options",
+                         lms_make_options_dict(&control->lms_control));
+    PyDict_SetItemString(py_options, "lms_prec_options",
+                         lms_make_options_dict(&control->lms_control_prec));
+    PyDict_SetItemString(py_options, "sec_options",
+                         sec_make_options_dict(&control->sec_control));
+    PyDict_SetItemString(py_options, "sha_options",
+                         sha_make_options_dict(&control->sha_control));
 
     return py_options;
 }
@@ -659,22 +667,22 @@ static PyObject* tru_make_inform_dict(const struct tru_inform_type *inform){
     PyDict_SetItemString(py_inform, "time",
                          tru_make_time_dict(&inform->time));
     // Set TRS, DPS, GLTR, PSLS, LMS, SEC and SHA nested dictionaries
-    //PyDict_SetItemString(py_inform, "trs_inform",
-    //                     trs_make_inform_dict(&inform->trs_inform));
-    //PyDict_SetItemString(py_inform, "dps_inform",
-    //                     dps_make_inform_dict(&inform->dps_inform));
-    //PyDict_SetItemString(py_inform, "gltr_inform",
-    //                     gltr_make_inform_dict(&inform->gltr_inform));
-    //PyDict_SetItemString(py_inform, "psls_inform",
-    //                     psls_make_inform_dict(&inform->psls_inform));
-    //PyDict_SetItemString(py_inform, "lms_inform",
-    //                     lms_make_inform_dict(&inform->lms_inform));
-    //PyDict_SetItemString(py_inform, "lms_info_inform",
-    //                     lms_make_inform_dict(&inform->lms_info_inform));
-    //PyDict_SetItemString(py_inform, "sec_inform",
-    //                     sec_make_inform_dict(&inform->sec_inform));
-    //PyDict_SetItemString(py_inform, "sha_inform",
-    //                     sha_make_inform_dict(&inform->sha_inform));
+    PyDict_SetItemString(py_inform, "trs_inform",
+                         trs_make_inform_dict(&inform->trs_inform));
+    PyDict_SetItemString(py_inform, "dps_inform",
+                         dps_make_inform_dict(&inform->dps_inform));
+    PyDict_SetItemString(py_inform, "gltr_inform",
+                         gltr_make_inform_dict(&inform->gltr_inform));
+    PyDict_SetItemString(py_inform, "psls_inform",
+                         psls_make_inform_dict(&inform->psls_inform));
+    PyDict_SetItemString(py_inform, "lms_inform",
+                         lms_make_inform_dict(&inform->lms_inform));
+    PyDict_SetItemString(py_inform, "lms_prec_inform",
+                         lms_make_inform_dict(&inform->lms_inform_prec));
+    PyDict_SetItemString(py_inform, "sec_inform",
+                         sec_make_inform_dict(&inform->sec_inform));
+    PyDict_SetItemString(py_inform, "sha_inform",
+                         sha_make_inform_dict(&inform->sha_inform));
 
     return py_inform;
 }

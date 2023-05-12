@@ -71,6 +71,7 @@
     TYPE ( scu_inform_type ), INTENT( OUT ) :: cinform
 
     ! Integers
+    cinform%status = 0
     cinform%alloc_status = finform%alloc_status
     cinform%inertia( 1 : 3 ) = finform%inertia( 1 : 3 )
     RETURN

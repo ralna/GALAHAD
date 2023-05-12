@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD PSLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-02-09
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -30,15 +30,20 @@ DEPENDS = arc cqps ermo ism nls tru
 
 CDEPENDENCIES = make_ciface_sls_deps make_ciface_sls make_ciface_mi28
 
+#  other C interface packages that depend on current interface package
+
+CDEPENDS = arc_ciface nls_ciface tru_ciface \
+           cqps_ciface ermo_ciface ism_ciface
+
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
 PYDEPENDENCIES = make_pyiface_sls
-#PYDEPENDENCIES = make_pyiface_sls make_pyiface_mi28
 
-#  other C interface packages that depend on current interface package
+#  other python interface packages that depend on current interface package 
 
-CDEPENDS = arc cqps ermo ism nls tru
+PYDEPENDS = arc_pyiface nls_pyiface tru_pyiface \
+            cqps_pyiface ermo_pyiface ism_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

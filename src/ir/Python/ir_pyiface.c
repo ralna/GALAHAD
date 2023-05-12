@@ -1,7 +1,7 @@
 //* \file ir_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-03 AT 07:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-11 AT 08:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_IR PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -28,8 +28,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool ir_update_control(struct ir_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within CRO Python interface
+bool ir_update_control(struct ir_control_type *control,
+                       PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -125,7 +126,7 @@ static bool ir_update_control(struct ir_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within CRO Python interface
 PyObject* ir_make_options_dict(const struct ir_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -157,7 +158,8 @@ PyObject* ir_make_options_dict(const struct ir_control_type *control){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* ir_make_inform_dict(const struct ir_inform_type *inform){
+// NB not static as it is used for nested control within CRO Python interface
+PyObject* ir_make_inform_dict(const struct ir_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

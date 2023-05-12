@@ -1,7 +1,7 @@
 //* \file eqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-05 AT 12:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -27,10 +27,10 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool gltr_update_control(struct gltr_control_type *control,
-//                         PyObject *py_options);
-//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
-//PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
+bool gltr_update_control(struct gltr_control_type *control,
+                         PyObject *py_options);
+PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
+PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -270,11 +270,11 @@ static bool eqp_update_control(struct eqp_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "gltr_options") == 0){
-        //    if(!gltr_update_control(&control->gltr_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "gltr_options") == 0){
+            if(!gltr_update_control(&control->gltr_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -362,12 +362,11 @@ PyObject* eqp_make_options_dict(const struct eqp_control_type *control){
                          fdc_make_options_dict(&control->fdc_control));
     PyDict_SetItemString(py_options, "sbls_options",
                          sbls_make_options_dict(&control->sbls_control));
-    // PyDict_SetItemString(py_options, "gltr_options",
-    //                     gltr_make_options_dict(&control->gltr_control));
+    PyDict_SetItemString(py_options, "gltr_options",
+                        gltr_make_options_dict(&control->gltr_control));
 
     return py_options;
 }
-
 
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
 
@@ -431,8 +430,8 @@ static PyObject* eqp_make_inform_dict(const struct eqp_inform_type *inform){
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
                         sbls_make_inform_dict(&inform->sbls_inform));
-    //PyDict_SetItemString(py_inform, "gltr_inform",
-    //                     gltr_make_inform_dict(&inform->gltr_inform));
+    PyDict_SetItemString(py_inform, "gltr_inform",
+                         gltr_make_inform_dict(&inform->gltr_inform));
 
     return py_inform;
 }

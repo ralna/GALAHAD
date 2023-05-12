@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD DPS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -25,6 +25,24 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
 #  other packages that depend on package
 
 DEPENDS = arc tru
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_sls_ciface
+
+#  other C interface packages that depend on current interface package 
+
+CDEPENDS = arc_ciface tru_ciface 
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_sls_pyiface
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS = arc_pyiface tru_pyiface 
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

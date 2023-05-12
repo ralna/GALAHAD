@@ -2333,7 +2333,8 @@ make_pyiface_rqs:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
 
 make_pyiface_sbls_deps: make_pyiface_sls_deps make_pyiface_sls \
-                       make_pyiface_uls_deps make_pyiface_uls
+                        make_pyiface_uls_deps make_pyiface_uls \
+                        make_pyiface_roots
 
 make_pyiface_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
@@ -2370,17 +2371,16 @@ make_pyiface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_pyiface_sls_deps: make_pyiface_sls_$(PRECIS)
-
-make_pyiface_sls_deps_single: make_pyiface_sils make_pyiface_ssids_dum \
-                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
-                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
-                       make_pyiface_mc68
-
-make_pyiface_sls_deps_double: make_pyiface_sils make_pyiface_$(SSIDS) \
-                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
-                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
-                       make_pyiface_mc68
+#make_pyiface_sls_deps: make_pyiface_sls_deps_$(PRECIS)
+#make_pyiface_sls_deps_single: make_pyiface_sils make_pyiface_ssids_dum \
+#                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
+#                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
+#                       make_pyiface_mc68
+#make_pyiface_sls_deps_double: make_pyiface_sils make_pyiface_$(SSIDS) \
+#                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
+#                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
+#                       make_pyiface_mc68
+make_pyiface_sls_deps: make_pyiface_sils
 
 make_pyiface_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -2447,7 +2447,8 @@ make_pyiface_ugo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 
-make_pyiface_uls_deps: make_pyiface_gls make_pyiface_ma48
+#make_pyiface_uls_deps: make_pyiface_gls make_pyiface_ma48
+make_pyiface_uls_deps: make_pyiface_gls
 
 make_pyiface_uls:
 	( cd $(GALAHAD)/src/uls ; \

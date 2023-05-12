@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 12:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -18,27 +18,27 @@
 #include "galahad_python.h"
 #include "galahad_nls.h"
 
-/* Nested TRS, GLTR, PSLS, LMS and SHA control and inform prototypes */
-//bool trs_update_control(struct trs_control_type *control,
-//                        PyObject *py_options);
-//PyObject* trs_make_options_dict(const struct trs_control_type *control);
-//PyObject* trs_make_inform_dict(const struct trs_inform_type *inform);
-//bool gltr_update_control(struct gltr_control_type *control,
-//                         PyObject *py_options);
-//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
-//PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
+/* Nested RQS, GLRT, PSLS, LMS and SHA control and inform prototypes */
+bool rqs_update_control(struct rqs_control_type *control,
+                        PyObject *py_options);
+PyObject* rqs_make_options_dict(const struct rqs_control_type *control);
+PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform);
+bool glrt_update_control(struct glrt_control_type *control,
+                         PyObject *py_options);
+PyObject* glrt_make_options_dict(const struct glrt_control_type *control);
+PyObject* glrt_make_inform_dict(const struct glrt_inform_type *inform);
 bool psls_update_control(struct psls_control_type *control,
                          PyObject *py_options);
 PyObject* psls_make_options_dict(const struct psls_control_type *control);
 PyObject* psls_make_inform_dict(const struct psls_inform_type *inform);
-//bool lms_update_control(struct lms_control_type *control,
-//                        PyObject *py_options);
-//PyObject* lms_make_options_dict(const struct lms_control_type *control);
-//PyObject* lms_make_inform_dict(const struct lms_inform_type *inform);
-//bool sha_update_control(struct sha_control_type *control,
-//                        PyObject *py_options);
-//PyObject* sha_make_options_dict(const struct sha_control_type *control);
-//PyObject* sha_make_inform_dict(const struct sha_inform_type *inform);
+bool bsc_update_control(struct bsc_control_type *control,
+                        PyObject *py_options);
+PyObject* bsc_make_options_dict(const struct bsc_control_type *control);
+PyObject* bsc_make_inform_dict(const struct bsc_inform_type *inform);
+bool roots_update_control(struct roots_control_type *control,
+                        PyObject *py_options);
+PyObject* roots_make_options_dict(const struct roots_control_type *control);
+PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -505,31 +505,31 @@ static bool nls_update_subproblem_control(
             continue;
         }
 
-        //if(strcmp(key_name, "rqs_options") == 0){
-        //    if(!rqs_update_control(&control->rqs_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "glrt_options") == 0){
-        //    if(!glrt_update_control(&control->glrt_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "rqs_options") == 0){
+            if(!rqs_update_control(&control->rqs_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "glrt_options") == 0){
+            if(!glrt_update_control(&control->glrt_control, value))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "psls_options") == 0){
             if(!psls_update_control(&control->psls_control, value))
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "bsc_options") == 0){
-        //    if(!bsc_update_control(&control->bsc_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "roots_options") == 0){
-        //    if(!roots_update_control(&control->roots_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "bsc_options") == 0){
+            if(!bsc_update_control(&control->bsc_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "roots_options") == 0){
+            if(!roots_update_control(&control->roots_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -827,31 +827,31 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "rqs_options") == 0){
-        //    if(!rqs_update_control(&control->rqs_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "glrt_options") == 0){
-        //    if(!glrt_update_control(&control->glrt_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "rqs_options") == 0){
+            if(!rqs_update_control(&control->rqs_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "glrt_options") == 0){
+            if(!glrt_update_control(&control->glrt_control, value))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "psls_options") == 0){
             if(!psls_update_control(&control->psls_control, value))
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "bsc_options") == 0){
-        //    if(!bsc_update_control(&control->bsc_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "roots_options") == 0){
-        //    if(!roots_update_control(&control->roots_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "bsc_options") == 0){
+            if(!bsc_update_control(&control->bsc_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "roots_options") == 0){
+            if(!roots_update_control(&control->roots_control, value))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "subproblem_options") == 0){
             if(!nls_update_subproblem_control(&control->subproblem_control,
                                               value))
@@ -963,16 +963,16 @@ static PyObject* nls_make_subproblem_options_dict(const struct
                          PyBool_FromLong(control->deallocate_error_fatal));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "rqs_options",
-    //                     rqs_make_options_dict(&control->rqs_control));
-    //PyDict_SetItemString(py_options, "glrt_options",
-    //                     glrt_make_options_dict(&control->glrt_control));
+    PyDict_SetItemString(py_options, "rqs_options",
+                         rqs_make_options_dict(&control->rqs_control));
+    PyDict_SetItemString(py_options, "glrt_options",
+                         glrt_make_options_dict(&control->glrt_control));
     PyDict_SetItemString(py_options, "psls_options",
                          psls_make_options_dict(&control->psls_control));
-    //PyDict_SetItemString(py_options, "bsc_options",
-    //                     bsc_make_options_dict(&control->bsc_control));
-    //PyDict_SetItemString(py_options, "roots_options",
-    //                     roots_make_options_dict(&control->roots_control));
+    PyDict_SetItemString(py_options, "bsc_options",
+                         bsc_make_options_dict(&control->bsc_control));
+    PyDict_SetItemString(py_options, "roots_options",
+                         roots_make_options_dict(&control->roots_control));
 
     return py_options;
 }
@@ -1071,16 +1071,16 @@ static PyObject* nls_make_options_dict(const struct nls_control_type *control){
                          PyBool_FromLong(control->deallocate_error_fatal));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "rqs_options",
-    //                     rqs_make_options_dict(&control->rqs_control));
-    //PyDict_SetItemString(py_options, "glrt_options",
-    //                     glrt_make_options_dict(&control->glrt_control));
+    PyDict_SetItemString(py_options, "rqs_options",
+                         rqs_make_options_dict(&control->rqs_control));
+    PyDict_SetItemString(py_options, "glrt_options",
+                         glrt_make_options_dict(&control->glrt_control));
     PyDict_SetItemString(py_options, "psls_options",
                          psls_make_options_dict(&control->psls_control));
-    //PyDict_SetItemString(py_options, "bsc_options",
-    //                     bsc_make_options_dict(&control->bsc_control));
-    //PyDict_SetItemString(py_options, "roots_options",
-    //                     roots_make_options_dict(&control->roots_control));
+    PyDict_SetItemString(py_options, "bsc_options",
+                         bsc_make_options_dict(&control->bsc_control));
+    PyDict_SetItemString(py_options, "roots_options",
+                         roots_make_options_dict(&control->roots_control));
     PyDict_SetItemString(py_options, "subproblem_options",
                          nls_make_subproblem_options_dict(&control->subproblem_control));
 
@@ -1166,16 +1166,16 @@ static PyObject* nls_make_subproblem_inform_dict(
                          PyFloat_FromDouble(inform->weight));
     PyDict_SetItemString(py_inform, "time",
                          nls_make_time_dict(&inform->time));
-    // PyDict_SetItemString(py_inform, "rqs_inform",
-    //                      rqs_make_inform_dict(&inform->rqs_inform));
-    // PyDict_SetItemString(py_inform, "glrt_inform",
-    //                      glrt_make_inform_dict(&inform->glrt_inform));
+    PyDict_SetItemString(py_inform, "rqs_inform",
+                         rqs_make_inform_dict(&inform->rqs_inform));
+    PyDict_SetItemString(py_inform, "glrt_inform",
+                         glrt_make_inform_dict(&inform->glrt_inform));
     PyDict_SetItemString(py_inform, "psls_inform",
                          psls_make_inform_dict(&inform->psls_inform));
-    // PyDict_SetItemString(py_inform, "bsc_inform",
-    //                      bsc_make_inform_dict(&inform->bsc_inform));
-    // PyDict_SetItemString(py_inform, "roots_inform",
-    //                      roots_make_inform_dict(&inform->roots_inform));
+    PyDict_SetItemString(py_inform, "bsc_inform",
+                         bsc_make_inform_dict(&inform->bsc_inform));
+    PyDict_SetItemString(py_inform, "roots_inform",
+                         roots_make_inform_dict(&inform->roots_inform));
 
     return py_inform;
 }
@@ -1228,17 +1228,17 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
                          nls_make_time_dict(&inform->time));
     PyDict_SetItemString(py_inform, "subproblem_inform",
                          nls_make_subproblem_inform_dict(
-                           &inform->subproblem_inform));
-    // PyDict_SetItemString(py_inform, "rqs_inform",
-    //                      rqs_make_inform_dict(&inform->rqs_inform));
-    // PyDict_SetItemString(py_inform, "glrt_inform",
-    //                      glrt_make_inform_dict(&inform->glrt_inform));
+                         &inform->subproblem_inform));
+    PyDict_SetItemString(py_inform, "rqs_inform",
+                         rqs_make_inform_dict(&inform->rqs_inform));
+    PyDict_SetItemString(py_inform, "glrt_inform",
+                         glrt_make_inform_dict(&inform->glrt_inform));
     PyDict_SetItemString(py_inform, "psls_inform",
                          psls_make_inform_dict(&inform->psls_inform));
-    // PyDict_SetItemString(py_inform, "bsc_inform",
-    //                      bsc_make_inform_dict(&inform->bsc_inform));
-    // PyDict_SetItemString(py_inform, "roots_inform",
-    //                      roots_make_inform_dict(&inform->roots_inform));
+    PyDict_SetItemString(py_inform, "bsc_inform",
+                         bsc_make_inform_dict(&inform->bsc_inform));
+    PyDict_SetItemString(py_inform, "roots_inform",
+                         roots_make_inform_dict(&inform->roots_inform));
 
     return py_inform;
 }
