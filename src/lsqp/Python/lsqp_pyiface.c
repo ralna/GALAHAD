@@ -18,7 +18,7 @@
 #include "galahad_python.h"
 #include "galahad_lsqp.h"
 
-/* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
+/* Nested FDC & SBLS control and inform prototypes */
 bool fdc_update_control(struct fdc_control_type *control,
                         PyObject *py_options);
 PyObject* fdc_make_options_dict(const struct fdc_control_type *control);
@@ -27,18 +27,6 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool roots_update_control(struct roots_control_type *control,
-//                         PyObject *py_options);
-//PyObject* roots_make_options_dict(const struct roots_control_type *control);
-//PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
-//bool fit_update_control(struct fit_control_type *control,
-//                        PyObject *py_options);
-//PyObject* fit_make_options_dict(const struct fit_control_type *control);
-//PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
-//bool cro_update_control(struct cro_control_type *control,
-//                        PyObject *py_options);
-//PyObject* cro_make_options_dict(const struct cro_control_type *control);
-//PyObject* cro_make_inform_dict(const struct cro_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -50,8 +38,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool lsqp_update_control(struct lsqp_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within QPB Python interface
+bool lsqp_update_control(struct lsqp_control_type *control,
+                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -411,7 +400,7 @@ static bool lsqp_update_control(struct lsqp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within QPB Python interface
 PyObject* lsqp_make_options_dict(const struct lsqp_control_type *control){
     PyObject *py_options = PyDict_New();
     PyDict_SetItemString(py_options, "error",
@@ -568,7 +557,8 @@ static PyObject* lsqp_make_time_dict(const struct lsqp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform){
+// NB not static as it is used for nested control within QPB Python interface
+PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

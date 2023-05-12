@@ -19,10 +19,7 @@
 #include "galahad_lpa.h"
 
 /* Nested RPD control and inform prototypes */
-//bool rpd_update_control(struct rpd_control_type *control,
-//                        PyObject *py_options);
-//PyObject* rpd_make_options_dict(const struct rpd_control_type *control);
-//PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
+PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -385,8 +382,8 @@ static PyObject* lpa_make_inform_dict(const struct lpa_inform_type *inform){
                          PyFloat_FromDouble(inform->primal_infeasibility));
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
-    //PyDict_SetItemString(py_inform, "rpd_inform",
-    //                     rpd_make_inform_dict(&inform->rpd_inform));
+    PyDict_SetItemString(py_inform, "rpd_inform",
+                         rpd_make_inform_dict(&inform->rpd_inform));
 
     // include RINFO array
     npy_intp rdim[] = {40}; 

@@ -1,7 +1,7 @@
 //* \file fit_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-02 AT 14:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 08:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_FIT PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -28,7 +28,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool fit_update_control(struct fit_control_type *control,
+// NB not static as it is used for nested control within QP Python interfaces
+bool fit_update_control(struct fit_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -95,7 +96,7 @@ static bool fit_update_control(struct fit_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within QP Python interfaces
 PyObject* fit_make_options_dict(const struct fit_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -117,7 +118,8 @@ PyObject* fit_make_options_dict(const struct fit_control_type *control){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* fit_make_inform_dict(const struct fit_inform_type *inform){
+// NB not static as it is used for nested control within QP Python interfaces
+PyObject* fit_make_inform_dict(const struct fit_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

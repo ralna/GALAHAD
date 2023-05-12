@@ -26,9 +26,10 @@ PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
 //bool trb_update_control(struct trb_control_type *control,
 //                        PyObject *py_options);
 //PyObject* trb_make_inform_dict(const struct trb_inform_type *inform);
-//bool hash_update_control(struct hash_control_type *control,
-//                         PyObject *py_options);
-//PyObject* hash_make_inform_dict(const struct hash_inform_type *inform);
+bool hash_update_control(struct hash_control_type *control,
+                         PyObject *py_options);
+PyObject* hash_make_options_dict(const struct hash_control_type *control);
+PyObject* hash_make_inform_dict(const struct hash_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -350,11 +351,11 @@ static bool dgo_update_control(struct dgo_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "hash_options") == 0){
-        //    if(!hash_update_control(&control->hash_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "hash_options") == 0){
+            if(!hash_update_control(&control->hash_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -423,8 +424,8 @@ static PyObject* dgo_make_options_dict(const struct dgo_control_type *control){
                          PyBool_FromLong(control->deallocate_error_fatal));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "hash_options",
-    //                     hash_make_options_dict(&control->hash_control));
+    PyDict_SetItemString(py_options, "hash_options",
+                         hash_make_options_dict(&control->hash_control));
     PyDict_SetItemString(py_options, "ugo_options",
                          ugo_make_options_dict(&control->ugo_control));
     // PyDict_SetItemString(py_options, "trb_options",
@@ -501,8 +502,8 @@ static PyObject* dgo_make_inform_dict(const struct dgo_inform_type *inform){
     //                     trb_make_inform_dict(&inform->trb_inform));
     PyDict_SetItemString(py_inform, "ugo_inform",
                          ugo_make_inform_dict(&inform->ugo_inform));
-    //PyDict_SetItemString(py_inform, "hash_inform",
-    //                     hash_make_inform_dict(&inform->hash_inform));
+    PyDict_SetItemString(py_inform, "hash_inform",
+                         hash_make_inform_dict(&inform->hash_inform));
 
     return py_inform;
 }

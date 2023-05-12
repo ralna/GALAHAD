@@ -406,6 +406,12 @@ test_$(package)_cifaces: test_$(package)_cifaces_$(PRECIS)
 test_$(package)_cifaces_single: $(package)cst $(package)cstf
 test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
 
+#  test Python interface to package
+
+test_$(package)_pyiface: test_pyiface
+test_pyiface:
+	python Python/test_$(package).py
+
 #  run specification document example tests
 
 $(package)de: $($(PACKAGE)DE)

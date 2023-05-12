@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-01-26
+#  This version: 2023-05-11
 
 #  makefile shell
 
@@ -189,7 +189,7 @@ PXRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PXLG)
 
 PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
 PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
-PYRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(PYLG) $(PRECIS)
+PYRMARFILES = $(GALAHAD)/bin/rmpyarfiles $(AR) $(GREP) $(PYLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)

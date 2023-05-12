@@ -1,7 +1,7 @@
 //* \file dps_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-13 AT 16:10 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DPS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -35,8 +35,9 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool dps_update_control(struct dps_control_type *control,
-                               PyObject *py_options){
+// NB not static as it is used for nested control within TRU Python interface
+bool dps_update_control(struct dps_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -176,7 +177,7 @@ static bool dps_update_control(struct dps_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-// NB not static as it is used for nested inform within QP Python interface
+// NB not static as it is used for nested inform within TRU Python interface
 PyObject* dps_make_options_dict(const struct dps_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -250,7 +251,8 @@ static PyObject* dps_make_time_dict(const struct dps_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* dps_make_inform_dict(const struct dps_inform_type *inform){
+// NB not static as it is used for nested control within TRU Python interface
+PyObject* dps_make_inform_dict(const struct dps_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
 

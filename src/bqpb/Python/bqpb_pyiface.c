@@ -27,18 +27,19 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool roots_update_control(struct roots_control_type *control,
-//                         PyObject *py_options);
-//PyObject* roots_make_options_dict(const struct roots_control_type *control);
-//PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
-//bool fit_update_control(struct fit_control_type *control,
-//                        PyObject *py_options);
-//PyObject* fit_make_options_dict(const struct fit_control_type *control);
-//PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
-//bool cro_update_control(struct cro_control_type *control,
-//                        PyObject *py_options);
-//PyObject* cro_make_options_dict(const struct cro_control_type *control);
-//PyObject* cro_make_inform_dict(const struct cro_inform_type *inform);
+bool roots_update_control(struct roots_control_type *control,
+                         PyObject *py_options);
+PyObject* roots_make_options_dict(const struct roots_control_type *control);
+PyObject* roots_make_inform_dict(const struct roots_inform_type *inform);
+bool fit_update_control(struct fit_control_type *control,
+                        PyObject *py_options);
+PyObject* fit_make_options_dict(const struct fit_control_type *control);
+PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
+bool cro_update_control(struct cro_control_type *control,
+                        PyObject *py_options);
+PyObject* cro_make_options_dict(const struct cro_control_type *control);
+PyObject* cro_make_inform_dict(const struct cro_inform_type *inform);
+PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -411,21 +412,21 @@ static bool bqpb_update_control(struct bqpb_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "fit_options") == 0){
-        //    if(!fit_update_control(&control->fit_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "roots_options") == 0){
-        //    if(!roots_update_control(&control->roots_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "cro_options") == 0){
-        //    if(!cro_update_control(&control->cro_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "fit_options") == 0){
+            if(!fit_update_control(&control->fit_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "roots_options") == 0){
+            if(!roots_update_control(&control->roots_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "cro_options") == 0){
+            if(!cro_update_control(&control->cro_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -556,12 +557,12 @@ PyObject* bqpb_make_options_dict(const struct bqpb_control_type *control){
                          fdc_make_options_dict(&control->fdc_control));
     PyDict_SetItemString(py_options, "sbls_options",
                          sbls_make_options_dict(&control->sbls_control));
-    //PyDict_SetItemString(py_options, "fit_options",
-    //                     fit_make_options_dict(&control->fit_control));
-    //PyDict_SetItemString(py_options, "roots_options",
-    //                     roots_make_options_dict(&control->roots_control));
-    //PyDict_SetItemString(py_options, "cro_options",
-    //                     cro_make_options_dict(&control->cro_control));
+    PyDict_SetItemString(py_options, "fit_options",
+                         fit_make_options_dict(&control->fit_control));
+    PyDict_SetItemString(py_options, "roots_options",
+                         roots_make_options_dict(&control->roots_control));
+    PyDict_SetItemString(py_options, "cro_options",
+                         cro_make_options_dict(&control->cro_control));
 
     return py_options;
 }
@@ -672,14 +673,14 @@ static PyObject* bqpb_make_inform_dict(const struct bqpb_inform_type *inform){
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
                         sbls_make_inform_dict(&inform->sbls_inform));
-    //PyDict_SetItemString(py_inform, "fit_inform",
-    //                     fit_make_inform_dict(&inform->fit_inform));
-    //PyDict_SetItemString(py_inform, "roots_inform",
-    //                     roots_make_inform_dict(&inform->roots_inform));
-    //PyDict_SetItemString(py_inform, "cro_inform",
-    //                     cro_make_inform_dict(&inform->cro_inform));
-    //PyDict_SetItemString(py_inform, "rpd_inform",
-    //                     rpd_make_inform_dict(&inform->rpd_inform));
+    PyDict_SetItemString(py_inform, "fit_inform",
+                         fit_make_inform_dict(&inform->fit_inform));
+    PyDict_SetItemString(py_inform, "roots_inform",
+                         roots_make_inform_dict(&inform->roots_inform));
+    PyDict_SetItemString(py_inform, "cro_inform",
+                         cro_make_inform_dict(&inform->cro_inform));
+    PyDict_SetItemString(py_inform, "rpd_inform",
+                         rpd_make_inform_dict(&inform->rpd_inform));
 
     return py_inform;
 }

@@ -35,6 +35,15 @@ CDEPENDENCIES =
 
 CDEPENDS =
 
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = 
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
+
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_lmt make_qpt make_convert make_mc64 make_mc68 \

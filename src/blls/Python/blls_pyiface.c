@@ -23,10 +23,10 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool convert_update_control(struct convert_control_type *control,
-//                        PyObject *py_options);
-//PyObject* convert_make_options_dict(const struct convert_control_type *control);
-//PyObject* convert_make_inform_dict(const struct convert_inform_type *inform);
+bool convert_update_control(struct convert_control_type *control,
+                        PyObject *py_options);
+PyObject* convert_make_options_dict(const struct convert_control_type *control);
+PyObject* convert_make_inform_dict(const struct convert_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -267,11 +267,11 @@ static bool blls_update_control(struct blls_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "convert_options") == 0){
-        //    if(!convert_update_control(&control->convert_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "convert_options") == 0){
+            if(!convert_update_control(&control->convert_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -359,8 +359,8 @@ PyObject* blls_make_options_dict(const struct blls_control_type *control){
                          PyUnicode_FromString(control->prefix));
     PyDict_SetItemString(py_options, "sbls_options",
                          sbls_make_options_dict(&control->sbls_control));
-    //PyDict_SetItemString(py_options, "convert_options",
-    //                     convert_make_options_dict(&control->convert_control));
+    PyDict_SetItemString(py_options, "convert_options",
+                         convert_make_options_dict(&control->convert_control));
 
     return py_options;
 }
@@ -424,8 +424,8 @@ static PyObject* blls_make_inform_dict(const struct blls_inform_type *inform){
     // Set dictionaries from subservient packages
     PyDict_SetItemString(py_inform, "sbls_inform",
                          sbls_make_inform_dict(&inform->sbls_inform));
-    //PyDict_SetItemString(py_inform, "convert_inform",
-    //                     convert_make_inform_dict(&inform->convert_inform));
+    PyDict_SetItemString(py_inform, "convert_inform",
+                         convert_make_inform_dict(&inform->convert_inform));
 
     return py_inform;
 }

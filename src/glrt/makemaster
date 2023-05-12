@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD GLRT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2022-01-06
+#  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -34,6 +34,15 @@ CDEPENDENCIES = make_ciface_common
 #  other C interface packages that depend on current interface package 
 
 CDEPENDS = arc_ciface
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = 
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS = arc_pyiface barc_pyiface nls_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

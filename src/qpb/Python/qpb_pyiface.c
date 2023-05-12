@@ -19,10 +19,10 @@
 #include "galahad_qpb.h"
 
 /* Nested LSQP, FDC, SBLS, GLTR and FDC control and inform prototypes */
-//bool lsqp_update_control(struct lsqp_control_type *control,
-//                         PyObject *py_options);
-//PyObject* lsqp_make_options_dict(const struct lsqp_control_type *control);
-//PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform);
+bool lsqp_update_control(struct lsqp_control_type *control,
+                         PyObject *py_options);
+PyObject* lsqp_make_options_dict(const struct lsqp_control_type *control);
+PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform);
 bool fdc_update_control(struct fdc_control_type *control,
                         PyObject *py_options);
 PyObject* fdc_make_options_dict(const struct fdc_control_type *control);
@@ -31,14 +31,14 @@ bool sbls_update_control(struct sbls_control_type *control,
                          PyObject *py_options);
 PyObject* sbls_make_options_dict(const struct sbls_control_type *control);
 PyObject* sbls_make_inform_dict(const struct sbls_inform_type *inform);
-//bool gltr_update_control(struct gltr_control_type *control,
-//                         PyObject *py_options);
-//PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
-//PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
-//bool fit_update_control(struct fit_control_type *control,
-//                        PyObject *py_options);
-//PyObject* fit_make_options_dict(const struct fit_control_type *control);
-//PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
+bool gltr_update_control(struct gltr_control_type *control,
+                         PyObject *py_options);
+PyObject* gltr_make_options_dict(const struct gltr_control_type *control);
+PyObject* gltr_make_inform_dict(const struct gltr_inform_type *inform);
+bool fit_update_control(struct fit_control_type *control,
+                        PyObject *py_options);
+PyObject* fit_make_options_dict(const struct fit_control_type *control);
+PyObject* fit_make_inform_dict(const struct fit_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -430,11 +430,11 @@ static bool qpb_update_control(struct qpb_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "lsqp_options") == 0){
-        //    if(!lsqp_update_control(&control->lsqp_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "lsqp_options") == 0){
+            if(!lsqp_update_control(&control->lsqp_control, value))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "fdc_options") == 0){
             if(!fdc_update_control(&control->fdc_control, value))
                 return false;
@@ -445,16 +445,16 @@ static bool qpb_update_control(struct qpb_control_type *control,
                 return false;
             continue;
         }
-        //if(strcmp(key_name, "gltr_options") == 0){
-        //    if(!gltr_update_control(&control->gltr_control, value))
-        //        return false;
-        //    continue;
-        //}
-        //if(strcmp(key_name, "fit_options") == 0){
-        //    if(!fit_update_control(&control->fit_control, value))
-        //        return false;
-        //    continue;
-        //}
+        if(strcmp(key_name, "gltr_options") == 0){
+            if(!gltr_update_control(&control->gltr_control, value))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "fit_options") == 0){
+            if(!fit_update_control(&control->fit_control, value))
+                return false;
+            continue;
+        }
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -592,16 +592,16 @@ PyObject* qpb_make_options_dict(const struct qpb_control_type *control){
                          PyUnicode_FromString(control->sif_file_name));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-    //PyDict_SetItemString(py_options, "lsqp_options",
-    //                     lsqp_make_options_dict(&control->lsqp_control));
+    PyDict_SetItemString(py_options, "lsqp_options",
+                         lsqp_make_options_dict(&control->lsqp_control));
     PyDict_SetItemString(py_options, "fdc_options",
                          fdc_make_options_dict(&control->fdc_control));
     PyDict_SetItemString(py_options, "sbls_options",
                          sbls_make_options_dict(&control->sbls_control));
-    //PyDict_SetItemString(py_options, "gltr_options",
-    //                     gltr_make_options_dict(&control->gltr_control));
-    //PyDict_SetItemString(py_options, "fit_options",
-    //                     fit_make_options_dict(&control->fit_control));
+    PyDict_SetItemString(py_options, "gltr_options",
+                         gltr_make_options_dict(&control->gltr_control));
+    PyDict_SetItemString(py_options, "fit_options",
+                         fit_make_options_dict(&control->fit_control));
 
     return py_options;
 }
@@ -699,16 +699,16 @@ static PyObject* qpb_make_inform_dict(const struct qpb_inform_type *inform){
                          qpb_make_time_dict(&inform->time));
 
     // Set dictionaries from subservient packages
-    //PyDict_SetItemString(py_inform, "lsqp_inform",
-    //                     lsqp_make_inform_dict(&inform->lsqp_inform));
+    PyDict_SetItemString(py_inform, "lsqp_inform",
+                         lsqp_make_inform_dict(&inform->lsqp_inform));
     PyDict_SetItemString(py_inform, "fdc_inform",
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
                         sbls_make_inform_dict(&inform->sbls_inform));
-    //PyDict_SetItemString(py_inform, "gltr_inform",
-    //                     gltr_make_inform_dict(&inform->gltr_inform));
-    //PyDict_SetItemString(py_inform, "fit_inform",
-    //                     fit_make_inform_dict(&inform->fit_inform));
+    PyDict_SetItemString(py_inform, "gltr_inform",
+                         gltr_make_inform_dict(&inform->gltr_inform));
+    PyDict_SetItemString(py_inform, "fit_inform",
+                         fit_make_inform_dict(&inform->fit_inform));
 
     return py_inform;
 }
