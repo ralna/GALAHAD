@@ -1077,6 +1077,7 @@ factorization.</p>
 <pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">trs</span>
 <span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
 <span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: trs&quot;</span><span class="punctuation">)</span>
 
 <span class="comment single"># set parameters</span>
 <span class="name">p</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
@@ -1134,7 +1135,7 @@ factorization.</p>
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
 
 <span class="comment single"># load data (and optionally non-default options)</span>
 <span class="name">trs</span><span class="operator">.</span><span class="name">load_m</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">M_type</span><span class="punctuation">,</span> <span class="name">M_ne</span><span class="punctuation">,</span> <span class="name">M_row</span><span class="punctuation">,</span> <span class="name">M_col</span><span class="punctuation">,</span> <span class="name">M_ptr</span><span class="punctuation">)</span>
@@ -1146,7 +1147,7 @@ factorization.</p>
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
 
 <span class="comment single"># load data (and optionally non-default options)</span>
 <span class="name">trs</span><span class="operator">.</span><span class="name">load_a</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">A_type</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_row</span><span class="punctuation">,</span> <span class="name">A_col</span><span class="punctuation">,</span> <span class="name">A_ptr</span><span class="punctuation">)</span>
@@ -1160,7 +1161,8 @@ factorization.</p>
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">trs</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string single">'** trs exit status:'</span><span class="punctuation">,</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'status'</span><span class="punctuation">])</span>
 
 <span class="comment single"># deallocate internal data</span>
 

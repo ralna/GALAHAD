@@ -33,9 +33,8 @@ CDEPENDENCIES = make_ciface_common make_ciface_trb make_ciface_hash \
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
-PYDEPENDENCIES = make_pyiface_ugo make_pyiface_bgo make_pyiface_dgo
-#PYDEPENDENCIES = make_pyiface_ugo make_pyiface_trb make_pyiface_hash \
-#                 make_pyiface_lhs make_pyiface_bgo make_pyiface_dgo
+PYDEPENDENCIES = make_pyiface_ugo make_pyiface_trb make_pyiface_hash \
+                 make_pyiface_lhs make_pyiface_bgo make_pyiface_dgo
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -253,12 +252,12 @@ make_ciface_ugo_test:
 
 make_pyiface_bgo_test:
 	( cd $(GALAHAD)/src/bgo ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyifaces \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_pyiface_dgo_test:
 	( cd $(GALAHAD)/src/dgo ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyifaces \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
 
 make_pyiface_ugo_test:

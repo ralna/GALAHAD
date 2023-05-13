@@ -1,6 +1,7 @@
 from galahad import bqpb
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: bqpb")
 
 # set parameters
 n = 3
@@ -39,16 +40,16 @@ y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of qp
-print("\n 1st problem: solve qp")
+print("1st problem: solve qp")
 x, z, x_stat \
   = bqpb.solve_qp(n, f, g, H_ne, H_val, x_l, x_u, x, z)
-print("x:",x)
-print("z:",z)
-print("x_stat:",x_stat)
+print(" x:",x)
+print(" z:",z)
+print(" x_stat:",x_stat)
 
 # get information
 inform = bqpb.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # deallocate internal data
 
@@ -60,13 +61,8 @@ w = np.array([1.0,1.0,1.0])
 x0 = np.array([1.0,1.0,1.0])
 H_type = 'shifted_least_distance'
 
-# allocate internal data and set default options
+# allocate internal data
 bqpb.initialize()
-
-# set some non-default options
-#options = {'print_level' : 1 }
-#print(options)
-#print("options:", options)
 
 # load data (and optionally non-default options)
 bqpb.load(n, H_type, H_ne, H_row, H_col, H_ptr, options)
@@ -80,13 +76,14 @@ z = np.array([0.0,0.0,0.0])
 print("\n 2nd problem: solve sldqp")
 x, z, x_stat \
   = bqpb.solve_sldqp(n, f, g, w, x0, x_l, x_u, x, z)
-print("x:",x)
-print("z:",z)
-print("x_stat:",x_stat)
+print(" x:",x)
+print(" z:",z)
+print(" x_stat:",x_stat)
 
 # get information
 inform = bqpb.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** bqpb exit status:', inform['status'])
 
 # deallocate internal data
 

@@ -1,6 +1,7 @@
 from galahad import fit
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: fit")
 
 # allocate internal data and set default options
 options = fit.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = fit.information()
-print(" status:",inform['status'])
+print('** fit exit status:', inform['status'])
 
 # deallocate internal data
 

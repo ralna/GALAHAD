@@ -1,6 +1,7 @@
 from galahad import bsc
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: bsc")
 
 # allocate internal data and set default options
 options = bsc.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = bsc.information()
-print(" status:",inform['status'])
+print('** bsc exit status:', inform['status'])
 
 # deallocate internal data
 

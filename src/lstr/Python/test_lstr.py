@@ -1,5 +1,7 @@
 from galahad import lstr
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: lstr")
 
 # set problem data
 
@@ -15,7 +17,7 @@ options = lstr.initialize()
 
 # set some non-default options
 options['unitm'] = False
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load non-default options
@@ -23,7 +25,7 @@ lstr.load_options(options)
 
 # first problem
 
-print("solve problem 1")
+print(" solve problem 1")
 status = 1
 radius = 1.0
 u = b
@@ -42,12 +44,12 @@ while status > 0:
 # get information
 
 inform = lstr.information()
-print("optimal ||r||:",inform['r_norm'])
-#print("x:",x)
+print(" optimal ||r||: %.4f" % inform['r_norm'])
+#print(" x:",x)
 
 # second problem, same data with smaller radius
 
-print("solve problem 2 with smaller radius")
+print("\n solve problem 2 with smaller radius")
 status = 5
 radius = 0.1
 u = b
@@ -66,8 +68,9 @@ while status > 0:
 # get information
 
 inform = lstr.information()
-print("optimal ||r||:",inform['r_norm'])
-#print("x:",x)
+print(" optimal ||r||: %.4f" % inform['r_norm'])
+#print(" x:",x)
+print('** lstr exit status:', inform['status'])
 
 # deallocate internal data
 

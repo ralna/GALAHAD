@@ -1,6 +1,7 @@
 from galahad import uls
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: uls")
 
 #  describe problem:
 #  ( 1     )     ( 1 )
@@ -31,17 +32,18 @@ uls.factorize_matrix(m, n, A_type, A_ne, A_row, A_col, A_ptr, A_val, options)
 # solve system
 trans = False
 x = uls.solve_system(m, n, b, trans)
-print("x:",x)
+print(" x:",x)
 
 # solve transpose system
 b = np.array([1.0,3.0,5.0])
 trans = True
 xt = uls.solve_system(m, n, b, trans)
-print("transpose x:",xt)
+print(" transpose x:",xt)
 
 # get information
 inform = uls.information()
-print("rank:",inform['rank'])
+print(" rank:",inform['rank'])
+print('** uls exit status:', inform['status'])
 
 # deallocate internal data
 

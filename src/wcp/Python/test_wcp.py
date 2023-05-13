@@ -1,6 +1,7 @@
 from galahad import wcp
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: wcp")
 
 # set parameters
 n = 3
@@ -24,7 +25,7 @@ x_u = np.array([1.0,infinity,2.0])
 options = wcp.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -57,6 +58,7 @@ print(" c_stat:",c_stat)
 # get information
 inform = wcp.information()
 print(" strictly feasible:",inform['feasible'])
+print('** wcp exit status:', inform['status'])
 
 # deallocate internal data
 

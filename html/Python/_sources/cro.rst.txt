@@ -304,13 +304,6 @@ functions
           if it is non-basic and active, 1 if it lies on its upper bound 
           and is active, 2 if it non-basic and active, and
           0 if it lies between bounds.
-
-   .. function:: [optional] cro.information()
-
-      Provide optional output information
-
-      **Returns:**
-
       inform : dict
          dictionary containing output information:
           status : int

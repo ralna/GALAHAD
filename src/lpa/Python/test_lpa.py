@@ -1,5 +1,7 @@
 from galahad import lpa
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: lpa")
 
 # set parameters
 n = 3
@@ -28,7 +30,7 @@ x_u = np.array([1.0,infinity,2.0])
 options = lpa.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -41,20 +43,21 @@ y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of lp
-print("\n solve lp")
+#print("\n solve lp")
 x, c, y, z, x_stat, c_stat \
   = lpa.solve_lp(n, m, f, g, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = lpa.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** lpa exit status:', inform['status'])
 
 # deallocate internal data
 

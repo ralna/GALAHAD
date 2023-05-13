@@ -1,12 +1,13 @@
 from galahad import dgo
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: dgo")
 
 # allocate internal data and set default options
 options = dgo.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 options['ugo_options']['print_level'] = 0
 #print("options:", options)
 
@@ -45,12 +46,13 @@ x = np.array([1.,1.,1.])
 
 # find optimum
 x, g = dgo.solve(n, H_ne, x, eval_f, eval_g, eval_h)
-print("x:",x)
-print("g:",g)
+print(" x:",x)
+print(" g:",g)
 
 # get information
 inform = dgo.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** dgo exit status:', inform['status'])
 
 # deallocate internal data
 dgo.terminate()

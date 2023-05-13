@@ -1,6 +1,7 @@
 from galahad import sha
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: sha")
 
 # allocate internal data and set default options
 options = sha.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = sha.information()
-print(" status:",inform['status'])
+print('** sha exit status:', inform['status'])
 
 # deallocate internal data
 

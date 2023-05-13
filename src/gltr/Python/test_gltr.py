@@ -1,5 +1,7 @@
 from galahad import gltr
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: gltr")
 
 # set problem data
 
@@ -14,7 +16,7 @@ options = gltr.initialize()
 
 # set some non-default options
 options['unitm'] = False
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load non-default options
@@ -22,7 +24,7 @@ gltr.load_options(options)
 
 # first problem
 
-print("solve problem 1")
+print(" solve problem 1")
 status = 1
 radius = 1.0
 r = g
@@ -44,12 +46,12 @@ while status > 0:
 # get information
 
 inform = gltr.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
 
 # second problem, same data with smaller radius
 
-print("solve problem 2 with smaller radius")
+print("\n solve problem 2 with smaller radius")
 status = 4
 radius = 0.1
 r = g
@@ -71,8 +73,9 @@ while status > 0:
 # get information
 
 inform = gltr.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
+print('** gltr exit status:', inform['status'])
 
 # deallocate internal data
 

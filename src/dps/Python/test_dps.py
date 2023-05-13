@@ -1,5 +1,7 @@
 from galahad import dps
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: dps")
 
 # set parameters
 p = 1.0
@@ -38,7 +40,7 @@ print(" x:",x)
 
 # get information
 inform = dps.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # set regualization weight and power
 weight = 1.0
@@ -51,7 +53,8 @@ print(" x:",x)
 
 # get information
 inform = dps.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** dps exit status:', inform['status'])
 
 # deallocate internal data
 

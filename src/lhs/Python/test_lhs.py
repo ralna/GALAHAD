@@ -1,6 +1,7 @@
 from galahad import lhs
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: lhs")
 
 # allocate internal data and set default options
 options, inform = lhs.initialize()
@@ -15,7 +16,7 @@ options['print_level'] = 0
 
 # get information
 inform = lhs.information()
-print(" information status:",inform['status'])
+print('** lhs exit status:', inform['status'])
 
 # deallocate internal data
 

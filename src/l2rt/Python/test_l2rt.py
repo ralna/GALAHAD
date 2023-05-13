@@ -1,5 +1,7 @@
 from galahad import l2rt
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: l2rt")
 
 # set problem data
 
@@ -18,7 +20,7 @@ options = l2rt.initialize()
 
 # set some non-default options
 options['unitm'] = False
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load non-default options
@@ -26,7 +28,7 @@ l2rt.load_options(options)
 
 # problem
 
-print("solve problem")
+print(" solve problem")
 status = 1
 u = b
 while status > 0:
@@ -44,8 +46,9 @@ while status > 0:
 # get information
 
 inform = l2rt.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
+print('** l2rt exit status:', inform['status'])
 
 # deallocate internal data
 
