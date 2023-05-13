@@ -1,6 +1,7 @@
 from galahad import sls
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: sls")
 
 #  describe problem (only the lower triangle of matrix is required)
 #  ( 1     )     ( 1 )
@@ -33,11 +34,12 @@ sls.factorize_matrix(A_ne, A_val)
 # solve system
 x = sls.solve_system(n, b)
 
-print("x:",x)
+print(" x:",x)
 
 # get information
 inform = sls.information()
-print("rank:",inform['rank'])
+print(" rank:",inform['rank'])
+print('** sls exit status:', inform['status'])
 
 # deallocate internal data
 

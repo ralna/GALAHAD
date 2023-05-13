@@ -39,14 +39,16 @@ CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps \
 
 PYDEPENDENCIES = make_pyiface_sils make_pyiface_gls \
                  make_pyiface_sbls_deps make_pyiface_psls \
-                 make_pyiface_sbls make_pyiface_fdc \
-                 make_pyiface_cqp make_pyiface_dqp \
-                 make_pyiface_qpa make_pyiface_qpb \
-                 make_pyiface_bqp make_pyiface_bqpb \
-                 make_pyiface_lsqp make_pyiface_cro \
-                 make_pyiface_eqp make_pyiface_blls \
-                 make_pyiface_lpa make_pyiface_lpb
-#                make_pyiface_sls_deps
+                 make_pyiface_sbls make_pyiface_fit \
+                 make_pyiface_convert make_pyiface_roots \
+                 make_pyiface_scu make_pyiface_rpd \
+                 make_pyiface_fdc make_pyiface_cqp \
+                 make_pyiface_dqp make_pyiface_qpa \
+                 make_pyiface_qpb make_pyiface_bqp \
+                 make_pyiface_bqpb make_pyiface_lsqp \
+                 make_pyiface_cro make_pyiface_eqp \
+                 make_pyiface_blls make_pyiface_lpa \
+                 make_pyiface_lpb make_pyiface_presolve
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -106,8 +108,7 @@ TEST_FULL = make_eqp_test_full make_qpa_test_full make_qpb_test_full \
             make_qpc_test_full make_blls_test_full make_bqp_test_full \
             make_bqpb_test_full make_cqp_test_full make_dqp_test_full \
             make_cdqp_test_full make_qp_test_full make_dlp_test_full \
-            make_lpa_test_full make_lpb_test_full \
-            make_l1qp_test_full
+            make_lpa_test_full make_lpb_test_full make_l1qp_test_full
 #           make_lls_test_full
 
 #  tests of C interfaces to be performed (prepend with make_)
@@ -119,6 +120,16 @@ TEST_CIFACE = make_ciface_eqp_test make_ciface_qpa_test make_ciface_lsqp_test \
 #             make_ciface_qpc_test make_ciface_cdqp_test make_ciface_qp_test
 #             make_ciface_dlp_test make_ciface_lls_test make_ciface_l1qp_test
 #             make_ciface_pdqp_test make_ciface_cqps_test
+
+#  tests of python interfaces to be performed (prepend with make_pyiface_)
+
+TEST_PYIFACE = make_pyiface_lpa_test make_pyiface_lpb_test \
+               make_pyiface_eqp_test make_pyiface_qpa_test \
+               make_pyiface_lsqp_test make_pyiface_qpb_test \
+               make_pyiface_blls_test make_pyiface_bqp_test \
+               make_pyiface_bqpb_test make_pyiface_cqp_test \
+               make_pyiface_dqp_test make_pyiface_rpd_test \
+               make_pyiface_cro_test make_pyiface_presolve_test
 
 #  all packages in the QP section
 
@@ -141,12 +152,14 @@ include $(GALAHAD)/src/makedefs/definitions
 
 all: $(package)
 all_ciface: $(package) $(package)_ciface
+all_pyiface: $(package) $(package)_pyiface
 all_cutest: $(package)_cutest
 all_qplib: $(package)_qplib
 test: all $(TEST)
 tests: all $(TESTS)
 test_full: all $(TEST_FULL)
 test_ciface: all_ciface $(TEST_CIFACE)
+test_pyiface: all_pyiface $(TEST_PYIFACE)
 
 #  silent packages
 
@@ -904,4 +917,76 @@ make_ciface_pdqp_test:
 make_ciface_rpd_test:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+
+#  comprehensive python interface tests
+
+make_pyiface_blls_test:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_pyiface_bqp_test:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_pyiface_bqpb_test:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_pyiface_cqp_test:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_pyiface_cro_test:
+	( cd $(GALAHAD)/src/cro ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cro )
+
+make_pyiface_dqp_test:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_pyiface_eqp_test:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_pyiface_lpa_test:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_pyiface_lpb_test:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_pyiface_lsqp_test:
+	( cd $(GALAHAD)/src/lsqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsqp )
+
+make_pyiface_qpa_test:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_pyiface_qpb_test:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_pyiface_presolve_test:
+	( cd $(GALAHAD)/src/presolve ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/presolve )
+
+make_pyiface_rpd_test:
+	( cd $(GALAHAD)/src/rpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )

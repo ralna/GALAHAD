@@ -1,6 +1,7 @@
 from galahad import dqp
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: dqp")
 
 # set parameters
 n = 3
@@ -66,7 +67,7 @@ print(" c_stat:",c_stat)
 
 # get information
 inform = dqp.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # deallocate internal data
 
@@ -78,12 +79,8 @@ w = np.array([1.0,1.0,1.0])
 x0 = np.array([1.0,1.0,1.0])
 H_type = 'shifted_least_distance'
 
-# allocate internal data and set default options
+# allocate internal data
 dqp.initialize()
-
-# set some non-default options
-#options = {'print_level' : 1 }
-#print("options:", options)
 
 # load data (and optionally non-default options)
 dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
@@ -109,7 +106,8 @@ print(" c_stat:",c_stat)
 
 # get information
 inform = dqp.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** dqp exit status:', inform['status'])
 
 # deallocate internal data
 

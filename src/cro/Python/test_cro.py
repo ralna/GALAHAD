@@ -1,6 +1,7 @@
 from galahad import cro
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: cro")
 
 # set parameters
 n = 11
@@ -66,6 +67,7 @@ print(" z:",z)
 print(" x_stat:",x_stat)
 print(" c_stat:",c_stat)
 print(" number of dependent constraints:",inform['dependent'])
+print('** cro exit status:', inform['status'])
 
 # deallocate internal data
 

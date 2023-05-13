@@ -1,12 +1,13 @@
 from galahad import arc
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: arc")
 
 # allocate internal data and set default options
 options = arc.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 #options['rqs_options']['print_level'] = 0
 #print("options:", options)
 
@@ -40,13 +41,14 @@ x = np.array([1.,1.,1.])
 
 # find optimum
 x, g = arc.solve(n, H_ne, x, eval_f, eval_g, eval_h)
-print("x:",x)
-print("g:",g)
+print(" x:",x)
+print(" g:",g)
 
 # get information
 inform = arc.information()
 #print(inform)
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** arc exit status:', inform['status'])
 
 # deallocate internal data
 arc.terminate()

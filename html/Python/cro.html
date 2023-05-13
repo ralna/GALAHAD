@@ -703,7 +703,7 @@ between bounds.</p>
 </dd>
 </dl>
 <p><strong>Returns:</strong></p>
-<dl class="simple">
+<dl>
 <dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the approximate minimizer <span class="math notranslate nohighlight">\(x\)</span> after
 a successful call.</p>
 </dd>
@@ -729,15 +729,6 @@ if it is non-basic and active, 1 if it lies on its upper bound
 and is active, 2 if it non-basic and active, and
 0 if it lies between bounds.</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">cro.information()</span></span></dt>
-<dd><p>Provide optional output information</p>
-<p><strong>Returns:</strong></p>
-<dl>
 <dt>inform<span class="classifier">dict</span></dt><dd><dl>
 <dt>dictionary containing output information:</dt><dd><dl>
 <dt>status<span class="classifier">int</span></dt><dd><p>return status.  Possible values are:</p>
@@ -867,6 +858,7 @@ to factorizat.</p>
 <pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">cro</span>
 <span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
 <span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: cro&quot;</span><span class="punctuation">)</span>
 
 <span class="comment single"># set parameters</span>
 <span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">11</span>
@@ -932,6 +924,7 @@ to factorizat.</p>
 <span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x_stat:&quot;</span><span class="punctuation">,</span><span class="name">x_stat</span><span class="punctuation">)</span>
 <span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; c_stat:&quot;</span><span class="punctuation">,</span><span class="name">c_stat</span><span class="punctuation">)</span>
 <span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; number of dependent constraints:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'dependent'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string single">'** cro exit status:'</span><span class="punctuation">,</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'status'</span><span class="punctuation">])</span>
 
 <span class="comment single"># deallocate internal data</span>
 

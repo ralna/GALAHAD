@@ -1,6 +1,7 @@
 from galahad import lsqp
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: lsqp")
 
 # set parameters
 n = 3
@@ -44,20 +45,21 @@ y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of qp
-print("\nsolve lsqp")
+#print("\nsolve lsqp")
 x, c, y, z, x_stat, c_stat \
   = lsqp.solve_qp(n, m, f, g, w, x0, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = lsqp.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** lsqp exit status:', inform['status'])
 
 # deallocate internal data
 

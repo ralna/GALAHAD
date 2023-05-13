@@ -1118,6 +1118,8 @@ to factorization.</p>
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
 <pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">lpb</span>
 <span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+<span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: lpb&quot;</span><span class="punctuation">)</span>
 
 <span class="comment single"># set parameters</span>
 <span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
@@ -1146,7 +1148,7 @@ to factorization.</p>
 <span class="name">options</span> <span class="operator">=</span> <span class="name">lpb</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
 
 <span class="comment single"># set some non-default options</span>
-<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
 <span class="comment single">#print(&quot;options:&quot;, options)</span>
 
 <span class="comment single"># load data (and optionally non-default options)</span>
@@ -1159,20 +1161,21 @@ to factorization.</p>
 <span class="name">z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
 
 <span class="comment single"># find optimum of lp</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve lp&quot;</span><span class="punctuation">)</span>
+<span class="comment single">#print(&quot;\n solve lp&quot;)</span>
 <span class="name">x</span><span class="punctuation">,</span> <span class="name">c</span><span class="punctuation">,</span> <span class="name">y</span><span class="punctuation">,</span> <span class="name">z</span><span class="punctuation">,</span> <span class="name">x_stat</span><span class="punctuation">,</span> <span class="name">c_stat</span> \
   <span class="operator">=</span> <span class="name">lpb</span><span class="operator">.</span><span class="name">solve_lp</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">m</span><span class="punctuation">,</span> <span class="name">f</span><span class="punctuation">,</span> <span class="name">g</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span>
                  <span class="name">c_l</span><span class="punctuation">,</span> <span class="name">c_u</span><span class="punctuation">,</span> <span class="name">x_l</span><span class="punctuation">,</span> <span class="name">x_u</span><span class="punctuation">,</span> <span class="name">x</span><span class="punctuation">,</span> <span class="name">y</span><span class="punctuation">,</span> <span class="name">z</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;c:&quot;</span><span class="punctuation">,</span><span class="name">c</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;y:&quot;</span><span class="punctuation">,</span><span class="name">y</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;z:&quot;</span><span class="punctuation">,</span><span class="name">z</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;x_stat:&quot;</span><span class="punctuation">,</span><span class="name">x_stat</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;c_stat:&quot;</span><span class="punctuation">,</span><span class="name">c_stat</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; c:&quot;</span><span class="punctuation">,</span><span class="name">c</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; y:&quot;</span><span class="punctuation">,</span><span class="name">y</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; z:&quot;</span><span class="punctuation">,</span><span class="name">z</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x_stat:&quot;</span><span class="punctuation">,</span><span class="name">x_stat</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; c_stat:&quot;</span><span class="punctuation">,</span><span class="name">c_stat</span><span class="punctuation">)</span>
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">lpb</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string single">'** lpb exit status:'</span><span class="punctuation">,</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'status'</span><span class="punctuation">])</span>
 
 <span class="comment single"># deallocate internal data</span>
 

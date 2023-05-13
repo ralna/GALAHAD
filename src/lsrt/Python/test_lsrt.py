@@ -1,5 +1,7 @@
 from galahad import lsrt
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: lsrt")
 
 # set problem data
 
@@ -16,7 +18,7 @@ options = lsrt.initialize()
 
 # set some non-default options
 options['unitm'] = False
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load non-default options
@@ -24,7 +26,7 @@ lsrt.load_options(options)
 
 # problem
 
-print("solve problem")
+print(" solve problem")
 status = 1
 weight = 1.0
 u = b
@@ -43,8 +45,9 @@ while status > 0:
 # get information
 
 inform = lsrt.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
+print('** lsrt exit status:', inform['status'])
 
 # deallocate internal data
 

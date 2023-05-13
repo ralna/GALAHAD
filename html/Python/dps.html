@@ -920,6 +920,8 @@ left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</sp
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
 <pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">dps</span>
 <span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+<span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: dps&quot;</span><span class="punctuation">)</span>
 
 <span class="comment single"># set parameters</span>
 <span class="name">p</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
@@ -958,7 +960,7 @@ left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</sp
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
 
 <span class="comment single"># set regualization weight and power</span>
 <span class="name">weight</span> <span class="operator">=</span> <span class="literal number float">1.0</span>
@@ -971,7 +973,8 @@ left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</sp
 
 <span class="comment single"># get information</span>
 <span class="name">inform</span> <span class="operator">=</span> <span class="name">dps</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f:&quot;</span><span class="punctuation">,</span><span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; f: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'obj'</span><span class="punctuation">])</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string single">'** dps exit status:'</span><span class="punctuation">,</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'status'</span><span class="punctuation">])</span>
 
 <span class="comment single"># deallocate internal data</span>
 

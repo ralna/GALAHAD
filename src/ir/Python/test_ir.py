@@ -1,6 +1,7 @@
 from galahad import ir
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: ir")
 
 # allocate internal data and set default options
 options = ir.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = ir.information()
-print(" status:",inform['status'])
+print('** ir exit status:', inform['status'])
 
 # deallocate internal data
 

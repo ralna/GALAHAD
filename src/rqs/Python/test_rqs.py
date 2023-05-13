@@ -1,6 +1,7 @@
 from galahad import rqs
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: rqs")
 
 # set parameters
 p = 1.0
@@ -59,7 +60,7 @@ print(" x:",x)
 
 # get information
 inform = rqs.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # load data (and optionally non-default options)
 rqs.load_m(n, M_type, M_ne, M_row, M_col, M_ptr)
@@ -71,7 +72,7 @@ print(" x:",x)
 
 # get information
 inform = rqs.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # load data (and optionally non-default options)
 rqs.load_a(m, A_type, A_ne, A_row, A_col, A_ptr)
@@ -85,7 +86,8 @@ print(" y:",y)
 
 # get information
 inform = rqs.information()
-print(" f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** rqs exit status:', inform['status'])
 
 # deallocate internal data
 

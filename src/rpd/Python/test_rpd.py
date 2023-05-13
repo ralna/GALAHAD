@@ -1,6 +1,7 @@
 from galahad import rpd
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: rpd")
 
 # allocate internal data and set default options
 options = rpd.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = rpd.information()
-print(" status:",inform['status'])
+print('** rpd exit status:', inform['status'])
 
 # deallocate internal data
 
