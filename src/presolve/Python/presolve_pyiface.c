@@ -371,20 +371,16 @@ PyObject* presolve_make_inform_dict(const struct presolve_inform_type *inform){
     PyDict_SetItemString(py_inform, "nbr_transforms",
                          PyLong_FromLong(inform->nbr_transforms));
 
-//    npy_intp cdim[] = {3,81}; 
-//    PyArrayObject *py_message = 
-//      (PyArrayObject*) PyArray_SimpleNew(2, cdim, NPY_STRING);
-//    printf("before\n");
-     // int *message = (int *) PyArray_DATA(py_message); 
-//    char *message = (char *) PyArray_DATA(py_message); 
-//    printf("after\n");
-//    for(int i=0; i<3; i++) {
-//      for(int j=0; j<81; j++) { 
-        // strcpy( message[i,j], inform->message[i][j]);  
-//        message[i,j] = inform->message[i][j];  
-//      }
-//    }
-//  PyDict_SetItemString(py_inform, "message", (PyObject *) py_message);
+    //npy_intp cdim[] = {3,81};
+    //PyArrayObject *py_message = 
+    //   (PyArrayObject*) PyArray_SimpleNew(2, cdim, NPY_STRING);
+    //char *message = (char *) PyArray_DATA(py_message);
+    //for(int i=0; i<3; i++) {
+    //  for(int j=0; j<81; j++) {
+    //    *(message + (i*81) + j) = inform->message[i][j];
+    //  }
+    //}    
+    //PyDict_SetItemString(py_inform, "message", (PyObject *) py_message);
 
     return py_inform;
 }

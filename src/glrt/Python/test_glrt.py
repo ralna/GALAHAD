@@ -1,5 +1,7 @@
 from galahad import glrt
 import numpy as np
+np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: glrt")
 
 # set problem data
 
@@ -15,7 +17,7 @@ options = glrt.initialize()
 
 # set some non-default options
 options['unitm'] = False
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load non-default options
@@ -23,7 +25,7 @@ glrt.load_options(options)
 
 # first problem
 
-print("solve problem 1")
+print(" solve problem 1")
 status = 1
 weight = 1.0
 r = g
@@ -45,12 +47,12 @@ while status > 0:
 # get information
 
 inform = glrt.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
 
 # second problem, same data with larger weight
 
-print("solve problem 2 with larger weight")
+print("\n solve problem 2 with larger weight")
 status = 6
 weight = 10.0
 r = g
@@ -72,8 +74,9 @@ while status > 0:
 # get information
 
 inform = glrt.information()
-print("optimal f:",inform['obj'])
-#print("x:",x)
+print(" optimal f: %.4f" % inform['obj'])
+#print(" x:",x)
+print('** glrt exit status:', inform['status'])
 
 # deallocate internal data
 

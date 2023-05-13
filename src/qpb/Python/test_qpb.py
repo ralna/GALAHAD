@@ -1,6 +1,7 @@
 from galahad import qpb
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: qpb")
 
 # set parameters
 n = 3
@@ -49,20 +50,21 @@ y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of qp
-print("\n 1st problem: solve qp")
+#print("solve qp")
 x, c, y, z, x_stat, c_stat \
   = qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = qpb.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** qpb exit status:', inform['status'])
 
 # deallocate internal data
 

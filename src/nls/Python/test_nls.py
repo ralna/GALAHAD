@@ -1,12 +1,13 @@
 from galahad import nls
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: nls")
 
 # allocate internal data and set default options
 options = nls.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 options['jacobian_available'] = 2
 options['hessian_available'] = 2
 options['model'] = 6
@@ -63,14 +64,15 @@ x = np.array([1.5,1.5])
 # find optimum
 x, c, g = nls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h, 
                     P_ne, eval_hprod)
-print("x:",x)
-print("c:",c)
-print("g:",g)
+print(" x:",x)
+print(" c:",c)
+print(" g:",g)
 
 # get information
 inform = nls.information()
 #print(inform)
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** nls exit status:', inform['status'])
 
 # deallocate internal data
 nls.terminate()

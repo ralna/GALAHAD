@@ -1,6 +1,7 @@
 from galahad import bqp
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: bqp")
 
 # set parameters
 n = 3
@@ -39,15 +40,16 @@ x = np.array([0.0,0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of qp
-print("\nsolve bqp")
+#print("\nsolve bqp")
 x, z, x_stat = bqp.solve_qp(n, f, g, H_ne, H_val, x_l, x_u, x, z)
-print("x:",x)
-print("z:",z)
-print("x_stat:",x_stat)
+print(" x:",x)
+print(" z:",z)
+print(" x_stat:",x_stat)
 
 # get information
 inform = bqp.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** bqp exit status:', inform['status'])
 
 # deallocate internal data
 

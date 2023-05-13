@@ -1,6 +1,7 @@
 from galahad import hash
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: hash")
 
 # allocate internal data and set default options
 nchar = 20
@@ -17,7 +18,7 @@ print(" initialize status:",inform['status'])
 
 # get information
 inform = hash.information()
-print(" information status:",inform['status'])
+print('** hash exit status:', inform['status'])
 
 # deallocate internal data
 

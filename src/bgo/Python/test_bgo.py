@@ -2,12 +2,13 @@ from galahad import bgo
 import numpy as np
 import sys
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: bgo")
 
 # allocate internal data and set default options
 options = bgo.initialize()
 
 # set some non-default options
-options['print_level'] = 1
+options['print_level'] = 0
 options['ugo_options']['print_level'] = 0
 #print("options:", options)
 
@@ -47,12 +48,13 @@ x = np.array([0.,0.,0.])
 # find optimum
 x, g = bgo.solve(n, H_ne, x, eval_f, eval_g, eval_h )
 
-print("x:",x)
-print("g:",g)
+print(" x:",x)
+print(" g:",g)
 
 # get information
 inform = bgo.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** bgo exit status:', inform['status'])
 
 # deallocate internal data
 bgo.terminate()

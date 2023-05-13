@@ -1,6 +1,7 @@
 from galahad import blls
 import numpy as np
 np.set_printoptions(precision=2,suppress=True,floatmode='fixed')
+print("\n** python test: blls")
 
 # set parameters
 n = 10
@@ -50,7 +51,7 @@ for i in range(2,n):
 options = blls.initialize()
 
 # set some non-default options
-#options['print_level'] = 1
+options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
@@ -64,8 +65,8 @@ for i in range(n):
   x[i] = 0.0
   z[i] = 0.0
 
-# find optimum of 
-print("\n solve blls")
+# find minimizer
+#print("\n solve blls")
 x, c, z, g, x_stat \
   = blls.solve_ls(n, m, w, A_ne, A_val, b, x_l, x_u, x, z)
 print(" x:",x)
@@ -76,7 +77,8 @@ print(" x_stat:",x_stat)
 
 # get information
 inform = blls.information()
-print(" r:",inform['obj'])
+print(" r: %.4f" % inform['obj'])
+print('** blls exit status:', inform['status'])
 
 # deallocate internal data
 

@@ -1,6 +1,7 @@
 from galahad import convert
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: convert")
 
 # allocate internal data and set default options
 options = convert.initialize()
@@ -14,7 +15,7 @@ options['print_level'] = 0
 
 # get information
 inform = convert.information()
-print(" status:",inform['status'])
+print('** convert exit status:', inform['status'])
 
 # deallocate internal data
 

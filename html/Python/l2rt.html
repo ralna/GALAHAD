@@ -766,6 +766,8 @@ outer iteration.</p>
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">l2rt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">floatmode</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">** python test: l2rt&quot;</span><span class="p">)</span>
 
 <span class="c1"># set problem data</span>
 
@@ -784,7 +786,7 @@ outer iteration.</p>
 
 <span class="c1"># set some non-default options</span>
 <span class="n">options</span><span class="p">[</span><span class="s1">&#39;unitm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1">#options[&#39;print_level&#39;] = 1</span>
+<span class="n">options</span><span class="p">[</span><span class="s1">&#39;print_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="c1">#print(&quot;options:&quot;, options)</span>
 
 <span class="c1"># load non-default options</span>
@@ -792,7 +794,7 @@ outer iteration.</p>
 
 <span class="c1"># problem</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;solve problem&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; solve problem&quot;</span><span class="p">)</span>
 <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">u</span> <span class="o">=</span> <span class="n">b</span>
 <span class="k">while</span> <span class="n">status</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -810,8 +812,9 @@ outer iteration.</p>
 <span class="c1"># get information</span>
 
 <span class="n">inform</span> <span class="o">=</span> <span class="n">l2rt</span><span class="o">.</span><span class="n">information</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;optimal f:&quot;</span><span class="p">,</span><span class="n">inform</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
-<span class="c1">#print(&quot;x:&quot;,x)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; optimal f: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inform</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+<span class="c1">#print(&quot; x:&quot;,x)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;** l2rt exit status:&#39;</span><span class="p">,</span> <span class="n">inform</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">])</span>
 
 <span class="c1"># deallocate internal data</span>
 

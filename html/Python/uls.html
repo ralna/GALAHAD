@@ -857,6 +857,7 @@ when trying to solve <span class="math notranslate nohighlight">\(A x = b\)</spa
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">uls</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">floatmode</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">** python test: uls&quot;</span><span class="p">)</span>
 
 <span class="c1">#  describe problem:</span>
 <span class="c1">#  ( 1     )     ( 1 )</span>
@@ -887,17 +888,18 @@ when trying to solve <span class="math notranslate nohighlight">\(A x = b\)</spa
 <span class="c1"># solve system</span>
 <span class="n">trans</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">uls</span><span class="o">.</span><span class="n">solve_system</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
 
 <span class="c1"># solve transpose system</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">])</span>
 <span class="n">trans</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">xt</span> <span class="o">=</span> <span class="n">uls</span><span class="o">.</span><span class="n">solve_system</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;transpose x:&quot;</span><span class="p">,</span><span class="n">xt</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; transpose x:&quot;</span><span class="p">,</span><span class="n">xt</span><span class="p">)</span>
 
 <span class="c1"># get information</span>
 <span class="n">inform</span> <span class="o">=</span> <span class="n">uls</span><span class="o">.</span><span class="n">information</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rank:&quot;</span><span class="p">,</span><span class="n">inform</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; rank:&quot;</span><span class="p">,</span><span class="n">inform</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;** uls exit status:&#39;</span><span class="p">,</span> <span class="n">inform</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">])</span>
 
 <span class="c1"># deallocate internal data</span>
 

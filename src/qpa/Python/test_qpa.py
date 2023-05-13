@@ -1,6 +1,7 @@
 from galahad import qpa
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
+print("\n** python test: qpa")
 
 # set parameters
 n = 3
@@ -49,20 +50,20 @@ y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
 # find optimum of qp
-print("\n 1st problem: solve qp")
+print("1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
   = qpa.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = qpa.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # deallocate internal data
 
@@ -96,16 +97,16 @@ print("\n 2nd problem: solve l1qp")
 x, c, y, z, x_stat, c_stat \
   = qpa.solve_l1qp(n, m, f, g, H_ne, H_val, rho_g, rho_b, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = qpa.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
 
 # deallocate internal data
 
@@ -139,16 +140,17 @@ print("\n 3rd problem: solve bcl1qp")
 x, c, y, z, x_stat, c_stat \
   = qpa.solve_bcl1qp(n, m, f, g, H_ne, H_val, rho_g, A_ne, A_val, 
                  c_l, c_u, x_l, x_u, x, y, z)
-print("x:",x)
-print("c:",c)
-print("y:",y)
-print("z:",z)
-print("x_stat:",x_stat)
-print("c_stat:",c_stat)
+print(" x:",x)
+print(" c:",c)
+print(" y:",y)
+print(" z:",z)
+print(" x_stat:",x_stat)
+print(" c_stat:",c_stat)
 
 # get information
 inform = qpa.information()
-print("f:",inform['obj'])
+print(" f: %.4f" % inform['obj'])
+print('** qpa exit status:', inform['status'])
 
 # deallocate internal data
 

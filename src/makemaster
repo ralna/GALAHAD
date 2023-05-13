@@ -169,9 +169,9 @@ all_pyiface_double: all_ciface_double
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface PRECIS=double PWD=$(PWD)/all_go )
 
-#  --------------------------------
+#  ------------------------------------------------------------
 #  everything with julia interfaces (not yet fully functional!)
-#  --------------------------------
+#  ------------------------------------------------------------
 
 all_jliface: all_jliface_$(PRECIS)
 
@@ -720,14 +720,98 @@ test_all_ciface_double:
 test_all_pyiface: test_all_pyiface_$(PRECIS)
 
 test_all_pyiface_single:
+	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/sls )
+	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/uls )
+	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/psls )
+	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/bsc )
+	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/convert )
+	( cd fit      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/fit )
+	( cd hash     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/hash )
+	( cd ir       ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/ir )
+	( cd lhs      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/lhs )
+	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/lms )
+	( cd roots    ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/roots )
+	( cd scu      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/scu )
+	( cd sec      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/sec )
+	( cd sha      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/sha )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/all_qp )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/wcp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/arc )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                         test_pyiface PRECIS=single PWD=$(PWD)/trb )
+                          test_pyiface PRECIS=single PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=single PWD=$(PWD)/nls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                         test_pyiface PRECIS=single PWD=$(PWD)/all_go )
+                          test_pyiface PRECIS=single PWD=$(PWD)/all_go )
 
 test_all_pyiface_double:
+	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/sls )
+	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/uls )
+	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/psls )
+	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/bsc )
+	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/convert )
+	( cd fit      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/fit )
+	( cd hash     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/hash )
+	( cd ir       ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/ir )
+	( cd lhs      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/lhs )
+	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/lms )
+	( cd roots    ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/roots )
+	( cd scu      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/scu )
+	( cd sec      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/sec )
+	( cd sha      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/sha )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/all_qp )
+	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/wcp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/arc )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                         test_pyiface PRECIS=double PWD=$(PWD)/trb )
+                          test_pyiface PRECIS=double PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface PRECIS=double PWD=$(PWD)/nls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface PRECIS=double PWD=$(PWD)/all_go )
 

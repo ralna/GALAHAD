@@ -710,14 +710,15 @@ function.</p>
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">ugo</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">floatmode</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">** python test: ugo&quot;</span><span class="p">)</span>
 
 <span class="c1"># allocate internal data and set default options</span>
 <span class="n">options</span> <span class="o">=</span> <span class="n">ugo</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
 <span class="c1"># set some non-default options</span>
-<span class="n">options</span><span class="p">[</span><span class="s1">&#39;print_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">options</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&#39;aargh&#39;&quot;</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;options:&quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">options</span><span class="p">[</span><span class="s1">&#39;print_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1">#print(&quot;options:&quot;, options)</span>
 
 <span class="c1"># load data (and optionally non-default options)</span>
 <span class="n">x_l</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -738,14 +739,14 @@ function.</p>
 
 <span class="c1"># find optimum</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">ugo</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">eval_fgh</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;f:&quot;</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;g:&quot;</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h:&quot;</span><span class="p">,</span><span class="n">h</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; f: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">f</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; g: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; h: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">h</span><span class="p">)</span>
 
 <span class="c1"># get information</span>
 <span class="n">inform</span> <span class="o">=</span> <span class="n">ugo</span><span class="o">.</span><span class="n">information</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">inform</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;** ugo exit status:&#39;</span><span class="p">,</span> <span class="n">inform</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">])</span>
 
 <span class="c1"># deallocate internal data</span>
 <span class="n">ugo</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
