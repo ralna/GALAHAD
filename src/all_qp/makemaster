@@ -42,13 +42,14 @@ PYDEPENDENCIES = make_pyiface_sils make_pyiface_gls \
                  make_pyiface_sbls make_pyiface_fit \
                  make_pyiface_convert make_pyiface_roots \
                  make_pyiface_scu make_pyiface_rpd \
-                 make_pyiface_fdc make_pyiface_cqp \
-                 make_pyiface_dqp make_pyiface_qpa \
-                 make_pyiface_qpb make_pyiface_bqp \
-                 make_pyiface_bqpb make_pyiface_lsqp \
-                 make_pyiface_cro make_pyiface_eqp \
-                 make_pyiface_blls make_pyiface_lpa \
-                 make_pyiface_lpb make_pyiface_presolve
+                 make_pyiface_gltr make_pyiface_fdc \
+                 make_pyiface_cqp make_pyiface_dqp \
+                 make_pyiface_qpa make_pyiface_lsqp \
+                 make_pyiface_qpb make_pyiface_cro \
+                 make_pyiface_bqp make_pyiface_bqpb \
+                 make_pyiface_eqp make_pyiface_blls \
+                 make_pyiface_lpa make_pyiface_lpb \
+                 make_pyiface_presolve
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
