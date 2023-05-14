@@ -45,7 +45,22 @@
 
       PRIVATE
       PUBLIC :: LLST_initialize, LLST_read_specfile, LLST_solve,               &
-                LLST_terminate, SMT_type, SMT_put, SMT_get
+                LLST_terminate,  LLST_full_initialize, LLST_full_terminate,    &
+                LLST_import, LLST_import_S, LLST_reset_control,                &
+                LLST_solve_problem, LLST_information,                          &
+                SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE LLST_initialize
+        MODULE PROCEDURE LLST_initialize, LLST_full_initialize
+      END INTERFACE LLST_initialize
+
+      INTERFACE LLST_terminate
+        MODULE PROCEDURE LLST_terminate, LLST_full_terminate
+      END INTERFACE LLST_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -143,7 +158,7 @@
 !  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint 
 !  an equality)?
 
-        LOGICAL :: equality_problem= .FALSE.
+        LOGICAL :: equality_problem = .FALSE.
 
 !  ignore initial_multiplier?
 
@@ -181,26 +196,6 @@
 
         TYPE ( IR_control_type ) :: IR_control
 
-      END TYPE
-
-!  - - - - - - - - - -
-!   data derived type 
-!  - - - - - - - - - -
-
-      TYPE, PUBLIC :: LLST_data_type
-        PRIVATE
-        INTEGER ( KIND = ip_ ) :: m, npm, s_ne, a_ne, m_end
-        TYPE ( RAND_seed ) :: seed
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, U, Y, Z
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_diag, S_offd
-        LOGICAL :: accurate = .TRUE.
-        TYPE ( SMT_type ) :: H_sbls, C_sbls
-        TYPE ( IR_data_type ) :: IR_data
-        TYPE ( SLS_data_type ) :: SLS_data
-        TYPE ( SBLS_data_type ) :: SBLS_data
-        TYPE ( SLS_control_type ) :: SLS_control
-        TYPE ( LLST_control_type ) :: control
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -336,6 +331,35 @@
         TYPE ( IR_inform_type ) :: IR_inform
       END TYPE
 
+!  - - - - - - - - - -
+!   data derived type 
+!  - - - - - - - - - -
+
+      TYPE, PUBLIC :: LLST_data_type
+        PRIVATE
+        INTEGER ( KIND = ip_ ) :: m, npm, s_ne, a_ne, m_end
+        TYPE ( RAND_seed ) :: seed
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, U, Y, Z
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_diag, S_offd
+        LOGICAL :: accurate = .TRUE.
+        TYPE ( SMT_type ) :: H_sbls, C_sbls
+        TYPE ( IR_data_type ) :: IR_data
+        TYPE ( SLS_data_type ) :: SLS_data
+        TYPE ( SBLS_data_type ) :: SBLS_data
+        TYPE ( SLS_control_type ) :: SLS_control
+        TYPE ( LLST_control_type ) :: control
+      END TYPE
+
+      TYPE, PUBLIC :: LLST_full_data_type
+        LOGICAL :: f_indexing = .TRUE.
+        TYPE ( LLST_data_type ) :: LLST_data
+        TYPE ( LLST_control_type ) :: LLST_control
+        TYPE ( LLST_inform_type ) :: LLST_inform
+        TYPE ( SMT_type ) :: A, S
+        LOGICAL :: use_s
+      END TYPE LLST_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  L L S T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -397,6 +421,38 @@
 !  End of subroutine LLST_initialize
 
       END SUBROUTINE LLST_initialize
+
+! G A L A H A D - L L S T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
+
+      SUBROUTINE LLST_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LLST controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLST_control_type ), INTENT( OUT ) :: control
+      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
+
+      CALL LLST_initialize( data%llst_data, control, inform )
+
+      RETURN
+
+!  End of subroutine LLST_full_initialize
+
+      END SUBROUTINE LLST_full_initialize
 
 !-*-*-*-*   L L S T _ R E A D _ S P E C F I L E  S U B R O U T I N E   *-*-*-*-
 
@@ -2151,6 +2207,33 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 
       END SUBROUTINE LLST_terminate
 
+!   G A L A H A D -  L L S T _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+      SUBROUTINE LLST_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLST_control_type ), INTENT( IN ) :: control
+      TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
+
+!  deallocate workspace
+
+      CALL LLST_terminate( data%llst_data, control, inform )
+      RETURN
+
+!  End of subroutine LLST_full_terminate
+
+      END SUBROUTINE LLST_full_terminate
+
 !-*-*-*-*-*-*-  L L S T _ P I _ D E R I V S   S U B R O U T I N E   -*-*-*-*-*-
 
       SUBROUTINE LLST_pi_derivs( max_order, beta, x_norm2, pi_beta )
@@ -2204,6 +2287,613 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !  End of subroutine LLST_pi_derivs
 
       END SUBROUTINE LLST_pi_derivs
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-  G A L A H A D -  L L S T _ i m p o r t _ A _ S U B R O U T I N E -*-*-
+
+     SUBROUTINE LLST_import( control, data, status, m, n,                      &
+                             A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data for the problem Jacobian A into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to LLST_solve
+!
+!  data is a scalar variable of type LLST_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   constraints
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'
+!   if m > 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LLST_control_type ), INTENT( INOUT ) :: control
+     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     error = data%llst_control%error
+     space_critical = data%llst_control%space_critical
+     deallocate_error_fatal = data%llst_control%space_critical
+
+!  flag that M and A are not currently used
+
+     data%use_s = .FALSE.
+
+!  record the dimensions
+
+     data%A%n = n ; data%A%m = m
+
+!  set A appropriately in its storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_ne ) .AND. PRESENT( A_row ) .AND.              &
+                    PRESENT( A_col ) ) ) THEN
+         data%llst_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'COORDINATE', data%llst_inform%alloc_status )
+       data%A%ne = A_ne
+
+       array_name = 'llst: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_col ) .AND. PRESENT( A_ptr ) ) ) THEN
+         data%llst_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
+                     data%llst_inform%alloc_status )
+       IF ( data%f_indexing ) THEN
+         data%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%A%ne = A_ptr( m + 1 )
+       END IF
+
+       array_name = 'llst: data%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%A%type, 'DENSE', data%llst_inform%alloc_status )
+       data%A%ne = m * n
+
+       array_name = 'llst: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%llst_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%llst_inform%status
+     RETURN
+
+!  End of subroutine LLST_import
+
+     END SUBROUTINE LLST_import
+
+!-*-*-  G A L A H A D -  L L T R _ i m p o r t _ S _ S U B R O U T I N E -*-*-
+
+     SUBROUTINE LLST_import_S( data, status, S_type, S_ne, S_row, S_col, S_ptr )
+
+!  import fixed problem data for the scaling matrix M into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  data is a scalar variable of type LLST_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  S_type is a character string that specifies the scaling matrix storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal' or 'identity'. Lower or upper case variants are allowed.
+!
+!  S_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the lower triangular part of M in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  S_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of M in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  S_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of M in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  S_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the lower
+!   triangular part of M, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: S_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: S_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: S_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: S_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: S_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     error = data%llst_control%error
+     space_critical = data%llst_control%space_critical
+     deallocate_error_fatal = data%llst_control%space_critical
+
+!  recover the dimension
+
+     n = data%A%n
+
+!  set M appropriately in its storage type
+
+     SELECT CASE ( S_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( S_ne ) .AND. PRESENT( S_row ) .AND.               &
+                    PRESENT( S_col ) ) ) THEN
+         data%llst_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%S%type, 'COORDINATE', data%llst_inform%alloc_status )
+       data%S%n = n ; data%S%ne = S_ne
+
+       array_name = 'llst: data%S%row'
+       CALL SPACE_resize_array( data%S%ne, data%S%row,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%S%col'
+       CALL SPACE_resize_array( data%S%ne, data%S%col,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%S%row( : data%S%ne ) = S_row( : data%S%ne )
+         data%S%col( : data%S%ne ) = S_col( : data%S%ne )
+       ELSE
+         data%S%row( : data%S%ne ) = S_row( : data%S%ne ) + 1
+         data%S%col( : data%S%ne ) = S_col( : data%S%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( S_col ) .AND. PRESENT( S_ptr ) ) ) THEN
+         data%llst_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%S%type, 'SPARSE_BY_ROWS',                            &
+                     data%llst_inform%alloc_status )
+       data%S%n = n
+       IF ( data%f_indexing ) THEN
+         data%S%ne = S_ptr( n + 1 ) - 1
+       ELSE
+         data%S%ne = S_ptr( n + 1 )
+       END IF
+
+       array_name = 'llst: data%S%ptr'
+       CALL SPACE_resize_array( n + 1, data%S%ptr,                             &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%S%col'
+       CALL SPACE_resize_array( data%S%ne, data%S%col,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       array_name = 'llst: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%S%ptr( : n + 1 ) = S_ptr( : n + 1 )
+         data%S%col( : data%S%ne ) = S_col( : data%S%ne )
+       ELSE
+         data%S%ptr( : n + 1 ) = S_ptr( : n + 1 ) + 1
+         data%S%col( : data%S%ne ) = S_col( : data%S%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%S%type, 'DENSE', data%llst_inform%alloc_status )
+       data%S%n = n ; data%S%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'llst: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%S%type, 'DIAGONAL', data%llst_inform%alloc_status )
+       data%S%n = n ; data%S%ne = n
+
+       array_name = 'llst: data%S%val'
+       CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
+              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%llst_inform%bad_alloc, out = error )
+       IF ( data%llst_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%S%type, 'IDENTITY', data%llst_inform%alloc_status )
+       data%S%n = n ; data%S%ne = 0
+
+     CASE DEFAULT
+       data%llst_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     data%use_s = .TRUE.
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%llst_inform%status
+     RETURN
+
+!  End of subroutine LLST_import_S
+
+     END SUBROUTINE LLST_import_S
+
+! - G A L A H A D -  L L S T _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE LLST_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See LLST_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LLST_control_type ), INTENT( IN ) :: control
+     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%llst_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LLST_reset_control
+
+     END SUBROUTINE LLST_reset_control
+
+!-  G A L A H A D -  L L S T _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE LLST_solve_problem( data, status, radius, A_val, B, X, S_val )
+
+!  solve the trust-region problem whose structure was previously
+!  imported. See LLST_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type LLST_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the 
+!       types contain a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  radius is a scalar of type default real, that holds the positive value 
+!   of the trust-region radius.
+!
+!  A_val is a one-dimensional array of size a_ne and type default real
+!   that holds the values of the entries of the objective Jacobian A.
+!
+!  B is a rank-one array of dimension m and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  S_val is an optional one-dimensional array of size s_ne and type default 
+!   real that holds the values of the entries of the lower triangular part of 
+!   the scaling matrix M in the storage scheme specified in llst_import. This
+!   need not be given if M is the identity matrix
+!
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: S_val
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: n, m
+
+!  recover the dimension
+
+     n = data%A%n ; m = data%A%m
+
+!  save the Hessian entries
+
+     IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+
+!  call the solver
+
+       IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+       IF ( .NOT. data%use_s ) THEN
+         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
+                         data%llst_control, data%llst_inform )
+
+       ELSE
+         IF ( .NOT. PRESENT( S_val ) ) THEN
+           data%llst_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
+         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,         &
+                         data%llst_control, data%llst_inform, S = data%S )
+       END IF
+
+     status = data%llst_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%llst_inform%status
+     RETURN
+
+!  End of subroutine LLST_solve_problem
+
+     END SUBROUTINE LLST_solve_problem
+
+!-  G A L A H A D -  L L S T _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+      SUBROUTINE LLST_information( data, inform, status )
+
+!  return solver information during or after solution by LLST
+!  See LLST_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+      inform = data%llst_inform
+
+!  flag a successful call
+
+      status = GALAHAD_ok
+      RETURN
+
+!  end of subroutine LLST_information
+
+      END SUBROUTINE LLST_information
 
 !-*-*-*-*-  End of G A L A H A D _ L L S T  d o u b l e  M O D U L E  -*-*-*-*-
 

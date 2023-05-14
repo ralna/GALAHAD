@@ -1,0 +1,126 @@
+  ======================
+  CREATING A NEW PACKAGE
+  ======================
+
+To provide a new package (call it pack, with PACK being the
+upper case alternative name), the following steps are required
+(N.B. It is best to copy and modify a "similar" existing package!!):
+
+1. Create suitable LaTeX Fortran documentation, pack.tex, in 
+   $GALAHAD/doc/src/ . Use current examples as a template.
+   This will ultimately require one or more examples of
+   use (packs.f90, packs2.f90,...), plus their output 
+   (packs.output,packs2.output,...).
+
+   Once the documentation is ready, add it to the list in
+   $GALAHAD/doc/src/makedocs, and run this script to create
+   $GALAHAD/doc/pack.pdf.
+
+2. Create a directory $GALAHAD/src/pack that will contain all
+   of the package codes. These will include
+
+     pack.F90 - the source code for the package. This will
+       contain the module GALAHAD_pack, which defines
+       - control, information and private data derived types,
+         PACK_control_type, PACK_inform_type and PACK_data_type
+       - initialize, termination and execution subroutines.
+         PACK_initialize, PACK_terminate and various PACK_*
+         (such as PACK_solve) as appropriate.
+       - a routine PACK_read_specfile that is able to read 
+         control information from a (spec)file.
+       - (perhaps) glue types and routines that provide the 
+         fortran side of the bridge between fortran and C.
+
+     packs.f90 - the example code for the documentation
+
+     packt.F90 - a comprehensive test example that tries
+       to execute every line of the package
+
+     packti.F90 - (optional) a test of the fortran-C bridge
+
+     use_pack.F90 - a module GALAHAD_USEPACK that enables
+       CUTEst to call pack
+
+     runpack_sif.F90 - the main program that calls the CUTEst interface.
+
+     makemaster - a makefile template that specifies package
+       specific information (use other packages as a template).
+
+     PACK.template - a list of commented keywords that specify 
+       available options with default values; these will match
+       the options mentioned in PACK_read_specfile in PACK.F90.
+
+     RUNPACK.meta - an auxiliary list of options used when
+       calling the package from CUTEst (under the heading MAIN,
+       as mentioned in use_pack.F90), along with the packages that
+       pack itself uses (under a list, each prefaced by INCLUDE)
+       
+3. Add mentions of pack to the main makefile template, 
+   $GALAHAD/src/makemaster, by copying what is written for 
+   existing packages.
+
+4. To build an interface to C, create the directory 
+    $GALAHAD/src/pack/C and fill this with
+
+      pack_ciface.F90 - a fortran code that binds the fortran
+        procedures and types to C using fortran's ansi_c module
+
+      packt.c - a test of the C bindings with C zero-based indexing
+
+      packtf.c - a test of the C bindings with fortran one-based indexing
+
+   In addition, create $GALAHAD/galahad_pack.h, a C header file 
+   that lists the C functions and structures that correspond to
+   the fortran ones that have been bound in pack_ciface.F90
+
+   Remember to update $GALAHAD/src/pack/makemaster and 
+   $GALAHAD/src/makemaster to add builds for C
+
+   To create C documentation, execute 
+
+     galdoxy pack
+
+   from $GALAHAD/doc/C. To make this permanent, add this
+   command to $GALAHAD/doc/C/gen_c_docs. The documentation
+   will appear both as $GALAHAD/doc/pack_c.pdf and as a
+   man page pack.3 in the directory $GALAHAD/man/man3 .
+
+5. To build an interface to Python, first create one to C as above,
+   and create the directory $GALAHAD/src/pack/Python. Fill this with
+
+      pack_pyiface.c - a C code that provides a bridge between the C
+        interface and Python's NUMPY package
+
+      test_pack.py - a simple test of the Python bindings
+
+   Remember to update $GALAHAD/src/pack/makemaster and 
+   $GALAHAD/src/makemaster to add builds for Python
+
+   To create Python documentation, create a suitable RST
+   file $GALAHAD/doc/Python/pack.rst, and then add an index
+   entry to this in an appropriate "category" file in the
+   $GALAHAD/doc/Python directory, and then
+
+      make html
+
+    This will produce html documentation that may be accessed
+    from a sub-page of $GALAHAD/html/Python/index.html .
+
+6. To provide a Matlab interface, add the following to
+   $GALAHAD/src/matlab
+
+     galahad_pack.F90 - a Mex interface from fortran to Matlab
+     galahad_pack_matlab_types.F90 - the fortran control and information
+       types as Matlab structures
+
+   Remember to update $GALAHAD/src/matlab/makemaster
+   to add builds for Matlab. Unfortunately Mex is very fussy,
+   and getting this right can be a pain!
+
+For any help, please contact me
+
+-----------------------------
+
+Nick Gould
+For GALAHAD productions
+This version 14th May 2023
