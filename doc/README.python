@@ -1,40 +1,64 @@
-Interim developer's notes
+   ============================
+   PYTHON interfaces to GALAHAD
+   ============================
 
-Initial sketch (for gfortran version)
+   ----------------------------------
+   N.B. ONLY TESTED WITH gcc/gfortran
+   ----------------------------------
 
-0. Add suitable PYVERSION, PYTHONINCLUDE, NUMPYINCLUDE and STATIC variables
-   in each architecture file (architecture), i.e. the names of files in
-   $GALAHAD/makefiles
+0. Add suitable PYVERSION, PYTHONINCLUDE, NUMPYINCLUDE,
+   SOABI and PYSITEPACKDIR variables in each architecture 
+   file (architecture), i.e. the names of files in $GALAHAD/makefiles
 
-   ** now done automatically
+    PYTHONVERSION = x.yy where x is the main version (usually 3) and yy 
+                      is the latest subversion (currently 10)
+    PYTHONINCLUDE = location of python include files, often
+                      /usr/include/python$(PYTHONVERSION)
+    NUMPYINCLUDE  = location of numpy package inclues, often
+                      /usr/lib/python3/dist-packages/numpy/core/include
+    SOABI         = SOABI/extension suffix, for example
+                      cpython-310-x86_64-linux-gnu (Linux), or
+                      cpython-310m-darwin (OSX).
+                    This may be found by issuing the commands
+                       import sysconfig
+                       print(sysconfig.get_config_var('SOABI')
+                    in python3
+    PYSITEPACKDIR = location of local python site packages, often
+                       ~/.local/lib/python$(PYTHONVERSION)/site-packages
+
+   These variables are found and set automatically during the install 
+   (if python 3 is present), but may be changed afterwards by editing the 
+   file $GALAHAD/makefiles/(architecture)
 
 1. Build fortran and C libraries as normal
 
-    make -s -f $GALAHAD/makefiles/(architecture) all_ciface
+     make -s -f $GALAHAD/makefiles/(architecture) all_ciface
 
-2. For each supported pthon package (pack), compile the interface
-   (pack)_pyiface.c using
+    from $GALAHAD/src
 
-      make -s -f $GALAHAD/makefiles/(architecture) (pack)_pyiface.o
+2. Now build the Python interfaces
 
-   from $GALAHAD/src/(pack)/
+     make -s -f $GALAHAD/makefiles/(architecture) all_pyiface
 
-   where (pack) is the actual package name
+3. Optionally, run simple tests to see if everything is ok
 
-   This uses $GALAHAD/bin/create_shared to create dynamic/shared libraries
-   and then uses pip install $GALAHAD/bin/ to build the required python package
+     make -s -f $GALAHAD/makefiles/(architecture) test_all_pyiface
 
-4. Test via
-   cd $GALAHAD/src/(pack)/Python ; python test_(pack).py
+   This may be done on a package-by-package basis, for example
 
-When adding a new interface
+     cd $GALAHAD/src/(package)
+     make -s -f $GALAHAD/makefiles/(architecture) test_pyiface
+    
+   for the package (package)
 
-a. create $GALAHAD/src/(pack)/Python
-b. add the relevant (pack)_pyiface.c
-c  add details to setup.py
+4. Documentation is available via
+
+     $GALAHAD/html/Python/index.html
+
+   (best viewed in a browser with the suffix file:/// )
 
 -----------------------------
 
 Nick Gould
 For GALAHAD productions
-This version 14th August 2022
+This version 14th May 2023
