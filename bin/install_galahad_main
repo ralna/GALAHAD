@@ -55,16 +55,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
-    if [[ $C_REQUIRED == "1" ]] ; then
-      if (( $DRYRUN )) ; then
-        echo " $MAKE $OPTIONS all_ciface $MACROS"
-      else
-        echo " compiling in $GALAHAD/src with the command"
-        echo " $MAKE $OPTIONS all_ciface"
-        $MAKE $OPTIONS all_ciface $MACROS
-        [[ $? != 0 ]] && exit 2
-      fi
-    fi
+
     if [[ $PYTHON_REQUIRED == "1" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_pyiface $MACROS"
@@ -74,7 +65,17 @@ galahad_compile () {
         $MAKE $OPTIONS all_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
       fi
+    elif [[ $C_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS all_ciface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the command"
+        echo " $MAKE $OPTIONS all_ciface"
+        $MAKE $OPTIONS all_ciface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
     fi
+
     if [[ $AMPL_REQUIRED == "1" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_ampl $MACROS"
