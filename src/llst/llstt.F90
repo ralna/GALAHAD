@@ -17,7 +17,7 @@
    TYPE ( SMT_type ) :: A, S
 
    B = one                               ! The term b is a vector of ones
-   A%m = m ; A%n = n ; A%ne = m          ! A^T = ( I : Diag(1:n) )
+   A%m = m ; A%n = n ; A%ne = 3 * m      ! A^T = ( I : Diag(1:n) : e )
    CALL SMT_put( A%type, 'COORDINATE', i )
    ALLOCATE( A%row( 3 * m ), A%col( 3 * m ), A%val( 3 * m ) )
    DO i = 1, m
@@ -46,10 +46,12 @@
    DO problem = 1, 2
      DO pass = 1, 5
        CALL LLST_initialize( data, control, inform )
-!      control%print_level = 1
+       control%print_level = 10
 !      control%itmax = 50
 !      control%extra_vectors = 100
-       control%error = 23 ; control%out = 23 ; control%print_level = 10
+!      control%error = 23 ; control%out = 23 ; control%print_level = 10
+       control%sbls_control%symmetric_linear_solver = "sytr  "
+       control%sbls_control%definite_linear_solver = "sytr  "
        radius = one
        IF ( pass == 2 ) radius = 10.0_rp_
        IF ( pass == 3 ) radius = 0.0001_rp_
