@@ -46,6 +46,10 @@ elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
 endif
 
+if cxx.get_id() == 'gcc' or cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
+  add_global_arguments('-MD', language : 'cpp')
+endif
+
 # Options
 install_modules = get_option('modules')
 
