@@ -14,8 +14,10 @@
    TYPE ( LLST_inform_type ) :: inform
    CALL LLST_initialize( data, control, inform ) ! Initialize control parameters
    control%print_level = 1
+   control%sbls_control%symmetric_linear_solver = "sytr  "
+   control%sbls_control%definite_linear_solver = "sytr  "
    B = one                               ! The term b is a vector of ones
-   A%m = m ; A%n = n ; A%ne = m          ! A^T = ( I : Diag(1:n) )
+   A%m = m ; A%n = n ; A%ne = 3 * m      ! A^T = ( I : Diag(1:n) )
    CALL SMT_put( A%type, 'COORDINATE', i )
    ALLOCATE( A%row( 3 * m ), A%col( 3 * m ), A%val( 3 * m ) )
    DO i = 1, m
@@ -33,7 +35,7 @@
    END DO
    CALL LLST_solve( m, n, radius, A, B, X, data, control, inform, S = S )
    IF ( inform%status == 0 ) THEN  !  Successful return
-     DO l = 1, A%ne 
+     DO l = 1, A%ne
        i =  A%row( l )
        B( i ) = B( i ) - A%val( l ) * X( A%col( l ) )
      END DO
