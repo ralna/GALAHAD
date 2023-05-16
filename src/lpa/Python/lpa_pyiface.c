@@ -386,11 +386,11 @@ static PyObject* lpa_make_inform_dict(const struct lpa_inform_type *inform){
                          rpd_make_inform_dict(&inform->rpd_inform));
 
     // include RINFO array
-    npy_intp rdim[] = {40}; 
-    PyArrayObject *py_rinfo = 
+    npy_intp rdim[] = {40};
+    PyArrayObject *py_rinfo =
       (PyArrayObject*) PyArray_SimpleNew(1, rdim, NPY_DOUBLE);
-    double *rinfo = (double *) PyArray_DATA(py_rinfo); 
-    for(int i=0; i<40; i++) rinfo[i] = inform->RINFO[i];  
+    double *rinfo = (double *) PyArray_DATA(py_rinfo);
+    for(int i=0; i<40; i++) rinfo[i] = inform->RINFO[i];
     PyDict_SetItemString(py_inform, "RINFO", (PyObject *) py_rinfo);
 
     // Set time nested dictionary
@@ -427,13 +427,11 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
-
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","m",
                              "A_type","A_ne","A_row","A_col","A_ptr",
                              "options"};
-
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
@@ -445,7 +443,7 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1)
+        check_array_int("A_ptr", py_A_ptr, m+1)
         ))
         return NULL;
 
@@ -465,9 +463,9 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert 64bit integer A_ptr array to 32bit
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
+        A_ptr = malloc((m+1) * sizeof(int));
         long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
     }
 
     // Reset control options
@@ -476,7 +474,7 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Update LPA control options
     if(!lpa_update_control(&control, py_options))
         return NULL;
-
+printf("here\n");
     // Call lpa_import
     lpa_import(&control, &data, &status, n, m,
                A_type, A_ne, A_row, A_col, A_ptr);
@@ -510,7 +508,7 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOOOOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOOOOOOOO", &n, &m, &f, &py_g,
                          &A_ne, &py_A_val, &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
 
@@ -548,25 +546,25 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call lpa_solve_direct
     status = 1; // set status to 1 on entry
-    lpa_solve_lp(&data, &status, n, m, g, f, A_ne, A_val, 
+    lpa_solve_lp(&data, &status, n, m, g, f, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -579,7 +577,7 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args){
     PyObject *solve_lp_return;
 
     // solve_lp_return = Py_BuildValue("O", py_x);
-    solve_lp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    solve_lp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
     Py_INCREF(solve_lp_return);
     return solve_lp_return;
