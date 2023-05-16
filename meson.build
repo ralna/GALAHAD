@@ -355,7 +355,7 @@ if build_pythoniface and build_ciface and build_double
 
     libgalahad_python = py.extension_module(name,
                                             sources : file,
-                                            link_args: '-Wl,-Bsymbolic-functions',
+                                            link_args: ['-Wl,-Bsymbolic', '-Wl,-Bsymbolic-functions'],
                                             link_with : libgalahad_double,
                                             link_language : 'c',
                                             include_directories : libgalahad_include,
