@@ -1,5 +1,5 @@
 ! Routine that is called if MeTiS 5 is linked.
-subroutine juliahsl_metis(n,iptr,irn,metftn,metopt,invprm,perm)
+subroutine galahad_metis(n,iptr,irn,metftn,metopt,invprm,perm)
     implicit none
     integer, intent(in) :: n
     integer, intent(in) :: iptr(n+1)
@@ -23,4 +23,4 @@ subroutine juliahsl_metis(n,iptr,irn,metftn,metopt,invprm,perm)
 
     ! Call MeTiS 5 to get ordering via C MeTiS 4 to 5 adapter
     call metis5_adapter(n,iptr,irn,metftn,metopt,invprm,perm)
-end subroutine juliahsl_metis
+end subroutine galahad_metis

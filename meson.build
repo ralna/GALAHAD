@@ -131,7 +131,7 @@ galahad_c_tests = []
 # Headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
-                      include_directories('src/ampl')] + libhsl_modules
+                      include_directories('src/ampl')] + libmetis_include + libhsl_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
