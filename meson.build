@@ -74,6 +74,9 @@ libpastix_path = get_option('libpastix_path')
 libmkl_pardiso_path = get_option('libmkl_pardiso_path')
 libampl_path = get_option('libampl_path')
 
+libmetis_include = get_option('libmetis_include')
+libmetis_version = get_option('libmetis_version')
+
 libhsl_modules = get_option('libhsl_modules')
 
 # Dependencies

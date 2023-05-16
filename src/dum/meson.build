@@ -36,10 +36,6 @@ if not libhsl.found()
   libgalahad_integer_src += files('hsl_kb22l.f90', 'hsl_mc68i.f90', 'hsl_mc78i.f90', 'hsl_of01i.f90', 'hsl_zb01i.f90', 'kb07i.f')
 endif
 
-if not libmetis.found()
-  libgalahad_src += files('metis4.f')
-endif
-
 if not libwsmp.found()
   libgalahad_src += files('wsmp.F90')
 endif
