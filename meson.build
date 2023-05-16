@@ -3,7 +3,7 @@ project(
   'c', 'cpp', 'fortran',
   version: '5.0.0',
   license: 'BSD-3',
-  meson_version: '>= 0.61.0',
+  meson_version: '>= 0.63.0',
   default_options: [
     'buildtype=debug',
     'libdir=lib',
@@ -355,9 +355,9 @@ if build_pythoniface and build_ciface and build_double
 
     libgalahad_python = py.extension_module(name,
                                             sources : file,
+                                            link_args: '-Wl,-Bsymbolic-functions',
                                             link_with : libgalahad_double,
                                             link_language : 'c',
-                                            dependencies : py.dependency(),
                                             include_directories : libgalahad_include,
                                             subdir : 'galahad',
                                             install : true)
