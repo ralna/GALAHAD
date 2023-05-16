@@ -90,7 +90,7 @@ option('libpastix',
 
 option('libmkl_pardiso',
        type : 'string',
-       value : 'mkl_intel_lp64',
+       value : 'mkl_rt',
        description : 'option for Intel MKL PARDISO library switching')
 
 option('libampl',
