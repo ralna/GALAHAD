@@ -11,7 +11,7 @@ as part of the GALAHAD installation (or update) process. See
 
 The use of other external packages, particularly those that
 are available as object libraries, is controlled by variables
-set in the files generically of the form
+set in the "architecture" files generically of the form
 
    machine.os.compiler
 
@@ -58,6 +58,19 @@ WSMP="-L/numerical/wsmp/wsmp-Linux64/lib/Intel -lwsmp64"
 
 Spaces arre critical here, and all declarations must be
 enclosed in quotes "" as shown.
+
+In addition, the GALAHAD interface scripts gal (for CUTEst), dgal (for QPLIB)
+and rbgal (for Rutherford-Boeing) override the above if the user sets
+and exports a variable PACKLIB (orresponding to the package "pack"), 
+this will ovedrride the PACK variable set in the architecture file.
+For example, when using the bash shell,
+
+ BLASLIB="-lblas"
+ export BLASLIB
+
+will override the BLAS variable set in ./galahad/bin/sys/* when using
+(sd)gal, dgal and rbgal. See the man pages for these scripts for
+further details.
 
 ----
 BLAS
@@ -262,3 +275,7 @@ MUMPS
   typically /usr/include on Linux systems.
 
  N.B. MUMPS is only optionally required but may improve performance.
+
+Nick Gould
+For GALAHAD productions
+2023-05-17

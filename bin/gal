@@ -30,6 +30,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
+#   this version 2023-05-17
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -209,135 +210,6 @@ CUDAFLAGS=""
 
 PROBFLAGS="-c -fixed"
 
-#  If there are compiled, library versions of the blas
-#  (basic linear algebra subprograms), set BLAS to a list of
-#  names of the object library suffix -lx, where the object library
-#  libx.a contains relevant blas. For instance if the blas are
-#  shared between object libraries libblas1.a and libblas2.a,
-#  BLAS should be set to "-lblas1 -lblas2", noting that those in
-#  libblas1.a will take precedence over those in libblas2.a.
-#  If compiled blas are unavailable, BLAS should be set to "".
-#  If the user wishes not to link blas separately, set BLAS to
-#  "-galahad_dummy"
-
-BLAS=""
-
-#  If there are compiled, library versions of the LAPACK library
-#  set LAPACK to a list of names of the object library suffix -lx,
-#  where the object library libx.a contains relevant lapack. For instance
-#  if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
-#  LAPACK should be set to "-llapack1 -llapack2", noting that those in
-#  liblapack1.a will take precedence over those in liblapack2.a.
-#  If compiled lapack are unavailable, LAPACK should be set to ""
-#  If the user wishes not to link lapack separately, set LAPACK to
-#  "-galahad_dummy"
-
-LAPACK=""
-
-#  If there is a compiled, library version of the Harwell
-#  Subroutine Library, set HSL to -lx, where the object library
-#  libx.a contains the relevant Harwell Subroutine Library.
-#  For instance if the Harwell Subroutine Library is contained
-#  in the object library libhsl.a, HSL should be set to "-lhsl".
-#  If a compiled version of the Harwell Subroutine Library is
-#  unavailable, HSL should be set to ""
-
-HSL=""
-
-#  If there is a compiled, library version of the Metis (version 4) graph
-#  partitioning package (http://www-users.cs.umn.edu/~karypis/metis/) , set
-#  METIS4 to -lx, where the object library libx.a contains Metis.  For instance
-#  if Metis is contained in the object library libmetis.a, METIS4 should be
-#  set to "-lmetis".  If the library is in a "non-standard" place, METIS4 should
-#  also point to the full path to the library. For example, if libmetis.so
-#  is in the directory /mylibrary, METIS4 should be set to
-#  "-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
-#  METIS4 should be set to "-lgalahad_metis4".
-#  N.B. Metis is only required if MA57 (version 2 or later) is to be used.
-
-METIS4=""
-
-#  If there is a compiled, library version of the SPRAL sparse factorization
-#  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
-#  to -lx, where the object library libx.so contains SPRAL.  For instance if
-#  SPRAL is contained in the object library libspral.so, SPRAL should be
-#  set to "-lspral". If the library is in a "non-standard place", SPRAL
-#  should also point to the full path to the library. For example, if
-#  libspral.so is in the directory /mylibrary, SPRAL should be set to
-#  "-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
-#  SPRAL should be set to "-lgalahad_spral".
-#  N.B. SPRAL is only optionally required but may improve performance.
-
-SPRAL=""
-
-#  If there is a compiled, library version of the PARDISO sparse factorization
-#  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
-#  where the object library libx.so contains PARDISO.  For instance if PARDISO
-#  is contained in the object library libpardiso.so, PARDISO should be set to
-#  "-lpardiso". If the library is in a "non-standard place", PARDISO should
-#  also point to the full path to the library. For example, if libpardiso.so
-#  is in the directory /mylibrary, PARDISO should be set to
-#  "-L/mylibrary -lpardiso" If a compiled version of PARDISO is unavailable,
-#  PARDISO should be set to "-lgalahad_pardiso".
-#  N.B. PARDISO is only optionally required but may improve performance.
-
-PARDISO=""
-
-#  If there is a compiled, library version of the MKL version of the PARDISO
-#  sparse factorization package (http://www.pardiso-project.org/) , set
-#  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
-#  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
-#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a
-#  "non-standard place", MKL_PARDISO should also point to the full path to the
-#  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
-#  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
-# If a compiled version of the MKL version of PARDISO is unavailable,
-#  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
-#  N.B. MKL PARDISO is only optionally required but may improve performance.
-
-MKL_PARDISO=""
-
-#  If there is a compiled, library version of the WSMP sparse factorization
-#  package (http://www.wsmp-project.org/) , set WSMP to -lx,
-#  where the object library libx.so contains WSMP.  For instance if WSMP
-#  is contained in the object library libwsmp.so, wsmp should be set to
-#  "-lwsmp". If the library is in a "non-standard place", WSMP should
-#  also point to the full path to the library. For example, if libwsmp.so
-#  is in the directory /mylibrary, WSMP should be set to
-#  "-L/mylibrary -lwsmp" If a compiled version of WSMP is unavailable,
-#  wsmp should be set to "-lgalahad_wsmp".
-#  N.B. WSMP is only optionally required but may improve performance.
-
-WSMP=""
-
-#  place-holder for future PaStiX codes
-
-PASTIX=""
-
-#  place-holder for future MPI codes
-
-MPI=""
-
-#  place-holder for future MUMPS codes
-
-MUMPS=""
-
-#  place-holder for future UMFPACK codes
-
-UMFPACK=""
-
-#  place-holder for future SuitSparse codes
-
-SUITESPARSE=""
-
-#  If the PLplot graphics library is available, some packages optionally
-#  produce grapical output for debugging purposes. The precise list of
-#  link options required may be obtained by executing the command
-#    pkg-config --cflags --libs plplotd-f95
-#  and PLPLOT should be set to the output of this command.
-#  N.B. PLPLOT is only optionally required.
-
-PLPLOT=""
 
 #  ----------------------------------------------------------------------------
 #  -*- end of default values that may be overridden in $GALAHAD/bin/sys/$1 -*-
@@ -426,87 +298,6 @@ else
    CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/double -lcutest"
 fi
 PROBLIB=""
-
-#  libraries for BLAS, LAPACK, HSL, METIS4, SPRAL, PARDISO, MKL_PARDISO,
-#  WSMP, PASTIX, MUMPS, UMFPACK and SUITESPARSE
-
-if [[ "$BLAS" == "" ]]; then
-  BLASLIB="-lgalahad_blas"
-else
-  BLASLIB="$BLAS"
-fi
-
-if [[ "$LAPACK" == "" ]]; then
-  LAPACKLIB="-lgalahad_lapack"
-else
-  LAPACKLIB="$LAPACK"
-fi
-
-if [[ "$HSL" == "" ]]; then
-  HSLLIB="-lgalahad_hsl"
-else
-  HSLLIB="$HSL"
-fi
-
-if [[ "$METIS4" == "" ]]; then
-  METISLIB="-lgalahad_metis4"
-else
-  METISLIB="$METIS4"
-fi
-
-if [[ "$SPRAL" == "" ]]; then
-  SPRALLIB="-lgalahad_spral"
-else
-  SPRALLIB="$SPRAL"
-fi
-
-if [[ "$PARDISO" == "" ]]; then
-  PARDISOLIB="-lgalahad_pardiso"
-else
-  PARDISOLIB="$PARDISO"
-fi
-
-if [[ "$MKL_PARDISO" == "" ]]; then
-  MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
-else
-  MKL_PARDISOLIB="$MKL_PARDISO"
-fi
-
-if [[ "$WSMP" == "" ]]; then
-  WSMPLIB="-lgalahad_wsmp"
-else
-  WSMPLIB="$WSMP"
-fi
-
-if [[ "$PASTIX" == "" ]]; then
-  PASTIXLIB="-lgalahad_pastix"
-else
-  PASTIXLIB="$PASTIX"
-fi
-
-if [[ "$MPI" == "" ]]; then
-  MPILIB="-lgalahad_mpi"
-else
-  MPILIB="$MPI"
-fi
-
-if [[ "$MUMPS" == "" ]]; then
-  MUMPSLIB="-lgalahad_mumps"
-else
-  MUMPSLIB="$MUMPS"
-fi
-
-if [[ "$UMFPACK" == "" ]]; then
-  UMFPACKLIB="-lgalahad_umfpack"
-else
-  UMFPACKLIB="$UMFPACK"
-fi
-
-if [[ "$SUITESPARSE" == "" ]]; then
-  SUITESPARSELIB=""
-else
-  SUITESPARSELIB="$SUITESPARSE"
-fi
 
 #  remove any hanging out-of-core files
 
@@ -1231,17 +1022,23 @@ fi
 #  create the executable
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN $NSUB\
-# -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad\
-# $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB \
-# $PASTIXLIB $MUMPSLIB $UMFPACKLIB $SUITESPARSELIB
-# $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
-
-EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB\
- -L$GALOBJ -lgalahad -lgalahad_cutest $PROBLIB $CUTESTLIB -lgalahad\
- $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB \
- $PASTIXLIB $MUMPSLIB $MPILIB $UMFPACKLIB $SUITESPARSELIB \
- $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB \
- $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
+EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB \
+ -L$GALOBJ -lgalahad -lgalahad_cutest $PROBLIB $CUTESTLIB -lgalahad \
+ ${HSLLIB-${HSL--lgalahad_hsl}} \
+ ${SPRALLIB-${SPRAL--lgalahad_spral}} \
+ ${PARDISOLIB-${PARDISO--lgalahad_pardiso}} \
+ ${MKL_PARDISOLIB-${MKL_PARDISO--lgalahad_mkl_pardiso}} \
+ ${WSMPLIB-${WSMP--lgalahad_wsmp}} \
+ ${PASTIXLIB-${PASTIX--lgalahad_pastix}} \
+ ${MUMPSLIB-${MUMPS--lgalahad_mumps}} \
+ ${MPILIB-${MPI--lgalahad_mpi}} \
+ ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
+ ${SUITESPARSELIB-${SUITESPARSE-}} \
+ ${METISLIB-${METIS4--lgalahad_metis4}} \
+ ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
+ ${BLASLIB-${BLAS--lgalahad_blas}} \
+ ${PLPLOTLIB-${PLPLOT-}} \
+ ${CUDALIBS-}"
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"

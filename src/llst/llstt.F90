@@ -5,7 +5,9 @@
    USE GALAHAD_LLST_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, zero = 0.0_rp_
-   INTEGER ( KIND = ip_ ), PARAMETER :: m = 5000, n = 2 * m + 1
+!  INTEGER ( KIND = ip_ ), PARAMETER :: m = 5000, n = 2 * m + 1
+!  INTEGER ( KIND = ip_ ), PARAMETER :: m = 1000, n = 2 * m + 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: m = 100, n = 2 * m + 1
    INTEGER ( KIND = ip_ ) :: i, pass, problem, nn
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X
    REAL ( KIND = rp_ ), DIMENSION( m ) :: B
@@ -19,7 +21,7 @@
    B = one                               ! The term b is a vector of ones
    A%m = m ; A%n = n ; A%ne = 3 * m      ! A^T = ( I : Diag(1:n) : e )
    CALL SMT_put( A%type, 'COORDINATE', i )
-   ALLOCATE( A%row( 3 * m ), A%col( 3 * m ), A%val( 3 * m ) )
+   ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
    DO i = 1, m
      A%row( i ) = i ; A%col( i ) = i ; A%val( i ) = one
      A%row( m + i ) = i ; A%col( m + i ) = m + i
@@ -29,9 +31,10 @@
    END DO
    S%m = n ; S%n = n ; S%ne = n    ! S = diag(1:n)**2
    CALL SMT_put( S%type, 'DIAGONAL', i )
-   ALLOCATE( S%val( n ) )
+   ALLOCATE( S%val( S%ne ) )
    DO i = 1, n
      S%val( i ) = REAL( i * i, rp_ )
+     S%val( i ) = one
    END DO
 
 !  ==============
@@ -46,10 +49,10 @@
    DO problem = 1, 2
      DO pass = 1, 5
        CALL LLST_initialize( data, control, inform )
-       control%print_level = 10
+!      control%print_level = 1
 !      control%itmax = 50
 !      control%extra_vectors = 100
-!      control%error = 23 ; control%out = 23 ; control%print_level = 10
+       control%error = 23 ; control%out = 23 ; control%print_level = 10
        control%sbls_control%symmetric_linear_solver = "sytr  "
        control%sbls_control%definite_linear_solver = "sytr  "
        radius = one
@@ -100,23 +103,27 @@
 !      IF ( pass == 1 ) control%equality_problem = .TRUE.
       IF ( pass == 5 ) THEN
         control%max_factorizations = 1
-        radius = 100.0_rp_
+        radius = 0.01_rp_
+      END IF
       IF ( pass == 6 ) THEN
         DO i = 1, n
           S%val( i ) = - REAL( i, rp_ )
         END DO
       END IF
-      END IF
 
 !  Iteration to find the minimizer
 
-      IF ( pass /= 1 ) THEN
+      IF ( pass == 4 .OR. pass == 6 ) THEN
         CALL LLST_solve( m, n, radius, A, B, X, data, control, inform, S = S )
+      ELSE IF ( pass /= 1 ) THEN
+        CALL LLST_solve( m, n, radius, A, B, X, data, control, inform )
       ELSE
         CALL LLST_solve( 0, nn, radius, A, B, X, data, control, inform )
       END IF
+      IF ( pass == 2 ) radius = one
       IF ( pass == 3 ) CALL SMT_put( A%type, 'COORDINATE', i )
       IF ( pass == 4 ) CALL SMT_put( S%type, 'DIAGONAL', i )
+      IF ( pass == 5 ) control%max_factorizations = - 1
       WRITE( 6, "( ' pass ', I3, ' LLST_solve exit status = ', I6 )" )         &
              pass, inform%status
       CALL LLST_terminate( data, control, inform ) !  delete internal workspace
