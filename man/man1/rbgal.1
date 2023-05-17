@@ -98,6 +98,125 @@ file containing solution created by rbgal
 .TP
 .IB SUMMARY.d
 file containing summary of solution created by rbgal
+.SH "ENVIRONMENT VARIABLES"
+Environment variables may be used to override default external library settings.
+By default these are unset, but if required they should be exported after
+being set.
+.TP
+.IB BLASLIB
+If there are compiled, library versions of the blas
+(basic linear algebra subprograms), set BLASLIB to a list of
+names of the object library suffix -lx, where the object library
+libx.a contains relevant blas. For instance if the blas are
+shared between object libraries libblas1.a and libblas2.a,
+BLASLIB should be set to "-lblas1 -lblas2", noting that those in
+libblas1.a will take precedence over those in libblas2.a.
+If compiled blas are unavailable, BLASLIB should either be unset or set to "".
+If the user wishes not to link blas separately, 
+for example if they are provided by one of the other external packages, 
+set BLASLIB to "-galahad_dummy",
+.TP
+.IB LAPACKLIB
+If there are compiled, library versions of the LAPACK library
+set LAPACKLIB to a list of names of the object library suffix -lx,
+where the object library libx.a contains relevant lapack. For instance
+if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
+LAPACKLIB should be set to "-llapack1 -llapack2", noting that those in
+liblapack1.a will take precedence over those in liblapack2.a. If compiled 
+lapack are unavailable, LAPACKLIB should either be unset or set to "".
+If the user wishes not to link lapack separately, 
+for example if they are provided by one of the other external packages, 
+set LAPACKLIB to "-galahad_dummy".
+.TP
+.IB HSLLIB
+If there is a compiled, library version of the HSL Mathematical 
+Software Library(formerly the Harwell Subroutine Library, 
+https://www.hsl.rl.ac.uk/), set HSLLIB to -lx, 
+where the object library libx.a contains the relevant HSL packages. 
+For instance if the HSL is contained in the object library libhsl.a, 
+HSLLIB should be set to "-lhsl". If a compiled version of HSL 
+is unavailable, HSLLIB should either be unset or set to "".
+N.B. HSL is only required optionally, but is recommended as it provides
+considerably improved performace for many GALAHAD packages.
+.TP
+.IB METISLIB
+If there is a compiled, library version of the Metis (version 4) graph
+partitioning package (http://www-users.cs.umn.edu/~karypis/metis/) , set
+METISLIB to -lx, where the object library libx.a contains Metis.  For instance
+if Metis is contained in the object library libmetis.a, METISLIB should be
+set to "-lmetis".  If the library is in a "non-standard" place, METISLIB should
+also point to the full path to the library. For example, if libmetis.so
+is in the directory /mylibrary, METISLIB should be set to
+"-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
+METISLIB will be set to "-lgalahad_metis4".
+N.B. Metis is only required by HSL and some other supported sparse matrix 
+packages.
+.TP
+.IB SPRALLIB
+If there is a compiled, library version of the SPRAL sparse factorization
+package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRALLIB
+to -lx, where the object library libx.so contains SPRAL.  For instance if
+SPRAL is contained in the object library libspral.so, SPRALLIB should be
+set to "-lspral". If the library is in a "non-standard place", SPRALLIB
+should also point to the full path to the library. For example, if
+libspral.so is in the directory /mylibrary, SPRALLIB should be set to
+"-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
+SPRALLIB will be set to "-lgalahad_spral".
+N.B. SPRAL is only optionally required but may improve performance.
+In addition, amny parts of SPRAL are included as part of GALAHAD.
+.TP
+.IB PARDISOLIB
+If there is a compiled, library version of the PARDISO sparse factorization
+package (http://www.pardiso-project.org/) , set PARDISOLIB to -lx,
+where the object library libx.so contains PARDISO.  For instance if PARDISO
+is contained in the object library libpardiso.so, PARDISOLIB should be set to
+"-lpardiso". If the library is in a "non-standard place", PARDISOLIB should
+also point to the full path to the library. For example, if libpardiso.so
+is in the directory /mylibrary, PARDISOLIB should be set to
+"-L/mylibrary -lpardiso" If a compiled version of PARDISO is unavailable,
+PARDISOLIB will be set to "-lgalahad_pardiso".
+N.B. PARDISO is only optionally required but may improve performance.
+.TP
+.IB MKL_PARDISOLIB
+If there is a compiled, library version of the MKL version of the PARDISO
+sparse factorization package (http://www.pardiso-project.org/) , set
+MKL_PARDISOLIB to -lx, where the object library libx.so contains PARDISO. For
+instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+MKL_PARDISOLIB should be set to "-lmkl_intel_lp64". If the library is in a
+"non-standard place", MKL_PARDISOLIB should also point to the full path to the
+library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+MKL_PARDISOLIB should be set to "-L/mylibrary -lmkl_intel_lp64"
+If a compiled version of the MKL version of PARDISO is unavailable,
+MKL_PARDISOLIB will be set to "-lgalahad_mkl_pardiso".
+N.B. MKL PARDISO is only optionally required but may improve performance.
+.TP
+.IB WSMPLIB
+If there is a compiled, library version of the WSMP sparse factorization
+package (http://www.wsmp-project.org/) , set WSMPLIB to -lx,
+where the object library libx.so contains WSMPLIB.  For instance if WSMP
+is contained in the object library libwsmp.so, WSMPLIB should be set to
+"-lwsmp". If the library is in a "non-standard place", WSMPLIB should
+also point to the full path to the library. For example, if libwsmp.so
+is in the directory /mylibrary, WSMPLIB should be set to
+"-L/mylibrary -lwsmp" If a compiled version of WSMP is unavailable,
+WSMPLIB will be set to "-lgalahad_wsmp".
+N.B. WSMP is only optionally required but may improve performance.
+.TP
+.IB PASTIXLIB
+place-holder for future PaStiX codes.
+.TP
+.IB MPILIB
+place-holder for future MPI codes.
+.TP
+.IB MUMPSLIB
+place-holder for future MUMPS codes.
+.TP
+.IB UMFPACKLIB
+place-holder for future UMFPACK codes.
+.TP
+.IB SUITESPARSELIB
+place-holder for future SuitSparse codes.
+
 .SH DIAGNOSTICS
 The diagnostics produced by rbgal itself are intended to be self-explanatory.
 .SH "SEE ALSO"

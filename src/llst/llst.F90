@@ -987,7 +987,7 @@
                         inform%alloc_status )
         END IF
 
-!  make space for C = - I
+!  make space for C = I
 
         data%C_sbls%m = m ; data%C_sbls%n = m
         CALL SMT_put( data%C_sbls%type, 'IDENTITY', inform%alloc_status )
@@ -1403,7 +1403,8 @@
 !  introduce lambda * S to form K(lambda)
 
         IF ( unit_s ) THEN
-          data%H_sbls%val( : data%s_ne ) = lambda
+!         data%H_sbls%val( : data%s_ne ) = lambda
+          data%H_sbls%val( : data%s_ne ) = lambda_pert
         ELSE
           IF ( SMT_get( S%type ) == 'COORDINATE' .OR.                          &
                SMT_get( S%type ) == 'SPARSE_BY_ROWS' .OR.                      &
@@ -1867,7 +1868,7 @@
 !  compute the new estimate of lambda
 
             IF ( printd ) WRITE( out, "( A, ' lambda_t', 3ES21.13 )" )         &
-               prefix, lambda_new( : n_lambda )
+              prefix, lambda_new( : n_lambda )
 
 !  compute the best Taylor improvement
 
