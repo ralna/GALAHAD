@@ -1,11 +1,11 @@
-   PROGRAM GALAHAD_LLST_EXAMPLE  !  GALAHAD 2.6 - 24/02/2014 AT 09:50 GMT
+   PROGRAM GALAHAD_LLST_EXAMPLE  !  GALAHAD 4.1 - 2023-05-17 AT 13:05 GMT
    USE GALAHAD_LLST_DOUBLE                         ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: working = KIND( 1.0D+0 )  ! set precision
    REAL ( KIND = working ), PARAMETER :: one = 1.0_working, zero = 0.0_working
-   INTEGER, PARAMETER :: m = 5000, n = 2 * m + 1   ! problem dimensions
+   INTEGER, PARAMETER :: m = 1000, n = 2 * m + 1   ! problem dimensions
    INTEGER :: i, l
-   REAL ( KIND = working ) :: radius = 10.0_working ! radius of one
+   REAL ( KIND = working ) :: radius = 1.0_working ! radius of one
    REAL ( KIND = working ), DIMENSION( n ) :: X
    REAL ( KIND = working ), DIMENSION( m ) :: B
    TYPE ( SMT_type ) :: A, S
@@ -16,10 +16,10 @@
    control%print_level = 1
    control%sbls_control%symmetric_linear_solver = "sytr  "
    control%sbls_control%definite_linear_solver = "sytr  "
-   B = one                               ! The term b is a vector of ones
-   A%m = m ; A%n = n ; A%ne = 3 * m      ! A^T = ( I : Diag(1:n) )
+   B = one                               ! The term b is a vector e of ones
+   A%m = m ; A%n = n ; A%ne = 3 * m      ! A = ( I : Diag(1:n) : e)
    CALL SMT_put( A%type, 'COORDINATE', i )
-   ALLOCATE( A%row( 3 * m ), A%col( 3 * m ), A%val( 3 * m ) )
+   ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
    DO i = 1, m
      A%row( i ) = i ; A%col( i ) = i ; A%val( i ) = one
      A%row( m + i ) = i ; A%col( m + i ) = m + i
