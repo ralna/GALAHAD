@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-05-11
+#  This version: 2023-05-18
 
 #  makefile shell
 
@@ -90,9 +90,17 @@ LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
 
-MLG  = $(OBJ)/libgalahad_metis4.a
-MLGS = $(OBJS)/libgalahad_metis4.a
-MLGD = $(OBJD)/libgalahad_metis4.a
+M4LG  = $(OBJ)/libgalahad_metis4.a
+M4LGS = $(OBJS)/libgalahad_metis4.a
+M4LGD = $(OBJD)/libgalahad_metis4.a
+
+M5LG  = $(OBJ)/libgalahad_metis5.a
+M5LGS = $(OBJS)/libgalahad_metis5.a
+M5LGD = $(OBJD)/libgalahad_metis5.a
+
+MDLG  = $(OBJ)/libgalahad_metis_dummy.a
+MDLGS = $(OBJS)/libgalahad_metis_dummy.a
+MDLGD = $(OBJD)/libgalahad_metis_dummy.a
 
 MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
 MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
@@ -166,8 +174,14 @@ HCRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HCLG)
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
 
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+M4ARR = $(AR) $(ARREPFLAGS) $(M4LG)
+M4RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $M4LG)
+
+M5ARR = $(AR) $(ARREPFLAGS) $(M5LG)
+M5RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $M5LG)
+
+MDARR = $(AR) $(ARREPFLAGS) $(MDLG)
+MDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MDLG)
 
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
 MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)

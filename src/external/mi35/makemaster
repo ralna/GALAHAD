@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MI35 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 21 VI 2009
+#  This version: 2023-05-18
 
 SHELL = /bin/$(BINSHELL)
 
@@ -66,17 +66,18 @@ MI35BUGSEDS = $(GALAHAD)/seds/mi35_$(MI35BUG)bug.sed
 
 #  compilation agenda
 
-MI35S = blas lapack $(HLGS)(hsl_mi35s.o)
-MI35D = blas lapack $(HLGD)(hsl_mi35d.o)
-
+MI35S = blas lapack $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_zb01i.o) \
+        $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64s.o) \
+        $(HLGS)(hsl_mc64s.o) $(HLGS)(hsl_mi35s.o)
+MI35D = blas lapack $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_zb01i.o) \
+        $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
+        $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi35d.o)
 
 mi35: mi35_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI35 routines ($(PRECIS) $(SUCC)"
 mi35_silent: mi35_$(PRECIS)
-mi35_single: blas lapack $(HLGS)(kb07i.o) $(HLGS)(mc60s.o) $(HLGS)(mc61s.o) \
-             $(HLGS)(mc77s.o) $(HLGS)(hsl_mi35s.o)
-mi35_double: blas lapack $(HLGD)(kb07i.o) $(HLGD)(mc60d.o) $(HLGD)(mc61d.o) \
-             $(HLGD)(mc77d.o) $(HLGD)(hsl_mi35d.o)
+mi35_single: $(MI35I)
+mi35_double: $(MI35D)
 
 #  lapack packages
 
@@ -89,67 +90,120 @@ lapack:
 
 #  individual compilations
 
-kb07i.o: $(HLG)(kb07i.o)
+hsl_mc34s.o: $(HLG)(hsl_mc34s.o)
 
-$(HLG)(kb07i.o): $(MI28)/kb07i.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "kb07i"
-	$(CP) $(MI28)/kb07i.f $(OBJ)/kb07i.f90
-	cd $(OBJ) ; $(FORTRAN) -o kb07i.o $(FFLAGS77) kb07i.f90
-	cd $(OBJ) ; $(HARR) kb07i.o ; $(RM) kb07i.f90 kb07i.o
+$(HLG)(hsl_mc34s.o): $(MA97)/hsl_mc34s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc34s"
+	$(CP) $(MA97)/hsl_mc34s.f90 $(OBJ)/hsl_mc34s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc34s.o $(FFLAGSOMP) hsl_mc34s.f90
+	cd $(OBJ) ; $(HARR) hsl_mc34s.o ; $(RM) hsl_mc34s.f90 hsl_mc34s.o
+	$(HRMARFILES) hsl_ma97s.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc60s.o: $(HLG)(mc60s.o)
+hsl_mc34d.o: $(HLG)(hsl_mc34d.o)
 
-$(HLG)(mc60s.o): $(MC61)/mc60s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc60s"
-	$(CP) $(MC61)/mc60s.f $(OBJ)/mc60s.f90
-	cd $(OBJ); $(FORTRAN) -o mc60s.o $(FFLAGS77) mc60s.f90
-	cd $(OBJ); $(HARR) mc60s.o ; $(RM) mc60s.f90 mc60s.o
+$(HLG)(hsl_mc34d.o): $(MA97)/hsl_mc34d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc34d"
+	$(CP) $(MA97)/hsl_mc34d.f90 $(OBJ)/hsl_mc34d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc34d.o $(FFLAGSOMP) hsl_mc34d.f90
+	cd $(OBJ) ; $(HARR) hsl_mc34d.o ; $(RM) hsl_mc34d.f90 hsl_mc34d.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc60d.o: $(HLG)(mc60d.o)
+hsl_zb01i.o: $(HLG)(hsl_zb01i.o)
 
-$(HLG)(mc60d.o): $(MC61)/mc60d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc60d"
-	$(CP) $(MC61)/mc60d.f $(OBJ)/mc60d.f90
-	cd $(OBJ); $(FORTRAN) -o mc60d.o $(FFLAGS77) mc60d.f90
-	cd $(OBJ); $(HARR) mc60d.o ; $(RM) mc60d.f90 mc60d.o
+$(HLG)(hsl_zb01i.o): $(MA97)/hsl_zb01i.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01i"
+	$(CP) $(MA97)/hsl_zb01i.f90 $(OBJ)/hsl_zb01i.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_zb01i.o $(FFLAGSOMP) hsl_zb01i.f90
+	cd $(OBJ) ; $(HARR) hsl_zb01i.o ; $(RM) hsl_zb01i.f90 hsl_zb01i.o
+	$(HRMARFILES) hsl_ma97s.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc61s.o: $(HLG)(mc61s.o)
+hsl_mc68i.o: $(HLG)(hsl_mc68i.o)
 
-$(HLG)(mc61s.o): $(MI28)/mc61s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc61s"
-	$(CP) $(MI28)/mc61s.f $(OBJ)/mc61s.f90
-	cd $(OBJ); $(FORTRAN) -o mc61s.o $(FFLAGS77) mc61s.f90
-	cd $(OBJ); $(HARR) mc61s.o ; $(RM) mc61s.f90 mc61s.o
+$(HLG)(hsl_mc68i.o): $(MA97)/hsl_mc68i.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68i"
+	$(CP) $(MA97)/hsl_mc68i.f90 $(OBJ)/hsl_mc68i.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) \
+                      -Dmetis_nodend=galahad_metis hsl_mc68i.f90
+	cd $(OBJ) ; $(HARR) hsl_mc68i.o ; $(RM) hsl_mc68i.f90 hsl_mc68i.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc61d.o: $(HLG)(mc61d.o)
+hsl_mc69s.o: $(HLG)(hsl_mc69s.o)
 
-$(HLG)(mc61d.o): $(MI28)/mc61d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc61d"
-	$(CP) $(MI28)/mc61d.f $(OBJ)/mc61d.f90
-	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
-	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
+$(HLG)(hsl_mc69s.o): $(MA97)/hsl_mc69s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc69s"
+	$(CP) $(MA97)/hsl_mc69s.f90 $(OBJ)/hsl_mc69s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc69s.o $(FFLAGSOMP) hsl_mc69s.f90
+	cd $(OBJ) ; $(HARR) hsl_mc69s.o ; $(RM) hsl_mc69s.f90 hsl_mc69s.o
+	$(HRMARFILES) hsl_ma97s.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc77s.o: $(HLG)(mc77s.o)
+hsl_mc69d.o: $(HLG)(hsl_mc69d.o)
 
-$(HLG)(mc77s.o): $(MI28)/mc77s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc77s"
-	$(CP) $(MI28)/mc77s.f $(OBJ)/mc77s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc77s.o $(FFLAGS77) mc77s.f90
-	cd $(OBJ) ; $(HARR) mc77s.o ; $(RM) mc77s.f90 mc77s.o
+$(HLG)(hsl_mc69d.o): $(MA97)/hsl_mc69d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc69d"
+	$(CP) $(MA97)/hsl_mc69d.f90 $(OBJ)/hsl_mc69d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc69d.o $(FFLAGSOMP) hsl_mc69d.f90
+	cd $(OBJ) ; $(HARR) hsl_mc69d.o ; $(RM) hsl_mc69d.f90 hsl_mc69d.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-mc77d.o: $(HLG)(mc77d.o)
+mc64s.o: $(HLG)(mc64s.o)
 
-$(HLG)(mc77d.o): $(MI28)/mc77d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc77d"
-	$(CP) $(MI28)/mc77d.f $(OBJ)/mc77d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc77d.o $(FFLAGS77) mc77d.f90
-	cd $(OBJ) ; $(HARR) mc77d.o ; $(RM) mc77d.f90 mc77d.o
+$(HLG)(mc64s.o): $(MA97)/mc64s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc64s"
+	$(CP) $(MA97)/mc64s.f $(OBJ)/mc64s.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc64s.o $(FFLAGS77) mc64s.f90
+	cd $(OBJ) ; $(HARR) mc64s.o ; $(RM) mc64s.f90 mc64s.o
+	@printf '[ OK ]\n'
+
+mc64d.o: $(HLG)(mc64d.o)
+
+$(HLG)(mc64d.o): $(MA97)/mc64d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc64d"
+	$(CP) $(MA97)/mc64d.f $(OBJ)/mc64d.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc64d.o $(FFLAGS77) mc64d.f90
+	cd $(OBJ) ; $(HARR) mc64d.o ; $(RM) mc64d.f90 mc64d.o
+	@printf '[ OK ]\n'
+
+hsl_mc64s.o: $(HLG)(hsl_mc64s.o)
+
+$(HLG)(hsl_mc64s.o): $(MA97)/hsl_mc64s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64s"
+	$(CP) $(MA97)/hsl_mc64s.f90 $(OBJ)/hsl_mc64s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc64s.o $(FFLAGSOMP) hsl_mc64s.f90
+	cd $(OBJ) ; $(HARR) hsl_mc64s.o ; $(RM) hsl_mc64s.f90 hsl_mc64s.o
+	$(HRMARFILES) hsl_ma97s.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_mc64d.o: $(HLG)(hsl_mc64d.o)
+
+$(HLG)(hsl_mc64d.o): $(MA97)/hsl_mc64d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64d"
+	$(CP) $(MA97)/hsl_mc64d.f90 $(OBJ)/hsl_mc64d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc64d.o $(FFLAGSOMP) hsl_mc64d.f90
+	cd $(OBJ) ; $(HARR) hsl_mc64d.o ; $(RM) hsl_mc64d.f90 hsl_mc64d.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
 hsl_mi35s.o: $(HLG)(hsl_mi35s.o)

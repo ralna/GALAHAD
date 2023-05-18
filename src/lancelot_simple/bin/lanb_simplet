@@ -5,7 +5,7 @@
 # lanb_simple:                                                         #
 #                                                                      #
 #    runs the test program lancelot_simplet.f90                        #
-#                                                                      # 
+#                                                                      #
 #    Ph. L. Toint, November 2007.                                      #
 #                                                                      #
 ########################################################################
@@ -47,7 +47,7 @@ set FORTRAN = "lf95"
 
 set FFLAGS = ""
 
-#  flags for compiling the FORTRAN 77 problem-dependent routines 
+#  flags for compiling the FORTRAN 77 problem-dependent routines
 
 set PROBFLAGS = "-c"
 
@@ -55,7 +55,7 @@ set PROBFLAGS = "-c"
 
 set GALMODULES=$GALAHAD/modules/pc.lnx.l95/double
 
-#  directory for double precision GALAHAD libraries 
+#  directory for double precision GALAHAD libraries
 
 set GALOBJ=$GALAHAD/objects/pc.lnx.l95/double
 
@@ -67,9 +67,9 @@ set LAPACKLIB="-lgalahad_lapack"
 
 set HSLLIB="-lgalahad_hsl"
 
-set METISLIB="-lgalahad_metis"
+set METISLIB="-lgalahad_metis_dummy"
 
-# compile the lancelot_1e.f90 program
+# compile the lancelot_simp1e.f90 program
 
 if ($OUTPUT) then
   echo ' '
@@ -77,7 +77,7 @@ if ($OUTPUT) then
   echo ' '
 endif
 
-$FORTRAN $PROBFLAGS -I$GALMODULES lancelot_simple.f90 lancelot_simplet.f90 
+$FORTRAN $PROBFLAGS -I$GALMODULES lancelot_simple.f90 lancelot_simplet.f90
 
 # link all the tools files together.
 
@@ -90,7 +90,7 @@ endif
 #  create the executable
 
 $FORTRAN $FFLAGS -o lancelot_simplet lancelot_simple.o lancelot_simplet.o\
-   -L$GALOBJ -lgalahad $BLASLIB $HSLLIB $METISLIB $LAPACKLIB 
+   -L$GALOBJ -lgalahad $BLASLIB $HSLLIB $METISLIB $LAPACKLIB
 
 if( $cwd != $EXEC ) $MV lancelot_simplet $EXEC/lancelot_simplet
 
@@ -108,5 +108,3 @@ $EXEC/lancelot_simplet
 #  tidy up the current directory.
 
 $RM $EXEC/lancelot_simple.o $EXEC/lancelot_simplet.o $EXEC/lancelot_simplet
-
-

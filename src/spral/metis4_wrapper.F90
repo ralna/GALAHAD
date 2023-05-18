@@ -3,7 +3,7 @@
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
-! 
+!
 module spral_metis_wrapper
 
   use, intrinsic :: iso_c_binding
@@ -37,7 +37,7 @@ contains
       ! duplicates or out-of-range entries
     integer(ip_), intent(in) :: row(ptr(n+1)-1) ! size at least ptr(n+1)-1
     integer(ip_), intent(out) :: perm(n) ! Holds elimination order on output
-    integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order 
+    integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order
       ! on exit
     integer(ip_), intent(out) :: flag ! Return value
     integer(ip_), intent(out) :: stat ! Stat value on allocation failure
@@ -45,7 +45,7 @@ contains
     ! ---------------------------------------------
     ! Local variables
     ! ---------------------------------------------
-    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later 
+    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later
       ! modified
     integer(ip_), allocatable :: row2(:) ! copy of row indices
     integer(ip_) :: metis_opts(8) ! metis options array
@@ -89,7 +89,7 @@ contains
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
       return
-    end if    
+    end if
   end subroutine metis_order32
 
   !
@@ -112,7 +112,7 @@ contains
     ! ---------------------------------------------
     ! Local variables
     ! ---------------------------------------------
-    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later 
+    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later
       ! modified
     integer(ip_), allocatable :: row2(:) ! copy of row indices
     integer(ip_) :: metis_opts(8) ! metis options array
@@ -156,12 +156,12 @@ contains
 
     ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-    call metis_nodend(n,ptr2,row2,1,metis_opts,invp,perm)
+    call galahad_metis(n,ptr2,row2,1,metis_opts,invp,perm)
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
       return
-    end if    
+    end if
   end subroutine metis_order64
 
   ! Convert a matrix in half storage to one in full storage.

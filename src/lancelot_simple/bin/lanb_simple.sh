@@ -7,14 +7,14 @@
 #    runs the simple 1-element simple interface to LANCELOT B.         #
 #    This script uses the program lancelot_simples.f90 and the         #
 #    subroutine lancelot_simple.f90 and requires the prior             #
-#    installation of the GALAHAD package.                              # 
+#    installation of the GALAHAD package.                              #
 #                                                                      #
 #    Adaptations to the local architecture and installation are        #
 #    required in the lines between ====================                #
 #                                                                      #
 #    NOTE: the executable created is called lancelot_simple and left   #
 #          in the execution directory.                                 #
-#                                                                      # 
+#                                                                      #
 #    Ph. L. Toint, November 2007.                                      #
 #                                                                      #
 ########################################################################
@@ -118,7 +118,7 @@ FORTRAN="lf95"
 
 GALMODULES=$GALAHAD/modules/pc.lnx.l95/double
 
-#  directory for double precision GALAHAD libraries 
+#  directory for double precision GALAHAD libraries
 
 GALLIBS=$GALAHAD/objects/pc.lnx.l95/double
 
@@ -132,7 +132,7 @@ $FORTRAN -c -I$GALMODULES lancelot_simple.f90 lancelot_simples.f90
 # link all the tools files together.
 (( OUTPUT > 0 )) && printf '\nLinking all the object files together ...\n'
 
-$FORTRAN -o lancelot_simple lancelot_simple.o lancelot_simples.o -L$GALLIBS -lgalahad -lgalahad_blas -lgalahad_hsl -lgalahad_metis -lgalahad_lapack
+$FORTRAN -o lancelot_simple lancelot_simple.o lancelot_simples.o -L$GALLIBS -lgalahad -lgalahad_blas -lgalahad_hsl -lgalahad_metis_dummy -lgalahad_lapack
 
 [[ $cwd != $EXEC  ]] && $MV lancelot_simple $EXEC/lancelot_simple
 

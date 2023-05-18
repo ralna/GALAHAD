@@ -120,8 +120,9 @@ this should provide a template for users' actual problems.
 To link with other applications, you should use
 
   -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl -lgalahad_spral \
-  -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis4 \
-  -lgalahad_lapack -lgalahad_blas
+  -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp \
+  -lgalahad_pastix -lgalahad_mumps -lgalahad_mpi -galahad_umfpack \
+  -lgalahad_metis_dummy -lgalahad_lapack -lgalahad_blas
 
 but remember to replace any of the later libraries with vendor-specific
 ones to improve performance.
@@ -139,4 +140,4 @@ Jari Fowkes (jaroslav.fowkes@stfc.ac.uk)
 
 For GALAHAD productions
 7 December 2021
-This version: 19 March 2022
+This version: 18 May 2023

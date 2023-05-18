@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA57 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-12-19
+#  This version: 2023-05-18
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -234,7 +234,8 @@ hsl_ma57d.o: $(HLG)(hsl_ma57d.o)
 $(HLG)(hsl_ma57d.o): $(MA57)/hsl_ma57d.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57d"
 	$(CP) $(MA57)/hsl_ma57d.f90 $(OBJ)/hsl_ma57d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGSS) hsl_ma57d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGSS) \
+                      -DMETIS_NODEND=galahad_metis hsl_ma57d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma57d.o ; $(RM) hsl_ma57d.f90 hsl_ma57d.o
 	$(RMARFILED) mdchl.o
 	$(RMARFILED) lancelot_types.o
@@ -280,4 +281,3 @@ ma57ds: $(MA57D)
 	$(MA57)//run_ma57 < $(MA57)/ma57s.data > $(MA57)/ma57ds.output 2>&1
 	cat $(MA57)/ma57ds.output
 	rm $(MA57)/run_ma57
-

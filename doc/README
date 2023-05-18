@@ -426,9 +426,14 @@ In order to get GALAHAD working, here is what you need to do.
     You should add this to your LIBPATH environment variable,
     and may then link the library with the -lgalahad compiler flag.
     Access to optional auxiliary libraries is via
-     -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis4
+     -lgalahad_hsl  -lgalahad_spral -lgalahad_mkl_pardiso
+     -lgalahad_pardiso -lgalahad_wsmp -lgalahad_pastix -lgalahad_mumps
+     -lgalahad_mpi -galahad_umfpack -lgalahad_metis_dummy
      -lgalahad_lapack -lgalahad_blas
-    as appropriate. C versions may be accessed by additionally pre-pending
+    as appropriate; any of these dummies may be replaced by their real
+    equivalents by using the proper library name, but note that
+    access to Metis 4 or 5 requires -lgalahad_metis4 or _metis5.
+    C versions may be accessed by additionally pre-pending
       -lgalahad_c -lgalahad_hsl_c
     to the previous list
 
@@ -478,8 +483,9 @@ Best of luck
 For GALAHAD productions
 25 April 2002
 
-This version (4.0), additionally with
+This version (4.1), additionally with
 
  Jari Fowkes
+ Alexis Montoison
 
-17 April 2023
+18 May 2023
