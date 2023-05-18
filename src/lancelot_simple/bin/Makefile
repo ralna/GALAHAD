@@ -24,7 +24,7 @@ USRLIBS =
 GALMODULES = ${GALAHAD}/modules/$(ARCH)/$(PREC)
 GALLIBDIR  = ${GALAHAD}/objects/$(ARCH)/$(PREC)
 GALLIBS1   = -lgalahad -lgalahad_hsl -lgalahad_lapack
-GALLIBS2   = -lgalahad_metis4 -lgalahad_blas
+GALLIBS2   = -lgalahad_metis_dummy -lgalahad_blas
 GALLIBS    = -L$(GALLIBDIR) $(GALLIBS1) $(GALLIBS2)
 
 all:: $(MAIN)

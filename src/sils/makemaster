@@ -120,7 +120,7 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
           -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
           -lgalahad -lgalahad_cutest_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
-          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS4) \
+          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS) \
           $(LAPACK) $(BLAS) -lgfortran \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \
           -Wl,-rpath=$(OBJ)/shared $(MOMP)

@@ -37,44 +37,23 @@ LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
 CULG  = $(OBJ)/libgalahad_cutest.a
 CULGS = $(OBJS)/libgalahad_cutest.a
 CULGD = $(OBJD)/libgalahad_cutest.a
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis4.a
-MLGS = $(OBJS)/libgalahad_metis4.a
-MLGD = $(OBJD)/libgalahad_metis4.a
-
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(METIS4) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(METIS) $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
 CUARR = $(AR) $(ARREPFLAGS) $(CULG)
 CURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CULG)
 
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
 
 #  compilation agenda
 

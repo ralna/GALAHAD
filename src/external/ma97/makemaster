@@ -174,7 +174,8 @@ hsl_mc68i.o: $(HLG)(hsl_mc68i.o)
 $(HLG)(hsl_mc68i.o): $(MA97)/hsl_mc68i.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68i"
 	$(CP) $(MA97)/hsl_mc68i.f90 $(OBJ)/hsl_mc68i.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) hsl_mc68i.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) \
+                      -Dmetis_nodend=galahad_metis hsl_mc68i.f90
 	cd $(OBJ) ; $(HARR) hsl_mc68i.o ; $(RM) hsl_mc68i.f90 hsl_mc68i.o
 	$(HRMARFILED) hsl_ma97d.o
 	$(MVMODS)

@@ -25,7 +25,7 @@ BLAS = -lgalahad_blas
 LAPACK = -lgalahad_lapack
 HSL = -lgalahad_hsl
 SPRAL = -lgalahad_spral
-METIS4 = -lgalahad_metis4
+METIS = -lgalahad_metis_dummy
 PARDISO = -lgalahad_pardiso
 MKL_PARDISO = -lgalahad_mkl_pardiso
 WSMP = -lgalahad_wsmp
@@ -36,6 +36,8 @@ These may be overridden as for eaxmple,
 
 WSMP = -L/numerical/wsmp/wsmp-Linux64/lib/Intel -lwsmp64
 
+but note tht access to Metis 4 or 5 requires -lgalahad_metis4 or _metis5
+in addition to the proper metis library name.
 Note that spaces are not critical here.
 
 The variables in ./galahad/bin/sys are Unix Bourne/bash-shell variables and
@@ -45,7 +47,7 @@ BLAS="-lgalahad_blas"
 LAPACK="-lgalahad_lapack"
 HSL="-lgalahad_hsl"
 SPRAL="-lgalahad_spral"
-METIS4="-lgalahad_metis4"
+METIS="-lgalahad_metis_dummy"
 PARDISO="-lgalahad_pardiso"
 MKL_PARDISO="-lgalahad_mkl_pardiso"
 WSMP="-lgalahad_wsmp"
@@ -61,7 +63,7 @@ enclosed in quotes "" as shown.
 
 In addition, the GALAHAD interface scripts gal (for CUTEst), dgal (for QPLIB)
 and rbgal (for Rutherford-Boeing) override the above if the user sets
-and exports a variable PACKLIB (orresponding to the package "pack"), 
+and exports a variable PACKLIB (orresponding to the package "pack"),
 this will ovedrride the PACK variable set in the architecture file.
 For example, when using the bash shell,
 
@@ -119,14 +121,16 @@ METIS
 
   http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/OLD/metis-4.0.3.tar.gz
 
- and follow the compilation instructions - set METIS4 to -lx,
+ and follow the compilation instructions - set METIS to -lx,
  where the object library libx.a contains Metis.  For instance if MeTiS
- is contained in the object library libmetis.a, METIS4 should be set to
- "-lmetis".  If the library is in a "non-standard" place, METIS4 should
- also point to the full path to the library. For example, if libmetis.so
- is in the directory /mylibrary, METIS4 should be set to "-L/mylibrary -lmetis"
+ is contained in the object library libmetis.a, METIS should be set to
+ "-lgalahad_metis4 -lmetis".  If the library is in a "non-standard" place,
+ METIS should  also point to the full path to the library. For example, if
+ libmetis.so  is in the directory /mylibrary, METIS should be set to
+ "-L/mylibrary -lgalahad_metis4 -lmetis"
+ The same is true for the more modern MeTiS 5, with all mentions of
+ metis4 becoing metis5.
  N.B. MeTiS is only optionally required but may improve performance.
- Also be aware that the more modern version 5 of MeTiS is not compatible.
 
 -------
 PARDISO
@@ -278,4 +282,4 @@ MUMPS
 
 Nick Gould
 For GALAHAD productions
-2023-05-17
+2023-05-18

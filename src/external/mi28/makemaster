@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MI28 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2022-01-26
+#  This version: 2023-05-18
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -46,8 +46,8 @@ zd11:
             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
 
 metis:
-	( cd ../../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            metis_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../dum )
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            metis_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  required blas
 
@@ -126,7 +126,8 @@ hsl_mc68i.o: $(HLG)(hsl_mc68i.o)
 $(HLG)(hsl_mc68i.o): $(MI28)/hsl_mc68i.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68i"
 	$(CP) $(MI28)/hsl_mc68i.f90 $(OBJ)/hsl_mc68i.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) hsl_mc68i.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) \
+                      -Dmetis_nodend=galahad_metis hsl_mc68i.f90
 	cd $(OBJ) ; $(HARR) hsl_mc68i.o ; $(RM) hsl_mc68i.f90 hsl_mc68i.o
 	$(HRMARFILES) hsl_mi64s.o
 	$(HRMARFILED) hsl_mi64d.o
