@@ -1,7 +1,7 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-01-29
+#  This version: 2023-05-18
 
 #  compilation agenda for package
 
@@ -35,7 +35,7 @@ DRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJD)/run$(package)_rb_double.o
 
 #  libraries used when linking for tests
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS4) \
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 CLIBS = -lgalahad_c -lgalahad_hsl_c $(LIBS)

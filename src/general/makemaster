@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-01-04
+#  This version: 2023-05-18
 
 #  include standard GALAHAD makefile definitions
 
@@ -298,24 +298,79 @@ $(LG)(lapack_interface_$(PRECIS).o): ../lapack/lapack_interface.F90
 	$(RMARFILES) gltr glrt sls trs rqs sha
 	@printf '[ OK ]\n'
 
-#  dummy metis package
+#  all metis packages
 
 metis_silent: metis_$(PRECIS)
 metis: metis_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(METIS4) ($(PRECIS) $(SUCC)"
-metis_single: symbols_silent $(MLGS)(metis4.o)
-	$(RANLIB) $(MLGS)
-metis_double: symbols_silent $(MLGD)(metis4.o)
-	$(RANLIB) $(MLGD)
+	@printf ' %-21s\n' "GALAHAD: metis ($(PRECIS) $(SUCC)"
+metis_single: dummy_metis_single metis4_single metis5_single
+metis_double: dummy_metis_double metis4_double metis5_double
 
-metis4.o: $(MLG)(metis4.o)
+#  dummy metis package
 
-$(MLG)(metis4.o): ../dum/metis4.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "metis  "
-	$(CP) ../dum/metis4.f $(OBJ)/metis4.f90
-	cd $(OBJ); $(FORTRAN) -o metis4.o $(FFLAGS77) metis4.f90
-	cd $(OBJ); $(MARR) metis4.o ; $(RM) metis4.f90 metis4.o
-	$(RANLIB) $(MLG)
+dummy_metis_silent: dummy_metis_$(PRECIS)
+dummy_metis: dummy_metis_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: dummy_metis ($(PRECIS) $(SUCC)"
+dummy_metis_single: symbols_silent $(MDLGS)(dummy_metis.o)
+	$(RANLIB) $(MDLGS)
+dummy_metis_double: symbols_silent $(MDLGD)(dummy_metis.o)
+	$(RANLIB) $(MDLGD)
+
+dummy_metis.o: $(MDLG)(dummy_metis.o)
+
+$(MDLG)(dummy_metis.o): ../external/metis/dummy_metis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy metis  "
+	$(CP) ../external/metis/dummy_metis.f90 $(OBJ)/dummy_metis.f90
+	cd $(OBJ); $(FORTRAN) -o dummy_metis.o $(FFLAGS) dummy_metis.f90
+	cd $(OBJ); $(MDARR) dummy_metis.o ; $(RM) dummy_metis.f90 dummy_metis.o
+	@printf '[ OK ]\n'
+
+#  metis4 package
+
+metis4_silent: metis4_$(PRECIS)
+metis4: metis4_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: metis4 ($(PRECIS) $(SUCC)"
+metis4_single: symbols_silent $(M4LGS)(metis4.o)
+	$(RANLIB) $(M4LGS)
+metis4_double: symbols_silent $(M4LGD)(metis4.o)
+	$(RANLIB) $(M4LGD)
+
+metis4.o: $(M4LG)(metis4.o)
+
+$(M4LG)(metis4.o): ../external/metis/metis4.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis4  "
+	$(CP) ../external/metis/metis4.f90 $(OBJ)/metis4.f90
+	cd $(OBJ); $(FORTRAN) -o metis4.o $(FFLAGS) metis4.f90
+	cd $(OBJ); $(M4ARR) metis4.o ; $(RM) metis4.f90 metis4.o
+	@printf '[ OK ]\n'
+
+#  metis5 package
+
+metis5_silent: metis5_$(PRECIS)
+metis5: metis5_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: metis5 ($(PRECIS) $(SUCC)"
+metis5_single: symbols_silent $(M5LGS)(metis5.o) $(M5LGS)(metis5_adapter.o)
+	$(RANLIB) $(M5LGS)
+metis5_double: symbols_silent $(M5LGD)(metis5.o) $(M5LGD)(metis5_adapter.o)
+	$(RANLIB) $(M5LGD)
+
+metis5.o: $(M5LG)(metis5.o)
+
+$(M5LG)(metis5.o): ../external/metis/metis5.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis5  "
+	$(CP) ../external/metis/metis5.f90 $(OBJ)/metis5.f90
+	cd $(OBJ); $(FORTRAN) -o metis5.o $(FFLAGS) metis5.f90
+	cd $(OBJ); $(M5ARR) metis5.o ; $(RM) metis5.f90 metis5.o
+	@printf '[ OK ]\n'
+
+metis5_adapter.o: $(M5LG)(metis5_adapter.o)
+
+$(M5LG)(metis5_adapter.o): ../external/metis/metis5_adapter.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis5_adapter  "
+	$(CP) ../external/metis/metis5_adapter.c $(OBJ)/metis5_adapter.c
+	cd $(OBJ); $(CC) -o metis5_adapter.o $(CFLAGS) metis5_adapter.c
+	cd $(OBJ); $(M5ARR) metis5_adapter.o ; \
+          $(RM) metis5_adapter.c metis5_adapter.o
 	@printf '[ OK ]\n'
 
 #  mpi package
