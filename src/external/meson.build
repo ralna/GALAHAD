@@ -1,3 +1,5 @@
+subdir('blas')
+subdir('lapack')
 subdir('metis')
 
 libgalahad_src += files('mkl_pardiso/mkl_pardiso_interface.F90', 'mumps/mumps_types.F90',
