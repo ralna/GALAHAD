@@ -215,6 +215,26 @@
 
      END INTERFACE GEMV
 
+!  matrix-matrix product
+
+      INTERFACE GEMM
+
+        SUBROUTINE SGEMM(TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC)
+          REAL :: ALPHA, BETA
+          INTEGER :: K, LDA, LDB, LDC, M, N
+          CHARACTER ( LEN = 1 ) :: TRANSA, TRANSB
+          REAL :: A(LDA,*), B(LDB,*), C(LDC,*)
+        END SUBROUTINE SGEMM
+
+        SUBROUTINE DGEMM(TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC)
+          DOUBLE PRECISION :: ALPHA, BETA
+          INTEGER :: K, LDA, LDB, LDC, M, N
+          CHARACTER ( LEN = 1 ) :: TRANSA, TRANSB
+          DOUBLE PRECISION :: A(LDA,*), B(LDB,*), C(LDC,*)
+        END SUBROUTINE DGEMM
+
+      END INTERFACE GEMM
+
 !  rank-one update
 
      INTERFACE GER
