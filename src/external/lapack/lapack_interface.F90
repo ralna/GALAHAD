@@ -21,6 +21,84 @@
 !   I n t e r f a c e  B l o c k s
 !---------------------------------
 
+!  Dense Matrix-vector products
+
+      INTERFACE GEMV
+
+        SUBROUTINE SGEMV(TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY)
+          REAL :: ALPHA, BETA
+          INTEGER :: INCX, INCY, LDA, M, N
+          CHARACTER ( LEN = 1 ) :: TRANS
+          REAL :: A(LDA,*), X(*), Y(*)
+        END SUBROUTINE SGEMV
+
+        SUBROUTINE DGEMV(TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY)
+          DOUBLE PRECISION :: ALPHA, BETA
+          INTEGER :: INCX, INCY, LDA, M, N
+          CHARACTER ( LEN = 1 ) :: TRANS
+          DOUBLE PRECISION :: A(LDA,*), X(*), Y(*)
+        END SUBROUTINE DGEMV
+
+      END INTERFACE GEMV
+
+!  Dense Matrix-matrix products
+
+      INTERFACE GEMM
+
+        SUBROUTINE SGEMM(TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC)
+          REAL :: ALPHA, BETA
+          INTEGER :: K, LDA, LDB, LDC, M, N
+          CHARACTER ( LEN = 1 ) :: TRANSA, TRANSB
+          REAL :: A(LDA,*), B(LDB,*), C(LDC,*)
+        END SUBROUTINE SGEMM
+
+        SUBROUTINE DGEMM(TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC)
+          DOUBLE PRECISION :: ALPHA, BETA
+          INTEGER :: K, LDA, LDB, LDC, M, N
+          CHARACTER ( LEN = 1 ) :: TRANSA, TRANSB
+          DOUBLE PRECISION :: A(LDA,*), B(LDB,*), C(LDC,*)
+        END SUBROUTINE DGEMM
+
+      END INTERFACE GEMM
+
+!  Solve a triangular system with a vector as right-hand side
+
+      INTERFACE TRSV
+
+        SUBROUTINE STRSV(UPLO, TRANS, DIAG, N, A, LDA, X, INCX)
+          INTEGER :: INCX, LDA, N
+          CHARACTER ( LEN = 1 ) :: DIAG, TRANS, UPLO
+          REAL :: A(LDA,*), X(*)
+        END SUBROUTINE STRSV
+
+        SUBROUTINE DTRSV(UPLO, TRANS, DIAG, N, A, LDA, X, INCX)
+          INTEGER :: INCX, LDA, N
+          CHARACTER ( LEN = 1 ) :: DIAG, TRANS, UPLO
+          DOUBLE PRECISION :: A(LDA,*), X(*)
+        END SUBROUTINE DTRSV
+
+      END INTERFACE TRSV
+
+!  Solve a triangular system with a matrix as right-hand side
+
+      INTERFACE TRSM
+
+        SUBROUTINE STRSM(SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, LDB)
+          REAL :: ALPHA
+          INTEGER :: LDA, LDB, M, N
+          CHARACTER ( LEN = 1 ) :: DIAG, SIDE, TRANSA, UPLO
+          REAL :: A(LDA,*), B(LDB,*)
+        END SUBROUTINE STRSM
+
+        SUBROUTINE DTRSM(SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, LDB)
+          DOUBLE PRECISION :: ALPHA
+          INTEGER :: LDA, LDB, M, N
+          CHARACTER ( LEN = 1 ) :: DIAG, SIDE, TRANSA, UPLO
+          DOUBLE PRECISION :: A(LDA,*), B(LDB,*)
+        END SUBROUTINE DTRSM
+
+      END INTERFACE TRSM
+
 !  LU factorization
 
       INTERFACE GETRF
