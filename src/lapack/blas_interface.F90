@@ -152,7 +152,7 @@
        INTEGER, INTENT( IN ) :: m, n, lda, ldb
        REAL, INTENT( IN ) :: alpha
        REAL, INTENT( IN ), DIMENSION( lda, * ) :: A
-       REAL, INTENT( IN ), DIMENSION( ldb, * ) :: B
+       REAL, INTENT( INOUT ), DIMENSION( ldb, * ) :: B
        END SUBROUTINE STRSM
 
        SUBROUTINE DTRSM( side, uplo, transa, diag, m, n, alpha, A, lda, B, ldb )
@@ -160,7 +160,7 @@
        INTEGER, INTENT( IN ) :: m, n, lda, ldb
        DOUBLE PRECISION, INTENT( IN ) :: alpha
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, * ) :: A
-       DOUBLE PRECISION, INTENT( IN ), DIMENSION( ldb, * ) :: B
+       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, * ) :: B
        END SUBROUTINE DTRSM
 
      END INTERFACE TRSM
