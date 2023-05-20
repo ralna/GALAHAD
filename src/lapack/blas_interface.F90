@@ -215,6 +215,30 @@
 
      END INTERFACE GEMV
 
+!  matrix-matrix product
+
+     INTERFACE GEMM
+
+       SUBROUTINE SGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
+                         beta, C, ldc )
+       CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb
+       INTEGER, INTENT( IN )  :: m, n, k, lda, ldb, ldc
+       REAL, INTENT( IN ) :: alpha, beta
+       REAL, INTENT( IN ) :: A( lda, * ), B( ldb, * )
+       REAL, INTENT( INOUT ) :: C( ldc, * )
+       END SUBROUTINE SGEMM
+
+       SUBROUTINE DGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
+                         beta, C, ldc )
+       CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb
+       INTEGER, INTENT( IN )  :: m, n, k, lda, ldb, ldc
+       DOUBLE PRECISION, INTENT( IN ) :: alpha, beta
+       DOUBLE PRECISION, INTENT( IN ) :: A( lda, * ), B( ldb, * )
+       DOUBLE PRECISION, INTENT( INOUT ) :: C( ldc, * )
+       END SUBROUTINE DGEMM
+
+     END INTERFACE GEMM
+
 !  rank-one update
 
      INTERFACE GER
