@@ -1,7 +1,7 @@
 //* \file cqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 09:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -720,9 +720,9 @@ static PyObject* py_cqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"n","m",
                              "H_type","H_ne","H_row","H_col","H_ptr",
                              "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+                             "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOO|O",
                                     kwlist, &n, &m,
                                     &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr,
@@ -1044,7 +1044,7 @@ static PyObject* py_cqp_terminate(PyObject *self){
 
 /* cqp python module method table */
 static PyMethodDef cqp_module_methods[] = {
-    {"initialize", (PyCFunction) py_cqp_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_cqp_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_cqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_qp", (PyCFunction) py_cqp_solve_qp, METH_VARARGS, NULL},
     {"solve_sldqp", (PyCFunction) py_cqp_solve_sldqp, METH_VARARGS, NULL},

@@ -1,7 +1,7 @@
 //* \file lpb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-19 AT 16:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -683,21 +683,23 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
     const char *A_type;
     int n, m, A_ne;
 
+printf("a");
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
-
+printf("b");
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
-                             "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+    static char *kwlist[] = {"n","m","A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
 
+printf("c");
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
                                     &py_options))
         return NULL;
+printf("d");
 
     // Check that array inputs are of correct type, size, and shape
 
@@ -880,7 +882,7 @@ static PyObject* py_lpb_terminate(PyObject *self){
 
 /* lpb python module method table */
 static PyMethodDef lpb_module_methods[] = {
-    {"initialize", (PyCFunction) py_lpb_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_lpb_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_lpb_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_lp", (PyCFunction) py_lpb_solve_lp, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_lpb_information, METH_NOARGS, NULL},

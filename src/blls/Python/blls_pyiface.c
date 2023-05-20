@@ -1,7 +1,7 @@
 //* \file blls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-14 AT 14:10 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -459,11 +459,10 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
-                             "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+    static char *kwlist[] = {"n","m","A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,

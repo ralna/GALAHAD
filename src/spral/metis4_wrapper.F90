@@ -84,7 +84,7 @@ contains
 
    ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-    call metis_nodend(n,ptr2,row2,1,metis_opts,invp,perm)
+    call galahad_metis(n,ptr2,row2,1,metis_opts,invp,perm)
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
