@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-26 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 11:30 GMT.
 
 #include "spral_procedures.h"
 
@@ -6,6 +6,7 @@
 module spral_ssids_gpu_cpu_solve_precision
   use spral_kinds_precision
   use spral_ssids_types_precision
+  use galahad_blas_interface
   implicit none
 
   private
@@ -209,13 +210,13 @@ contains
        ! Work with xlocal
 
        if (pos_def) then
-          call dtrsv('L','N','N', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','N','N', nelim, lcol, blkm, xlocal, 1)
        else
-          call dtrsv('L','N','U', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','N','U', nelim, lcol, blkm, xlocal, 1)
        end if
 
        if (blkm-nelim .gt. 0) then
-          call dgemv('N', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
+          call gemv('N', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
                xlocal, 1, zero, xlocal(nelim+1), 1)
           ! Add contribution into x
           ! Delays first
@@ -313,15 +314,15 @@ contains
        ! Work with xlocal
 
        if (pos_def) then
-          call dtrsm('Left', 'Lower', 'Non-Trans', 'Non-Unit', nelim, nrhs, &
+          call trsm('Left', 'Lower', 'Non-Trans', 'Non-Unit', nelim, nrhs, &
                one, lcol, blkm, xlocal, blkm)
        else
-          call dtrsm('Left', 'Lower', 'Non-Trans', 'Unit', nelim, nrhs, &
+          call trsm('Left', 'Lower', 'Non-Trans', 'Unit', nelim, nrhs, &
                one, lcol, blkm, xlocal, blkm)
        end if
 
        if (blkm-nelim .gt. 0) then
-          call dgemm('N', 'N', blkm-nelim, nrhs, nelim, -one, &
+          call gemm('N', 'N', blkm-nelim, nrhs, nelim, -one, &
                lcol(nelim+1), blkm, xlocal, blkm, zero, &
                xlocal(nelim+1,1), blkm)
           ! Add contribution into x
@@ -447,14 +448,14 @@ contains
           xlocal(j) = x(rp1)
        end do
        if ((blkm-nelim) .gt. 0) then
-          call dgemv('T', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
+          call gemv('T', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
                xlocal(nelim+1), 1, one, xlocal, 1)
        end if
 
        if (pos_def) then
-          call dtrsv('L','T','N', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','T','N', nelim, lcol, blkm, xlocal, 1)
        else
-          call dtrsv('L','T','U', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','T','U', nelim, lcol, blkm, xlocal, 1)
        end if
 
        ! Copy solution back from xlocal
@@ -585,16 +586,16 @@ contains
           end do
        end do
        if ((blkm-nelim) .gt. 0) then
-          call dgemm('Trans', 'Non-trans', nelim, nrhs, blkm-nelim, -one, &
+          call gemm('Trans', 'Non-trans', nelim, nrhs, blkm-nelim, -one, &
                lcol(nelim+1), blkm, xlocal(nelim+1,1), blkm, one, xlocal, &
                blkm)
        end if
 
        if (pos_def) then
-          call dtrsm('Left','Lower','Trans','Non-Unit', nelim, nrhs, one, &
+          call trsm('Left','Lower','Trans','Non-Unit', nelim, nrhs, one, &
                lcol, blkm, xlocal, blkm)
        else
-          call dtrsm('Left','Lower','Trans','Unit', nelim, nrhs, one, lcol, &
+          call trsm('Left','Lower','Trans','Unit', nelim, nrhs, one, lcol, &
                blkm, xlocal, blkm)
        end if
        do r = 1, nrhs
