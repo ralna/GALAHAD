@@ -1,12 +1,23 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 14:10 GMT.
 
 #include "spral_procedures.h"
+
+#ifdef SPRAL_SINGLE
+#define trsm strsm
+#define trsv strsv
+#define gemm sgemm
+#define gemv sgemv
+#else
+#define trsm dtrsm
+#define trsv dtrsv
+#define gemm dgemm
+#define gemv dgemv
+#endif
 
 ! This module provides a way of doing solve on CPU using GPU data structures
 module spral_ssids_gpu_cpu_solve_precision
   use spral_kinds_precision
   use spral_ssids_types_precision
-  use galahad_blas_interface
   implicit none
 
   private
