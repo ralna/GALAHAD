@@ -26,6 +26,14 @@ if fc.get_id() == 'nagfor'
   extra_args += '-dcfuns'
 endif
 
+# Remove messages about deprecated Intel compilers
+if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
+  add_global_arguments('-diag-disable=10441', language : 'c')
+endif
+if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
+  add_global_arguments('-diag-disable=10441', language : 'cpp')
+endif
+
 # Preprocessing
 pp_options = []
 if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
@@ -33,7 +41,7 @@ if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
   add_global_arguments('-cpp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl' or fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-P']
-  add_global_arguments('-fpp', language : 'fortran')
+  add_global_arguments(['-fpp', '-P'], language : 'fortran')
 endif
 
 # Options
