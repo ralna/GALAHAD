@@ -1,7 +1,7 @@
 //* \file psls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PSLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -375,7 +375,7 @@ static PyObject* py_psls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist,
                                     &n, &A_type, &A_ne, &py_A_row,

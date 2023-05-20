@@ -102,7 +102,7 @@
        control%QPC_control%QPB_control%maxit = 0
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
-       control%QPC_control%cpu_time_limit = 0.0
+       control%QPC_control%cpu_time_limit = 0.00001
        p%X( 2 ) = 100000000.0_rp_
 !      control%print_level = 1
 !      control%maxit = 1

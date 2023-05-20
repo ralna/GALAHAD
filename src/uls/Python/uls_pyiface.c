@@ -19,9 +19,9 @@
 #include "galahad_uls.h"
 
 /* Nested HSL info/inform prototypes */
-//PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *inform);
-//PyObject* gls_make_finfo_dict(const struct gls_finfo_type *inform);
-//PyObject* gls_make_sinfo_dict(const struct gls_sinfo_type *inform);
+PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *inform);
+PyObject* gls_make_finfo_dict(const struct gls_finfo_type *inform);
+PyObject* gls_make_sinfo_dict(const struct gls_sinfo_type *inform);
 //PyObject* ma48_make_ainfo_dict(const struct ma48_ainfo_type *inform);
 //PyObject* ma48_make_finfo_dict(const struct ma48_finfo_type *inform);
 //PyObject* ma48_make_sinfo_dict(const struct ma48_sinfo_type *inform);
@@ -323,12 +323,12 @@ PyObject* uls_make_inform_dict(const struct uls_inform_type *inform){
                          PyLong_FromLong(inform->iterative_refinements));
     PyDict_SetItemString(py_inform, "alternative",
                          PyBool_FromLong(inform->alternative));
-    //PyDict_SetItemString(py_inform, "gls_ainfo",
-    //                     gls_make_inform_dict(&inform->gls_ainfo));
-    //PyDict_SetItemString(py_inform, "gls_finfo",
-    //                     gls_make_inform_dict(&inform->gls_finfo));
-    //PyDict_SetItemString(py_inform, "gls_sinfo",
-    //                     gls_make_inform_dict(&inform->gls_sinfo));
+    PyDict_SetItemString(py_inform, "gls_ainfo",
+                         gls_make_ainfo_dict(&inform->gls_ainfo));
+    PyDict_SetItemString(py_inform, "gls_finfo",
+                         gls_make_finfo_dict(&inform->gls_finfo));
+    PyDict_SetItemString(py_inform, "gls_sinfo",
+                         gls_make_sinfo_dict(&inform->gls_sinfo));
     //PyDict_SetItemString(py_inform, "ma48_ainfo",
     //                     ma48_make_inform_dict(&inform->ma48_ainfo));
     //PyDict_SetItemString(py_inform, "ma48_finfo",
@@ -379,7 +379,7 @@ static PyObject* py_uls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"m","n","A_type","A_ne","A_row","A_col","A_ptr",
-                             "A_val","options"};
+                             "A_val","options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOO|O", kwlist,
                                     &m, &n, &A_type, &A_ne, &py_A_row,

@@ -40,8 +40,9 @@ done
 for name in galahad galahad_hsl galahad_spral galahad_mpi \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
             galahad_pastix galahad_mumps galahad_umfpack \
-            galahad_metis4 galahad_lapack galahad_blas \
-            galahad_cutest_dummy galahad_hsl_c galahad_c
+            galahad_metis_dummy galahad_metis4 galahad_metis5 \
+            galahad_lapack galahad_blas galahad_cutest_dummy \
+            galahad_hsl_c galahad_c
 do
   if [ -f "lib$name.a" ]; then
     echo " creating lib$name.$DLEXT"

@@ -1,7 +1,7 @@
 #  Standard GALAHAD HSL makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-01-04
+#  This version: 2023-05-18
 
 SHELL = /bin/$(BINSHELL)
 

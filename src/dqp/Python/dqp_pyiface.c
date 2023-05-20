@@ -1,7 +1,7 @@
 //* \file dqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 15:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -677,9 +677,9 @@ static PyObject* py_dqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"n","m",
                              "H_type","H_ne","H_row","H_col","H_ptr",
                              "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+                             "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOO|O",
                                     kwlist, &n, &m,
                                     &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr,

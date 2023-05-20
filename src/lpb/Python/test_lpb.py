@@ -45,6 +45,7 @@ x = np.array([0.0,0.0,0.0])
 y = np.array([0.0,0.0])
 z = np.array([0.0,0.0,0.0])
 
+print("3\n*")
 # find optimum of lp
 #print("\n solve lp")
 x, c, y, z, x_stat, c_stat \

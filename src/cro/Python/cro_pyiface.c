@@ -1,7 +1,7 @@
 //* \file cro_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 14:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CRO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -331,7 +331,8 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
                              "H_ne", "H_val", "H_col", "H_ptr",
                              "A_ne", "A_val", "A_col", "A_ptr",
                              "c_l", "c_u", "x_l", "x_u",
-                             "x", "c", "y", "z", "x_stat", "c_stat", "options"};
+                             "x", "c", "y", "z", "x_stat", "c_stat", 
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOOOiOOOOOOOOOOOOO|O", 
                              kwlist, &n, &m, &m_equal, &py_g, 

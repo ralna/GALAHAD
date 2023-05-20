@@ -551,6 +551,7 @@ echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
 echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
 echo 'HSL="'$HSL'"'                                                >> $SYSFILE
 echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
+echo 'METIS=-lgalahad_metis_dummy'                                 >> $SYSFILE
 echo 'METIS4="'$METIS4'"'                                          >> $SYSFILE
 echo 'METIS5="'$METIS5'"'                                          >> $SYSFILE
 echo 'PARMETIS="'$PARMETIS'"'                                      >> $SYSFILE
@@ -705,6 +706,7 @@ echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- Metis --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
+echo 'METIS = -lgalahad_metis_dummy'                               >> $MAKEFILE
 echo 'METIS4 = '$METIS4                                            >> $MAKEFILE
 echo 'METIS5 = '$METIS5                                            >> $MAKEFILE
 echo 'PARMETIS = '$PARMETIS                                        >> $MAKEFILE

@@ -1,7 +1,7 @@
 //* \file lpa_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-05 AT 08:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPA PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -428,9 +428,8 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!check_init(init_called))
         return NULL;
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
-                             "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+    static char *kwlist[] = {"n","m","A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
                                     &A_type, &A_ne, &py_A_row,
