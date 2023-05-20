@@ -1,7 +1,7 @@
 //* \file sbls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SBLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -512,7 +512,7 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
                              "H_type","H_ne","H_row","H_col","H_ptr",
                              "A_type","A_ne","A_row","A_col","A_ptr",
                              "C_type","C_ne","C_row","C_col","C_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOsiOOO|O", 
                                     kwlist, &n, &m, 

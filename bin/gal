@@ -1034,7 +1034,7 @@ EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB \
  ${MPILIB-${MPI--lgalahad_mpi}} \
  ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
  ${SUITESPARSELIB-${SUITESPARSE-}} \
- ${METISLIB-${METIS4--lgalahad_metis4}} \
+ ${METISLIB-${METIS--lgalahad_metis_dummy}} \
  ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
  ${BLASLIB-${BLAS--lgalahad_blas}} \
  ${PLPLOTLIB-${PLPLOT-}} \

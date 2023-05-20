@@ -160,15 +160,16 @@ N.B. HSL is only required optionally, but is recommended as it provides
 considerably improved performace for many GALAHAD packages.
 .TP
 .IB METISLIB
-If there is a compiled, library version of the Metis (version 4) graph
-partitioning package (http://www-users.cs.umn.edu/~karypis/metis/) , set
-METISLIB to -lx, where the object library libx.a contains Metis.  For instance
-if Metis is contained in the object library libmetis.a, METISLIB should be
-set to "-lmetis".  If the library is in a "non-standard" place, METISLIB should
-also point to the full path to the library. For example, if libmetis.so
-is in the directory /mylibrary, METISLIB should be set to
-"-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
-METISLIB will be set to "-lgalahad_metis4".
+If there is a compiled, library version of the Metis (versions 4 or 5) graph
+partitioning package (http://www-users.cs.umn.edu/~karypis/metis/), set
+METISLIB to "-lgalahad_metis4 -lx" ( "-lgalahad_metis5 -lx" for version 5).
+where the object library libx.a contains Metis.  For instance
+if Metis 5 is contained in the object library libmetis.a, METISLIB should be
+set to "-lgalahad_metis5 -lmetis".  If the library is in a "non-standard" 
+place, METISLIB should also point to the full path to the library. 
+For example, if libmetis.so is in the directory /mylibrary, METISLIB should
+be set to "-L/mylibrary -lgalahad_metis5 -lmetis" If a compiled version 
+of Metis is unavailable, METISLIB will be set to "-lgalahad_metis_dummy".
 N.B. Metis is only required by HSL and some other supported sparse matrix 
 packages.
 .TP

@@ -1,7 +1,7 @@
 //* \file wcp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-14 AT 09:20 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_WCP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -592,11 +592,10 @@ static PyObject* py_wcp_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m",
-                             "A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+    static char *kwlist[] = {"n","m","A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOO|O",
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
                                     kwlist, &n, &m,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
@@ -608,7 +607,7 @@ static PyObject* py_wcp_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1)
+        check_array_int("A_ptr", py_A_ptr, m+1)
         ))
         return NULL;
 
@@ -628,9 +627,9 @@ static PyObject* py_wcp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert 64bit integer A_ptr array to 32bit
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
+        A_ptr = malloc((m+1) * sizeof(int));
         long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
     }
 
     // Reset control options

@@ -64,7 +64,7 @@ $(package)_silent_double: $($(PACKAGE)OBJECTSD)
 
 #  libraries used when linking for tests
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS4) \
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 
 #  non-standard package compilation

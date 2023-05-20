@@ -1,7 +1,7 @@
 //* \file fdc_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-02 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_FDC PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -299,7 +299,8 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"m","n","A_ptr","A_col","A_val","b","options"};
+    static char *kwlist[] = {"m","n","A_ptr","A_col","A_val","b",
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOO|O", kwlist,
                                     &m, &n, &py_A_ptr, &py_A_col, &py_A_val, 

@@ -1,7 +1,7 @@
 //* \file bqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-05 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -385,7 +385,7 @@ static PyObject* py_bqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","H_type","H_ne","H_row","H_col","H_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O",
                                     kwlist, &n, &H_type, &H_ne, &py_H_row,

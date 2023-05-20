@@ -1,7 +1,7 @@
 //* \file lsrt_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-12 AT 14:50 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LSRT PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -287,7 +287,7 @@ static PyObject* py_lsrt_load_options(PyObject *self, PyObject *args, PyObject *
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"options"};
+    static char *kwlist[] = {"options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "O", kwlist, &py_options))
         return NULL;

@@ -1,7 +1,7 @@
 //* \file sls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:15 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -19,9 +19,9 @@
 #include "galahad_sls.h"
 
 /* Nested HSL info/inform prototypes */
-//PyObject* sils_make_ainfo_dict(const struct sils_ainfo_type *inform);
-//PyObject* sils_make_finfo_dict(const struct sils_finfo_type *inform);
-//PyObject* sils_make_sinfo_dict(const struct sils_sinfo_type *inform);
+PyObject* sils_make_ainfo_dict(const struct sils_ainfo_type *inform);
+PyObject* sils_make_finfo_dict(const struct sils_finfo_type *inform);
+PyObject* sils_make_sinfo_dict(const struct sils_sinfo_type *inform);
 //PyObject* ma57_make_ainfo_dict(const struct ma57_ainfo_type *inform);
 //PyObject* ma57_make_finfo_dict(const struct ma57_finfo_type *inform);
 //PyObject* ma57_make_sinfo_dict(const struct ma57_sinfo_type *inform);
@@ -628,12 +628,12 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
                          PyFloat_FromDouble(inform->forward_error));
     PyDict_SetItemString(py_inform, "alternative",
                          PyBool_FromLong(inform->alternative));
-    //PyDict_SetItemString(py_inform, "sils_ainfo",
-    //                     sils_make_ainfo_dict(&inform->sils_ainfo));
-    //PyDict_SetItemString(py_inform, "sils_finfo",
-    //                     sils_make_finfo_dict(&inform->sils_finfo));
-    //PyDict_SetItemString(py_inform, "sils_sinfo",
-    //                     sils_make_sinfo_dict(&inform->sils_sinfo));
+    PyDict_SetItemString(py_inform, "sils_ainfo",
+                         sils_make_ainfo_dict(&inform->sils_ainfo));
+    PyDict_SetItemString(py_inform, "sils_finfo",
+                         sils_make_finfo_dict(&inform->sils_finfo));
+    PyDict_SetItemString(py_inform, "sils_sinfo",
+                         sils_make_sinfo_dict(&inform->sils_sinfo));
     //PyDict_SetItemString(py_inform, "ma57_ainfo",
     //                     ma57_make_ainfo_dict(&inform->ma57_ainfo));
     //PyDict_SetItemString(py_inform, "ma57_finfo",
@@ -731,7 +731,7 @@ static PyObject* py_sls_analyse_matrix(PyObject *self, PyObject *args, PyObject 
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist,
                                     &n, &A_type, &A_ne, &py_A_row,
