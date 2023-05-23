@@ -39,9 +39,12 @@ pp_options = []
 if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
   pp_options += ['-cpp', '-E']
   add_global_arguments('-cpp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl' or fc.get_id() == 'nagfor'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   pp_options += ['-fpp', '-P']
   add_global_arguments(['-fpp', '-P'], language : 'fortran')
+elif fc.get_id() == 'nagfor'
+  pp_options += '-fpp'
+  add_global_arguments('-fpp', language : 'fortran')
 endif
 
 # Options
