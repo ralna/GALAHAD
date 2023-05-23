@@ -168,11 +168,6 @@ option('libhsl_modules',
        value : [],
        description : 'Additional directories to search HSL modules')
 
-option('libmetis_include',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search the METIS header files')
-
 option('libmetis_version',
        type : 'combo',
        choices : ['4', '5'],
