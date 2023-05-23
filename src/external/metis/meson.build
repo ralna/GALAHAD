@@ -1,9 +1,3 @@
-if libmetis_include != []
-  foreach folder: libmetis_include
-    pp_options += ['-I', folder]
-  endforeach
-endif
-
 if not (libmetis.found() and libmetis_version == '4')
   add_global_arguments('-Dmetis_nodend=galahad_metis', language : 'fortran')
 endif
