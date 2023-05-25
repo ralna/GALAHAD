@@ -58,7 +58,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
-  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+  Julia interface, additionally A. Montoison and D. Orban, 
+  Polytechnique Montréal.
 
   \subsection trs_date Originally released
 
@@ -76,7 +77,7 @@
   is found.  Here \f$x(\lambda)\f$ and its companion \f$y(\lambda)\f$ are
   defined to be a solution of
   \f[\mbox{(2)}\;\;\; (H + \lambda M)x(\lambda)
-   + A^T y(\lambda) = - c \;\mbox{and}\; A x(\lambda) = 0.\f]
+   + A^T y(\lambda) = - c \;\mbox{and}\; A x(\lambda) = 0;\f]
 \manonly
 \n
    (2)    (H + lambda M)x(lambda) + A^T y(lambda) = - c and
@@ -500,7 +501,7 @@ struct trs_inform_type {
     ///        \f$H + \lambda M\f$ failed
     /// \li -10 the factorization of \f$H + \lambda M\f$ failed
     /// \li -15 \f$M\f$ does not appear to be strictly diagonally dominant
-    /// \li -16 ill-conditioning has prevented furthr progress
+    /// \li -16 ill-conditioning has prevented further progress
     int status;
 
     /// \brief
@@ -958,7 +959,7 @@ void trs_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example trst.c
-   This is an example of how to use the package to solve a trus-region
+   This is an example of how to use the package to solve a trust-region
    problem. A variety of supported Hessian, scaling and constraint
    matrix storage formats are shown.
 

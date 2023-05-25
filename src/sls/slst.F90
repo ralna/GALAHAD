@@ -31,8 +31,8 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: ssids = 15
    INTEGER ( KIND = ip_ ), PARAMETER :: all = ssids
    INTEGER ( KIND = ip_ ) :: ORDER( n )
-   REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
-   REAL ( KIND = rp_ ) :: D( 2, n )
+   REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 ), D( 2, n )
+   REAL ( KIND = rp_ ) :: B_diag( n )
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
    INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
    INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
@@ -63,7 +63,6 @@
      ORDER( i ) = n - i + 1
    END DO
 ! Read matrix order and number of entries
-!  DO type = 1, 0   ! none
    DO type = 1, 3   ! all
 !  DO type = 1, 1   ! coordinate
 !  DO type = 2, 2   ! row-wise
@@ -82,10 +81,6 @@
        write(6,"( ' dense storage ' )" )
        ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
        CALL SMT_put( matrix%type, 'DENSE', s )
-     CASE ( 4 )
-       write(6,"( ' diagonal storage ' )" )
-       ALLOCATE( matrix%val( n ) )
-       CALL SMT_put( matrix%type, 'DIAGONAL', s )
      END SELECT
      matrix%n = n
 !  GO TO 1
@@ -596,7 +591,77 @@
        DEALLOCATE( matrix%val )
      END SELECT
    END DO
+
+   WRITE( 6, "( ' diagonal matrix tests' )" )
+   WRITE( 6, "( ' type         1 RHS  >1 RHS    partial' )" )
+   DO type = 4, 8   ! all
+!  DO type = 4, 4   ! diagonal
+!  DO type = 5, 5   ! scaled identity
+!  DO type = 6, 6   ! identity
+!  DO type = 7, 7   ! zero
+!  DO type = 8, 8   ! none
+! Allocate arrays of appropriate sizes
+     SELECT CASE( type )
+     CASE ( 4 )
+       write(6,"( ' diagonal ' )", advance = 'no' )
+       ALLOCATE( matrix%val( n ) )
+       matrix%val( : n ) = rhs( : n ) / sol( : n )
+       B_diag = rhs
+       CALL SMT_put( matrix%type, 'DIAGONAL', s )
+     CASE ( 5 )
+       write(6,"( ' scaled I ' )", advance = 'no' )
+       ALLOCATE( matrix%val( 1 ) )
+       matrix%val( 1 ) = 2.0_rp_
+       B_diag = sol * matrix%val( 1 )
+       CALL SMT_put( matrix%type, 'SCALED_IDENTITY', s )
+     CASE ( 6 )
+       write(6,"( ' identity ' )", advance = 'no' )
+       B_diag = sol
+       CALL SMT_put( matrix%type, 'IDENTITY', s )
+     CASE ( 7 )
+       write(6,"( ' zero     ' )", advance = 'no' )
+       CALL SMT_put( matrix%type, 'ZERO', s )
+     CASE ( 8 )
+       write(6,"( ' none     ' )", advance = 'no' )
+       CALL SMT_put( matrix%type, 'NONE', s )
+     END SELECT
+     matrix%n = n
+     CALL SLS_initialize( 'none', data, control, inform )
+     CALL SLS_analyse( matrix, data, control, inform )
+     CALL SLS_factorize( matrix, data, control, inform )
+     X = B_diag
+     CALL SLS_solve( matrix, X, data, control, inform )
+     IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1 : n ) ) )                           &
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
+       WRITE( 6, "( '     ok  ' )", advance = 'no' )
+     ELSE
+       WRITE( 6, "( '    fail ' )", advance = 'no' )
+     END IF
+     X2( : n, 1 ) = B_diag ; X2( : n, 2 ) = B_diag ; 
+     CALL SLS_solve( matrix, X2, data, control, inform )
+     IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
+             <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                                &
+          MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                       &
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
+       WRITE( 6, "( '     ok  ' )", advance = 'no' )
+     ELSE
+       WRITE( 6, "( '    fail ' )", advance = 'no' )
+     END IF
+     X = B_diag
+     CALL SLS_part_solve( 'L', X, data, control, inform )
+     CALL SLS_part_solve( 'D', X, data, control, inform )
+     CALL SLS_part_solve( 'U', X, data, control, inform )
+     IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1 : n ) ) )                           &
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
+       WRITE( 6, "( '     ok  ' )" )
+     ELSE
+       WRITE( 6, "( '    fail ' )" )
+     END IF
+     CALL SLS_terminate( data, control, inform )
+     IF ( type <= 5 ) DEALLOCATE( matrix%val )
+   END DO
 ! stop
+
 ! Test error returns
    WRITE( 6, "( ' error tests' )" )
    WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
@@ -680,6 +745,7 @@
      WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      DEALLOCATE( matrix%val, matrix%row, matrix%col, matrix%type )
      CALL SLS_terminate( data, control, inform )
+     write(6,"('')", advance = 'no') 
 
 !1111 continue
 ! test for error = GALAHAD_error_inertia
@@ -761,5 +827,6 @@
    DEALLOCATE( matrix%type )
    CALL MPI_INITIALIZED( mpi_flag, i )
    IF ( mpi_flag ) CALL MPI_FINALIZE( i )
+   WRITE( 6, "( /, ' tests completed' )" )
    STOP
    END PROGRAM GALAHAD_SLS_test_program
