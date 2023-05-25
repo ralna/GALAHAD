@@ -40,7 +40,7 @@ if fc.get_id() == 'gcc'
   add_global_arguments('-cpp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   pp_options += ['-fpp', '-P']
-  add_global_arguments(['-fpp', '-P'], language : 'fortran')
+  add_global_arguments('-fpp', language : 'fortran')
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
   add_global_arguments('-fpp', language : 'fortran')
