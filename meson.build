@@ -20,12 +20,6 @@ fc = meson.get_compiler('fortran')
 fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
 
-extra_args = []
-if fc.get_id() == 'nagfor'
-  extra_args += '-fixed'
-  extra_args += '-dcfuns'
-endif
-
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
   add_global_arguments('-diag-disable=10441', language : 'c')
@@ -34,9 +28,14 @@ if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
   add_global_arguments('-diag-disable=10441', language : 'cpp')
 endif
 
+# Recognise old non-standard double complex intrinsics
+if fc.get_id() == 'nagfor'
+  add_global_arguments('-dcfuns', language : 'fortran')
+endif
+
 # Preprocessing
 pp_options = []
-if fc.get_id() == 'gcc' or fc.get_id() == 'flang'
+if fc.get_id() == 'gcc'
   pp_options += ['-cpp', '-E']
   add_global_arguments('-cpp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
