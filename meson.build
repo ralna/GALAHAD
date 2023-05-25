@@ -42,7 +42,7 @@ elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   pp_options += ['-fpp', '-P']
   add_global_arguments(['-fpp', '-P'], language : 'fortran')
 elif fc.get_id() == 'nagfor'
-  pp_options += '-fpp'
+  pp_options += ['-fpp', '-F']
   add_global_arguments('-fpp', language : 'fortran')
 endif
 
@@ -127,6 +127,7 @@ libgalahad_single_src = []
 libgalahad_double_src = []
 libgalahad_integer_src = []
 libgalahad_src = []
+libgalahad_aux = []
 
 galahad_headers = []
 galahad_binaries = []
@@ -288,7 +289,7 @@ if build_single
 
   sources_single = [libgalahad_single_src, libgalahad_integer_src,
                     libgalahad_c_single_src, libgalahad_c_integer_src,
-                    pp_sources_single, libgalahad_cpp_src]
+                    pp_sources_single, libgalahad_cpp_src, libgalahad_aux]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -313,7 +314,7 @@ if build_double
 
   sources_double = [libgalahad_double_src, libgalahad_integer_src,
                     libgalahad_c_double_src, libgalahad_c_integer_src,
-                    pp_sources_double, libgalahad_cpp_src]
+                    pp_sources_double, libgalahad_cpp_src, libgalahad_aux]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
