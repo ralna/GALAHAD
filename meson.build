@@ -23,9 +23,11 @@ fs = import('fs')
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
   add_global_arguments('-diag-disable=10441', language : 'c')
+  add_global_link_arguments('-diag-disable=10441', language : 'c')
 endif
 if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
   add_global_arguments('-diag-disable=10441', language : 'cpp')
+  add_global_link_arguments('-diag-disable=10441', language : 'cpp')
 endif
 
 # Recognise old non-standard double complex intrinsics
