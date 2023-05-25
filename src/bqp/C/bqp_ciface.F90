@@ -565,7 +565,7 @@
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
 
 !  local variables
 
@@ -597,7 +597,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: g
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f

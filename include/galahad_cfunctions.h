@@ -148,6 +148,14 @@
 #define lhs_ihs lhs_ihs_s
 #define lhs_get_seed lhs_get_seed_s
 #define lhs_terminate lhs_terminate_s
+#define llst_initialize llst_initialize_s
+#define llst_read_specfile llst_read_specfile_s
+#define llst_import llst_import_s
+#define llst_import_s llst_import_s_s
+#define llst_reset_control llst_reset_control_s
+#define llst_solve_problem llst_solve_problem_s
+#define llst_information llst_information_s
+#define llst_terminate llst_terminate_s
 #define lms_initialize lms_initialize_s
 #define lms_read_specfile lms_read_specfile_s
 #define lms_terminate lms_terminate_s
@@ -349,3 +357,5 @@
 #define spral_c_dtrsv spral_c_strsv
 #define spral_c_dgemv spral_c_sgemv
 #endif
+
+

@@ -262,10 +262,10 @@ RB_TESTS = make_copyright
 #  valgrind options if needed
 
 #VALGRIND = --tool=memcheck --leak-check=full --show-reachable=yes \
-VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
---track-origins=yes -s
-#VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
+#VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
 #--track-origins=yes -s
+VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
+--track-origins=yes -s
 
 #  gdb options if needed
 

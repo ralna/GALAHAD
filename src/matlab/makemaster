@@ -17,7 +17,8 @@ FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 MFFLAGS   = $(MBASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES)
 MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' \
-            FFLAGS='$(MFFLAGS) $(OPENMP) -fallow-argument-mismatch -fallow-invalid-boz' \
+            FFLAGS='$(MFFLAGS) $(OPENMP) \
+            -fallow-argument-mismatch -fallow-invalid-boz' \
             LD='$(FORTRAN) $(MFFLAGS) $(OPENMP)' \
             -largeArrayDims $(MATLABINC) $(MOMP)
 #            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) $(MOMP)

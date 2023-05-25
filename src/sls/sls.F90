@@ -198,18 +198,18 @@
 
 !  maximum size for real array for the factors and other data
 
-       INTEGER ( KIND = long_ ) :: max_real_factor_size         &
-                                                    = HUGE( 0 )
+       INTEGER ( KIND = long_ ) :: max_real_factor_size = HUGE( 0 )
 
 !  maximum size for integer array for the factors and other data
 
-       INTEGER ( KIND = long_ ) :: max_integer_factor_size      &
-                                                    = HUGE( 0 )
+       INTEGER ( KIND = long_ ) :: max_integer_factor_size = HUGE( 0 )
 
 !  amount of in-core storage to be used for out-of-core factorization
 
-       INTEGER ( KIND = long_ ) :: max_in_core_store            &
-                                                    = HUGE( 0 ) / real_bytes_
+!      INTEGER ( KIND = long_ ) :: max_in_core_store = HUGE( 0 ) / real_bytes_
+       INTEGER ( KIND = long_ ) :: max_in_core_store =                         &
+           FLOOR( REAL( HUGE( 0 ), KIND = dp_ ) /                              &
+                  REAL( real_bytes_, KIND = dp_ ), KIND = long_ )
 
 !  factor by which arrays sizes are to be increased if they are too small
 
@@ -757,6 +757,7 @@
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
        LOGICAL :: no_ssids = .FALSE.
+       LOGICAL :: trivial_matrix_type = .FALSE.
        INTEGER ( KIND = long_ ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
        INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: idum
@@ -1403,6 +1404,7 @@
        END IF
 
        IF ( data%no_mumps ) THEN
+         data%mumps_par%MYID = 1
          IF ( check_available ) THEN ! if mumps is unavailble, use ma57 instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
@@ -2698,6 +2700,25 @@
 !  start timimg
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  trivial cases, no analysis
+
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' )
+       IF ( matrix%n < 1 ) THEN
+         inform%status = GALAHAD_error_restrictions
+       ELSE
+         inform%entries = matrix%n
+         inform%real_size_desirable = 0
+         inform%integer_size_desirable = 0
+         inform%status = GALAHAD_ok
+       END IF
+       data%trivial_matrix_type = .TRUE.
+       data%n = matrix%n
+       GO TO 900
+     CASE DEFAULT
+       data%trivial_matrix_type = .FALSE.
+     END SELECT
 
 !  check whether solver is available
 
@@ -4279,6 +4300,59 @@
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
+!  trivial cases, no factorization
+
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' )
+       inform%real_size_necessary = 0
+       inform%integer_size_necessary = 0
+       inform%real_size_factors  = 0
+       inform%integer_size_factors = 0
+       inform%entries_in_factors = matrix%n
+       inform%two_by_two_pivots = 0
+       inform%semi_bandwidth = 0
+       inform%largest_modified_pivot = 0.0_rp_
+       inform%solver = 'none' // REPEAT( ' ', len_solver - 4 )
+
+!  store the matrix in work
+
+       CALL SPACE_resize_array( matrix%n, data%WORK,                           &
+                                inform%status, inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%WORK' ; GO TO 900 ; END IF
+
+       SELECT CASE ( SMT_get( matrix%type ) )
+       CASE ( 'DIAGONAL' )
+         inform%rank                                                           &
+           = COUNT( matrix%val( : matrix%n ) /= 0.0_rp_ )
+         inform%negative_eigenvalues                                           &
+           = COUNT( matrix%val( : matrix%n ) < 0.0_rp_ )
+          data%WORK( : matrix%n ) = matrix%val( : matrix%n )
+       CASE ( 'SCALED_IDENTITY' )
+         IF ( matrix%val( 1 ) > 0.0_rp_ ) THEN
+           inform%rank = matrix%n
+           inform%negative_eigenvalues = 0
+         ELSE IF ( matrix%val( 1 ) < 0.0_rp_ ) THEN
+           inform%rank = matrix%n
+           inform%negative_eigenvalues = matrix%n
+         ELSE
+           inform%rank = 0
+           inform%negative_eigenvalues = 0
+         END IF
+         data%WORK( : matrix%n ) = matrix%val( 1 )
+       CASE ( 'IDENTITY' )
+         inform%rank = matrix%n
+         inform%negative_eigenvalues = 0
+         data%WORK( : matrix%n ) = 1.0_rp_
+       CASE ( 'ZERO', 'NONE' )
+         inform%rank = 0
+         inform%negative_eigenvalues = 0
+         data%WORK( : matrix%n ) = 0.0_rp_
+       END SELECT
+       inform%status = GALAHAD_ok
+       GO TO 900
+     END SELECT
+
 !  if the input matrix is not in co-ordinate form and sils/ma27/ma57 are
 !  to be used, make a copy
 
@@ -5322,7 +5396,6 @@
            END DO
          END DO
        END SELECT
-
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        SELECT CASE( data%solver( 1 : data%len_solver ) )
 
@@ -5565,6 +5638,34 @@
 !  start timimg
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  trivial cases
+
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n ) = X( : matrix%n ) / matrix%val( : matrix%n )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'SCALED_IDENTITY' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'IDENTITY' )
+       inform%status = GALAHAD_ok
+!      X( : matrix%n ) = X( : matrix%n )
+       GO TO 900
+     CASE ( 'ZERO', 'NONE' )
+       inform%status = GALAHAD_error_solve
+       GO TO 900
+     END SELECT
 
 !  Set default inform values
 
@@ -5849,6 +5950,37 @@
 !  start timimg
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  trivial cases
+
+     nrhs = SIZE( X, 2 )
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL' )
+       IF ( inform%rank == matrix%n ) THEN
+         DO i = 1, nrhs
+           X( : matrix%n, i ) = X( : matrix%n, i ) / matrix%val( : matrix%n )
+         END DO
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'SCALED_IDENTITY' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n, : nrhs ) = X( : matrix%n, : nrhs ) / matrix%val( 1 )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'IDENTITY' )
+       inform%status = GALAHAD_ok
+!      X( : matrix%n, : nhs ) = X( : matrix%n, : nhs )
+       GO TO 900
+     CASE ( 'ZERO', 'NONE' )
+       inform%status = GALAHAD_error_solve
+       GO TO 900
+     END SELECT
 
 !  Set default inform values
 
@@ -6156,6 +6288,34 @@
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
+
+!  trivial cases
+
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n ) = X( : matrix%n ) / matrix%val( : matrix%n )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'SCALED_IDENTITY' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'IDENTITY' )
+       inform%status = GALAHAD_ok
+!      X( : matrix%n ) = X( : matrix%n )
+       GO TO 900
+     CASE ( 'ZERO', 'NONE' )
+       inform%status = GALAHAD_error_solve
+       GO TO 900
+     END SELECT
 
 !  solver-dependent solution
 
@@ -6544,6 +6704,37 @@
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
+
+!  trivial cases
+
+     nrhs = SIZE( X, 2 )
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL' )
+       IF ( inform%rank == matrix%n ) THEN
+         DO i = 1, nrhs
+           X( : matrix%n, i ) = X( : matrix%n, i ) / matrix%val( : matrix%n )
+         END DO
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'SCALED_IDENTITY' )
+       IF ( inform%rank == matrix%n ) THEN
+         X( : matrix%n, : nrhs ) = X( : matrix%n, : nrhs ) / matrix%val( 1 )
+         inform%status = GALAHAD_ok
+       ELSE
+         inform%status = GALAHAD_error_solve
+       END IF
+       GO TO 900
+     CASE ( 'IDENTITY' )
+       inform%status = GALAHAD_ok
+!      X( : matrix%n, : nhs ) = X( : matrix%n, : nhs )
+       GO TO 900
+     CASE ( 'ZERO', 'NONE' )
+       inform%status = GALAHAD_error_solve
+       GO TO 900
+     END SELECT
 
 !  solver-dependent solution
 
@@ -6992,6 +7183,13 @@
 
      INTEGER ( KIND = ip_ ) :: info
 
+!  trivial cases
+
+     IF ( data%trivial_matrix_type ) THEN
+       CALL SPACE_dealloc_array( data%WORK, inform%status, inform%alloc_status )
+       RETURN
+     END IF
+
 !  solver-dependent termination
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
@@ -7298,6 +7496,31 @@
      REAL :: time_start, time_now
      REAL ( KIND = rp_ ) :: clock_start, clock_now
 !    INTEGER, DIMENSION( data%n ) :: INV
+
+!  trivial cases
+
+     IF ( data%trivial_matrix_type ) THEN
+       IF ( PRESENT( PERM ) ) THEN
+         DO i = 1, data%n
+           PERM( i ) = i
+         END DO
+         inform%status = GALAHAD_ok
+       END IF
+       IF ( PRESENT( PIVOTS ) ) THEN
+         DO i = 1, data%n
+           PIVOTS( i ) = i
+         END DO
+         inform%status = GALAHAD_ok
+       END IF
+       IF ( PRESENT( PERTURBATION ) ) THEN
+         DO i = 1, data%n
+           PERTURBATION( i ) = 0.0_rp_
+         END DO
+         inform%status = GALAHAD_ok
+       END IF
+       IF ( PRESENT( D ) ) inform%status = GALAHAD_error_access_diagonal
+       GO TO 900
+     END IF
 
      inform%status = GALAHAD_ok
 
@@ -7613,6 +7836,13 @@
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
+!  trivial cases
+
+     IF ( data%trivial_matrix_type ) THEN
+       inform%status = GALAHAD_error_alter_diagonal
+       RETURN
+     END IF
+
 !  solver-dependent data alteration
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
@@ -7749,6 +7979,35 @@
 !  start timimg
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  trivial cases
+
+     IF ( data%trivial_matrix_type ) THEN
+       IF ( part == 'D' ) THEN
+         DO i = 1, data%n
+           IF ( data%WORK( i ) /= 0.0_rp_ ) THEN
+             X( i ) = X( i ) / data%WORK( i )
+           ELSE
+             inform%status = GALAHAD_error_solve
+             GO TO 900
+           END IF
+         END DO
+       END IF
+       IF ( part == 'S' ) THEN
+         DO i = 1, data%n
+           IF ( data%WORK( i ) > 0.0_rp_ ) THEN
+             X( i ) = X( i ) / SQRT( data%WORK( i ) )
+           ELSE
+             inform%status = GALAHAD_error_solve
+             GO TO 900
+           END IF
+         END DO
+       END IF
+       inform%status = GALAHAD_ok
+       GO TO 900
+     END IF
+
+!  scale if required
 
      IF ( data%explicit_scaling ) THEN
        IF ( part == 'L' .OR. part == 'S' ) THEN
@@ -8426,6 +8685,17 @@
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
+!  trivial cases
+
+     IF ( data%trivial_matrix_type ) THEN
+       nnz_x = nnz_b
+       INDEX_x( : nnz_x ) = INDEX_b( : nnz_b )
+       inform%status = GALAHAD_ok
+       GO TO 900
+     END IF
+
+!  scale if necessary
+
      IF ( data%explicit_scaling ) THEN
        X( : data%n ) = X( : data%n ) / data%SCALE( : data%n )
      END IF
@@ -8990,9 +9260,67 @@
 
 !  local variables
 
+     INTEGER ( KIND = ip_ ) :: i
      LOGICAL, DIMENSION( 1 ) :: flag_out
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now
+
+!  start timimg
+
+     CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+
+!  trivial cases
+
+     SELECT CASE ( SMT_get( matrix%type ) )
+     CASE ( 'DIAGONAL' )
+       inform%alternative = .FALSE.
+       DO i = 1, matrix%n
+         IF ( matrix%val( i ) /= 0.0_rp_ ) THEN
+           X( i ) = X( i ) / matrix%val( i )
+         ELSE
+           IF ( X( i ) /= 0.0_rp_ ) THEN
+             inform%alternative = .TRUE.
+             EXIT
+           END IF
+         END IF
+       END DO
+       IF ( inform%alternative ) THEN
+         DO i = 1, matrix%n
+           IF ( matrix%val( i ) /= 0.0_rp_ ) X( i ) = 0.0_rp_
+         END DO
+       END IF
+       inform%status = GALAHAD_ok
+       GO TO 900
+     CASE ( 'SCALED_IDENTITY' )
+       inform%alternative = .FALSE.
+       IF ( matrix%val( 1 ) /= 0.0_rp_ ) THEN
+          X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
+       ELSE     
+         DO i = 1, matrix%n
+           IF ( X( i ) /= 0.0_rp_ ) THEN
+             inform%alternative = .TRUE.
+             EXIT
+           END IF
+         END DO
+       END IF
+       inform%status = GALAHAD_ok
+       GO TO 900
+     CASE ( 'IDENTITY' )
+       inform%alternative = .FALSE.
+       inform%status = GALAHAD_ok
+!      X( : matrix%n ) = X( : matrix%n )
+       GO TO 900
+     CASE ( 'ZERO', 'NONE' )
+       inform%alternative = .FALSE.
+       DO i = 1, matrix%n
+         IF ( X( i ) /= 0.0_rp_ ) THEN
+           inform%alternative = .TRUE.
+           EXIT
+         END IF
+       END DO
+       inform%status = GALAHAD_ok
+       GO TO 900
+     END SELECT
 
 !  solver-dependent solution
 ! write(6,*) data%solver( 1 : data%len_solver )
