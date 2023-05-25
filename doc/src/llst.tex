@@ -1110,13 +1110,13 @@ rapidly convergent.
 
 The dominant cost is the requirement that we solve a sequence of linear systems
 \req{ls}. This may be rewritten as
-\eqn{kktb}{\mat{cc}{ \lambda \bmS & \bmA^T \\ \bmA & - \bmI}
-\vect{ \bmx(\lambda) \\ \bmy(\lambda)}
-\vect{ \bmA^T b \\ \bmzero},}
+\eqn{kktb}{\mat{cc}{ \lambda \bmS & \bmA^T \\ \bmA & - \bmI} 
+\vect{ \bmx(\lambda) \\ \bmy(\lambda)} =
+\vect{ \bmA^T \bmb \\ \bmzero},}
 for some auxiliary vector $\bmy(\lambda)$.
 In general a sparse symmetric, indefinite factorization of the
 coefficient matrix of \req{kktb} is
-often preferred to a Cholesky factorization of that of \req{kkt}.
+often preferred to a Cholesky factorization of that of \req{ls}.
 
 \galreference
 The method is the obvious adaptation to the linear least-squares

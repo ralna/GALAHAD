@@ -1,7 +1,7 @@
   PROGRAM extract_types
 
-!  create C interface files package_ciface.f90 and package.h from
-!  date in the package file package.f90
+!  create C interface files package_ciface.F90 and package.h from
+!  date in the package file package.F90
 
   INTEGER, DIMENSION( 100 ) :: control_clen
   INTEGER, DIMENSION( 100 ) :: inform_clen
@@ -74,6 +74,7 @@
   LOGICAL :: control_type = .FALSE.
   LOGICAL :: time_type = .FALSE.
   LOGICAL :: inform_type = .FALSE.
+  LOGICAL :: debug = .TRUE.
 
 !  read package name
 
@@ -93,7 +94,7 @@
 
 !  check that package.f90 exists
 
-  package_f90 = TRIM( package_lower ) // '.f90'
+  package_f90 = TRIM( package_lower ) // '.F90'
   INQUIRE( FILE = package_f90, EXIST = file_exists )
   IF ( file_exists ) THEN
 !   WRITE( out, "( ' package file ', A, ' exists' )" ) TRIM( package_f90 )
@@ -196,6 +197,7 @@
  &  '', /, &
  &  '// precision', /, &
  &  '#include ""galahad_precision.h""' &
+ &  '#include ""galahad_cfunctions.h""' &
  &   )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
           TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
           TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
@@ -204,7 +206,7 @@
 !  set up and initialize the C interface file, along with an associated 
 !  scratch file
 
-  package_ciface = TRIM( package_lower ) // '_ciface.f90'
+  package_ciface = TRIM( package_lower ) // '_ciface.F90'
   INQUIRE( FILE = package_ciface, EXIST = file_exists )
   IF ( file_exists ) THEN
     OPEN( UNIT = ciface_unit, FILE = package_ciface, FORM = 'FORMATTED',       &
@@ -236,6 +238,9 @@
  &  A2, ':', A2, ' GMT.' )" ) year, month, day, hour, minute
   WRITE( ciface_unit, "(                                                       &
  &  '', /, &
+ &  '#include ""galahad_modules.h""', /, &
+ &  '#include ""galahad_cfunctions.h""', /, &
+ &  '', /, &
  &  '!-*-*-*-*-*-*-*-  G A L A H A D _ ', 10( 1X, A1 ) )", ADVANCE = 'NO' )    &
    ( package_upper( i : i ), i = 1, len_name )   
   WRITE( ciface_unit, "(                                                       &
@@ -253,7 +258,7 @@
  &  '!  For full documentation, see', /, &
  &  '!   http://galahad.rl.ac.uk/galahad-www/specs.html', /, &
  &  '', /, &
- &  '  MODULE GALAHAD_', A, '_double_ciface', /, &
+ &  '  MODULE GALAHAD_', A, '_precision_ciface', /, &
  &  '    USE iso_c_binding', /, &
  &  '    USE GALAHAD_common_ciface' &
  &   )" ) TRIM( package_upper )
@@ -270,7 +275,7 @@
       line( i : i ) = ' '
     END DO
     line = ADJUSTL( line )
-!   WRITE( out, * ) TRIM( line )
+    IF ( debug ) WRITE( out, * ) TRIM( line )
 
 !  control section
 
@@ -331,6 +336,7 @@
         CYCLE
       END IF
       line = ADJUSTL( line )
+      IF ( debug ) WRITE( out, * ) TRIM( line )
       IF ( line( 1 : 8 ) == 'END TYPE' ) THEN
         WRITE(  h_scratch, "( '};' )" )
         WRITE(  ciface_scratch, "( '    END TYPE ', A, '_', A, '_type' )" )    &
@@ -395,13 +401,13 @@
 
 !  determine the kind of component
 
-        IF ( line( 1 : 7 ) == 'INTEGER' ) THEN
+        IF ( line( 1 : 22 ) == 'INTEGER ( KIND = ip_ )' ) THEN
           c = 'i'
-        ELSE IF ( line( 1 : 18 ) == 'REAL ( KIND = wp )' ) THEN
+        ELSE IF ( line( 1 : 19 ) == 'REAL ( KIND = rp_ )' ) THEN
           c = 'r'
-        ELSE IF ( line( 1 : 18 ) == 'REAL ( KIND = dp )' ) THEN
+        ELSE IF ( line( 1 : 19 ) == 'REAL ( KIND = dp_ )' ) THEN
           c = 'r'
-        ELSE IF ( line( 1 : 18 ) == 'REAL ( KIND = sp )' ) THEN
+        ELSE IF ( line( 1 : 19 ) == 'REAL ( KIND = sp_ )' ) THEN
           c = 's'
         ELSE IF ( line( 1 : 4 ) == 'REAL' ) THEN
           c = 's'
@@ -473,7 +479,7 @@
             WRITE( h_scratch, "( '    real_wp_ ', A, ';' )" ) TRIM( line )
           END IF
           WRITE( ciface_scratch,                                               &
-        "( '      REAL ( KIND = wp ) :: ', A )" ) TRIM( line )
+        "( '      REAL ( KIND = rp_ ) :: ', A )" ) TRIM( line )
           nr = nr + 1
           SELECT CASE( TRIM( dtype ) )
           CASE ( 'control' )
@@ -491,7 +497,7 @@
             WRITE( h_scratch, "( '    real_sp_ ', A, ';' )" ) TRIM( line )
           END IF
           WRITE( ciface_scratch,                                               &
-        "( '      REAL ( KIND = sp ) :: ', A )" ) TRIM( line )
+        "( '      REAL ( KIND = sp_ ) :: ', A )" ) TRIM( line )
           ns = ns + 1
           SELECT CASE( TRIM( dtype ) )
           CASE ( 'control' )
@@ -595,12 +601,12 @@
         CALL STRING_lower_scalar( st1 )
         depends_lower( i : i ) = st1
       END DO
-      WRITE( h_unit, "( '#include ""', A, '.h""' )" )                          &
+      WRITE( h_unit, "( '#include ""galahad_', A, '.h""' )" )                  &
          depends_lower( 1 : len_dname )
     END DO
   END IF
 
-  WRITE( ciface_unit, "( '    USE GALAHAD_', A, '_double, ONLY: &' )" )        &
+  WRITE( ciface_unit, "( '    USE GALAHAD_', A, '_precision, ONLY: &' )" )     &
     TRIM( package_upper )
   IF ( control_type )                                                          &
     WRITE( ciface_unit, "( '        f_', A, '_control_type => ', A,            &
@@ -637,7 +643,7 @@
       depends_upper( i : i ) = st1
     END DO
     WRITE( ciface_unit, "( '', /,                                              &
-   &  '    USE GALAHAD_', A, '_double_ciface, ONLY: &', /, &
+   &  '    USE GALAHAD_', A, '_precision_ciface, ONLY: &', /, &
    &  '        ', A, '_inform_type, &', /, &
    &  '        ', A, '_control_type, &', /, &
    &  '        copy_', A, '_inform_in => copy_inform_in, &' , /, &
@@ -652,13 +658,6 @@
 
   WRITE( ciface_unit, "( '', /,                                                &
  &  '    IMPLICIT NONE', /, &
- &  '', /, &
- &  '!--------------------', /, &
- &  '!   P r e c i s i o n', /, &
- &  '!--------------------', /, &
- &  '', /, &
- &  '    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision', /, &
- &  '    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision', /, &
  &  '', /, &
  &  '!-------------------------------------------------', /, &
  &  '!  D e r i v e d   t y p e   d e f i n i t i o n s', /, &
@@ -1224,7 +1223,7 @@
   END IF
 
   WRITE( ciface_unit, "(                                                       &
- &  '  END MODULE GALAHAD_', A, '_double_ciface' )" ) TRIM( package_upper )
+ &  '  END MODULE GALAHAD_', A, '_precision_ciface' )" ) TRIM( package_upper )
 
   WRITE( ciface_unit, "(                                                       &
  & '', /, &
@@ -1233,7 +1232,7 @@
  & '!  -------------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_initialize( cdata, ccontrol, status ) BIND( C ) ', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1281,7 +1280,7 @@
  & '!  ----------------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_read_specfile( ccontrol, cspecfile ) BIND( C )', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1337,7 +1336,7 @@
  & '!  ---------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_import( ccontrol, cdata, status ) BIND( C )', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1364,16 +1363,9 @@
  & '', /, &
  & '  fdata%f_indexing = f_indexing', /, &
  & '', /, &
- & '!  handle C sparse matrix indexing', /, &
- & '', /, &
- & '  IF ( .NOT. f_indexing ) THEN', /, &
- & '', /, &
  & '!  import the problem data into the required ', A, ' structure', /, &
  & '', /, &
- & '    CALL f_', A, '_import( fcontrol, fdata, status )', /, &
- & '  ELSE', /, &
- & '    CALL f_', A, '_import( fcontrol, fdata, status )', /, &
- & '  END IF', /, &
+ & '  CALL f_', A, '_import( fcontrol, fdata, status )', /, &
  & '', /, &
  & '!  copy control out', /, &
  & '', /, &
@@ -1394,7 +1386,7 @@
  & '!  ----------------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_reset_control( ccontrol, cdata, status ) BIND( C )', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1439,7 +1431,7 @@
  & '!  --------------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_information( cdata, cinform, status ) BIND( C ) ', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1479,7 +1471,7 @@
  & '!  ------------------------------------', /, &
  & '', /, &
  & '  SUBROUTINE ', A, '_terminate( cdata, ccontrol, cinform ) BIND( C ) ', /, &
- & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  USE GALAHAD_', A, '_precision_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
@@ -1528,7 +1520,7 @@
      TRIM( package_lower )
 
   CLOSE( UNIT = ciface_unit )
-  WRITE( out, "( 1X, A, '_ciface.f90 constructed' )" ) TRIM( package_lower )
+  WRITE( out, "( 1X, A, '_ciface.F90 constructed' )" ) TRIM( package_lower )
 
   STOP
 

@@ -151,7 +151,7 @@
         REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
 !  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
-!              stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) )
+!              stop_normal * max( 1, ||x|| )
 
         REAL ( KIND = rp_ ) :: stop_normal = epsmch
 
@@ -170,7 +170,7 @@
 
 !  exit if any deallocation fails
 
-        LOGICAL :: deallocate_error_fatal  = .FALSE.
+        LOGICAL :: deallocate_error_fatal = .FALSE.
 
 !  definite linear equation solver
 
@@ -262,7 +262,7 @@
 
 !  corresponding value of ||A x(lambda) - b||_2
 
-!       REAL ( KIND = rp_ ) :: r_norm = zero
+        REAL ( KIND = rp_ ) :: r_norm = zero
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -277,7 +277,7 @@
 !     -2 an array deallocation has failed
 !     -3 n and/or Delta is not positive
 !    -10 the factorization of K(lambda) failed
-!    -15 M does not appear to be strictly diagonally dominant
+!    -15 S does not appear to be strictly diagonally dominant
 !    -16 ill-conditioning has prevented furthr progress
 
         INTEGER ( KIND = ip_ ) :: status = 0
@@ -1249,15 +1249,15 @@
 
 !  compute the sums of the absolute values of off-diagonal terms of S (in Y),
 !  and its diagonal terms (in Z). Then record the Gershgorin bound on the
-!  smallest eigenvalue, which gives the reciprocal of the laregst eigenvalue
+!  smallest eigenvalue, which gives the reciprocal of the largest eigenvalue
 !  of S^-1
 
         data%Y( : n ) = zero ; data%Z( : n ) = zero
         SELECT CASE ( SMT_get( S%type ) )
         CASE ( 'DENSE' )
           l = 0
-          DO i = 1, m
-            DO j = 1, n
+          DO i = 1, n
+            DO j = 1, i
               l = l + 1
               val = S%val( l )
               IF ( i == j ) THEN
@@ -1270,7 +1270,7 @@
           END DO
           lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
         CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, m
+          DO i = 1, n
             DO l = S%ptr( i ), S%ptr( i + 1 ) - 1
               j = S%col( l ) ; val = S%val( l )
               IF ( i == j ) THEN
@@ -2057,7 +2057,7 @@
 
   930 CONTINUE
       IF ( printi ) WRITE( out,                                                &
-         "( A, ' The matrix S provided for LLST appears not to be strictly ',  &
+         "( A, ' The matrix S provided for LLST appears not to be strictly',   &
         &      ' diagonally dominant'  )" ) prefix
       inform%status = GALAHAD_error_preconditioner
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -2843,7 +2843,7 @@
        IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
        IF ( .NOT. data%use_s ) THEN
          CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                         data%llst_control, data%llst_inform )
+                          data%llst_control, data%llst_inform )
 
        ELSE
          IF ( .NOT. PRESENT( S_val ) ) THEN
@@ -2852,7 +2852,7 @@
          END IF
          IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
          CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                         data%llst_control, data%llst_inform, S = data%S )
+                          data%llst_control, data%llst_inform, S = data%S )
        END IF
 
      status = data%llst_inform%status
