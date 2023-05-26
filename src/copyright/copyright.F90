@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-26 AT 11:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -44,22 +44,26 @@
       CALL date_and_time( date = currentdate )
 
       IF ( startyear == currentdate( 1 : 4 ) ) THEN
-        WRITE( out, "(                                                         &
-     &      /, ' Copyright GALAHAD productions, ', A4,                         &
-     &     //, ' - Use of this code is restricted to those who agree to abide',&
-     &     /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
-     &     /,  ' - distributed with the source of the  GALAHAD  codes or from',&
-     &     /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
-     &     / )" ) currentdate( 1 : 4 )
+        WRITE( out, 2000 ) currentdate( 1 : 4 )
       ELSE
-        WRITE( out, "(                                                         &
-     &      /, ' Copyright GALAHAD productions, ', A4, '-', A4                 &
-     &     //, ' - Use of this code is restricted to those who agree to abide',&
-     &     /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
-     &     /,  ' - distributed with the source of the  GALAHAD  codes or from',&
-     &     /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
-     &     / )" ) startyear, currentdate( 1 : 4 )
+        WRITE( out, 2010 ) startyear, currentdate( 1 : 4 )
       END IF
+
+!  non-executable statements
+
+2000 FORMAT( /, ' Copyright GALAHAD productions, ', A4,                        &
+           //, ' - Use of this code is restricted to those who agree to abide',&
+           /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
+           /,  ' - distributed with the source of the  GALAHAD  codes or from',&
+           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
+           / )
+2010 FORMAT( /, ' Copyright GALAHAD productions, ', A4, '-', A4                &
+           //, ' - Use of this code is restricted to those who agree to abide',&
+           /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
+           /,  ' - distributed with the source of the  GALAHAD  codes or from',&
+           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
+           / )
+
 
 !  End of subroutine COPYRIGHT
 
