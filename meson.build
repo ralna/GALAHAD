@@ -133,6 +133,7 @@ libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libcutest,
 libgalahad_single_src = []
 libgalahad_double_src = []
 libgalahad_integer_src = []
+libgalahad_multi_src = []
 libgalahad_src = []
 libgalahad_aux = []
 
@@ -294,7 +295,7 @@ if build_single
 
   pp_sources_single = gen_single.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
-  sources_single = [libgalahad_single_src, libgalahad_integer_src,
+  sources_single = [libgalahad_multi_src, libgalahad_single_src, libgalahad_integer_src,
                     libgalahad_c_single_src, libgalahad_c_integer_src,
                     pp_sources_single, libgalahad_cpp_src, libgalahad_aux]
 
@@ -319,7 +320,7 @@ if build_double
 
   pp_sources_double = gen_double.process([libgalahad_src, libgalahad_c_src, libgalahad_cutest_src, libgalahad_ampl_src])
 
-  sources_double = [libgalahad_double_src, libgalahad_integer_src,
+  sources_double = [libgalahad_multi_src, libgalahad_double_src, libgalahad_integer_src,
                     libgalahad_c_double_src, libgalahad_c_integer_src,
                     pp_sources_double, libgalahad_cpp_src, libgalahad_aux]
 
