@@ -39,13 +39,10 @@ endif
 pp_options = []
 if fc.get_id() == 'gcc'
   pp_options += ['-cpp', '-E']
-  add_global_arguments('-cpp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   pp_options += ['-fpp', '-P']
-  add_global_arguments('-fpp', language : 'fortran')
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
-  add_global_arguments('-fpp', language : 'fortran')
 endif
 
 # Options
@@ -115,6 +112,14 @@ elif fc.get_id() == 'gcc'
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   add_global_link_arguments('-qopenmp', language : 'fortran')
 endif
+
+if cxx.get_id() == 'gcc'
+  add_global_arguments('-fopenmp', language : 'cpp')
+endif
+# --- FIX ME ---
+# if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
+#   add_global_arguments('-qopenmp', language : 'cpp')
+# endif
 
 libmpi = dependency('mpi', language : 'fortran', required : false)
 libhwloc = dependency('hwloc', required : false)
@@ -281,7 +286,7 @@ subdir('src/zd11')
 # Libraries
 if build_single
   gen_single = generator(fc_compiler,
-                         output : 'single_@PLAINNAME@',
+                         output : 'single_@BASENAME@.f90',
                          arguments : pp_options + ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
                                      '-I', '@CURRENT_SOURCE_DIR@/include',
                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
@@ -306,7 +311,7 @@ endif
 
 if build_double
   gen_double = generator(fc_compiler,
-                         output : 'double_@PLAINNAME@',
+                         output : 'double_@BASENAME@.f90',
                          arguments : pp_options + ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
                                      '-I', '@CURRENT_SOURCE_DIR@/include',
                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
