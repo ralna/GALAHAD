@@ -1,4 +1,4 @@
-if not libhsl.found()
+if libhsl.found()
   if build_single
     galahad_examples += [['ma48ss', files('ma48ss.f90')]]
   endif
