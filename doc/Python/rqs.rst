@@ -633,14 +633,14 @@ functions
                   clock time spent solving linear systems inolving
                   $H + \lambda M$.
           history : dict
-             dictionary containing information recording the history of the iterates:
-               lambda : float
-                  the value of $\lambda$.
-               x_norm : float
-                  the corresponding value of $\|x(\lambda)\|_M$.
-
+             dictionary recording the history of the iterates:
+               lambda : ndarray(100)
+                  the values of $\lambda$ for the first min(100,
+                  ``len_history``) iterations.
+               x_norm : ndarray(100)
+                  the corresponding values of $\|x(\lambda)\|_M$.
           sls_inform : dict
-             inform parameters for SLS (see ``sbls.information``).
+             inform parameters for SLS (see ``sls.information``).
           ir_inform : dict
              inform parameters for IR (see ``ir.information``).
 

@@ -372,6 +372,7 @@
 <li class="toctree-l1"><a class="reference internal" href="dps.html">DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gltr.html">GLTR - global minization of a quadratic function within an ellipsoid using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glrt.html">GLRT - global minization of a regularized quadratic function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llst.html">LLST - global minization of a linear least-squares objective within an ellipsoid using matrix factorizations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lstr.html">LSTR - global minization of a linear least-squares objective within a sphere using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lsrt.html">LSRT - global minization of a regularized linear least-squares objective using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l2rt.html">L2RT - global minization of a regularized linear least-Euclidean-norm objective using an iterative method</a></li>
@@ -1024,16 +1025,17 @@ factorization.</p>
 </dl>
 </dd>
 <dt>history<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing information recording the history of the iterates:</dt><dd><dl class="simple">
-<dt>lambda<span class="classifier">float</span></dt><dd><p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+<dt>dictionary recording the history of the iterates:</dt><dd><dl class="simple">
+<dt>lambda<span class="classifier">ndarray(100)</span></dt><dd><p>the values of <span class="math notranslate nohighlight">\(\lambda\)</span> for the first min(100,
+<code class="docutils literal notranslate"><span class="pre">len_history</span></code>) iterations.</p>
 </dd>
-<dt>x_norm<span class="classifier">float</span></dt><dd><p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span>.</p>
+<dt>x_norm<span class="classifier">ndarray(100)</span></dt><dd><p>the corresponding values of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd>
-<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sbls.information</span></code>).</p>
+<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.information</span></code>).</p>
 </dd>
 <dt>ir_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for IR (see <code class="docutils literal notranslate"><span class="pre">ir.information</span></code>).</p>
 </dd>

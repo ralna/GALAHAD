@@ -24,7 +24,7 @@ bool sls_update_control(struct sls_control_type *control,
 PyObject* sls_make_options_dict(const struct sls_control_type *control);
 PyObject* sls_make_inform_dict(const struct sls_inform_type *inform);
 bool ir_update_control(struct ir_control_type *control,
-                        PyObject *py_options);
+                       PyObject *py_options);
 PyObject* ir_make_options_dict(const struct ir_control_type *control);
 PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
 
@@ -409,16 +409,16 @@ PyObject* trs_make_inform_dict(const struct trs_inform_type *inform){
                          PyUnicode_FromString(inform->bad_alloc));
 
     // include history arrays
-    //npy_intp hdim[] = {1000}; 
+    //npy_intp hdim[] = {100}; 
     //PyArrayObject *py_lambda = 
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
     //double *lambda = (double *) PyArray_DATA(py_lambda); 
-    //for(int i=0; i<1000; i++) lambda[i] = inform->history[i]->lambda;  
+    //for(int i=0; i<100; i++) lambda[i] = inform->history[i]->lambda;  
     //PyDict_SetItemString(py_inform, "lambda", (PyObject *) py_lambda);
     //PyArrayObject *py_x_norm = 
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
     //double *x_norm = (double *) PyArray_DATA(py_x_norm); 
-    //for(int i=0; i<1000; i++) x_norm[i] = inform->history[i]->x_norm;  
+    //for(int i=0; i<100; i++) x_norm[i] = inform->history[i]->x_norm;  
     //PyDict_SetItemString(py_inform, "x_norm", (PyObject *) py_x_norm);
 
     // Set time nested dictionary

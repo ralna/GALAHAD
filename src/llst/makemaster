@@ -18,7 +18,7 @@ PACKAGE = LLST
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sbls_deps make_sbls make_rand make_ir make_mop
+DEPENDENCIES = make_sbls_deps make_sbls make_rand make_mop make_ir
 
 #  other packages that depend on package
 

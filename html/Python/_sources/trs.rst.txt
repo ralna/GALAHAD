@@ -10,13 +10,13 @@ an **ellipsoidal region**; this is commonly known as the
 The aim is to minimize the quadratic objective function
 $$q(x) = f + g^T x + \frac{1}{2} x^T H x,$$ 
 where the vector $x$ is required to satisfy 
-the ellipsoidal  **trust-region constraint** $\|x\|_{M} \leq  \Delta$, 
+the ellipsoidal  **trust-region constraint** $\|x\|_M \leq  \Delta$, 
 and optionally  **affine constraints** $A x = 0$, 
-where the $M$-norm of $x$ is defined to be $\|x\|_{M} = \sqrt{x^T M x}$,
+where the $M$-norm of $x$ is defined to be $\|x\|_M = \sqrt{x^T M x}$,
 and where the **radius** $\Delta > 0$.
 
 The package may also be used to solve the related problem in which $x$ is
-instead required to satisfy the **equality constraint** $\|x\|_{M} = \Delta$.
+instead required to satisfy the **equality constraint** $\|x\|_M = \Delta$.
 The matrix $M$ need not be provided in the commonly-occurring
 $\ell_2$-trust-region case for which $M = I$, the $n$ by $n$
 identity matrix.
@@ -38,10 +38,10 @@ method
 The required solution $x_*$ necessarily satisfies the optimality condition
 $H x_* + \lambda_* M x_* + A^T y_* + g = 0$ and
 $A x_* = 0$, where $\lambda_* \geq 0$ is a Lagrange
-multiplier corresponding to the constraint $\|x\|_{M}  \leq  \Delta$
+multiplier corresponding to the constraint $\|x\|_M  \leq  \Delta$
 and $y_*$ are Lagrange multipliers for the linear constraints $A x = 0$,
 if any;
-for the equality-constrained problem $\|x\|_{M} = \Delta$,
+for the equality-constrained problem $\|x\|_M = \Delta$,
 the multiplier is unconstrained.
 In addition in all cases, the matrix $H + \lambda_* M$ will be positive
 semi-definite on the null-space of $A$; in most instances it will actually
@@ -55,19 +55,19 @@ using Gershgorin's theorems and other eigenvalue bounds. The
 first phase of the computation proceeds by progressively shrinking  the bound
 interval $[\lambda_L,\lambda_U]$
 until a value $\lambda$ for which
-$\|x(\lambda)\|_{M}  \geq  \Delta$ is found.
+$\|x(\lambda)\|_M  \geq  \Delta$ is found.
 Here $x(\lambda)$ and its companion $y(\lambda)$
 are defined to be a solution of
 $$(H + \lambda M)x(\lambda) + A^T y(\lambda) = 
 - g \;\;\mbox{and}\;\; A x(\lambda) = 0;\;\;\mbox{(2)}$$
 along the way the possibility that $H$ might be positive definite on
 the null-space of $A$ and
-$\|x(0)\|_{M}  \leq  \Delta$ is examined, and if this transpires
+$\|x(0)\|_M  \leq  \Delta$ is examined, and if this transpires
 the process is terminated with $x_* = x(0)$.
 Once the terminating $\lambda$ from the first phase has been discovered,
 the second phase
 consists of applying Newton or higher-order iterations to the nonlinear
-"secular" equation $\|x(\lambda)\|_{M}  =  \Delta$ with
+"secular" equation $\|x(\lambda)\|_M  =  \Delta$ with
 the knowledge that such iterations are both globally and ultimately
 rapidly convergent. It is possible in the "hard" case that the
 interval in the first-phase will shrink to the single point $\lambda_*$,
@@ -657,14 +657,14 @@ functions
                   clock time spent solving linear systems inolving
                   $H + \lambda M$.
           history : dict
-             dictionary containing information recording the history of the iterates:
-               lambda : float
-                  the value of $\lambda$.
-               x_norm : float
-                  the corresponding value of $\|x(\lambda)\|_M$.
-
+             dictionary recording the history of the iterates:
+               lambda : ndarray(100)
+                  the values of $\lambda$ for the first min(100,
+                  ``len_history``) iterations.
+               x_norm : ndarray(100)
+                  the corresponding values of $\|x(\lambda)\|_M$.
           sls_inform : dict
-             inform parameters for SLS (see ``sbls.information``).
+             inform parameters for SLS (see ``sls.information``).
           ir_inform : dict
              inform parameters for IR (see ``ir.information``).
 
