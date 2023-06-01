@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD TRAL package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-29
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -20,8 +20,8 @@ PACKAGE = TRAL
 
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_rand make_gltr \
-               make_tools make_scu make_mi28 make_ir \
-               make_mop make_trs make_userdata make_nlpt \
+               make_tools make_scu make_mi28 make_mop \
+               make_ir make_trs make_userdata make_nlpt \
                make_icfs make_lancelot_psls make_psls \
                make_cauchy make_cg
 

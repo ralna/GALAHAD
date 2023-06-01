@@ -372,6 +372,7 @@
 <li class="toctree-l1"><a class="reference internal" href="dps.html">DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gltr.html">GLTR - global minization of a quadratic function within an ellipsoid using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glrt.html">GLRT - global minization of a regularized quadratic function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llst.html">LLST - global minization of a linear least-squares objective within an ellipsoid using matrix factorizations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lstr.html">LSTR - global minization of a linear least-squares objective within a sphere using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lsrt.html">LSRT - global minization of a regularized linear least-squares objective using an iterative method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l2rt.html">L2RT - global minization of a regularized linear least-Euclidean-norm objective using an iterative method</a></li>
@@ -417,12 +418,12 @@ The aim is to minimize the quadratic objective function
 \[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
 
 where the vector <span class="math notranslate nohighlight">\(x\)</span> is required to satisfy
-the ellipsoidal  <strong>trust-region constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_{M} \leq  \Delta\)</span>,
+the ellipsoidal  <strong>trust-region constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_M \leq  \Delta\)</span>,
 and optionally  <strong>affine constraints</strong> <span class="math notranslate nohighlight">\(A x = 0\)</span>,
-where the <span class="math notranslate nohighlight">\(M\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is defined to be <span class="math notranslate nohighlight">\(\|x\|_{M} = \sqrt{x^T M x}\)</span>,
+where the <span class="math notranslate nohighlight">\(M\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is defined to be <span class="math notranslate nohighlight">\(\|x\|_M = \sqrt{x^T M x}\)</span>,
 and where the <strong>radius</strong> <span class="math notranslate nohighlight">\(\Delta &gt; 0\)</span>.</p>
 <p>The package may also be used to solve the related problem in which <span class="math notranslate nohighlight">\(x\)</span> is
-instead required to satisfy the <strong>equality constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_{M} = \Delta\)</span>.
+instead required to satisfy the <strong>equality constraint</strong> <span class="math notranslate nohighlight">\(\|x\|_M = \Delta\)</span>.
 The matrix <span class="math notranslate nohighlight">\(M\)</span> need not be provided in the commonly-occurring
 <span class="math notranslate nohighlight">\(\ell_2\)</span>-trust-region case for which <span class="math notranslate nohighlight">\(M = I\)</span>, the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
 identity matrix.</p>
@@ -442,10 +443,10 @@ this is not the case, the package <code class="docutils literal notranslate"><sp
 <p>The required solution <span class="math notranslate nohighlight">\(x_*\)</span> necessarily satisfies the optimality condition
 <span class="math notranslate nohighlight">\(H x_* + \lambda_* M x_* + A^T y_* + g = 0\)</span> and
 <span class="math notranslate nohighlight">\(A x_* = 0\)</span>, where <span class="math notranslate nohighlight">\(\lambda_* \geq 0\)</span> is a Lagrange
-multiplier corresponding to the constraint <span class="math notranslate nohighlight">\(\|x\|_{M}  \leq  \Delta\)</span>
+multiplier corresponding to the constraint <span class="math notranslate nohighlight">\(\|x\|_M  \leq  \Delta\)</span>
 and <span class="math notranslate nohighlight">\(y_*\)</span> are Lagrange multipliers for the linear constraints <span class="math notranslate nohighlight">\(A x = 0\)</span>,
 if any;
-for the equality-constrained problem <span class="math notranslate nohighlight">\(\|x\|_{M} = \Delta\)</span>,
+for the equality-constrained problem <span class="math notranslate nohighlight">\(\|x\|_M = \Delta\)</span>,
 the multiplier is unconstrained.
 In addition in all cases, the matrix <span class="math notranslate nohighlight">\(H + \lambda_* M\)</span> will be positive
 semi-definite on the null-space of <span class="math notranslate nohighlight">\(A\)</span>; in most instances it will actually
@@ -458,7 +459,7 @@ using Gershgorin’s theorems and other eigenvalue bounds. The
 first phase of the computation proceeds by progressively shrinking  the bound
 interval <span class="math notranslate nohighlight">\([\lambda_L,\lambda_U]\)</span>
 until a value <span class="math notranslate nohighlight">\(\lambda\)</span> for which
-<span class="math notranslate nohighlight">\(\|x(\lambda)\|_{M}  \geq  \Delta\)</span> is found.
+<span class="math notranslate nohighlight">\(\|x(\lambda)\|_M  \geq  \Delta\)</span> is found.
 Here <span class="math notranslate nohighlight">\(x(\lambda)\)</span> and its companion <span class="math notranslate nohighlight">\(y(\lambda)\)</span>
 are defined to be a solution of
 <div class="math notranslate nohighlight">
@@ -467,12 +468,12 @@ are defined to be a solution of
 
 along the way the possibility that <span class="math notranslate nohighlight">\(H\)</span> might be positive definite on
 the null-space of <span class="math notranslate nohighlight">\(A\)</span> and
-<span class="math notranslate nohighlight">\(\|x(0)\|_{M}  \leq  \Delta\)</span> is examined, and if this transpires
+<span class="math notranslate nohighlight">\(\|x(0)\|_M  \leq  \Delta\)</span> is examined, and if this transpires
 the process is terminated with <span class="math notranslate nohighlight">\(x_* = x(0)\)</span>.
 Once the terminating <span class="math notranslate nohighlight">\(\lambda\)</span> from the first phase has been discovered,
 the second phase
 consists of applying Newton or higher-order iterations to the nonlinear
-“secular” equation <span class="math notranslate nohighlight">\(\|x(\lambda)\|_{M}  =  \Delta\)</span> with
+“secular” equation <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M  =  \Delta\)</span> with
 the knowledge that such iterations are both globally and ultimately
 rapidly convergent. It is possible in the “hard” case that the
 interval in the first-phase will shrink to the single point <span class="math notranslate nohighlight">\(\lambda_*\)</span>,
@@ -1044,16 +1045,17 @@ factorization.</p>
 </dl>
 </dd>
 <dt>history<span class="classifier">dict</span></dt><dd><dl class="simple">
-<dt>dictionary containing information recording the history of the iterates:</dt><dd><dl class="simple">
-<dt>lambda<span class="classifier">float</span></dt><dd><p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+<dt>dictionary recording the history of the iterates:</dt><dd><dl class="simple">
+<dt>lambda<span class="classifier">ndarray(100)</span></dt><dd><p>the values of <span class="math notranslate nohighlight">\(\lambda\)</span> for the first min(100,
+<code class="docutils literal notranslate"><span class="pre">len_history</span></code>) iterations.</p>
 </dd>
-<dt>x_norm<span class="classifier">float</span></dt><dd><p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span>.</p>
+<dt>x_norm<span class="classifier">ndarray(100)</span></dt><dd><p>the corresponding values of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd>
-<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sbls.information</span></code>).</p>
+<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.information</span></code>).</p>
 </dd>
 <dt>ir_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for IR (see <code class="docutils literal notranslate"><span class="pre">ir.information</span></code>).</p>
 </dd>

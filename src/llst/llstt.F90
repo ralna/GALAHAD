@@ -54,7 +54,7 @@
      S_dense%val( l + i ) = REAL( i * i, rp_ )
      l = l + i
    END DO
-   B = one                           !  b is a vector of ones
+   B = one   !  b is a vector of ones
 
    OPEN( UNIT = 23, STATUS = 'SCRATCH' )
 

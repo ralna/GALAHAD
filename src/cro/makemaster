@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD CRO package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-11
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -19,7 +19,7 @@ PACKAGE = CRO
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_sbls_deps make_sbls make_lms make_scu \
-               make_ir make_mop
+               make_mop make_ir
 
 #  other packages that depend on package
 

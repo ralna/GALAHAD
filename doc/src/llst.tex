@@ -14,17 +14,17 @@
 
 \galsummary
 Given a real $m$ by $n$ matrix $\bmA$,
-a real $n$ by $n$ symmetric diagonally dominant matrix $\bmS$
+a real $n$ by $n$ symmetric diagonally-dominant matrix $\bmS$,
 a real $m$ vector $\bmb$ and a scalar $\Delta>0$, this package finds a
 {\bf minimizer of the linear least-squares objective function
 $\| \bmA \bmx  - \bmb \|_2$, where the vector $\bmx$ is
-required to satisfy the constraint $\|\bmx\|_{\bmS} \leq  \Delta$},
-where the $\bmS$-norm of $\bmx$ is $\|\bmx\|_{\bmS} = \sqrt{\bmx^T \bmS \bmx}$.
+required to satisfy the constraint $\|\bmx\|_S \leq  \Delta$},
+where the $\bmS$-norm of $\bmx$ is $\|\bmx\|_S = \sqrt{\bmx^T \bmS \bmx}$.
 This problem commonly occurs as a trust-region subproblem in nonlinear
 least-squares calculations.
 The package may also be used to solve the related problem in which $\bmx$ is
 instead required to satisfy the
-{\bf equality constraint $\|\bmx\|_{\bmS} = \Delta$}.
+{\bf equality constraint $\|\bmx\|_S = \Delta$}.
 The matrix $\bmS$ need not be provided in the commonly-occurring
 $\ell_2$-trust-region case for which $\bmS = \bmI$, the $n$ by $n$
 identity matrix.
@@ -318,8 +318,8 @@ that hold values for the standard convergence tolerances of the method
 (see Section~\ref{galmethod}).
 In particular, the method is deemed to have converged when the
 computed solution $\bmx$ and its multiplier $\lambda$ satisfy either
-$\lambda = 0$ and $|\|\bmx\|_{\bmS} < \Delta$ or
-$\|\bmx\|_{\bmS} -  \Delta| \leq$ {\tt stop\_normal} $\ast \;
+$\lambda = 0$ and $|\|\bmx\|_S < \Delta$ or
+$\|\bmx\|_S -  \Delta| \leq$ {\tt stop\_normal} $\ast \;
 \max(1,\Delta)$.
 %$\lambda_{\mbox{\protect\tiny U}} - \lambda_{\mbox{\protect\tiny L}}
 %\leq$ {\tt stop\_hard} $\ast \; \max( 1, | \lambda_{\mbox{\protect\tiny L}} |,
@@ -334,7 +334,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 \itt{equality\_problem} is a scalar variable of type default \logical, that
 may be set \true\ if the user requires that the solution
 occur on the constraint boundary (i.e., that the inequality constraint be
-replaced by $\|\bmx\|_{\bmS} = \Delta$), and \false\ otherwise.
+replaced by $\|\bmx\|_S = \Delta$), and \false\ otherwise.
 The default is {\tt equality\_problem = \false}.
 
 \itt{use\_initial\_multiplier} is a scalar variable of type default \logical,
@@ -397,7 +397,7 @@ iterative refinement package {\tt IR}. See the documentation for
  information}\label{typehist}
 The derived data type
 {\tt \packagename\_history\_type}
-is used to hold the value of $\|\bmx(\lambda)\|_{\bmS}$, where
+is used to hold the value of $\|\bmx(\lambda)\|_S$, where
 $\bmx(\lambda)$ satisfies
 $(\bmH + \lambda \bmS)\bmx(\lambda) = - \bmc$ and $\bmA\bmx(\lambda) = \bmzero$
 for a specific $\lambda$ arising during the computation.
@@ -409,7 +409,7 @@ are:
  the value $\lambda$.
 
 \itt{x\_norm} is a scalar variable of type default \real, that gives
- the corresponding value $\|\bmx(\lambda)\|_{\bmS}$.
+ the corresponding value $\|\bmx(\lambda)\|_S$.
 
 \end{description}
 
@@ -492,14 +492,14 @@ gives the maximum number of entries in any of the matrix factorizations
 performed during the calculation.
 
 \itt{len\_history} is a scalar variable of type default \integer, that gives
-the number of $(\lambda,\|\bmx(\lambda)\|_{\bmS})$ pairs encountered during the
+the number of $(\lambda,\|\bmx(\lambda)\|_S)$ pairs encountered during the
 calculation.
 
 \itt{r\_normj} is a scalar variable of type default \realdp, that holds the
 value of the norm of the residual $\| \bmA \bmx - \bmb\|_2$.
 
 \itt{x\_norm} is a scalar variable of type default \realdp,
-that holds the value of $\|\bmx\|_{\bmS}$.
+that holds the value of $\|\bmx\|_S$.
 
 \itt{multiplier} is a scalar variable of type default \realdp, that holds the
 value of the Lagrange multiplier $\lambda$ associated with the constraint.
@@ -510,7 +510,7 @@ various parts of the calculation (see Section~\ref{typetime}).
 
 \itt{history} is an array argument of dimension {\tt len\_history} and
 type {\tt \packagename\_history\_type} that contains a list of pairs
-$(\lambda,\|\bmx(\lambda)\|_{\bmS})$ encountered during the
+$(\lambda,\|\bmx(\lambda)\|_S)$ encountered during the
 calculation (see Section~\ref{typehist}).
 
 \itt{SBLS\_inform} is a scalar variable of type {\tt SBLS\_inform\_type},
@@ -1043,7 +1043,7 @@ If {\tt control\%print\_level = 1}, a single line of output will be produced
 for each iteration of the process. In the first phase of the algorithm,
 this will include the current estimate of the multiplier and known
 brackets on its optimal value. In the second phase, the residual
-$\|\bmx\|_{\bmS} - \Delta$, the current estimate of the multiplier and
+$\|\bmx\|_S - \Delta$, the current estimate of the multiplier and
 the size of the correction will be printed.
 If {\tt control\%print\_level} $\geq$ {\tt 2}, this
 output will be increased to provide significant detail of each iteration.
@@ -1079,10 +1079,10 @@ The package is thread-safe.
 
 \galmethod
 The required solution $\bmx_*$ necessarily satisfies the optimality condition
-$\bmA^ \bmA \bmx_* + \lambda_* \bmS \bmx_* = A^T \bmb$,
+$\bmA^T \bmA \bmx_* + \lambda_* \bmS \bmx_* = A^T \bmb$,
 where $\lambda_* \geq 0$ is a Lagrange
-multiplier corresponding to the constraint $\|\bmx\|_{\bmS}  \leq  \Delta$;
-for the equality-constrained problem $\|\bmx\|_{\bmS} = \Delta$ and
+multiplier corresponding to the constraint $\|\bmx\|_S  \leq  \Delta$;
+for the equality-constrained problem $\|\bmx\|_S = \Delta$ and
 the multiplier is unconstrained.
 
 \noindent
@@ -1094,17 +1094,17 @@ including those that may involve the Cholesky factorization of $\bmS$  The
 first phase of the computation proceeds by progressively shrinking  the bound
 interval $[\lambda_{\mbox{\protect\tiny L}},\lambda_{\mbox{\protect\tiny U}}]$
 until a value $\lambda$ for which
-$\|\bmx(\lambda)\|_{\bmS}  \geq  \Delta$ is found.
+$\|\bmx(\lambda)\|_S  \geq  \Delta$ is found.
 Here $\bmx(\lambda)$ and its companion $\bmy(\lambda)$
 are defined to be a solution of
 \eqn{ls}{(\bmA^T \bmA  + \lambda \bmS)\bmx(\lambda) = \bmA^T \bmb;}
 along the way the possibility that
-$\|\bmx(0)\|_{\bmS}  \leq  \Delta$ is examined, and if this transpires
+$\|\bmx(0)\|_S  \leq  \Delta$ is examined, and if this transpires
 the process is terminated with $\bmx_* = \bmx(0)$.
 Once the terminating $\lambda$ from the first phase has been discovered,
 the second phase
 consists of applying Newton or higher-order iterations to the nonlinear
-``secular'' equation $\|\bmx(\lambda)\|_{\bmS}  =  \Delta$ with
+``secular'' equation $\|\bmx(\lambda)\|_S  =  \Delta$ with
 the knowledge that such iterations are both globally and ultimately
 rapidly convergent.
 

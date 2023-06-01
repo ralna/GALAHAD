@@ -1,3 +1,4 @@
+! THIS VERSION: GALAHAD 4.1 - 2023-05-29 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -43,7 +44,6 @@
              mop_row_infinity_norms, mop_column_2_norms, mop_scaleA
 
 !  Define the working precision to be double
-
 
  CONTAINS
 
@@ -325,6 +325,12 @@
         ELSE
           R( : m ) = zero
         END IF
+     ELSE IF ( beta == - one ) THEN
+        IF ( trans ) THEN
+          R( : n ) = - R( : n )
+        ELSE
+          R( : m ) = - R( : m )
+        END IF
      ELSE
         IF ( trans ) THEN
            CALL SCAL( n, beta, R, 1 )  ! R <- beta * R
@@ -341,35 +347,39 @@
      ! ************************************
 
      CASE ( 'DENSE' )
-
         IF ( symm ) THEN
-
            nA = 1
-
            IF ( alpha == one ) THEN
-
               DO i = 1, m
                  R( i ) = R( i ) + DOT_PRODUCT( A%val( nA : nA+i-1 ), X(1:i) )
                  R( 1 : i-1 ) = R( 1 : i-1 ) + A%val( nA : nA+i-2 ) * X( i )
                  nA = nA + i
               END DO
               !write(*,*) 'Testing 1'
-
+           ELSE IF ( alpha == - one ) THEN
+              DO i = 1, m
+                 R( i ) = R( i ) - DOT_PRODUCT( A%val( nA : nA+i-1 ), X(1:i) )
+                 R( 1 : i-1 ) = R( 1 : i-1 ) - A%val( nA : nA+i-2 ) * X( i )
+                 nA = nA + i
+              END DO
+              !write(*,*) 'Testing 1'
            ELSE
-
               DO i = 1, m
                  R(i) = R(i) + alpha*DOT_PRODUCT( A%val( nA:nA+i-1 ), X(1:i) )
                  R( 1:i-1 ) = R( 1:i-1 ) + alpha*A%val( nA : nA+i-2 ) * X( i )
                  nA = nA + i
               END DO
               !write(*,*) 'Testing 2'
-
            END IF
         ELSE
            IF ( trans ) THEN
               IF ( alpha == one ) THEN
                 DO j = 1, m
                   R(1:n) = R(1:n) + X(j) * A%val( n*(j-1) + 1: n*j )
+                END DO
+              ELSE IF ( alpha == - one ) THEN
+                DO j = 1, m
+                  R(1:n) = R(1:n) - X(j) * A%val( n*(j-1) + 1: n*j )
                 END DO
               ELSE
                 DO j = 1, m
@@ -381,14 +391,16 @@
                 DO j = 1, m
                   R(j) = R(j) + DOT_PRODUCT( A%val( n*(j-1)+1 : n*j ), X(1:n) )
                 END DO
+              ELSE IF ( alpha == - one ) THEN
+                DO j = 1, m
+                  R(j) = R(j) - DOT_PRODUCT( A%val( n*(j-1)+1 : n*j ), X(1:n) )
+                END DO
               ELSE
                 DO j = 1, m
                   R(j) = R(j) + alpha*DOT_PRODUCT(A%val(n*(j-1)+1:n*j), X(1:n))
                 END DO
               END IF
-
            END IF
-
         END IF
 
 
@@ -396,22 +408,23 @@
      ! *************************************
 
      CASE ( 'DENSE_BY_COLUMNS' )
-
         IF ( symm ) THEN
-
            nA = 1
-
            IF ( alpha == one ) THEN
-
              DO j = 1, n
                R( j : m ) = R( j : m ) + A%val( nA : nA+m-j ) * X( j )
                R( j ) = R( j ) + DOT_PRODUCT( A%val( nA+1 : nA+m-j ), X(j+1:m) )
                nA = nA + m - j + 1
              END DO
               !write(*,*) 'Testing 1'
-
+           ELSE IF ( alpha == - one ) THEN
+             DO j = 1, n
+               R( j : m ) = R( j : m ) - A%val( nA : nA+m-j ) * X( j )
+               R( j ) = R( j ) - DOT_PRODUCT( A%val( nA+1 : nA+m-j ), X(j+1:m) )
+               nA = nA + m - j + 1
+             END DO
+              !write(*,*) 'Testing 1'
            ELSE
-
              DO j = 1, n
                R( j : m ) = R( j : m ) + alpha * A%val( nA : nA+m-j ) * X( j )
                R( j ) = R( j ) + alpha *                                      &
@@ -419,13 +432,16 @@
                nA = nA + m - j + 1
              END DO
               !write(*,*) 'Testing 2'
-
            END IF
         ELSE
            IF ( trans ) THEN
               IF ( alpha == one ) THEN
                 DO j = 1, n
                   R(j) = R(j) + DOT_PRODUCT(A%val(m*(j-1)+1:m*j), X(1:m))
+                END DO
+              ELSE IF ( alpha == - one ) THEN
+                DO j = 1, n
+                  R(j) = R(j) - DOT_PRODUCT(A%val(m*(j-1)+1:m*j), X(1:m))
                 END DO
               ELSE
                 DO j = 1, n
@@ -437,25 +453,24 @@
                 DO j = 1, n
                   R(1:m) = R(1:m) + A%val( m*(j-1)+1 : m*j ) * X(j)
                 END DO
+              ELSE IF ( alpha == - one ) THEN
+                DO j = 1, n
+                  R(1:m) = R(1:m) - A%val( m*(j-1)+1 : m*j ) * X(j)
+                END DO
               ELSE
                 DO j = 1, n
                   R(1:m) = R(1:m) + alpha*A%val( m*(j-1)+1 : m*j ) * X(j)
                 END DO
               END IF
-
            END IF
-
         END IF
 
      ! Storage type GALAHAD_SPARSE_BY_ROWS
      ! ***********************************
 
      CASE ( 'SPARSE_BY_ROWS' )
-
         IF ( symm ) THEN
-
            IF ( alpha == one ) THEN
-
               DO i = 1, m
                  ri = R( i )
                  Xi = X( i )
@@ -468,9 +483,20 @@
                  R( i ) = ri
               END DO
               !write(*,*) 'Testing 7'
-
+           ELSE IF ( alpha == - one ) THEN
+              DO i = 1, m
+                 ri = R( i )
+                 Xi = X( i )
+                 DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                    ri = ri - A%val( j ) * X( A%col( j ) )
+                    IF ( i /= A%col( j ) ) THEN
+                       r( A%col( j ) ) = r( A%col( j ) ) - A%val( j ) * Xi
+                    END IF
+                 END DO
+                 R( i ) = ri
+              END DO
+              !write(*,*) 'Testing 7'
            ELSE
-
               DO i = 1, m
                  ri = zero
                  Xi = alpha * X( i )
@@ -483,15 +509,10 @@
                  R( i ) = R( i ) + alpha * ri
               END DO
               !write(*,*) 'Testing 8'
-
            END IF
-
         ELSE
-
            IF ( trans ) THEN
-
               IF ( alpha == one ) THEN
-
                  DO j = 1, m
                     xj = X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -499,9 +520,15 @@
                     END DO
                  END DO
                  !write(*,*) 'Testing 9'
-
+              ELSE IF ( alpha == - one ) THEN
+                 DO j = 1, m
+                    xj = X( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * xj
+                    END DO
+                 END DO
+                 !write(*,*) 'Testing 9'
               ELSE
-
                  DO j = 1, m
                     xj = alpha * X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -509,13 +536,9 @@
                     END DO
                  END DO
                  !write(*,*) 'Testing 10'
-
               END IF
-
            ELSE
-
               IF ( alpha == one ) THEN
-
                  DO i = 1, m
                     ri = R( i )
                     DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
@@ -524,9 +547,16 @@
                     R( i ) = ri
                  END DO
                  !write(*,*) 'Testing 11'
-
+              ELSE IF ( alpha == - one ) THEN
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                       ri = ri - A%val( j ) * X( A%col( j ) )
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 !write(*,*) 'Testing 11'
               ELSE
-
                  DO i = 1, m
                     ri = zero
                     DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
@@ -535,22 +565,16 @@
                     R( i ) = R( i ) + alpha * ri
                  END DO
                  !write(*,*) 'Testing 12'
-
               END IF
-
            END IF
-
         END IF
 
      ! Storage type GALAHAD_SPARSE_BY_COLUMNS
      ! **************************************
 
      CASE ( 'SPARSE_BY_COLUMNS' )
-
         IF ( symm ) THEN
-
            IF ( alpha == one ) THEN
-
               DO j = 1, n
                  rj = R( j )
                  Xj = X( j )
@@ -562,9 +586,19 @@
                  END DO
               END DO
               !write(*,*) 'Testing 13'
-
+           ELSE IF ( alpha == - one ) THEN
+              DO j = 1, n
+                 rj = R( j )
+                 Xj = X( j )
+                 DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                    R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * Xj
+                    IF ( j /= A%row( i ) ) THEN
+                       R( j ) = R( j ) - A%val( i ) * X( A%row( i ) )
+                    END IF
+                 END DO
+              END DO
+              !write(*,*) 'Testing 13'
            ELSE
-
               DO j = 1, n
                  Xj = alpha * X( j )
                  DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -575,14 +609,10 @@
                  END DO
               END DO
               !write(*,*) 'Testing 14'
-
            END IF
-
         ELSE
            IF ( trans ) THEN
-
               IF ( alpha == one ) THEN
-
                  DO j = 1, n
                     rj = R( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -591,9 +621,16 @@
                     R( j ) = rj
                  END DO
                  !write(*,*) 'Testing 15'
-
+              ELSE IF ( alpha == - one ) THEN
+                 DO j = 1, n
+                    rj = R( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       rj = rj - A%val( i ) * X( A%row( i ) )
+                    END DO
+                    R( j ) = rj
+                 END DO
+                 !write(*,*) 'Testing 15'
               ELSE
-
                  DO j = 1, n
                     rj = zero
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -602,14 +639,9 @@
                     R( j ) = R( j ) + alpha * rj
                  END DO
                  !write(*,*) 'Testing 16'
-
               END IF
-
-
            ELSE
-
               IF ( alpha == one ) THEN
-
                  DO j = 1, n
                     Xj = X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -617,9 +649,15 @@
                     END DO
                  END DO
                  !write(*,*) 'Testing 17'
-
+              ELSE IF ( alpha == - one ) THEN
+                 DO j = 1, n
+                    Xj = X( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * Xj
+                    END DO
+                 END DO
+                 !write(*,*) 'Testing 17'
               ELSE
-
                  DO j = 1, n
                     Xj = alpha * X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -627,60 +665,58 @@
                     END DO
                  END DO
                  !write(*,*) 'Testing 18'
-
               END IF
-
            END IF
-
         END IF
 
      ! Storage type GALAHAD_COORDINATE
      ! *******************************
 
      CASE ( 'COORDINATE' )
-
         IF ( symm ) THEN
-
            IF ( alpha == one ) THEN
-
               DO i = 1, A%ne
-
                  Arowi = A%row(i)
                  Acoli = A%col(i)
                  Avali = A%val(i)
-
                  R( Arowi ) = R( Arowi ) + Avali * X( Acoli )
-
                  IF ( Arowi /= Acoli ) THEN
                     R( Acoli ) = R( Acoli ) + Avali * X( Arowi )
                  END IF
-
               END DO
               !WRITE(*,*) 'Testing 19'
-
-           ELSE
-
+           ELSE IF ( alpha == - one ) THEN
               DO i = 1, A%ne
-
+                 Arowi = A%row(i)
+                 Acoli = A%col(i)
+                 Avali = A%val(i)
+                 R( Arowi ) = R( Arowi ) - Avali * X( Acoli )
+                 IF ( Arowi /= Acoli ) THEN
+                    R( Acoli ) = R( Acoli ) - Avali * X( Arowi )
+                 END IF
+              END DO
+              !WRITE(*,*) 'Testing 19'
+           ELSE
+              DO i = 1, A%ne
                  Avali = alpha * A%val(i)
                  Arowi = A%row(i)
                  Acoli = A%col(i)
-
                  R( Arowi ) = R( Arowi ) + Avali * X( Acoli )
-
                  IF ( Arowi /= Acoli ) THEN
                     R( Acoli ) = R( Acoli ) + Avali * X( Arowi )
                  END IF
-
               END DO
               !WRITE(*,*) 'Testing 20'
-
            END IF
         ELSE
           IF ( trans ) THEN
             IF ( alpha == one ) THEN
               DO i = 1, A%ne
                 R( A%col(i) ) = R( A%col(i) ) + A%val(i) * X( A%row(i) )
+              END DO
+            ELSE IF ( alpha == - one ) THEN
+              DO i = 1, A%ne
+                R( A%col(i) ) = R( A%col(i) ) - A%val(i) * X( A%row(i) )
               END DO
             ELSE
               DO i = 1, A%ne
@@ -691,6 +727,10 @@
             IF ( alpha == one ) THEN
               DO i = 1, A%ne
                 R( A%row(i) ) = R( A%row(i) ) + A%val(i) * X( A%col(i) )
+              END DO
+            ELSE IF ( alpha == - one ) THEN
+              DO i = 1, A%ne
+                R( A%row(i) ) = R( A%row(i) ) - A%val(i) * X( A%col(i) )
               END DO
             ELSE
               DO i = 1, A%ne
@@ -704,46 +744,49 @@
      ! *****************************
 
      CASE( 'DIAGONAL' )
-
         IF ( alpha == one ) THEN
-
            R( 1:n ) = R( 1:n ) + A%val( 1:n ) * X( 1:n )
            !WRITE(*,*) 'Testing 25'
-
+        ELSE IF ( alpha == - one ) THEN
+           R( 1:n ) = R( 1:n ) - A%val( 1:n ) * X( 1:n )
+           !WRITE(*,*) 'Testing 25'
         ELSE
-
            R( 1:n ) = R( 1:n ) + alpha*A%val( 1:n ) * X( 1:n )
            !WRITE(*,*) 'Testing 26'
-
         END IF
+
+     ! Storage type SCALED_IDENTITY
+     ! ****************************
 
      CASE( 'SCALED_IDENTITY' )
-
         IF ( alpha == one ) THEN
-
            R( 1:n ) = R( 1:n ) + A%val( 1 ) * X( 1:n )
            !WRITE(*,*) 'Testing 25'
-
+        ELSE IF ( alpha == - one ) THEN
+           R( 1:n ) = R( 1:n ) - A%val( 1 ) * X( 1:n )
+           !WRITE(*,*) 'Testing 25'
         ELSE
-
            R( 1:n ) = R( 1:n ) + alpha*A%val( 1 ) * X( 1:n )
            !WRITE(*,*) 'Testing 26'
-
         END IF
+
+     ! Storage type IDENTITY
+     ! *********************
 
      CASE( 'IDENTITY' )
-
         IF ( alpha == one ) THEN
-
            R( 1:n ) = R( 1:n ) + X( 1:n )
            !WRITE(*,*) 'Testing 25'
-
+        ELSE IF ( alpha == - one ) THEN
+           R( 1:n ) = R( 1:n ) - X( 1:n )
+           !WRITE(*,*) 'Testing 25'
         ELSE
-
            R( 1:n ) = R( 1:n ) + alpha * X( 1:n )
            !WRITE(*,*) 'Testing 26'
-
         END IF
+
+     ! Storage type NONE or ZERO
+     ! *************************
 
      CASE( 'NONE', 'ZERO' )
 
@@ -751,9 +794,7 @@
     ! ************************************
 
      CASE DEFAULT
-
-           WRITE( e_dev, 1000 )
-
+        WRITE( e_dev, 1000 )
      END SELECT
 
 !*****************************************************************

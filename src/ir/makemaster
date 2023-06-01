@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD IR package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2023-05-11
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -18,7 +18,7 @@ PACKAGE = IR
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls_deps make_sls make_lmt make_qpt
+DEPENDENCIES = make_sls_deps make_sls make_lmt make_qpt make_mop
 
 #  other packages that depend on package
 

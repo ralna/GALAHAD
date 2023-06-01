@@ -22,7 +22,7 @@ DEPENDENCIES = make_dummy make_zd11 make_smt
 
 #  other packages that depend on package
 
-DEPENDS = check demo ermo ism llst s2qp rqs trace tral trimsqp trs
+DEPENDS = check ir demo ermo ism llst s2qp rqs trace tral trimsqp trs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

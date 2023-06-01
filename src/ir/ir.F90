@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-05-29 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -24,6 +24,7 @@
 
       USE GALAHAD_KINDS_precision
       USE GALAHAD_SYMBOLS
+      USE GALAHAD_MOP_precision, ONLY : MOP_Ax
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SMT_precision
 !     USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
@@ -395,8 +396,8 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, iter, n
-      REAL ( KIND = rp_ ) :: residual, residual_zero, val
+      INTEGER ( KIND = ip_ ) :: iter, n
+      REAL ( KIND = rp_ ) :: residual, residual_zero
       LOGICAL :: print_more
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -465,18 +466,12 @@
           RETURN
         END IF
 
-!  record the final residuals if required
+!  record the final residuals r = b - A x if required
 
         IF ( control%record_residuals .OR. print_more .OR.                     &
              control%required_residual_relative >= zero ) THEN
           data%RES = data%B
-          DO l = 1, A%ne
-            i = A%row( l ) ; j = A%col( l )
-            val = A%val( l )
-            data%RES( i ) = data%RES( i ) - val * X( j )
-            IF ( i /= j )                                                      &
-              data%RES( j ) = data%RES( j ) - val * X( i )
-          END DO
+          CALL MOP_Ax( - one, A, X, one, data%RES, symmetric = .TRUE. )
           residual = MAXVAL( ABS( data%RES( : n ) ) )
 
           IF ( print_more )                                                    &
@@ -511,7 +506,7 @@
 
 !  Use factors of the A to solve for the correction
 
-          CALL SLS_SOLVE( A, data%RES( : n ), SLS_data, SLS_control,           &
+          CALL SLS_solve( A, data%RES( : n ), SLS_data, SLS_control,           &
                           SLS_inform )
           inform%status = SLS_inform%status
           IF ( inform%status /= GALAHAD_ok ) THEN
@@ -530,18 +525,12 @@
 
           X( : n ) = X( : n ) + data%RES( : n )
 
-!  Form the residuals
+!  Form the residuals r = b - A x
 
           IF ( iter < control%itref_max .OR. control%record_residuals .OR.     &
                  control%required_residual_relative >= zero ) THEN
             data%RES = data%B
-            DO l = 1, A%ne
-              i = A%row( l ) ; j = A%col( l )
-              val = A%val( l )
-              data%RES( i ) = data%RES( i ) - val * X( j )
-              IF ( i /= j )                                                    &
-                data%RES( j ) = data%RES( j ) - val * X( i )
-            END DO
+            CALL MOP_Ax( - one, A, X, one, data%RES, symmetric = .TRUE. )
             residual = MAXVAL( ABS( data%RES( : n ) ) )
 
             IF ( print_more )                                                  &

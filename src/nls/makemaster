@@ -21,7 +21,7 @@ PACKAGE = NLS
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_rand make_gltr \
                make_glrt make_tools make_scu make_mi28 \
-               make_ir make_mop make_rqs make_userdata \
+               make_mop make_ir make_rqs make_userdata \
                make_nlpt make_bsc make_icfs make_lancelot_psls \
                make_psls
 
