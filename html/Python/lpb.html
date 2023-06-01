@@ -1149,6 +1149,9 @@ to factorization.</p>
 
 <span class="comment single"># set some non-default options</span>
 <span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'fdc_options'</span><span class="punctuation">][</span><span class="literal string single">'symmetric_linear_solver'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal string single">'sytr '</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'sbls_options'</span><span class="punctuation">][</span><span class="literal string single">'symmetric_linear_solver'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal string single">'sytr '</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'sbls_options'</span><span class="punctuation">][</span><span class="literal string single">'definite_linear_solver'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal string single">'sytr '</span>
 <span class="comment single">#print(&quot;options:&quot;, options)</span>
 
 <span class="comment single"># load data (and optionally non-default options)</span>
@@ -1160,6 +1163,7 @@ to factorization.</p>
 <span class="name">y</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
 <span class="name">z</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">,</span><span class="literal number float">0.0</span><span class="punctuation">])</span>
 
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;3</span><span class="literal string escape">\n</span><span class="literal string double">*&quot;</span><span class="punctuation">)</span>
 <span class="comment single"># find optimum of lp</span>
 <span class="comment single">#print(&quot;\n solve lp&quot;)</span>
 <span class="name">x</span><span class="punctuation">,</span> <span class="name">c</span><span class="punctuation">,</span> <span class="name">y</span><span class="punctuation">,</span> <span class="name">z</span><span class="punctuation">,</span> <span class="name">x_stat</span><span class="punctuation">,</span> <span class="name">c_stat</span> \

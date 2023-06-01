@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD GSM package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2023-02-25
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -19,7 +19,7 @@ PACKAGE = GSM
 #  auxililiary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
-               make_lmt make_qpt make_rand make_ir make_mop \
+               make_lmt make_qpt make_rand make_mop make_ir \
                make_userdata make_trs
 
 #  other packages that depend on package

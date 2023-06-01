@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD DGO package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-11
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -21,7 +21,7 @@ PACKAGE = DGO
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_lms make_rand make_hash \
                make_gltr make_tools make_scu make_mi28 \
-               make_ir make_mop make_trs make_userdata \
+               make_mop make_ir make_trs make_userdata \
                make_nlpt make_icfs make_lancelot_psls \
                make_psls make_sha make_lhs make_ugo \
                make_sha make_cauchy make_cg make_trb

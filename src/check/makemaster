@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD CHECK package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
