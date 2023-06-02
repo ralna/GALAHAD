@@ -125,8 +125,9 @@ int main(void) {
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_s( &control, &data, &status, n, 
-                                     "coordinate", S_ne, S_row, S_col, NULL );
+                      llst_import_scaling( &control, &data, &status, n, 
+                                           "coordinate", S_ne, S_row, 
+                                           S_col, NULL );
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
@@ -139,9 +140,9 @@ int main(void) {
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_s( &control, &data, &status, n, 
-                                     "sparse_by_rows", S_ne, NULL, 
-                                     S_col, S_ptr );
+                      llst_import_scaling( &control, &data, &status, n, 
+                                           "sparse_by_rows", S_ne, NULL, 
+                                           S_col, S_ptr );
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
@@ -155,8 +156,9 @@ int main(void) {
                                           A_dense_ne, A_dense_val, b, x,
                                           0, NULL );
                    }else{
-                      llst_import_s( &control, &data, &status, n, 
-                                     "dense", S_dense_ne, NULL, NULL, NULL );
+                      llst_import_scaling( &control, &data, &status, n, 
+                                           "dense", S_dense_ne, 
+                                           NULL, NULL, NULL );
                       llst_solve_problem( &data, &status, m, n, radius,
                                           A_dense_ne, A_dense_val, b, x,
                                           S_dense_ne, S_dense_val );
@@ -170,8 +172,8 @@ int main(void) {
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_s( &control, &data, &status, n, 
-                                     "diagonal", S_ne, NULL, NULL, NULL );
+                      llst_import_scaling( &control, &data, &status, n, 
+                                           "diagonal", S_ne, NULL, NULL, NULL );
                       llst_solve_problem( &data, &status, m, n, radius, 
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }

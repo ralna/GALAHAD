@@ -111,8 +111,8 @@
          ELSE IF ( data_storage_type == 4 ) THEN
            S_type = 'DIAGONAL      ' ; S_ne = nes
          END IF
-         CALL LLST_import_S( data, status,                                     &
-                             TRIM( S_type ), S_ne, S_row, S_col, S_ptr )
+         CALL LLST_import_scaling( data, status,                               &
+                                   TRIM( S_type ), S_ne, S_row, S_col, S_ptr )
          IF ( data_storage_type == 3 ) THEN
            CALL LLST_solve_problem( data, status, radius, A_dense_val, B, X,   &
                                     S_val = S_dense_val )

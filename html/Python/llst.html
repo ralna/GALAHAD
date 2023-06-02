@@ -733,15 +733,19 @@ total number of entries, in the sparse row-wise storage
 scheme. It need not be set when the other schemes are used, and in
 this case can be None.</p>
 </dd>
-<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">trs.initialize</span></code>).</p>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llst.initialize</span></code>).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llst.load_s(n,</span> <span class="pre">S_type,</span> <span class="pre">S_ne,</span> <span class="pre">S_row,</span> <span class="pre">S_col,</span> <span class="pre">S_ptr,</span> <span class="pre">options=None)</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llst.load_scaling(n,</span> <span class="pre">S_type,</span> <span class="pre">S_ne,</span> <span class="pre">S_row,</span> <span class="pre">S_col,</span> <span class="pre">S_ptr,</span> <span class="pre">options=None)</span></span></dt>
+<dd><p>Import non-trivial trust-region scaling data into internal storage
+prior to solution. This is only required if <span class="math notranslate nohighlight">\(S\)</span> is not the identity
+matrix <span class="math notranslate nohighlight">\(I\)</span>.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
 <dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables, <span class="math notranslate nohighlight">\(n\)</span>
 (= the number of rows/columns of <span class="math notranslate nohighlight">\(S\)</span>).</p>
 </dd>
@@ -768,7 +772,7 @@ part of <span class="math notranslate nohighlight">\(S\)</span>, as well as the 
 in the sparse row-wise storage scheme. It need not be set when the
 other schemes are used, and in this case can be None.</p>
 </dd>
-<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">trs.initialize</span></code>).</p>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llst.initialize</span></code>).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -798,7 +802,7 @@ Otherwise it should be None.</p>
 </dd>
 <dt>S_val<span class="classifier">ndarray(s_ne), optional</span></dt><dd><p>holds the values of the nonzeros in the lower triangle of <span class="math notranslate nohighlight">\(S\)</span> in
 the same order as specified in the sparsity pattern in
-<code class="docutils literal notranslate"><span class="pre">llst.load_s</span></code> if needed. Otherwise it should be None.</p>
+<code class="docutils literal notranslate"><span class="pre">llst.load_scaling</span></code> if needed. Otherwise it should be None.</p>
 </dd>
 </dl>
 <p><strong>Returns:</strong></p>
@@ -956,7 +960,74 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
-<p>This example code is available in $GALAHAD/src/trs/Python/test_llst.py .</p>
+<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">llst</span>
+<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
+<span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: llst&quot;</span><span class="punctuation">)</span>
+
+<span class="comment single"># set parameters</span>
+<span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+
+<span class="comment single">#  describe objective function</span>
+
+<span class="name">A_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">A_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">A_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
+<span class="name">A_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">A_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">A_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+<span class="name">b</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+
+<span class="comment single">#  describe norm</span>
+
+<span class="name">S_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
+<span class="name">S_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="name">S_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">S_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
+<span class="name">S_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
+<span class="name">S_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
+
+<span class="comment single"># set trust-region radius</span>
+
+<span class="name">radius</span> <span class="operator">=</span> <span class="literal number float">0.1</span>
+
+<span class="comment single"># allocate internal data and set default options</span>
+<span class="name">options</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
+
+<span class="comment single"># set some non-default options</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'definite_linear_solver'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal string single">'sytr '</span>
+<span class="comment single">#print(&quot;options:&quot;, options)</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">llst</span><span class="operator">.</span><span class="name">load</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">A_type</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_row</span><span class="punctuation">,</span> <span class="name">A_col</span><span class="punctuation">,</span> <span class="name">A_ptr</span><span class="punctuation">,</span> <span class="name">options</span><span class="punctuation">)</span>
+
+<span class="comment single"># find minimum of linear least-squares objective within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 1&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span> <span class="name">b</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; ||r||: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'r_norm'</span><span class="punctuation">])</span>
+
+<span class="comment single"># load data (and optionally non-default options)</span>
+<span class="name">llst</span><span class="operator">.</span><span class="name">load_scaling</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">S_type</span><span class="punctuation">,</span> <span class="name">S_ne</span><span class="punctuation">,</span> <span class="name">S_row</span><span class="punctuation">,</span> <span class="name">S_col</span><span class="punctuation">,</span> <span class="name">S_ptr</span><span class="punctuation">)</span>
+
+<span class="comment single"># find minimum of linear least-squares objective within the trust region</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 2 with additional non-unit scaling&quot;</span><span class="punctuation">)</span>
+<span class="name">x</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span> <span class="name">b</span><span class="punctuation">,</span> <span class="name">S_ne</span><span class="punctuation">,</span> <span class="name">S_val</span><span class="punctuation">)</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
+
+<span class="comment single"># get information</span>
+<span class="name">inform</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
+<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; ||r||: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'r_norm'</span><span class="punctuation">])</span>
+
+<span class="comment single"># deallocate internal data</span>
+
+<span class="name">llst</span><span class="operator">.</span><span class="name">terminate</span><span class="punctuation">()</span></code></pre>
+<p>This example code is available in $GALAHAD/src/llst/Python/test_llst.py .</p>
 </section>
 </section>
 

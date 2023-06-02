@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-22 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -26,7 +26,7 @@
         f_llst_initialize => LLST_initialize,                                  &
         f_llst_read_specfile => LLST_read_specfile,                            &
         f_llst_import => LLST_import,                                          &
-        f_llst_import_s => LLST_import_s,                                      &
+        f_llst_import_scaling => LLST_import_scaling,                          &
         f_llst_solve_problem => LLST_solve_problem,                            &
         f_llst_reset_control => LLST_reset_control,                            &
         f_llst_information => LLST_information,                                &
@@ -519,12 +519,12 @@
 
   END SUBROUTINE llst_import
 
-!  ---------------------------------
-!  C interface to fortran llst_inport
-!  ---------------------------------
+!  ------------------------------------------
+!  C interface to fortran llst_inport_scaling
+!  ------------------------------------------
 
-  SUBROUTINE llst_import_s( ccontrol, cdata, status, n,                        &
-                            cstype, sne, srow, scol, sptr ) BIND( C )
+  SUBROUTINE llst_import_scaling( ccontrol, cdata, status, n,                  &
+                                  cstype, sne, srow, scol, sptr ) BIND( C )
   USE GALAHAD_LLST_precision_ciface
   IMPLICIT NONE
 
@@ -564,14 +564,14 @@
 
 !  import the problem data into the required LLST structure
 
-  CALL f_llst_import_s( fdata, status, fstype, sne, srow, scol, sptr )
+  CALL f_llst_import_scaling( fdata, status, fstype, sne, srow, scol, sptr )
 
 !  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE llst_import_s
+  END SUBROUTINE llst_import_scaling
 
 !  ---------------------------------------
 !  C interface to fortran llst_reset_control

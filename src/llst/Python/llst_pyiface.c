@@ -38,7 +38,7 @@ static struct llst_control_type control;  // control struct
 static struct llst_inform_type inform;    // inform struct
 static bool init_called = false;         // record if initialise was called
 static bool load_called = false;         // record if load was called
-static bool load_s_called = false;       // record if load_s was called
+static bool load_scaling_called = false; // record if load_scaling was called
 static int status = 0;                   // exit status
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
@@ -435,10 +435,10 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD_S    -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD_SCALING    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_load_s(PyObject *self, PyObject *args, 
-                                PyObject *keywds){
+static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args, 
+                                      PyObject *keywds){
     PyArrayObject *py_S_row, *py_S_col, *py_S_ptr;
     PyObject *py_options = NULL;
     int *S_row = NULL, *S_col = NULL, *S_ptr = NULL;
@@ -497,8 +497,8 @@ static PyObject* py_llst_load_s(PyObject *self, PyObject *args,
         return NULL;
 
     // Call llst_import
-    llst_import_s(&control, &data, &status, n, 
-                  S_type, S_ne, S_row, S_col, S_ptr);
+    llst_import_scaling(&control, &data, &status, n, 
+                        S_type, S_ne, S_row, S_col, S_ptr);
 
     // Free allocated memory
     if(S_row != NULL) free(S_row);
@@ -510,7 +510,7 @@ static PyObject* py_llst_load_s(PyObject *self, PyObject *args,
         return NULL;
 
     // Record that llst M structure been initialised
-    load_s_called = true;
+    load_scaling_called = true;
 
     // Return None boilerplate
     Py_INCREF(Py_None);
@@ -543,7 +543,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
         return NULL;
     if(!check_array_double("A_val", py_A_val, A_ne))
         return NULL;
-    if(load_s_called) {
+    if(load_scaling_called) {
       if(!check_array_double("S_val", py_S_val, S_ne))
           return NULL;
     }
@@ -611,7 +611,7 @@ static PyObject* py_llst_terminate(PyObject *self){
     // require future calls start with llst_initialize
     init_called = false;
     load_called = false;
-    load_s_called = false;
+    load_scaling_called = false;
 
     // Return None boilerplate
     Py_INCREF(Py_None);
@@ -624,7 +624,7 @@ static PyObject* py_llst_terminate(PyObject *self){
 static PyMethodDef llst_module_methods[] = {
     {"initialize", (PyCFunction) py_llst_initialize, METH_NOARGS,NULL},
     {"load", (PyCFunction) py_llst_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"load_s", (PyCFunction) py_llst_load_s, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"load_scaling", (PyCFunction) py_llst_load_scaling, METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_problem", (PyCFunction) py_llst_solve_problem, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_llst_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_llst_terminate, METH_NOARGS, NULL},
