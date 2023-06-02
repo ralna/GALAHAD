@@ -1,7 +1,7 @@
 //* \file rqs_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RQS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -674,9 +674,10 @@ static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
 
 //  *-*-*-*-*-*-*-*-*-*-   RQS_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args){
-    PyArrayObject *py_g, *py_H_val, *py_M_val, *py_A_val;
-    double *g, *H_val, *M_val, *A_val;
+static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
+                                      PyObject *keywds){
+    PyArrayObject *py_g, *py_H_val, *py_M_val = NULL, *py_A_val = NULL;
+    double *g, *H_val, *M_val = NULL, *A_val = NULL;
     int n, m, H_ne, M_ne, A_ne;
     double power, weight, f;
 
@@ -685,9 +686,12 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idddOiO|iOiiO", &n, &power, &weight, &f, &py_g,
-                         &H_ne, &py_H_val, &M_ne, &py_M_val, 
-                         &m, &A_ne, &py_A_val))
+    static char *kwlist[] = {"n","power","weight","f","g","H_ne","H_val",
+                             "M_ne","M_val","m","A_ne","A_val",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO|iOiiO", kwlist, 
+                                    &n, &power, &weight, &f, &py_g,
+                                    &H_ne, &py_H_val, &M_ne, &py_M_val, 
+                                    &m, &A_ne, &py_A_val))
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -708,8 +712,8 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args){
     // Get array data pointer
     g = (double *) PyArray_DATA(py_g);
     H_val = (double *) PyArray_DATA(py_H_val);
-    M_val = (double *) PyArray_DATA(py_M_val);
-    A_val = (double *) PyArray_DATA(py_A_val);
+    if(py_M_val != NULL) M_val = (double *) PyArray_DATA(py_M_val);
+    if(py_A_val != NULL) A_val = (double *) PyArray_DATA(py_A_val);
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
