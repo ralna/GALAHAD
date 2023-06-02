@@ -1,7 +1,7 @@
 //* \file uls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-03-28 AT 13:20 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 12:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ULS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -19,12 +19,12 @@
 #include "galahad_uls.h"
 
 /* Nested HSL info/inform prototypes */
-PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *inform);
-PyObject* gls_make_finfo_dict(const struct gls_finfo_type *inform);
-PyObject* gls_make_sinfo_dict(const struct gls_sinfo_type *inform);
-//PyObject* ma48_make_ainfo_dict(const struct ma48_ainfo_type *inform);
-//PyObject* ma48_make_finfo_dict(const struct ma48_finfo_type *inform);
-//PyObject* ma48_make_sinfo_dict(const struct ma48_sinfo_type *inform);
+PyObject* gls_make_ainfo_dict(const struct gls_ainfo *ainfo);
+PyObject* gls_make_finfo_dict(const struct gls_finfo *finfo);
+PyObject* gls_make_sinfo_dict(const struct gls_sinfo *sinfo);
+//PyObject* ma48_make_ainfo_dict(const struct ma48_ainfo_type *ainfo);
+//PyObject* ma48_make_finfo_dict(const struct ma48_finfo_type *finfo);
+//PyObject* ma48_make_sinfo_dict(const struct ma48_sinfo_type *sinfo);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -38,7 +38,7 @@ static int status = 0;                   // exit status
 /* Update the control options: use C defaults but update any passed via Python*/
 // NB not static as it is used for nested control within SBLS Python interface
 bool uls_update_control(struct uls_control_type *control,
-                               PyObject *py_options){
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
