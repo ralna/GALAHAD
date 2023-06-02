@@ -342,9 +342,15 @@ functions
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
       options : dict, optional
-          dictionary of control options (see ``trs.initialize``).
+          dictionary of control options (see ``llst.initialize``).
 
-   .. function:: [optional] llst.load_s(n, S_type, S_ne, S_row, S_col, S_ptr, options=None)
+   .. function:: [optional] llst.load_scaling(n, S_type, S_ne, S_row, S_col, S_ptr, options=None)
+
+      Import non-trivial trust-region scaling data into internal storage 
+      prior to solution. This is only required if $S$ is not the identity
+      matrix $I$.
+
+      **Parameters:**
 
       n : int
           holds the number of variables, $n$ 
@@ -373,7 +379,7 @@ functions
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None.
       options : dict, optional
-          dictionary of control options (see ``trs.initialize``).
+          dictionary of control options (see ``llst.initialize``).
 
    .. function:: llst.solve_problem(m, n, radius, A_ne, A_val, b, S_ne, S_val)
 
@@ -401,7 +407,7 @@ functions
       S_val : ndarray(s_ne), optional
           holds the values of the nonzeros in the lower triangle of $S$ in 
           the same order as specified in the sparsity pattern in 
-          ``llst.load_s`` if needed. Otherwise it should be None.
+          ``llst.load_scaling`` if needed. Otherwise it should be None.
 
       **Returns:**
 
@@ -549,7 +555,7 @@ functions
 example code
 ------------
 
-.. include:: ../../src/trs/Python/test_llst.py
+.. include:: ../../src/llst/Python/test_llst.py
    :code: python
 
-This example code is available in $GALAHAD/src/trs/Python/test_llst.py .
+This example code is available in $GALAHAD/src/llst/Python/test_llst.py .

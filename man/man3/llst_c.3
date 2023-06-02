@@ -1,4 +1,4 @@
-.TH "galahad_llst.h" 3 "Thu Jun 1 2023" "C interfaces to GALAHAD LLST" \" -*- nroff -*-
+.TH "galahad_llst.h" 3 "Fri Jun 2 2023" "C interfaces to GALAHAD LLST" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -48,7 +48,7 @@ galahad_llst.h
 .RI "void \fBllst_import\fP (struct \fBllst_control_type\fP *control, void **data, int *status, int m, int n, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
 .br
 .ti -1c
-.RI "void \fBllst_import_s\fP (struct \fBllst_control_type\fP *control, void **data, int *status, int n, const char S_type[], int S_ne, const int S_row[], const int S_col[], const int S_ptr[])"
+.RI "void \fBllst_import_scaling\fP (struct \fBllst_control_type\fP *control, void **data, int *status, int n, const char S_type[], int S_ne, const int S_row[], const int S_col[], const int S_ptr[])"
 .br
 .ti -1c
 .RI "void \fBllst_reset_control\fP (struct \fBllst_control_type\fP *control, void **data, int *status)"
@@ -114,7 +114,7 @@ To solve a given problem, functions from the llst package must be called in the 
 .IP "\(bu" 2
 \fBllst_import\fP - set up problem data structures and fixed values
 .IP "\(bu" 2
-\fBllst_import_s\fP (optional) - set up problem data structures for S if required
+\fBllst_import_scaling\fP (optional) - set up problem data structures for S if required
 .IP "\(bu" 2
 \fBllst_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
 .IP "\(bu" 2
@@ -432,7 +432,7 @@ Import problem data into internal storage prior to solution\&.
 .RE
 .PP
 
-.SS "void llst_import_s (struct \fBllst_control_type\fP * control, void ** data, int * status, int n, const char S_type[], int S_ne, const int S_row[], const int S_col[], const int S_ptr[])"
+.SS "void llst_import_scaling (struct \fBllst_control_type\fP * control, void ** data, int * status, int n, const char S_type[], int S_ne, const int S_row[], const int S_col[], const int S_ptr[])"
 Import the scaling matrix S into internal storage prior to solution\&. Thus must have been preceeded by a call to llst_import\&.
 .PP
 \fBParameters\fP
