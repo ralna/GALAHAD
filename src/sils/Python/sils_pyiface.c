@@ -1,7 +1,7 @@
 //* \file sils_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-04-03 AT 16:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SILS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -22,8 +22,8 @@
 static void *data;                  // private internal data
 static struct sils_control_type control;  // control struct
 static struct sils_ainfo_type ainfo;      // ainfo struct
-static struct sils_finfo_type finfo;      // ainfo struct
-static struct sils_sinfo_type sinfo;      // ainfo struct
+static struct sils_finfo_type finfo;      // finfo struct
+static struct sils_sinfo_type sinfo;      // sinfo struct
 static bool init_called = false;    // record if initialise was called
 static int status = 0;              // exit status
 
