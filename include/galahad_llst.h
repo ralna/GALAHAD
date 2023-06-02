@@ -130,8 +130,8 @@
       by reading replacement values from a file
   - \link llst_import \endlink - set up problem data structures and fixed
       values
-  - \link llst_import_s \endlink (optional) - set up problem data structures 
-      for \f$S\f$ if required
+  - \link llst_import_scaling \endlink (optional) - set up problem data 
+      structures for \f$S\f$ if required
   - \link llst_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - \link llst_solve_problem \endlink - solve the trust-region problem
@@ -616,17 +616,17 @@ void llst_import( struct llst_control_type *control,
    and in this case can be NULL.
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    L L S T  _ I M P O R T _ S  -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-    L L S T  _ I M P O R T _ S C A L I N G -*-*-*-*-*-*-*-
 
-void llst_import_s( struct llst_control_type *control,
-                   void **data,
-                   int *status,
-                   int n,
-                   const char S_type[],
-                   int S_ne,
-                   const int S_row[],
-                   const int S_col[],
-                   const int S_ptr[] );
+void llst_import_scaling( struct llst_control_type *control,
+                          void **data,
+                          int *status,
+                          int n,
+                          const char S_type[],
+                          int S_ne,
+                          const int S_row[],
+                          const int S_col[],
+                          const int S_ptr[] );
 
 /*!<
  Import the scaling matrix \f$S\f$ into internal storage prior to solution. 
@@ -835,7 +835,7 @@ void llst_terminate( void **data,
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 
-    \example lssttf.c
+    \example llsttf.c
    This is the same example, but now fortran-style indexing is used.\n
 
  */

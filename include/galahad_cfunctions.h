@@ -151,7 +151,7 @@
 #define llst_initialize llst_initialize_s
 #define llst_read_specfile llst_read_specfile_s
 #define llst_import llst_import_s
-#define llst_import_s llst_import_s_s
+#define llst_import_scaling llst_import_scaling_s
 #define llst_reset_control llst_reset_control_s
 #define llst_solve_problem llst_solve_problem_s
 #define llst_information llst_information_s

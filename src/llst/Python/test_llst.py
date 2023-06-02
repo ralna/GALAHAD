@@ -51,7 +51,7 @@ inform = llst.information()
 print(" ||r||: %.4f" % inform['r_norm'])
 
 # load data (and optionally non-default options)
-llst.load_s(n, S_type, S_ne, S_row, S_col, S_ptr)
+llst.load_scaling(n, S_type, S_ne, S_row, S_col, S_ptr)
 
 # find minimum of linear least-squares objective within the trust region
 print("\n solve problem 2 with additional non-unit scaling")

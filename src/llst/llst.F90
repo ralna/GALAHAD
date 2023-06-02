@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -46,7 +46,7 @@
       PRIVATE
       PUBLIC :: LLST_initialize, LLST_read_specfile, LLST_solve,               &
                 LLST_terminate,  LLST_full_initialize, LLST_full_terminate,    &
-                LLST_import, LLST_import_S, LLST_reset_control,                &
+                LLST_import, LLST_import_scaling, LLST_reset_control,          &
                 LLST_solve_problem, LLST_information,                          &
                 SMT_type, SMT_put, SMT_get
 
@@ -2515,11 +2515,12 @@
 
      END SUBROUTINE LLST_import
 
-!-*-*-  G A L A H A D -  L L T R _ i m p o r t _ S _ S U B R O U T I N E -*-*-
+!-  G A L A H A D - L L T R _ i m p o r t _ s c a l i n g  S U B R O U T I N E -
 
-     SUBROUTINE LLST_import_S( data, status, S_type, S_ne, S_row, S_col, S_ptr )
+     SUBROUTINE LLST_import_scaling( data, status, S_type, S_ne, S_row,        &
+                                     S_col, S_ptr )
 
-!  import fixed problem data for the scaling matrix M into internal
+!  import fixed problem data for the scaling matrix S into internal
 !  storage prior to solution. Arguments are as follows:
 
 !  data is a scalar variable of type LLST_full_data_type used for internal data
@@ -2736,9 +2737,9 @@
      status = data%llst_inform%status
      RETURN
 
-!  End of subroutine LLST_import_S
+!  End of subroutine LLST_import_scaling
 
-     END SUBROUTINE LLST_import_S
+     END SUBROUTINE LLST_import_scaling
 
 ! - G A L A H A D -  L L S T _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
