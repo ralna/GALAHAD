@@ -598,10 +598,10 @@ value of the objective function at the best estimate of the solution found.
 value of the norm of the projected gradient of the objective function 
 at the best estimate of the solution found.
 
-\ittf{length\_ratio} is a scalar variable of type default \realdp, that holds 
+\itt{length\_ratio} is a scalar variable of type default \realdp, that holds 
 the ratio of the final to the initial box lengths.
 
-\ittf{f\_gap} is a scalar variable of type default \realdp, that holds the
+\itt{f\_gap} is a scalar variable of type default \realdp, that holds the
 gap  between the best objective value found and the lowest bound.
 
 \itt{why\_stop} is a scalar variable of type default \character\
@@ -1325,7 +1325,10 @@ A negative value of {\tt inform\%status} on exit from
 {\tt \packagename\_solve}
 or
 {\tt \packagename\_terminate}
-indicates that an error has occurred. No further calls should be made
+indicates that an error has occurred (but note that the
+value {\tt \galbudgetexhausted} that indicates the evaluation 
+budget has been achieved is highly likely to occur).
+No further calls should be made
 until the error has been corrected. Possible values are:
 
 \begin{description}
@@ -1380,11 +1383,6 @@ and {\tt inform\%bad\_alloc}, respectively.
 
 \itt{\galerrtinystep.} The step is too small to make further impact.
 
-\itt{\galerrmaxiterations.} Too many iterations have been performed.
-  This may happen if
-    {\tt control\%trb\_control\%maxit} is too small, but may also be 
-    symptomatic of a badly scaled problem.
-
 \itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been
     reached. This may happen if either {\tt control\%cpu\_time\_limit} or
     {\tt control\%clock\_time\_limit} is too small, but may also be symptomatic
@@ -1402,6 +1400,13 @@ and {\tt inform\%bad\_alloc}, respectively.
 \itt{\galerrmaxstorage.} The hash table used to store the dictionary
      of vertices of the sub-boxes is full, and there is no room to increase
      it further.
+
+\itt{\galbudgetexhausted.} The budget limit on function evaluations has
+    been reached.  This will happen if the limit {\tt max\_evals} is
+    exceeded, and is quite normal for stochastic global-optimization methods.
+    The user may explore increasing {\tt max\_evals} to see if that 
+    produces a lower value of the objective function, but there are 
+    unfortunately no guarantees.
 
 \end{description}
 

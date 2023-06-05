@@ -230,7 +230,7 @@ functions
 
           the inverse of $M$ must be applied to the vector returned in v,
           the result placed in v, and the function recalled with status
-          set to 2. This will only occur if control['unitm'] is False.
+          set to 2. This will only occur if options['unitm'] is False.
 
           * **3**
 
@@ -273,7 +273,7 @@ functions
             * **-1**
 
               An allocation error occurred. A message indicating the
-              offending array is written on unit control['error'], and
+              offending array is written on unit options['error'], and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -281,7 +281,7 @@ functions
             * **-2**
 
               A deallocation error occurred.  A message indicating the
-              offending array is written on unit control['error'] and
+              offending array is written on unit options['error'] and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.

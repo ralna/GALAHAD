@@ -466,7 +466,7 @@ functions
             * **-1**
 
               An allocation error occurred. A message indicating the
-              offending array is written on unit control['error'], and
+              offending array is written on unit options['error'], and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -474,7 +474,7 @@ functions
             * **-2**
 
               A deallocation error occurred.  A message indicating the
-              offending array is written on unit control['error'] and
+              offending array is written on unit options['error'] and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -515,20 +515,20 @@ functions
             * **-18**
 
               Too many iterations have been performed. This may happen if
-              control['maxit'] is too small, but may also be symptomatic
+              options['maxit'] is too small, but may also be symptomatic
               of a badly scaled problem.
 
             * **-19**
 
               The CPU time limit has been reached. This may happen if
-              control['cpu_time_limit'] is too small, but may also be
+              options['cpu_time_limit'] is too small, but may also be
               symptomatic of a badly scaled problem.
 
             * **-82**
 
               The user has forced termination of the solver by removing
-              the file named control['alive_file'] from unit
-              control['alive_unit'].
+              the file named options['alive_file'] from unit
+              options['alive_unit'].
 
           alloc_status : int
             the status of the last attempted allocation/deallocation.

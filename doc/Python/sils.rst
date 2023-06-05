@@ -222,11 +222,11 @@ functions
           delay : int
              Number of delayed pivots (total).
           signc : int
-             Number of pivot sign changes when control[`pivoting`]=3.
+             Number of pivot sign changes when options[`pivoting`]=3.
           nstatic : int
              Number of static pivots chosen.
           modstep : int
-             First pivot modification when control[`pivoting`]=4.
+             First pivot modification when options[`pivoting`]=4.
           rank : int
              Rank of original factorization.
           stat : int
@@ -242,7 +242,7 @@ functions
           opsb : float
              Additional number of operations for BLAS.
           maxchange : float
-             Largest control[`pivoting`]=4 modification.
+             Largest options[`pivoting`]=4 modification.
           smin : float
              Minimum scaling factor.
           smax : float

@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -619,14 +633,14 @@ a successful call.</p>
 </li>
 <li><p><strong>-1</strong></p>
 <p>An allocation error occurred. A message indicating the
-offending array is written on unit control[‘error’], and the
+offending array is written on unit options[‘error’], and the
 returned allocation status and a string containing the name
 of the offending array are held in inform[‘alloc_status’]
 and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-2</strong></p>
 <p>A deallocation error occurred.  A message indicating the
-offending array is written on unit control[‘error’] and
+offending array is written on unit options[‘error’] and
 the returned allocation status and a string containing
 the name of the offending array are held in
 inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
@@ -636,18 +650,18 @@ inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-18</strong></p>
 <p>Too many iterations have been performed. This may happen if
-control[‘maxit’] is too small, but may also be symptomatic
+options[‘maxit’] is too small, but may also be symptomatic
 of a badly scaled problem.</p>
 </li>
 <li><p><strong>-19</strong></p>
 <p>The CPU time limit has been reached. This may happen if
-control[‘cpu_time_limit’] is too small, but may also be
+options[‘cpu_time_limit’] is too small, but may also be
 symptomatic of a badly scaled problem.</p>
 </li>
 <li><p><strong>-40</strong></p>
 <p>The user has forced termination of the solver by removing
-the file named control[‘alive_file’] from unit
-control[‘alive_unit’].</p>
+the file named options[‘alive_file’] from unit
+options[‘alive_unit’].</p>
 </li>
 </ul>
 </dd>

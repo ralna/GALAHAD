@@ -671,9 +671,6 @@ void dgo_solve_with_mat( void **data,
          package is given in the component inform.factor_status.
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
-  \li -18. Too many iterations have been performed. This may happen if
-         control.maxit is too small, but may also be symptomatic of
-         a badly scaled problem.
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
@@ -681,6 +678,12 @@ void dgo_solve_with_mat( void **data,
          named control.alive_file from unit unit control.alive_unit.
   \li -91. The hash table used to store the dictionary of vertices of the
          sub-boxes is full, and there is no room to increase it further.
+  \li -99. The budget limit on function evaluations has
+         been reached.  This will happen if the limit control.max_evals is
+         exceeded, and is quite normal for stochastic global-optimization 
+         methods. The user may explore increasing control.max_evals to see 
+         if that produces a lower value of the objective function, but 
+         there are unfortunately no guarantees.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
@@ -806,14 +809,17 @@ void dgo_solve_without_mat( void **data,
          package is given in the component inform.factor_status.
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
-  \li -18. Too many iterations have been performed. This may happen if
-         control.maxit is too small, but may also be symptomatic of
-         a badly scaled problem.
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
+  \li -99. The budget limit on function evaluations has
+         been reached.  This will happen if the limit control.max_evals is
+         exceeded, and is quite normal for stochastic global-optimization 
+         methods. The user may explore increasing control.max_evals to see 
+         if that produces a lower value of the objective function, but 
+         there are unfortunately no guarantees.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
@@ -945,14 +951,17 @@ void dgo_solve_reverse_with_mat( void **data,
          package is given in the component inform.factor_status.
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
-  \li -18. Too many iterations have been performed. This may happen if
-         control.maxit is too small, but may also be symptomatic of
-         a badly scaled problem.
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
+  \li -99. The budget limit on function evaluations has
+         been reached.  This will happen if the limit control.max_evals is
+         exceeded, and is quite normal for stochastic global-optimization 
+         methods. The user may explore increasing control.max_evals to see 
+         if that produces a lower value of the objective function, but 
+         there are unfortunately no guarantees.
 
  @param status (continued)
   \li  2. The user should compute the objective function value \f$f(x)\f$ at
@@ -1092,14 +1101,17 @@ void dgo_solve_reverse_without_mat( void **data,
          package is given in the component inform.factor_status.
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
-  \li -18. Too many iterations have been performed. This may happen if
-         control.maxit is too small, but may also be symptomatic of
-         a badly scaled problem.
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
+  \li -99. The budget limit on function evaluations has
+         been reached.  This will happen if the limit control.max_evals is
+         exceeded, and is quite normal for stochastic global-optimization 
+         methods. The user may explore increasing control.max_evals to see 
+         if that produces a lower value of the objective function, but 
+         there are unfortunately no guarantees.
 
  @param status (continued)
   \li  2. The user should compute the objective function value \f$f(x)\f$ at
