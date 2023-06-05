@@ -180,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -310,6 +317,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -609,11 +623,11 @@ they are reset to current requirment.</p>
 </dd>
 <dt>delay<span class="classifier">int</span></dt><dd><p>Number of delayed pivots (total).</p>
 </dd>
-<dt>signc<span class="classifier">int</span></dt><dd><p>Number of pivot sign changes when control[<cite>pivoting</cite>]=3.</p>
+<dt>signc<span class="classifier">int</span></dt><dd><p>Number of pivot sign changes when options[<cite>pivoting</cite>]=3.</p>
 </dd>
 <dt>nstatic<span class="classifier">int</span></dt><dd><p>Number of static pivots chosen.</p>
 </dd>
-<dt>modstep<span class="classifier">int</span></dt><dd><p>First pivot modification when control[<cite>pivoting</cite>]=4.</p>
+<dt>modstep<span class="classifier">int</span></dt><dd><p>First pivot modification when options[<cite>pivoting</cite>]=4.</p>
 </dd>
 <dt>rank<span class="classifier">int</span></dt><dd><p>Rank of original factorization.</p>
 </dd>
@@ -629,7 +643,7 @@ they are reset to current requirment.</p>
 </dd>
 <dt>opsb<span class="classifier">float</span></dt><dd><p>Additional number of operations for BLAS.</p>
 </dd>
-<dt>maxchange<span class="classifier">float</span></dt><dd><p>Largest control[<cite>pivoting</cite>]=4 modification.</p>
+<dt>maxchange<span class="classifier">float</span></dt><dd><p>Largest options[<cite>pivoting</cite>]=4 modification.</p>
 </dd>
 <dt>smin<span class="classifier">float</span></dt><dd><p>Minimum scaling factor.</p>
 </dd>

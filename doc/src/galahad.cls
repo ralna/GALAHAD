@@ -1036,6 +1036,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerralive}{-82}
 \newcommand{\galerrunknownstorage}{-90}
 \newcommand{\galerrmaxstorage}{-91}
+\newcommand{\galbudgetexhausted}{-99}
 
 \newcommand{\galsymsilent}{0}
 \newcommand{\galsymtrace}{1}

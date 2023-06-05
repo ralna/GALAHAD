@@ -1,4 +1,4 @@
-.TH "galahad_dgo.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD DGO" \" -*- nroff -*-
+.TH "galahad_dgo.h" 3 "Fri Jun 2 2023" "C interfaces to GALAHAD DGO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -467,13 +467,13 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 .IP "\(bu" 2
 -16\&. The problem is so ill-conditioned that further progress is impossible\&. 
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
 -82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&. 
 .IP "\(bu" 2
--91\&. The hash table used to store the dictionary of vertices of the sub-boxes is full, and there is no room to increase it further\&.
+-91\&. The hash table used to store the dictionary of vertices of the sub-boxes is full, and there is no room to increase it further\&. 
+.IP "\(bu" 2
+-99\&. The budget limit on function evaluations has been reached\&. This will happen if the limit control\&.max_evals is exceeded, and is quite normal for stochastic global-optimization methods\&. The user may explore increasing control\&.max_evals to see if that produces a lower value of the objective function, but there are unfortunately no guarantees\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -563,11 +563,11 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -16\&. The problem is so ill-conditioned that further progress is impossible\&. 
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&. 
+.IP "\(bu" 2
+-99\&. The budget limit on function evaluations has been reached\&. This will happen if the limit control\&.max_evals is exceeded, and is quite normal for stochastic global-optimization methods\&. The user may explore increasing control\&.max_evals to see if that produces a lower value of the objective function, but there are unfortunately no guarantees\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables
@@ -665,11 +665,11 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, but
 .IP "\(bu" 2
 -16\&. The problem is so ill-conditioned that further progress is impossible\&. 
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&. 
+.IP "\(bu" 2
+-99\&. The budget limit on function evaluations has been reached\&. This will happen if the limit control\&.max_evals is exceeded, and is quite normal for stochastic global-optimization methods\&. The user may explore increasing control\&.max_evals to see if that produces a lower value of the objective function, but there are unfortunately no guarantees\&.
 .PP
 .br
 \fIstatus\fP (continued) 
@@ -752,11 +752,11 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .IP "\(bu" 2
 -16\&. The problem is so ill-conditioned that further progress is impossible\&. 
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&. 
+.IP "\(bu" 2
+-99\&. The budget limit on function evaluations has been reached\&. This will happen if the limit control\&.max_evals is exceeded, and is quite normal for stochastic global-optimization methods\&. The user may explore increasing control\&.max_evals to see if that produces a lower value of the objective function, but there are unfortunately no guarantees\&.
 .PP
 .br
 \fIstatus\fP (continued) 

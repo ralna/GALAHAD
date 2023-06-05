@@ -117,7 +117,7 @@ functions
              * **-1**
 
                An allocation error occurred. A message indicating the
-               offending array is written on unit control['error'], and
+               offending array is written on unit options['error'], and
                the returned allocation status and a string containing
                the name of the offending array are held in
                inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -125,7 +125,7 @@ functions
              * **-2**
 
                A deallocation error occurred.  A message indicating the
-               offending array is written on unit control['error'] and
+               offending array is written on unit options['error'] and
                the returned allocation status and a string containing
                the name of the offending array are held in
                inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -146,10 +146,10 @@ functions
 
                A call to the function ``lhs_apply`` has been made without 
                a prior call to ``lhs_form_shift`` or ``lhs_form`` with lambda 
-               specified  when control['method'] = 4, or ``lhs_form_shift`` 
-               has been called when  control['method'] = 3, or 
+               specified  when options['method'] = 4, or ``lhs_form_shift`` 
+               has been called when  options['method'] = 3, or 
                ``lhs_change_method`` has been called after
-               control['any_method'] = False was specified when calling 
+               options['any_method'] = False was specified when calling 
                ``lhs_setup``.
           alloc_status : int
              the status of the last attempted allocation/deallocation.

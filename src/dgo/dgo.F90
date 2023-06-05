@@ -2126,7 +2126,7 @@
 
        inform%iter = inform%iter + 1
        IF ( inform%iter > data%control%maxit ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 800
+         inform%status = GALAHAD_budget_exhausted ; GO TO 800
        END IF
 
 !  ============================================================================
@@ -2137,7 +2137,7 @@
                      MASK = .NOT. data%BOX( : data%boxes )%pruned )
        lipschitz_estimate_max = data%BOX( loc( 1 ) )%gradient_lipschitz_estimate
        m = ( data%control%lipschitz_reliability +                              &
-             data%control%lipschitz_control / REAL( inform%iter, KIND = rp_ ) ) &
+             data%control%lipschitz_control / REAL( inform%iter, KIND = rp_ ) )&
              * MAX( data%control%lipschitz_lower_bound, lipschitz_estimate_max )
 
 !  ============================================================================
@@ -3321,7 +3321,7 @@
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      IF ( data%dgo_inform%status == GALAHAD_ok .OR.                            &
-          data%dgo_inform%status == GALAHAD_error_max_iterations )             &
+          data%dgo_inform%status == GALAHAD_budget_exhausted )                 &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
 
      status = data%dgo_inform%status
@@ -3365,7 +3365,7 @@
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      IF ( data%dgo_inform%status == GALAHAD_ok .OR.                            &
-          data%dgo_inform%status == GALAHAD_error_max_iterations )             &
+          data%dgo_inform%status == GALAHAD_budget_exhausted )                 &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
 
      status = data%dgo_inform%status
