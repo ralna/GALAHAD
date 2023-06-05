@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:05 GMT
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-04 AT 12:05 GMT
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD C INTERFACE PRECISION  *-*-*-*-*-*-*-*-*-*-
  *
@@ -16,12 +16,15 @@
 // include guard
 #ifndef GALAHAD_PRECISION_H
 #define GALAHAD_PRECISION_H
+/** `real_sp_` is real single precision */
+typedef float real_sp_;   // single precision
+
 #ifdef GALAHAD_SINGLE
+/** `real_wp_` is real working precision */
 typedef float real_wp_;  // working precision
-typedef float real_sp_;   // single precision
 #else
+/** `real_wp_` is the real working precision used */
 typedef double real_wp_;  // working precision
-typedef float real_sp_;   // single precision
 #endif
 
 // end include guard

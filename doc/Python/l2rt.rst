@@ -278,7 +278,7 @@ functions
             * **-1**
 
               An allocation error occurred. A message indicating the
-              offending array is written on unit control['error'], and
+              offending array is written on unit options['error'], and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
@@ -286,7 +286,7 @@ functions
             * **-2**
 
               A deallocation error occurred.  A message indicating the
-              offending array is written on unit control['error'] and
+              offending array is written on unit options['error'] and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.

@@ -24,13 +24,13 @@ fi
 mkdir -p $package
 mkdir -p $GALAHAD/html/C/$package
 
-#  build the pdf and html documentation
+#  build the html documentation
 
 echo "building html"
-cp $GALAHAD/include/$package.h $package/.
+cp $GALAHAD/include/galahad_$package.h $package/.
 #doxygen Doxyfile
 ( cd ./$package ; doxygen ../Doxyfile_html )
 #mogrify -trim $GALAHAD/html/C/$package/*.png
 cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
-rm $package/$package.h
+rm $package/galahad_$package.h
 

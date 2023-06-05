@@ -238,6 +238,8 @@
                               GALAHAD_error_mumps = - 96
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_mpi = - 97
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_budget_exhausted = - 99
 
 !     General integers
 
@@ -873,6 +875,10 @@
      CASE( GALAHAD_error_mpi )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   MPI failure: check its return status' )" )                   &
+         prefix, routine, prefix
+     CASE( GALAHAD_budget_exhausted )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   Function call budget limit reached' )" )                     &
          prefix, routine, prefix
      CASE( 1 : )
        WRITE( out, "( /, A,  ' Intermediate return from ', A, /, A,            &

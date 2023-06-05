@@ -45,6 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'dgo';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Auxiliary Procedures" href="auxiliary.html" />
     <link rel="prev" title="BGO" href="bgo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -179,6 +180,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
                 </div>
             </div>
             
@@ -309,6 +317,13 @@
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
                       </a>
                     </li>
                 
@@ -710,14 +725,14 @@ a successful call.</p>
 </li>
 <li><p><strong>-1</strong></p>
 <p>An allocation error occurred. A message indicating the
-offending array is written on unit control[‘error’], and
+offending array is written on unit options[‘error’], and
 the returned allocation status and a string containing
 the name of the offending array are held in
 inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-2</strong></p>
 <p>A deallocation error occurred.  A message indicating the
-offending array is written on unit control[‘error’] and
+offending array is written on unit options[‘error’] and
 the returned allocation status and a string containing
 the name of the offending array are held in
 inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
@@ -749,25 +764,28 @@ inform[‘factor_status’].</p>
 <p>The problem is so ill-conditioned that further progress
 is impossible.</p>
 </li>
-<li><p><strong>-18</strong></p>
-<p>Too many iterations have been performed. This may happen if
-control[‘maxit’] is too small, but may also be symptomatic
-of a badly scaled problem.</p>
-</li>
 <li><p><strong>-19</strong></p>
 <p>The CPU time limit has been reached. This may happen if
-control[‘cpu_time_limit’] is too small, but may also be
+options[‘cpu_time_limit’] is too small, but may also be
 symptomatic of a badly scaled problem.</p>
 </li>
 <li><p><strong>-82</strong></p>
 <p>The user has forced termination of the solver by removing
-the file named control[‘alive_file’] from unit
-control[‘alive_unit’].</p>
+the file named options[‘alive_file’] from unit
+options[‘alive_unit’].</p>
 </li>
 <li><p><strong>-91</strong></p>
 <p>The hash table used to store the dictionary of vertices
 of the sub-boxes is full, and there is no room to increase
 it further</p>
+</li>
+<li><p><strong>-99</strong></p>
+<p>The budget limit on function evaluations has been reached.
+This will happen if the limit options[‘max_evals’] is
+exceeded, and is quite normal for stochastic global-optimization
+methods. The user may explore increasing options[‘max_evals’]
+to see if that produces a lower value of the objective function,
+but there are unfortunately no guarantees.</p>
 </li>
 </ul>
 </dd>
@@ -922,6 +940,13 @@ optimization.</p>
           <p class="prev-next-subtitle">previous</p>
           <p class="prev-next-title">BGO</p>
       </div>
+  </a>
+  <a class='right-next' id="next-link" href="auxiliary.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Auxiliary Procedures</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
   </a>
 </div>
             </footer>
