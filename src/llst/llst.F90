@@ -150,8 +150,7 @@
         REAL ( KIND = rp_ ) :: lower = - half * HUGE( one )
         REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
-!  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
-!              stop_normal * max( 1, ||x|| )
+!  stop when | ||x|| - radius | <= stop_normal * max( 1, ||x|| )
 
         REAL ( KIND = rp_ ) :: stop_normal = epsmch
 
