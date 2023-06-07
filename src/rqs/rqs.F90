@@ -2627,8 +2627,8 @@
 
           n_lambda = 0
 
-!  compute Taylor approximants of degree one;
-!  special (but frequent) case when p = 3
+!  compute Taylor approximants of degree one; special (but frequent) case 
+!  when p = 3
 
           IF ( p == three ) THEN
 
@@ -5129,7 +5129,7 @@
 !   lambda, sigma - lambda and sigma
 !  Output -
 !   theta_beta - (0) value of (lambda/sigma)^beta,
-!             (i) ith derivative of (lambda/sigma)^beta, i = 1, max_order
+!                (i) ith derivative of (lambda/sigma)^beta, i = 1, max_order
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
