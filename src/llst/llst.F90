@@ -2270,15 +2270,31 @@
 
       hbeta = half * beta
       pi_beta( 0 ) = x_norm2( 0 ) ** hbeta
-      pi_beta( 1 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - one ) ) * x_norm2( 1 )
-      IF ( max_order == 1 ) RETURN
-      pi_beta( 2 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - two ) ) *             &
-        ( ( hbeta - one ) * x_norm2( 1 ) ** 2 + x_norm2( 0 ) * x_norm2( 2 ) )
-      IF ( max_order == 2 ) RETURN
-      pi_beta( 3 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - three ) ) *           &
-        ( x_norm2( 3 ) * x_norm2( 0 ) ** 2 + ( hbeta - one ) *                 &
-          ( three * x_norm2( 0 ) * x_norm2( 1 ) * x_norm2( 2 ) +               &
-            ( hbeta - two ) * x_norm2( 1 ) ** 3 ) )
+      IF ( hbeta == one ) THEN
+        pi_beta( 1 ) = x_norm2( 1 )
+        IF ( max_order == 1 ) RETURN
+        pi_beta( 2 ) = x_norm2( 2 )
+        IF ( max_order == 2 ) RETURN
+        pi_beta( 3 ) = x_norm2( 3 )
+      ELSE IF ( hbeta == two ) THEN
+        pi_beta( 1 ) = two * x_norm2( 0 ) * x_norm2( 1 )
+        IF ( max_order == 1 ) RETURN
+        pi_beta( 2 ) = two * ( x_norm2( 1 ) ** 2 + x_norm2( 0 ) * x_norm2( 2 ) )
+        IF ( max_order == 2 ) RETURN
+        pi_beta( 3 ) = two *                                                   &
+          ( x_norm2( 0 ) * x_norm2( 3 ) + three * x_norm2( 1 ) * x_norm2( 2 ) )
+      ELSE
+        pi_beta( 1 )                                                           &
+          = hbeta * ( x_norm2( 0 ) ** ( hbeta - one ) ) * x_norm2( 1 )
+        IF ( max_order == 1 ) RETURN
+        pi_beta( 2 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - two ) ) *           &
+          ( ( hbeta - one ) * x_norm2( 1 ) ** 2 + x_norm2( 0 ) * x_norm2( 2 ) )
+        IF ( max_order == 2 ) RETURN
+        pi_beta( 3 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - three ) ) *         &
+          ( x_norm2( 3 ) * x_norm2( 0 ) ** 2 + ( hbeta - one ) *               &
+            ( three * x_norm2( 0 ) * x_norm2( 1 ) * x_norm2( 2 ) +             &
+              ( hbeta - two ) * x_norm2( 1 ) ** 3 ) )
+      END IF
 
       RETURN
 

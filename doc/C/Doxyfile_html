@@ -40,7 +40,6 @@ INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
 ALIASES                =
-TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -198,7 +197,6 @@ CLANG_DATABASE_PATH    =
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
