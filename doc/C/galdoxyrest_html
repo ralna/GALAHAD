@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#  syntax: galdoxyrest_html package
+
+#  create the C documentation for GALAHAD.
+#  currently this will produce html
+
+#  Nick Gould, August 21st 2021
+
+#  does the package exist?
+
+export package=$1
+if [ -d "$GALAHAD/src/$package" ]; then 
+  export PACKAGE=${package^^}
+elif [ $package == "galahad" ]; then
+  export PACKAGE=
+else
+  echo "Error: package $package does not exist."
+  exit 1
+fi
+
+#  make sure that required subdirectories exist
+
+mkdir -p $package
+mkdir -p $package/include $package/source 
+#mkdir -p $GALAHAD/html/C/$package
+
+#  build the html documentation
+
+echo "building html"
+
+#sed -f modify.sed $GALAHAD/include/galahad_$package.h > $package/include/galahad_$package.h
+
+#cp $GALAHAD/include/galahad_$package.h $package/include/galahad_$package.h
+#ln -fs $GALAHAD/include/galahad_precision.h $package/include/.
+#ln -fs $GALAHAD/include/galahad_cfunctions.h $package/include/.
+#ln -fs $GALAHAD/doc/src/galahad.small.png $package/source/.
+
+cp $GALAHAD/include/galahad_$package.h $package/galahad_$package.h
+ln -fs $GALAHAD/include/galahad_precision.h $package/.
+ln -fs $GALAHAD/include/galahad_cfunctions.h $package/.
+ln -fs $GALAHAD/doc/src/galahad.small.png $package/.
+
+ln -fs $PWD/conf.py $package/.
+ln -fs $PWD/index.rst $package/.
+
+( cd ./$package ; \
+  doxygen ../Doxyrestfile_html ; \
+  doxyrest -c ../doxyrest-config.lua ; \
+  doxyrest -v )
+
+#cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+#rm $package/galahad_$package.h
+
