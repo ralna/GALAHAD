@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>LLST &#8212; GALAHAD Python Interface 1.0 documentation</title>
+    <title>LLSR &#8212; GALAHAD Python Interface 1.0 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -38,11 +38,11 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'llst';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'llsr';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="LSTR" href="lstr.html" />
-    <link rel="prev" title="LLSR" href="llsr.html" />
+    <link rel="next" title="LLST" href="llst.html" />
+    <link rel="prev" title="GLRT" href="glrt.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -384,13 +384,13 @@
    GLRT - global minization of a regularized quadratic function
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="llsr.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    LLSR - global minization of a regularized linear least-squares objective using matrix factorizations
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="llst.html">
    LLST - global minization of a linear least-squares objective within an ellipsoid using matrix factorizations
   </a>
  </li>
@@ -437,21 +437,20 @@
             
             <article class="bd-article" role="main">
               
-  <section id="module-galahad.llst">
-<span id="llst"></span><h1>LLST<a class="headerlink" href="#module-galahad.llst" title="Permalink to this heading">#</a></h1>
+  <section id="module-galahad.llsr">
+<span id="llsr"></span><h1>LLSR<a class="headerlink" href="#module-galahad.llsr" title="Permalink to this heading">#</a></h1>
 <p>Given a real <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> model matrix <span class="math notranslate nohighlight">\(A\)</span>, a real <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric
 diagonally-dominant matrix <span class="math notranslate nohighlight">\(S\)</span>, a real <span class="math notranslate nohighlight">\(m\)</span> vector of observations <span class="math notranslate nohighlight">\(b\)</span>
-and a scalar <span class="math notranslate nohighlight">\(\Delta&gt;0\)</span>, the <code class="docutils literal notranslate"><span class="pre">llst</span></code> package finds a <strong>minimizer of the linear
-least-squares objective function <span class="math notranslate nohighlight">\(\|A x - b\|_2\)</span>, where the vector <span class="math notranslate nohighlight">\(x\)</span> is
-required to satisfy the constraint <span class="math notranslate nohighlight">\(\|x\|_S \leq  \Delta\)</span></strong>,
-and where the <span class="math notranslate nohighlight">\(S\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is <span class="math notranslate nohighlight">\(\|x\|_S = \sqrt{x^T S x}\)</span>.
-This problem commonly occurs as a trust-region subproblem in nonlinear
+and a scalar <span class="math notranslate nohighlight">\(\Delta&gt;0\)</span>, the <code class="docutils literal notranslate"><span class="pre">llsr</span></code> package finds a <strong>minimizer of the
+regularized linear least-squares objective function</strong>
+<div class="math notranslate nohighlight">
+\[\frac{1}{2} \| A x  - b \|^2_2 + \frac{\sigma}{p}\|x\|_S^p,\]</div>
+
+where the <span class="math notranslate nohighlight">\(S\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is <span class="math notranslate nohighlight">\(\|x\|_S = \sqrt{x^T S x}\)</span>.
+This problem commonly occurs as a subproblem in nonlinear
 least-squares calculations.
-The package may also be used to solve the related problem in which <span class="math notranslate nohighlight">\(x\)</span> is
-instead required to satisfy the
-<strong>equality constraint <span class="math notranslate nohighlight">\(\|x\|_S = \Delta\)</span></strong>.
 The matrix <span class="math notranslate nohighlight">\(S\)</span> need not be provided in the commonly-occurring
-<span class="math notranslate nohighlight">\(\ell_2\)</span>-trust-region case for which <span class="math notranslate nohighlight">\(S = I\)</span>, the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
+<span class="math notranslate nohighlight">\(\ell_2\)</span>-regularization case for which <span class="math notranslate nohighlight">\(S = I\)</span>, the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
 identity matrix.</p>
 <p>Factorization of matrices of the form
 <div class="math notranslate nohighlight">
@@ -459,35 +458,30 @@ identity matrix.</p>
 
 for a succession of scalars <span class="math notranslate nohighlight">\(\lambda\)</span> will be required, so this package is
 most suited for the case where such a factorization may be found efficiently.
-If this is not the case, the package <code class="docutils literal notranslate"><span class="pre">lstr</span></code> may be preferred.</p>
-<p>See Section 4 of $GALAHAD/doc/llst.pdf for additional details.</p>
+If this is not the case, the package <code class="docutils literal notranslate"><span class="pre">lsrt</span></code> may be preferred.</p>
+<p>See Section 4 of $GALAHAD/doc/llsr.pdf for additional details.</p>
 <section id="method">
 <h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
 <p>The required solution <span class="math notranslate nohighlight">\(x_*\)</span> necessarily satisfies the optimality condition
-<span class="math notranslate nohighlight">\(A^T A x_* + \lambda_* S x_* = A^T b\)</span>, where <span class="math notranslate nohighlight">\(\lambda_* \geq 0\)</span> is a Lagrange
-multiplier corresponding to the constraint <span class="math notranslate nohighlight">\(\|x\|_S  \leq  \Delta\)</span>;
-for the equality-constrained problem <span class="math notranslate nohighlight">\(\|x\|_S = \Delta\)</span> and
-the multiplier is unconstrained.</p>
+<span class="math notranslate nohighlight">\(A^T A x_* + \lambda_* S x_* = A^T b\)</span>,
+where <span class="math notranslate nohighlight">\(\lambda_* = \sigma \|x_*\|^{p-2}\)</span>.</p>
 <p>The method is iterative, and proceeds in two phases.
 Firstly, lower and upper bounds, <span class="math notranslate nohighlight">\(\lambda_L\)</span> and
 <span class="math notranslate nohighlight">\(\lambda_U\)</span>, on <span class="math notranslate nohighlight">\(\lambda_*\)</span> are computed
 using Gershgorin’s theorems and other eigenvalue bounds,
 including those that may involve the Cholesky factorization of <span class="math notranslate nohighlight">\(S\)</span>  The
 first phase of the computation proceeds by progressively shrinking  the bound
-interval <span class="math notranslate nohighlight">\([\lambda_L,\lambda_U]\)</span>
-until a value <span class="math notranslate nohighlight">\(\lambda\)</span> for which
-<span class="math notranslate nohighlight">\(\|x(\lambda)\|_S  \geq  \Delta\)</span> is found.
+interval <span class="math notranslate nohighlight">\([\lambda_L,\lambda_U]\)</span> until a value <span class="math notranslate nohighlight">\(\lambda\)</span> for which
+<span class="math notranslate nohighlight">\(\|x(\lambda)\|_{M}  \geq  \sigma \|x(\lambda)\|_M^{p-2}\)</span> is found.
 Here <span class="math notranslate nohighlight">\(x(\lambda)\)</span> and its companion <span class="math notranslate nohighlight">\(y(\lambda)\)</span>
 are defined to be a solution of
 <div class="math notranslate nohighlight">
-\[(A^T A  + \lambda S)x(\lambda) = A^T b; \mspace{5em}\mbox{(2)}\]</div>
+\[(A^T A  + \lambda S)x(\lambda) = A^T b. \mspace{5em}\mbox{(2)}\]</div>
 
-along the way the possibility that
-<span class="math notranslate nohighlight">\(\|x(0)\|_S  \leq  \Delta\)</span> is examined, and if this transpires
-the process is terminated with <span class="math notranslate nohighlight">\(x_* = x(0)\)</span>. Once the terminating
+Once the terminating
 <span class="math notranslate nohighlight">\(\lambda\)</span> from the first phase has been discovered, the second phase
 consists of applying Newton or higher-order iterations to the nonlinear
-<em>secular</em> equation <span class="math notranslate nohighlight">\(\|x(\lambda)\|_S = \Delta\)</span> with
+<em>secular</em> equation <span class="math notranslate nohighlight">\(\lambda = \sigma \|x(\lambda)\|_M^{p-2}\)</span> with
 the knowledge that such iterations are both globally and ultimately
 rapidly convergent.</p>
 <p>The dominant cost is the requirement that we solve a sequence of
@@ -626,8 +620,8 @@ the string S_type = ‘zero’ or ‘none’ should be specified.</p>
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <blockquote>
 <div><dl class="py function">
-<dt class="sig sig-object py" id="galahad.llst.llst.initialize">
-<span class="sig-prename descclassname"><span class="pre">llst.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llst.llst.initialize" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="galahad.llsr.llsr.initialize">
+<span class="sig-prename descclassname"><span class="pre">llsr.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llsr.llsr.initialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Set default option values and initialize private data</p>
 <p><strong>Returns:</strong></p>
 <dl>
@@ -700,9 +694,6 @@ allowed. -ve implies no limit.</p>
 <dt>stop_normal<span class="classifier">float</span></dt><dd><p>stop when <span class="math notranslate nohighlight">\(| \|x\| -\)</span> radius <span class="math notranslate nohighlight">\(| \leq\)</span> max( stop_normal *
 max( 1, radius ).</p>
 </dd>
-<dt>equality_problem<span class="classifier">bool</span></dt><dd><p>is the solution is &lt;b&lt;required&lt;/b&gt; to lie on the boundary
-(i.e., is the constraint an equality)?.</p>
-</dd>
 <dt>use_initial_multiplier<span class="classifier">bool</span></dt><dd><p>ignore initial_multiplier?.</p>
 </dd>
 <dt>space_critical<span class="classifier">bool</span></dt><dd><p>if space is critical, ensure allocated arrays are no
@@ -733,8 +724,8 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="galahad.llst.llst.load">
-<span class="sig-prename descclassname"><span class="pre">llst.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llst.llst.load" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="galahad.llsr.llsr.load">
+<span class="sig-prename descclassname"><span class="pre">llsr.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llsr.llsr.load" title="Permalink to this definition">#</a></dt>
 <dd><p>Import problem data into internal storage prior to solution.</p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
@@ -763,15 +754,15 @@ total number of entries, in the sparse row-wise storage
 scheme. It need not be set when the other schemes are used, and in
 this case can be None.</p>
 </dd>
-<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llst.initialize</span></code>).</p>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llsr.initialize</span></code>).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llst.load_scaling(n,</span> <span class="pre">S_type,</span> <span class="pre">S_ne,</span> <span class="pre">S_row,</span> <span class="pre">S_col,</span> <span class="pre">S_ptr,</span> <span class="pre">options=None)</span></span></dt>
-<dd><p>Import non-trivial trust-region scaling data into internal storage
+<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llsr.load_scaling(n,</span> <span class="pre">S_type,</span> <span class="pre">S_ne,</span> <span class="pre">S_row,</span> <span class="pre">S_col,</span> <span class="pre">S_ptr,</span> <span class="pre">options=None)</span></span></dt>
+<dd><p>Import non-trivial regularization-norm scaling data into internal storage
 prior to solution. This is only required if <span class="math notranslate nohighlight">\(S\)</span> is not the identity
 matrix <span class="math notranslate nohighlight">\(I\)</span>.</p>
 <p><strong>Parameters:</strong></p>
@@ -802,27 +793,29 @@ part of <span class="math notranslate nohighlight">\(S\)</span>, as well as the 
 in the sparse row-wise storage scheme. It need not be set when the
 other schemes are used, and in this case can be None.</p>
 </dd>
-<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llst.initialize</span></code>).</p>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">llsr.initialize</span></code>).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="galahad.llst.llst.solve_problem">
-<span class="sig-prename descclassname"><span class="pre">llst.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llst.llst.solve_problem" title="Permalink to this definition">#</a></dt>
-<dd><p>Solve the linear-least-squares trust-region problem.</p>
+<dt class="sig sig-object py" id="galahad.llsr.llsr.solve_problem">
+<span class="sig-prename descclassname"><span class="pre">llsr.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llsr.llsr.solve_problem" title="Permalink to this definition">#</a></dt>
+<dd><p>Solve the regularized linear-least-squares problem.</p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
 <dt>m<span class="classifier">int</span></dt><dd><p>holds the number of observations, <span class="math notranslate nohighlight">\(m\)</span>.</p>
 </dd>
 <dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables, <span class="math notranslate nohighlight">\(n\)</span>.</p>
 </dd>
-<dt>radius<span class="classifier">float</span></dt><dd><p>holds the strictly positive trust-region radius, <span class="math notranslate nohighlight">\(\Delta\)</span>.</p>
+<dt>power<span class="classifier">float</span></dt><dd><p>holds the regularization power, <span class="math notranslate nohighlight">\(\weight \geq 2\)</span>.</p>
+</dd>
+<dt>weight<span class="classifier">float</span></dt><dd><p>holds the strictly positive regularization weight, <span class="math notranslate nohighlight">\(\weight\)</span>.</p>
 </dd>
 <dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the model matrix <span class="math notranslate nohighlight">\(A\)</span>.</p>
 </dd>
 <dt>A_val<span class="classifier">ndarray(a_ne)</span></dt><dd><p>holds the values of the nonzeros in <span class="math notranslate nohighlight">\(A\)</span> in the same order as
-specified in the sparsity pattern in <code class="docutils literal notranslate"><span class="pre">llst.load</span></code>.</p>
+specified in the sparsity pattern in <code class="docutils literal notranslate"><span class="pre">llsr.load</span></code>.</p>
 </dd>
 <dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the observations <span class="math notranslate nohighlight">\(b\)</span>.</p>
 </dd>
@@ -832,7 +825,7 @@ Otherwise it should be None.</p>
 </dd>
 <dt>S_val<span class="classifier">ndarray(s_ne), optional</span></dt><dd><p>holds the values of the nonzeros in the lower triangle of <span class="math notranslate nohighlight">\(S\)</span> in
 the same order as specified in the sparsity pattern in
-<code class="docutils literal notranslate"><span class="pre">llst.load_scaling</span></code> if needed. Otherwise it should be None.</p>
+<code class="docutils literal notranslate"><span class="pre">llsr.load_scaling</span></code> if needed. Otherwise it should be None.</p>
 </dd>
 </dl>
 <p><strong>Returns:</strong></p>
@@ -844,7 +837,7 @@ the same order as specified in the sparsity pattern in
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llst.information()</span></span></dt>
+<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">llsr.information()</span></span></dt>
 <dd><p>Provide optional output information</p>
 <p><strong>Returns:</strong></p>
 <dl>
@@ -915,8 +908,7 @@ error occurred.</p>
 </dd>
 <dt>len_history<span class="classifier">int</span></dt><dd><p>the number of <span class="math notranslate nohighlight">\((\lambda,\|x\|_S,\|Ax-b\|)\)</span> triples in the history.</p>
 </dd>
-<dt>multiplier<span class="classifier">float</span></dt><dd><p>the Lagrange multiplier corresponding to the trust-region
-constraint.</p>
+<dt>multiplier<span class="classifier">float</span></dt><dd><p>the Lagrange multiplier corresponding to the regularization term.</p>
 </dd>
 <dt>x_norm<span class="classifier">float</span></dt><dd><p>the S-norm of x, <span class="math notranslate nohighlight">\(\|x\|_S\)</span>.</p>
 </dd>
@@ -981,8 +973,8 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="galahad.llst.llst.terminate">
-<span class="sig-prename descclassname"><span class="pre">llst.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llst.llst.terminate" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="galahad.llsr.llsr.terminate">
+<span class="sig-prename descclassname"><span class="pre">llsr.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.llsr.llsr.terminate" title="Permalink to this definition">#</a></dt>
 <dd><p>Deallocate all internal private storage.</p>
 </dd></dl>
 
@@ -990,74 +982,7 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
 </section>
 <section id="example-code">
 <h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
-<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">galahad</span> <span class="keyword namespace">import</span> <span class="name">llst</span>
-<span class="keyword namespace">import</span> <span class="name namespace">numpy</span> <span class="keyword">as</span> <span class="name namespace">np</span>
-<span class="name">np</span><span class="operator">.</span><span class="name">set_printoptions</span><span class="punctuation">(</span><span class="name">precision</span><span class="operator">=</span><span class="literal number integer">4</span><span class="punctuation">,</span><span class="name">suppress</span><span class="operator">=</span><span class="keyword constant">True</span><span class="punctuation">,</span><span class="name">floatmode</span><span class="operator">=</span><span class="literal string single">'fixed'</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double">** python test: llst&quot;</span><span class="punctuation">)</span>
-
-<span class="comment single"># set parameters</span>
-<span class="name">n</span> <span class="operator">=</span> <span class="literal number integer">3</span>
-<span class="name">m</span> <span class="operator">=</span> <span class="literal number integer">1</span>
-
-<span class="comment single">#  describe objective function</span>
-
-<span class="name">A_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
-<span class="name">A_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
-<span class="name">A_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">0</span><span class="punctuation">])</span>
-<span class="name">A_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
-<span class="name">A_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
-<span class="name">A_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
-<span class="name">b</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
-
-<span class="comment single">#  describe norm</span>
-
-<span class="name">S_type</span> <span class="operator">=</span> <span class="literal string single">'coordinate'</span>
-<span class="name">S_ne</span> <span class="operator">=</span> <span class="literal number integer">3</span>
-<span class="name">S_row</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
-<span class="name">S_col</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number integer">0</span><span class="punctuation">,</span><span class="literal number integer">1</span><span class="punctuation">,</span><span class="literal number integer">2</span><span class="punctuation">])</span>
-<span class="name">S_ptr</span> <span class="operator">=</span> <span class="keyword constant">None</span>
-<span class="name">S_val</span> <span class="operator">=</span> <span class="name">np</span><span class="operator">.</span><span class="name">array</span><span class="punctuation">([</span><span class="literal number float">1.0</span><span class="punctuation">,</span><span class="literal number float">2.0</span><span class="punctuation">,</span><span class="literal number float">1.0</span><span class="punctuation">])</span>
-
-<span class="comment single"># set trust-region radius</span>
-
-<span class="name">radius</span> <span class="operator">=</span> <span class="literal number float">0.1</span>
-
-<span class="comment single"># allocate internal data and set default options</span>
-<span class="name">options</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">initialize</span><span class="punctuation">()</span>
-
-<span class="comment single"># set some non-default options</span>
-<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'print_level'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal number integer">0</span>
-<span class="name">options</span><span class="punctuation">[</span><span class="literal string single">'definite_linear_solver'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="literal string single">'sytr '</span>
-<span class="comment single">#print(&quot;options:&quot;, options)</span>
-
-<span class="comment single"># load data (and optionally non-default options)</span>
-<span class="name">llst</span><span class="operator">.</span><span class="name">load</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">A_type</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_row</span><span class="punctuation">,</span> <span class="name">A_col</span><span class="punctuation">,</span> <span class="name">A_ptr</span><span class="punctuation">,</span> <span class="name">options</span><span class="punctuation">)</span>
-
-<span class="comment single"># find minimum of linear least-squares objective within the trust region</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 1&quot;</span><span class="punctuation">)</span>
-<span class="name">x</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span> <span class="name">b</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
-
-<span class="comment single"># get information</span>
-<span class="name">inform</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; ||r||: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'r_norm'</span><span class="punctuation">])</span>
-
-<span class="comment single"># load data (and optionally non-default options)</span>
-<span class="name">llst</span><span class="operator">.</span><span class="name">load_scaling</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">,</span> <span class="name">S_type</span><span class="punctuation">,</span> <span class="name">S_ne</span><span class="punctuation">,</span> <span class="name">S_row</span><span class="punctuation">,</span> <span class="name">S_col</span><span class="punctuation">,</span> <span class="name">S_ptr</span><span class="punctuation">)</span>
-
-<span class="comment single"># find minimum of linear least-squares objective within the trust region</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot;</span><span class="literal string escape">\n</span><span class="literal string double"> solve problem 2 with additional non-unit scaling&quot;</span><span class="punctuation">)</span>
-<span class="name">x</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">solve_problem</span><span class="punctuation">(</span><span class="name">m</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">,</span> <span class="name">radius</span><span class="punctuation">,</span> <span class="name">A_ne</span><span class="punctuation">,</span> <span class="name">A_val</span><span class="punctuation">,</span> <span class="name">b</span><span class="punctuation">,</span> <span class="name">S_ne</span><span class="punctuation">,</span> <span class="name">S_val</span><span class="punctuation">)</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; x:&quot;</span><span class="punctuation">,</span><span class="name">x</span><span class="punctuation">)</span>
-
-<span class="comment single"># get information</span>
-<span class="name">inform</span> <span class="operator">=</span> <span class="name">llst</span><span class="operator">.</span><span class="name">information</span><span class="punctuation">()</span>
-<span class="name builtin">print</span><span class="punctuation">(</span><span class="literal string double">&quot; ||r||: </span><span class="literal string interpol">%.4f</span><span class="literal string double">&quot;</span> <span class="operator">%</span> <span class="name">inform</span><span class="punctuation">[</span><span class="literal string single">'r_norm'</span><span class="punctuation">])</span>
-
-<span class="comment single"># deallocate internal data</span>
-
-<span class="name">llst</span><span class="operator">.</span><span class="name">terminate</span><span class="punctuation">()</span></code></pre>
-<p>This example code is available in $GALAHAD/src/llst/Python/test_llst.py .</p>
+<p>This example code is available in $GALAHAD/src/llsr/Python/test_llsr.py .</p>
 </section>
 </section>
 
@@ -1069,17 +994,17 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="llsr.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="glrt.html" title="previous page">
       <i class="fas fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">LLSR</p>
+          <p class="prev-next-title">GLRT</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="lstr.html" title="next page">
+  <a class='right-next' id="next-link" href="llst.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">LSTR</p>
+      <p class="prev-next-title">LLST</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -1136,7 +1061,7 @@ system solves (see <code class="docutils literal notranslate"><span class="pre">
 <div class="toc-item">
   
 <div class="tocsection sourcelink">
-    <a href="_sources/llst.rst.txt">
+    <a href="_sources/llsr.rst.txt">
         <i class="fas fa-file-alt"></i> Show Source
     </a>
 </div>
