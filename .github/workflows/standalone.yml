@@ -40,8 +40,14 @@ jobs:
             compiler: intel-llvm
             compiler_version: 2023.1
             cc_cmd: icx
-            fc_cmd: ifx
+            fc_cmd: ifort
             cxx_cmd: icpx
+          - os: macos-latest
+            compiler: clang
+            compiler_version: latest
+            cc_cmd: clang
+            fc_cmd: gfortran
+            cxx_cmd: clang++
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -60,21 +66,21 @@ jobs:
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      - name: Install GNU C and Fortran compilers
-        if: matrix.compiler == 'gnu'
+      - name: Install GNU compilers
+        if: matrix.compiler == 'gnu' || matrix.compiler == 'mvsc'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
-      - name: Install classic Intel C and C++ compilers
+      - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: intel-classic
           version: ${{ matrix.compiler_version }}
 
-      - name: Install nextgen Intel C and C++ compilers
+      - name: Install nextgen Intel compilers
         if: matrix.compiler == 'intel-llvm'
         uses: awvwgk/setup-fortran@main
         with:
