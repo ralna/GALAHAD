@@ -12,7 +12,7 @@ Regularization subproblems
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there nine packages designed to find a global
+optimization.  Currently there ten packages designed to find a global
 minimizer of a variety of regularized quadratic functions
 
 .. toctree::
@@ -25,6 +25,7 @@ minimizer of a variety of regularized quadratic functions
    DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization <dps>
    GLTR - global minization of a quadratic function within an ellipsoid using an iterative method <gltr>
    GLRT - global minization of a regularized quadratic function <glrt>
+   LLSR - global minization of a regularized linear least-squares objective using matrix factorizations <llsr>
    LLST - global minization of a linear least-squares objective within an ellipsoid using matrix factorizations <llst>
    LSTR - global minization of a linear least-squares objective within a sphere using an iterative method <lstr>
    LSRT - global minization of a regularized linear least-squares objective using an iterative method <lsrt>
