@@ -67,7 +67,7 @@ jobs:
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install GNU compilers
-        if: matrix.compiler == 'gnu' || matrix.compiler == 'mvsc'
+        if: matrix.compiler == 'gnu'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: gcc
