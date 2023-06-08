@@ -62,14 +62,14 @@ jobs:
           version: ${{ matrix.compiler_version }}
 
       - name: Install classic Intel C and C++ compilers
-        if: matrix.config.compiler == 'intel'
+        if: matrix.compiler == 'intel'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: intel-classic
           version: ${{ matrix.compiler_version }}
 
       - name: Install nextgen Intel C and C++ compilers
-        if: matrix.config.compiler == 'intel-llvm'
+        if: matrix.compiler == 'intel-llvm'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: intel
