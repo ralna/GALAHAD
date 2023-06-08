@@ -73,6 +73,13 @@ jobs:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
+      - name: Install gfortran for builds with MVSC and Clang
+        if: matrix.compiler == 'mvsc' || matrix.compiler == 'clang'
+        uses: awvwgk/setup-fortran@main
+        with:
+          compiler: gcc
+          version: 12
+
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
         uses: awvwgk/setup-fortran@main
