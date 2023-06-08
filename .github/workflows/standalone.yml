@@ -40,7 +40,7 @@ jobs:
             compiler: clang
             compiler_version: 14
             cc_cmd: clang
-            fc_cmd: gfortran
+            fc_cmd: gfortran-13
             cxx_cmd: clang++
     runs-on: ${{ matrix.os }}
     steps:
