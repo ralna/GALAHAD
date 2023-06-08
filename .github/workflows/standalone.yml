@@ -18,6 +18,12 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
+          - os: windows-latest
+            compiler: mvsc
+            compiler_version: latest
+            cc_cmd: cl
+            fc_cmd: gfortran
+            cxx_cmd: cl
           - os: ubuntu-latest
             compiler: intel
             compiler_version: 2021.9
@@ -34,7 +40,7 @@ jobs:
             compiler: intel-llvm
             compiler_version: 2023.1
             cc_cmd: icx
-            fc_cmd: ifort
+            fc_cmd: ifx
             cxx_cmd: icpx
     runs-on: ${{ matrix.os }}
     steps:
