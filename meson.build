@@ -106,10 +106,13 @@ lm = cc.find_library('m', required : false)
 
 # OpenMP
 if fc.get_id() == 'nagfor'
+  add_global_arguments('-openmp', language : 'fortran')
   add_global_link_arguments('-openmp', language : 'fortran')
 elif fc.get_id() == 'gcc'
+  add_global_arguments('-fopenmp', language : 'fortran')
   add_global_link_arguments('-fopenmp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
+  add_global_arguments('-qopenmp', language : 'fortran')
   add_global_link_arguments('-qopenmp', language : 'fortran')
 endif
 
