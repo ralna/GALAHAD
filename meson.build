@@ -116,13 +116,11 @@ elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
   add_global_link_arguments('-qopenmp', language : 'fortran')
 endif
 
-if cxx.get_id() == 'gcc'
+if cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
   add_global_arguments('-fopenmp', language : 'cpp')
+elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm' or cxx.get_id() == 'intel-llvm-cl'
+  add_global_arguments('-qopenmp', language : 'cpp')
 endif
-# --- FIX ME ---
-# if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
-#   add_global_arguments('-qopenmp', language : 'cpp')
-# endif
 
 libmpi = dependency('mpi', language : 'fortran', required : false)
 libhwloc = dependency('hwloc', required : false)
