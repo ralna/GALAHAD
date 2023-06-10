@@ -122,10 +122,6 @@ elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl' or cxx.get_id() == 'i
   add_global_arguments('-qopenmp', language : 'cpp')
 endif
 
-if fc.get_id() == 'gcc' and fc.version().version_compare('>=10.0')
-  add_global_arguments('-fallow-argument-mismatch', language : 'fortran')
-endif
-
 libmpi = dependency('mpi', language : 'fortran', required : false)
 libhwloc = dependency('hwloc', required : false)
 

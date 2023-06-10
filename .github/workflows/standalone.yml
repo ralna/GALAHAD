@@ -67,11 +67,11 @@ jobs:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
-      - name: Install gfortran for Mac for the build with Clang compilers
+      - name: Install gfortran / OpenMP for the build on Mac with Clang compilers
         if: matrix.compiler == 'clang'
         shell: bash
         run: |
-          brew install gfortran
+          brew install gfortran llvm libomp
 
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
