@@ -7,34 +7,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>BQP &#8212; GALAHAD Python Interface 1.0 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -51,6 +55,10 @@
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
 
   
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
   <label class="overlay overlay-primary" for="__primary"></label>
 
@@ -64,7 +72,7 @@
     <div class="search-button__search-container">
       
 <form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
@@ -74,7 +82,7 @@
   
   <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
+      <span class="fa-solid fa-bars"></span>
   </label>
   <div id="navbar-start">
     
@@ -112,39 +120,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="uco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
                         Unconstrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="bco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
                         Bound-constrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="ls.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
                         Least-Squares
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="lp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
                         Linear Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="qp.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
                         Quadratic Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -152,32 +160,32 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="reg.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
                         Regularization subproblems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="sys.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
                         Linear Systems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="go.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="auxiliary.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
                         Auxiliary Procedures
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -189,19 +197,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -214,15 +224,17 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
+      <span class="fa-solid fa-outdent"></span>
   </label>
   
 
@@ -248,39 +260,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="uco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
                         Unconstrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="bco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
                         Bound-constrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="ls.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
                         Least-Squares
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="lp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
                         Linear Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="qp.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
                         Quadratic Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -288,32 +300,32 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="reg.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
                         Regularization subproblems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="sys.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
                         Linear Systems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="go.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="auxiliary.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
                         Auxiliary Procedures
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -330,11 +342,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -353,57 +365,17 @@
     Section Navigation
   </p>
   <div class="bd-toc-item navbar-nav">
-    <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contents
- </span>
-</p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   BQP - bound-constrained quadratic programming using a preconditioned, projected-gradient method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="bqpb.html">
-   BQPB - bound-constrained quadratic programming using an interior-point method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cqp.html">
-   CQP - convex quadratic programming using an interior-point method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="cro.html">
-   CRO - crossover from an interior-point to basic solution for convex quadratic programming
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="dqp.html">
-   DQP - convex quadratic programming using a dual active-set method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="eqp.html">
-   EQP - equality-constrained quadratic programming using an iterative method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="lsqp.html">
-   LSQP - linear or separable convex quadratic programming using an interior-point trust-region method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="qpa.html">
-   QPA - non-convex quadratic programming using an active-set method
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="qpb.html">
-   QPB - non-convex quadratic programming using an interior-point method
-  </a>
- </li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">BQP - bound-constrained quadratic programming using a preconditioned, projected-gradient method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bqpb.html">BQPB - bound-constrained quadratic programming using an interior-point method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cqp.html">CQP - convex quadratic programming using an interior-point method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cro.html">CRO - crossover from an interior-point to basic solution for convex quadratic programming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dqp.html">DQP - convex quadratic programming using a dual active-set method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eqp.html">EQP - equality-constrained quadratic programming using an iterative method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lsqp.html">LSQP - linear or separable convex quadratic programming using an interior-point trust-region method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qpa.html">QPA - non-convex quadratic programming using an active-set method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qpb.html">QPB - non-convex quadratic programming using an interior-point method</a></li>
 </ul>
 
   </div>
@@ -418,8 +390,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -434,67 +409,115 @@
               
   <section id="module-galahad.bqp">
 <span id="bqp"></span><h1>BQP<a class="headerlink" href="#module-galahad.bqp" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">bqp</span></code> package uses a <strong>preconditioned, projected-gradient method</strong> to
-solve a given <strong>bound-constrained convex quadratic program</strong>.
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">bqpb</span></code> package uses a <strong>primal-dual interior-point method</strong> to solve a
+given <strong>bound-constrained convex quadratic program</strong>.
 The aim is to minimize the quadratic objective function
 <div class="math notranslate nohighlight">
 \[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
+
+or the <strong>shifted-least-distance</strong> objective function
+<div class="math notranslate nohighlight">
+\[s(x) = f + g^T x + \frac{1}{2} \sum_{j=1}^n w_j^2 (x_j - x_j^0)^2,\]</div>
 
 subject to the simple bounds
 <div class="math notranslate nohighlight">
 \[x_l \leq x \leq x_u,\]</div>
 
 where <span class="math notranslate nohighlight">\(H\)</span> is a given <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric postive-semi-definite matrix,
-<span class="math notranslate nohighlight">\(g\)</span> is a vector, <span class="math notranslate nohighlight">\(f\)</span> is a scalar, and any of the components
+<span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(x^0\)</span> are vectors, <span class="math notranslate nohighlight">\(f\)</span> is a scalar, and any of the components
 of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
-<p>See Section 4 of $GALAHAD/doc/bqp.pdf for a brief description of the
-method employed and other details.</p>
-<section id="terminolgy">
-<h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
+<p>See Section 4 of $GALAHAD/doc/bqpb.pdf for additional details.</p>
+</section>
+<section id="terminology">
+<h2>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h2>
 <p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
 the <strong>primal optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[x_l \leq x \leq x_u,\]</div>
+\[x_l \leq x \leq x_u,\;\;\mbox{(1)}\]</div>
 
 the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[H x + g = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+\[H x + g = z,\;\;\mbox{and}\;\; z = z_l + z_u,\;\;\mbox{(2a)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\;\;\mbox{(2b)}\]</div>
 
 and the <strong>complementary slackness conditions</strong>
 <div class="math notranslate nohighlight">
-\[(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\]</div>
+\[(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(3)}\]</div>
 
 where the vector <span class="math notranslate nohighlight">\(z\)</span> is known as the <strong>dual variables</strong> for the bounds,
 and where the vector inequalities hold component-wise.</p>
+<p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
+and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
 </section>
 <section id="method">
 <h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
-<p>Projected-gradient methods iterate towards a point
-that satisfies these conditions by ultimately aiming to satisfy
-<span class="math notranslate nohighlight">\(H x + g = z\)</span> and <span class="math notranslate nohighlight">\(z = z_l + z_u\)</span>, while satifying the remaining
-optimality conditions at each stage. Appropriate norms of the amounts by
-which the optimality conditions fail to be satisfied are known as the
-primal and dual infeasibility, and the violation of complementary slackness,
-respectively.</p>
-<p>The method is iterative. Each iteration proceeds in two stages.
-Firstly, the so-called generalized Cauchy point for the quadratic
-objective is found.  (The purpose of this point is to ensure that the
-algorithm converges and that the set of bounds which are satisfied as
-equations at the solution is rapidly identified.)  Thereafter an
-improvement to the objective is sought using either a
-direct-matrix or truncated conjugate-gradient algorithm.</p>
+<p>Primal-dual interior point methods iterate towards a point that satisfies
+these optimality conditions by ultimately aiming to satisfy
+(2a) and (3), while ensuring that (1) and (2b) are
+satisfied as strict inequalities at each stage.
+Appropriate norms of the amounts by
+which (2a) and (3) fail to be satisfied are known as the
+dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that (1) and (2b) are satisfied as strict
+inequalities gives such methods their other title, namely
+interior-point methods.</p>
+<p>The method aims at each stage to reduce the overall violation of (2a) and (3),
+rather than reducing each of the terms individually. Given an estimate
+<span class="math notranslate nohighlight">\(v = (x, \; z, \; z^{l}, \; z^{u})\)</span>
+of the primal-dual variables, a correction
+<span class="math notranslate nohighlight">\(\Delta v = \Delta (x, \;z,\;z^{l} ,\;z^{u} )\)</span>
+is obtained by solving a suitable linear system of Newton equations for the
+nonlinear systems (2a) and a parameterized <a href="#id1"><span class="problematic" id="id2">``</span></a>residual
+trajectory’’ perturbation of (3); residual trajectories
+proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
+An improved estimate <span class="math notranslate nohighlight">\(v + \alpha \Delta v\)</span>
+is then used, where the step-size <span class="math notranslate nohighlight">\(\alpha\)</span>
+is chosen as close to 1.0 as possible while ensuring both that
+(1) and (2b) continue to hold and that the individual components
+which make up the complementary slackness (3) do not deviate too significantly
+from their average value. The parameter that controls the perturbation
+of (3) is ultimately driven to zero.</p>
+<p>The Newton equations are solved  by applying the matrix factorization
+package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, but there are options
+to factorize the matrix as a whole (the so-called “augmented system”
+approach), to perform a block elimination first (the “Schur-complement”
+approach), or to let the method itself decide which of the two
+previous options is more appropriate.
+The “Schur-complement” approach is usually to be preferred when all the
+weights are nonzero or when every variable is bounded (at least one side).</p>
+<p>The package is actually just a front-end to the more-sophisticated
+package <code class="docutils literal notranslate"><span class="pre">CQP</span></code> that saves users from setting unnecessary arguments.</p>
 </section>
-<section id="reference">
-<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
-<p>This is a specialised version of the method presented in</p>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The basic algorithm is a generalisation of those of</p>
 <blockquote>
-<div><p>A. R. Conn, N. I. M. Gould and Ph. L. Toint,
-Global convergence of a class of trust region algorithms
-for optimization with simple bounds.
-<em>SIAM Journal on Numerical Analysis</em> <strong>25</strong> (1988) 433-460.</p>
+<div><p>Y. Zhang,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On the convergence of a class of infeasible interior-point methods
+for the horizontal linear complementarity problem’’.
+<em>SIAM J. Optimization</em> <strong>4(1)</strong> (1994) 208-227,</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>G. Zhao and J. Sun,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>On the rate of local convergence of high-order infeasible
+path-following algorithms for <span class="math notranslate nohighlight">\(P_*\)</span> linear complementarity problems’’.
+<em>Computational Optimization and Applications</em> <a href="#id7"><span class="problematic" id="id8">**</span></a>14(1)* (1999) 293-307,</p>
+</div></blockquote>
+<p>with many enhancements described by</p>
+<blockquote>
+<div><p>N. I. M. Gould, D. Orban and D. P. Robinson,
+<a href="#id9"><span class="problematic" id="id10">``</span></a>Trajectory-following methods for large-scale degenerate
+convex quadratic programming’’,
+<em>Mathematical Programming Computation</em> <strong>5(2)</strong> (2013) 113-142.</p>
 </div></blockquote>
 </section>
 <section id="matrix-storage">
@@ -952,7 +975,7 @@ error occurred.</p>
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
   <a class='left-prev' id="prev-link" href="qp.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
           <p class="prev-next-title">Quadratic Programming</p>
@@ -963,7 +986,7 @@ error occurred.</p>
       <p class="prev-next-subtitle">next</p>
       <p class="prev-next-title">BQPB</p>
   </div>
-  <i class="fas fa-angle-right"></i>
+  <i class="fa-solid fa-angle-right"></i>
   </a>
 </div>
             </footer>
@@ -977,13 +1000,18 @@ error occurred.</p>
 <div class="toc-item">
   
 <div class="tocsection onthispage">
-    <i class="fas fa-list"></i> On this page
+    <i class="fa-solid fa-list"></i> On this page
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#terminolgy">
-   terminolgy
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminology">
+   terminology
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -992,8 +1020,8 @@ error occurred.</p>
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#reference">
-   reference
+  <a class="reference internal nav-link" href="#references">
+   references
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -1005,6 +1033,44 @@ error occurred.</p>
   <a class="reference internal nav-link" href="#functions">
    functions
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.bqp.bqp.initialize">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       bqp.initialize()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.bqp.bqp.load">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       bqp.load()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.bqp.bqp.solve_qp">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       bqp.solve_qp()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.bqp.bqp.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       bqp.terminate()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#example-code">
@@ -1018,13 +1084,18 @@ error occurred.</p>
 
 <div class="toc-item">
   
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
 </div>
 
 <div class="toc-item">
   
 <div class="tocsection sourcelink">
     <a href="_sources/bqp.rst.txt">
-        <i class="fas fa-file-alt"></i> Show Source
+        <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
 </div>
 
@@ -1047,7 +1118,8 @@ error occurred.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -1062,9 +1134,19 @@ error occurred.</p>
   </div>
   
   <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

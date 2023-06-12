@@ -19,11 +19,15 @@ else
   exit 1
 fi
 
+export DOXYREST_DIR=/usr/local/src/doxyrest
+export DOXYREST_FRAME_DIR=$DOXYREST_DIR/frame
+
 #  make sure that required subdirectories exist
 
 mkdir -p $package
 mkdir -p $package/include $package/source 
-#mkdir -p $GALAHAD/html/C/$package
+mkdir -p $package/xml-dir $package/rst-dir $package/html-dir
+#mkdir -p $GALAHAD/html/C_doxy/$package
 
 #  build the html documentation
 
@@ -45,10 +49,40 @@ ln -fs $PWD/conf.py $package/.
 ln -fs $PWD/index.rst $package/.
 
 ( cd ./$package ; \
+  echo "generating xml ..." ; \
   doxygen ../Doxyrestfile_html ; \
-  doxyrest -c ../doxyrest-config.lua ; \
-  doxyrest -v )
+  echo "generating rst ..." ; \
+  doxyrest -c ../doxyrest-config.lua -F $DOXYREST_FRAME_DIR/lua \
+    -F $DOXYREST_FRAME_DIR/common -F $DOXYREST_FRAME_DIR/cfamily ; \
+  doxyrest -v ; \
+#  echo "generating html ..." ; \
+#  sphinx-build -b html rst-dir html-dir -c ./ ; \
+#  sphinx-build -b html rst-dir html-dir -c ./ ; \
 
-#cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  sed "s/xxx/$package/gI" $GALAHAD/doc/C/rst-dir/template > \
+                          $GALAHAD/doc/C/rst-dir/$package.rst
+  sed -n '/Call order/,$p' rst-dir/page_index.rst > 1
+  sed '/See Section/,$d' < 1 >> $GALAHAD/doc/C/rst-dir/$package.rst
+
+  sed "s/xxx/$package/gI" $GALAHAD/doc/C/rst-dir/template_control > 1
+  cat 1 rst-dir/struct_${package}_control_type.rst > \
+                       $GALAHAD/doc/C/rst-dir/struct_${package}_control_type.rst
+
+  sed "s/xxx/$package/gI" $GALAHAD/doc/C/rst-dir/template_time > 1
+  cat 1 rst-dir/struct_${package}_time_type.rst > \
+                       $GALAHAD/doc/C/rst-dir/struct_${package}_time_type.rst
+
+  sed "s/xxx/$package/gI" $GALAHAD/doc/C/rst-dir/template_inform > 1
+  cat 1 rst-dir/struct_${package}_inform_type.rst > \
+                       $GALAHAD/doc/C/rst-dir/struct_${package}_inform_type.rst
+
+  sed "s/xxx/$package/gI" $GALAHAD/doc/C/rst-dir/template_functions > 1
+  cat 1 rst-dir/global.rst > $GALAHAD/doc/C/rst-dir/${package}_functions.rst
+
+  rm 1
+
+  echo "generation finished !!" )
+
+#cp $GALAHAD/html/C_doxy/$package/index.html $GALAHAD/html/C_doxy/$package/$package.html
 #rm $package/galahad_$package.h
 
