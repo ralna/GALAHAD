@@ -7,34 +7,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>NLS &#8212; GALAHAD Python Interface 1.0 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -51,6 +55,10 @@
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
 
   
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
   <label class="overlay overlay-primary" for="__primary"></label>
 
@@ -64,7 +72,7 @@
     <div class="search-button__search-container">
       
 <form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
@@ -74,7 +82,7 @@
   
   <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
+      <span class="fa-solid fa-bars"></span>
   </label>
   <div id="navbar-start">
     
@@ -112,39 +120,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="uco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
                         Unconstrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="bco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
                         Bound-constrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="ls.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
                         Least-Squares
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="lp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
                         Linear Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="qp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
                         Quadratic Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -152,32 +160,32 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="reg.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
                         Regularization subproblems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="sys.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
                         Linear Systems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="go.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="auxiliary.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
                         Auxiliary Procedures
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -189,19 +197,21 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -214,15 +224,17 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
+      <span class="fa-solid fa-outdent"></span>
   </label>
   
 
@@ -248,39 +260,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="uco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
                         Unconstrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="bco.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
                         Bound-constrained Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="ls.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
                         Least-Squares
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="lp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
                         Linear Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="qp.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
                         Quadratic Programming
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -288,32 +300,32 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="reg.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
                         Regularization subproblems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="sys.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
                         Linear Systems
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="go.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
                         Global Optimization
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="auxiliary.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
                         Auxiliary Procedures
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -330,11 +342,11 @@
     <div class="sidebar-header-items__end">
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
       </div>
       
       <div class="navbar-end-item">
@@ -353,22 +365,10 @@
     Section Navigation
   </p>
   <div class="bd-toc-item navbar-nav">
-    <p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Contents
- </span>
-</p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="blls.html">
-   BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   NLS - unconstrained local nonlinear least-squares using a regularization method
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="blls.html">BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
 </ul>
 
   </div>
@@ -383,8 +383,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -399,174 +402,157 @@
               
   <section id="module-galahad.nls">
 <span id="nls"></span><h1>NLS<a class="headerlink" href="#module-galahad.nls" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">nls</span></code> package uses a regularization method to find a (local) unconstrained
-minimizer of a differentiable weighted sum-of-squares objective function
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">cqp</span></code> package uses a <strong>primal-dual interior-point method</strong> to solve a
+given <strong>convex quadratic program</strong>.
+The aim is to minimize the quadratic objective function
 <div class="math notranslate nohighlight">
-\[f(x) :=
-\frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv \frac{1}{2} \|c(x)\|^2_W\]</div>
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
 
-of many variables <span class="math notranslate nohighlight">\(x\)</span> involving positive weights <span class="math notranslate nohighlight">\(w_i\)</span>, <span class="math notranslate nohighlight">\(i=1,\ldots,m\)</span>.
+or the <strong>shifted-least-distance</strong> objective function
+<div class="math notranslate nohighlight">
+\[s(x) = f + g^T x + \frac{1}{2} \sum_{j=1}^n w_j^2 (x_j - x_j^0)^2,\]</div>
+
+subject to the general linear constraints and simple bounds
+<div class="math notranslate nohighlight">
+\[c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,\]</div>
+
+where <span class="math notranslate nohighlight">\(H\)</span> and <span class="math notranslate nohighlight">\(A\)</span> are, respectively, given
+<span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric postive-semi-definite and <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrices,
+<span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(x^0\)</span> are vectors, <span class="math notranslate nohighlight">\(f\)</span> is a scalar, and any of the components
+of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
-regularization subproblems, and is most suitable for large problems.
-First derivatives of the residual function <span class="math notranslate nohighlight">\(c(x)\)</span> are required, and if
-second derivatives of the <span class="math notranslate nohighlight">\(c_i(x)\)</span> can be calculated, they may be exploited.</p>
-<p>See Section 4 of $GALAHAD/doc/nls.pdf for additional details.</p>
+regularization subproblems, and is most suitable for problems
+involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/cqp.pdf for additional details.</p>
+</section>
 <section id="terminology">
 <h2>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h2>
-<p>The <strong>gradient</strong> <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span> of a function <span class="math notranslate nohighlight">\(f(x)\)</span> is the vector
-whose <span class="math notranslate nohighlight">\(i\)</span>-th component is <span class="math notranslate nohighlight">\(\partial f(x)/\partial x_i\)</span>.
-The <strong>Hessian</strong> <span class="math notranslate nohighlight">\(\nabla_{xx} f(x)\)</span> of <span class="math notranslate nohighlight">\(f(x)\)</span> is the symmetric matrix
-whose <span class="math notranslate nohighlight">\(i,j\)</span>-th entry is <span class="math notranslate nohighlight">\(\partial^2 f(x)/\partial x_i \partial x_j\)</span>.
-The Hessian is <strong>sparse</strong> if a significant and useful proportion of the
-entries are universally zero.</p>
-<p>The algorithm used by the package is iterative. From the current best estimate
-of the minimizer <span class="math notranslate nohighlight">\(x_k\)</span>, a trial improved point <span class="math notranslate nohighlight">\(x_k + s_k\)</span> is sought.
-The correction <span class="math notranslate nohighlight">\(s_k\)</span> is chosen to improve a model <span class="math notranslate nohighlight">\(m_k(s)\)</span> of
-the objective function <span class="math notranslate nohighlight">\(f(x_k+s)\)</span> built around
-<span class="math notranslate nohighlight">\(x_k\)</span>. The model is the sum of two basic components,
-a suitable approximation <span class="math notranslate nohighlight">\(t_k(s)\)</span> of <span class="math notranslate nohighlight">\(f(x_k+s)\)</span>,
-%another approximation of <span class="math notranslate nohighlight">\((\rho/r) \|x_k+s\|_r^r\)</span> (if <span class="math notranslate nohighlight">\(\rho &gt; 0\)</span>),
-and a regularization term <span class="math notranslate nohighlight">\((\sigma_k/p) \|s\|_{S_k}^p\)</span>
-involving a weight <span class="math notranslate nohighlight">\(\sigma_k\)</span>, power <span class="math notranslate nohighlight">\(p\)</span> and
-a norm <span class="math notranslate nohighlight">\(\|s\|_{S_k} := \sqrt{s^T S_k s}\)</span> for a given positive
-definite scaling matrix <span class="math notranslate nohighlight">\(S_k\)</span> that is included to prevent large
-corrections. The weight  <span class="math notranslate nohighlight">\(\sigma_k\)</span> is adjusted as the algorithm
-progresses to  ensure convergence.</p>
-<p>The model <span class="math notranslate nohighlight">\(t_k(s)\)</span> is a truncated Taylor-series approximation, and this
-relies on being able to compute or estimate derivatives of <span class="math notranslate nohighlight">\(c(x)\)</span>.
-Various models are provided, and each has different derivative requirements.
-We denote the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> residual <strong>Jacobian</strong>
-<span class="math notranslate nohighlight">\(J(x) \equiv \nabla_x c(x)\)</span> as the matrix  whose <span class="math notranslate nohighlight">\(i,j\)</span>-th component
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
+the <strong>primal optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[J(x)_{i,j} := \partial c_i(x) / \partial x_j \;\;
-\mbox{for $i=1,\ldots,m$ and $j=1,\ldots,n$.}\]</div>
+\[A x = c\;\;\mbox{(1a)}\]</div>
 
-For a given <span class="math notranslate nohighlight">\(m\)</span>-vector <span class="math notranslate nohighlight">\(y\)</span>, the
-<strong>weighted-residual Hessian</strong> is the sum
+and
 <div class="math notranslate nohighlight">
-\[H(x,y) := \sum_{\ell=1}^m y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 c_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=1,\ldots,n$}\]</div>
+\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(1b)}\]</div>
 
-is the Hessian of <span class="math notranslate nohighlight">\(c_\ell(x)\)</span>.
-Finally, for a given vector <span class="math notranslate nohighlight">\(v\)</span>, we define
-the <strong>residual-Hessians-vector product</strong> matrix
+the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[P(x,v) := (H_1(x) v, \ldots, H_m(x) v).\]</div>
+\[H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\;
+z = z_l + z_u,\;\;\mbox{(2a)}\]</div>
 
-The models <span class="math notranslate nohighlight">\(t_k(s)\)</span> provided are,</p>
-<ol class="arabic">
-<li><p>the <strong>first-order Taylor</strong> approximation
-<span class="math notranslate nohighlight">\(f(x_k) + g(x_k)^T s\)</span>, where <span class="math notranslate nohighlight">\(g(x) = J^T(x) W c(x)\)</span>,</p></li>
-<li><p>a <strong>barely second-order</strong> approximation
-<span class="math notranslate nohighlight">\(f(x_k) + g(x_k)^T s + \frac{1}{2} s^T W s\)</span>,</p></li>
-<li><p>the <strong>Gauss-Newton</strong> approximation
-<span class="math notranslate nohighlight">\(\frac{1}{2} \| c(x_k) + J(x_k) s\|^2_W\)</span>,</p></li>
-<li><p>the <strong>Newton (second-order Taylor)</strong> approximation</p>
-<p><span class="math notranslate nohighlight">\(f(x_k) + g(x_k)^T s + \frac{1}{2} s^T [ J^T(x_k) W J(x_k) + H(x_k,W c(x_k))] s\)</span>, and</p>
-</li>
-<li><p>the <strong>tensor Gauss-Newton</strong> approximation
-<span class="math notranslate nohighlight">\(\frac{1}{2} \| c(x_k) + J(x_k) s + \frac{1}{2} s^T \cdot P(x_k,s) \|^2_W\)</span>,
-where the <span class="math notranslate nohighlight">\(i\)</span>-th component of <span class="math notranslate nohighlight">\(s^T \cdot P(x_k,s)\)</span> is
-shorthand for the scalar <span class="math notranslate nohighlight">\(s^T H_i(x_k) s\)</span>,
-where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix of weights
-<span class="math notranslate nohighlight">\(w_i\)</span>, <span class="math notranslate nohighlight">\(i = 1, \ldots m\)</span>0.</p></li>
-</ol>
+and
+<div class="math notranslate nohighlight">
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\;
+z_u \leq 0,\;\;\mbox{(2b)}\]</div>
+
+and the <strong>complementary slackness conditions</strong>
+<div class="math notranslate nohighlight">
+\[( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(3)}\]</div>
+
+where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints, and the <strong>dual variables</strong> for the bounds,
+respectively, and where the vector inequalities hold component-wise.</p>
+<p>In the shifted-least-distance case, <span class="math notranslate nohighlight">\(g\)</span> is shifted by <span class="math notranslate nohighlight">\(-W^2 x^0\)</span>,
+and <span class="math notranslate nohighlight">\(H = W^2\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
 </section>
 <section id="method">
 <h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
-<p>An adaptive regularization method is used.
-In this, an improvement to a current
-estimate of the required minimizer, <span class="math notranslate nohighlight">\(x_k\)</span> is sought by computing a
-step <span class="math notranslate nohighlight">\(s_k\)</span>. The step is chosen to approximately minimize a model <span class="math notranslate nohighlight">\(t_k(s)\)</span>
-of <span class="math notranslate nohighlight">\(f_{\rho,r}(x_k+s)\)</span>
-that includes a weighted regularization term
-<span class="math notranslate nohighlight">\(\frac{\sigma_k}{p} \|s\|_{S_k}^p\)</span>
-for some specified positive weight <span class="math notranslate nohighlight">\(\sigma_k\)</span>. The quality of the
-resulting step <span class="math notranslate nohighlight">\(s_k\)</span> is assessed by computing the “ratio”
-<span class="math notranslate nohighlight">\((f(x_k) - f(x_k + s_k))/(t_k(0) - t_k(s_k))\)</span>.
-The step is deemed to have succeeded if the ratio exceeds a given <span class="math notranslate nohighlight">\(\eta_s &gt; 0\)</span>,
-and in this case <span class="math notranslate nohighlight">\(x_{k+1} = x_k + s_k\)</span>. Otherwise
-<span class="math notranslate nohighlight">\(x_{k+1} = x_k\)</span>, and the weight is increased by powers of a given
-increase factor up to a given limit. If the ratio is larger than
-<span class="math notranslate nohighlight">\(\eta_v \geq \eta_d\)</span>, the weight will be decreased by powers of a given
-decrease factor again up to a given limit. The method will terminate
-as soon as <span class="math notranslate nohighlight">\(f(x_k)\)</span> or
-<span class="math notranslate nohighlight">\(\|\nabla_x f(x_k)\|\)</span> is smaller than a specified value.</p>
-<p>A choice of linear, quadratic or quartic models <span class="math notranslate nohighlight">\(t_k(s)\)</span> is available
-(see the previous section), and normally a two-norm regularization will
-be used, but this may change if preconditioning is employed.</p>
-<p>If linear or quadratic models are employed, an appropriate,
-approximate model minimizer is found using either a direct approach
-involving factorization of a shift of the model Hessian <span class="math notranslate nohighlight">\(B_k\)</span> or an
-iterative (conjugate-gradient/Lanczos) approach based on approximations
-to the required solution from a so-called Krlov subspace. The direct
-approach is based on the knowledge that the required solution
-satisfies the linear system of equations <span class="math notranslate nohighlight">\((B_k + \lambda_k I) s_k
-= - \nabla_x f(x_k)\)</span> involving a scalar Lagrange multiplier <span class="math notranslate nohighlight">\(\lambda_k\)</span>.
-This multiplier is found by uni-variate root finding, using a safeguarded
-Newton-like process, by <code class="docutils literal notranslate"><span class="pre">RQS</span></code>. The iterative approach
-uses <code class="docutils literal notranslate"><span class="pre">GLRT</span></code>, and is best accelerated by preconditioning with
-good approximations to the Hessian of the model using <code class="docutils literal notranslate"><span class="pre">PSLS</span></code>. The
-iterative approach has the advantage that only Hessian matrix-vector products
-are required, and thus the Hessian <span class="math notranslate nohighlight">\(B_k\)</span> is not required explicitly.
-However when factorizations of the Hessian are possible, the direct approach
-is often more efficient.</p>
-<p>When a quartic model is used, the model is itself of least-squares form,
-and the package calls itself recursively to approximately minimize its
-model. The quartic model often gives a better approximation, but at the
-cost of more involved derivative requirements.</p>
+<p>Primal-dual interior point methods iterate towards a point that satisfies
+these optimality conditions by ultimately aiming to satisfy
+(1a), (2a) and (3), while ensuring that (1b) and (2b) are
+satisfied as strict inequalities at each stage.
+Appropriate norms of the amounts by
+which (1a), (2a) and (3) fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that (1b) and (2b) are satisfied as strict
+inequalities gives such methods their other title, namely
+interior-point methods.</p>
+<p>The method aims at each stage to reduce the
+overall violation of (1a), (2a) and (3),
+rather than reducing each of the terms individually. Given an estimate
+<span class="math notranslate nohighlight">\(v = (x, \; c, \; y, \; y^{l}, \; y^{u}, \; z, \; z^{l}, \; z^{u})\)</span>
+of the primal-dual variables, a correction
+<span class="math notranslate nohighlight">\(\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \;
+y^{u} ,\;z,\;z^{l} ,\;z^{u} )\)</span>
+is obtained by solving a suitable linear system of Newton equations for the
+nonlinear systems (1a), (2a) and a parameterized <a href="#id1"><span class="problematic" id="id2">``</span></a>residual
+trajectory’’ perturbation of (3); residual trajectories
+proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
+An improved estimate <span class="math notranslate nohighlight">\(v + \alpha \Delta v\)</span>
+is then used, where the step-size <span class="math notranslate nohighlight">\(\alpha\)</span>
+is chosen as close to 1.0 as possible while ensuring both that
+(1b) and (2b) continue to hold and that the individual components
+which make up the complementary slackness
+(3) do not deviate too significantly
+from their average value. The parameter that controls the perturbation
+of (3) is ultimately driven to zero.</p>
+<p>The Newton equations are solved  by applying the matrix factorization
+package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, but there are options
+to factorize the matrix as a whole (the so-called “augmented system”
+approach), to perform a block elimination first (the “Schur-complement”
+approach), or to let the method itself decide which of the two
+previous options is more appropriate.
+The “Schur-complement” approach is usually to be preferred when all the
+weights are nonzero or when every variable is bounded (at least one side),
+but may be inefficient if any of the columns of <span class="math notranslate nohighlight">\(A\)</span> is too dense.</p>
+<p>Optionally, the problem may be pre-processed temporarily to eliminate dependent
+constraints using the package <code class="docutils literal notranslate"><span class="pre">FDC</span></code>. This may improve the
+performance of the subsequent iteration.</p>
 </section>
 <section id="references">
 <h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<p>The generic adaptive cubic regularization method is described in detail in</p>
+<p>The basic algorithm is a generalisation of those of</p>
 <blockquote>
-<div><p>C. Cartis,  N. I. M. Gould and Ph. L. Toint,
-<a href="#id1"><span class="problematic" id="id2">``</span></a>Adaptive cubic regularisation methods for unconstrained optimization.
-Part I: motivation, convergence and numerical results’’
-<em>Mathematical Programming</em> <strong>127(2)</strong> (2011) 245–295,</p>
+<div><p>Y. Zhang,
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On the convergence of a class of infeasible interior-point methods
+for the horizontal linear complementarity problem’’.
+<em>SIAM J. Optimization</em> <strong>4(1)</strong> (1994) 208-227,</p>
 </div></blockquote>
-<p>and uses <a href="#id3"><span class="problematic" id="id4">``</span></a>tricks’’ as suggested in</p>
+<p>and</p>
 <blockquote>
-<div><p>N. I. M. Gould, M. Porcelli and Ph. L. Toint,
-<a href="#id5"><span class="problematic" id="id6">``</span></a>Updating the regularization parameter in the adaptive cubic regularization
-algorithm’’.
-<em>Computational Optimization and Applications</em>
-<strong>53(1)</strong> (2012) 1–22.</p>
+<div><p>G. Zhao and J. Sun,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>On the rate of local convergence of high-order infeasible
+path-following algorithms for <span class="math notranslate nohighlight">\(P_*\)</span> linear complementarity problems’’.
+<em>Computational Optimization and Applications</em> <a href="#id7"><span class="problematic" id="id8">**</span></a>14(1)* (1999) 293-307,</p>
 </div></blockquote>
-<p>The specific methods employed here are discussed in</p>
+<p>with many enhancements described by</p>
 <blockquote>
-<div><p>N. I. M. Gould, J. A. Scott and T. Rees,
-<a href="#id7"><span class="problematic" id="id8">``</span></a>Convergence and evaluation-complexity analysis of a regularized
-tensor-Newton method for solving nonlinear least-squares problems’’.
-<em>Computational Optimization and Applications</em>
-<strong>73(1)</strong> (2019) 1–35.</p>
+<div><p>N. I. M. Gould, D. Orban and D. P. Robinson,
+<a href="#id9"><span class="problematic" id="id10">``</span></a>Trajectory-following methods for large-scale degenerate
+convex quadratic programming’’,
+<em>Mathematical Programming Computation</em> <strong>5(2)</strong> (2013) 113-142.</p>
 </div></blockquote>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
-<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> Jacobian matrix <span class="math notranslate nohighlight">\(J = J(x)\)</span> and the
-residual-Hessians-vector product matrix <span class="math notranslate nohighlight">\(P(x,v)\)</span> may be presented
-and stored in a variety of convenient input formats. Let
-<span class="math notranslate nohighlight">\(A\)</span> be <span class="math notranslate nohighlight">\(J\)</span> or <span class="math notranslate nohighlight">\(P\)</span> as appropriate.</p>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
+and stored in a variety of convenient input formats.</p>
 <p><em>Dense</em> storage format:
-The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact  dense matrix by rows, that is,
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
 the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
-will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.</p>
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
 <p><em>Dense by columns</em> storage format:
-The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact  dense matrix by columns, that is,
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
 In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
-will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.</p>
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
 <p><em>Sparse co-ordinate</em> storage format:
 Only the nonzero entries of the matrices are stored.
 For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
 its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
-<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,  <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as
-the <span class="math notranslate nohighlight">\(l\)</span>-th components of the integer arrays A_row and
-A_col and real array A_val, respectively, while the number of nonzeros
-is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.</p>
+<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
 <p><em>Sparse row-wise storage</em> format:
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
@@ -575,10 +561,11 @@ integer array A_ptr holds the position of the first entry in this row,
 while A_ptr(m) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
 <span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1,\)</span>
 of the integer array A_col, and real array A_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
-its predecessor.</p>
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
 <p><em>Sparse column-wise</em> storage format:
 Once again only the nonzero entries are stored, but this time
 they are ordered so that those in column j appear directly before those
@@ -586,14 +573,15 @@ in column j+1. For the j-th column of <span class="math notranslate nohighlight"
 integer array A_ptr holds the position of the first entry in this column,
 while A_ptr(n) holds the total number of entries.
 The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
-of the  nonzero entries in the j-th columnsare stored in components
+of the  nonzero entries in the j-th columns are stored in components
 l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
 of the integer array A_row, and real array A_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
-storage than the co-ordinate format.</p>
-<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H = H(x,y)\)</span> may
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span> may also
 be presented and stored in a variety of formats. But crucially symmetry
-is exploited by only storing values from the lower triangular part
+is exploited by only storing values from the <em>lower triangular</em> part
 (i.e, those entries that lie on or below the leading diagonal).</p>
 <p><em>Dense</em> storage format:
 The matrix <span class="math notranslate nohighlight">\(H\)</span> is stored as a compact  dense matrix by rows, that
@@ -604,7 +592,8 @@ symmetric, only the lower triangular part (that is the part
 In this case the lower triangle should be stored by rows, that is
 component <span class="math notranslate nohighlight">\(i * i / 2 + j\)</span>  of the storage array H_val
 will hold the value <span class="math notranslate nohighlight">\(H_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(H_{ji}\)</span>)
-for <span class="math notranslate nohighlight">\(0 \leq j \leq i \leq n-1\)</span>.</p>
+for <span class="math notranslate nohighlight">\(0 \leq j \leq i \leq n-1\)</span>.
+The string H_type = ‘dense’ should be specified.</p>
 <p><em>Sparse co-ordinate</em> storage format:
 Only the nonzero entries of the matrices are stored.
 For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(H\)</span>,
@@ -613,7 +602,8 @@ its row index i, column index j and value <span class="math notranslate nohighli
 components of the integer arrays H_row and H_col and real array H_val,
 respectively, while the number of nonzeros is recorded as
 H_ne = <span class="math notranslate nohighlight">\(ne\)</span>. Note that only the entries in the lower triangle
-should be stored.</p>
+should be stored.
+The string H_type = ‘coordinate’ should be specified.</p>
 <p><em>Sparse row-wise</em> storage format:
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
@@ -622,25 +612,28 @@ integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq i\)</span>, and values
 <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the  entries in the i-th row are stored in components
-l = H_ptr(i), …, H_ptr(i+1)-1 of the
-integer array H_col, and real array H_val, respectively. Note that
-as before only the entries in the lower triangle should be stored. For
-sparse matrices, this scheme almost always requires less storage than
-its predecessor.</p>
+l = H_ptr(i), …, H_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1,\)</span> of the
+integer array H_col, and real array H_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string H_type = ‘sparse_by_rows’ should be specified.</p>
 <p><em>Diagonal</em> storage format:
 If <span class="math notranslate nohighlight">\(H\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(H_{ij} = 0\)</span> for all
 <span class="math notranslate nohighlight">\(0 \leq i \neq j \leq n-1\)</span>) only the diagonals entries
-<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1\)</span> need
-be stored, and the first n components of the array H_val may be
-used for the purpose.</p>
+<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(0 \leq i \leq n-1\)</span> need be stored,
+and the first n components of the array H_val may be used for the purpose.
+The string H_type = ‘diagonal’ should be specified.</p>
 <p><em>Multiples of the identity</em> storage format:
 If <span class="math notranslate nohighlight">\(H\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
 where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
-it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.</p>
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.
+The string H_type = ‘scaled_identity’ should be specified.</p>
 <p>The <em>identity matrix</em> format:
-If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.</p>
+If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.
+The string H_type = ‘identity’ should be specified.</p>
 <p>The <em>zero matrix</em> format:
-The same is true if <span class="math notranslate nohighlight">\(H\)</span>7 is the zero matrix.</p>
+The same is true if <span class="math notranslate nohighlight">\(H\)</span> is the zero matrix, but now
+the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 </section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
@@ -1734,7 +1727,7 @@ to factorization.</p>
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
   <a class='left-prev' id="prev-link" href="blls.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
           <p class="prev-next-title">BLLS</p>
@@ -1745,7 +1738,7 @@ to factorization.</p>
       <p class="prev-next-subtitle">next</p>
       <p class="prev-next-title">Linear Programming</p>
   </div>
-  <i class="fas fa-angle-right"></i>
+  <i class="fa-solid fa-angle-right"></i>
   </a>
 </div>
             </footer>
@@ -1759,10 +1752,15 @@ to factorization.</p>
 <div class="toc-item">
   
 <div class="tocsection onthispage">
-    <i class="fas fa-list"></i> On this page
+    <i class="fa-solid fa-list"></i> On this page
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#terminology">
    terminology
@@ -1787,6 +1785,44 @@ to factorization.</p>
   <a class="reference internal nav-link" href="#functions">
    functions
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.nls.nls.initialize">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       nls.initialize()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.nls.nls.load">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       nls.load()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.nls.nls.solve">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       nls.solve()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.nls.nls.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       nls.terminate()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#example-code">
@@ -1800,13 +1836,18 @@ to factorization.</p>
 
 <div class="toc-item">
   
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
 </div>
 
 <div class="toc-item">
   
 <div class="tocsection sourcelink">
     <a href="_sources/nls.rst.txt">
-        <i class="fas fa-file-alt"></i> Show Source
+        <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
 </div>
 
@@ -1829,7 +1870,8 @@ to factorization.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -1844,9 +1886,19 @@ to factorization.</p>
   </div>
   
   <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
 
   </div>

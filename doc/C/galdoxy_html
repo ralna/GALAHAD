@@ -22,7 +22,7 @@ fi
 #  make sure that required subdirectories exist
 
 mkdir -p $package
-mkdir -p $GALAHAD/html/C/$package
+mkdir -p $GALAHAD/html/C_doxy/$package
 
 #  build the html documentation
 
@@ -31,6 +31,6 @@ cp $GALAHAD/include/galahad_$package.h $package/.
 #doxygen Doxyfile
 ( cd ./$package ; doxygen ../Doxyfile_html )
 #mogrify -trim $GALAHAD/html/C/$package/*.png
-cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+cp $GALAHAD/html/C_doxy/$package/index.html $GALAHAD/html/C_doxy/$package/$package.html
 rm $package/galahad_$package.h
 

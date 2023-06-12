@@ -22,7 +22,7 @@ fi
 #  make sure that required subdirectories exist
 
 mkdir -p $package
-mkdir -p $GALAHAD/html/C/$package
+mkdir -p $GALAHAD/html/C_doxy/$package
 
 #  build the pdf documentation
 
@@ -35,7 +35,7 @@ if [ $package == "galahad" ]; then
   #mogrify -trim $GALAHAD/html/C/$package/*.png
   ( cd ./$package/latex ; make )
   cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
-  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  #cp $GALAHAD/html/C_doxy/$package/index.html $GALAHAD/html/C_doxy/$package/$package.html
   rm $package/$package.h
 else
   cp $GALAHAD/include/galahad_$package.h $package/.
@@ -44,6 +44,6 @@ else
   #mogrify -trim $GALAHAD/html/C/$package/*.png
   ( cd ./$package/latex ; make )
   cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
-  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  #cp $GALAHAD/html/C_doxy/$package/index.html $GALAHAD/html/C_doxy/$package/$package.html
   rm $package/galahad_$package.h
 fi

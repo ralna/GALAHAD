@@ -15,7 +15,8 @@
 \galsummary
 Given a real $m$ by $n$ matrix $\bmA$,
 a real $n$ by $n$ symmetric diagonally-dominant matrix $\bmS$,
-a real $m$ vector $\bmb$ and a scalar $\Delta>0$, this package finds a
+a real $m$ vector $\bmb$, and scalars $\sigma>0$ and $p \geq 2$, 
+this package finds a
 {\bf minimizer of the regularized linear least-squares objective function}
 $$\frac{1}{2} \| \bmA \bmx  - \bmb \|^2_2 + \frac{\sigma}{p}\|x\|_S^p,$$
 where the $\bmS$-norm of $\bmx$ is $\|\bmx\|_S = \sqrt{\bmx^T \bmS \bmx}$.
@@ -313,17 +314,10 @@ The default is {\tt upper = HUGE(1.0)}
 that hold values for the standard convergence tolerances of the method
 (see Section~\ref{galmethod}).
 In particular, the method is deemed to have converged when the
-computed solution $\bmx$ and its multiplier $\lambda$ satisfy either
-$\lambda = 0$ and $|\|\bmx\|_S < \Delta$ or
-$\|\bmx\|_S -  \Delta| \leq$ {\tt stop\_normal} $\ast \;
-\max(1,\Delta)$.
-%$\lambda_{\mbox{\protect\tiny U}} - \lambda_{\mbox{\protect\tiny L}}
-%\leq$ {\tt stop\_hard} $\ast \; \max( 1, | \lambda_{\mbox{\protect\tiny L}} |,
-%| \lambda_{\mbox{\protect\tiny U}} | )$, where
-%$\lambda_{\mbox{\protect\tiny L}}$ and
-%$\lambda_{\mbox{\protect\tiny U}}$ are computed lower and upper bounds
-%on the optimal multiplier $\lambda_*$.
-The defaults is {\tt stop\_normal =} $u^{0.75}$,
+computed solution $\bmx$ and its multiplier $\lambda$ satisfy
+$|\|\bmx\|_S -  (\lambda/\sigma)^{1/(p-2)}|$
+{\tt stop\_normal} $\ast \; \max(1,\|\bmx\|)$.
+The default is {\tt stop\_normal =} $u^{0.75}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 

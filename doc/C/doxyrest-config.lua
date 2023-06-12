@@ -29,19 +29,17 @@
 --! searched in directories -- and in the sequence -- specified here.
 --!
 
---!FRAME_DIR_LIST = {}
-FRAME_DIR_LIST = { "doxyrest-frame-dir/cfamily", "doxyrest-frame-dir/common" }
+FRAME_DIR_LIST = {}
 
 --!
---! The output master (index) rerStreucturedText file. Usually, the index frame
---! alvso generates auxillary files -- they will be placed next to the master
+--! The output master (index) reStructuredText file. Usually, the index frame
+--! also generates auxillary files -- they will be placed next to the master
 --! file. The command line option ``-f`` *overrides* this value.
 --! If neither ``FRAME_FILE`` nor ``-f`` is specified, ``index.rst.in`` will be
 --! used as the default frame file.
 --!
---!FRAME_FILE = "index.rst.in"
 
-FRAME_FILE = "index.rst"
+FRAME_FILE = nil
 
 --!
 --! The input master (index) XML file. Specifying it here allows calling
@@ -50,6 +48,7 @@ FRAME_FILE = "index.rst"
 --! specified, the command line takes precedence.
 --!
 
+INPUT_FILE = nil
 INPUT_FILE = "xml-dir/index.xml"
 
 --!
@@ -60,6 +59,7 @@ INPUT_FILE = "xml-dir/index.xml"
 --! the default output master file.
 --!
 
+OUTPUT_FILE = nil
 OUTPUT_FILE = "rst-dir/index.rst"
 
 --!
@@ -88,9 +88,8 @@ INDEX_TITLE = "My Project Documentation"
 --! will be included into ``index.rst`` file and NOT added to the list of other
 --! documentation pages.
 --!
---!INTRO_FILE = "page_index.rst"
 
-INTRO_FILE = nill
+INTRO_FILE = nil
 
 --!
 --! Specify whether to sort groups lexicographically (by ``title``) or
@@ -156,32 +155,29 @@ LANGUAGE = cpp
 --! no syntax highlighting. To disable conversion at all, use ``nil``.
 --!
 
-VERBATIM_TO_CODE_BLOCK = "cpp"
+VERBATIM_TO_CODE_BLOCK = "none"
 
 --!
 --! If the original doxy comments contain asterisks, they have to be escaped in
 --! reStructuredText (asterisks are used to mark **bold** or *italic* blocks).
 --!
---!ESCAPE_ASTERISKS = false
 
-ESCAPE_ASTERISKS = true
+ESCAPE_ASTERISKS = false
 
 --!
 --! If the original doxy comments contain pipe characters ``|``, they have to be
 --! escaped in reStructuredText (pipes are used for substitution references).
 --!
---!ESCAPE_PIPES = false
 
-ESCAPE_PIPES = true
+ESCAPE_PIPES = false
 
 --!
 --! If the original doxy comments contain trailingasterisks, they have to be
 --! escaped in reStructuredText (trailing underscores are used for internal
 --! links).
 --!
---!ESCAPE_TRAILING_UNDERSCORES = false
 
-ESCAPE_TRAILING_UNDERSCORES = true
+ESCAPE_TRAILING_UNDERSCORES = false
 
 --!
 --! Exclude items declared in specific locations. Use a regular expression to
