@@ -1,0 +1,11 @@
+/* Full-size code tags */
+pre, code {
+  font-size: 100%;
+  line-height: 155%;
+}
+p {
+  text-align: justify;
+}
+ul {
+  list-style-type: none;
+}
