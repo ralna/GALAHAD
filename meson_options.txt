@@ -40,12 +40,12 @@ option('ssids',
 
 option('libblas',
        type : 'string',
-       value : 'blas',
+       value : 'openblas',
        description : 'option for BLAS library switching')
 
 option('liblapack',
        type : 'string',
-       value : 'lapack',
+       value : 'openblas',
        description : 'option for BLAS library switching')
 
 option('libmetis',
