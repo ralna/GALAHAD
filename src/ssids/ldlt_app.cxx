@@ -1336,7 +1336,7 @@ private:
            my_abort = abort;
            if (!my_abort) {
              try {
-               #pragma omp cancellation point taskgroup
+               // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                Profile::Task task("TA_LDLT_DIAG");
 #endif
@@ -1400,7 +1400,7 @@ private:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-                #pragma omp cancellation point taskgroup
+                // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
@@ -1434,7 +1434,7 @@ private:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-                #pragma omp cancellation point taskgroup
+                // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
@@ -1468,7 +1468,7 @@ private:
            #pragma omp atomic read
            my_abort = abort;
            if (!my_abort) {
-             #pragma omp cancellation point taskgroup
+             // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
              Profile::Task task("TA_LDLT_ADJUST");
 #endif
@@ -1498,7 +1498,7 @@ private:
                  #pragma omp atomic read
                  my_abort = abort;
                  if (!my_abort) {
-                  #pragma omp cancellation point taskgroup
+                  // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                   Profile::Task task("TA_LDLT_UPDA");
 #endif
@@ -1535,7 +1535,7 @@ private:
                  #pragma omp atomic read
                  my_abort = abort;
                  if (!my_abort) {
-                   #pragma omp cancellation point taskgroup
+                   // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDA");
 #endif
@@ -1575,7 +1575,7 @@ private:
                   #pragma omp atomic read
                   my_abort = abort;
                   if (!my_abort) {
-                    #pragma omp cancellation point taskgroup
+                    // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                     Profile::Task task("TA_LDLT_UPDC");
 #endif
@@ -1798,7 +1798,7 @@ private:
            my_abort = abort;
            if (!my_abort) {
              try {
-               #pragma omp cancellation point taskgroup
+               // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                Profile::Task task("TA_LDLT_DIAG");
 #endif
@@ -1862,7 +1862,7 @@ private:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-                #pragma omp cancellation point taskgroup
+                // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
@@ -1892,7 +1892,7 @@ private:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-                #pragma omp cancellation point taskgroup
+                // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
@@ -1941,7 +1941,7 @@ private:
                  #pragma omp atomic read
                  my_abort = abort;
                  if (!my_abort) {
-                   #pragma omp cancellation point taskgroup
+                   // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDA");
 #endif
@@ -1981,7 +1981,7 @@ private:
                  #pragma omp atomic read
                  my_abort = abort;
                  if (!my_abort) {
-                   #pragma omp cancellation point taskgroup
+                   // #pragma omp cancellation point taskgroup
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDC");
 #endif
