@@ -90,7 +90,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dlibblas= -Dliblapack=
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
