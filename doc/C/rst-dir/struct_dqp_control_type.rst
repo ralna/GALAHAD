@@ -7,8 +7,6 @@ dqp_control_type structure
 .. toctree::
 	:hidden:
 
-control derived type as a C struct :ref:`More...<details-structdqp__control__type>`
-
 .. ref-code-block:: lua
 	:class: doxyrest-overview-code-block
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-05 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-06-13 AT 09:30 GMT.
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 
@@ -110,7 +110,7 @@
      INTERFACE IAMAX
 
         FUNCTION ISAMAX( n, X, incx )
-        INTEGER :: IDAMAX
+        INTEGER :: ISAMAX
         INTEGER, INTENT( IN ) :: n, incx
         REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
         END FUNCTION ISAMAX
