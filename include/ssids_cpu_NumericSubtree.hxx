@@ -114,7 +114,7 @@ public:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-               #pragma omp cancellation point taskgroup
+               // #pragma omp cancellation point taskgroup
                try {
                   int this_thread = omp_get_thread_num();
 #ifdef PROFILE
@@ -179,7 +179,7 @@ public:
               #pragma omp atomic read
               my_abort = abort;
               if (!my_abort) {
-               #pragma omp cancellation point taskgroup
+               // #pragma omp cancellation point taskgroup
                try {
                   // printf("%d: Node %d parent %d (of %d) size %d x %d\n",
                   //       omp_get_thread_num(), ni, symb_[ni].parent,
