@@ -38,10 +38,10 @@ jobs:
             cxx_cmd: icpx
           - os: macos-latest
             compiler: clang
-            compiler_version: 14
-            cc_cmd: clang
+            compiler_version: latest
+            cc_cmd: /usr/local/opt/llvm/bin/clang
             fc_cmd: gfortran-13
-            cxx_cmd: clang++
+            cxx_cmd: /usr/local/opt/llvm/bin/clang++
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
