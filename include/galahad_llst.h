@@ -77,7 +77,7 @@
   may involve the Cholesky factorization of \f$S\f$. The first phase of
   the computation proceeds by progressively shrinking the bound interval
   \f$[\lambda_L,\lambda_U]\f$
-  until a value \f$\lambda\f$ for which \f$\|x(\lambda)\|_M \geq \Delta\f$
+  until a value \f$\lambda\f$ for which \f$\|x(\lambda)\|_S \geq \Delta\f$
   is found.  Here \f$x(\lambda)\f$ and its companion \f$y(\lambda)\f$ are
   defined to be a solution of
 \manonly
@@ -87,12 +87,12 @@
    (2)    (A^T A  + \lambda S)x(\lambda) = A^T b;
 \n
 \endmanonly
-  along the way the possibility that \f$\|x(0)\|_M \leq \Delta\f$ is examined, 
+  along the way the possibility that \f$\|x(0)\|_S \leq \Delta\f$ is examined, 
   and if this transpires the process is terminated with \f$x_* = x(0)\f$.
   Once the terminating \f$\lambda\f$ from the first phase has
   been discovered, the second phase consists of applying Newton or
   higher-order iterations to the nonlinear ``secular'' equation
-  \f$\|x(\lambda)\|_M = \Delta\f$ with the knowledge that such
+  \f$\|x(\lambda)\|_S = \Delta\f$ with the knowledge that such
   iterations are both globally and ultimately rapidly convergent. 
 
   The dominant cost is the requirement that we solve a sequence of linear
@@ -434,7 +434,7 @@ struct llst_history_type {
     real_wp_ lambda;
 
     /// \brief
-    /// the corresponding value of \f$\|x(\lambda)\|_M\f$
+    /// the corresponding value of \f$\|x(\lambda)\|_S\f$
     real_wp_ x_norm;
 
     /// \brief

@@ -7,8 +7,6 @@ lpa_inform_type structure
 .. toctree::
 	:hidden:
 
-inform derived type as a C struct :ref:`More...<details-structlpa__inform__type>`
-
 .. ref-code-block:: lua
 	:class: doxyrest-overview-code-block
 
