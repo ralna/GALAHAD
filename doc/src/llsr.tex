@@ -48,7 +48,7 @@ this is not the case, the package {\tt \libraryname\_LSRT} may be preferred.
 {\tt \libraryname\_SBLS},
 {\tt \libraryname\_SLS}, {\tt \libraryname\_IR},
 {\tt \libraryname\_MOP}
-\galdate October 2008.
+\galdate June 2023.
 \galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
 \gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 \galparallelism Some options may use OpenMP and its runtime library.
@@ -486,7 +486,8 @@ value of the norm of the residual $\| \bmA \bmx - \bmb\|_2$.
 that holds the value of $\|\bmx\|_S$.
 
 \itt{multiplier} is a scalar variable of type default \realdp, that holds the
-value of the Lagrange multiplier $\lambda$ associated with the constraint.
+value of the multiplier $\lambda$ associated with the 
+regularization term.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed CPU  and system clock times for the

@@ -1,8 +1,8 @@
 .. index:: pair: table; xxx_time_type
 .. _doxid-structxxx__time__type:
 
-xxx_time_type  structure
-------------------------
+xxx_time_type structure
+-----------------------
 
 .. toctree::
 	:hidden:
@@ -17,3 +17,4 @@ time derived type as a C struct
 components
 ~~~~~~~~~~
 
+.. ---------------------------------------------------------------------------

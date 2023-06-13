@@ -7,8 +7,6 @@ lpa_time_type  structure
 .. toctree::
 	:hidden:
 
-time derived type as a C struct :ref:`More...<details-structlpa__time__type>`
-
 .. ref-code-block:: lua
 	:class: doxyrest-overview-code-block
 
