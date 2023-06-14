@@ -7,90 +7,135 @@ overview of functions provided
 	:hidden:
 
 	struct_dps_control_type.rst
-	struct_dps_inform_type.rst
 	struct_dps_time_type.rst
+	struct_dps_inform_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`dps_control_type<doxid-structdps__control__type>`;
+	struct :ref:`dps_inform_type<doxid-structdps__inform__type>`;
+	struct :ref:`dps_time_type<doxid-structdps__time__type>`;
+
+	// global functions
+
+	void :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status);
+	void :ref:`dps_read_specfile<doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf>`(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[]);
+
+	void :ref:`dps_import<doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee>`(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	);
+
+	void :ref:`dps_reset_control<doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c>`(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`dps_solve_tr_problem<doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5>`(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_solve_rq_problem<doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6>`(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_resolve_tr_problem<doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d>`(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_resolve_rq_problem<doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a>`(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status);
+
+	void :ref:`dps_terminate<doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e>`(
+		void** data,
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_dps_control_type.rst
-	struct_dps_inform_type.rst
-	struct_dps_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`dps_control_type<doxid-structdps__control__type>`
-	:ref:`dps_inform_type<doxid-structdps__inform__type>`
-	:ref:`dps_time_type<doxid-structdps__time__type>`
-
-	-- functions
-
-	function :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(data, control, status)
-	function :ref:`dps_read_specfile<doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf>`(control, specfile)
-	function :ref:`dps_import<doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee>`(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
-	function :ref:`dps_reset_control<doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c>`(control, data, status)
-	function :ref:`dps_solve_tr_problem<doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5>`(data, status, n, ne, H_val, c, f, radius, x)
-
-	function :ref:`dps_solve_rq_problem<doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6>`(
-		data,
-		status,
-		n,
-		ne,
-		H_val,
-		c,
-		f,
-		power,
-		weight,
-		x
-		)
-
-	function :ref:`dps_resolve_tr_problem<doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d>`(data, status, n, c, f, radius, x)
-	function :ref:`dps_resolve_rq_problem<doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a>`(data, status, n, c, f, power, weight, x)
-	function :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(data, inform, status)
-	function :ref:`dps_terminate<doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; dps_initialize
 .. _doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_initialize(data, control, status)
+	void dps_initialize(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -122,10 +167,10 @@ Set default control values and initialize private data
 .. index:: pair: function; dps_read_specfile
 .. _doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_read_specfile(control, specfile)
+	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDPS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
 
@@ -149,10 +194,20 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; dps_import
 .. _doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+	void dps_import(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	)
 
 Import problem data into internal storage prior to solution.
 
@@ -220,10 +275,14 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; dps_reset_control
 .. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_reset_control(control, data, status)
+	void dps_reset_control(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Reset control parameters after import if required.
 
@@ -255,10 +314,20 @@ Reset control parameters after import if required.
 .. index:: pair: function; dps_solve_tr_problem
 .. _doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_solve_tr_problem(data, status, n, ne, H_val, c, f, radius, x)
+	void dps_solve_tr_problem(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
 
 Find the global minimizer of the trust-region problem (1).
 
@@ -338,21 +407,21 @@ Find the global minimizer of the trust-region problem (1).
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_solve_rq_problem(
-		data,
-		status,
-		n,
-		ne,
-		H_val,
-		c,
-		f,
-		power,
-		weight,
-		x
-		)
+	void dps_solve_rq_problem(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
 
 Find the global minimizer of the regularized-quadartic problem (2).
 
@@ -437,10 +506,18 @@ Find the global minimizer of the regularized-quadartic problem (2).
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_resolve_tr_problem(data, status, n, c, f, radius, x)
+	void dps_resolve_tr_problem(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
 
@@ -504,10 +581,19 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_resolve_rq_problem(data, status, n, c, f, power, weight, x)
+	void dps_resolve_rq_problem(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
 
@@ -574,10 +660,10 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_information(data, inform, status)
+	void dps_information(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -609,10 +695,14 @@ Provides output information
 .. index:: pair: function; dps_terminate
 .. _doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function dps_terminate(data, control, inform)
+	void dps_terminate(
+		void** data,
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 

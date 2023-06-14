@@ -51,6 +51,8 @@ available structures
 
 .. include :: struct_llsr_time_type.rst
 
+.. include :: struct_llsr_history_type.rst
+
 .. include :: struct_llsr_inform_type.rst
 
 |	:ref:`genindex`

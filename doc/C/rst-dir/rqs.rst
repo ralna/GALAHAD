@@ -53,6 +53,8 @@ available structures
 
 .. include :: struct_rqs_time_type.rst
 
+.. include :: struct_rqs_history_type.rst
+
 .. include :: struct_rqs_inform_type.rst
 
 |	:ref:`genindex`

@@ -7,96 +7,131 @@ overview of functions provided
 	:hidden:
 
 	struct_trs_control_type.rst
-	struct_trs_inform_type.rst
 	struct_trs_time_type.rst
+	struct_trs_history_type.rst
+	struct_trs_inform_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+	
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`trs_control_type<doxid-structtrs__control__type>`;
+	struct :ref:`trs_time_type<doxid-structtrs__time__type>`;
+	struct :ref:`trs_history_type<doxid-structtrs__history__type>`;
+	struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`;
+
+	// global functions
+
+	void :ref:`trs_initialize<doxid-galahad__trs_8h_1acb066d992c4ec394402bc7b7317e1163>`(void** data, struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, int* status);
+	void :ref:`trs_read_specfile<doxid-galahad__trs_8h_1adc7c56e7be2f7cc9d32921582d379b13>`(struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, const char specfile[]);
+
+	void :ref:`trs_import<doxid-galahad__trs_8h_1a4becded30e9b95fe7028b7799292c0af>`(
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int H_ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	);
+
+	void :ref:`trs_import_m<doxid-galahad__trs_8h_1a427420b6025d522bb7b3c652e8c2be48>`(
+		void** data,
+		int* status,
+		int n,
+		const char M_type[],
+		int M_ne,
+		const int M_row[],
+		const int M_col[],
+		const int M_ptr[]
+	);
+
+	void :ref:`trs_import_a<doxid-galahad__trs_8h_1ad726ff8f6c25c4384d2b952e8fab4409>`(
+		void** data,
+		int* status,
+		int m,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	);
+
+	void :ref:`trs_reset_control<doxid-galahad__trs_8h_1aae677e64bacb35354f49326815b694c3>`(
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`trs_solve_problem<doxid-galahad__trs_8h_1aadb8a751c29efcef663bf9560a1f9a8e>`(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		int H_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int M_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` M_val[],
+		int m,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+	);
+
+	void :ref:`trs_information<doxid-galahad__trs_8h_1a3dda24010e564e2d6536cc7ea518451e>`(void** data, struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform, int* status);
+
+	void :ref:`trs_terminate<doxid-galahad__trs_8h_1ab5cf0077db0631814fdd03599a585376>`(
+		void** data,
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_trs_control_type.rst
-	struct_trs_history_type.rst
-	struct_trs_inform_type.rst
-	struct_trs_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`trs_control_type<doxid-structtrs__control__type>`
-	:ref:`trs_history_type<doxid-structtrs__history__type>`
-	:ref:`trs_inform_type<doxid-structtrs__inform__type>`
-	:ref:`trs_time_type<doxid-structtrs__time__type>`
-
-	-- functions
-
-	function :ref:`trs_initialize<doxid-galahad__trs_8h_1acb066d992c4ec394402bc7b7317e1163>`(data, control, status)
-	function :ref:`trs_read_specfile<doxid-galahad__trs_8h_1adc7c56e7be2f7cc9d32921582d379b13>`(control, specfile)
-	function :ref:`trs_import<doxid-galahad__trs_8h_1a4becded30e9b95fe7028b7799292c0af>`(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
-	function :ref:`trs_import_m<doxid-galahad__trs_8h_1a427420b6025d522bb7b3c652e8c2be48>`(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
-	function :ref:`trs_import_a<doxid-galahad__trs_8h_1ad726ff8f6c25c4384d2b952e8fab4409>`(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
-	function :ref:`trs_reset_control<doxid-galahad__trs_8h_1aae677e64bacb35354f49326815b694c3>`(control, data, status)
-
-	function :ref:`trs_solve_problem<doxid-galahad__trs_8h_1aadb8a751c29efcef663bf9560a1f9a8e>`(
-		data,
-		status,
-		n,
-		radius,
-		f,
-		c,
-		H_ne,
-		H_val,
-		x,
-		M_ne,
-		M_val,
-		m,
-		A_ne,
-		A_val,
-		y
-		)
-
-	function :ref:`trs_information<doxid-galahad__trs_8h_1a3dda24010e564e2d6536cc7ea518451e>`(data, inform, status)
-	function :ref:`trs_terminate<doxid-galahad__trs_8h_1ab5cf0077db0631814fdd03599a585376>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; trs_initialize
 .. _doxid-galahad__trs_8h_1acb066d992c4ec394402bc7b7317e1163:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_initialize(data, control, status)
+	void trs_initialize(void** data, struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -128,10 +163,10 @@ Set default control values and initialize private data
 .. index:: pair: function; trs_read_specfile
 .. _doxid-galahad__trs_8h_1adc7c56e7be2f7cc9d32921582d379b13:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_read_specfile(control, specfile)
+	void trs_read_specfile(struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, const char specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNTRS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/trs.pdf for a list of keywords that may be set.
 
@@ -155,10 +190,20 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; trs_import
 .. _doxid-galahad__trs_8h_1a4becded30e9b95fe7028b7799292c0af:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_import(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
+	void trs_import(
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int H_ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	)
 
 Import problem data into internal storage prior to solution.
 
@@ -226,10 +271,19 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; trs_import_m
 .. _doxid-galahad__trs_8h_1a427420b6025d522bb7b3c652e8c2be48:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_import_m(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
+	void trs_import_m(
+		void** data,
+		int* status,
+		int n,
+		const char M_type[],
+		int M_ne,
+		const int M_row[],
+		const int M_col[],
+		const int M_ptr[]
+	)
 
 Import data for the scaling matrix M into internal storage prior to solution.
 
@@ -292,10 +346,19 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. index:: pair: function; trs_import_a
 .. _doxid-galahad__trs_8h_1ad726ff8f6c25c4384d2b952e8fab4409:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
+	void trs_import_a(
+		void** data,
+		int* status,
+		int m,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	)
 
 Import data for the constraint matrix A into internal storage prior to solution.
 
@@ -358,10 +421,14 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. index:: pair: function; trs_reset_control
 .. _doxid-galahad__trs_8h_1aae677e64bacb35354f49326815b694c3:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_reset_control(control, data, status)
+	void trs_reset_control(
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Reset control parameters after import if required.
 
@@ -393,26 +460,26 @@ Reset control parameters after import if required.
 .. index:: pair: function; trs_solve_problem
 .. _doxid-galahad__trs_8h_1aadb8a751c29efcef663bf9560a1f9a8e:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_solve_problem(
-		data,
-		status,
-		n,
-		radius,
-		f,
-		c,
-		H_ne,
-		H_val,
-		x,
-		M_ne,
-		M_val,
-		m,
-		A_ne,
-		A_val,
-		y
-		)
+	void trs_solve_problem(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		int H_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int M_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` M_val[],
+		int m,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+	)
 
 Solve the trust-region problem.
 
@@ -526,10 +593,10 @@ Solve the trust-region problem.
 .. index:: pair: function; trs_information
 .. _doxid-galahad__trs_8h_1a3dda24010e564e2d6536cc7ea518451e:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_information(data, inform, status)
+	void trs_information(void** data, struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -561,10 +628,14 @@ Provides output information
 .. index:: pair: function; trs_terminate
 .. _doxid-galahad__trs_8h_1ab5cf0077db0631814fdd03599a585376:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function trs_terminate(data, control, inform)
+	void trs_terminate(
+		void** data,
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
+		struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 

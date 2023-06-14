@@ -8,70 +8,96 @@ overview of functions provided
 
 	struct_gltr_control_type.rst
 	struct_gltr_inform_type.rst
-	struct_gltr_time_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`gltr_control_type<doxid-structgltr__control__type>`;
+	struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`;
+
+	// global functions
+
+	void :ref:`gltr_initialize<doxid-galahad__gltr_8h_1ac06a7060d9355146e801157c2f29ca5c>`(
+		void** data,
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		int* status
+	);
+
+	void :ref:`gltr_read_specfile<doxid-galahad__gltr_8h_1a68a3273a88b27601e72b61f10a23de31>`(
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		const char specfile[]
+	);
+
+	void :ref:`gltr_import_control<doxid-galahad__gltr_8h_1acb8a654fc381e3f231c3d10858f111b3>`(
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`gltr_solve_problem<doxid-galahad__gltr_8h_1ad77040d245e6bc307d13ea0cec355f18>`(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` vector[]
+	);
+
+	void :ref:`gltr_information<doxid-galahad__gltr_8h_1a1b1b4d87884833c4bfe184ff79c1e2bb>`(void** data, struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform, int* status);
+
+	void :ref:`gltr_terminate<doxid-galahad__gltr_8h_1ac3e0cbd0ecc79b37251fad7fd6f47631>`(
+		void** data,
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_gltr_control_type.rst
-	struct_gltr_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`gltr_control_type<doxid-structgltr__control__type>`
-	:ref:`gltr_inform_type<doxid-structgltr__inform__type>`
-
-	-- functions
-
-	function :ref:`gltr_initialize<doxid-galahad__gltr_8h_1ac06a7060d9355146e801157c2f29ca5c>`(data, control, status)
-	function :ref:`gltr_read_specfile<doxid-galahad__gltr_8h_1a68a3273a88b27601e72b61f10a23de31>`(control, specfile)
-	function :ref:`gltr_import_control<doxid-galahad__gltr_8h_1acb8a654fc381e3f231c3d10858f111b3>`(control, data, status)
-	function :ref:`gltr_solve_problem<doxid-galahad__gltr_8h_1ad77040d245e6bc307d13ea0cec355f18>`(data, status, n, radius, x, r, vector)
-	function :ref:`gltr_information<doxid-galahad__gltr_8h_1a1b1b4d87884833c4bfe184ff79c1e2bb>`(data, inform, status)
-	function :ref:`gltr_terminate<doxid-galahad__gltr_8h_1ac3e0cbd0ecc79b37251fad7fd6f47631>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; gltr_initialize
 .. _doxid-galahad__gltr_8h_1ac06a7060d9355146e801157c2f29ca5c:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_initialize(data, control, status)
+	void gltr_initialize(
+		void** data,
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		int* status
+	)
 
 Set default control values and initialize private data
 
@@ -103,10 +129,13 @@ Set default control values and initialize private data
 .. index:: pair: function; gltr_read_specfile
 .. _doxid-galahad__gltr_8h_1a68a3273a88b27601e72b61f10a23de31:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_read_specfile(control, specfile)
+	void gltr_read_specfile(
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		const char specfile[]
+	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gltr.pdf for a list of keywords that may be set.
 
@@ -130,10 +159,14 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; gltr_import_control
 .. _doxid-galahad__gltr_8h_1acb8a654fc381e3f231c3d10858f111b3:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_import_control(control, data, status)
+	void gltr_import_control(
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Import control parameters prior to solution.
 
@@ -165,10 +198,18 @@ Import control parameters prior to solution.
 .. index:: pair: function; gltr_solve_problem
 .. _doxid-galahad__gltr_8h_1ad77040d245e6bc307d13ea0cec355f18:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_solve_problem(data, status, n, radius, x, r, vector)
+	void gltr_solve_problem(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` vector[]
+	)
 
 Solve the trust-region problem using reverse communication.
 
@@ -202,7 +243,7 @@ Solve the trust-region problem using reverse communication.
 		  
 		  * 2. the inverse of :math:`M` must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged. This will only happen if control.unitm is false
 		  
-		  * 3. the product :math:`H` * vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
+		  * 3. the product :math:`H` \* vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
 		  
 		  * 5. The iteration must be restarted. Reset r (below) to :math:`c` and re-enter with all other data unchanged. This exit will only occur if control.steihaug_toint is false and the solution lies on the trust-region boundary
 		  
@@ -248,10 +289,10 @@ Solve the trust-region problem using reverse communication.
 .. index:: pair: function; gltr_information
 .. _doxid-galahad__gltr_8h_1a1b1b4d87884833c4bfe184ff79c1e2bb:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_information(data, inform, status)
+	void gltr_information(void** data, struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -283,10 +324,14 @@ Provides output information
 .. index:: pair: function; gltr_terminate
 .. _doxid-galahad__gltr_8h_1ac3e0cbd0ecc79b37251fad7fd6f47631:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function gltr_terminate(data, control, inform)
+	void gltr_terminate(
+		void** data,
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
+		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 

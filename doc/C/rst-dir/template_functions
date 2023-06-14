@@ -7,8 +7,8 @@ overview of functions provided
 	:hidden:
 
 	struct_xxx_control_type.rst
-	struct_xxx_inform_type.rst
 	struct_xxx_time_type.rst
+	struct_xxx_inform_type.rst
 
 .. _details-global:
 

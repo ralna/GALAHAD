@@ -234,6 +234,9 @@ In order to get GALAHAD working, here is what you need to do.
 
    for Macs under OSX.
 
+   You will also need to set environment variables  OMP_CANCELLATION, 
+   OMP_NESTED and OMP_PROC_BIND to TRUE
+
    Check with your system administrator if you need help!
 
    If it *really* is impossible to install libhwloc-dev, you should edit
