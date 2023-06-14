@@ -7,115 +7,130 @@ overview of functions provided
 	:hidden:
 
 	struct_llst_control_type.rst
-	struct_llst_inform_type.rst
 	struct_llst_time_type.rst
+	struct_llst_history_type.rst
+	struct_llst_inform_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+	
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`llst_control_type<doxid-structllst__control__type>`;
+	struct :ref:`llst_history_type<doxid-structllst__history__type>`;
+	struct :ref:`llst_inform_type<doxid-structllst__inform__type>`;
+	struct :ref:`llst_time_type<doxid-structllst__time__type>`;
+
+	// global functions
+
+	void :ref:`llst_initialize<doxid-galahad__llst_8h_1a9da7a4daba2ceaf875fbd24fe42fbe1f>`(
+		void** data,
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		int* status
+	);
+
+	void :ref:`llst_read_specfile<doxid-galahad__llst_8h_1a9bcda9a7420b5de742370e1464d5b0c2>`(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		const char specfile[]
+	);
+
+	void :ref:`llst_import<doxid-galahad__llst_8h_1a4ffc854176462b1d6492b55317150236>`(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	);
+
+	void :ref:`llst_import_scaling<doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f>`(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char S_type[],
+		int S_ne,
+		const int S_row[],
+		const int S_col[],
+		const int S_ptr[]
+	);
+
+	void :ref:`llst_reset_control<doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41>`(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`llst_solve_problem<doxid-galahad__llst_8h_1add75b5481c528cca64abbcdeb3a2af35>`(
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int S_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` S_val[]
+	);
+
+	void :ref:`llst_information<doxid-galahad__llst_8h_1a88854815d1c936131dcc762c64275d6f>`(void** data, struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform, int* status);
+
+	void :ref:`llst_terminate<doxid-galahad__llst_8h_1a3d7693551362082a30094e7dea5a2a66>`(
+		void** data,
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_llst_control_type.rst
-	struct_llst_history_type.rst
-	struct_llst_inform_type.rst
-	struct_llst_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`llst_control_type<doxid-structllst__control__type>`
-	:ref:`llst_history_type<doxid-structllst__history__type>`
-	:ref:`llst_inform_type<doxid-structllst__inform__type>`
-	:ref:`llst_time_type<doxid-structllst__time__type>`
-
-	-- functions
-
-	function :ref:`llst_initialize<doxid-galahad__llst_8h_1a9da7a4daba2ceaf875fbd24fe42fbe1f>`(data, control, status)
-	function :ref:`llst_read_specfile<doxid-galahad__llst_8h_1a9bcda9a7420b5de742370e1464d5b0c2>`(control, specfile)
-
-	function :ref:`llst_import<doxid-galahad__llst_8h_1a4ffc854176462b1d6492b55317150236>`(
-		control,
-		data,
-		status,
-		m,
-		n,
-		A_type,
-		A_ne,
-		A_row,
-		A_col,
-		A_ptr
-		)
-
-	function :ref:`llst_import_scaling<doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f>`(
-		control,
-		data,
-		status,
-		n,
-		S_type,
-		S_ne,
-		S_row,
-		S_col,
-		S_ptr
-		)
-
-	function :ref:`llst_reset_control<doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41>`(control, data, status)
-
-	function :ref:`llst_solve_problem<doxid-galahad__llst_8h_1add75b5481c528cca64abbcdeb3a2af35>`(
-		data,
-		status,
-		m,
-		n,
-		radius,
-		A_ne,
-		A_val,
-		b,
-		x,
-		S_ne,
-		S_val
-		)
-
-	function :ref:`llst_information<doxid-galahad__llst_8h_1a88854815d1c936131dcc762c64275d6f>`(data, inform, status)
-	function :ref:`llst_terminate<doxid-galahad__llst_8h_1a3d7693551362082a30094e7dea5a2a66>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; llst_initialize
 .. _doxid-galahad__llst_8h_1a9da7a4daba2ceaf875fbd24fe42fbe1f:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_initialize(data, control, status)
+	void llst_initialize(
+		void** data,
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		int* status
+	)
 
 Set default control values and initialize private data
 
@@ -147,10 +162,13 @@ Set default control values and initialize private data
 .. index:: pair: function; llst_read_specfile
 .. _doxid-galahad__llst_8h_1a9bcda9a7420b5de742370e1464d5b0c2:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_read_specfile(control, specfile)
+	void llst_read_specfile(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		const char specfile[]
+	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
 
@@ -174,21 +192,21 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; llst_import
 .. _doxid-galahad__llst_8h_1a4ffc854176462b1d6492b55317150236:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_import(
-		control,
-		data,
-		status,
-		m,
-		n,
-		A_type,
-		A_ne,
-		A_row,
-		A_col,
-		A_ptr
-		)
+	void llst_import(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	)
 
 Import problem data into internal storage prior to solution.
 
@@ -261,20 +279,20 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; llst_import_scaling
 .. _doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_import_scaling(
-		control,
-		data,
-		status,
-		n,
-		S_type,
-		S_ne,
-		S_row,
-		S_col,
-		S_ptr
-		)
+	void llst_import_scaling(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char S_type[],
+		int S_ne,
+		const int S_row[],
+		const int S_col[],
+		const int S_ptr[]
+	)
 
 Import the scaling matrix :math:`S` into internal storage prior to solution. Thus must have been preceeded by a call to llst_import.
 
@@ -342,10 +360,14 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 .. index:: pair: function; llst_reset_control
 .. _doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_reset_control(control, data, status)
+	void llst_reset_control(
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Reset control parameters after import if required.
 
@@ -377,22 +399,22 @@ Reset control parameters after import if required.
 .. index:: pair: function; llst_solve_problem
 .. _doxid-galahad__llst_8h_1add75b5481c528cca64abbcdeb3a2af35:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_solve_problem(
-		data,
-		status,
-		m,
-		n,
-		radius,
-		A_ne,
-		A_val,
-		b,
-		x,
-		S_ne,
-		S_val
-		)
+	void llst_solve_problem(
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int S_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` S_val[]
+	)
 
 Solve the trust-region problem.
 
@@ -486,10 +508,10 @@ Solve the trust-region problem.
 .. index:: pair: function; llst_information
 .. _doxid-galahad__llst_8h_1a88854815d1c936131dcc762c64275d6f:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_information(data, inform, status)
+	void llst_information(void** data, struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -521,10 +543,14 @@ Provides output information
 .. index:: pair: function; llst_terminate
 .. _doxid-galahad__llst_8h_1a3d7693551362082a30094e7dea5a2a66:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function llst_terminate(data, control, inform)
+	void llst_terminate(
+		void** data,
+		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
+		struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 

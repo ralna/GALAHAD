@@ -8,70 +8,98 @@ overview of functions provided
 
 	struct_lsrt_control_type.rst
 	struct_lsrt_inform_type.rst
-	struct_lsrt_time_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+	
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`;
+	struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`;
+
+	// global functions
+
+	void :ref:`lsrt_initialize<doxid-galahad__lsrt_8h_1a9c5c14ddb34a5ea1becd133837da6544>`(
+		void** data,
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		int* status
+	);
+
+	void :ref:`lsrt_read_specfile<doxid-galahad__lsrt_8h_1a07c4c60e1ab6ae67a4da710e2ed01ff0>`(
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		const char specfile[]
+	);
+
+	void :ref:`lsrt_import_control<doxid-galahad__lsrt_8h_1a09e39db33990f0c8a66480f54ba80f09>`(
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`lsrt_solve_problem<doxid-galahad__lsrt_8h_1aa1b3479d5f21fe373ef8948d55763992>`(
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+	);
+
+	void :ref:`lsrt_information<doxid-galahad__lsrt_8h_1ad3895aabdb7f18f84d209b02287872be>`(void** data, struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform, int* status);
+
+	void :ref:`lsrt_terminate<doxid-galahad__lsrt_8h_1ac3a3d73e2686538802563c795a1afff4>`(
+		void** data,
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_lsrt_control_type.rst
-	struct_lsrt_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`lsrt_control_type<doxid-structlsrt__control__type>`
-	:ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`
-
-	-- functions
-
-	function :ref:`lsrt_initialize<doxid-galahad__lsrt_8h_1a9c5c14ddb34a5ea1becd133837da6544>`(data, control, status)
-	function :ref:`lsrt_read_specfile<doxid-galahad__lsrt_8h_1a07c4c60e1ab6ae67a4da710e2ed01ff0>`(control, specfile)
-	function :ref:`lsrt_import_control<doxid-galahad__lsrt_8h_1a09e39db33990f0c8a66480f54ba80f09>`(control, data, status)
-	function :ref:`lsrt_solve_problem<doxid-galahad__lsrt_8h_1aa1b3479d5f21fe373ef8948d55763992>`(data, status, m, n, power, weight, x, u, v)
-	function :ref:`lsrt_information<doxid-galahad__lsrt_8h_1ad3895aabdb7f18f84d209b02287872be>`(data, inform, status)
-	function :ref:`lsrt_terminate<doxid-galahad__lsrt_8h_1ac3a3d73e2686538802563c795a1afff4>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; lsrt_initialize
 .. _doxid-galahad__lsrt_8h_1a9c5c14ddb34a5ea1becd133837da6544:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_initialize(data, control, status)
+	void lsrt_initialize(
+		void** data,
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		int* status
+	)
 
 Set default control values and initialize private data
 
@@ -103,10 +131,13 @@ Set default control values and initialize private data
 .. index:: pair: function; lsrt_read_specfile
 .. _doxid-galahad__lsrt_8h_1a07c4c60e1ab6ae67a4da710e2ed01ff0:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_read_specfile(control, specfile)
+	void lsrt_read_specfile(
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		const char specfile[]
+	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSRT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lsrt.pdf for a list of keywords that may be set.
 
@@ -130,10 +161,14 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; lsrt_import_control
 .. _doxid-galahad__lsrt_8h_1a09e39db33990f0c8a66480f54ba80f09:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_import_control(control, data, status)
+	void lsrt_import_control(
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Import control parameters prior to solution.
 
@@ -165,10 +200,20 @@ Import control parameters prior to solution.
 .. index:: pair: function; lsrt_solve_problem
 .. _doxid-galahad__lsrt_8h_1aa1b3479d5f21fe373ef8948d55763992:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_solve_problem(data, status, m, n, power, weight, x, u, v)
+	void lsrt_solve_problem(
+		void** data,
+		int* status,
+		int m,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+	)
 
 Solve the regularized least-squuares problem using reverse communication.
 
@@ -268,10 +313,10 @@ Solve the regularized least-squuares problem using reverse communication.
 .. index:: pair: function; lsrt_information
 .. _doxid-galahad__lsrt_8h_1ad3895aabdb7f18f84d209b02287872be:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_information(data, inform, status)
+	void lsrt_information(void** data, struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -303,10 +348,14 @@ Provides output information
 .. index:: pair: function; lsrt_terminate
 .. _doxid-galahad__lsrt_8h_1ac3a3d73e2686538802563c795a1afff4:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function lsrt_terminate(data, control, inform)
+	void lsrt_terminate(
+		void** data,
+		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
+		struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 
