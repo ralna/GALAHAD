@@ -100,7 +100,8 @@ INTRO_FILE = nil
 --! being sorted by ``title``.
 --!
 
-SORT_GROUPS_BY = "title"
+--!SORT_GROUPS_BY = "title"
+SORT_GROUPS_BY = "originalIdx"
 
 --[[!
 	By default, the page for the global namespace page will be called
@@ -162,14 +163,14 @@ VERBATIM_TO_CODE_BLOCK = "none"
 --! reStructuredText (asterisks are used to mark **bold** or *italic* blocks).
 --!
 
-ESCAPE_ASTERISKS = false
+ESCAPE_ASTERISKS = true
 
 --!
 --! If the original doxy comments contain pipe characters ``|``, they have to be
 --! escaped in reStructuredText (pipes are used for substitution references).
 --!
 
-ESCAPE_PIPES = false
+ESCAPE_PIPES = true
 
 --!
 --! If the original doxy comments contain trailingasterisks, they have to be
@@ -177,7 +178,7 @@ ESCAPE_PIPES = false
 --! links).
 --!
 
-ESCAPE_TRAILING_UNDERSCORES = false
+ESCAPE_TRAILING_UNDERSCORES = true
 
 --!
 --! Exclude items declared in specific locations. Use a regular expression to
@@ -281,7 +282,8 @@ EXCLUDE_DEFAULT_CONSTRUCTORS = true
 --! included.
 --!
 
-EXCLUDE_DESTRUCTORS = true
+EXCLUDE_DESTRUCTORS = false
+--!EXCLUDE_DESTRUCTORS = true
 
 --[[!
 	Usually providing documentation blocks for primitive C typedefs such as:
@@ -295,6 +297,7 @@ EXCLUDE_DESTRUCTORS = true
 ]]
 
 EXCLUDE_PRIMITIVE_TYPEDEFS = true
+--!EXCLUDE_PRIMITIVE_TYPEDEFS = false
 
 --!
 --! For a base class/struct, show all the types directly derived from it.

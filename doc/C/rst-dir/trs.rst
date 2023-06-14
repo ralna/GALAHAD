@@ -53,6 +53,8 @@ available structures
 
 .. include :: struct_trs_time_type.rst
 
+.. include :: struct_trs_history_type.rst
+
 .. include :: struct_trs_inform_type.rst
 
 |	:ref:`genindex`
@@ -79,3 +81,4 @@ the code is available in $GALAHAD/src/trs/C/trstf.c .
 
 .. include :: ../../../src/trs/C/trstf.c
    :code: C
+

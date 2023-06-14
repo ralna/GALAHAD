@@ -45,8 +45,6 @@ available structures
 
 .. include :: struct_glrt_control_type.rst
 
-.. include :: struct_glrt_time_type.rst
-
 .. include :: struct_glrt_inform_type.rst
 
 |	:ref:`genindex`

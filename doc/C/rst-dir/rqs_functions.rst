@@ -7,97 +7,132 @@ overview of functions provided
 	:hidden:
 
 	struct_rqs_control_type.rst
-	struct_rqs_inform_type.rst
 	struct_rqs_time_type.rst
+	struct_rqs_history_type.rst
+	struct_rqs_inform_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`rqs_control_type<doxid-structrqs__control__type>`;
+	struct :ref:`rqs_history_type<doxid-structrqs__history__type>`;
+	struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`;
+	struct :ref:`rqs_time_type<doxid-structrqs__time__type>`;
+
+	// global functions
+
+	void :ref:`rqs_initialize<doxid-galahad__rqs_8h_1aeb8c3e1a278c83094aaaf185e9833fac>`(void** data, struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, int* status);
+	void :ref:`rqs_read_specfile<doxid-galahad__rqs_8h_1a1f6f3841ad5f7952dbc04a7cb19dd0e7>`(struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, const char specfile[]);
+
+	void :ref:`rqs_import<doxid-galahad__rqs_8h_1af815172e77293aa2a7c9dbcac2379f50>`(
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int H_ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	);
+
+	void :ref:`rqs_import_m<doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b>`(
+		void** data,
+		int* status,
+		int n,
+		const char M_type[],
+		int M_ne,
+		const int M_row[],
+		const int M_col[],
+		const int M_ptr[]
+	);
+
+	void :ref:`rqs_import_a<doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5>`(
+		void** data,
+		int* status,
+		int m,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	);
+
+	void :ref:`rqs_reset_control<doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f>`(
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`rqs_solve_problem<doxid-galahad__rqs_8h_1a162e2301c9d4bde7d57f5f1e820e2b84>`(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		int H_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int M_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` M_val[],
+		int m,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+	);
+
+	void :ref:`rqs_information<doxid-galahad__rqs_8h_1a586e85ec11c4647346916f49805fcb83>`(void** data, struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform, int* status);
+
+	void :ref:`rqs_terminate<doxid-galahad__rqs_8h_1ae1f727eadfaada300dc6a5e268ac2b74>`(
+		void** data,
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform
+	);
 
 .. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
 
 function calls
 --------------
 
-.. ---------------------------------------------------------------------------
-.. _global:
-
-Global Scope
-============
-
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_rqs_control_type.rst
-	struct_rqs_history_type.rst
-	struct_rqs_inform_type.rst
-	struct_rqs_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-.. ref-code-block:: lua
-	:class: doxyrest-overview-code-block
-
-	-- modules
-
-	:ref:`conf<doxid-namespaceconf>`
-
-	-- table types
-
-	:ref:`rqs_control_type<doxid-structrqs__control__type>`
-	:ref:`rqs_history_type<doxid-structrqs__history__type>`
-	:ref:`rqs_inform_type<doxid-structrqs__inform__type>`
-	:ref:`rqs_time_type<doxid-structrqs__time__type>`
-
-	-- functions
-
-	function :ref:`rqs_initialize<doxid-galahad__rqs_8h_1aeb8c3e1a278c83094aaaf185e9833fac>`(data, control, status)
-	function :ref:`rqs_read_specfile<doxid-galahad__rqs_8h_1a1f6f3841ad5f7952dbc04a7cb19dd0e7>`(control, specfile)
-	function :ref:`rqs_import<doxid-galahad__rqs_8h_1af815172e77293aa2a7c9dbcac2379f50>`(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
-	function :ref:`rqs_import_m<doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b>`(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
-	function :ref:`rqs_import_a<doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5>`(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
-	function :ref:`rqs_reset_control<doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f>`(control, data, status)
-
-	function :ref:`rqs_solve_problem<doxid-galahad__rqs_8h_1a162e2301c9d4bde7d57f5f1e820e2b84>`(
-		data,
-		status,
-		n,
-		power,
-		weight,
-		f,
-		c,
-		H_ne,
-		H_val,
-		x,
-		M_ne,
-		M_val,
-		m,
-		A_ne,
-		A_val,
-		y
-		)
-
-	function :ref:`rqs_information<doxid-galahad__rqs_8h_1a586e85ec11c4647346916f49805fcb83>`(data, inform, status)
-	function :ref:`rqs_terminate<doxid-galahad__rqs_8h_1ae1f727eadfaada300dc6a5e268ac2b74>`(data, control, inform)
-
-.. _details-global:
-
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Functions
----------
-
 .. index:: pair: function; rqs_initialize
 .. _doxid-galahad__rqs_8h_1aeb8c3e1a278c83094aaaf185e9833fac:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_initialize(data, control, status)
+	void rqs_initialize(void** data, struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -129,10 +164,10 @@ Set default control values and initialize private data
 .. index:: pair: function; rqs_read_specfile
 .. _doxid-galahad__rqs_8h_1a1f6f3841ad5f7952dbc04a7cb19dd0e7:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_read_specfile(control, specfile)
+	void rqs_read_specfile(struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, const char specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNRQS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/rqs.pdf for a list of keywords that may be set.
 
@@ -156,10 +191,20 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; rqs_import
 .. _doxid-galahad__rqs_8h_1af815172e77293aa2a7c9dbcac2379f50:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_import(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
+	void rqs_import(
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int H_ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	)
 
 Import problem data into internal storage prior to solution.
 
@@ -227,10 +272,19 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; rqs_import_m
 .. _doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_import_m(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
+	void rqs_import_m(
+		void** data,
+		int* status,
+		int n,
+		const char M_type[],
+		int M_ne,
+		const int M_row[],
+		const int M_col[],
+		const int M_ptr[]
+	)
 
 Import data for the scaling matrix M into internal storage prior to solution.
 
@@ -293,10 +347,19 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. index:: pair: function; rqs_import_a
 .. _doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
+	void rqs_import_a(
+		void** data,
+		int* status,
+		int m,
+		const char A_type[],
+		int A_ne,
+		const int A_row[],
+		const int A_col[],
+		const int A_ptr[]
+	)
 
 Import data for the constraint matrix A into internal storage prior to solution.
 
@@ -359,10 +422,14 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. index:: pair: function; rqs_reset_control
 .. _doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_reset_control(control, data, status)
+	void rqs_reset_control(
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		void** data,
+		int* status
+	)
 
 Reset control parameters after import if required.
 
@@ -394,27 +461,27 @@ Reset control parameters after import if required.
 .. index:: pair: function; rqs_solve_problem
 .. _doxid-galahad__rqs_8h_1a162e2301c9d4bde7d57f5f1e820e2b84:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_solve_problem(
-		data,
-		status,
-		n,
-		power,
-		weight,
-		f,
-		c,
-		H_ne,
-		H_val,
-		x,
-		M_ne,
-		M_val,
-		m,
-		A_ne,
-		A_val,
-		y
-		)
+	void rqs_solve_problem(
+		void** data,
+		int* status,
+		int n,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		int H_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
+		int M_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` M_val[],
+		int m,
+		int A_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+	)
 
 Solve the regularised quadratic problem.
 
@@ -533,10 +600,10 @@ Solve the regularised quadratic problem.
 .. index:: pair: function; rqs_information
 .. _doxid-galahad__rqs_8h_1a586e85ec11c4647346916f49805fcb83:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_information(data, inform, status)
+	void rqs_information(void** data, struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -568,10 +635,14 @@ Provides output information
 .. index:: pair: function; rqs_terminate
 .. _doxid-galahad__rqs_8h_1ae1f727eadfaada300dc6a5e268ac2b74:
 
-.. ref-code-block:: lua
+.. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	function rqs_terminate(data, control, inform)
+	void rqs_terminate(
+		void** data,
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
+		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform
+	)
 
 Deallocate all internal private storage
 
