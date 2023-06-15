@@ -7,32 +7,6 @@ lms_time_type structure
 .. toctree::
 	:hidden:
 
-.. _details-structlms__time__type:
-
-detailed documentation
-----------------------
-
-time derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; lms_time_type
-.. _doxid-structlms__time__type:
-
-struct lms_time_type
-====================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-time derived type as a C struct :ref:`More...<details-structlms__time__type>`
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -52,13 +26,13 @@ time derived type as a C struct :ref:`More...<details-structlms__time__type>`
 	};
 .. _details-structlms__time__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
 time derived type as a C struct
 
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; total
 .. _doxid-structlms__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:

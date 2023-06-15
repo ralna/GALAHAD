@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_hash_control_type.rst
-	struct_hash_time_type.rst
 	struct_hash_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_hash_control_type.rst
-	struct_hash_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -73,12 +47,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -101,8 +70,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; hash_initialize
 .. _doxid-galahad__hash_8h_1ac983b0236ce2f2ae9ed016846c5ad2a3:

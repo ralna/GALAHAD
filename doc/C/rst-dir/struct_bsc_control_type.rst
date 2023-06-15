@@ -7,32 +7,6 @@ bsc_control_type structure
 .. toctree::
 	:hidden:
 
-.. _details-structbsc__control__type:
-
-detailed documentation
-----------------------
-
-control derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; bsc_control_type
-.. _doxid-structbsc__control__type:
-
-struct bsc_control_type
-=======================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-control derived type as a C struct :ref:`More...<details-structbsc__control__type>`
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -55,13 +29,13 @@ control derived type as a C struct :ref:`More...<details-structbsc__control__typ
 	};
 .. _details-structbsc__control__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
 control derived type as a C struct
 
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
 .. _doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:

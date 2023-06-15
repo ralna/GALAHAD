@@ -7,32 +7,6 @@ lhs_control_type structure
 .. toctree::
 	:hidden:
 
-.. _details-structlhs__control__type:
-
-detailed documentation
-----------------------
-
-control derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; lhs_control_type
-.. _doxid-structlhs__control__type:
-
-struct lhs_control_type
-=======================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -51,13 +25,13 @@ Overview
 	};
 .. _details-structlhs__control__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
+control derived type as a C struct
 
-
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; error
 .. _doxid-structlhs__control__type_1a11614f44ef4d939bdd984953346a7572:
