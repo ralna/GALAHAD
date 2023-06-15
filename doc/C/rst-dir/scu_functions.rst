@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_scu_control_type.rst
-	struct_scu_time_type.rst
 	struct_scu_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_scu_control_type.rst
-	struct_scu_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -65,12 +39,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -93,8 +62,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; scu_information
 .. _doxid-galahad__scu_8h_1ad52752848139c1772e7d5bb4aa2a3f6d:

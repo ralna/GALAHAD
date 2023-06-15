@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_rpd_control_type.rst
-	struct_rpd_time_type.rst
 	struct_rpd_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_rpd_control_type.rst
-	struct_rpd_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -132,12 +106,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -160,8 +129,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; rpd_initialize
 .. _doxid-galahad__rpd_8h_1a6805ebb5cc097db7df39723c64cef793:

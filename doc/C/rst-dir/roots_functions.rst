@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_roots_control_type.rst
-	struct_roots_time_type.rst
 	struct_roots_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_roots_control_type.rst
-	struct_roots_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -75,12 +49,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -103,8 +72,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; roots_initialize
 .. _doxid-galahad__roots_8h_1ac504c30e3b55ef425516ad7cf1638a76:

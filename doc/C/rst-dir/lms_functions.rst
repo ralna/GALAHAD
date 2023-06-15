@@ -10,32 +10,6 @@ overview of functions provided
 	struct_lms_time_type.rst
 	struct_lms_inform_type.rst
 
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_lms_control_type.rst
-	struct_lms_inform_type.rst
-	struct_lms_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -68,12 +42,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -96,8 +65,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; lms_initialize
 .. _doxid-galahad__lms_8h_1a9abec0f0f82474e01c99ce43ab9252f5:

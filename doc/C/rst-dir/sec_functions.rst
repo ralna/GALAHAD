@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_sec_control_type.rst
-	struct_sec_time_type.rst
 	struct_sec_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_sec_control_type.rst
-	struct_sec_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -66,12 +40,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -94,8 +63,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; sec_initialize
 .. _doxid-galahad__sec_8h_1adf7e7f81c32214d1e79170023d5d47e5:

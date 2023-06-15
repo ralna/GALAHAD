@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_lhs_control_type.rst
-	struct_lhs_time_type.rst
 	struct_lhs_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_lhs_control_type.rst
-	struct_lhs_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -84,12 +58,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -112,8 +81,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; lhs_initialize
 .. _doxid-galahad__lhs_8h_1ae5e561917c238f90b8f6549a80c9d3d8:
