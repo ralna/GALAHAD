@@ -2,36 +2,10 @@
 .. _doxid-structhash__inform__type:
 
 hash_inform_type structure
--------------------------
+--------------------------
 
 .. toctree::
 	:hidden:
-
-.. _details-structhash__inform__type:
-
-detailed documentation
-----------------------
-
-inform derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; hash_inform_type
-.. _doxid-structhash__inform__type:
-
-struct hash_inform_type
-=======================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -47,13 +21,13 @@ Overview
 	};
 .. _details-structhash__inform__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
+inform derived type as a C struct
 
-
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; status
 .. _doxid-structhash__inform__type_1a6e27f49150e9a14580fb313cc2777e00:

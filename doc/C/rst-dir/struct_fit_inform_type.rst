@@ -7,32 +7,6 @@ fit_inform_type structure
 .. toctree::
 	:hidden:
 
-.. _details-structfit__inform__type:
-
-detailed documentation
-----------------------
-
-inform derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; fit_inform_type
-.. _doxid-structfit__inform__type:
-
-struct fit_inform_type
-======================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-inform derived type as a C struct :ref:`More...<details-structfit__inform__type>`
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -47,13 +21,13 @@ inform derived type as a C struct :ref:`More...<details-structfit__inform__type>
 	};
 .. _details-structfit__inform__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
 inform derived type as a C struct
 
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; status
 .. _doxid-structfit__inform__type_1a6e27f49150e9a14580fb313cc2777e00:

@@ -2,36 +2,10 @@
 .. _doxid-structroots__control__type:
 
 roots_control_type structure
---------------------------
+----------------------------
 
 .. toctree::
 	:hidden:
-
-.. _details-structroots__control__type:
-
-detailed documentation
-----------------------
-
-control derived type as a C struct
-
-components
-~~~~~~~~~~
-
-.. ---------------------------------------------------------------------------
-.. index:: pair: struct; roots_control_type
-.. _doxid-structroots__control__type:
-
-struct roots_control_type
-=========================
-
-.. toctree::
-	:hidden:
-
-Overview
-~~~~~~~~
-
-control derived type as a C struct :ref:`More...<details-structroots__control__type>`
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -54,13 +28,13 @@ control derived type as a C struct :ref:`More...<details-structroots__control__t
 	};
 .. _details-structroots__control__type:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
+detailed documentation
+----------------------
 
 control derived type as a C struct
 
-Fields
-------
+components
+~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
 .. _doxid-structroots__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:

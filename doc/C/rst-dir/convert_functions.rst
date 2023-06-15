@@ -10,32 +10,6 @@ overview of functions provided
 	struct_convert_time_type.rst
 	struct_convert_inform_type.rst
 
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_convert_control_type.rst
-	struct_convert_inform_type.rst
-	struct_convert_time_type.rst
-
-Overview
-~~~~~~~~
-
-
-
-
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
@@ -77,12 +51,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -105,8 +74,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; convert_initialize
 .. _doxid-galahad__convert_8h_1a6b9f4c72cb9c23cae9d4900816685ad6:

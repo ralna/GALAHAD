@@ -7,33 +7,7 @@ overview of functions provided
 	:hidden:
 
 	struct_bsc_control_type.rst
-	struct_bsc_time_type.rst
 	struct_bsc_inform_type.rst
-
-.. _details-global:
-
-function calls
---------------
-
-.. ---------------------------------------------------------------------------
-.. _global:
-.. index:: pair: namespace; global
-
-Global Namespace
-================
-
-.. toctree::
-	:hidden:
-
-	namespace_conf.rst
-	struct_bsc_control_type.rst
-	struct_bsc_inform_type.rst
-
-Overview
-~~~~~~~~
-
-
-
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -66,12 +40,7 @@ Overview
 
 .. _details-global:
 
-Detailed Documentation
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-Typedefs
+typedefs
 --------
 
 .. index:: pair: typedef; real_sp_
@@ -94,8 +63,8 @@ Typedefs
 
 ``real_wp_`` is the real working precision used
 
-Global Functions
-----------------
+function calls
+--------------
 
 .. index:: pair: function; bsc_initialize
 .. _doxid-galahad__bsc_8h_1a32dd948f5ce268b0cdb340f435819c8e:
