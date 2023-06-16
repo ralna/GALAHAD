@@ -1,0 +1,1301 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD gls package &#8212; GALAHAD C interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'gls';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="overview of functions provided" href="gls_functions.html" />
+    <link rel="prev" title="sils_sinfo_type structure" href="struct_sils_sinfo_type.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_control_type.html">sls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_time_type.html">sls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_inform_type.html">sls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_control_type.html">sls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_time_type.html">sls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_inform_type.html">sls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="uls.html">ULS - solve unsymmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="uls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_uls_control_type.html">uls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_uls_inform_type.html">uls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_uls_control_type.html">uls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_uls_inform_type.html">uls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sbls.html">SBLS - precondition and solve block symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sbls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_control_type.html">sbls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_time_type.html">sbls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_inform_type.html">sbls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_control_type.html">sbls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_time_type.html">sbls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_inform_type.html">sbls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="psls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_control_type.html">psls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_time_type.html">psls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_inform_type.html">psls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_control_type.html">psls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_time_type.html">psls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_inform_type.html">psls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sils.html">SILS - solve symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sils_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_control_type.html">sils_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_ainfo_type.html">sils_ainfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_finfo_type.html">sils_finfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_sinfo_type.html">sils_sinfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_control_type.html">sils_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-37"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_ainfo_type.html">sils_ainfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-38"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_finfo_type.html">sils_finfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-39"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_sinfo_type.html">sils_sinfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">GLS - solve unsymmetric systems of linear equations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-41"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-42"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_control.html">struct gls_control</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-43"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_ainfo.html">gls_ainfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-44"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_finfo.html">gls_finfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-45"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_sinfo.html">gls_sinfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-46"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_control.html">struct gls_control</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-47"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_ainfo.html">gls_ainfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-48"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_finfo.html">gls_finfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-49"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_sinfo.html">gls_sinfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-50"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fdc.html">FDC - find an equivalent linearly independent subset of a system of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-51"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="fdc_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-52"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_control_type.html">fdc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-53"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_time_type.html">fdc_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-54"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_inform_type.html">fdc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-55"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_control_type.html">fdc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-56"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_time_type.html">fdc_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-57"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_inform_type.html">fdc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-58"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.gls">
+<span id="galahad-gls-package"></span><span id="doxid-index-gls"></span><h1>GALAHAD gls package<a class="headerlink" href="#module-galahad.gls" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">gls</span></code> package <strong>solves sparse unsymmetric systems of linear equations</strong>
+using a variant of Gaussian elimination.
+Given a sparse symmetric matrix <span class="math notranslate nohighlight">\(A = \{ a_{ij} \}_{m \times n}\)</span>, and an
+<span class="math notranslate nohighlight">\(n\)</span>-vector <span class="math notranslate nohighlight">\(b\)</span>, this function solves the system <span class="math notranslate nohighlight">\(A x = b\)</span>. If instead
+<span class="math notranslate nohighlight">\(b\)</span> is an <span class="math notranslate nohighlight">\(m\)</span>-vector, the function may solve instead <span class="math notranslate nohighlight">\(A^T x = b\)</span>.
+<code class="docutils literal notranslate"><span class="pre">gls</span></code> is based upon a modern fortran interface to the HSL Archive
+fortran 77 package <code class="docutils literal notranslate"><span class="pre">MA28</span></code>, which itself relies on <code class="docutils literal notranslate"><span class="pre">MA33</span></code>.
+To obtain HSL Archive packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk/archive/">http://hsl.rl.ac.uk/archive/</a> .</p></li>
+</ul>
+<p><strong>Currently only the options and info dictionaries are exposed</strong>; these are
+provided and used by other GALAHAD packages with Python interfaces.
+Extended functionality is available with the <code class="docutils literal notranslate"><span class="pre">uls</span></code> function.</p>
+<p>See Section 4 of $GALAHAD/doc/gls.pdf for a brief description of the
+method employed and other details.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="overview-of-functions-provided">
+<span id="global"></span><h2>overview of functions provided<a class="headerlink" href="#overview-of-functions-provided" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
+
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// structs</span>
+
+<span class="k">struct</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// global functions</span>
+
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1ab7827883517db347ee1229eda004ede5"><span class="std std-ref">gls_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1a428c3dcc1d0de87f6108d396eec6e176"><span class="std std-ref">gls_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1a1b34338e803f603af4161082a25f4e58"><span class="std std-ref">gls_import</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1a8b84f081ccc0b05b733adc2f0a829c07"><span class="std std-ref">gls_reset_control</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1a620dc0f7a9ef6049a7bafdc02913da47"><span class="std std-ref">gls_information</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="gls_functions.html#doxid-galahad-gls-8h-1a4758f1fc9cad110a33c1778254b51390"><span class="std std-ref">gls_finalize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span></pre>
+</section>
+<section id="typedefs">
+<span id="details-global"></span><h2>typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span id="index-0"></span><span></span><span class="k">typedef</span> <span class="kt">float</span> <span class="n">real_sp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_sp_</span></code> is real single precision</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">double</span> <span class="n">real_wp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_wp_</span></code> is the real working precision used</p>
+</section>
+<section id="function-calls">
+<h2>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1ab7827883517db347ee1229eda004ede5"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">gls_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1a428c3dcc1d0de87f6108d396eec6e176"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">gls_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gls.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1a1b34338e803f603af4161082a25f4e58"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">gls_import</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>The import was succesful, and the package is ready for the solve phase</p></li>
+</ol>
+</li>
+<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-3. The restriction n &gt; 0 or requirement that type contains its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been violated.</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1a8b84f081ccc0b05b733adc2f0a829c07"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">gls_reset_control</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>The import was succesful, and the package is ready for the solve phase</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1a620dc0f7a9ef6049a7bafdc02913da47"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">gls_information</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>ainfo</p></td>
+<td><p>is a struct containing analysis output information (see <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>finfo</p></td>
+<td><p>is a struct containing factorization output information (see <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>sinfo</p></td>
+<td><p>is a struct containing solver output information (see <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The values were recorded succesfully</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gls-8h-1a4758f1fc9cad110a33c1778254b51390"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">gls_finalize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control"><span class="std std-ref">gls_control</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The values were recorded succesfully</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="struct-gls-control">
+<span id="doxid-structgls-control"></span><span id="index-8"></span><h2>struct gls_control<a class="headerlink" href="#struct-gls-control" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_gls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">gls_control</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">bool</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span class="std std-ref">f_indexing</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a3eec33a4e6d8295c25d117bb25dd1b9b"><span class="std std-ref">lp</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1af203f5ddbac4a47afed1a07b97e7e477"><span class="std std-ref">wp</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a4b5efeeced2b749191f71afc3bc8bebd"><span class="std std-ref">mp</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ad0e905fe282a7125424a53219afc0791"><span class="std std-ref">ldiag</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a48e951043b7ec1aab5e2e1b62f1d4021"><span class="std std-ref">btf</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ab717630b215f0362699acac11fb3652c"><span class="std std-ref">maxit</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1abca1e309e7d2d73481534b8fdad872e7"><span class="std std-ref">factor_blocking</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ab2cc1341183896b96cacc4c6a39acdde"><span class="std std-ref">solve_blas</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a8e48dcc59e4b8bbe40fe5b58321e4e72"><span class="std std-ref">la</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a7d8b6a8163160b2aa8f730ead5dd3727"><span class="std std-ref">la_int</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a6437ead17fd48daf197640949e8d4ff3"><span class="std std-ref">maxla</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1aa4d2d93f87da5df80b8aa2bce688c030"><span class="std std-ref">pivoting</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1afdaf7f9c41586b488e08ac26dd5d93b8"><span class="std std-ref">fill_in</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span class="std std-ref">multiplier</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a595df8d359282d27f49ac529283c509a"><span class="std std-ref">reduce</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1abb669b70ee8fb00689add7fad23ce00f"><span class="std std-ref">u</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a425fe61f3ab00924d3f1e05e93985df5"><span class="std std-ref">switch_full</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1aa340d2fee9ccb7c4a2f38ac086482506"><span class="std std-ref">drop</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ad0dcb73e98bad740852a54d6b7d1f6c2"><span class="std std-ref">tolerance</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1ada0fc18d7059672071369decb96f6178"><span class="std std-ref">cgce</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1aae1a90daac2378be15e6d9d644d19281"><span class="std std-ref">diagonal_pivoting</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="struct_gls_control.html#doxid-structgls-control-1a9b775b57e2c00f53ca8d8a33e5589533"><span class="std std-ref">struct_abort</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structgls-control"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a C struct</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-9"></span><span></span><span class="kt">bool</span> <span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a3eec33a4e6d8295c25d117bb25dd1b9b"><span id="index-10"></span><span></span><span class="kt">int</span> <span class="n">lp</span></pre>
+<p>Unit for error messages.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1af203f5ddbac4a47afed1a07b97e7e477"><span id="index-11"></span><span></span><span class="kt">int</span> <span class="n">wp</span></pre>
+<p>Unit for warning messages.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a4b5efeeced2b749191f71afc3bc8bebd"><span id="index-12"></span><span></span><span class="kt">int</span> <span class="n">mp</span></pre>
+<p>Unit for monitor output.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ad0e905fe282a7125424a53219afc0791"><span id="index-13"></span><span></span><span class="kt">int</span> <span class="n">ldiag</span></pre>
+<p>Controls level of diagnostic output.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a48e951043b7ec1aab5e2e1b62f1d4021"><span id="index-14"></span><span></span><span class="kt">int</span> <span class="n">btf</span></pre>
+<p>Minimum block size for block-triangular form (BTF). Set to <span class="math notranslate nohighlight">\(n\)</span> to avoid.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ab717630b215f0362699acac11fb3652c"><span id="index-15"></span><span></span><span class="kt">int</span> <span class="n">maxit</span></pre>
+<p>Maximum number of iterations.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1abca1e309e7d2d73481534b8fdad872e7"><span id="index-16"></span><span></span><span class="kt">int</span> <span class="n">factor_blocking</span></pre>
+<p>Level 3 blocking in factorize.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ab2cc1341183896b96cacc4c6a39acdde"><span id="index-17"></span><span></span><span class="kt">int</span> <span class="n">solve_blas</span></pre>
+<p>Switch for using Level 1 or 2 BLAS in solve.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a8e48dcc59e4b8bbe40fe5b58321e4e72"><span id="index-18"></span><span></span><span class="kt">int</span> <span class="n">la</span></pre>
+<p>Initial size for real array for the factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a7d8b6a8163160b2aa8f730ead5dd3727"><span id="index-19"></span><span></span><span class="kt">int</span> <span class="n">la_int</span></pre>
+<p>Initial size for integer array for the factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a6437ead17fd48daf197640949e8d4ff3"><span id="index-20"></span><span></span><span class="kt">int</span> <span class="n">maxla</span></pre>
+<p>Maximum size for real array for the factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1aa4d2d93f87da5df80b8aa2bce688c030"><span id="index-21"></span><span></span><span class="kt">int</span> <span class="n">pivoting</span></pre>
+<p>Controls pivoting: Number of columns searched. Zero for Markowitz.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1afdaf7f9c41586b488e08ac26dd5d93b8"><span id="index-22"></span><span></span><span class="kt">int</span> <span class="n">fill_in</span></pre>
+<p>Initially fill_in * ne space allocated for factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-23"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">multiplier</span></pre>
+<p>Factor by which arrays sizes are to be increased if they are too small.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a595df8d359282d27f49ac529283c509a"><span id="index-24"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">reduce</span></pre>
+<p>if previously allocated internal workspace arrays are greater than reduce times the currently required sizes, they are reset to current requirment</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1abb669b70ee8fb00689add7fad23ce00f"><span id="index-25"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">u</span></pre>
+<p>Pivot threshold.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a425fe61f3ab00924d3f1e05e93985df5"><span id="index-26"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">switch_full</span></pre>
+<p>Density for switch to full code.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1aa340d2fee9ccb7c4a2f38ac086482506"><span id="index-27"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">drop</span></pre>
+<p>Drop tolerance.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ad0dcb73e98bad740852a54d6b7d1f6c2"><span id="index-28"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">tolerance</span></pre>
+<p>anything &lt; this is considered zero</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1ada0fc18d7059672071369decb96f6178"><span id="index-29"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">cgce</span></pre>
+<p>Ratio for required reduction using IR.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1aae1a90daac2378be15e6d9d644d19281"><span id="index-30"></span><span></span><span class="kt">bool</span> <span class="n">diagonal_pivoting</span></pre>
+<p>Set to 0 for diagonal pivoting.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-control-1a9b775b57e2c00f53ca8d8a33e5589533"><span id="index-31"></span><span></span><span class="kt">bool</span> <span class="n">struct_abort</span></pre>
+<p>Control to abort if structurally singular.</p>
+</section>
+</section>
+<section id="gls-ainfo-structure">
+<span id="doxid-structgls-ainfo"></span><span id="index-32"></span><h2>gls_ainfo structure<a class="headerlink" href="#gls-ainfo-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_gls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">gls_ainfo</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1adf916204820072417ed73a32de1cefcf"><span class="std std-ref">flag</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a4628f2fb17af64608416810cc4e5a9d0"><span class="std std-ref">more</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1aa0296ccd8aa2c86d573fc176876ad1b3"><span class="std std-ref">len_analyse</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a41ce64037dc7aae66b5a4ac582a2985a"><span class="std std-ref">len_factorize</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a5e8b1d7aba05cfece368396811da24a3"><span class="std std-ref">ncmpa</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a6cfd95afd0afebd625b889fb6e58371c"><span class="std std-ref">rank</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a56da9169fe581b834e971dee4997ecfd"><span class="std std-ref">drop</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1adb25a546fdb408d29ea28385fe414361"><span class="std std-ref">struc_rank</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1afa0283d540a2a393c746b5eb05c3431c"><span class="std std-ref">oor</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1adc4cf3f551bb367858644559d69cfdf5"><span class="std std-ref">dup</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span class="std std-ref">stat</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1a1e1f13a9a57bbd9e84303bdc2b49b2fc"><span class="std std-ref">lblock</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1ad319083836152d74198f05040820282b"><span class="std std-ref">sblock</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1aed4a0eb964f83e8a0a29ae1f2e0f5cce"><span class="std std-ref">tblock</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo-1af0a337c9f4d03e088123ec071639aad7"><span class="std std-ref">ops</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="details-structgls-ainfo">
+<span id="id1"></span><h2>detailed documentation<a class="headerlink" href="#details-structgls-ainfo" title="Permalink to this heading">#</a></h2>
+<p>ainfo derived type as a C struct</p>
+<section id="id2">
+<h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1adf916204820072417ed73a32de1cefcf"><span id="index-33"></span><span></span><span class="kt">int</span> <span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a4628f2fb17af64608416810cc4e5a9d0"><span id="index-34"></span><span></span><span class="kt">int</span> <span class="n">more</span></pre>
+<p>More information on failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1aa0296ccd8aa2c86d573fc176876ad1b3"><span id="index-35"></span><span></span><span class="kt">int</span> <span class="n">len_analyse</span></pre>
+<p>Size for analysis.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a41ce64037dc7aae66b5a4ac582a2985a"><span id="index-36"></span><span></span><span class="kt">int</span> <span class="n">len_factorize</span></pre>
+<p>Size for factorize.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a5e8b1d7aba05cfece368396811da24a3"><span id="index-37"></span><span></span><span class="kt">int</span> <span class="n">ncmpa</span></pre>
+<p>Number of compresses.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a6cfd95afd0afebd625b889fb6e58371c"><span id="index-38"></span><span></span><span class="kt">int</span> <span class="n">rank</span></pre>
+<p>Estimated rank.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a56da9169fe581b834e971dee4997ecfd"><span id="index-39"></span><span></span><span class="kt">int</span> <span class="n">drop</span></pre>
+<p>Number of entries dropped.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1adb25a546fdb408d29ea28385fe414361"><span id="index-40"></span><span></span><span class="kt">int</span> <span class="n">struc_rank</span></pre>
+<p>Structural rank of matrix.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1afa0283d540a2a393c746b5eb05c3431c"><span id="index-41"></span><span></span><span class="kt">int</span> <span class="n">oor</span></pre>
+<p>Number of indices out-of-range.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1adc4cf3f551bb367858644559d69cfdf5"><span id="index-42"></span><span></span><span class="kt">int</span> <span class="n">dup</span></pre>
+<p>Number of duplicates.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-43"></span><span></span><span class="kt">int</span> <span class="n">stat</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1a1e1f13a9a57bbd9e84303bdc2b49b2fc"><span id="index-44"></span><span></span><span class="kt">int</span> <span class="n">lblock</span></pre>
+<p>Size largest non-triangular block.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1ad319083836152d74198f05040820282b"><span id="index-45"></span><span></span><span class="kt">int</span> <span class="n">sblock</span></pre>
+<p>Sum of orders of non-triangular blocks.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1aed4a0eb964f83e8a0a29ae1f2e0f5cce"><span id="index-46"></span><span></span><span class="kt">int</span> <span class="n">tblock</span></pre>
+<p>Total entries in all non-tringular blocks.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-ainfo-1af0a337c9f4d03e088123ec071639aad7"><span id="index-47"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">ops</span></pre>
+<p>Number of operations in elimination.</p>
+</section>
+</section>
+<section id="gls-finfo-structure">
+<span id="doxid-structgls-finfo"></span><span id="index-48"></span><h2>gls_finfo structure<a class="headerlink" href="#gls-finfo-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_gls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">gls_finfo</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1adf916204820072417ed73a32de1cefcf"><span class="std std-ref">flag</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a4628f2fb17af64608416810cc4e5a9d0"><span class="std std-ref">more</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a79b3c4b1d5426fdbd7eaf1b346be2c49"><span class="std std-ref">size_factor</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a41ce64037dc7aae66b5a4ac582a2985a"><span class="std std-ref">len_factorize</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a56da9169fe581b834e971dee4997ecfd"><span class="std std-ref">drop</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a6cfd95afd0afebd625b889fb6e58371c"><span class="std std-ref">rank</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span class="std std-ref">stat</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo-1af0a337c9f4d03e088123ec071639aad7"><span class="std std-ref">ops</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="details-structgls-finfo">
+<span id="id3"></span><h2>detailed documentation<a class="headerlink" href="#details-structgls-finfo" title="Permalink to this heading">#</a></h2>
+<p>finfo derived type as a C struct</p>
+<section id="id4">
+<h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1adf916204820072417ed73a32de1cefcf"><span id="index-49"></span><span></span><span class="kt">int</span> <span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a4628f2fb17af64608416810cc4e5a9d0"><span id="index-50"></span><span></span><span class="kt">int</span> <span class="n">more</span></pre>
+<p>More information on failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a79b3c4b1d5426fdbd7eaf1b346be2c49"><span id="index-51"></span><span></span><span class="kt">int</span> <span class="n">size_factor</span></pre>
+<p>Number of words to hold factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a41ce64037dc7aae66b5a4ac582a2985a"><span id="index-52"></span><span></span><span class="kt">int</span> <span class="n">len_factorize</span></pre>
+<p>Size for subsequent factorization.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a56da9169fe581b834e971dee4997ecfd"><span id="index-53"></span><span></span><span class="kt">int</span> <span class="n">drop</span></pre>
+<p>Number of entries dropped.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a6cfd95afd0afebd625b889fb6e58371c"><span id="index-54"></span><span></span><span class="kt">int</span> <span class="n">rank</span></pre>
+<p>Estimated rank.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-55"></span><span></span><span class="kt">int</span> <span class="n">stat</span></pre>
+<p>Status value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-finfo-1af0a337c9f4d03e088123ec071639aad7"><span id="index-56"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">ops</span></pre>
+<p>Number of operations in elimination.</p>
+</section>
+</section>
+<section id="gls-sinfo-structure">
+<span id="doxid-structgls-sinfo"></span><span id="index-57"></span><h2>gls_sinfo structure<a class="headerlink" href="#gls-sinfo-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_gls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">gls_sinfo</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo-1adf916204820072417ed73a32de1cefcf"><span class="std std-ref">flag</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo-1a4628f2fb17af64608416810cc4e5a9d0"><span class="std std-ref">more</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span class="std std-ref">stat</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="details-structgls-sinfo">
+<span id="id5"></span><h2>detailed documentation<a class="headerlink" href="#details-structgls-sinfo" title="Permalink to this heading">#</a></h2>
+<p>sinfo derived type as a C struct</p>
+<section id="id6">
+<h3>components<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-sinfo-1adf916204820072417ed73a32de1cefcf"><span id="index-58"></span><span></span><span class="kt">int</span> <span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-sinfo-1a4628f2fb17af64608416810cc4e5a9d0"><span id="index-59"></span><span></span><span class="kt">int</span> <span class="n">more</span></pre>
+<p>More information on failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structgls-sinfo-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-60"></span><span></span><span class="kt">int</span> <span class="n">stat</span></pre>
+<p>Status value after allocate failure.</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="struct_sils_sinfo_type.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">sils_sinfo_type structure</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="gls_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">overview of functions provided</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview-of-functions-provided">
+   overview of functions provided
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#typedefs">
+   typedefs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#function-calls">
+   function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#struct-gls-control">
+   struct gls_control
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#gls-ainfo-structure">
+   gls_ainfo structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structgls-ainfo">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#gls-finfo-structure">
+   gls_finfo structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structgls-finfo">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#gls-sinfo-structure">
+   gls_sinfo structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structgls-sinfo">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/gls.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

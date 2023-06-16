@@ -1,0 +1,1549 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>overview of functions provided &#8212; GALAHAD C interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'rpd_functions';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rpd_control_type structure" href="struct_rpd_control_type.html" />
+    <link rel="prev" title="GALAHAD RPD package" href="rpd.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="bsc.html">BSC - build and use the Schur complement from constituent matrices</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="bsc_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_bsc_control_type.html">bsc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_bsc_inform_type.html">bsc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_bsc_control_type.html">bsc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_bsc_inform_type.html">bsc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="convert.html">CONVERT - convert a sparse matrix from one format to another</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="convert_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_convert_control_type.html">convert_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_convert_time_type.html">convert_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_convert_inform_type.html">convert_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_convert_control_type.html">convert_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_convert_time_type.html">convert_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_convert_inform_type.html">convert_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fit.html">FIT - fit function and derivative values to data</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="fit_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fit_control_type.html">fit_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fit_inform_type.html">fit_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fit_control_type.html">fit_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fit_inform_type.html">fit_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="hash.html">HASH - set up and use a chained scatter table</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="hash_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_hash_control_type.html">hash_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_hash_inform_type.html">hash_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hash_control_type.html">hash_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hash_inform_type.html">hash_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ir.html">IR - given matrix factors, perform iterative refinement to solve systems</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ir_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_ir_control_type.html">ir_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_ir_inform_type.html">ir_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_ir_control_type.html">ir_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_ir_inform_type.html">ir_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lhs.html">LHS - compute an array of Latin Hypercube samples</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="lhs_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_lhs_control_type.html">lhs_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_lhs_inform_type.html">lhs_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_lhs_control_type.html">lhs_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-37"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_lhs_inform_type.html">lhs_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-38"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lms.html">LMS - maintain limited-memory Hessian approximations</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-39"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="lms_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_lms_control_type.html">lms_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-41"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_lms_time_type.html">lms_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-42"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_lms_inform_type.html">lms_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-43"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_lms_control_type.html">lms_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-44"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_lms_time_type.html">lms_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-45"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_lms_inform_type.html">lms_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-46"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="roots.html">ROOTS - find real roots of real polynomials</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-47"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="roots_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-48"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_roots_control_type.html">roots_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-49"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_roots_inform_type.html">roots_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-50"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_roots_control_type.html">roots_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-51"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_roots_inform_type.html">roots_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-52"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="rpd.html">RPD - convert LP/QP data to and from QPLIB format</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-53"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">overview of functions provided</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-54"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_rpd_control_type.html">rpd_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-55"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_rpd_inform_type.html">rpd_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-56"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_rpd_control_type.html">rpd_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-57"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_rpd_inform_type.html">rpd_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-58"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="scu.html">SCU - build and extend factors for an evolving block sparse matrix</a><input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-59"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="scu_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-60"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_scu_control_type.html">scu_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-61"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_scu_inform_type.html">scu_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-62"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_scu_control_type.html">scu_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-63"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_scu_inform_type.html">scu_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-64"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sec.html">SEC - maintain dense BFGS and SR1 secant approximations to a Hessian</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-65"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sec_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-66"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sec_control_type.html">sec_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-67"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sec_inform_type.html">sec_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-68"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sec_control_type.html">sec_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-69"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sec_inform_type.html">sec_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-70"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sha.html">SHA - find a sparse Hessian matrix approximation using componentwise secant approximation</a><input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-71"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sha_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-72"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sha_control_type.html">sha_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-73"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sha_inform_type.html">sha_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-74"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sha_control_type.html">sha_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-75"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sha_inform_type.html">sha_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-76" name="toctree-checkbox-76" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-76"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="presolve.html">PRESOLVE - transform LP/QP data so that the resulting problem is easier to solve</a><input class="toctree-checkbox" id="toctree-checkbox-77" name="toctree-checkbox-77" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-77"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="presolve_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-78" name="toctree-checkbox-78" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-78"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_presolve_control_type.html">presolve_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-79" name="toctree-checkbox-79" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-79"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_presolve_inform_type.html">presolve_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-80" name="toctree-checkbox-80" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-80"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_presolve_control_type.html">presolve_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-81" name="toctree-checkbox-81" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-81"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_presolve_inform_type.html">presolve_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-82" name="toctree-checkbox-82" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-82"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="overview-of-functions-provided">
+<span id="global"></span><h1>overview of functions provided<a class="headerlink" href="#overview-of-functions-provided" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// namespaces</span>
+
+<span class="k">namespace</span> conf<span></span><span class="p">;</span>
+
+<span class="c1">// typedefs</span>
+
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// structs</span>
+
+<span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// global functions</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a6805ebb5cc097db7df39723c64cef793"><span class="std std-ref">rpd_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1ad0148374adcd7bf5f34f378ba0995a21"><span class="std std-ref">rpd_get_stats</span></a><span></span><span class="p">(</span>
+    <span class="kt">char</span> <span class="n">qplib_file</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">qplib_file_len</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">char</span> <span class="n">p_type</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">h_ne</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">a_ne</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">h_c_ne</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1aa5be687c00e4a7980c5ea7c258717d3a"><span class="std std-ref">rpd_get_g</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a38dc68ed79b192e3fcd961b8589d202c"><span class="std std-ref">rpd_get_f</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="o">*</span> <span class="n">f</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span class="std std-ref">rpd_get_xlu</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1aa3b44968b109ed194ed2bb04009f35ac"><span class="std std-ref">rpd_get_clu</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a02021324df6f485160d327f2f5fca0d3"><span class="std std-ref">rpd_get_h</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">h_val</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a8b0c3c507b12512b09ee4ec92596148e"><span class="std std-ref">rpd_get_a</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">a_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">a_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">a_val</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a55ae091188ad0d88920565549bd47451"><span class="std std-ref">rpd_get_h_c</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_c_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_c_ptr</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_c_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_c_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">h_c_val</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1af784ecc65c925575788a494bd8118f4d"><span class="std std-ref">rpd_get_x_type</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x_type</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1afbc831595295e9153e4740d852a35c27"><span class="std std-ref">rpd_get_x</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1ac9fd1a08acf460b7962ad5393d69fff5"><span class="std std-ref">rpd_get_y</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1ab1579a81766096bd1764f0fb0cc10db3"><span class="std std-ref">rpd_get_z</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1a6deb3fc67d1b4e1d1cd1661af237d6b3"><span class="std std-ref">rpd_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-rpd-8h-1af49fc46839c605dd71d2666189d0d8a9"><span class="std std-ref">rpd_terminate</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">);</span></pre>
+</section>
+<section id="typedefs">
+<span id="details-global"></span><h1>typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h1>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span id="index-0"></span><span></span><span class="k">typedef</span> <span class="kt">float</span> <span class="n">real_sp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_sp_</span></code> is real single precision</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">double</span> <span class="n">real_wp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_wp_</span></code> is the real working precision used</p>
+</section>
+<section id="function-calls">
+<h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a6805ebb5cc097db7df39723c64cef793"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">rpd_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The import was succesful.</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1ad0148374adcd7bf5f34f378ba0995a21"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_stats</span><span class="p">(</span>
+    <span class="kt">char</span> <span class="n">qplib_file</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">qplib_file_len</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">char</span> <span class="n">p_type</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">h_ne</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">a_ne</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">h_c_ne</span>
+<span class="p">)</span></pre>
+<p>Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>qplib_file</p></td>
+<td><p>is a one-dimensional array of type char that specifies the name of the QPLIB file that is to be read.</p></td>
+</tr>
+<tr class="row-even"><td><p>qplib_file_len</p></td>
+<td><p>is a scalar variable of type int, that gives the number of characters in the name encoded in qplib_file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>p_type</p></td>
+<td><p>is a one-dimensional array of size 4 and type char that specifies the type of quadratic programming problem encoded in the QPLIB file.</p>
+<p>The first character indicates the type of objective function used. It will be one of the following:</p>
+<ul class="simple">
+<li><p>L a linear objective function.</p></li>
+<li><p>D a convex quadratic objective function whose Hessian is a diagonal matrix.</p></li>
+<li><p>C a convex quadratic objective function.</p></li>
+<li><p>Q a quadratic objective function whose Hessian may be indefinite.</p></li>
+</ul>
+<p>The second character indicates the types of variables that are present. It will be one of the following:</p>
+<ul class="simple">
+<li><p>C all the variables are continuous.</p></li>
+<li><p>B all the variables are binary (0-1).</p></li>
+<li><p>M the variables are a mix of continuous and binary.</p></li>
+<li><p>I all the variables are integer.</p></li>
+<li><p>G the variables are a mix of continuous, binary and integer.</p></li>
+</ul>
+<p>The third character indicates the type of the (most extreme) constraint function used; other constraints may be of a lesser type. It will be one of the following:</p>
+<ul class="simple">
+<li><p>N there are no constraints.</p></li>
+<li><p>B some of the variables lie between lower and upper bounds (box constraint).</p></li>
+<li><p>L the constraint functions are linear.</p></li>
+<li><p>D the constraint functions are convex quadratics with diagonal Hessians.</p></li>
+<li><p>C the constraint functions are convex quadratics.</p></li>
+<li><p>Q the constraint functions are quadratics whose Hessians may be indefinite.</p></li>
+</ul>
+<p>Thus for continuous problems, we would have</p>
+<ul class="simple">
+<li><p>LCL a linear program.</p></li>
+<li><p>LCC or LCQ a linear program with quadratic constraints.</p></li>
+<li><p>CCB or QCB a bound-constrained quadratic program.</p></li>
+<li><p>CCL or QCL a quadratic program.</p></li>
+<li><p>CCC or CCQ or QCC or QCQ a quadratic program with quadratic constraints.</p></li>
+</ul>
+<p>For integer problems, the second character would be I rather than C, and for mixed integer problems, the second character would by M or G.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type int, that holds the number of general constraints.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> stored in the sparse symmetric co-ordinate storage scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p>a_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> stored in the sparse co-ordinate storage scheme.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_c_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> stored in the joint sparse co-ordinate storage scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1aa5be687c00e4a7980c5ea7c258717d3a"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_g</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[])</span></pre>
+<p>Recover the linear term <span class="math notranslate nohighlight">\(g\)</span> from in objective function</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the linear term <span class="math notranslate nohighlight">\(g\)</span> of the objective function. The j-th component of g, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a38dc68ed79b192e3fcd961b8589d202c"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_f</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="o">*</span> <span class="n">f</span><span class="p">)</span></pre>
+<p>Recover the constant term <span class="math notranslate nohighlight">\(f\)</span> in the objective function.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>f</p></td>
+<td><p>is a scalar of type double, that gives the constant term <span class="math notranslate nohighlight">\(f\)</span> from the objective function.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_xlu</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Recover the variable lower and upper bounds <span class="math notranslate nohighlight">\(x_l\)</span> and <span class="math notranslate nohighlight">\(x_u\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the lower bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of x_l, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\((x_l)_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the upper bounds <span class="math notranslate nohighlight">\(x_u\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of x_u, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\((x_u)_j\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1aa3b44968b109ed194ed2bb04009f35ac"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_clu</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Recover the constraint lower and upper bounds <span class="math notranslate nohighlight">\(c_l\)</span> and <span class="math notranslate nohighlight">\(c_u\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type int, that holds the number of general constraints.</p></td>
+</tr>
+<tr class="row-even"><td><p>c_l</p></td>
+<td><p>is a one-dimensional array of size m and type double, that gives the lower bounds <span class="math notranslate nohighlight">\(c_l\)</span> on the constraints <span class="math notranslate nohighlight">\(A x\)</span>. The i-th component of c_l, i = 0, … , m-1, contains <span class="math notranslate nohighlight">\((c_l)_i\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>c_u</p></td>
+<td><p>is a one-dimensional array of size m and type double, that gives the upper bounds <span class="math notranslate nohighlight">\(c_u\)</span> on the constraints <span class="math notranslate nohighlight">\(A x\)</span>. The i-th component of c_u, i = 0, … , m-1, contains <span class="math notranslate nohighlight">\((c_u)_i\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a02021324df6f485160d327f2f5fca0d3"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_h</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">h_val</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Recover the Hessian term <span class="math notranslate nohighlight">\(H\)</span> in the objective function.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>h_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>h_row</p></td>
+<td><p>is a one-dimensional array of size h_ne and type int, that gives the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the <span class="xref std std-ref">sparse co-ordinate storage scheme</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_col</p></td>
+<td><p>is a one-dimensional array of size h_ne and type int, that gives the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p>h_val</p></td>
+<td><p>is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a8b0c3c507b12512b09ee4ec92596148e"><span id="index-9"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_a</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">a_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">a_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">a_val</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Recover the Jacobian term <span class="math notranslate nohighlight">\(A\)</span> in the constraints.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>a_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>a_row</p></td>
+<td><p>is a one-dimensional array of size a_ne and type int, that gives the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the <span class="xref std std-ref">sparse co-ordinate storage scheme</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>a_col</p></td>
+<td><p>is a one-dimensional array of size a_ne and type int, that gives the column indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate, storage scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p>a_val</p></td>
+<td><p>is a one-dimensional array of size a_ne and type double, that gives the values of the entries of the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a55ae091188ad0d88920565549bd47451"><span id="index-10"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_h_c</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_c_ne</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">h_c_ptr</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_c_row</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">h_c_col</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">h_c_val</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Recover the Hessian terms <span class="math notranslate nohighlight">\(H_c\)</span> in the constraints.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>h_c_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>h_c_ptr</p></td>
+<td><p>is a one-dimensional array of size h_c_ne and type int, that gives the constraint indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the <span class="xref std std-ref">joint sparse co-ordinate storage scheme</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_c_row</p></td>
+<td><p>is a one-dimensional array of size h_c_ne and type int, that gives the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the joint sparse co-ordinate storage scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p>h_c_col</p></td>
+<td><p>is a one-dimensional array of size h_c_ne and type int, that gives the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the sparse co-ordinate storage scheme.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_c_val</p></td>
+<td><p>is a one-dimensional array of size h_c_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H_c\)</span> in the sparse co-ordinate storage scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1af784ecc65c925575788a494bd8118f4d"><span id="index-11"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_x_type</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x_type</span><span class="p">[])</span></pre>
+<p>Recover the types of the variables <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_type</p></td>
+<td><p>is a one-dimensional array of size n and type int, that specifies the type of each variable <span class="math notranslate nohighlight">\(x\)</span>. Specifically, for j = 0, … , n-1, x(j) =</p>
+<ul class="simple">
+<li><p>0 variable <span class="math notranslate nohighlight">\(x_j\)</span> is continuous,</p></li>
+<li><p>1 variable <span class="math notranslate nohighlight">\(x_j\)</span> is integer, and</p></li>
+<li><p>2 variable <span class="math notranslate nohighlight">\(x_j\)</span> is binary (0,1)</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1afbc831595295e9153e4740d852a35c27"><span id="index-12"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_x</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[])</span></pre>
+<p>Recover the initial values of the variables <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the initial values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of x, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1ac9fd1a08acf460b7962ad5393d69fff5"><span id="index-13"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_y</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[])</span></pre>
+<p>Recover the initial values of the Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type int, that holds the number of general constraints.</p></td>
+</tr>
+<tr class="row-even"><td><p>y</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the initial values <span class="math notranslate nohighlight">\(y\)</span> of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(y_j\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1ab1579a81766096bd1764f0fb0cc10db3"><span id="index-14"></span><span></span><span class="kt">void</span> <span class="n">rpd_get_z</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[])</span></pre>
+<p>Recover the initial values of the dual variables <span class="math notranslate nohighlight">\(z\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The statistics have been recovered succesfully.</p></li>
+</ol>
+</li>
+<li><p>-93. The QPLIB file did not contain the required data.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>z</p></td>
+<td><p>is a one-dimensional array of size n and type double, that gives the initial values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of z, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1a6deb3fc67d1b4e1d1cd1661af237d6b3"><span id="index-15"></span><span></span><span class="kt">void</span> <span class="n">rpd_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The values were recorded succesfully</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-rpd-8h-1af49fc46839c605dd71d2666189d0d8a9"><span id="index-16"></span><span></span><span class="kt">void</span> <span class="n">rpd_terminate</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="rpd.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">GALAHAD RPD package</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="struct_rpd_control_type.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">rpd_control_type structure</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   overview of functions provided
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#typedefs">
+   typedefs
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#function-calls">
+   function calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/rpd_functions.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
