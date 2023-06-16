@@ -39,7 +39,7 @@ endif
 pp_options = []
 if fc.get_id() == 'gcc'
   pp_options += ['-cpp', '-E']
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
   pp_options += ['-fpp', '-P']
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
@@ -111,7 +111,7 @@ if fc.get_id() == 'nagfor'
 elif fc.get_id() == 'gcc'
   add_global_arguments('-fopenmp', language : 'fortran')
   add_global_link_arguments('-fopenmp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
   add_global_arguments('-qopenmp', language : 'fortran')
   add_global_link_arguments('-qopenmp', language : 'fortran')
 endif
