@@ -1,0 +1,1941 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD ULS package &#8212; GALAHAD C interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'uls';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="overview of functions provided" href="uls_functions.html" />
+    <link rel="prev" title="sls_inform_type structure" href="struct_sls_inform_type.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_control_type.html">sls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_time_type.html">sls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sls_inform_type.html">sls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_control_type.html">sls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_time_type.html">sls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sls_inform_type.html">sls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">ULS - solve unsymmetric systems of linear equations (übersolver)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="uls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_uls_control_type.html">uls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_uls_inform_type.html">uls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_uls_control_type.html">uls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_uls_inform_type.html">uls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sbls.html">SBLS - precondition and solve block symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sbls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_control_type.html">sbls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_time_type.html">sbls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sbls_inform_type.html">sbls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_control_type.html">sbls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_time_type.html">sbls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sbls_inform_type.html">sbls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="psls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_control_type.html">psls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_time_type.html">psls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_psls_inform_type.html">psls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_control_type.html">psls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_time_type.html">psls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_psls_inform_type.html">psls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sils.html">SILS - solve symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="sils_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_control_type.html">sils_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_ainfo_type.html">sils_ainfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_finfo_type.html">sils_finfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_sils_sinfo_type.html">sils_sinfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_control_type.html">sils_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-37"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_ainfo_type.html">sils_ainfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-38"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_finfo_type.html">sils_finfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-39"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_sils_sinfo_type.html">sils_sinfo_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gls.html">GLS - solve unsymmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-41"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-42"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_control.html">struct gls_control</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-43"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_ainfo.html">gls_ainfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-44"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_finfo.html">gls_finfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-45"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_gls_sinfo.html">gls_sinfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-46"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_control.html">struct gls_control</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-47"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_ainfo.html">gls_ainfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-48"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_finfo.html">gls_finfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-49"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_gls_sinfo.html">gls_sinfo structure</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-50"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fdc.html">FDC - find an equivalent linearly independent subset of a system of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-51"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="fdc_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-52"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_control_type.html">fdc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-53"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_time_type.html">fdc_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-54"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_fdc_inform_type.html">fdc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-55"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_control_type.html">fdc_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-56"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_time_type.html">fdc_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-57"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_fdc_inform_type.html">fdc_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-58"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.uls">
+<span id="galahad-uls-package"></span><span id="doxid-index-uls"></span><h1>GALAHAD ULS package<a class="headerlink" href="#module-galahad.uls" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">uls</span></code> package
+<strong>solves dense or sparse unsymmetric systems of linear equations</strong>
+using variants of Gaussian elimination.
+Given a sparse matrix <span class="math notranslate nohighlight">\(A = \{ a_{ij} \}_{m \times n}\)</span>, and an
+<span class="math notranslate nohighlight">\(n\)</span>-vector <span class="math notranslate nohighlight">\(b\)</span>, this function solves the systems <span class="math notranslate nohighlight">\(A x = b\)</span> or <span class="math notranslate nohighlight">\(A^T x = b\)</span>.
+Both square (<span class="math notranslate nohighlight">\(m=n\)</span>) and rectangular (<span class="math notranslate nohighlight">\(m\neq n\)</span>)  matrices are handled;
+one of an infinite class of  solutions for consistent systems will be returned
+whenever <span class="math notranslate nohighlight">\(A\)</span> is not of full rank.</p>
+<p>The method provides a common interface to a variety of well-known
+solvers from HSL and elsewhere. Currently supported solvers include
+<code class="docutils literal notranslate"><span class="pre">MA28/GLS</span></code> and <code class="docutils literal notranslate"><span class="pre">HSL_MA48</span></code> from {HSL},
+as well as <code class="docutils literal notranslate"><span class="pre">GETR</span></code> from LAPACK.
+Note that, with the exception of he Netlib reference LAPACK code,
+<strong>the solvers themselves do not form part of this package and
+must be obtained/linked to separately.</strong>
+Dummy instances are provided for solvers that are unavailable.
+Also note that additional flexibility may be obtained by calling the
+solvers directly rather that via this package.</p>
+</section>
+<section id="terminology">
+<h2>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h2>
+<p>The solvers used each produce an <span class="math notranslate nohighlight">\(L U\)</span> factorization of
+<span class="math notranslate nohighlight">\(A\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> and U are permuted
+lower and upper triangular matrices (respectively).
+It is convenient to write this factorization in the form
+<div class="math notranslate nohighlight">
+\[A = P_R L U P_C,\]</div>
+
+where <span class="math notranslate nohighlight">\(P_R\)</span> and <span class="math notranslate nohighlight">\(P_C\)</span> are row and column permutation matrices, respectively.</p>
+</section>
+<section id="supported-solvers">
+<h2>supported solvers<a class="headerlink" href="#supported-solvers" title="Permalink to this heading">#</a></h2>
+<p>The key features of the external solvers supported by <code class="docutils literal notranslate"><span class="pre">uls</span></code> are
+given in the following table:</p>
+<table class="table" id="id13">
+<caption><span class="caption-text">External solver characteristics</span><a class="headerlink" href="#id13" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 22.7%" />
+<col style="width: 22.7%" />
+<col style="width: 18.2%" />
+<col style="width: 36.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>solver</p></th>
+<th class="head"><p>factorization</p></th>
+<th class="head"><p>out-of-core</p></th>
+<th class="head"><p>parallelised</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GLS/MA28</span></code></p></td>
+<td><p>sparse</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA48</span></code></p></td>
+<td><p>sparse</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GETR</span></code></p></td>
+<td><p>dense</p></td>
+<td><p>no</p></td>
+<td><p>with parallel LAPACK</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Variants of sparse Gaussian elimination are used.
+See Section 4 of $GALAHAD/doc/uls.pdf for a brief description of the
+method employed and other details.</p>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">GLS</span></code> is available as part of GALAHAD and relies on
+the HSL Archive package <code class="docutils literal notranslate"><span class="pre">MA33</span></code>. To obtain HSL Archive packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk/archive/">http://hsl.rl.ac.uk/archive/</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">HSL_MA48</span></code> is part of HSL 2011.
+To obtain HSL 2011 packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk">http://hsl.rl.ac.uk</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">GETR</span></code> is available as <code class="docutils literal notranslate"><span class="pre">S/DGETRF/S</span></code>
+as part of LAPACK. Reference versions
+are provided by GALAHAD, but for good performance
+machined-tuned versions should be used.</p>
+<p>The methods used are described in the user-documentation for</p>
+<p>HSL 2011, A collection of Fortran codes for large-scale scientific computation (2011).</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.hsl.rl.ac.uk">http://www.hsl.rl.ac.uk</a> .</p></li>
+</ul>
+</section>
+<section id="matrix-storage">
+<h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
+and stored in a variety of convenient input formats.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, $0 \leq j \leq n-1
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,  <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m) holds the total number of entries.
+The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n) holds the total number of entries.
+The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="introduction-to-function-calls">
+<h2>introduction to function calls<a class="headerlink" href="#introduction-to-function-calls" title="Permalink to this heading">#</a></h2>
+<p>To solve a given problem, functions from the uls package must be
+called in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a7afb5f2dde112e60686a5527a8f37ca4"><span class="std std-ref">uls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span class="std std-ref">uls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a6c0599479b84ee7d7c4ee7c473b76a83"><span class="std std-ref">uls_factorize_matrix</span></a> - set up matrix data structures, analyse the structure to choose a suitable order for factorization, and then factorize the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ad2ad6daa4d54d75e40fbe253f2bc5881"><span class="std std-ref">uls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a01d3e7c19415125c660eba51d99c7518"><span class="std std-ref">uls_solve_system</span></a> - solve the linear system of equations <span class="math notranslate nohighlight">\(Ax=b\)</span> or <span class="math notranslate nohighlight">\(A^Tx=b\)</span></p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ab41cc4ccba208d7de3a0ccbc4b4efbcf"><span class="std std-ref">uls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a36b2ea1ade2cdd8bca238f46e9e98435"><span class="std std-ref">uls_terminate</span></a> - deallocate data structures</p></li>
+</ul>
+<p>See the <a class="reference internal" href="#doxid-index-uls-examples"><span class="std std-ref">examples</span></a> section for
+illustrations of use.</p>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="overview-of-functions-provided">
+<span id="global"></span><h2>overview of functions provided<a class="headerlink" href="#overview-of-functions-provided" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
+
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// structs</span>
+
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// global functions</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a7afb5f2dde112e60686a5527a8f37ca4"><span class="std std-ref">uls_initialize</span></a><span></span><span class="p">(</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">solver</span><span class="p">[],</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span class="std std-ref">uls_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a6c0599479b84ee7d7c4ee7c473b76a83"><span class="std std-ref">uls_factorize_matrix</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">type</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">row</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">ptr</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ad2ad6daa4d54d75e40fbe253f2bc5881"><span class="std std-ref">uls_reset_control</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a01d3e7c19415125c660eba51d99c7518"><span class="std std-ref">uls_solve_system</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
+    <span class="kt">bool</span> <span class="n">trans</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ab41cc4ccba208d7de3a0ccbc4b4efbcf"><span class="std std-ref">uls_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a36b2ea1ade2cdd8bca238f46e9e98435"><span class="std std-ref">uls_terminate</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">);</span></pre>
+</section>
+<section id="typedefs">
+<span id="details-global"></span><h2>typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span id="index-0"></span><span></span><span class="k">typedef</span> <span class="kt">float</span> <span class="n">real_sp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_sp_</span></code> is real single precision</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">double</span> <span class="n">real_wp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_wp_</span></code> is the real working precision used</p>
+</section>
+<section id="function-calls">
+<h2>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a7afb5f2dde112e60686a5527a8f37ca4"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">uls_initialize</span><span class="p">(</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">solver</span><span class="p">[],</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p>Select solver, set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>solver</p></td>
+<td><p>is a one-dimensional array of type char that specifies the <span class="xref std std-ref">solver package</span> that should be used to factorize the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘gls’, ‘ma28’, ‘ma48 or ‘getr’; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The import was succesful.</p></li>
+</ol>
+</li>
+<li><p>-26. The requested solver is not available.</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">uls_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNULS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/uls.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a6c0599479b84ee7d7c4ee7c473b76a83"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">uls_factorize_matrix</span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">type</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">row</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">ptr</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Import matrix data into internal storage prior to solution, analyse the sparsity patern, and subsequently factorize the matrix</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The import, analysis and factorization were conducted succesfully.</p></li>
+</ol>
+</li>
+<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-3. The restrictions n &gt; 0 and m&gt; 0 or requirement that the matrix type must contain the relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows has been violated.</p></li>
+<li><p>-26. The requested solver is not available.</p></li>
+<li><p>-29. This option is not available with this solver.</p></li>
+<li><p>-32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.</p></li>
+<li><p>-50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>is a one-dimensional array of type char that specifies the <span class="xref std std-ref">unsymmetric storage scheme</span> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>val</p></td>
+<td><p>is a one-dimensional array of size ne and type double, that holds the values of the entries of the matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the supported storage schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>row</p></td>
+<td><p>is a one-dimensional array of size ne and type int, that holds the row indices of the matrix <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>col</p></td>
+<td><p>is a one-dimensional array of size ne and type int, that holds the column indices of the matrix <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ptr</p></td>
+<td><p>is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1ad2ad6daa4d54d75e40fbe253f2bc5881"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">uls_reset_control</span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The import was succesful.</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a01d3e7c19415125c660eba51d99c7518"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">uls_solve_system</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
+    <span class="kt">bool</span> <span class="n">trans</span>
+<span class="p">)</span></pre>
+<p>Solve the linear system <span class="math notranslate nohighlight">\(Ax=b\)</span> or <span class="math notranslate nohighlight">\(A^Tx=b\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The required solution was obtained.</p></li>
+</ol>
+</li>
+<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
+<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
+<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>sol</p></td>
+<td><p>is a one-dimensional array of size n and type double. On entry, it must hold the vector <span class="math notranslate nohighlight">\(b\)</span>. On a successful exit, its contains the solution <span class="math notranslate nohighlight">\(x\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>trans</p></td>
+<td><p>is a scalar variable of type bool, that specifies whether to solve the equation <span class="math notranslate nohighlight">\(A^Tx=b\)</span> (trans=true) or <span class="math notranslate nohighlight">\(Ax=b\)</span> (trans=false).</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1ab41cc4ccba208d7de3a0ccbc4b4efbcf"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">uls_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>The values were recorded succesfully</p></li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a36b2ea1ade2cdd8bca238f46e9e98435"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">uls_terminate</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="uls-control-type-structure">
+<span id="doxid-structuls-control-type"></span><span id="index-9"></span><h2>uls_control_type structure<a class="headerlink" href="#uls-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_uls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">uls_control_type</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structuls-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span class="std std-ref">f_indexing</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a11614f44ef4d939bdd984953346a7572"><span class="std std-ref">error</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1af44472f3bdd4c3af6ed5465266b25312"><span class="std std-ref">warning</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span class="std std-ref">out</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span class="std std-ref">print_level</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1afc17ef86601030a3cb1c7edb7a79a39f"><span class="std std-ref">print_level_solver</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a9a5f5bbcbc09508812a16fee01fc812d"><span class="std std-ref">initial_fill_in_factor</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a60c3d0376bbe5c06260509a9be31c562"><span class="std std-ref">min_real_factor_size</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1addaddc306c33f5d7e6ebf7eeeab2612e"><span class="std std-ref">min_integer_factor_size</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-control-type-1ae7e9983ad0ee9b1e837f3e1cacc9f4e9"><span class="std std-ref">max_factor_size</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1aa2177c655d92533f17fcff58482e52c1"><span class="std std-ref">blas_block_size_factorize</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a1af3c20cdeaaee431f309395f9f09564"><span class="std std-ref">blas_block_size_solve</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a7489428a42ce1420b4891f638153c99f"><span class="std std-ref">pivot_control</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1a9a4b5f33dbbc1f6e9aa81dee63af5d2e"><span class="std std-ref">pivot_search_limit</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1ac1bd945b4d891a5f407f98afccb2c357"><span class="std std-ref">minimum_size_for_btf</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-control-type-1ab044fd598767830ddc06560a91b80936"><span class="std std-ref">max_iterative_refinements</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structuls-control-type-1a5d1b79218a7bf1f16c3195835a311195"><span class="std std-ref">stop_if_singular</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1a6189cbfe4360772c9fa6b554e93a9b2b"><span class="std std-ref">array_increase_factor</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1a95f87bc195563b7a846fd33107fbe09c"><span class="std std-ref">switch_to_full_code_density</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1abee09e4efae03be7d0d1a8503b338ce7"><span class="std std-ref">array_decrease_factor</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1a65344e4192516e9b621cc7416f09045c"><span class="std std-ref">relative_pivot_tolerance</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1aa5e25bdcf567fac1fb496199a7c06d5a"><span class="std std-ref">absolute_pivot_tolerance</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1afb83ea8401da6498362914aa88ae823f"><span class="std std-ref">zero_tolerance</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1a97a6571829dbdccad7598f7b5c3ddfbd"><span class="std std-ref">acceptable_residual_relative</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structuls-control-type-1a5ee0e70d90b1398019054b19b68057a0"><span class="std std-ref">acceptable_residual_absolute</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structuls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span class="std std-ref">prefix</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+<span class="p">};</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structuls-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a C struct</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-10"></span><span></span><span class="kt">bool</span> <span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-11"></span><span></span><span class="kt">int</span> <span class="n">error</span></pre>
+<p>unit for error messages</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1af44472f3bdd4c3af6ed5465266b25312"><span id="index-12"></span><span></span><span class="kt">int</span> <span class="n">warning</span></pre>
+<p>unit for warning messages</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-13"></span><span></span><span class="kt">int</span> <span class="n">out</span></pre>
+<p>unit for monitor output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-14"></span><span></span><span class="kt">int</span> <span class="n">print_level</span></pre>
+<p>controls level of diagnostic output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1afc17ef86601030a3cb1c7edb7a79a39f"><span id="index-15"></span><span></span><span class="kt">int</span> <span class="n">print_level_solver</span></pre>
+<p>controls level of diagnostic output from external solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a9a5f5bbcbc09508812a16fee01fc812d"><span id="index-16"></span><span></span><span class="kt">int</span> <span class="n">initial_fill_in_factor</span></pre>
+<p>prediction of factor by which the fill-in will exceed the initial number of nonzeros in <span class="math notranslate nohighlight">\(A\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a60c3d0376bbe5c06260509a9be31c562"><span id="index-17"></span><span></span><span class="kt">int</span> <span class="n">min_real_factor_size</span></pre>
+<p>initial size for real array for the factors and other data</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1addaddc306c33f5d7e6ebf7eeeab2612e"><span id="index-18"></span><span></span><span class="kt">int</span> <span class="n">min_integer_factor_size</span></pre>
+<p>initial size for integer array for the factors and other data</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1ae7e9983ad0ee9b1e837f3e1cacc9f4e9"><span id="index-19"></span><span></span><span class="kt">int64_t</span> <span class="n">max_factor_size</span></pre>
+<p>maximum size for real array for the factors and other data</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1aa2177c655d92533f17fcff58482e52c1"><span id="index-20"></span><span></span><span class="kt">int</span> <span class="n">blas_block_size_factorize</span></pre>
+<p>level 3 blocking in factorize</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a1af3c20cdeaaee431f309395f9f09564"><span id="index-21"></span><span></span><span class="kt">int</span> <span class="n">blas_block_size_solve</span></pre>
+<p>level 2 and 3 blocking in solve</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a7489428a42ce1420b4891f638153c99f"><span id="index-22"></span><span></span><span class="kt">int</span> <span class="n">pivot_control</span></pre>
+<p>pivot control:</p>
+<ul class="simple">
+<li><p>1 Threshold Partial Pivoting is desired</p></li>
+<li><p>2 Threshold Rook Pivoting is desired</p></li>
+<li><p>3 Threshold Complete Pivoting is desired</p></li>
+<li><p>4 Threshold Symmetric Pivoting is desired</p></li>
+<li><p>5 Threshold Diagonal Pivoting is desired</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a9a4b5f33dbbc1f6e9aa81dee63af5d2e"><span id="index-23"></span><span></span><span class="kt">int</span> <span class="n">pivot_search_limit</span></pre>
+<p>number of rows/columns pivot selection restricted to (0 = no restriction)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1ac1bd945b4d891a5f407f98afccb2c357"><span id="index-24"></span><span></span><span class="kt">int</span> <span class="n">minimum_size_for_btf</span></pre>
+<p>the minimum permitted size of blocks within the block-triangular form</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1ab044fd598767830ddc06560a91b80936"><span id="index-25"></span><span></span><span class="kt">int</span> <span class="n">max_iterative_refinements</span></pre>
+<p>maximum number of iterative refinements allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a5d1b79218a7bf1f16c3195835a311195"><span id="index-26"></span><span></span><span class="kt">bool</span> <span class="n">stop_if_singular</span></pre>
+<p>stop if the matrix is found to be structurally singular</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a6189cbfe4360772c9fa6b554e93a9b2b"><span id="index-27"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">array_increase_factor</span></pre>
+<p>factor by which arrays sizes are to be increased if they are too small</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a95f87bc195563b7a846fd33107fbe09c"><span id="index-28"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">switch_to_full_code_density</span></pre>
+<p>switch to full code when the density exceeds this factor</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1abee09e4efae03be7d0d1a8503b338ce7"><span id="index-29"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">array_decrease_factor</span></pre>
+<p>if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a65344e4192516e9b621cc7416f09045c"><span id="index-30"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">relative_pivot_tolerance</span></pre>
+<p>pivot threshold</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1aa5e25bdcf567fac1fb496199a7c06d5a"><span id="index-31"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">absolute_pivot_tolerance</span></pre>
+<p>any pivot small than this is considered zero</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1afb83ea8401da6498362914aa88ae823f"><span id="index-32"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">zero_tolerance</span></pre>
+<p>any entry smaller than this in modulus is reset to zero</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a97a6571829dbdccad7598f7b5c3ddfbd"><span id="index-33"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">acceptable_residual_relative</span></pre>
+<p>refinement will cease as soon as the residual <span class="math notranslate nohighlight">\(\|Ax-b\|\)</span> falls below max( acceptable_residual_relative * <span class="math notranslate nohighlight">\(\|b\|\)</span>, acceptable_residual_absolute )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a5ee0e70d90b1398019054b19b68057a0"><span id="index-34"></span><a class="reference internal" href="uls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">acceptable_residual_absolute</span></pre>
+<p>see acceptable_residual_relative</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-35"></span><span></span><span class="kt">char</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+</section>
+</section>
+<section id="uls-inform-type-structure">
+<span id="doxid-structuls-inform-type"></span><span id="index-36"></span><h2>uls_inform_type structure<a class="headerlink" href="#uls-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_uls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">uls_inform_type</span> <span class="p">{</span>
+    <span class="c1">// fields</span>
+
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a24d9e61a5ee1839c2fda4f8d5cff0cb7"><span class="std std-ref">more_info</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-inform-type-1ae595bb33a1e4f5e95da1927ac4673bbf"><span class="std std-ref">out_of_range</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-inform-type-1aba4e8149b1ecbb5c21f4534ef36d75b8"><span class="std std-ref">duplicates</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a2092110f6de97b4607da184213cd7492"><span class="std std-ref">entries_dropped</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a4e43e0824a84867596aac783665f8057"><span class="std std-ref">workspace_factors</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a06332c9a99b61a82393d2cf74a47428e"><span class="std std-ref">compresses</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structuls-inform-type-1ab741fb84b79d2b013a84d71932452681"><span class="std std-ref">entries_in_factors</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a6cfd95afd0afebd625b889fb6e58371c"><span class="std std-ref">rank</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a870efaeda81975bbbd9e247fe17baed1"><span class="std std-ref">structural_rank</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a7489428a42ce1420b4891f638153c99f"><span class="std std-ref">pivot_control</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a22c83a8ec8964a169bdd9d0cdf196cf1"><span class="std std-ref">iterative_refinements</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a48c07c7da1803ed8af25ca949f4854b5"><span class="std std-ref">alternative</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structuls-inform-type-1af335c33211ea78f2d5b7314d7b1c210d"><span class="std std-ref">solver</span></a><span></span><span class="p">[</span><span class="mi">21</span><span class="p">];</span>
+    <span class="k">struct</span> <span class="n">gls_ainfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">gls_finfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span class="std std-ref">gls_finfo</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">gls_sinfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">ma48_ainfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a9487553043c4ec110826e99e071ce9bc"><span class="std std-ref">ma48_ainfo</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">ma48_finfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1ac28e039b045cad8dec788fdca9823348"><span class="std std-ref">ma48_finfo</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">ma48_sinfo</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a78e9faeec60579cc0fa6c34e0aaeecc3"><span class="std std-ref">ma48_sinfo</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structuls-inform-type-1a0319e2c4ee2d95fe244f92d276038bd4"><span class="std std-ref">lapack_error</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="details-structuls-inform-type">
+<span id="id1"></span><h2>detailed documentation<a class="headerlink" href="#details-structuls-inform-type" title="Permalink to this heading">#</a></h2>
+<p>inform derived type as a C struct</p>
+<section id="id2">
+<h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-37"></span><span></span><span class="kt">int</span> <span class="n">status</span></pre>
+<p>reported return status:</p>
+<ul class="simple">
+<li><p>0 success</p></li>
+<li><p>-1 allocation error</p></li>
+<li><p>-2 deallocation error</p></li>
+<li><p>-3 matrix data faulty (m &lt; 1, n &lt; 1, ne &lt; 0)</p></li>
+<li><p>-26 unknown solver</p></li>
+<li><p>-29 unavailable option</p></li>
+<li><p>-31 input order is not a permutation or is faulty in some other way</p></li>
+<li><p>-32 error with integer workspace</p></li>
+<li><p>-33 error with real workspace</p></li>
+<li><p>-50 solver-specific error; see the solver’s info parameter</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-38"></span><span></span><span class="kt">int</span> <span class="n">alloc_status</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-39"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
+<p>name of array which provoked an allocate failure</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a24d9e61a5ee1839c2fda4f8d5cff0cb7"><span id="index-40"></span><span></span><span class="kt">int</span> <span class="n">more_info</span></pre>
+<p>further information on failure</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1ae595bb33a1e4f5e95da1927ac4673bbf"><span id="index-41"></span><span></span><span class="kt">int64_t</span> <span class="n">out_of_range</span></pre>
+<p>number of indices out-of-range</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1aba4e8149b1ecbb5c21f4534ef36d75b8"><span id="index-42"></span><span></span><span class="kt">int64_t</span> <span class="n">duplicates</span></pre>
+<p>number of duplicates</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a2092110f6de97b4607da184213cd7492"><span id="index-43"></span><span></span><span class="kt">int64_t</span> <span class="n">entries_dropped</span></pre>
+<p>number of entries dropped during the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a4e43e0824a84867596aac783665f8057"><span id="index-44"></span><span></span><span class="kt">int64_t</span> <span class="n">workspace_factors</span></pre>
+<p>predicted or actual number of reals and integers to hold factors</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a06332c9a99b61a82393d2cf74a47428e"><span id="index-45"></span><span></span><span class="kt">int</span> <span class="n">compresses</span></pre>
+<p>number of compresses of data required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1ab741fb84b79d2b013a84d71932452681"><span id="index-46"></span><span></span><span class="kt">int64_t</span> <span class="n">entries_in_factors</span></pre>
+<p>number of entries in factors</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a6cfd95afd0afebd625b889fb6e58371c"><span id="index-47"></span><span></span><span class="kt">int</span> <span class="n">rank</span></pre>
+<p>estimated rank of the matrix</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a870efaeda81975bbbd9e247fe17baed1"><span id="index-48"></span><span></span><span class="kt">int</span> <span class="n">structural_rank</span></pre>
+<p>structural rank of the matrix</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a7489428a42ce1420b4891f638153c99f"><span id="index-49"></span><span></span><span class="kt">int</span> <span class="n">pivot_control</span></pre>
+<p>pivot control:</p>
+<ul class="simple">
+<li><p>1 Threshold Partial Pivoting has been used</p></li>
+<li><p>2 Threshold Rook Pivoting has been used</p></li>
+<li><p>3 Threshold Complete Pivoting has been desired</p></li>
+<li><p>4 Threshold Symmetric Pivoting has been desired</p></li>
+<li><p>5 Threshold Diagonal Pivoting has been desired</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a22c83a8ec8964a169bdd9d0cdf196cf1"><span id="index-50"></span><span></span><span class="kt">int</span> <span class="n">iterative_refinements</span></pre>
+<p>number of iterative refinements performed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a48c07c7da1803ed8af25ca949f4854b5"><span id="index-51"></span><span></span><span class="kt">bool</span> <span class="n">alternative</span></pre>
+<p>has an “alternative” y: A^T y = 0 and yT b &gt; 0 been found when trying to solve A x = b ?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1af335c33211ea78f2d5b7314d7b1c210d"><span id="index-52"></span><span></span><span class="kt">char</span> <span class="n">solver</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span></pre>
+<p>name of external solver used to factorize and solve</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span id="index-53"></span><span></span><span class="k">struct</span> <span class="n">gls_ainfo</span> <span class="n">gls_ainfo</span></pre>
+<p>the output arrays from GLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span id="index-54"></span><span></span><span class="k">struct</span> <span class="n">gls_finfo</span> <span class="n">gls_finfo</span></pre>
+<p>see gls_ainfo</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span id="index-55"></span><span></span><span class="k">struct</span> <span class="n">gls_sinfo</span> <span class="n">gls_sinfo</span></pre>
+<p>see gls_ainfo</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a9487553043c4ec110826e99e071ce9bc"><span id="index-56"></span><span></span><span class="k">struct</span> <span class="n">ma48_ainfo</span> <span class="n">ma48_ainfo</span></pre>
+<p>the output arrays from MA48</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1ac28e039b045cad8dec788fdca9823348"><span id="index-57"></span><span></span><span class="k">struct</span> <span class="n">ma48_finfo</span> <span class="n">ma48_finfo</span></pre>
+<p>see ma48_ainfo</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a78e9faeec60579cc0fa6c34e0aaeecc3"><span id="index-58"></span><span></span><span class="k">struct</span> <span class="n">ma48_sinfo</span> <span class="n">ma48_sinfo</span></pre>
+<p>see ma48_ainfo</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a0319e2c4ee2d95fe244f92d276038bd4"><span id="index-59"></span><span></span><span class="kt">int</span> <span class="n">lapack_error</span></pre>
+<p>the LAPACK error return code</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+<section id="example-calls">
+<span id="doxid-index-uls-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
+<p>This is an example of how to use the package to … ;
+the code is available in $GALAHAD/src/uls/C/ulst.c .
+A variety of supported Hessian and constraint matrix storage formats are shown.</p>
+<p>Notice that C-style indexing is used, and that this is flaggeed by setting
+<code class="docutils literal notranslate"><span class="pre">control.f_indexing</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>. The floating-point type <code class="docutils literal notranslate"><span class="pre">real_wp_</span></code>
+is set in <code class="docutils literal notranslate"><span class="pre">galahad_precision.h</span></code> to <code class="docutils literal notranslate"><span class="pre">double</span></code> by default, but to <code class="docutils literal notranslate"><span class="pre">float</span></code>
+if the preproccesor variable <code class="docutils literal notranslate"><span class="pre">GALAHAD_SINGLE</span></code> is defined.</p>
+<div class="code C highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/*</span> <span class="n">ulst</span><span class="o">.</span><span class="n">c</span> <span class="o">*/</span>
+<span class="o">/*</span> <span class="n">Full</span> <span class="n">test</span> <span class="k">for</span> <span class="n">the</span> <span class="n">ULS</span> <span class="n">C</span> <span class="n">interface</span> <span class="n">using</span> <span class="n">C</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">indexing</span> <span class="o">*/</span>
+
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;math.h&gt;</span>
+<span class="c1">#include &lt;stdlib.h&gt;</span>
+<span class="c1">#include &lt;float.h&gt;</span>
+<span class="c1">#include &quot;galahad_precision.h&quot;</span>
+<span class="c1">#include &quot;galahad_cfunctions.h&quot;</span>
+<span class="c1">#include &quot;galahad_uls.h&quot;</span>
+
+<span class="nb">int</span> <span class="n">maxabsarray</span><span class="p">(</span><span class="n">real_wp_</span> <span class="n">a</span><span class="p">[],</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">real_wp_</span> <span class="o">*</span><span class="n">maxabs</span><span class="p">);</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="o">//</span> <span class="n">Derived</span> <span class="n">types</span>
+    <span class="n">void</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="n">struct</span> <span class="n">uls_control_type</span> <span class="n">control</span><span class="p">;</span>
+    <span class="n">struct</span> <span class="n">uls_inform_type</span> <span class="n">inform</span><span class="p">;</span>
+
+    <span class="o">//</span> <span class="n">Set</span> <span class="n">problem</span> <span class="n">data</span>
+    <span class="nb">int</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="o">//</span> <span class="n">column</span> <span class="n">dimension</span> <span class="n">of</span> <span class="n">A</span>
+    <span class="nb">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="o">//</span> <span class="n">column</span> <span class="n">dimension</span> <span class="n">of</span> <span class="n">A</span>
+    <span class="nb">int</span> <span class="n">ne</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span> <span class="o">//</span> <span class="n">number</span> <span class="n">of</span> <span class="n">entries</span> <span class="n">of</span> <span class="n">A</span>
+    <span class="nb">int</span> <span class="n">dense_ne</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span> <span class="o">//</span> <span class="n">number</span> <span class="n">of</span> <span class="n">elements</span> <span class="n">of</span> <span class="n">A</span> <span class="k">as</span> <span class="n">a</span> <span class="n">dense</span> <span class="n">matrix</span>
+    <span class="nb">int</span> <span class="n">row</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span> <span class="o">//</span> <span class="n">row</span> <span class="n">indices</span>
+    <span class="nb">int</span> <span class="n">col</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span> <span class="o">//</span> <span class="n">column</span> <span class="n">indices</span>
+    <span class="nb">int</span> <span class="n">ptr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">};</span> <span class="o">//</span> <span class="n">pointers</span> <span class="n">to</span> <span class="n">indices</span>
+    <span class="n">real_wp_</span> <span class="n">val</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">};</span> <span class="o">//</span> <span class="n">values</span>
+    <span class="n">real_wp_</span> <span class="n">dense</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span>
+                      <span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                      <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">};</span>
+    <span class="n">real_wp_</span> <span class="n">rhs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">33.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">};</span>
+    <span class="n">real_wp_</span> <span class="n">rhst</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">};</span>
+    <span class="n">real_wp_</span> <span class="n">sol</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">};</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">status</span><span class="p">;</span>
+    <span class="n">real_wp_</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+    <span class="n">real_wp_</span> <span class="n">error</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+    <span class="n">_Bool</span> <span class="n">trans</span><span class="p">;</span>
+
+    <span class="n">real_wp_</span> <span class="n">norm_residual</span><span class="p">;</span>
+    <span class="n">real_wp_</span> <span class="n">good_x</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span> <span class="n">DBL_EPSILON</span><span class="p">,</span> <span class="mf">0.3333</span> <span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; C sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; basic tests of storage formats</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; storage          RHS   refine   RHST  refine</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span> <span class="n">d</span><span class="o">++</span><span class="p">){</span>
+        <span class="o">//</span> <span class="n">Initialize</span> <span class="n">ULS</span> <span class="o">-</span> <span class="n">use</span> <span class="n">the</span> <span class="n">gls</span> <span class="n">solver</span>
+        <span class="n">uls_initialize</span><span class="p">(</span> <span class="s2">&quot;getr&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="o">//</span> <span class="n">Set</span> <span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="n">control</span> <span class="n">options</span>
+        <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span> <span class="o">//</span> <span class="n">Fortran</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">indexing</span>
+
+        <span class="n">switch</span><span class="p">(</span><span class="n">d</span><span class="p">){</span> <span class="o">//</span> <span class="kn">import</span> <span class="nn">matrix</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">factorize</span>
+            <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="o">//</span> <span class="n">sparse</span> <span class="n">co</span><span class="o">-</span><span class="n">ordinate</span> <span class="n">storage</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; coordinate     &quot;</span><span class="p">);</span>
+                <span class="n">uls_factorize_matrix</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                                    <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">ne</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">NULL</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="o">//</span> <span class="n">sparse</span> <span class="n">by</span> <span class="n">rows</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; sparse by rows &quot;</span><span class="p">);</span>
+                <span class="n">uls_factorize_matrix</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                                    <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">ne</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">ptr</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="o">//</span> <span class="n">dense</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; dense          &quot;</span><span class="p">);</span>
+                <span class="n">uls_factorize_matrix</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;dense&quot;</span><span class="p">,</span>
+                                      <span class="n">dense_ne</span><span class="p">,</span> <span class="n">dense</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+
+        <span class="o">//</span> <span class="n">Set</span> <span class="n">right</span><span class="o">-</span><span class="n">hand</span> <span class="n">side</span> <span class="ow">and</span> <span class="n">solve</span> <span class="n">the</span> <span class="n">system</span> <span class="n">A</span> <span class="n">x</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+        <span class="n">uls_solve_system</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">trans</span> <span class="p">);</span>
+        <span class="n">uls_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">sol</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+          <span class="n">status</span> <span class="o">=</span> <span class="n">maxabsarray</span><span class="p">(</span> <span class="n">error</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">norm_residual</span> <span class="p">);</span>
+          <span class="k">if</span><span class="p">(</span><span class="n">norm_residual</span> <span class="o">&lt;</span> <span class="n">good_x</span><span class="p">){</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;   ok  &quot;</span><span class="p">);</span>
+          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;  fail &quot;</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; ULS_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="o">//</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;sol: &quot;</span><span class="p">);</span>
+        <span class="o">//</span> <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+        <span class="o">//</span> <span class="n">resolve</span><span class="p">,</span> <span class="n">this</span> <span class="n">time</span> <span class="n">using</span> <span class="n">iterative</span> <span class="n">refinement</span>
+        <span class="n">control</span><span class="o">.</span><span class="n">max_iterative_refinements</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">uls_reset_control</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">uls_solve_system</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">trans</span> <span class="p">);</span>
+        <span class="n">uls_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">sol</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+          <span class="n">status</span> <span class="o">=</span> <span class="n">maxabsarray</span><span class="p">(</span> <span class="n">error</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">norm_residual</span> <span class="p">);</span>
+          <span class="k">if</span><span class="p">(</span><span class="n">norm_residual</span> <span class="o">&lt;</span> <span class="n">good_x</span><span class="p">){</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;    ok  &quot;</span><span class="p">);</span>
+          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;   fail &quot;</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; ULS_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="o">//</span> <span class="n">Set</span> <span class="n">right</span><span class="o">-</span><span class="n">hand</span> <span class="n">side</span> <span class="ow">and</span> <span class="n">solve</span> <span class="n">the</span> <span class="n">system</span> <span class="n">A</span><span class="o">^</span><span class="n">T</span> <span class="n">x</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rhst</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">true</span><span class="p">;</span>
+        <span class="n">uls_solve_system</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">trans</span> <span class="p">);</span>
+        <span class="n">uls_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">sol</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+          <span class="n">status</span> <span class="o">=</span> <span class="n">maxabsarray</span><span class="p">(</span> <span class="n">error</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">norm_residual</span> <span class="p">);</span>
+          <span class="k">if</span><span class="p">(</span><span class="n">norm_residual</span> <span class="o">&lt;</span> <span class="n">good_x</span><span class="p">){</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;   ok  &quot;</span><span class="p">);</span>
+          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;  fail &quot;</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; ULS_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="o">//</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;sol: &quot;</span><span class="p">);</span>
+        <span class="o">//</span> <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+        <span class="o">//</span> <span class="n">resolve</span><span class="p">,</span> <span class="n">this</span> <span class="n">time</span> <span class="n">using</span> <span class="n">iterative</span> <span class="n">refinement</span>
+        <span class="n">control</span><span class="o">.</span><span class="n">max_iterative_refinements</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">uls_reset_control</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rhst</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">uls_solve_system</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">trans</span> <span class="p">);</span>
+        <span class="n">uls_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+          <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">sol</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+          <span class="n">status</span> <span class="o">=</span> <span class="n">maxabsarray</span><span class="p">(</span> <span class="n">error</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">norm_residual</span> <span class="p">);</span>
+          <span class="k">if</span><span class="p">(</span><span class="n">norm_residual</span> <span class="o">&lt;</span> <span class="n">good_x</span><span class="p">){</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;    ok  &quot;</span><span class="p">);</span>
+          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;   fail &quot;</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; ULS_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="o">//</span> <span class="n">Delete</span> <span class="n">internal</span> <span class="n">workspace</span>
+        <span class="n">uls_terminate</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span> <span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nb">int</span> <span class="n">maxabsarray</span><span class="p">(</span><span class="n">real_wp_</span> <span class="n">a</span><span class="p">[],</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">real_wp_</span> <span class="o">*</span><span class="n">maxabs</span><span class="p">)</span>
+ <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">real_wp_</span> <span class="n">b</span><span class="p">,</span> <span class="nb">max</span><span class="p">;</span>
+    <span class="nb">max</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">fabs</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">max</span><span class="o">&lt;</span><span class="n">b</span><span class="p">)</span>
+          <span class="nb">max</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">*</span><span class="n">maxabs</span><span class="o">=</span><span class="nb">max</span><span class="p">;</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+<p>This is the same example, but now fortran-style indexing is used;
+the code is available in $GALAHAD/src/uls/C/ulstf.c .</p>
+<p>/* ulstf.c <em>/
+/</em> Full test for the ULS C interface using Fortran sparse matrix indexing <a href="#id3"><span class="problematic" id="id4">*</span></a>/</p>
+<p>#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;float.h&gt;
+#include “galahad_precision.h”
+#include “galahad_cfunctions.h”
+#include “galahad_uls.h”</p>
+<p>int maxabsarray(<a href="#id14"><span class="problematic" id="id15">real_wp_</span></a> a[], int n, <a href="#id16"><span class="problematic" id="id17">real_wp_</span></a> <a href="#id5"><span class="problematic" id="id6">*</span></a>maxabs);</p>
+<p>int main(void) {</p>
+<blockquote>
+<div><p>// Derived types
+void <a href="#id7"><span class="problematic" id="id8">*</span></a>data;
+struct uls_control_type control;
+struct uls_inform_type inform;</p>
+<p>// Set problem data
+int m = 5; // column dimension of A
+int n = 5; // column dimension of A
+int ne = 7; // number of entries of A
+int dense_ne = 25; // number of elements of A as a dense matrix
+int row[] = {1, 2, 2, 3, 3, 4, 5}; // row indices
+int col[] = {1, 1, 5, 2, 3, 3, 4}; // column indices
+int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
+<a href="#id18"><span class="problematic" id="id19">real_wp_</span></a> val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
+<a href="#id20"><span class="problematic" id="id21">real_wp_</span></a> dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0,</p>
+<blockquote>
+<div><p>0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 1.0, 0.0};</p>
+</div></blockquote>
+<p><a href="#id22"><span class="problematic" id="id23">real_wp_</span></a> rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
+<a href="#id24"><span class="problematic" id="id25">real_wp_</span></a> rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
+<a href="#id26"><span class="problematic" id="id27">real_wp_</span></a> sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
+int i, status;
+<a href="#id28"><span class="problematic" id="id29">real_wp_</span></a> x[n];
+<a href="#id30"><span class="problematic" id="id31">real_wp_</span></a> error[n];
+_Bool trans;</p>
+<p><a href="#id32"><span class="problematic" id="id33">real_wp_</span></a> norm_residual;
+<a href="#id34"><span class="problematic" id="id35">real_wp_</span></a> good_x = pow( DBL_EPSILON, 0.3333 );</p>
+<p>printf(” Fortran sparse matrix indexingnn”);</p>
+<p>printf(” basic tests of storage formatsnn”);</p>
+<p>printf(” storage          RHS   refine   RHST  refinen”);</p>
+<dl>
+<dt>for( int d=1; d &lt;= 3; d++){</dt><dd><p>// Initialize ULS - use the gls solver
+uls_initialize( “getr”, &amp;data, &amp;control, &amp;status );</p>
+<p>// Set user-defined control options
+control.f_indexing = true; // Fortran sparse matrix indexing</p>
+<dl>
+<dt>switch(d){ // import matrix data and factorize</dt><dd><dl>
+<dt>case 1: // sparse co-ordinate storage</dt><dd><p>printf(” coordinate     “);
+uls_factorize_matrix( &amp;control, &amp;data, &amp;status, m, n,</p>
+<blockquote>
+<div><p>“coordinate”, ne, val, row, col, NULL );</p>
+</div></blockquote>
+<p>break;</p>
+</dd>
+<dt>case 2: // sparse by rows</dt><dd><p>printf(” sparse by rows “);
+uls_factorize_matrix( &amp;control, &amp;data, &amp;status, m, n,</p>
+<blockquote>
+<div><p>“sparse_by_rows”, ne, val, NULL, col, ptr );</p>
+</div></blockquote>
+<p>break;</p>
+</dd>
+<dt>case 3: // dense</dt><dd><p>printf(” dense          “);
+uls_factorize_matrix( &amp;control, &amp;data, &amp;status, m, n,</p>
+<blockquote>
+<div><p>“dense”, dense_ne, dense, NULL, NULL, NULL );</p>
+</div></blockquote>
+<p>break;</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>// Set right-hand side and solve the system A x = b
+for(i=0; i&lt;n; i++) x[i] = rhs[i];
+trans = false;
+uls_solve_system( &amp;data, &amp;status, m, n, x, trans );
+uls_information( &amp;data, &amp;inform, &amp;status );</p>
+<dl>
+<dt>if(inform.status == 0){</dt><dd><p>for(i=0; i&lt;n; i++) error[i] = x[i]-sol[i];
+status = maxabsarray( error, n, &amp;norm_residual );
+if(norm_residual &lt; good_x){</p>
+<blockquote>
+<div><p>printf(”   ok  “);</p>
+</div></blockquote>
+<dl class="simple">
+<dt>}else{</dt><dd><p>printf(”  fail “);</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+<dt>}else{</dt><dd><p>printf(” ULS_solve exit status = %1in”, inform.status);</p>
+</dd>
+</dl>
+<p>}
+// printf(“sol: “);
+// for( int i = 0; i &lt; n; i++) printf(“%f “, x[i]);</p>
+<p>// resolve, this time using iterative refinement
+control.max_iterative_refinements = 1;
+uls_reset_control( &amp;control, &amp;data, &amp;status );
+for(i=0; i&lt;n; i++) x[i] = rhs[i];
+uls_solve_system( &amp;data, &amp;status, m, n, x, trans );
+uls_information( &amp;data, &amp;inform, &amp;status );</p>
+<dl>
+<dt>if(inform.status == 0){</dt><dd><p>for(i=0; i&lt;n; i++) error[i] = x[i]-sol[i];
+status = maxabsarray( error, n, &amp;norm_residual );
+if(norm_residual &lt; good_x){</p>
+<blockquote>
+<div><p>printf(”    ok  “);</p>
+</div></blockquote>
+<dl class="simple">
+<dt>}else{</dt><dd><p>printf(”   fail “);</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+<dt>}else{</dt><dd><p>printf(” ULS_solve exit status = %1in”, inform.status);</p>
+</dd>
+</dl>
+<p>}</p>
+<p>// Set right-hand side and solve the system A^T x = b
+for(i=0; i&lt;n; i++) x[i] = rhst[i];
+trans = true;
+uls_solve_system( &amp;data, &amp;status, m, n, x, trans );
+uls_information( &amp;data, &amp;inform, &amp;status );</p>
+<dl>
+<dt>if(inform.status == 0){</dt><dd><p>for(i=0; i&lt;n; i++) error[i] = x[i]-sol[i];
+status = maxabsarray( error, n, &amp;norm_residual );
+if(norm_residual &lt; good_x){</p>
+<blockquote>
+<div><p>printf(”   ok  “);</p>
+</div></blockquote>
+<dl class="simple">
+<dt>}else{</dt><dd><p>printf(”  fail “);</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+<dt>}else{</dt><dd><p>printf(” ULS_solve exit status = %1in”, inform.status);</p>
+</dd>
+</dl>
+<p>}
+// printf(“sol: “);
+// for( int i = 0; i &lt; n; i++) printf(“%f “, x[i]);</p>
+<p>// resolve, this time using iterative refinement
+control.max_iterative_refinements = 1;
+uls_reset_control( &amp;control, &amp;data, &amp;status );
+for(i=0; i&lt;n; i++) x[i] = rhst[i];
+uls_solve_system( &amp;data, &amp;status, m, n, x, trans );
+uls_information( &amp;data, &amp;inform, &amp;status );</p>
+<dl>
+<dt>if(inform.status == 0){</dt><dd><p>for(i=0; i&lt;n; i++) error[i] = x[i]-sol[i];
+status = maxabsarray( error, n, &amp;norm_residual );
+if(norm_residual &lt; good_x){</p>
+<blockquote>
+<div><p>printf(”    ok  “);</p>
+</div></blockquote>
+<dl class="simple">
+<dt>}else{</dt><dd><p>printf(”   fail “);</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+<dt>}else{</dt><dd><p>printf(” ULS_solve exit status = %1in”, inform.status);</p>
+</dd>
+</dl>
+<p>}</p>
+<p>// Delete internal workspace
+uls_terminate( &amp;data, &amp;control, &amp;inform );
+printf(”n”);</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+<dl>
+<dt>int maxabsarray(<a href="#id36"><span class="problematic" id="id37">real_wp_</span></a> a[], int n, <a href="#id38"><span class="problematic" id="id39">real_wp_</span></a> <a href="#id9"><span class="problematic" id="id10">*</span></a>maxabs)</dt><dd><dl>
+<dt>{</dt><dd><p>int i;
+<a href="#id40"><span class="problematic" id="id41">real_wp_</span></a> b, max;
+max=abs(a[0]);
+for(i=1; i&lt;n; i++)
+{</p>
+<blockquote>
+<div><p>b = fabs(a[i]);</p>
+</div></blockquote>
+<dl class="simple">
+<dt>if(max&lt;b)</dt><dd><p>max=b;</p>
+</dd>
+</dl>
+<p>}
+<a href="#id11"><span class="problematic" id="id12">*</span></a>maxabs=max;</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="struct_sls_inform_type.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">sls_inform_type structure</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="uls_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">overview of functions provided</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminology">
+   terminology
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#supported-solvers">
+   supported solvers
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction-to-function-calls">
+   introduction to function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview-of-functions-provided">
+   overview of functions provided
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#typedefs">
+   typedefs
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#function-calls">
+   function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#uls-control-type-structure">
+   uls_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#uls-inform-type-structure">
+   uls_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structuls-inform-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-calls">
+   example calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/uls.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

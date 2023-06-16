@@ -1,0 +1,14 @@
+All of these frames are either identical or close to those
+provided in the source tree from the doxyrest package
+
+  https://github.com/vovkos/doxyrest
+
+that is available under an MIT licence.
+
+We are very grateful to the authors of this package
+for providing a way to produce beautiful html
+documentation from C header files via xml and rst.
+
+Nick Gould
+For GALAHAD productions
+June 2023

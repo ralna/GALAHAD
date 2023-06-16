@@ -62,8 +62,8 @@ ln -fs $PWD/index.rst $package/.
 #  generate rst
 
   echo "generating rst ..." ; \
-  doxyrest -c ../doxyrest-config.lua -F ../frame/gal_cfamily \
-    -F $DOXYREST_FRAME_DIR/common ; \
+  doxyrest -c ../doxyrest-config.lua -F $RST/frame/gal_cfamily \
+    -F $RST/frame/common ; \
 #  doxyrest -c ../doxyrest-config.lua -F $DOXYREST_FRAME_DIR/cfamily \
 #    -F $DOXYREST_FRAME_DIR/common ; \
 #  doxyrest -c ../doxyrest-config.lua -F $DOXYREST_FRAME_DIR/lua \
@@ -77,28 +77,54 @@ ln -fs $PWD/index.rst $package/.
 #  sed "s/xxx/$package/gI" $RST/template_functions > 1
 #  cat 1 rst-dir/global.rst > $RST/${package}_functions.rst
 
+#   cp rst-dir/global.rst $RST/${package}_functions.rst
+
 #  if [ -e rst-dir/struct_${package}_control_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_control > 1
 #    cat 1 rst-dir/struct_${package}_control_type.rst > \
 #                         $RST/struct_${package}_control_type.rst
+#   cp rst-dir/struct_${package}_control_type.rst \
+#      $RST/struct_${package}_control_type.rst
 #  fi
+
+  if [ -e rst-dir/struct_${package}_subproblem_control_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_control > 1
+#    cat 1 rst-dir/struct_${package}_control_type.rst > \
+#                         $RST/struct_${package}_control_type.rst
+   cp rst-dir/struct_${package}_subproblem_control_type.rst \
+      $RST/struct_${package}_subproblem_control_type.rst
+  fi
 
 #  if [ -e rst-dir/struct_${package}_time_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_time > 1
 #    cat 1 rst-dir/struct_${package}_time_type.rst > \
-                         $RST/struct_${package}_time_type.rst
+#                         $RST/struct_${package}_time_type.rst
+#   cp rst-dir/struct_${package}_time_type.rst \
+#      $RST/struct_${package}_time_type.rst
 #  fi
 
 #  if [ -e rst-dir/struct_${package}_inform_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_inform > 1
 #    cat 1 rst-dir/struct_${package}_inform_type.rst > \
-                         $RST/struct_${package}_inform_type.rst
+#                         $RST/struct_${package}_inform_type.rst
+#    cp rst-dir/struct_${package}_inform_type.rst \
+#       $RST/struct_${package}_inform_type.rst
 #  fi
+
+  if [ -e rst-dir/struct_${package}_subproblem_inform_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_inform > 1
+#    cat 1 rst-dir/struct_${package}_inform_type.rst > \
+#                         $RST/struct_${package}_inform_type.rst
+    cp rst-dir/struct_${package}_subproblem_inform_type.rst \
+       $RST/struct_${package}_subproblem_inform_type.rst
+  fi
 
 #  if [ -e rst-dir/struct_${package}_history_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_history > 1
 #    cat 1 rst-dir/struct_${package}_history_type.rst > \
-                         $RST/struct_${package}_history_type.rst
+#                         $RST/struct_${package}_history_type.rst
+#    cp rst-dir/struct_${package}_history_type.rst \
+#       $RST/struct_${package}_history_type.rst
 #  fi
 
 #  generate html

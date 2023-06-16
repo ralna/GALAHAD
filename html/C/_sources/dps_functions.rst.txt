@@ -1,0 +1,730 @@
+.. _global:
+
+overview of functions provided
+------------------------------
+
+.. toctree::
+	:hidden:
+
+	struct_dps_control_type.rst
+	struct_dps_time_type.rst
+	struct_dps_inform_type.rst
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	// typedefs
+
+	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
+	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+
+	// structs
+
+	struct :ref:`dps_control_type<doxid-structdps__control__type>`;
+	struct :ref:`dps_inform_type<doxid-structdps__inform__type>`;
+	struct :ref:`dps_time_type<doxid-structdps__time__type>`;
+
+	// global functions
+
+	void :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status);
+	void :ref:`dps_read_specfile<doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf>`(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[]);
+
+	void :ref:`dps_import<doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee>`(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	);
+
+	void :ref:`dps_reset_control<doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c>`(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status
+	);
+
+	void :ref:`dps_solve_tr_problem<doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5>`(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_solve_rq_problem<doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6>`(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_resolve_tr_problem<doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d>`(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_resolve_rq_problem<doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a>`(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	);
+
+	void :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status);
+
+	void :ref:`dps_terminate<doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e>`(
+		void** data,
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
+	);
+
+.. _details-global:
+
+typedefs
+--------
+
+.. index:: pair: typedef; real_sp_
+.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef float real_sp_
+
+``real_sp_`` is real single precision
+
+.. index:: pair: typedef; real_wp_
+.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double real_wp_
+
+``real_wp_`` is the real working precision used
+
+function calls
+--------------
+
+.. index:: pair: function; dps_initialize
+.. _doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_initialize(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
+
+Set default control values and initialize private data
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- control
+
+		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  
+		  * 0. The import was succesful.
+
+.. index:: pair: function; dps_read_specfile
+.. _doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[])
+
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDPS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- control
+
+		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+
+	*
+		- specfile
+
+		- is a character string containing the name of the specification file
+
+.. index:: pair: function; dps_import
+.. _doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_import(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status,
+		int n,
+		const char H_type[],
+		int ne,
+		const int H_row[],
+		const int H_col[],
+		const int H_ptr[]
+	)
+
+Import problem data into internal storage prior to solution.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- control
+
+		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  
+		  * 1. The import was succesful, and the package is ready for the solve phase
+		  
+		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+
+	*
+		- n
+
+		- is a scalar variable of type int, that holds the number of variables
+
+	*
+		- H_type
+
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed
+
+	*
+		- ne
+
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+
+	*
+		- H_row
+
+		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+
+	*
+		- H_col
+
+		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+
+	*
+		- H_ptr
+
+		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+
+.. index:: pair: function; dps_reset_control
+.. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_reset_control(
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		void** data,
+		int* status
+	)
+
+Reset control parameters after import if required.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- control
+
+		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  
+		  * 1. The import was succesful, and the package is ready for the solve phase
+
+.. index:: pair: function; dps_solve_tr_problem
+.. _doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_solve_tr_problem(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
+
+Find the global minimizer of the trust-region problem (1).
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package.
+		  
+		  Possible values are:
+		  
+		  * 0. The run was succesful
+		  
+		  
+		  
+		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  
+		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  
+		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  
+		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  
+		  * -40. An error has occured when building the preconditioner.
+
+	*
+		- n
+
+		- is a scalar variable of type int, that holds the number of variables
+
+	*
+		- ne
+
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+
+	*
+		- H_val
+
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+
+	*
+		- c
+
+		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+
+	*
+		- f
+
+		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+
+	*
+		- radius
+
+		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, :math:`\Delta > 0`.
+
+	*
+		- x
+
+		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+
+.. index:: pair: function; dps_solve_rq_problem
+.. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_solve_rq_problem(
+		void** data,
+		int* status,
+		int n,
+		int ne,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
+
+Find the global minimizer of the regularized-quadartic problem (2).
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package.
+		  
+		  Possible values are:
+		  
+		  * 0. The run was succesful
+		  
+		  
+		  
+		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  
+		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  
+		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  
+		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  
+		  * -40. An error has occured when building the preconditioner.
+
+	*
+		- n
+
+		- is a scalar variable of type int, that holds the number of variables
+
+	*
+		- ne
+
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+
+	*
+		- H_val
+
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+
+	*
+		- c
+
+		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+
+	*
+		- f
+
+		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+
+	*
+		- weight
+
+		- is a scalar variable pointer of type double, that holds the value of the regularization weight, :math:`\sigma > 0`.
+
+	*
+		- power
+
+		- is a scalar variable pointer of type double, that holds the value of the regularization power, :math:`p \geq 2`.
+
+	*
+		- x
+
+		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+
+.. index:: pair: function; dps_resolve_tr_problem
+.. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_resolve_tr_problem(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
+
+Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package.
+		  
+		  Possible values are:
+		  
+		  * 0. The run was succesful
+		  
+		  
+		  
+		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  
+		  * -16. The problem is so ill-conditioned that further progress is impossible.
+
+	*
+		- n
+
+		- is a scalar variable of type int, that holds the number of variables
+
+	*
+		- c
+
+		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+
+	*
+		- f
+
+		- is a scalar variable pointer of type double, that holds the value of the constant term :math:`f` in the objective function.
+
+	*
+		- radius
+
+		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, :math:`\Delta > 0`.
+
+	*
+		- x
+
+		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+
+.. index:: pair: function; dps_resolve_rq_problem
+.. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_resolve_rq_problem(
+		void** data,
+		int* status,
+		int n,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+	)
+
+Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package.
+		  
+		  Possible values are:
+		  
+		  * 0. The run was succesful
+		  
+		  
+		  
+		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  
+		  * -16. The problem is so ill-conditioned that further progress is impossible.
+
+	*
+		- n
+
+		- is a scalar variable of type int, that holds the number of variables
+
+	*
+		- c
+
+		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+
+	*
+		- f
+
+		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+
+	*
+		- weight
+
+		- is a scalar variable pointer of type double, that holds the value of the regularization weight, :math:`\sigma > 0`.
+
+	*
+		- power
+
+		- is a scalar variable pointer of type double, that holds the value of the regularization power, :math:`p \geq 2`.
+
+	*
+		- x
+
+		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+
+.. index:: pair: function; dps_information
+.. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_information(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
+
+Provides output information
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- inform
+
+		- is a struct containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
+
+	*
+		- status
+
+		- 
+		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  
+		  * 0. The values were recorded succesfully
+
+.. index:: pair: function; dps_terminate
+.. _doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void dps_terminate(
+		void** data,
+		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
+		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
+	)
+
+Deallocate all internal private storage
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
+
+	*
+		- control
+
+		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+
+	*
+		- inform
+
+		- is a struct containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
+
