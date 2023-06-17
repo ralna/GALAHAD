@@ -23,8 +23,8 @@ fdc_inform_type structure
 		int64_t :ref:`factorization_real<doxid-structfdc__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`non_negligible_pivot<doxid-structfdc__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
 		struct :ref:`fdc_time_type<doxid-structfdc__time__type>` :ref:`time<doxid-structfdc__inform__type_1af77e8a375712c74c7ec4cb4d6ee89826>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structfdc__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct uls_inform_type :ref:`uls_inform<doxid-structfdc__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structfdc__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`uls_inform_type<doxid-structuls__inform__type>` :ref:`uls_inform<doxid-structfdc__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
 	};
 .. _details-structfdc__inform__type:
 
@@ -122,7 +122,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 SLS inform type.
 
@@ -132,7 +132,7 @@ SLS inform type.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct uls_inform_type uls_inform
+	struct :ref:`uls_inform_type<doxid-structuls__inform__type>` uls_inform
 
 ULS inform type.
 

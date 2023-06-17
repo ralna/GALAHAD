@@ -27,7 +27,7 @@ dps_inform_type structure
 		bool :ref:`hard_case<doxid-structdps__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
 		char :ref:`bad_alloc<doxid-structdps__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`dps_time_type<doxid-structdps__time__type>` :ref:`time<doxid-structdps__inform__type_1ac1ae6841280bc6d2f24f9665cb75c40e>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structdps__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structdps__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
 	};
 .. _details-structdps__inform__type:
 
@@ -165,7 +165,7 @@ time information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 information from SLS
 

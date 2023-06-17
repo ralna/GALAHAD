@@ -25,8 +25,8 @@ blls_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_pg<doxid-structblls__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
 		char :ref:`bad_alloc<doxid-structblls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`blls_time_type<doxid-structblls__time__type>` :ref:`time<doxid-structblls__inform__type_1ac8d53b198a1597a4a9fe75d4c1191ec0>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structblls__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct convert_inform_type :ref:`convert_inform<doxid-structblls__inform__type_1a7006a98737e58bb90259d7705ef537ae>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structblls__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`convert_inform_type<doxid-structconvert__inform__type>` :ref:`convert_inform<doxid-structblls__inform__type_1a7006a98737e58bb90259d7705ef537ae>`;
 	};
 .. _details-structblls__inform__type:
 
@@ -134,7 +134,7 @@ times for various stages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform values from SBLS
 
@@ -144,7 +144,7 @@ inform values from SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct convert_inform_type convert_inform
+	struct :ref:`convert_inform_type<doxid-structconvert__inform__type>` convert_inform
 
 inform values for CONVERT
 

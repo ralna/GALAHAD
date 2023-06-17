@@ -70,22 +70,22 @@ ln -fs $PWD/index.rst $package/.
 #    -F $DOXYREST_FRAME_DIR/common -F $DOXYREST_FRAME_DIR/cfamily ; \
   doxyrest -v ; \
 
-#  sed "s/xxx/$package/gI" $RST/template > $RST/$package.rst
-#  sed -n '/Call order/,$p' rst-dir/page_index.rst > 1
-#  sed '/See Section/,$d' < 1 >> $RST/$package.rst
+  sed "s/xxx/$package/gI" $RST/template > $RST/$package.rst
+  sed -n '/Call order/,$p' rst-dir/page_index.rst > 1
+  sed '/See Section/,$d' < 1 >> $RST/$package.rst
 
 #  sed "s/xxx/$package/gI" $RST/template_functions > 1
 #  cat 1 rst-dir/global.rst > $RST/${package}_functions.rst
 
-#   cp rst-dir/global.rst $RST/${package}_functions.rst
+   cp rst-dir/global.rst $RST/${package}_functions.rst
 
-#  if [ -e rst-dir/struct_${package}_control_type.rst ]; then
+  if [ -e rst-dir/struct_${package}_control_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_control > 1
 #    cat 1 rst-dir/struct_${package}_control_type.rst > \
 #                         $RST/struct_${package}_control_type.rst
-#   cp rst-dir/struct_${package}_control_type.rst \
-#      $RST/struct_${package}_control_type.rst
-#  fi
+   cp rst-dir/struct_${package}_control_type.rst \
+      $RST/struct_${package}_control_type.rst
+  fi
 
   if [ -e rst-dir/struct_${package}_subproblem_control_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_control > 1
@@ -95,21 +95,21 @@ ln -fs $PWD/index.rst $package/.
       $RST/struct_${package}_subproblem_control_type.rst
   fi
 
-#  if [ -e rst-dir/struct_${package}_time_type.rst ]; then
+  if [ -e rst-dir/struct_${package}_time_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_time > 1
 #    cat 1 rst-dir/struct_${package}_time_type.rst > \
 #                         $RST/struct_${package}_time_type.rst
-#   cp rst-dir/struct_${package}_time_type.rst \
-#      $RST/struct_${package}_time_type.rst
-#  fi
+   cp rst-dir/struct_${package}_time_type.rst \
+      $RST/struct_${package}_time_type.rst
+  fi
 
-#  if [ -e rst-dir/struct_${package}_inform_type.rst ]; then
+  if [ -e rst-dir/struct_${package}_inform_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_inform > 1
 #    cat 1 rst-dir/struct_${package}_inform_type.rst > \
 #                         $RST/struct_${package}_inform_type.rst
-#    cp rst-dir/struct_${package}_inform_type.rst \
-#       $RST/struct_${package}_inform_type.rst
-#  fi
+    cp rst-dir/struct_${package}_inform_type.rst \
+       $RST/struct_${package}_inform_type.rst
+  fi
 
   if [ -e rst-dir/struct_${package}_subproblem_inform_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_inform > 1
@@ -119,13 +119,13 @@ ln -fs $PWD/index.rst $package/.
        $RST/struct_${package}_subproblem_inform_type.rst
   fi
 
-#  if [ -e rst-dir/struct_${package}_history_type.rst ]; then
+  if [ -e rst-dir/struct_${package}_history_type.rst ]; then
 #    sed "s/xxx/$package/gI" $RST/template_history > 1
 #    cat 1 rst-dir/struct_${package}_history_type.rst > \
 #                         $RST/struct_${package}_history_type.rst
-#    cp rst-dir/struct_${package}_history_type.rst \
-#       $RST/struct_${package}_history_type.rst
-#  fi
+    cp rst-dir/struct_${package}_history_type.rst \
+       $RST/struct_${package}_history_type.rst
+  fi
 
 #  generate html
 #  echo "generating html ..." ; \

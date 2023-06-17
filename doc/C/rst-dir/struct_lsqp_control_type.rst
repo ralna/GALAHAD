@@ -70,8 +70,8 @@ lsqp_control_type structure
 		bool :ref:`generate_sif_file<doxid-structlsqp__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
 		char :ref:`sif_file_name<doxid-structlsqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`prefix<doxid-structlsqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct fdc_control_type :ref:`fdc_control<doxid-structlsqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct sbls_control_type :ref:`sbls_control<doxid-structlsqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structlsqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structlsqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
 	};
 .. _details-structlsqp__control__type:
 
@@ -659,7 +659,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_control_type fdc_control
+	struct :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
 
 control parameters for FDC
 
@@ -669,7 +669,7 @@ control parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 

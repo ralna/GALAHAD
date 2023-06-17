@@ -37,11 +37,11 @@ nls_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`weight<doxid-structnls__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
 		struct :ref:`nls_time_type<doxid-structnls__time__type>` :ref:`time<doxid-structnls__inform__type_1a44dc03b1a33bf900f668c713cbac9498>`;
 		struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` :ref:`subproblem_inform<doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a>`;
-		struct rqs_inform_type :ref:`rqs_inform<doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
-		struct glrt_inform_type :ref:`glrt_inform<doxid-structnls__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
-		struct psls_inform_type :ref:`psls_inform<doxid-structnls__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
-		struct bsc_inform_type :ref:`bsc_inform<doxid-structnls__inform__type_1ab95c5e6786b9d93eb147f64fbf14da17>`;
-		struct roots_inform_type :ref:`roots_inform<doxid-structnls__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
+		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
+		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structnls__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
+		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structnls__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
+		struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>` :ref:`bsc_inform<doxid-structnls__inform__type_1ab95c5e6786b9d93eb147f64fbf14da17>`;
+		struct :ref:`roots_inform_type<doxid-structroots__inform__type>` :ref:`roots_inform<doxid-structnls__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
 	};
 .. _details-structnls__inform__type:
 
@@ -269,7 +269,7 @@ inform parameters for subproblem
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rqs_inform_type rqs_inform
+	struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` rqs_inform
 
 inform parameters for RQS
 
@@ -279,7 +279,7 @@ inform parameters for RQS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct glrt_inform_type glrt_inform
+	struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` glrt_inform
 
 inform parameters for GLRT
 
@@ -289,7 +289,7 @@ inform parameters for GLRT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct psls_inform_type psls_inform
+	struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` psls_inform
 
 inform parameters for PSLS
 
@@ -299,7 +299,7 @@ inform parameters for PSLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct bsc_inform_type bsc_inform
+	struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>` bsc_inform
 
 inform parameters for BSC
 
@@ -309,7 +309,7 @@ inform parameters for BSC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct roots_inform_type roots_inform
+	struct :ref:`roots_inform_type<doxid-structroots__inform__type>` roots_inform
 
 inform parameters for ROOTS
 

@@ -25,9 +25,9 @@ bgo_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structbgo__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_pg<doxid-structbgo__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
 		struct :ref:`bgo_time_type<doxid-structbgo__time__type>` :ref:`time<doxid-structbgo__inform__type_1a323c159d2e08628b6db82791b80a2f30>`;
-		struct ugo_inform_type :ref:`ugo_inform<doxid-structbgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
-		struct lhs_inform_type :ref:`lhs_inform<doxid-structbgo__inform__type_1aa1305fc54f2639b2f4c39c629b39cd48>`;
-		struct trb_inform_type :ref:`trb_inform<doxid-structbgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
+		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` :ref:`ugo_inform<doxid-structbgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
+		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>` :ref:`lhs_inform<doxid-structbgo__inform__type_1aa1305fc54f2639b2f4c39c629b39cd48>`;
+		struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` :ref:`trb_inform<doxid-structbgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
 	};
 .. _details-structbgo__inform__type:
 
@@ -135,7 +135,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ugo_inform_type ugo_inform
+	struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` ugo_inform
 
 inform parameters for UGO
 
@@ -145,7 +145,7 @@ inform parameters for UGO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lhs_inform_type lhs_inform
+	struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>` lhs_inform
 
 inform parameters for LHS
 
@@ -155,7 +155,7 @@ inform parameters for LHS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct trb_inform_type trb_inform
+	struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` trb_inform
 
 inform parameters for TRB
 

@@ -245,7 +245,7 @@ name of external solver used to factorize and solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gls_ainfo gls_ainfo
+	struct :ref:`gls_ainfo<doxid-structgls__ainfo>` gls_ainfo
 
 the output arrays from GLS
 
@@ -255,7 +255,7 @@ the output arrays from GLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gls_finfo gls_finfo
+	struct :ref:`gls_finfo<doxid-structgls__finfo>` gls_finfo
 
 see gls_ainfo
 
@@ -265,7 +265,7 @@ see gls_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gls_sinfo gls_sinfo
+	struct :ref:`gls_sinfo<doxid-structgls__sinfo>` gls_sinfo
 
 see gls_ainfo
 
@@ -275,9 +275,9 @@ see gls_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ma48_ainfo ma48_ainfo
+	struct :ref:`ma48_ainfo<doxid-structma48__ainfo>` ma48_ainfo
 
-the output arrays from MA48
+the output arrays from HSL's MA48
 
 .. index:: pair: variable; ma48_finfo
 .. _doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348:
@@ -285,7 +285,7 @@ the output arrays from MA48
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ma48_finfo ma48_finfo
+	struct :ref:`ma48_finfo<doxid-structma48__finfo>` ma48_finfo
 
 see ma48_ainfo
 
@@ -295,7 +295,7 @@ see ma48_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ma48_sinfo ma48_sinfo
+	struct :ref:`ma48_sinfo<doxid-structma48__sinfo>` ma48_sinfo
 
 see ma48_ainfo
 

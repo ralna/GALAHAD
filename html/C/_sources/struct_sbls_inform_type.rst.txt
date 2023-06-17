@@ -31,8 +31,8 @@ sbls_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_residual<doxid-structsbls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
 		bool :ref:`alternative<doxid-structsbls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
 		struct :ref:`sbls_time_type<doxid-structsbls__time__type>` :ref:`time<doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structsbls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct uls_inform_type :ref:`uls_inform<doxid-structsbls__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structsbls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`uls_inform_type<doxid-structuls__inform__type>` :ref:`uls_inform<doxid-structsbls__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
 	};
 .. _details-structsbls__inform__type:
 
@@ -210,7 +210,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 inform parameters from the GALAHAD package SLS used
 
@@ -220,7 +220,7 @@ inform parameters from the GALAHAD package SLS used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct uls_inform_type uls_inform
+	struct :ref:`uls_inform_type<doxid-structuls__inform__type>` uls_inform
 
 inform parameters from the GALAHAD package ULS used
 

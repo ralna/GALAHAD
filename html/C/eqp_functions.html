@@ -694,22 +694,22 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="p">;</span>
 <span class="k">struct</span> <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_eqp_time_type.html#doxid-structeqp-time-type"><span class="std std-ref">eqp_time_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-time-type"><span class="std std-ref">eqp_time_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// function calls</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1a0d6a00469fba32b588f74c05a386626d"><span class="std std-ref">eqp_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1a24889f7ee5c51b3c76daab94687faed9"><span class="std std-ref">eqp_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1a0d6a00469fba32b588f74c05a386626d"><span class="std std-ref">eqp_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1a24889f7ee5c51b3c76daab94687faed9"><span class="std std-ref">eqp_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1adbadbd11a40aedbbb705334023406de1"><span class="std std-ref">eqp_import</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1adbadbd11a40aedbbb705334023406de1"><span class="std std-ref">eqp_import</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -726,61 +726,61 @@
     <span class="k">const</span> <span class="kt">int</span> <span class="n">A_ptr</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1a1b8074313bdc2176203d0c0e9ea87c24"><span class="std std-ref">eqp_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1a1b8074313bdc2176203d0c0e9ea87c24"><span class="std std-ref">eqp_reset_control</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1abf97ed5ee46d2b3fd9a6f75023a95c3d"><span class="std std-ref">eqp_solve_qp</span></a><span></span><span class="p">(</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1abf97ed5ee46d2b3fd9a6f75023a95c3d"><span class="std std-ref">eqp_solve_qp</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">h_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1aaadb310c329e4857b3ad373bcee69e6f"><span class="std std-ref">eqp_solve_sldqp</span></a><span></span><span class="p">(</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1aaadb310c329e4857b3ad373bcee69e6f"><span class="std std-ref">eqp_solve_sldqp</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x0</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x0</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1abde96724e9b4b13c5cce1aae5cf93d8f"><span class="std std-ref">eqp_resolve_qp</span></a><span></span><span class="p">(</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1abde96724e9b4b13c5cce1aae5cf93d8f"><span class="std std-ref">eqp_resolve_qp</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1aba10933446f1856fc435ecfbd98371d6"><span class="std std-ref">eqp_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1aba10933446f1856fc435ecfbd98371d6"><span class="std std-ref">eqp_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-eqp-8h-1a237e3d3e43c6819205b3f303418324e0"><span class="std std-ref">eqp_terminate</span></a><span></span><span class="p">(</span>
+<span class="kt">void</span> <a class="reference internal" href="eqp.html#doxid-galahad-eqp-8h-1a237e3d3e43c6819205b3f303418324e0"><span class="std std-ref">eqp_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">struct</span> <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
@@ -793,7 +793,7 @@
 </section>
 <section id="function-calls">
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a0d6a00469fba32b588f74c05a386626d"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">eqp_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a0d6a00469fba32b588f74c05a386626d"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">eqp_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -806,7 +806,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -820,7 +820,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a24889f7ee5c51b3c76daab94687faed9"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">eqp_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a24889f7ee5c51b3c76daab94687faed9"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">eqp_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
 <p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -830,7 +830,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -838,7 +838,7 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1adbadbd11a40aedbbb705334023406de1"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">eqp_import</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -863,7 +863,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -921,7 +921,7 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a1b8074313bdc2176203d0c0e9ea87c24"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">eqp_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -934,7 +934,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -957,14 +957,14 @@
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">h_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Solve the quadratic program when the Hessian <span class="math notranslate nohighlight">\(H\)</span> is available.</p>
 <p class="rubric">Parameters:</p>
@@ -1040,15 +1040,15 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x0</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x0</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Solve the shifted least-distance quadratic program</p>
 <p class="rubric">Parameters:</p>
@@ -1124,11 +1124,11 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="sbls.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(c\)</span> has changed</p>
 <p class="rubric">Parameters:</p>
@@ -1214,7 +1214,7 @@
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a237e3d3e43c6819205b3f303418324e0"><span id="index-10"></span><span></span><span class="kt">void</span> <span class="n">eqp_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">struct</span> <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
@@ -1229,7 +1229,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="eqp.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a struct containing output information (see <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a>)</p></td>

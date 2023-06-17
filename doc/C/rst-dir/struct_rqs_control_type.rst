@@ -42,8 +42,8 @@ rqs_control_type structure
 		char :ref:`symmetric_linear_solver<doxid-structrqs__control__type_1af297ace351b9307640715643cde57384>`[31];
 		char :ref:`definite_linear_solver<doxid-structrqs__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
 		char :ref:`prefix<doxid-structrqs__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sls_control_type :ref:`sls_control<doxid-structrqs__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct ir_control_type :ref:`ir_control<doxid-structrqs__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structrqs__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structrqs__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
 	};
 .. _details-structrqs__control__type:
 
@@ -349,7 +349,7 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for the Cholesky factorization and solution (see sls_c documentation)
 
@@ -359,7 +359,7 @@ control parameters for the Cholesky factorization and solution (see sls_c docume
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ir_control_type ir_control
+	struct :ref:`ir_control_type<doxid-structir__control__type>` ir_control
 
 control parameters for iterative refinement (see ir_c documentation)
 

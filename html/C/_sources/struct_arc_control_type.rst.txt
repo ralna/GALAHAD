@@ -61,13 +61,13 @@ arc_control_type structure
 		bool :ref:`space_critical<doxid-structarc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structarc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structarc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct rqs_control_type :ref:`rqs_control<doxid-structarc__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
-		struct glrt_control_type :ref:`glrt_control<doxid-structarc__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
-		struct dps_control_type :ref:`dps_control<doxid-structarc__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1>`;
-		struct psls_control_type :ref:`psls_control<doxid-structarc__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct lms_control_type :ref:`lms_control<doxid-structarc__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct lms_control_type :target:`lms_control_prec<doxid-structarc__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct sha_control_type :ref:`sha_control<doxid-structarc__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>` :ref:`rqs_control<doxid-structarc__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
+		struct :ref:`glrt_control_type<doxid-structglrt__control__type>` :ref:`glrt_control<doxid-structarc__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
+		struct :ref:`dps_control_type<doxid-structdps__control__type>` :ref:`dps_control<doxid-structarc__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1>`;
+		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structarc__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structarc__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :target:`lms_control_prec<doxid-structarc__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
+		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structarc__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
 	};
 .. _details-structarc__control__type:
 
@@ -594,7 +594,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rqs_control_type rqs_control
+	struct :ref:`rqs_control_type<doxid-structrqs__control__type>` rqs_control
 
 control parameters for RQS
 
@@ -604,7 +604,7 @@ control parameters for RQS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct glrt_control_type glrt_control
+	struct :ref:`glrt_control_type<doxid-structglrt__control__type>` glrt_control
 
 control parameters for GLRT
 
@@ -614,7 +614,7 @@ control parameters for GLRT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct dps_control_type dps_control
+	struct :ref:`dps_control_type<doxid-structdps__control__type>` dps_control
 
 control parameters for DPS
 
@@ -624,7 +624,7 @@ control parameters for DPS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct psls_control_type psls_control
+	struct :ref:`psls_control_type<doxid-structpsls__control__type>` psls_control
 
 control parameters for PSLS
 
@@ -634,9 +634,18 @@ control parameters for PSLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lms_control_type lms_control
-
+	struct :ref:`lms_control_type<doxid-structlms__control__type>` lms_control
 control parameters for LMS
+
+.. index:: pair: variable; lms_control_prec
+.. _doxid-structarc__control__type_1aaad01db9888c4f77c450ff45fac4dfec:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`lms_control_type<doxid-structlms__control__type>` lms_control_prec
+
+control parameters for LMS used for preconditioning
 
 .. index:: pair: variable; sha_control
 .. _doxid-structarc__control__type_1a0e0b1319a0f3da41507bfb343a26ab96:
@@ -644,7 +653,7 @@ control parameters for LMS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sha_control_type sha_control
+	struct :ref:`sha_control_type<doxid-structsha__control__type>` sha_control
 
 control parameters for SHA
 

@@ -29,9 +29,9 @@ dgo_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`f_gap<doxid-structdgo__inform__type_1ae3a0ee7dd2eb9e07caf6f795a81ff5ff>`;
 		char :ref:`why_stop<doxid-structdgo__inform__type_1aa59a8565c1e8326a5e51ad319778042c>`[2];
 		struct :ref:`dgo_time_type<doxid-structdgo__time__type>` :ref:`time<doxid-structdgo__inform__type_1a46152da6b6a2aecc3da098819a6a81ac>`;
-		struct hash_inform_type :ref:`hash_inform<doxid-structdgo__inform__type_1a06ea21c222dde5731d218b41438f5c69>`;
-		struct ugo_inform_type :ref:`ugo_inform<doxid-structdgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
-		struct trb_inform_type :ref:`trb_inform<doxid-structdgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
+		struct :ref:`hash_inform_type<doxid-structhash__inform__type>` :ref:`hash_inform<doxid-structdgo__inform__type_1a06ea21c222dde5731d218b41438f5c69>`;
+		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` :ref:`ugo_inform<doxid-structdgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
+		struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` :ref:`trb_inform<doxid-structdgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
 	};
 .. _details-structdgo__inform__type:
 
@@ -180,7 +180,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct hash_inform_type hash_inform
+	struct :ref:`hash_inform_type<doxid-structhash__inform__type>` hash_inform
 
 inform parameters for HASH
 
@@ -190,7 +190,7 @@ inform parameters for HASH
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ugo_inform_type ugo_inform
+	struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` ugo_inform
 
 inform parameters for UGO
 
@@ -200,7 +200,7 @@ inform parameters for UGO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct trb_inform_type trb_inform
+	struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` trb_inform
 
 inform parameters for TRB
 

@@ -68,10 +68,10 @@ dqp_control_type structure
 		char :ref:`sif_file_name<doxid-structdqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`qplib_file_name<doxid-structdqp__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
 		char :ref:`prefix<doxid-structdqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct fdc_control_type :ref:`fdc_control<doxid-structdqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct sls_control_type :ref:`sls_control<doxid-structdqp__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct sbls_control_type :ref:`sbls_control<doxid-structdqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct gltr_control_type :ref:`gltr_control<doxid-structdqp__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
+		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structdqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structdqp__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structdqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structdqp__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
 	};
 .. _details-structdqp__control__type:
 
@@ -633,7 +633,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_control_type fdc_control
+	struct :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
 
 control parameters for FDC
 
@@ -643,7 +643,7 @@ control parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for SLS
 
@@ -653,7 +653,7 @@ control parameters for SLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 
@@ -663,7 +663,7 @@ control parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gltr_control_type gltr_control
+	struct :ref:`gltr_control_type<doxid-structgltr__control__type>` gltr_control
 
 control parameters for GLTR
 
