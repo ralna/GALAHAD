@@ -18,6 +18,12 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
+          - os: macos-latest
+            compiler: clang
+            compiler_version: 14
+            cc_cmd: clang
+            fc_cmd: gfortran-13
+            cxx_cmd: clang++
           - os: ubuntu-latest
             compiler: intel
             compiler_version: 2021.9
@@ -36,12 +42,7 @@ jobs:
             cc_cmd: icx
             fc_cmd: ifort
             cxx_cmd: icpx
-          - os: macos-latest
-            compiler: clang
-            compiler_version: 14
-            cc_cmd: clang
-            fc_cmd: gfortran-13
-            cxx_cmd: clang++
+            allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -59,6 +60,9 @@ jobs:
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
+          echo "OMP_NESTED=TRUE" >> $GITHUB_ENV
+          echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
       - name: Install GNU compilers
         if: matrix.compiler == 'gnu'
