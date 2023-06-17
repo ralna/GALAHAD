@@ -33,8 +33,8 @@ wcp_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`non_negligible_pivot<doxid-structwcp__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
 		bool :ref:`feasible<doxid-structwcp__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
 		struct :ref:`wcp_time_type<doxid-structwcp__time__type>` :ref:`time<doxid-structwcp__inform__type_1afd2e59f6d17df493c93987f3f6b8b042>`;
-		struct fdc_inform_type :ref:`fdc_inform<doxid-structwcp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structwcp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structwcp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structwcp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
 	};
 .. _details-structwcp__inform__type:
 
@@ -222,7 +222,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_inform_type fdc_inform
+	struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
 
 inform parameters for FDC
 
@@ -232,7 +232,7 @@ inform parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
 

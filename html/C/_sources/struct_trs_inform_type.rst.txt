@@ -29,8 +29,8 @@ trs_inform_type structure
 		char :ref:`bad_alloc<doxid-structtrs__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`trs_time_type<doxid-structtrs__time__type>` :ref:`time<doxid-structtrs__inform__type_1a137801ab863218dd25dd377da6a6cbfb>`;
 		struct :ref:`trs_history_type<doxid-structtrs__history__type>` :ref:`history<doxid-structtrs__inform__type_1adbea75a6746b7545b3c4dfcfc8780664>`[100];
-		struct sls_inform_type :ref:`sls_inform<doxid-structtrs__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct ir_inform_type :ref:`ir_inform<doxid-structtrs__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structtrs__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structtrs__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
 	};
 .. _details-structtrs__inform__type:
 
@@ -204,7 +204,7 @@ history information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 cholesky information (see sls_c documentation)
 
@@ -214,7 +214,7 @@ cholesky information (see sls_c documentation)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ir_inform_type ir_inform
+	struct :ref:`ir_inform_type<doxid-structir__inform__type>` ir_inform
 
 iterative_refinement information (see ir_c documentation)
 

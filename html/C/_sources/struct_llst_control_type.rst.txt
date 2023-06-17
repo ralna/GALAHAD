@@ -33,9 +33,9 @@ llst_control_type structure
 		bool :ref:`deallocate_error_fatal<doxid-structllst__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`definite_linear_solver<doxid-structllst__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
 		char :ref:`prefix<doxid-structllst__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sbls_control_type :ref:`sbls_control<doxid-structllst__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct sls_control_type :ref:`sls_control<doxid-structllst__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct ir_control_type :ref:`ir_control<doxid-structllst__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structllst__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structllst__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structllst__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
 	};
 .. _details-structllst__control__type:
 
@@ -245,7 +245,7 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for the symmetric factorization and related linear solves (see sbls_c documentation)
 
@@ -255,7 +255,7 @@ control parameters for the symmetric factorization and related linear solves (se
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for the factorization of S and related linear solves (see sls_c documentation)
 
@@ -265,7 +265,7 @@ control parameters for the factorization of S and related linear solves (see sls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ir_control_type ir_control
+	struct :ref:`ir_control_type<doxid-structir__control__type>` ir_control
 
 control parameters for iterative refinement for definite system solves (see ir_c documentation)
 

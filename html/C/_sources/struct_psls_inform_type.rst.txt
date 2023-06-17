@@ -39,8 +39,8 @@ psls_inform_type structure
 		int :ref:`mc61_info<doxid-structpsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`mc61_rinfo<doxid-structpsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
 		struct :ref:`psls_time_type<doxid-structpsls__time__type>` :ref:`time<doxid-structpsls__inform__type_1a4e85e8fc22799defca71ba5c448216ed>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structpsls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct mi28_info :ref:`mi28_info<doxid-structpsls__inform__type_1aa5913427f989eb08152b78bf6390c0b9>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structpsls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`mi28_info<doxid-structmi28__info>` :ref:`mi28_info<doxid-structpsls__inform__type_1aa5913427f989eb08152b78bf6390c0b9>`;
 	};
 .. _details-structpsls__inform__type:
 
@@ -306,7 +306,7 @@ times for various stages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 inform values from SLS
 
@@ -316,7 +316,7 @@ inform values from SLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct mi28_info mi28_info
+	struct :ref:`mi28_info<doxid-structmi28__info>` mi28_info
 
-the output structure from mi28
+the output info structure from HSL's mi28
 

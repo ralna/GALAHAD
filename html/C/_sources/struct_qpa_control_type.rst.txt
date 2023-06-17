@@ -66,7 +66,7 @@ qpa_control_type structure
 		char :ref:`sif_file_name<doxid-structqpa__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`prefix<doxid-structqpa__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
 		bool :ref:`each_interval<doxid-structqpa__control__type_1a1c67e9287c98ef959b05e041803f16a9>`;
-		struct sls_control_type :ref:`sls_control<doxid-structqpa__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structqpa__control__type_1a31b308b91955ee385daacc3de00f161b>`;
 	};
 .. _details-structqpa__control__type:
 
@@ -590,7 +590,7 @@ component specifically for parametric problems (not used at present)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for SLS
 

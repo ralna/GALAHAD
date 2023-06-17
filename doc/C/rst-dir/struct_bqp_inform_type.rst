@@ -25,7 +25,7 @@ bqp_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_pg<doxid-structbqp__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
 		char :ref:`bad_alloc<doxid-structbqp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`bqp_time_type<doxid-structbqp__time__type>` :ref:`time<doxid-structbqp__inform__type_1a7f44be002389597b3f6c06e9a9b6eefa>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structbqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structbqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
 	};
 .. _details-structbqp__inform__type:
 
@@ -143,7 +143,7 @@ times for various stages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform values from SBLS
 

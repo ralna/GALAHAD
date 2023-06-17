@@ -25,9 +25,9 @@ eqp_inform_type structure
 		int64_t :ref:`factorization_real<doxid-structeqp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structeqp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
 		struct :ref:`eqp_time_type<doxid-structeqp__time__type>` :ref:`time<doxid-structeqp__inform__type_1ab4ea6394e359e4f2ba2543eda324643a>`;
-		struct fdc_inform_type :ref:`fdc_inform<doxid-structeqp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structeqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct gltr_inform_type :ref:`gltr_inform<doxid-structeqp__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
+		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structeqp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structeqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structeqp__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
 	};
 .. _details-structeqp__inform__type:
 
@@ -135,7 +135,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_inform_type fdc_inform
+	struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
 
 inform parameters for FDC
 
@@ -145,7 +145,7 @@ inform parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
 
@@ -155,7 +155,7 @@ inform parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gltr_inform_type gltr_inform
+	struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` gltr_inform
 
 return information from GLTR
 

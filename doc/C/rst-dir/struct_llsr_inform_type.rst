@@ -25,9 +25,9 @@ llsr_inform_type structure
 		char :ref:`bad_alloc<doxid-structllsr__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`llsr_time_type<doxid-structllsr__time__type>` :ref:`time<doxid-structllsr__inform__type_1ace18e9a0877156e432cc23c7d5799dd6>`;
 		struct :ref:`llsr_history_type<doxid-structllsr__history__type>` :ref:`history<doxid-structllsr__inform__type_1a13047d24b0cf3469a41cc14c364d3587>`[100];
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structllsr__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structllsr__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct ir_inform_type :ref:`ir_inform<doxid-structllsr__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structllsr__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structllsr__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structllsr__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
 	};
 .. _details-structllsr__inform__type:
 
@@ -159,7 +159,7 @@ history information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 information from the symmetric factorization and related linear solves (see sbls_c documentation)
 
@@ -169,7 +169,7 @@ information from the symmetric factorization and related linear solves (see sbls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 information from the factorization of S and related linear solves (see sls_c documentation)
 
@@ -179,7 +179,7 @@ information from the factorization of S and related linear solves (see sls_c doc
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ir_inform_type ir_inform
+	struct :ref:`ir_inform_type<doxid-structir__inform__type>` ir_inform
 
 information from the iterative refinement for definite system solves (see ir_c documentation)
 

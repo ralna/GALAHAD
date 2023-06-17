@@ -77,11 +77,11 @@ qpb_control_type structure
 		bool :ref:`generate_sif_file<doxid-structqpb__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
 		char :ref:`sif_file_name<doxid-structqpb__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`prefix<doxid-structqpb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct lsqp_control_type :ref:`lsqp_control<doxid-structqpb__control__type_1a2cda9960f4e6a417f64b213147f802e0>`;
-		struct fdc_control_type :ref:`fdc_control<doxid-structqpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct sbls_control_type :ref:`sbls_control<doxid-structqpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct gltr_control_type :ref:`gltr_control<doxid-structqpb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct fit_control_type :ref:`fit_control<doxid-structqpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
+		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>` :ref:`lsqp_control<doxid-structqpb__control__type_1a2cda9960f4e6a417f64b213147f802e0>`;
+		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structqpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structqpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structqpb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
+		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structqpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
 	};
 .. _details-structqpb__control__type:
 
@@ -743,7 +743,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lsqp_control_type lsqp_control
+	struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>` lsqp_control
 
 control parameters for LSQP
 
@@ -753,7 +753,7 @@ control parameters for LSQP
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_control_type fdc_control
+	struct :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
 
 control parameters for FDC
 
@@ -763,7 +763,7 @@ control parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 
@@ -773,7 +773,7 @@ control parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gltr_control_type gltr_control
+	struct :ref:`gltr_control_type<doxid-structgltr__control__type>` gltr_control
 
 control parameters for GLTR
 
@@ -783,7 +783,7 @@ control parameters for GLTR
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fit_control_type fit_control
+	struct :ref:`fit_control_type<doxid-structfit__control__type>` fit_control
 
 control parameters for FIT
 

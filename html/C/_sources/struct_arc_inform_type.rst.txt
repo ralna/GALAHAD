@@ -34,13 +34,13 @@ arc_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_g<doxid-structarc__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`weight<doxid-structarc__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
 		struct :ref:`arc_time_type<doxid-structarc__time__type>` :ref:`time<doxid-structarc__inform__type_1a4288efaa60a28f967b947ef1b07cf445>`;
-		struct rqs_inform_type :ref:`rqs_inform<doxid-structarc__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
-		struct glrt_inform_type :ref:`glrt_inform<doxid-structarc__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
-		struct dps_inform_type :ref:`dps_inform<doxid-structarc__inform__type_1aec61ddb290b679c265693de171a6394f>`;
-		struct psls_inform_type :ref:`psls_inform<doxid-structarc__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
-		struct lms_inform_type :ref:`lms_inform<doxid-structarc__inform__type_1a6428cf213f8c899aa1bfb1fc3d24f37d>`;
-		struct lms_inform_type :target:`lms_inform_prec<doxid-structarc__inform__type_1a2040147e726e4ad18ef6d81d8339644e>`;
-		struct sha_inform_type :ref:`sha_inform<doxid-structarc__inform__type_1a196d9da91c7ed4a67aa6e009e336e101>`;
+		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structarc__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
+		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structarc__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
+		struct :ref:`dps_inform_type<doxid-structdps__inform__type>` :ref:`dps_inform<doxid-structarc__inform__type_1aec61ddb290b679c265693de171a6394f>`;
+		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structarc__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
+		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :ref:`lms_inform<doxid-structarc__inform__type_1a6428cf213f8c899aa1bfb1fc3d24f37d>`;
+		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :target:`lms_inform_prec<doxid-structarc__inform__type_1a2040147e726e4ad18ef6d81d8339644e>`;
+		struct :ref:`sha_inform_type<doxid-structsha__inform__type>` :ref:`sha_inform<doxid-structarc__inform__type_1a196d9da91c7ed4a67aa6e009e336e101>`;
 	};
 .. _details-structarc__inform__type:
 
@@ -238,7 +238,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rqs_inform_type rqs_inform
+	struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` rqs_inform
 
 inform parameters for RQS
 
@@ -248,7 +248,7 @@ inform parameters for RQS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct glrt_inform_type glrt_inform
+	struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` glrt_inform
 
 inform parameters for GLRT
 
@@ -258,7 +258,7 @@ inform parameters for GLRT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct dps_inform_type dps_inform
+	struct :ref:`dps_inform_type<doxid-structdps__inform__type>` dps_inform
 
 inform parameters for DPS
 
@@ -268,7 +268,7 @@ inform parameters for DPS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct psls_inform_type psls_inform
+	struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` psls_inform
 
 inform parameters for PSLS
 
@@ -278,9 +278,18 @@ inform parameters for PSLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lms_inform_type lms_inform
+	struct :ref:`lms_inform_type<doxid-structlms__inform__type>` lms_inform
 
 inform parameters for LMS
+
+.. index:: pair: variable; lms_inform_prec
+.. _doxid-structarc__inform__type_1a2040147e726e4ad18ef6d81d8339644e:
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`lms_inform_type<doxid-structlms__inform__type>` lms_inform_prec
+
+inform parameters for LMS used for preconditioning
 
 .. index:: pair: variable; sha_inform
 .. _doxid-structarc__inform__type_1a196d9da91c7ed4a67aa6e009e336e101:
@@ -288,7 +297,7 @@ inform parameters for LMS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sha_inform_type sha_inform
+	struct :ref:`sha_inform_type<doxid-structsha__inform__type>` sha_inform
 
 inform parameters for SHA
 
