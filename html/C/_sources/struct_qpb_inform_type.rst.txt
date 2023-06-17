@@ -31,11 +31,11 @@ qpb_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`non_negligible_pivot<doxid-structqpb__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
 		bool :ref:`feasible<doxid-structqpb__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
 		struct :ref:`qpb_time_type<doxid-structqpb__time__type>` :ref:`time<doxid-structqpb__inform__type_1ae4e944df2baf87107a291094002befb2>`;
-		struct lsqp_inform_type :ref:`lsqp_inform<doxid-structqpb__inform__type_1acc149a8b0411baab4ddd0d9e4ccf28ff>`;
-		struct fdc_inform_type :ref:`fdc_inform<doxid-structqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct gltr_inform_type :ref:`gltr_inform<doxid-structqpb__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-		struct fit_inform_type :ref:`fit_inform<doxid-structqpb__inform__type_1ac6efa45e989564727014956bf3e00deb>`;
+		struct :ref:`lsqp_inform_type<doxid-structlsqp__inform__type>` :ref:`lsqp_inform<doxid-structqpb__inform__type_1acc149a8b0411baab4ddd0d9e4ccf28ff>`;
+		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structqpb__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
+		struct :ref:`fit_inform_type<doxid-structfit__inform__type>` :ref:`fit_inform<doxid-structqpb__inform__type_1ac6efa45e989564727014956bf3e00deb>`;
 	};
 .. _details-structqpb__inform__type:
 
@@ -203,7 +203,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lsqp_inform_type lsqp_inform
+	struct :ref:`lsqp_inform_type<doxid-structlsqp__inform__type>` lsqp_inform
 
 inform parameters for LSQP
 
@@ -213,7 +213,7 @@ inform parameters for LSQP
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_inform_type fdc_inform
+	struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
 
 inform parameters for FDC
 
@@ -223,7 +223,7 @@ inform parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
 
@@ -233,7 +233,7 @@ inform parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gltr_inform_type gltr_inform
+	struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` gltr_inform
 
 return information from GLTR
 
@@ -243,7 +243,7 @@ return information from GLTR
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fit_inform_type fit_inform
+	struct :ref:`fit_inform_type<doxid-structfit__inform__type>` fit_inform
 
 return information from FIT
 

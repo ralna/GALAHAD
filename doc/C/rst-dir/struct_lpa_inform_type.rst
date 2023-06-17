@@ -27,7 +27,7 @@ lpa_inform_type structure
 		bool :ref:`feasible<doxid-structlpa__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`RINFO<doxid-structlpa__inform__type_1a1dcb2a53d683485290d30e0a16d7e2ee>`[40];
 		struct :ref:`lpa_time_type<doxid-structlpa__time__type>` :ref:`time<doxid-structlpa__inform__type_1a06efd7a01012eda3b046d741ef9584fa>`;
-		struct rpd_inform_type :ref:`rpd_inform<doxid-structlpa__inform__type_1a823701505feea7615e9f8995769d8b60>`;
+		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` :ref:`rpd_inform<doxid-structlpa__inform__type_1a823701505feea7615e9f8995769d8b60>`;
 	};
 .. _details-structlpa__inform__type:
 
@@ -155,7 +155,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rpd_inform_type rpd_inform
+	struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` rpd_inform
 
 inform parameters for RPD
 

@@ -34,7 +34,7 @@ qpa_inform_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`infeas_b<doxid-structqpa__inform__type_1a3001ce44f7449e075ae83fde8439c8df>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`merit<doxid-structqpa__inform__type_1a231e0f500c3a8e0e9acfa786b03381d9>`;
 		struct :ref:`qpa_time_type<doxid-structqpa__time__type>` :ref:`time<doxid-structqpa__inform__type_1af9a10dd74244e6c12e136ae0828ae3a7>`;
-		struct sls_inform_type :ref:`sls_inform<doxid-structqpa__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structqpa__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
 	};
 .. _details-structqpa__inform__type:
 
@@ -232,7 +232,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_inform_type sls_inform
+	struct :ref:`sls_inform_type<doxid-structsls__inform__type>` sls_inform
 
 inform parameters for SLS
 

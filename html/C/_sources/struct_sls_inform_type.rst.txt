@@ -61,9 +61,9 @@ sls_inform_type structure
 		bool :ref:`alternative<doxid-structsls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
 		char :ref:`solver<doxid-structsls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
 		struct :ref:`sls_time_type<doxid-structsls__time__type>` :ref:`time<doxid-structsls__inform__type_1aeb306e2c697a3b16156c7bbf95933d04>`;
-		struct sils_ainfo_type :ref:`sils_ainfo<doxid-structsls__inform__type_1a6490df077bf8d853c6ce6242ef95ef3f>`;
-		struct sils_finfo_type :ref:`sils_finfo<doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a>`;
-		struct sils_sinfo_type :ref:`sils_sinfo<doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01>`;
+		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` :ref:`sils_ainfo<doxid-structsls__inform__type_1a6490df077bf8d853c6ce6242ef95ef3f>`;
+		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` :ref:`sils_finfo<doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a>`;
+		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` :ref:`sils_sinfo<doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01>`;
 		struct ma57_ainfo :ref:`ma57_ainfo<doxid-structsls__inform__type_1aa7061ae61ef272126c2d93c0bb7c3e92>`;
 		struct ma57_finfo :ref:`ma57_finfo<doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f>`;
 		struct ma57_sinfo :ref:`ma57_sinfo<doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8>`;
@@ -569,7 +569,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sils_ainfo_type sils_ainfo
+	struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` sils_ainfo
 
 the output structure from sils
 
@@ -579,7 +579,7 @@ the output structure from sils
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sils_finfo_type sils_finfo
+	struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` sils_finfo
 
 see sils_ainfo
 
@@ -589,7 +589,7 @@ see sils_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sils_sinfo_type sils_sinfo
+	struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` sils_sinfo
 
 see sils_ainfo
 

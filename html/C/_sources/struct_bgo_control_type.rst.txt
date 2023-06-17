@@ -35,9 +35,9 @@ bgo_control_type structure
 		bool :ref:`space_critical<doxid-structbgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structbgo__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structbgo__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct ugo_control_type :ref:`ugo_control<doxid-structbgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
-		struct lhs_control_type :ref:`lhs_control<doxid-structbgo__control__type_1a4938e30d02d3b452486980daef1f6f73>`;
-		struct trb_control_type :ref:`trb_control<doxid-structbgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
+		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structbgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
+		struct :ref:`lhs_control_type<doxid-structlhs__control__type>` :ref:`lhs_control<doxid-structbgo__control__type_1a4938e30d02d3b452486980daef1f6f73>`;
+		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structbgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
 	};
 .. _details-structbgo__control__type:
 
@@ -259,7 +259,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ugo_control_type ugo_control
+	struct :ref:`ugo_control_type<doxid-structugo__control__type>` ugo_control
 
 control parameters for UGO
 
@@ -269,7 +269,7 @@ control parameters for UGO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lhs_control_type lhs_control
+	struct :ref:`lhs_control_type<doxid-structlhs__control__type>` lhs_control
 
 control parameters for LHS
 
@@ -279,7 +279,7 @@ control parameters for LHS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct trb_control_type trb_control
+	struct :ref:`trb_control_type<doxid-structtrb__control__type>` trb_control
 
 control parameters for TRB
 

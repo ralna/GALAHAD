@@ -39,12 +39,12 @@ bqpb_inform_type structure
 		int :ref:`checkpointsIter<doxid-structbqpb__inform__type_1acb0789a29239327ab8a4e929e0fbc65b>`[16];
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`checkpointsTime<doxid-structbqpb__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9>`[16];
 		struct :ref:`bqpb_time_type<doxid-structbqpb__time__type>` :ref:`time<doxid-structbqpb__inform__type_1a0503be346fa7319255edb6365d226f17>`;
-		struct fdc_inform_type :ref:`fdc_inform<doxid-structbqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct sbls_inform_type :ref:`sbls_inform<doxid-structbqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct fit_inform_type :ref:`fit_inform<doxid-structbqpb__inform__type_1ac6efa45e989564727014956bf3e00deb>`;
-		struct roots_inform_type :ref:`roots_inform<doxid-structbqpb__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
-		struct cro_inform_type :ref:`cro_inform<doxid-structbqpb__inform__type_1a594c21272a0c3d75d5ffa712f1d8f971>`;
-		struct rpd_inform_type :ref:`rpd_inform<doxid-structbqpb__inform__type_1a823701505feea7615e9f8995769d8b60>`;
+		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structbqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structbqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		struct :ref:`fit_inform_type<doxid-structfit__inform__type>` :ref:`fit_inform<doxid-structbqpb__inform__type_1ac6efa45e989564727014956bf3e00deb>`;
+		struct :ref:`roots_inform_type<doxid-structroots__inform__type>` :ref:`roots_inform<doxid-structbqpb__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
+		struct :ref:`cro_inform_type<doxid-structcro__inform__type>` :ref:`cro_inform<doxid-structbqpb__inform__type_1a594c21272a0c3d75d5ffa712f1d8f971>`;
+		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` :ref:`rpd_inform<doxid-structbqpb__inform__type_1a823701505feea7615e9f8995769d8b60>`;
 	};
 .. _details-structbqpb__inform__type:
 
@@ -292,7 +292,7 @@ timings (see above)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_inform_type fdc_inform
+	struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
 
 inform parameters for FDC
 
@@ -302,7 +302,7 @@ inform parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_inform_type sbls_inform
+	struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS
 
@@ -312,7 +312,7 @@ inform parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fit_inform_type fit_inform
+	struct :ref:`fit_inform_type<doxid-structfit__inform__type>` fit_inform
 
 return information from FIT
 
@@ -322,7 +322,7 @@ return information from FIT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct roots_inform_type roots_inform
+	struct :ref:`roots_inform_type<doxid-structroots__inform__type>` roots_inform
 
 return information from ROOTS
 
@@ -332,7 +332,7 @@ return information from ROOTS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct cro_inform_type cro_inform
+	struct :ref:`cro_inform_type<doxid-structcro__inform__type>` cro_inform
 
 inform parameters for CRO
 
@@ -342,7 +342,7 @@ inform parameters for CRO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rpd_inform_type rpd_inform
+	struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` rpd_inform
 
 inform parameters for RPD
 

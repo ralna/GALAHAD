@@ -61,11 +61,11 @@ nls_control_type structure
 		bool :ref:`space_critical<doxid-structnls__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structnls__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structnls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct rqs_control_type :ref:`rqs_control<doxid-structnls__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
-		struct glrt_control_type :ref:`glrt_control<doxid-structnls__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
-		struct psls_control_type :ref:`psls_control<doxid-structnls__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct bsc_control_type :ref:`bsc_control<doxid-structnls__control__type_1a899f35f15eea56c23fe8fb22857e01f7>`;
-		struct roots_control_type :ref:`roots_control<doxid-structnls__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
+		struct :ref:`rqs_control_type<doxid-structrqs__control__type>` :ref:`rqs_control<doxid-structnls__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
+		struct :ref:`glrt_control_type<doxid-structglrt__control__type>` :ref:`glrt_control<doxid-structnls__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
+		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structnls__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
+		struct :ref:`bsc_control_type<doxid-structbsc__control__type>` :ref:`bsc_control<doxid-structnls__control__type_1a899f35f15eea56c23fe8fb22857e01f7>`;
+		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structnls__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
 		struct :ref:`nls_subproblem_control_type<doxid-structnls__subproblem__control__type>` :ref:`subproblem_control<doxid-structnls__control__type_1a00b9f02fd328ee8fcd289b0a36ae8218>`;
 	};
 .. _details-structnls__control__type:
@@ -593,7 +593,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct rqs_control_type rqs_control
+	struct :ref:`rqs_control_type<doxid-structrqs__control__type>` rqs_control
 
 control parameters for RQS
 
@@ -603,7 +603,7 @@ control parameters for RQS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct glrt_control_type glrt_control
+	struct :ref:`glrt_control_type<doxid-structglrt__control__type>` glrt_control
 
 control parameters for GLRT
 
@@ -613,7 +613,7 @@ control parameters for GLRT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct psls_control_type psls_control
+	struct :ref:`psls_control_type<doxid-structpsls__control__type>` psls_control
 
 control parameters for PSLS
 
@@ -623,7 +623,7 @@ control parameters for PSLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct bsc_control_type bsc_control
+	struct :ref:`bsc_control_type<doxid-structbsc__control__type>` bsc_control
 
 control parameters for BSC
 
@@ -633,7 +633,7 @@ control parameters for BSC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct roots_control_type roots_control
+	struct :ref:`roots_control_type<doxid-structroots__control__type>` roots_control
 
 control parameters for ROOTS
 

@@ -35,8 +35,8 @@ psls_control_type structure
 		bool :ref:`deallocate_error_fatal<doxid-structpsls__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`definite_linear_solver<doxid-structpsls__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
 		char :ref:`prefix<doxid-structpsls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sls_control_type :ref:`sls_control<doxid-structpsls__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct mi28_control :ref:`mi28_control<doxid-structpsls__control__type_1a0a72ba6769963a38f2428b875b1d295e>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structpsls__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`mi28_control<doxid-structmi28__control>` :ref:`mi28_control<doxid-structpsls__control__type_1a0a72ba6769963a38f2428b875b1d295e>`;
 	};
 .. _details-structpsls__control__type:
 
@@ -278,7 +278,7 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for SLS
 
@@ -288,7 +288,7 @@ control parameters for SLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct mi28_control mi28_control
+	struct :ref:`mi28_control<doxid-structmi28__control>` mi28_control
 
 control parameters for HSL_MI28
 

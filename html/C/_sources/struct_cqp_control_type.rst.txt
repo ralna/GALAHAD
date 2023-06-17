@@ -72,11 +72,11 @@ cqp_control_type structure
 		char :ref:`sif_file_name<doxid-structcqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`qplib_file_name<doxid-structcqp__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
 		char :ref:`prefix<doxid-structcqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct fdc_control_type :ref:`fdc_control<doxid-structcqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct sbls_control_type :ref:`sbls_control<doxid-structcqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct fit_control_type :ref:`fit_control<doxid-structcqp__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
-		struct roots_control_type :ref:`roots_control<doxid-structcqp__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
-		struct cro_control_type :ref:`cro_control<doxid-structcqp__control__type_1a7fbe482405119bceefb8480356d6bd43>`;
+		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structcqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structcqp__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
+		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structcqp__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
+		struct :ref:`cro_control_type<doxid-structcro__control__type>` :ref:`cro_control<doxid-structcqp__control__type_1a7fbe482405119bceefb8480356d6bd43>`;
 	};
 .. _details-structcqp__control__type:
 
@@ -684,7 +684,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fdc_control_type fdc_control
+	struct :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
 
 control parameters for FDC
 
@@ -694,7 +694,7 @@ control parameters for FDC
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 
@@ -704,7 +704,7 @@ control parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct fit_control_type fit_control
+	struct :ref:`fit_control_type<doxid-structfit__control__type>` fit_control
 
 control parameters for FIT
 
@@ -714,7 +714,7 @@ control parameters for FIT
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct roots_control_type roots_control
+	struct :ref:`roots_control_type<doxid-structroots__control__type>` roots_control
 
 control parameters for ROOTS
 
@@ -724,7 +724,7 @@ control parameters for ROOTS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct cro_control_type cro_control
+	struct :ref:`cro_control_type<doxid-structcro__control__type>` cro_control
 
 control parameters for CRO
 

@@ -63,12 +63,12 @@ trb_control_type structure
 		bool :ref:`space_critical<doxid-structtrb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structtrb__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structtrb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct trs_control_type :ref:`trs_control<doxid-structtrb__control__type_1a0fb493acc030672e71f68fa1ef1727e8>`;
-		struct gltr_control_type :ref:`gltr_control<doxid-structtrb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct psls_control_type :ref:`psls_control<doxid-structtrb__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct lms_control_type :ref:`lms_control<doxid-structtrb__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct lms_control_type :ref:`lms_control_prec<doxid-structtrb__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct sha_control_type :ref:`sha_control<doxid-structtrb__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>` :ref:`trs_control<doxid-structtrb__control__type_1a0fb493acc030672e71f68fa1ef1727e8>`;
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structtrb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
+		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structtrb__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structtrb__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control_prec<doxid-structtrb__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
+		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structtrb__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
 	};
 .. _details-structtrb__control__type:
 
@@ -606,7 +606,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct trs_control_type trs_control
+	struct :ref:`trs_control_type<doxid-structtrs__control__type>` trs_control
 
 control parameters for TRS
 
@@ -616,7 +616,7 @@ control parameters for TRS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct gltr_control_type gltr_control
+	struct :ref:`gltr_control_type<doxid-structgltr__control__type>` gltr_control
 
 control parameters for GLTR
 
@@ -626,7 +626,7 @@ control parameters for GLTR
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct psls_control_type psls_control
+	struct :ref:`psls_control_type<doxid-structpsls__control__type>` psls_control
 
 control parameters for PSLS
 
@@ -636,7 +636,7 @@ control parameters for PSLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lms_control_type lms_control
+	struct :ref:`lms_control_type<doxid-structlms__control__type>` lms_control
 
 control parameters for LMS
 
@@ -646,7 +646,7 @@ control parameters for LMS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct lms_control_type lms_control_prec
+	struct :ref:`lms_control_type<doxid-structlms__control__type>` lms_control_prec
 
 control parameters for LMS used for preconditioning
 
@@ -656,7 +656,7 @@ control parameters for LMS used for preconditioning
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sha_control_type sha_control
+	struct :ref:`sha_control_type<doxid-structsha__control__type>` sha_control
 
 control parameters for SHA
 

@@ -30,10 +30,10 @@ cro_control_type structure
 		char :ref:`symmetric_linear_solver<doxid-structcro__control__type_1af297ace351b9307640715643cde57384>`[31];
 		char :ref:`unsymmetric_linear_solver<doxid-structcro__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
 		char :ref:`prefix<doxid-structcro__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sls_control_type :ref:`sls_control<doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct sbls_control_type :ref:`sbls_control<doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct uls_control_type :ref:`uls_control<doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
-		struct ir_control_type :ref:`ir_control<doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
+		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
 	};
 .. _details-structcro__control__type:
 
@@ -191,7 +191,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for SLS
 
@@ -201,7 +201,7 @@ control parameters for SLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 
@@ -211,7 +211,7 @@ control parameters for SBLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct uls_control_type uls_control
+	struct :ref:`uls_control_type<doxid-structuls__control__type>` uls_control
 
 control parameters for ULS
 
@@ -221,7 +221,7 @@ control parameters for ULS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ir_control_type ir_control
+	struct :ref:`ir_control_type<doxid-structir__control__type>` ir_control
 
 control parameters for iterative refinement
 

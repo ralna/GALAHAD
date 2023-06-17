@@ -43,9 +43,9 @@ dgo_control_type structure
 		bool :ref:`space_critical<doxid-structdgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structdgo__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structdgo__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct hash_control_type :ref:`hash_control<doxid-structdgo__control__type_1a00007ea491013c422add9f9a1a336860>`;
-		struct ugo_control_type :ref:`ugo_control<doxid-structdgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
-		struct trb_control_type :ref:`trb_control<doxid-structdgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
+		struct :ref:`hash_control_type<doxid-structhash__control__type>` :ref:`hash_control<doxid-structdgo__control__type_1a00007ea491013c422add9f9a1a336860>`;
+		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structdgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
+		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structdgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
 	};
 .. _details-structdgo__control__type:
 
@@ -343,7 +343,7 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(prefix))-1) where prefix 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct hash_control_type hash_control
+	struct :ref:`hash_control_type<doxid-structhash__control__type>` hash_control
 
 control parameters for HASH
 
@@ -353,7 +353,7 @@ control parameters for HASH
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct ugo_control_type ugo_control
+	struct :ref:`ugo_control_type<doxid-structugo__control__type>` ugo_control
 
 control parameters for UGO
 
@@ -363,7 +363,7 @@ control parameters for UGO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct trb_control_type trb_control
+	struct :ref:`trb_control_type<doxid-structtrb__control__type>` trb_control
 
 control parameters for TRB
 

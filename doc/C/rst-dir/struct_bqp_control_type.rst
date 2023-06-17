@@ -44,7 +44,7 @@ bqp_control_type structure
 		bool :ref:`generate_sif_file<doxid-structbqp__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
 		char :ref:`sif_file_name<doxid-structbqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
 		char :ref:`prefix<doxid-structbqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sbls_control_type :ref:`sbls_control<doxid-structbqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structbqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
 	};
 .. _details-structbqp__control__type:
 
@@ -342,7 +342,7 @@ all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(T
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sbls_control_type sbls_control
+	struct :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS
 

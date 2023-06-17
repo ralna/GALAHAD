@@ -31,8 +31,8 @@ fdc_control_type structure
 		char :ref:`symmetric_linear_solver<doxid-structfdc__control__type_1af297ace351b9307640715643cde57384>`[31];
 		char :ref:`unsymmetric_linear_solver<doxid-structfdc__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
 		char :ref:`prefix<doxid-structfdc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct sls_control_type :ref:`sls_control<doxid-structfdc__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct uls_control_type :ref:`uls_control<doxid-structfdc__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structfdc__control__type_1a31b308b91955ee385daacc3de00f161b>`;
+		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structfdc__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
 	};
 .. _details-structfdc__control__type:
 
@@ -210,7 +210,7 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct sls_control_type sls_control
+	struct :ref:`sls_control_type<doxid-structsls__control__type>` sls_control
 
 control parameters for SLS
 
@@ -220,7 +220,7 @@ control parameters for SLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct uls_control_type uls_control
+	struct :ref:`uls_control_type<doxid-structuls__control__type>` uls_control
 
 control parameters for ULS
 
