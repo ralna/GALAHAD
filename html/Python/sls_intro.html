@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>purpose &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'sls_intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="purpose">
+<h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">sls</span></code> package
+<strong>solves dense or sparse symmetric systems of linear equations</strong>
+using variants of Gaussian elimination.
+Given a sparse symmetric matrix <span class="math notranslate nohighlight">\(A = \{ a_{ij} \}_{n \times n}\)</span>, and an
+<span class="math notranslate nohighlight">\(n\)</span>-vector <span class="math notranslate nohighlight">\(b\)</span> or a matrix <span class="math notranslate nohighlight">\(B = \{ b_{ij} \}_{n \times r}\)</span>, this
+function solves the system <span class="math notranslate nohighlight">\(A x = b\)</span> or the system <span class="math notranslate nohighlight">\(A X = B\)</span> .
+The matrix <span class="math notranslate nohighlight">\(A\)</span> need not be definite.</p>
+<p>The method provides a common interface to a variety of well-known
+solvers from HSL and elsewhere. Currently supported solvers include
+<code class="docutils literal notranslate"><span class="pre">MA27/SILS</span></code>, <code class="docutils literal notranslate"><span class="pre">HSL_MA57</span></code>, <code class="docutils literal notranslate"><span class="pre">HSL_MA77</span></code> , <code class="docutils literal notranslate"><span class="pre">HSL_MA86</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HSL_MA87</span></code> and <code class="docutils literal notranslate"><span class="pre">HSL_MA97</span></code> from {HSL},
+<code class="docutils literal notranslate"><span class="pre">SSIDS</span></code> from {SPRAL},
+<code class="docutils literal notranslate"><span class="pre">MUMPS</span></code> from Mumps Technologies,
+<code class="docutils literal notranslate"><span class="pre">PARDISO</span></code> both from the Pardiso Project and Intel’s MKL,
+<code class="docutils literal notranslate"><span class="pre">PaStiX</span></code> from Inria, and
+<code class="docutils literal notranslate"><span class="pre">WSMP</span></code> from the IBM alpha Works,
+as well as <code class="docutils literal notranslate"><span class="pre">POTR</span></code>, <code class="docutils literal notranslate"><span class="pre">SYTR</span></code> and <code class="docutils literal notranslate"><span class="pre">SBTR</span></code> from LAPACK.
+Note that, with the exception of <code class="docutils literal notranslate"><span class="pre">SSIDS</span></code> and the Netlib
+reference LAPACK codes,
+<strong>the solvers themselves do not form part of this package and
+must be obtained/linked to separately.</strong>
+Dummy instances are provided for solvers that are unavailable.
+Also note that additional flexibility may be obtained by calling the
+solvers directly rather that via this package.</p>
+</section>
+<section id="terminology">
+<h1>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h1>
+<p>The solvers used each produce an <span class="math notranslate nohighlight">\(L D L^T\)</span> factorization of
+<span class="math notranslate nohighlight">\(A\)</span> or a perturbation thereof, where <span class="math notranslate nohighlight">\(L\)</span> is a permuted
+lower triangular matrix and <span class="math notranslate nohighlight">\(D\)</span> is a block diagonal matrix with
+blocks of order 1 and 2. It is convenient to write this factorization in
+the form
+<div class="math notranslate nohighlight">
+\[A + E = P L D L^T P^T,\]</div>
+
+where <span class="math notranslate nohighlight">\(P\)</span> is a permutation matrix and <span class="math notranslate nohighlight">\(E\)</span> is any diagonal
+perturbation introduced.</p>
+</section>
+<section id="supported-solvers">
+<h1>supported solvers<a class="headerlink" href="#supported-solvers" title="Permalink to this heading">#</a></h1>
+<p>The key features of the external solvers supported by <code class="docutils literal notranslate"><span class="pre">sls</span></code> are
+given in the following table:</p>
+<table class="table" id="id1">
+<caption><span class="caption-text">External solver characteristics</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 19.2%" />
+<col style="width: 19.2%" />
+<col style="width: 15.4%" />
+<col style="width: 15.4%" />
+<col style="width: 30.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>solver</p></th>
+<th class="head"><p>factorization</p></th>
+<th class="head"><p>indefinite <span class="math notranslate nohighlight">\(A\)</span></p></th>
+<th class="head"><p>out-of-core</p></th>
+<th class="head"><p>parallelised</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SILS/MA27</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA57</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA77</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>OpenMP core</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA86</span></code></p></td>
+<td><p>left-looking</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA87</span></code></p></td>
+<td><p>left-looking</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HSL_MA97</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP core</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SSIDS</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>CUDA core</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MUMPS</span></code></p></td>
+<td><p>multifrontal</p></td>
+<td><p>yes</p></td>
+<td><p>optionally</p></td>
+<td><p>MPI</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PARDISO</span></code></p></td>
+<td><p>left-right-looking</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MKL_PARDISO</span></code></p></td>
+<td><p>left-right-looking</p></td>
+<td><p>yes</p></td>
+<td><p>optionally</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PaStix</span></code></p></td>
+<td><p>left-right-looking</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WSMP</span></code></p></td>
+<td><p>left-right-looking</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>OpenMP fully</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">POTR</span></code></p></td>
+<td><p>dense</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+<td><p>with parallel LAPACK</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYTR</span></code></p></td>
+<td><p>dense</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>with parallel LAPACK</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PBTR</span></code></p></td>
+<td><p>dense band</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+<td><p>with parallel LAPACK</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="method">
+<h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
+<p>Variants of sparse Gaussian elimination are used.
+See Section 4 of $GALAHAD/doc/sls.pdf for a brief description of the
+method employed and other details.</p>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">SILS</span></code> is available as part of GALAHAD and relies on
+the HSL Archive package <code class="docutils literal notranslate"><span class="pre">MA27</span></code>. To obtain HSL Archive packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk/archive/">http://hsl.rl.ac.uk/archive/</a> .</p></li>
+</ul>
+<p>The solvers
+<code class="docutils literal notranslate"><span class="pre">HSL_MA57</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HSL_MA77</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HSL_MA86</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HSL_MA87</span></code>
+and
+<code class="docutils literal notranslate"><span class="pre">HSL_MA97</span></code>, the ordering packages
+<code class="docutils literal notranslate"><span class="pre">MC61</span></code> and <code class="docutils literal notranslate"><span class="pre">HSL_MC68</span></code>, and the scaling packages
+<code class="docutils literal notranslate"><span class="pre">HSL_MC64</span></code> and <code class="docutils literal notranslate"><span class="pre">MC77</span></code>
+are all part of HSL 2011.
+To obtain HSL 2011 packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk">http://hsl.rl.ac.uk</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">SSIDS</span></code> is from the SPRAL sparse-matrix collection,
+and is available as part of GALAHAD.</p>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">MUMPS</span></code> is available from Mumps Technologies in France, and
+version 5.5.1 or above is sufficient.
+To obtain <code class="docutils literal notranslate"><span class="pre">MUMPS</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://mumps-solver.org">https://mumps-solver.org</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">PARDISO</span></code> is available from the Pardiso Project;
+version 4.0.0 or above is required.
+To obtain <code class="docutils literal notranslate"><span class="pre">PARDISO</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.pardiso-project.org/">http://www.pardiso-project.org/</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">MKL</span> <span class="pre">PARDISO</span></code> is available as part of Intel’s oneAPI Math Kernel
+Library (oneMKL).
+To obtain this version of <code class="docutils literal notranslate"><span class="pre">PARDISO</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://software.intel.com/content/www/us/en/develop/tools/oneapi.html">https://software.intel.com/content/www/us/en/develop/tools/oneapi.html</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">PaStix</span></code> is available from Inria in France, and
+version 6.2 or above is sufficient.
+To obtain <code class="docutils literal notranslate"><span class="pre">PaStiX</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://solverstack.gitlabpages.inria.fr/pastix">https://solverstack.gitlabpages.inria.fr/pastix</a> .</p></li>
+</ul>
+<p>The solver <code class="docutils literal notranslate"><span class="pre">WSMP</span></code> is available from the IBM alpha Works;
+version 10.9 or above is required.
+To obtain <code class="docutils literal notranslate"><span class="pre">WSMP</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.alphaworks.ibm.com/tech/wsmp">http://www.alphaworks.ibm.com/tech/wsmp</a> .</p></li>
+</ul>
+<p>The solvers <code class="docutils literal notranslate"><span class="pre">POTR</span></code>, <code class="docutils literal notranslate"><span class="pre">SYTR</span></code> and <code class="docutils literal notranslate"><span class="pre">PBTR</span></code>,
+are available as
+<code class="docutils literal notranslate"><span class="pre">S/DPOTRF/S</span></code>,
+<code class="docutils literal notranslate"><span class="pre">S/DSYTRF/S</span></code> and <code class="docutils literal notranslate"><span class="pre">S/DPBTRF/S</span></code>
+as part of LAPACK. Reference versions
+are provided by GALAHAD, but for good performance
+machined-tuned versions should be used.</p>
+<p>Explicit sparsity re-orderings are obtained by calling the HSL package
+<code class="docutils literal notranslate"><span class="pre">HSL_MC68</span></code>.
+Both this, <code class="docutils literal notranslate"><span class="pre">HSL_MA57</span></code> and <code class="docutils literal notranslate"><span class="pre">PARDISO</span></code> rely optionally
+on the ordering package <code class="docutils literal notranslate"><span class="pre">MeTiS</span></code> (version 4) from the Karypis Lab.
+To obtain <code class="docutils literal notranslate"><span class="pre">METIS</span></code>, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://glaros.dtc.umn.edu/gkhome/views/metis/">http://glaros.dtc.umn.edu/gkhome/views/metis/</a> .</p></li>
+</ul>
+<p>Bandwidth, Profile and wavefront reduction is supported by
+calling HSL’s <code class="docutils literal notranslate"><span class="pre">MC61</span></code>.</p>
+<p>The methods used are described in the user-documentation for</p>
+<p>HSL 2011, A collection of Fortran codes for large-scale scientific computation (2011).</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.hsl.rl.ac.uk">http://www.hsl.rl.ac.uk</a></p></li>
+</ul>
+<p>and papers</p>
+<p>E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L’Excellent, A. Guermouche
+and F.-H. Rouet,
+“Robust memory-aware mappings for parallel multifrontal factorizations”.
+SIAM Journal on Scientific Computing, b 38(3) (2016), C256–C279,</p>
+<p>P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L’Excellent.
+“A fully asynchronous multifrontal solver using distributed
+dynamic scheduling”.
+SIAM Journal on Matrix Analysis and Applications b 23(1) (2001) 15-41,</p>
+<p>A. Gupta,
+“WSMP: Watson Sparse Matrix Package Part I - direct
+solution of symmetric sparse systems”.
+IBM Research Report RC 21886, IBM T. J. Watson Research Center,
+NY 10598, USA (2010),</p>
+<p>P. Henon, P. Ramet and J. Roman,
+“PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric
+Definite Systems”.
+Parallel Computing, b 28(2) (2002) 301–321,</p>
+<p>J.D. Hogg, E. Ovtchinnikov and J.A. Scott.
+“A sparse symmetric indefinite direct solver for GPU architectures”.
+ACM Transactions on Mathematical Software b 42(1) (2014), Article 1,</p>
+<p>O. Schenk and K. Gartner,
+“Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO”.
+Journal of Future Generation Computer Systems b, 20(3) (2004) 475–487,
+and</p>
+<p>O. Schenk and K. Gartner,
+“On fast factorization pivoting methods for symmetric indefinite systems”.
+Electronic Transactions on Numerical Analysis b 23 (2006) 158–179.</p>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminology">
+   terminology
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#supported-solvers">
+   supported solvers
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/sls_intro.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

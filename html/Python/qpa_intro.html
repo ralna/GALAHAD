@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>purpose &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'qpa_intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="purpose">
+<h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">qpa</span></code> package uses a <strong>working-set method</strong> to solve
+<strong>non-convex quadratic programs</strong> in various guises.
+The first is the <strong><span class="math notranslate nohighlight">\(\mathbf{\ell_1}\)</span> quadratic programming problem</strong>
+that aims to minimize
+<div class="math notranslate nohighlight">
+\[f(x;\rho_g,\rho_b) = q(x) + \rho_g v_g(x) + \rho_b v_b(x)\]</div>
+
+involving the quadratic objective
+<div class="math notranslate nohighlight">
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x\]</div>
+
+and the infeasibilities
+<div class="math notranslate nohighlight">
+\[v_g(x) = \sum_{i=1}^{m} \max(c_i^l - a_i^T x, 0)
++ \sum_{i=1}^{m} \max(a_i^T x - c_i^u, 0)\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[v_b(x) = \sum_{j=1}^{n} \max(x_j^l - x_j  , 0)
++ \sum_{j=1}^{n} \max(x_j  - x_j^u , 0),\]</div>
+
+where the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric matrix <span class="math notranslate nohighlight">\(H\)</span>, the
+vectors <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(a_i\)</span>, <span class="math notranslate nohighlight">\(c^l\)</span>, <span class="math notranslate nohighlight">\(c^u\)</span>, <span class="math notranslate nohighlight">\(x^l\)</span>, <span class="math notranslate nohighlight">\(x^u\)</span>
+and the scalars <span class="math notranslate nohighlight">\(f\)</span>, <span class="math notranslate nohighlight">\(\rho_g\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span> are given.
+Full advantage is taken of any zero coefficients in the matrices <span class="math notranslate nohighlight">\(H\)</span>
+or <span class="math notranslate nohighlight">\(A\)</span> (whose rows are the vectors <span class="math notranslate nohighlight">\(a_i^T\)</span>).
+Any of the constraint bounds <span class="math notranslate nohighlight">\(c_i^l\)</span>, <span class="math notranslate nohighlight">\(c_i^u\)</span>,
+<span class="math notranslate nohighlight">\(x_j^l\)</span> and <span class="math notranslate nohighlight">\(x_j^u\)</span> may be infinite.</p>
+<p>The package may also be used to solve the
+<strong>standard quadratic programming problem</strong>
+whose aim is to minimize <span class="math notranslate nohighlight">\(q(x)\)</span>
+subject to the general linear constraints and simple bounds
+<div class="math notranslate nohighlight">
+\[c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,\]</div>
+
+by automatically adjusting the parameters <span class="math notranslate nohighlight">\(\rho_g\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span> in
+<span class="math notranslate nohighlight">\(f(x;\rho_g,\rho_b)\)</span>.</p>
+<p>Similarly, the package is capable of solving the
+<strong>bound-constrained <span class="math notranslate nohighlight">\(\mathbf{\ell_1}\)</span> quadratic programming problem</strong>
+whose intention is to minimize <span class="math notranslate nohighlight">\(q(x) + \rho_g v_g(x),\)</span>
+subject to the above simple bound constraints
+by automatically adjusting <span class="math notranslate nohighlight">\(\rho_b\)</span> in <span class="math notranslate nohighlight">\(f(x;\rho_g,\rho_b)\)</span>.</p>
+<p>If the matrix <span class="math notranslate nohighlight">\(H\)</span> is positive semi-definite, a global solution is found.
+However, if <span class="math notranslate nohighlight">\(H\)</span> is indefinite, the procedure may find a (weak second-order)
+critical point that is not the global solution to the given problem.</p>
+<p>See Section 4 of $GALAHAD/doc/qpa.pdf for additional details.</p>
+<p><strong>N.B.</strong> In many cases, the alternative quadratic programming package <code class="docutils literal notranslate"><span class="pre">qpb</span></code>
+is faster, and thus to be preferred.</p>
+</section>
+<section id="terminolgy">
+<h1>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h1>
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> for the standard quadratic programming problem
+necessarily satisfies the <strong>primal optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[A x = c\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\]</div>
+
+the <strong>dual optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[H x + g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+
+and the <strong>complementary slackness conditions</strong>
+<div class="math notranslate nohighlight">
+\[( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\]</div>
+
+where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints, and the <strong>dual variables</strong> for the bounds,
+respectively, and where the vector inequalities hold component-wise.</p>
+</section>
+<section id="method">
+<h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
+<p>At the <span class="math notranslate nohighlight">\(k\)</span>-th iteration of the method, an improvement to the value
+of the merit function
+<span class="math notranslate nohighlight">\(m(x, \rho_g, \rho_b ) = q(x) + \rho_g v_g(x) + \rho_b v_b(x)\)</span>
+at <span class="math notranslate nohighlight">\(x = x^{(k)}\)</span> is sought. This is achieved by first
+computing a search direction <span class="math notranslate nohighlight">\(s^{(k)}\)</span>,
+and then setting <span class="math notranslate nohighlight">\(x^{(k+1)} = x^{(k)} + \alpha^{(k)} s^{(k)}\)</span>,
+where the stepsize <span class="math notranslate nohighlight">\(\alpha^{(k)}\)</span> is chosen as the first local minimizer of
+<span class="math notranslate nohighlight">\(\phi ( \alpha ) = m( x^{(k)} + \alpha s^{(k)} , \rho_g, \rho_b )\)</span>
+as <span class="math notranslate nohighlight">\(\alpha\)</span> incesases from zero.
+The stepsize calculation is straightforward, and exploits the fact that
+<span class="math notranslate nohighlight">\(\phi ( \alpha )\)</span> is a piecewise quadratic function of <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+<p>The search direction is defined by a subset of the “active” terms in
+<span class="math notranslate nohighlight">\(v(x)\)</span>, i.e., those for which
+<span class="math notranslate nohighlight">\(a_i^T x = c_i^l\)</span> or <span class="math notranslate nohighlight">\(c_i^u\)</span> (for <span class="math notranslate nohighlight">\(i=1,\ldots,m\)</span>) or
+<span class="math notranslate nohighlight">\(x_j = x_j^l\)</span> or <span class="math notranslate nohighlight">\(x_j^u\)</span> (for (<span class="math notranslate nohighlight">\(j=1,\ldots,n\)</span>).
+The “working” set <span class="math notranslate nohighlight">\(W^{(k)}\)</span> is chosen from the active terms, and is such
+that its members have linearly independent gradients.
+The search direction <span class="math notranslate nohighlight">\(s^{(k)}\)</span> is chosen as an approximate solution of
+the equality-constrained quadratic program
+<div class="math notranslate nohighlight">
+\[\begin{split}
+{\renewcommand{\arraystretch}{0.8}
+\begin{array}[t]{c}
+\mbox{minimize} \\
+\mbox{ $s \in R^n $ }
+\end{array} \;}
+q(x^{(k)} + s) +
+\rho_g l_g^{(k)} (s) + \rho_b l_b^{(k)} (s),\;\;\mbox{(1)}\end{split}\]</div>
+
+subject to
+<div class="math notranslate nohighlight">
+\[a_i^T s = 0,\;\;  i \in \{ 1, \ldots , m \} \cap W^{(k)},
+\;\;\mbox{and}\;\;
+x_j = 0, \;\;  i  \in \{1, \ldots , n \} \cap W^{(k)},\;\;\mbox{(2)}\]</div>
+
+where
+<div class="math notranslate nohighlight">
+\[l_g^{(k)} (s) = - \sum_{\stackrel{i=1}{a_i^T x &lt; c_i^l}}^m a_i^T s
+\; + \sum_{\stackrel{i=1}{a_i^T x &gt; c_i^u}}^m a_i^T s\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[l_b^{(k)} (s) = - \sum_{\stackrel{j=1}{x_j &lt; x_j^l}}^n s_j
+\; + \sum_{\stackrel{j=1}{x_j &gt; x_j^u}}^n s_j. \]</div>
+
+The equality-constrained quadratic program (1)–(2) is solved by
+a projected preconditioned conjugate gradient method. The method terminates
+either after a prespecified number of iterations, or if the solution is found,
+or if a direction of infinite descent, along which
+<span class="math notranslate nohighlight">\(q(x^{(k)} + s) + \rho_g l_g^{(k)} (s) + \rho_b l_b^{(k)} (s)\)</span>
+decreases without bound within the feasible region (2), is located.
+Succesively more accurate approximations are required as suspected
+solutions of the <span class="math notranslate nohighlight">\(\ell_1\)</span>-QP are approached.</p>
+<p>Preconditioning of the conjugate gradient iteration
+requires the solution of one or more linear systems of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\begin{array}{cc}
+M^{(k)} &amp; A^{(k)T} \\ A^{(k)} &amp; 0
+\end{array}\right) \left(\begin{array}{c}
+p \\ u
+\end{array}\right) = \left(\begin{array}{c}
+g \\ 0
+\end{array}\right),\;\;\mbox{(3)}\end{split}\]</div>
+
+where <span class="math notranslate nohighlight">\(M^{(k)}\)</span> is a “suitable” approximation to <span class="math notranslate nohighlight">\(H\)</span> and the rows of
+<span class="math notranslate nohighlight">\(A^{(k)}\)</span> comprise the gradients of the terms in the current working
+set. Rather than recomputing a factorization of the preconditioner at
+every iteration, a Schur complement method is used, recognising the fact
+that gradual changes occur to successive working sets. The main
+iteration is divided into a sequence of “major” iterations.  At the
+start of each major iteration (say, at the overall iteration <span class="math notranslate nohighlight">\(l\)</span>), a
+factorization of the current “reference” matrix, that is the matrix
+<div class="math notranslate nohighlight">
+\[\begin{split}K^{(l)} = \left(\begin{array}{cc}
+M^{(l)} &amp; A^{(l)T} \\ A^{(l)} &amp; 0
+\end{array}\right)\end{split}\]</div>
+
+is obtained using the matrix factorization package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>.  This
+reference matrix may be factorized as a whole (the so-called “augmented
+system” approach), or by performing a block elimination first (the
+“Schur-complement” approach). The latter is usually to be preferred when
+a (non-singular) diagonal preconditioner is used, but may be inefficient
+if any of the columns of <span class="math notranslate nohighlight">\(A^{(l)}\)</span> is too dense.  Subsequent iterations
+within the current major iteration obtain solutions to (3) via the
+factors of <span class="math notranslate nohighlight">\(K^{(l)}\)</span> and an appropriate (dense) Schur complement,
+obtained from the package <code class="docutils literal notranslate"><span class="pre">SCU</span></code>.  The major iteration terminates once
+the space required to hold the factors of the (growing) Schur complement
+exceeds a given threshold.</p>
+<p>The working set changes by (a) adding an active term encountered during
+the determination of the stepsize, or (b) the removal of a term if <span class="math notranslate nohighlight">\(s = 0\)</span>
+solves (1)–(2). The  decision on which to remove in the latter
+case is based upon the expected decrease upon the removal of an individual term,
+and this information is available from the magnitude and sign of the components
+of the auxiliary vector <span class="math notranslate nohighlight">\(u\)</span> computed in (3). At optimality, the
+components of <span class="math notranslate nohighlight">\(u\)</span> for <span class="math notranslate nohighlight">\(a_i\)</span> terms will all lie between
+<span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(\rho_g\)</span> — and those for the other terms
+between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span> — and any violation
+of this rule indicates further progress is possible. The components
+of <span class="math notranslate nohighlight">\(u\)</span> corresonding to the terms involving <span class="math notranslate nohighlight">\(a_i^T x\)</span>
+are sometimes known as Lagrange multipliers (or generalized gradients) and
+denoted by <span class="math notranslate nohighlight">\(y\)</span>, while those for the remaining <span class="math notranslate nohighlight">\(x_j\)</span> terms are dual variables
+and denoted by <span class="math notranslate nohighlight">\(z\)</span>.</p>
+<p>To solve the standard quadratic programming problem, a sequence of
+<span class="math notranslate nohighlight">\(\ell_1\)</span>-quadratic programs are solved, each with a larger value of
+<span class="math notranslate nohighlight">\(\rho_g\)</span> and/or <span class="math notranslate nohighlight">\(\rho_b\)</span> than its predecessor. The
+required solution has been found once the infeasibilities
+<span class="math notranslate nohighlight">\(v_g(x)\)</span> and <span class="math notranslate nohighlight">\(v_b(x)\)</span> have been reduced to zero at the solution of
+the <span class="math notranslate nohighlight">\(\ell_1\)</span>-problem for the given <span class="math notranslate nohighlight">\(\rho_g\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span>.</p>
+<p>In order to make the solution as efficient as possible, the variables
+and constraints are reordered internally by the package <code class="docutils literal notranslate"><span class="pre">QPP</span></code> prior
+to solution. In particular, fixed variables and free (unbounded on
+both sides) constraints are temporarily removed.</p>
+</section>
+<section id="reference">
+<h1>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h1>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>N. I. M. Gould and Ph. L. Toint
+<a href="#id1"><span class="problematic" id="id2">``</span></a>An iterative working-set method for large-scale
+non-convex quadratic programming’’.
+<em>Applied Numerical Mathematics</em> <strong>43(1–2)</strong> (2002) 109–128.</p>
+</div></blockquote>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminolgy">
+   terminolgy
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/qpa_intro.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
