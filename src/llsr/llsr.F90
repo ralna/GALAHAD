@@ -1,32 +1,30 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-06-05 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-  G A L A H A D _ L L S T  d o u b l e  M O D U L E  *-*-*-*-*-*-
+!-*-*-*-*-*-*-  G A L A H A D _ L L S R  d o u b l e  M O D U L E  *-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released GALAHAD Version 2.5. February 21st, 2011
+!   originally released GALAHAD Version 4.1. June 5th, 2023
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_LLST_precision
+    MODULE GALAHAD_LLSR_precision
 
-!       -----------------------------------------------
-!      |                                               |
-!      | Solve the linear least-squares subproblem     |
-!      | with trust-region regularization              |
-!      |                                               |
-!      |    minimize     1/2 || A x - b ||^2           |
-!      |    subject to    ||x||_S <= radius            |
-!      |                                               |
-!      | where ||x||_S^2 = <x, Sx> and S is diagonally |
-!      | dominant, using a sparse matrix factorization |
-!      |                                               |
-!       -----------------------------------------------
+!       ------------------------------------------------------------
+!      |                                                            |
+!      | Solve the regularized linear least-squares subproblem      |
+!      |                                                            |
+!      |   minimize    1/2 || A x - b ||^2  + sigma / p ||x||_S^p,  |
+!      |                                                            |
+!      | where ||x||_S^2 = <x, Sx> and S is diagonally dominant,    |
+!      | using a sparse matrix factorization                        |
+!      |                                                            |
+!       ------------------------------------------------------------
 
       USE GALAHAD_KINDS_precision
       USE GALAHAD_CLOCK
@@ -44,23 +42,23 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: LLST_initialize, LLST_read_specfile, LLST_solve,               &
-                LLST_terminate,  LLST_full_initialize, LLST_full_terminate,    &
-                LLST_import, LLST_import_scaling, LLST_reset_control,          &
-                LLST_solve_problem, LLST_information,                          &
+      PUBLIC :: LLSR_initialize, LLSR_read_specfile, LLSR_solve,               &
+                LLSR_terminate,  LLSR_full_initialize, LLSR_full_terminate,    &
+                LLSR_import, LLSR_import_scaling, LLSR_reset_control,          &
+                LLSR_solve_problem, LLSR_information,                          &
                 SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   I n t e r f a c e s
 !----------------------
 
-      INTERFACE LLST_initialize
-        MODULE PROCEDURE LLST_initialize, LLST_full_initialize
-      END INTERFACE LLST_initialize
+      INTERFACE LLSR_initialize
+        MODULE PROCEDURE LLSR_initialize, LLSR_full_initialize
+      END INTERFACE LLSR_initialize
 
-      INTERFACE LLST_terminate
-        MODULE PROCEDURE LLST_terminate, LLST_full_terminate
-      END INTERFACE LLST_terminate
+      INTERFACE LLSR_terminate
+        MODULE PROCEDURE LLSR_terminate, LLSR_full_terminate
+      END INTERFACE LLSR_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -68,6 +66,7 @@
 
       INTEGER ( KIND = ip_ ), PARAMETER :: history_max = 100
       INTEGER ( KIND = ip_ ), PARAMETER :: max_degree = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: it_stalled = 100
       REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
       REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
@@ -86,8 +85,10 @@
       REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
 
+      REAL ( KIND = rp_ ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = rp_ ), PARAMETER :: theta_ii = one
       REAL ( KIND = rp_ ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = rp_ ), PARAMETER :: theta_eps5 = point1
       REAL ( KIND = rp_ ), PARAMETER :: theta_g = half
       REAL ( KIND = rp_ ), PARAMETER :: theta_n = half
       REAL ( KIND = rp_ ), PARAMETER :: theta_n_small = ten ** ( - 1 )
@@ -105,7 +106,7 @@
 !   control derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: LLST_control_type
+      TYPE, PUBLIC :: LLSR_control_type
 
 !  unit for error messages
 
@@ -150,14 +151,10 @@
         REAL ( KIND = rp_ ) :: lower = - half * HUGE( one )
         REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
-!  stop when | ||x|| - radius | <= stop_normal * max( 1, ||x|| )
+!  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
+!              stop_normal * max( 1, ||x|| )
 
         REAL ( KIND = rp_ ) :: stop_normal = epsmch
-
-!  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint
-!  an equality)?
-
-        LOGICAL :: equality_problem = .FALSE.
 
 !  ignore initial_multiplier?
 
@@ -201,7 +198,7 @@
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: LLST_time_type
+      TYPE, PUBLIC :: LLSR_time_type
 
 !  total CPU time spent in the package
 
@@ -249,7 +246,7 @@
 !   history derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: LLST_history_type
+      TYPE, PUBLIC :: LLSR_history_type
 
 !  value of lambda
 
@@ -268,7 +265,7 @@
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: LLST_inform_type
+      TYPE, PUBLIC :: LLSR_inform_type
 
 !   reported return status:
 !      0 the solution has been found
@@ -301,7 +298,7 @@
 
         REAL ( KIND = rp_ ) :: x_norm = zero
 
-!  the Lagrange multiplier corresponding to the trust-region constraint
+!  the Lagrange multiplier corresponding to the regularization
 
         REAL ( KIND = rp_ ) :: multiplier = zero
 
@@ -311,11 +308,11 @@
 
 !  time information
 
-        TYPE ( LLST_time_type ) :: time
+        TYPE ( LLSR_time_type ) :: time
 
 !  history information
 
-        TYPE ( LLST_history_type ), DIMENSION( history_max ) :: history
+        TYPE ( LLSR_history_type ), DIMENSION( history_max ) :: history
 
 !  information from the symmetric factorization and related linear solves
 
@@ -334,7 +331,7 @@
 !   data derived type
 !  - - - - - - - - - -
 
-      TYPE, PUBLIC :: LLST_data_type
+      TYPE, PUBLIC :: LLSR_data_type
         PRIVATE
         INTEGER ( KIND = ip_ ) :: m, npm, s_ne, a_ne, m_end
         TYPE ( RAND_seed ) :: seed
@@ -346,33 +343,33 @@
         TYPE ( SLS_data_type ) :: SLS_data
         TYPE ( SBLS_data_type ) :: SBLS_data
         TYPE ( SLS_control_type ) :: SLS_control
-        TYPE ( LLST_control_type ) :: control
+        TYPE ( LLSR_control_type ) :: control
       END TYPE
 
-      TYPE, PUBLIC :: LLST_full_data_type
+      TYPE, PUBLIC :: LLSR_full_data_type
         LOGICAL :: f_indexing = .TRUE.
-        TYPE ( LLST_data_type ) :: LLST_data
-        TYPE ( LLST_control_type ) :: LLST_control
-        TYPE ( LLST_inform_type ) :: LLST_inform
+        TYPE ( LLSR_data_type ) :: LLSR_data
+        TYPE ( LLSR_control_type ) :: LLSR_control
+        TYPE ( LLSR_inform_type ) :: LLSR_inform
         TYPE ( SMT_type ) :: A, S
         LOGICAL :: use_s
-      END TYPE LLST_full_data_type
+      END TYPE LLSR_full_data_type
 
     CONTAINS
 
-!-*-*-*-*-*-  L L S T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
+!-*-*-*-*-*-  L L S R _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
 
-      SUBROUTINE LLST_initialize( data, control, inform )
+      SUBROUTINE LLSR_initialize( data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 !
-!  .  Set initial values for the LLST control parameters  .
+!  .  Set initial values for the LLSR control parameters  .
 !
 !  Arguments:
 !  =========
 !
 !   data     private internal data
-!   control  a structure containing control information. See LLST_control_type
+!   control  a structure containing control information. See LLSR_control_type
 !   data     private internal data
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -381,9 +378,9 @@
 !   D u m m y   A r g u m e n t
 !-----------------------------------------------
 
-      TYPE ( LLST_DATA_TYPE ), INTENT( INOUT ) :: data
-      TYPE ( LLST_CONTROL_TYPE ), INTENT( OUT ) :: control
-      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( LLSR_DATA_TYPE ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_CONTROL_TYPE ), INTENT( OUT ) :: control
+      TYPE ( LLSR_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
@@ -416,17 +413,17 @@
 
       RETURN
 
-!  End of subroutine LLST_initialize
+!  End of subroutine LLSR_initialize
 
-      END SUBROUTINE LLST_initialize
+      END SUBROUTINE LLSR_initialize
 
-! G A L A H A D - L L S T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
+! G A L A H A D - L L S R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
 
-      SUBROUTINE LLST_full_initialize( data, control, inform )
+      SUBROUTINE LLSR_full_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Provide default values for LLST controls
+!   Provide default values for LLSR controls
 
 !   Arguments:
 
@@ -440,29 +437,29 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( OUT ) :: control
-      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_control_type ), INTENT( OUT ) :: control
+      TYPE ( LLSR_inform_type ), INTENT( OUT ) :: inform
 
-      CALL LLST_initialize( data%llst_data, control, inform )
+      CALL LLSR_initialize( data%llsr_data, control, inform )
 
       RETURN
 
-!  End of subroutine LLST_full_initialize
+!  End of subroutine LLSR_full_initialize
 
-      END SUBROUTINE LLST_full_initialize
+      END SUBROUTINE LLSR_full_initialize
 
-!-*-*-*-*   L L S T _ R E A D _ S P E C F I L E  S U B R O U T I N E   *-*-*-*-
+!-*-*-*-*   L L S R _ R E A D _ S P E C F I L E  S U B R O U T I N E   *-*-*-*-
 
-      SUBROUTINE LLST_read_specfile( control, device, alt_specname )
+      SUBROUTINE LLSR_read_specfile( control, device, alt_specname )
 
 !  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LLST_initialize could (roughly)
+!  The defauly values as given by LLSR_initialize could (roughly)
 !  have been set as:
 
-!  BEGIN LLST SPECIFICATIONS (DEFAULT)
+!  BEGIN LLSR SPECIFICATIONS (DEFAULT)
 !   error-printout-device                          6
 !   printout-device                                6
 !   print-level                                    0
@@ -474,17 +471,16 @@
 !   lower-bound-on-multiplier                      0.0
 !   upper-bound-on-multiplier                      1.0D+300
 !   stop-normal-case                               1.0D-12
-!   equality-problem                               F
 !   use-initial-multiplier                         F
 !   space-critical                                 F
 !   deallocate-error-fatal                         F
 !   definite-linear-equation-solver                sils
 !   output-line-prefix                             ""
-!  END LLST SPECIFICATIONS
+!  END LLSR SPECIFICATIONS
 
 !  Dummy arguments
 
-      TYPE ( LLST_control_type ), INTENT( INOUT ) :: control
+      TYPE ( LLSR_control_type ), INTENT( INOUT ) :: control
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -505,9 +501,8 @@
       INTEGER ( KIND = ip_ ), PARAMETER :: lower = initial_multiplier + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: upper = lower + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: stop_normal = upper + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: equality_problem = stop_normal + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: use_initial_multiplier              &
-                                            = equality_problem + 1
+                                            = stop_normal + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                      &
                                             = use_initial_multiplier + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
@@ -516,7 +511,7 @@
                                             = deallocate_error_fatal + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: prefix = definite_linear_solver + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LLST'
+      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LLSR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -542,7 +537,6 @@
 
 !  Logical key-words
 
-      spec( equality_problem )%keyword = 'equality-problem'
       spec( use_initial_multiplier )%keyword = 'use-initial-multiplier'
       spec( space_critical )%keyword = 'space-critical'
       spec( deallocate_error_fatal  )%keyword = 'deallocate-error-fatal'
@@ -595,9 +589,6 @@
 
 !  Set logical values
 
-      CALL SPECFILE_assign_value( spec( equality_problem ),                    &
-                                  control%equality_problem,                    &
-                                  control%error )
       CALL SPECFILE_assign_value( spec( use_initial_multiplier ),              &
                                   control%use_initial_multiplier,              &
                                   control%error )
@@ -646,22 +637,24 @@
 
       RETURN
 
-      END SUBROUTINE LLST_read_specfile
+      END SUBROUTINE LLSR_read_specfile
 
-!-*-*-*-*-*-*-*-*-*-*  L L S T _ S O L V E   S U B R O U T I N E  -*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*  L L S R _ S O L V E   S U B R O U T I N E  -*-*-*-*-*-*-*
 
-      SUBROUTINE LLST_solve( m, n, radius, A, B, X, data, control, inform, S )
+      SUBROUTINE LLSR_solve( m, n, power, weight, A, B, X, data,               &
+                             control, inform, S )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Arguments:
 !  =========
 !
-!    m - the number of rows of A and entries in b
+!   m - the number of rows of A and entries in b
 !
-!    n - the number of colunds of A and entries in x
+!   n - the number of colunds of A and entries in x
 !
-!   radius - the trust-region radius
+!   power - power of the regularization, p
+!   weight - the regularization weight, sigma
 !
 !   A -  a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
@@ -704,9 +697,9 @@
 !
 !   data - private internal data
 !
-!   control - a structure containing control information. See LLST_control_type
+!   control - a structure containing control information. See LLSR_control_type
 !
-!   inform - a structure containing information. See LLST_inform_type
+!   inform - a structure containing information. See LLSR_inform_type
 !
 !   S - an optional structure of type SMT_type used to hold the LOWER TRIANGULAR
 !    part of the symmetric, DIAGONALLY DOMINANT matrix S. Four storage formats
@@ -759,29 +752,33 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
-      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( IN ) :: power, weight
       TYPE ( SMT_type ), INTENT( IN ) :: A
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: B
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
-      TYPE ( LLST_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( IN ) :: control
-      TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( LLSR_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_control_type ), INTENT( IN ) :: control
+      TYPE ( LLSR_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: S
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, it, out, nroots, print_level
+      INTEGER ( KIND = ip_ ) :: i, j, l, it, itt, out, nroots, print_level
       INTEGER ( KIND = ip_ ) :: max_order, n_lambda, in_n
       REAL :: time_start, time_now, time_record
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record, lambda_n
       REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda
-      REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2, val
-      REAL ( KIND = rp_ ) :: beta, z_norm2, root1, root2, root3, lambda_pert
+      REAL ( KIND = rp_ ) :: c_norm, sigma_c_norm_pm2, v_norm2, w_norm2, val
+      REAL ( KIND = rp_ ) :: beta, z_norm2
       REAL ( KIND = rp_ ) :: width, lambda_plus, a_one, a_inf, lambda_sinv
-      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
-      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
+      REAL ( KIND = rp_ ) :: p, sigma, oos, oos2, pm2, oopm2, target
+      REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max
+      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: roots
+      REAL ( KIND = rp_ ), DIMENSION( 9 ) :: lambda_new
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: pi_beta, theta_beta
       LOGICAL :: printi, printt, printd, printh, psdef, try_zero, unit_s
       LOGICAL :: phase_1
       CHARACTER ( LEN = 1 ) :: region
@@ -794,6 +791,8 @@
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
       CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
+      p = power ; sigma = weight
 
 !  set initial values
 
@@ -817,6 +816,10 @@
       printd = out > 0 .AND. print_level > 2
       printh = printi
 
+!  reccord useful constants
+
+      oos = one / sigma ; oos2 = oos * oos
+
 !  check for obvious errors
 
       IF ( n <= 0 ) THEN
@@ -827,10 +830,18 @@
         GO TO 910
       END IF
 
-      IF ( radius <= zero ) THEN
+      IF ( power < two ) THEN
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, "( A, ' The power ', ES12.4,                   &
+         &  ' is smaller than two ' )" ) prefix, power
+        inform%status = GALAHAD_error_restrictions
+        GO TO 910
+      END IF
+
+      IF ( weight <= zero ) THEN
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error,                                                &
-          "( A, ' The radius ', ES12.4 , ' is not positive ' )" ) prefix, radius
+          "( A, ' The weight ', ES12.4, ' is not positive ' )" ) prefix, weight
         inform%status = GALAHAD_error_restrictions
         GO TO 910
       END IF
@@ -923,7 +934,7 @@
           END SELECT
 
           IF ( SMT_get( S%type ) == 'COORDINATE' ) THEN
-            array_name = 'llst: H_sbls%row'
+            array_name = 'llsr: H_sbls%row'
             CALL SPACE_resize_array( data%s_ne, data%H_sbls%row,               &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -935,7 +946,7 @@
 
           IF ( SMT_get( S%type ) == 'COORDINATE' .OR.                          &
                SMT_get( S%type ) == 'SPARSE_BY_ROWS' ) THEN
-            array_name = 'llst: H_sbls%col'
+            array_name = 'llsr: H_sbls%col'
             CALL SPACE_resize_array( data%s_ne, data%H_sbls%col,               &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -946,7 +957,7 @@
           END IF
 
           IF ( SMT_get( S%type ) == 'SPARSE_BY_ROWS' ) THEN
-            array_name = 'llst: H_sbls%ptr'
+            array_name = 'llsr: H_sbls%ptr'
             CALL SPACE_resize_array( n + 1, data%H_sbls%ptr,                   &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -962,7 +973,7 @@
                SMT_get( S%type ) == 'DIAGONAL' .OR.                            &
                SMT_get( S%type ) == 'SCALED_IDENTITY' .OR.                     &
                SMT_get( S%type ) == 'IDENTITY' ) THEN
-            array_name = 'llst: H_sbls%val'
+            array_name = 'llsr: H_sbls%val'
             CALL SPACE_resize_array( data%s_ne, data%H_sbls%val,               &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -974,7 +985,7 @@
 !  special case for H = lambda I when S is not provided
 
         ELSE
-          array_name = 'llst: H_sbls%val'
+          array_name = 'llsr: H_sbls%val'
           CALL SPACE_resize_array( data%s_ne, data%H_sbls%val,                 &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -998,13 +1009,17 @@
       IF ( printt ) WRITE( out, "( A,  ' time( assembly ) = ', F0.2 )" )       &
         prefix, clock_now - clock_start
 
+!  set c = A^T b
+
+      CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
+
 !  =====================
 !  Array (re)allocations
 !  =====================
 
-!  allocate C, U, V, Y and Z
+!  allocate C and Y
 
-      array_name = 'llst: C'
+      array_name = 'llsr: C'
       CALL SPACE_resize_array( n, data%C,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
@@ -1012,15 +1027,7 @@
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 910
 
-      array_name = 'llst: U'
-      CALL SPACE_resize_array( data%npm, data%U,                               &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        deallocate_error_fatal = control%deallocate_error_fatal,               &
-        exact_size = control%space_critical,                                   &
-        bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= 0 ) GO TO 910
-
-      array_name = 'llst: Y'
+      array_name = 'llsr: Y'
       CALL SPACE_resize_array( data%npm, data%Y,                               &
           inform%status, inform%alloc_status, array_name = array_name,         &
           deallocate_error_fatal = control%deallocate_error_fatal,             &
@@ -1028,23 +1035,31 @@
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 910
 
-      array_name = 'llst: Z'
-      CALL SPACE_resize_array( data%npm, data%Z,                               &
+!  allocate U and Z if necessary
+
+      IF ( p > two ) THEN
+        pm2 = p - two ; oopm2 = one / pm2
+
+        array_name = 'llsr: U'
+        CALL SPACE_resize_array( data%npm, data%U,                             &
           inform%status, inform%alloc_status, array_name = array_name,         &
           deallocate_error_fatal = control%deallocate_error_fatal,             &
           exact_size = control%space_critical,                                 &
           bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= 0 ) GO TO 910
+        IF ( inform%status /= 0 ) GO TO 910
 
-!  set c = A^T b
-
-      CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
+        array_name = 'llsr: Z'
+        CALL SPACE_resize_array( data%npm, data%Z,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 910
 
 !  the real line is partitioned into disjoint sets
 !     N = { lambda: lambda <= max(0, -lambda_1(H))}
 !     L = { lambda: max(0, -lambda_1(H)) < lambda <= lambda_optimal } and
-!     G = { lambda: lambda > lambda_optimal };
-!  for the equality problem, 0 plays no role in N and L.
+!     G = { lambda: lambda > lambda_optimal }
 !  The aim is to find a lambda in L, as generally then Newton's method
 !  will converge both globally and ultimately quadratically. We also let
 !     F = L union G
@@ -1055,208 +1070,214 @@
 
 !  bounds on lambda currently used -
 
-!  * lambda >=0 (for the inequality problem)
-!  * ||A^Tb||_S^-1 / radius - lambda_n <= lambda <= ||A^Tb||_S^-1 / radius
-!  where lambda_n^2 <= ||A S^{-1/2}||_1 . ||A S^{-1/2}||_inf
+!  * lambda >=0
+!  * lambda_L <= lambda <= [sigma ||A^Tb||_S^(p-2)]^1/(p-1)
+!    where lambda_L is the rightmost real root of the equation
+!      (lambda + lambda_n) lambda^1/(p-2) = sigma^1/(p-2) ||A^Tb||_S
+!    and lambda_n^2 <= ||A S^{-1/2}||_1 . ||A S^{-1/2}||_inf
 !                   <= ||A||_1 . ||A||_inf . ||S^{-1}||_2
 
-!  ** unit trust-region scaling
+!  ** unit regularization-norm scaling
 
-      IF ( unit_s ) THEN
+        IF ( unit_s ) THEN
 
-!  record || c || / radius
+!  record sigma || c ||**(p-2)
 
-        c_norm = TWO_NORM( data%C( : n ) )
-        c_norm_over_radius = c_norm / radius
+          c_norm = TWO_NORM( data%C( : n ) )
 
 !  compute the sum of the absolute values of each row of A in U(1:m) and
 !  column of A in U(m+1:m+n)
 
-        data%U( : data%npm ) = zero
-        SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, m
-            DO j = 1, n
-              l = l + 1 ; val = ABS( A%val( l ) )
+          data%U( : data%npm ) = zero
+          SELECT CASE ( SMT_get( A%type ) )
+          CASE ( 'DENSE' )
+            l = 0
+            DO i = 1, m
+              DO j = 1, n
+                l = l + 1 ; val = ABS( A%val( l ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'SPARSE_BY_ROWS' )
+            DO i = 1, m
+              DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+                j = A%col( l ) ; val = ABS( A%val( l ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'COORDINATE' )
+            DO l = 1, A%ne
+              i = A%row( l ) ; j = A%col( l ) ; val = ABS( A%val( l ) )
               data%U( i ) =  data%U( i ) + val
               data%U( m + j ) =  data%U( m + j ) + val
             END DO
-          END DO
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l ) ; val = ABS( A%val( l ) )
-              data%U( i ) =  data%U( i ) + val
-              data%U( m + j ) =  data%U( m + j ) + val
-            END DO
-          END DO
-        CASE ( 'COORDINATE' )
-          DO l = 1, A%ne
-            i = A%row( l ) ; j = A%col( l ) ; val = ABS( A%val( l ) )
-            data%U( i ) =  data%U( i ) + val
-            data%U( m + j ) =  data%U( m + j ) + val
-          END DO
-        END SELECT
+          END SELECT
 
 !  compute ||A||_1 and ||A||_inf and the bound on lambda_n
 
-        a_one = MAXVAL( data%U( 1 : m ) )
-        a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
-!       lambda_n = SQRT( a_one * a_inf )
-        lambda_n = a_one * a_inf
+          a_one = MAXVAL( data%U( 1 : m ) )
+          a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
+          lambda_n = a_one * a_inf
 
-!  set known lower and upper bounds on lambda
+!  ** diagonal regularization-norm scaling
 
-        IF ( data%control%equality_problem ) THEN
-          lambda_l = c_norm_over_radius - lambda_n
-        ELSE
-          lambda_l = MAX( zero, c_norm_over_radius - lambda_n )
-        END IF
-        lambda_u = c_norm_over_radius
+        ELSE IF ( SMT_get( S%type ) == 'DIAGONAL' ) THEN
 
-!  ** diagonal trust-region scaling
+!  record sigma || c ||**(p-2)
 
-      ELSE IF ( SMT_get( S%type ) == 'DIAGONAL' ) THEN
-
-!  record || c ||_S^-1/ radius
-
-        c_norm = SQRT( DOT_PRODUCT( data%C( : n ),                             &
-                                    data%C( : n )  / S%val( : n ) ) )
-        c_norm_over_radius = c_norm / radius
+          c_norm = SQRT( DOT_PRODUCT( data%C( : n ),                           &
+                                      data%C( : n )  / S%val( : n ) ) )
 
 !  compute the sum of the absolute values of each row of A S^{-1/2} in U(1:m)
 !  and column of A S^{-1/2} in U(m+1:m+n)
 
-        data%U( : data%npm ) = zero
-        SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, m
-            DO j = 1, n
-              l = l + 1 ; val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
+          data%U( : data%npm ) = zero
+          SELECT CASE ( SMT_get( A%type ) )
+          CASE ( 'DENSE' )
+            l = 0
+            DO i = 1, m
+              DO j = 1, n
+                l = l + 1 ; val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'SPARSE_BY_ROWS' )
+            DO i = 1, m
+              DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+                j = A%col( l ) ; val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'COORDINATE' )
+            DO l = 1, A%ne
+              i = A%row( l ) ; j = A%col( l )
+              val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
               data%U( i ) =  data%U( i ) + val
               data%U( m + j ) =  data%U( m + j ) + val
             END DO
-          END DO
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l ) ; val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
-              data%U( i ) =  data%U( i ) + val
-              data%U( m + j ) =  data%U( m + j ) + val
-            END DO
-          END DO
-        CASE ( 'COORDINATE' )
-          DO l = 1, A%ne
-            i = A%row( l ) ; j = A%col( l )
-            val = ABS( A%val( l ) / SQRT( S%val( j ) ) )
-            data%U( i ) =  data%U( i ) + val
-            data%U( m + j ) =  data%U( m + j ) + val
-          END DO
-        END SELECT
+          END SELECT
 
 !  compute ||A S^{-1/2}||_1 and ||A S^{-1/2}||_inf and the bound on lambda_n
 
-        a_one = MAXVAL( data%U( 1 : m ) )
-        a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
-!       lambda_n = SQRT( a_one * a_inf )
-        lambda_n = a_one * a_inf
+          a_one = MAXVAL( data%U( 1 : m ) )
+          a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
+          lambda_n = a_one * a_inf
 
-!  set known lower and upper bounds on lambda
+!  ** general regularization-norm scaling
 
-        IF ( data%control%equality_problem ) THEN
-          lambda_l = c_norm_over_radius - lambda_n
         ELSE
-          lambda_l = MAX( zero, c_norm_over_radius - lambda_n )
-        END IF
-        lambda_u = c_norm_over_radius
-
-!  ** general trust-region scaling
-
-      ELSE
 
 !  perform an analysis of the spasity pattern of S to identify a good
 !  ordering for sparse factorization
 
-        IF ( data%control%new_s >= 2 ) THEN
-          data%control%SLS_control%pivot_control = 2
-          CALL SLS_initialize_solver( control%definite_linear_solver,          &
-                                      data%SLS_data, inform%SLS_inform )
-          CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-          CALL SLS_analyse( S, data%SLS_data,                                  &
-                            data%control%SLS_control, inform%SLS_inform )
-          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%analyse = inform%time%analyse + time_now - time_record
-          inform%time%clock_analyse =                                          &
-            inform%time%clock_analyse + clock_now - clock_record
-          IF ( printt ) WRITE( out, 2000 ) prefix, clock_now - clock_record
+          IF ( data%control%new_s >= 2 ) THEN
+            data%control%SLS_control%pivot_control = 2
+            CALL SLS_initialize_solver( control%definite_linear_solver,        &
+                                        data%SLS_data, inform%SLS_inform )
+            CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+            CALL SLS_analyse( S, data%SLS_data,                                &
+                              data%control%SLS_control, inform%SLS_inform )
+            CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+            inform%time%analyse = inform%time%analyse + time_now - time_record
+            inform%time%clock_analyse =                                        &
+              inform%time%clock_analyse + clock_now - clock_record
+            IF ( printt ) WRITE( out, 2000 ) prefix, clock_now - clock_record
 
 !  test that the analysis succeeded
 
-          IF ( inform%SLS_inform%status < 0 ) THEN
-            IF ( printi ) WRITE( out, "( A, ' error return from SLS',          &
-           &  '_analyse: status = ', I0 )" ) prefix, inform%SLS_inform%status
-            inform%status = GALAHAD_error_analysis ;  GO TO 910 ; END IF
-        END IF
+            IF ( inform%SLS_inform%status < 0 ) THEN
+              IF ( printi ) WRITE( out, "( A, ' error return from SLS',        &
+             &  '_analyse: status = ', I0 )" ) prefix, inform%SLS_inform%status
+              inform%status = GALAHAD_error_analysis ;  GO TO 910 ; END IF
+          END IF
 
 !  attempt an L B L^T factorization of S
 
-        IF ( data%control%new_s >= 1 ) THEN
-          CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-          CALL SLS_factorize( S, data%SLS_data,                                &
-                              data%control%SLS_control, inform%SLS_inform )
-          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%factorize = inform%time%factorize + time_now - time_record
-          inform%time%clock_factorize =                                        &
-            inform%time%clock_factorize + clock_now - clock_record
-          IF ( printt ) WRITE( out, 2010 ) prefix, clock_now - clock_record
-          inform%factorizations = inform%factorizations + 1
+          IF ( data%control%new_s >= 1 ) THEN
+            CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+            CALL SLS_factorize( S, data%SLS_data,                              &
+                                data%control%SLS_control, inform%SLS_inform )
+            CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+            inform%time%factorize =                                            &
+              inform%time%factorize + time_now - time_record
+            inform%time%clock_factorize =                                      &
+              inform%time%clock_factorize + clock_now - clock_record
+            IF ( printt ) WRITE( out, 2010 ) prefix, clock_now - clock_record
+            inform%factorizations = inform%factorizations + 1
 
 !  test that the factorization succeeded
 
-          IF ( inform%SLS_inform%status == 0 ) THEN
-            psdef = .TRUE.
-          ELSE IF ( inform%SLS_inform%status == GALAHAD_error_inertia ) THEN
-            GO TO 930
-!           psdef = .FALSE.
-          ELSE
-            GO TO 920
+            IF ( inform%SLS_inform%status == 0 ) THEN
+              psdef = .TRUE.
+            ELSE IF ( inform%SLS_inform%status == GALAHAD_error_inertia ) THEN
+              GO TO 930
+!             psdef = .FALSE.
+            ELSE
+              GO TO 920
+            END IF
           END IF
-        END IF
 
 !  compute S^{-1} c in V
 
-        CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-        data%U( : n ) = data%C( : n )
-        CALL IR_solve( S, data%U( : n ), data%IR_data, data%SLS_data,          &
-                       data%control%IR_control, data%control%SLS_control,      &
-                       inform%IR_inform, inform%SLS_inform )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%solve = inform%time%solve + time_now - time_record
-        inform%time%clock_solve =                                              &
-          inform%time%clock_factorize + clock_now - clock_record
-        IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+          CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+          data%U( : n ) = data%C( : n )
+          CALL IR_solve( S, data%U( : n ), data%IR_data, data%SLS_data,        &
+                         data%control%IR_control, data%control%SLS_control,    &
+                         inform%IR_inform, inform%SLS_inform )
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%clock_solve =                                            &
+            inform%time%clock_factorize + clock_now - clock_record
+          IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
 
 !  compute the S^-1 norm of c, while checking that S is positive definite
 
-        c_norm = DOT_PRODUCT( data%U( : n ), data%C( : n ) )
-        IF ( c_norm < zero ) GO TO 930
-        c_norm = SQRT( c_norm )
-        c_norm_over_radius = c_norm / radius
+          c_norm = DOT_PRODUCT( data%U( : n ), data%C( : n ) )
+          IF ( c_norm < zero ) GO TO 930
+          c_norm = SQRT( c_norm )
 
 !  compute the sums of the absolute values of off-diagonal terms of S (in Y),
 !  and its diagonal terms (in Z). Then record the Gershgorin bound on the
 !  smallest eigenvalue, which gives the reciprocal of the largest eigenvalue
 !  of S^-1
 
-        data%Y( : n ) = zero ; data%Z( : n ) = zero
-        SELECT CASE ( SMT_get( S%type ) )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, n
-            DO j = 1, i
-              l = l + 1
+          data%Y( : n ) = zero ; data%Z( : n ) = zero
+          SELECT CASE ( SMT_get( S%type ) )
+          CASE ( 'DENSE' )
+            l = 0
+            DO i = 1, n
+              DO j = 1, i
+                l = l + 1
+                val = S%val( l )
+                IF ( i == j ) THEN
+                  data%Z( i ) = val
+                ELSE
+                  data%Y( i ) = data%Y( i ) + ABS( val )
+                  data%Y( j ) = data%Y( j ) + ABS( val )
+                END IF
+              END DO
+            END DO
+            lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
+          CASE ( 'SPARSE_BY_ROWS' )
+            DO i = 1, n
+              DO l = S%ptr( i ), S%ptr( i + 1 ) - 1
+                j = S%col( l ) ; val = S%val( l )
+                IF ( i == j ) THEN
+                  data%Z( i ) = val
+                ELSE
+                  data%Y( i ) = data%Y( i ) + ABS( val )
+                  data%Y( j ) = data%Y( j ) + ABS( val )
+                END IF
+              END DO
+            END DO
+            lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
+          CASE ( 'COORDINATE' )
+            DO l = 1, S%ne
+              i = S%row( l ) ; j = S%col( l )
               val = S%val( l )
               IF ( i == j ) THEN
                 data%Z( i ) = val
@@ -1265,106 +1286,87 @@
                 data%Y( j ) = data%Y( j ) + ABS( val )
               END IF
             END DO
-          END DO
-          lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, n
-            DO l = S%ptr( i ), S%ptr( i + 1 ) - 1
-              j = S%col( l ) ; val = S%val( l )
-              IF ( i == j ) THEN
-                data%Z( i ) = val
-              ELSE
-                data%Y( i ) = data%Y( i ) + ABS( val )
-                data%Y( j ) = data%Y( j ) + ABS( val )
-              END IF
-            END DO
-          END DO
-          lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
-        CASE ( 'COORDINATE' )
-          DO l = 1, S%ne
-            i = S%row( l ) ; j = S%col( l )
-            val = S%val( l )
-            IF ( i == j ) THEN
-              data%Z( i ) = val
-            ELSE
-              data%Y( i ) = data%Y( i ) + ABS( val )
-              data%Y( j ) = data%Y( j ) + ABS( val )
-            END IF
-          END DO
-          lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
-        CASE( 'DIAGONAL' )
-          lambda = MINVAL( S%val( : n ) )
-        CASE( 'SCALED_IDENTITY' )
-          lambda = S%val( 1 )
-        CASE( 'IDENTITY' )
-          lambda = one
-        END SELECT
-        IF ( lambda > zero ) THEN
-          lambda_sinv = one / lambda
-        ELSE
-          GO TO 930
-        END IF
+            lambda = MINVAL( data%Z( : n ) - data%Y( : n ) )
+          CASE( 'DIAGONAL' )
+            lambda = MINVAL( S%val( : n ) )
+          CASE( 'SCALED_IDENTITY' )
+            lambda = S%val( 1 )
+          CASE( 'IDENTITY' )
+            lambda = one
+          END SELECT
+          IF ( lambda > zero ) THEN
+            lambda_sinv = one / lambda
+          ELSE
+            GO TO 930
+          END IF
 
 !  compute the sum of the absolute values of each row of A in U(1:m) and
 !  column of A in U(m+1:m+n)
 
-        data%U( : data%npm ) = zero
-        SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, m
-            DO j = 1, n
-              l = l + 1 ; val = ABS( A%val( l ) )
+          data%U( : data%npm ) = zero
+          SELECT CASE ( SMT_get( A%type ) )
+          CASE ( 'DENSE' )
+            l = 0
+            DO i = 1, m
+              DO j = 1, n
+                l = l + 1 ; val = ABS( A%val( l ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'SPARSE_BY_ROWS' )
+            DO i = 1, m
+              DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+                j = A%col( l ) ; val = ABS( A%val( l ) )
+                data%U( i ) =  data%U( i ) + val
+                data%U( m + j ) =  data%U( m + j ) + val
+              END DO
+            END DO
+          CASE ( 'COORDINATE' )
+            DO l = 1, A%ne
+              i = A%row( l ) ; j = A%col( l ) ; val = ABS( A%val( l ) )
               data%U( i ) =  data%U( i ) + val
               data%U( m + j ) =  data%U( m + j ) + val
             END DO
-          END DO
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, m
-            DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
-              j = A%col( l ) ; val = ABS( A%val( l ) )
-              data%U( i ) =  data%U( i ) + val
-              data%U( m + j ) =  data%U( m + j ) + val
-            END DO
-          END DO
-        CASE ( 'COORDINATE' )
-          DO l = 1, A%ne
-            i = A%row( l ) ; j = A%col( l ) ; val = ABS( A%val( l ) )
-            data%U( i ) =  data%U( i ) + val
-            data%U( m + j ) =  data%U( m + j ) + val
-          END DO
-        END SELECT
+          END SELECT
 
 !  compute ||A||_1 and ||A||_inf and the bound on lambda_n
 
-        a_one = MAXVAL( data%U( 1 : m ) )
-        a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
-!       lambda_n = SQRT( a_one * a_inf ) * lambda_sinv
-        lambda_n = a_one * a_inf * lambda_sinv
+          a_one = MAXVAL( data%U( 1 : m ) )
+          a_inf = MAXVAL( data%U( m + 1 : data%npm ) )
+          lambda_n = a_one * a_inf * lambda_sinv
+
+        END IF
+
+        IF ( p == three ) THEN
+          sigma_c_norm_pm2 = sigma * c_norm
+        ELSE
+          sigma_c_norm_pm2 = sigma * c_norm ** pm2
+        END IF
 
 !  set known lower and upper bounds on lambda
 
-        IF ( data%control%equality_problem ) THEN
-          lambda_l = c_norm_over_radius - lambda_n
+        IF ( p == three ) THEN
+          CALL ROOTS_quadratic( sigma_c_norm_pm2, lambda_n, one, roots_tol,    &
+                                nroots, roots( 1 ), roots( 2 ), roots_debug )
+          lambda_l = MAX( zero, roots( 2 ) )
+          lambda_u = SQRT( sigma_c_norm_pm2 )
         ELSE
-          lambda_l = MAX( zero, c_norm_over_radius - lambda_n )
+          lambda_l =  MAX( zero, LLSR_lambda_root( lambda_n,                   &
+                           sigma_c_norm_pm2 ** oopm2, oopm2 ) )
+          lambda_u = ( sigma_c_norm_pm2 ) ** ( one / ( p - one ) )
         END IF
-        lambda_u = c_norm_over_radius
-      END IF
 
 !  assign the initial lambda
 
-      IF ( data%control%use_initial_multiplier ) THEN
-        IF ( data%control%initial_multiplier >= lambda_l .AND.                 &
-             data%control%initial_multiplier <= lambda_u ) THEN
-          lambda =  data%control%initial_multiplier
-        ELSE
-          lambda = MAX( gamma * SQRT( lambda_l * lambda_u ),                   &
-                        lambda_l + theta_eps * ( lambda_u - lambda_l ) )
-        END IF
-      ELSE
-        IF ( data%control%equality_problem ) THEN
-          lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+        IF ( data%control%use_initial_multiplier ) THEN
+          IF ( data%control%initial_multiplier >= lambda_l .AND.               &
+               data%control%initial_multiplier <= lambda_u ) THEN
+            lambda =  data%control%initial_multiplier
+          ELSE
+            lambda = MAX( gamma * SQRT( lambda_l * lambda_u ),                 &
+                          lambda_l + theta_eps * ( lambda_u - lambda_l ) )
+          END IF
         ELSE
           IF ( lambda_l == zero ) THEN
             try_zero = .FALSE.
@@ -1374,11 +1376,15 @@
                           lambda_l + theta_eps * ( lambda_u - lambda_l ) )
           END IF
         END IF
+      ELSE ! p == 2
+        lambda = sigma
+        lambda_l = sigma
+        lambda_u = sigma
       END IF
 
-      lambda_pert = MAX( lambda, epsmch )
       try_zero = lambda > zero .AND. lambda_l == zero
       region = ' '
+      target = zero
       max_order = MAX( 1, MIN( max_degree, control%taylor_max_degree ) )
 
       IF ( printt )                                                            &
@@ -1390,13 +1396,28 @@
       data%control%SBLS_control%new_h = MAX( control%new_s, 1 )
       data%control%SBLS_control%new_a = control%new_a
       data%control%SBLS_control%new_c = 0
-      IF ( data%control%equality_problem )                                     &
-        data%control%SBLS_control%factorization = 2
 
       it = 0 ; in_n = 0
       DO
         it = it + 1
-!if(it>10)stop
+
+!  exit if the iteration has stalled
+
+        IF ( it > it_stalled ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
+
+        itt = 0
+ 100    CONTINUE
+
+!  precaution to stop infinite loop
+
+        itt = itt + 1
+        IF ( itt > 100 ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
 
 !  introduce lambda * S to form K(lambda)
 
@@ -1475,6 +1496,17 @@
             inform%x_norm = SQRT( x_norm2( 0 ) )
           END IF
 
+!  special p = 2 case
+
+          IF ( p == two ) THEN
+            inform%status = GALAHAD_ok
+            GO TO 900
+          END IF 
+
+!  compute the target value ( lambda / sigma )^(1/(p-2))
+
+          target = ( lambda / weight ) ** oopm2
+
 !  compute the two-norm of the residual, ||A x - b||_2 = ||y - b||_2
 
           inform%r_norm = TWO_NORM( B - data%U( n + 1 : data%npm ) )
@@ -1516,9 +1548,9 @@
 !  debug printing
 
           IF ( printd ) THEN
-            WRITE( out, "( A, 8X, 'lambda', 13X, 'x_norm', 15X, 'radius' )" )  &
+            WRITE( out, "( A, 8X, 'lambda', 13X, 'x_norm', 15X, 'target' )" )  &
               prefix
-            WRITE( out, "( A, 3ES20.12 )") prefix, lambda, inform%x_norm, radius
+            WRITE( out, "( A, 3ES20.12 )") prefix, lambda, inform%x_norm, target
             IF ( phase_1 ) THEN
               WRITE( out, "( A, ' interval width =', ES21.14 )")               &
                 prefix, lambda_u - lambda_l
@@ -1529,31 +1561,13 @@
             END IF
           END IF
 
-!  ---------------------------------------------------------------------------
-!  The interval is small and the current estimate lies within the trust-region
-!  ---------------------------------------------------------------------------
-
-          IF ( lambda_u - lambda_l <= epsmch .AND. inform%x_norm - radius <=   &
-                 data%control%stop_normal * MAX( one, radius ) ) THEN
-            IF ( ( phase_1 .AND. printi ) .OR. printh )                        &
-              WRITE( out, 2030 ) prefix
-            IF ( printi ) THEN
-              WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,         &
-              it, inform%x_norm - radius, lambda, ABS( delta_lambda )
-              WRITE( out, "( A,                                                &
-           &    ' Normal stopping criteria satisfied' )" ) prefix
-            END IF
-            inform%status = 0
-            EXIT
-          END IF
-
 !  --------------------------------------------------------------------
 !  The current estimate gives a good approximation to the required root
 !  --------------------------------------------------------------------
 
-          IF ( ABS( inform%x_norm - radius ) <=                                &
-                 data%control%stop_normal * MAX( one, radius ) ) THEN
-            IF ( inform%x_norm > radius ) THEN
+          IF ( ABS( inform%x_norm - target ) <= data%control%stop_normal *     &
+               MAX( one, inform%x_norm, target ) ) THEN
+            IF ( inform%x_norm > target ) THEN
               region = 'L'
               lambda_l = MAX( lambda_l, lambda )
             ELSE
@@ -1564,7 +1578,7 @@
               WRITE( out, 2030 ) prefix
             IF ( printi ) THEN
               WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,         &
-              it, ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
+              it, ABS( inform%x_norm - target ), lambda, ABS( delta_lambda )
               WRITE( out, "( A,                                                &
            &    ' Normal stopping criteria satisfied' )" ) prefix
             END IF
@@ -1578,7 +1592,7 @@
             inform%multiplier = lambda
             inform%status = GALAHAD_error_max_iterations ; GO TO 910
           END IF
-!         write(6,*) ' ||x||-radius = ', inform%x_norm - radius
+!         write(6,*) ' ||x||-target = ', inform%x_norm - target
 
 !  determine which region the current lambda lies in
 
@@ -1586,7 +1600,7 @@
 !  The current lambda lies in L
 !  ----------------------------
 
-          IF ( inform%x_norm > radius ) THEN
+          IF ( inform%x_norm > target ) THEN
             region = 'L'
             lambda_l = MAX( lambda_l, lambda )
 
@@ -1613,7 +1627,7 @@
 !  a variety of Taylor-series-based methods starting from this lambda
 
             IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix,      &
-              region, it, ABS( inform%x_norm - radius ), lambda,               &
+              region, it, ABS( inform%x_norm - target ), lambda,               &
               ABS( delta_lambda )
 
 !  precaution against rounding producing lambda outside L
@@ -1639,17 +1653,6 @@
             IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
               prefix, region, it, lambda_l, lambda, lambda_u
 
-!  -----------------------------------------------------
-!  The solution lies in the interior of the trust-region
-!  -----------------------------------------------------
-
-            IF ( lambda == zero .AND. .NOT. data%control%equality_problem ) THEN
-              IF ( printi ) WRITE( out, "( A,                                  &
-             &    ' Interior stopping criteria satisfied' )" ) prefix
-              inform%status = 0
-              GO TO 900
-            END IF
-
 !  record, for the future, values of lambda which give small ||x||
 
             IF ( inform%len_history < history_max ) THEN
@@ -1671,11 +1674,30 @@
                            data%control%SBLS_control, inform%SBLS_inform,      &
                            data%Z( : data%npm ) )
 
+!  check that the solution succeeded. If not, increase lambda and try again
+
+          IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+            IF ( printd ) WRITE( out,                                          &
+           &    "( ' **** WARNING 3 *** iterative refinement diverged,',       &
+           &    ' increasing lambda marginally' ) ")
+            lambda_l = lambda
+            lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+            it = it + 1
+            GO TO 100
+          END IF
+
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%solve = inform%time%solve + time_now - time_record
           inform%time%clock_solve =                                            &
             inform%time%clock_factorize + clock_now - clock_record
           IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+
+!         IF ( inform%IR_inform%norm_final_residual >                          &
+!              inform%IR_inform%norm_initial_residual ) THEN
+! write(6, "( ' *********** WARNING 4 - initial and final residuals are ',     &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!              inform%IR_inform%norm_final_residual
+!         END IF
 
 !  form ||w||^2 = y^T z = x^T L^-T D^-1 L^-1 x = x^T H^-1(lambda) x
 
@@ -1685,18 +1707,133 @@
 
           x_norm2( 1 ) = - two * w_norm2
 
+!  count the number of corrections computed
+
+          n_lambda = 0
+
+!  compute Taylor approximants of degree one; special (but frequent) case 
+!  when p = 3
+
+          IF ( p == three ) THEN
+
+!  compute pi_beta = ||x||^beta and its first derivative when beta = 2
+
+            beta = two
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+
+!  compute the Newton correction (for beta = 2)
+
+            a_0 = pi_beta( 0 ) - target ** 2
+            a_1 = pi_beta( 1 ) - two * lambda * oos2
+            a_2 = - oos2
+            a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+            IF ( a_max > zero ) THEN
+              a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+            END IF
+            CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,            &
+                                  roots( 1 ), roots( 2 ), roots_debug )
+            lambda_plus = lambda + roots( 2 )
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
+
+!  compute pi_beta = ||x||^beta and its first derivative when beta = 1
+
+            beta = one
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+
+!  compute the Newton correction (for beta = 1)
+
+            delta_lambda = - ( pi_beta( 0 ) - target ) / ( pi_beta( 1 ) - oos )
+            lambda_plus = lambda + delta_lambda
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
+
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
-          beta = - one
-          CALL LLST_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            beta = - one
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
-!  compute the Newton correction (for beta = - 1)
+!  compute the Newton correction (for beta = -1)
 
-          delta_lambda = - ( pi_beta( 0 ) - ( radius ) ** beta ) / pi_beta( 1 )
-          n_lambda = 1
-          lambda_new( n_lambda ) = lambda + delta_lambda
+            a_0 = pi_beta( 0 ) * lambda - sigma
+            a_1 = pi_beta( 0 ) + lambda * pi_beta( 1 )
+            a_2 = pi_beta( 1 )
+            a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+            IF ( a_max > zero ) THEN
+              a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+            END IF
+            CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,            &
+                                  roots( 1 ), roots( 2 ), roots_debug )
+            lambda_plus = lambda + roots( 2 )
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
 
-!  compute x' where H(lambda) x' = - S x ; - S x' is in data%z
+!  more general p
+
+          ELSE
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their first derivatives when beta = p-2
+
+            beta = pm2
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL LLSR_theta_derivs( 1, beta / pm2, lambda, sigma,              &
+                                      theta_beta( : 1 )  )
+
+!  compute the "linear Taylor approximation" correction (for beta = p-2)
+
+            delta_lambda = - ( pi_beta( 0 ) - theta_beta( 0 ) ) /              &
+                             ( pi_beta( 1 ) - theta_beta( 1 ) )
+            lambda_plus = lambda + delta_lambda
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their first derivatives when beta = (p-2)/2
+
+            beta = pm2 / two
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL LLSR_theta_derivs( 1, beta / pm2, lambda, sigma,              &
+                                    theta_beta( : 1 )  )
+
+!  compute the "linear Taylor approximation" correction (for beta = (p-2)/2)
+
+            delta_lambda = - ( pi_beta( 0 ) - theta_beta( 0 ) ) /              &
+                             ( pi_beta( 1 ) - theta_beta( 1 ) )
+            lambda_plus = lambda + delta_lambda
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their first derivatives when beta = max(2-p,-1)
+
+            beta = max( - pm2, - one )
+            CALL LLSR_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL LLSR_theta_derivs( 1, beta / pm2, lambda, sigma,              &
+                                    theta_beta( : 1 )  )
+
+!  compute the "linear Taylor approximation" correction (for beta = max(2-p,-1))
+
+            delta_lambda = - ( pi_beta( 0 ) - theta_beta( 0 ) ) /              &
+                             ( pi_beta( 1 ) - theta_beta( 1 ) )
+            lambda_plus = lambda + delta_lambda
+            IF (  lambda_plus < lambda ) THEN
+              n_lambda = n_lambda + 1
+              lambda_new( n_lambda ) = lambda_plus
+            END IF
+          END IF
+
+!         WRITE( out, "( ' lambda, delta ', 2ES22.15 )" ) lambda, delta_lambda
 
           IF ( ( max_order >= 3 .AND. region == 'L' ) .OR.                     &
                ( max_order >= 2 .AND. region == 'G' ) ) THEN
@@ -1707,7 +1844,7 @@
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Z( : n ) )
             ELSE
               CALL mop_AX( one, S, data%Z( : n ), zero, data%Y( : n ), 0,      &
-                           symmetric = .TRUE. )
+                           symmetric = .TRUE., m_matrix = n, n_matrix = n )
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Y( : n ) )
             END IF
 
@@ -1729,11 +1866,31 @@
               CALL SBLS_solve( n, m, A, data%C_sbls, data%SBLS_data,           &
                                data%control%SBLS_control, inform%SBLS_inform,  &
                                data%Z( : data%npm ) )
+
+!  check that the solution succeeded. If not, increase lambda and try again
+
+              IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+                IF ( printd ) WRITE( out,                                      &
+               &    "( ' **** WARNING 5 *** iterative refinement diverged,',   &
+               &    ' increasing lambda marginally' ) ")
+                lambda_l = lambda
+                lambda = lambda_l + theta_eps5 * ( lambda_u - lambda_l )
+                it = it + 1
+                GO TO 100
+              END IF
+
               CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
               inform%time%solve = inform%time%solve + time_now - time_record
               inform%time%clock_solve =                                        &
                 inform%time%clock_factorize + clock_now - clock_record
               IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+
+!             IF ( inform%IR_inform%norm_final_residual >                      &
+!                  inform%IR_inform%norm_initial_residual ) THEN
+! write(6, "( ' *********** WARNING 6 - initial and final residuals are ',     &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!              inform%IR_inform%norm_final_residual
+!             END IF
 
 !  form ||v||^2 = z^T y = x'^T L^-T D^-1 L^-1 x' = x'^T H^-1(lambda) x'
 
@@ -1745,6 +1902,11 @@
             END IF
           END IF
 
+!  reset lower or upper bound appropriately
+
+          IF ( region == 'L' ) lambda_l = MAX( lambda_l, lambda )
+          IF ( region == 'G' ) lambda_u = MIN( lambda_u, lambda )
+
 !  compute pi_beta = ||x||^beta and its derivatives for various beta
 !  and the resulting Taylor series approximants
 
@@ -1754,59 +1916,184 @@
 !  The current lambda lies in L
 !  ----------------------------
 
-          IF ( inform%x_norm > radius ) THEN
+          IF ( inform%x_norm > target ) THEN
+
+!  for Taylor approximants of degree larger than one
+
             IF ( max_order >= 3 ) THEN
+
+!  special (but frequent) case when p = 3
+
+              IF ( p == three ) THEN
 
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
-              beta = two
-              CALL LLST_pi_derivs( max_order, beta, x_norm2( : max_order ),    &
-                                  pi_beta( : max_order ) )
+                beta = two
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 2)
 
-              CALL ROOTS_cubic( pi_beta( 0 ) - ( radius ) ** beta,             &
-                                pi_beta( 1 ), half * pi_beta( 2 ),             &
-                                sixth * pi_beta( 3 ), roots_tol,               &
-                                nroots, root1, root2, root3, roots_debug )
-              n_lambda = n_lambda + 1
-              IF ( nroots == 3 ) THEN
-                lambda_new( n_lambda ) = lambda + root3
-              ELSE
-                lambda_new( n_lambda ) = lambda + root1
-              END IF
+                a_0 = pi_beta( 0 ) - target ** 2
+                a_1 = pi_beta( 1 ) - two * lambda * oos2
+                a_2 = half * pi_beta( 2 ) - oos2
+                a_3 = sixth * pi_beta( 3 )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda + roots( 1 )
 
-!  compute pi_beta = ||x||^beta and its derivatives when beta = - 0.4
+!  compute pi_beta = ||x||^beta and its derivatives when beta = 1
 
-              beta = - point4
-              CALL LLST_pi_derivs( max_order, beta, x_norm2( : max_order ),    &
-                                  pi_beta( : max_order ) )
+                beta = one
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+
+!  compute the "cubic Taylor approximaton" step (beta = 1)
+
+                a_0 = pi_beta( 0 ) - target
+                a_1 = pi_beta( 1 ) - oos
+                a_2 = half * pi_beta( 2 )
+                a_3 = sixth * pi_beta( 3 )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda + roots( 1 )
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^beta and
+!  their derivatives when beta = - 0.4
+
+                beta = - point4
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL LLSR_theta_derivs( 3, beta, lambda, sigma,                &
+                                       theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)
 
-              CALL ROOTS_cubic( pi_beta( 0 ) - ( radius ) ** beta,             &
-                                pi_beta( 1 ), half * pi_beta( 2 ),             &
-                                sixth * pi_beta( 3 ), roots_tol,               &
-                                nroots, root1, root2, root3, roots_debug )
-              n_lambda = n_lambda + 1
-              IF ( nroots == 3 ) THEN
-                lambda_new( n_lambda ) = lambda + root3
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda + roots( 1 )
+
+!  more general p
+
               ELSE
-                lambda_new( n_lambda ) = lambda + root1
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = p-2
+
+                beta = pm2
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta = p-2)
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda +                              &
+                  LLSR_required_root( .TRUE., nroots, roots( : 3 ) )
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = (p-2)/2
+
+                beta = pm2 / two
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta = (p-2)/2)
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda +                              &
+                  LLSR_required_root( .TRUE., nroots, roots( : 3 ) )
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = max(2-p,-0.4)
+
+                beta = max( - pm2, - point4 )
+                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta=max(2-p,-0.4))
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                END IF
+                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
+                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
+                                  roots_debug )
+                n_lambda = n_lambda + 1
+                lambda_new( n_lambda ) = lambda +                              &
+                  LLSR_required_root( .TRUE., nroots, roots( : 3 ) )
               END IF
             END IF
 
-!  compute the new estimate of lambda
+!  record all of the estimates of the optimal lambda
 
-            IF ( printd ) WRITE( out, "( A, ' lambda_t', 3ES21.13 )" )         &
-              prefix, lambda_new( : n_lambda )
+            IF ( printd ) THEN
+              WRITE( out, "( A, ' lambda_t (', I1, ')', 3ES20.12 )" )          &
+                prefix, MAXLOC( lambda_new( : n_lambda ) ),                    &
+                lambda_new( : MIN( 3, n_lambda ) )
+              IF ( n_lambda > 3 ) WRITE( out, "( A, 13X, 3ES20.12 )" )         &
+                prefix, lambda_new( 4 : MIN( 6, n_lambda ) )
+            END IF
 
 !  compute the best Taylor improvement
 
             lambda_plus = MAXVAL( lambda_new( : n_lambda ) )
             delta_lambda = lambda_plus - lambda
             lambda = lambda_plus
-            lambda_pert = lambda
 
 !  improve the lower bound if possible
 
@@ -1815,54 +2102,372 @@
 !  check that the best Taylor improvement is significant
 
             IF ( ABS( delta_lambda ) < epsmch * MAX( one, ABS( lambda ) ) ) THEN
-              inform%status = 0
+              inform%status = GALAHAD_ok
+              IF ( printi ) WRITE( out, "( A, ' normal exit with no ',         &
+             &                     'significant Taylor improvement' )" ) prefix
               EXIT
             END IF
+          ELSE
 
 !  ----------------------------
 !  The current lambda lies in G
 !  ----------------------------
 
-          ELSE
+!  compute Taylor approximants of degree two
+
             IF ( max_order >= 2 ) THEN
 
-!  compute pi_beta = ||x||^beta and its derivatives when beta = - 0.666
+!  special (but frequent) case when p = 3
 
-              beta = - twothirds
-              CALL LLST_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+              IF ( p == three ) THEN
+
+!  compute pi_beta = ||x||^beta and its first derivative when beta = 2
+
+                beta = two
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+
+!  compute the "quadratic Taylor approximaton" step (beta = 2)
+
+                a_0 = pi_beta( 0 ) - target ** 2
+                a_1 = pi_beta( 1 ) - two * lambda * oos2
+                a_2 = half * pi_beta( 2 ) - oos2
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
+
+!  compute pi_beta = ||x||^beta and its first derivative when beta = 1
+
+                beta = one
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+
+!  compute the "quadratic Taylor approximaton" step (beta = 1)
+
+                a_0 = pi_beta( 0 ) - target
+                a_1 = pi_beta( 1 ) - oos
+                a_2 = half * pi_beta( 2 )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^beta and
+!  their derivatives when beta = - 0.666
+
+                beta = - twothirds
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                CALL LLSR_theta_derivs( 2, beta, lambda, sigma,                &
+                                       theta_beta( : 2 ) )
 
 !  compute the "quadratic Taylor approximaton" step (beta = - 0.666)
 
-              CALL ROOTS_quadratic( pi_beta( 0 ) - ( radius ) ** beta,         &
-                                    pi_beta( 1 ), half * pi_beta( 2 ),         &
-                                    roots_tol, nroots, root1, root2,           &
-                                    roots_debug )
-              n_lambda = n_lambda + 1
-              lambda_new( n_lambda ) = lambda + root1
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
 
+!  more general p
+
+              ELSE
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = p-2
+
+                beta = pm2
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                CALL LLSR_theta_derivs( 2, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 2 )  )
+
+!  compute the "quadratic Taylor approximation" correction (for beta = p-2)
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = (p-2)/2
+
+                beta = pm2 / two
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                CALL LLSR_theta_derivs( 2, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 2 )  )
+
+!  compute the "quadratic Taylor approximation" correction (for beta = (p-2)/2)
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = max(2-p,-0.666)
+
+                beta = max( - pm2, - twothirds )
+                CALL LLSR_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                CALL LLSR_theta_derivs( 2, beta / pm2, lambda, sigma,          &
+                                       theta_beta( : 2 )  )
+
+!  compute the "quadratic Taylor approximation" correction
+!  (for beta = max(2-p,-0.666))
+
+                a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ) )
+                IF ( a_max > zero ) THEN
+                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max ; a_2 = a_2 / a_max
+                END IF
+                CALL ROOTS_quadratic( a_0, a_1, a_2, roots_tol, nroots,        &
+                                      roots( 1 ), roots( 2 ), roots_debug )
+                lambda_plus = lambda +                                         &
+                   LLSR_required_root( .FALSE., nroots, roots( : 2 ) )
+                IF (  lambda_plus < lambda ) THEN
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda_plus
+                END IF
+              END IF
+
+!  compute Taylor approximants of degree three or larger
 
               IF ( max_order >= 3 ) THEN
 
-!  compute pi_beta = ||x||^beta and its derivatives when beta = - 0.4
+!  special (but frequent) case when p = 3
 
-                beta = - point4
-                CALL LLST_pi_derivs( max_order, beta, x_norm2( : max_order ),  &
-                                     pi_beta( : max_order ) )
+                IF ( p == three ) THEN
 
-!  Compute the "cubic Taylor approximaton" step (beta = - 0.4)
+!  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
-                CALL ROOTS_cubic( pi_beta( 0 ) - ( radius ) ** beta,           &
-                     pi_beta( 1 ), half * pi_beta( 2 ), sixth * pi_beta( 3 ),  &
-                     roots_tol,  nroots, root1, root2, root3, roots_debug )
-                n_lambda = n_lambda + 1
-                lambda_new( n_lambda ) = lambda + root1
+                  beta = two
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+
+!  compute the "cubic Taylor approximaton" step (beta = 2)
+
+                  a_0 = pi_beta( 0 ) - target ** 2
+                  a_1 = pi_beta( 1 ) - two * lambda * oos2
+                  a_2 = half * pi_beta( 2 ) - oos2
+                  a_3 = sixth * pi_beta( 3 )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda + roots( 1 )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+
+!  compute pi_beta = ||x||^beta and its derivatives when beta = 1
+
+                  beta = one
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+
+!  compute the "cubic Taylor approximaton" step (beta = 1)
+
+                  a_0 = pi_beta( 0 ) - target
+                  a_1 = pi_beta( 1 ) - oos
+                  a_2 = half * pi_beta( 2 )
+                  a_3 = sixth * pi_beta( 3 )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda + roots( 1 )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^beta and
+!  their derivatives when beta = - 0.4
+
+                  beta = - point4
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                  CALL LLSR_theta_derivs( 3, beta, lambda, sigma,              &
+                                         theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximaton" step (beta = - 0.4)
+
+                  a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                  a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                  a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                  a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3) )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda + roots( 1 )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+
+!  more general p
+
+                ELSE
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = p-2
+
+                  beta = pm2
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                  CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,        &
+                                         theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta = p-2)
+
+                  a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                  a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                  a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                  a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3) )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda +                                       &
+                    LLSR_required_root( .FALSE., nroots, roots( : 3 ) )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = (p-2)/2
+
+                  beta = pm2 / two
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                  CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,        &
+                                         theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta = (p-2)/2)
+
+                  a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                  a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                  a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                  a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3) )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda +                                       &
+                    LLSR_required_root( .FALSE., nroots, roots( : 3 ) )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+
+!  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^(beta/(p-2)) and
+!  their derivatives when beta = max(2-p,-0.4)
+
+                  beta = max( - pm2, - point4 )
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                  CALL LLSR_theta_derivs( 3, beta / pm2, lambda, sigma,        &
+                                         theta_beta( : 3 )  )
+
+!  compute the "cubic Taylor approximation" correction (for beta=max(2-p,-0.4))
+
+                  a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                  a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                  a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                  a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3) )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  lambda_plus = lambda +                                       &
+                    LLSR_required_root( .FALSE., nroots, roots( : 3 ) )
+                  IF (  lambda_plus < lambda ) THEN
+                    n_lambda = n_lambda + 1
+                    lambda_new( n_lambda ) = lambda_plus
+                  END IF
+                END IF
               END IF
             END IF
 
 !  record all of the estimates of the optimal lambda
 
-            IF ( printd ) WRITE( out, "( A, ' lambda_t', 3ES21.13 )" )         &
-              prefix, lambda_new( : n_lambda )
+            IF ( printd ) THEN
+              WRITE( out, "( A, ' lambda_t (', I1, ')', 3ES20.13 )" )          &
+                prefix, MAXLOC( lambda_new( : n_lambda ) ),                    &
+                lambda_new( : MIN( 3, n_lambda ) )
+              IF ( n_lambda > 3 ) WRITE( out, "( A, 13X, 3ES20.13 )" )         &
+                prefix, lambda_new( 4 : MIN( 6, n_lambda ) )
+              IF ( n_lambda > 6 ) WRITE( out, "( A, 13X, 3ES20.13 )" )         &
+                prefix, lambda_new( 7 : MIN( 9, n_lambda ) )
+            END IF
 
 !  compute the best Taylor improvement
 
@@ -1877,10 +2482,8 @@
 
             IF ( try_zero ) THEN
               try_zero = .FALSE.
-              IF ( MAXVAL( lambda_new( : n_lambda ) ) < zero ) THEN
+              IF ( lambda_l < zero ) THEN
                 lambda = zero
-                lambda_pert = epsmch
-!               lambda_pert = ten * epsmch
                 CYCLE
               END IF
             END IF
@@ -1888,21 +2491,11 @@
 !  check that the best Taylor improvement is significant
 
             IF ( ABS( delta_lambda ) < epsmch * MAX( one, ABS( lambda ) ) ) THEN
-              inform%status = 0
+              inform%status = GALAHAD_ok
+              IF ( printi ) WRITE( out, "( A, ' normal exit with no ',         &
+             &                   'significant Taylor improvement' )" ) prefix
               EXIT
             END IF
-
-            IF ( lambda_plus >= lambda_l ) THEN
-              lambda = lambda_plus
-            ELSE
-              IF ( data%control%equality_problem ) THEN
-                lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
-              ELSE
-                lambda = MAX( gamma * SQRT( lambda_l * lambda_u ),             &
-                              lambda_l + theta_eps * ( lambda_u - lambda_l ) )
-              END IF
-            END IF
-            lambda_pert = lambda
           END IF
 
 !  ----------------------------
@@ -1920,23 +2513,18 @@
 !  compute the next lambda
 
           width = ABS( lambda_u - lambda_l )
-          IF ( data%control%equality_problem ) THEN
-            lambda = lambda_l + theta_n * width
+          in_n = in_n + 1
+          IF ( MOD( in_n, 2 ) == 1 ) THEN
+            lambda = MAX( gamma * SQRT( lambda_l * lambda_u ),                 &
+                          lambda_l + theta_n * width )
           ELSE
-            in_n = in_n + 1
-            IF ( MOD( in_n, 2 ) == 1 ) THEN
-              lambda = MAX( gamma * SQRT( lambda_l * lambda_u ),               &
-                            lambda_l + theta_n * width )
-            ELSE
-              lambda = lambda_l + theta_n_small * width
-            END IF
+            lambda = lambda_l + theta_n_small * width
           END IF
-          lambda_pert = lambda
         END IF
 
-        printh = printt .OR. printi .AND.                                     &
-                   ( control%SBLS_control%print_level > 0 .OR.                &
-                     control%SLS_control%print_level > 0 .OR.                 &
+        printh = printt .OR. printi .AND.                                      &
+                   ( control%SBLS_control%print_level > 0 .OR.                 &
+                     control%SLS_control%print_level > 0 .OR.                  &
                      control%IR_control%print_level > 0 )
 
 !  End of main iteration loop
@@ -1961,7 +2549,7 @@
 
   910 CONTINUE
       IF ( printi ) WRITE( out, "( A, '   **  Error return ', I0,              &
-     & ' from LLST ' )" ) prefix, inform%status
+     & ' from LLSR ' )" ) prefix, inform%status
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
@@ -1988,7 +2576,7 @@
 
   930 CONTINUE
       IF ( printi ) WRITE( out,                                                &
-         "( A, ' The matrix S provided for LLST appears not to be strictly',   &
+         "( A, ' The matrix S provided for LLSR appears not to be strictly',   &
         &      ' diagonally dominant'  )" ) prefix
       inform%status = GALAHAD_error_preconditioner
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -2003,21 +2591,21 @@
  2010 FORMAT( A, ' time( SBLS_factorize ) = ', F0.2 )
  2020 FORMAT( A, '    it        lambda_l                lambda ',              &
                  '               lambda_u' )
- 2030 FORMAT( A, '    it     ||x||_S-radius             lambda ',              &
-                 '               d_lambda' )
+ 2030 FORMAT( A, '    it    ||x||-target              lambda ',                &
+                 '              d_lambda' )
  2050 FORMAT( A, ' time( SBLS_solve ) = ', F0.2 )
 
-!  End of subroutine LLST_solve
+!  End of subroutine LLSR_solve
 
-      END SUBROUTINE LLST_solve
+      END SUBROUTINE LLSR_solve
 
-!-*-*-*-*-*-  L L S T _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*-
+!-*-*-*-*-*-  L L S R _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*-
 
-      SUBROUTINE LLST_terminate( data, control, inform )
+      SUBROUTINE LLSR_terminate( data, control, inform )
 
 !  ...........................................
 !  .                                         .
-!  .  Deallocate arrays at end of LLST_solve  .
+!  .  Deallocate arrays at end of LLSR_solve  .
 !  .                                         .
 !  ...........................................
 
@@ -2025,16 +2613,16 @@
 !  =========
 !
 !   data    private internal data
-!   control see Subroutine LLST_initialize
-!   inform    see Subroutine LLST_solve
+!   control see Subroutine LLSR_initialize
+!   inform    see Subroutine LLSR_solve
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( LLST_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( IN ) :: control
-      TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( LLSR_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_control_type ), INTENT( IN ) :: control
+      TYPE ( LLSR_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
@@ -2044,61 +2632,61 @@
 
 !  Deallocate all internal arrays
 
-      array_name = 'llst: S_diag'
+      array_name = 'llsr: S_diag'
       CALL SPACE_dealloc_array( data%S_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: S_offd'
+      array_name = 'llsr: S_offd'
       CALL SPACE_dealloc_array( data%S_offd,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: C'
+      array_name = 'llsr: C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: U'
+      array_name = 'llsr: U'
       CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: Y'
+      array_name = 'llsr: Y'
       CALL SPACE_dealloc_array( data%Y,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: Z'
+      array_name = 'llsr: Z'
       CALL SPACE_dealloc_array( data%Z,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: H_sbls%row'
+      array_name = 'llsr: H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: H_sbls%col'
+      array_name = 'llsr: H_sbls%col'
       CALL SPACE_dealloc_array( data%H_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: H_sbls%ptr'
+      array_name = 'llsr: H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'llst: H_sbls%val'
+      array_name = 'llsr: H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
@@ -2110,7 +2698,7 @@
                           inform%IR_inform )
       IF ( inform%IR_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'llst: IR_data'
+        inform%bad_alloc = 'llsr: IR_data'
       END IF
 
 !  Deallocate all arrays allocated within SLS
@@ -2119,7 +2707,7 @@
                           inform%SLS_inform )
       IF ( inform%SLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'llst: SLS_data'
+        inform%bad_alloc = 'llsr: SLS_data'
       END IF
 
 !  Deallocate all arrays allocated within SBLS
@@ -2128,18 +2716,18 @@
                           inform%SBLS_inform )
       IF ( inform%SBLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'llst: SBLS_data'
+        inform%bad_alloc = 'llsr: SBLS_data'
       END IF
 
       RETURN
 
-!  End of subroutine LLST_terminate
+!  End of subroutine LLSR_terminate
 
-      END SUBROUTINE LLST_terminate
+      END SUBROUTINE LLSR_terminate
 
-!   G A L A H A D -  L L S T _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+!   G A L A H A D -  L L S R _ f u l l _ t e r m i n a t e  S U B R O U T I N E
 
-      SUBROUTINE LLST_full_terminate( data, control, inform )
+      SUBROUTINE LLSR_full_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2151,22 +2739,22 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( IN ) :: control
-      TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_control_type ), INTENT( IN ) :: control
+      TYPE ( LLSR_inform_type ), INTENT( INOUT ) :: inform
 
 !  deallocate workspace
 
-      CALL LLST_terminate( data%llst_data, control, inform )
+      CALL LLSR_terminate( data%llsr_data, control, inform )
       RETURN
 
-!  End of subroutine LLST_full_terminate
+!  End of subroutine LLSR_full_terminate
 
-      END SUBROUTINE LLST_full_terminate
+      END SUBROUTINE LLSR_full_terminate
 
-!-*-*-*-*-*-*-  L L S T _ P I _ D E R I V S   S U B R O U T I N E   -*-*-*-*-*-
+!-*-*-*-*-*-*-  L L S R _ P I _ D E R I V S   S U B R O U T I N E   -*-*-*-*-*-
 
-      SUBROUTINE LLST_pi_derivs( max_order, beta, x_norm2, pi_beta )
+      SUBROUTINE LLSR_pi_derivs( max_order, beta, x_norm2, pi_beta )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -2230,9 +2818,256 @@
 
       RETURN
 
-!  End of subroutine LLST_pi_derivs
+!  End of subroutine LLSR_pi_derivs
 
-      END SUBROUTINE LLST_pi_derivs
+      END SUBROUTINE LLSR_pi_derivs
+
+!-*-*-*-*-*  L L S R _ T H E T A _ D E R I V S   S U B R O U T I N E   *-*-*-*-
+
+      SUBROUTINE LLSR_theta_derivs( max_order, beta, lambda, sigma, theta_beta )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Compute theta_beta = (lambda/sigma)^beta and its derivatives
+!
+!  Arguments:
+!  =========
+!
+!  Input -
+!   max_order - maximum order of derivative
+!   beta - power
+!   lambda, sigma - lambda and sigma
+!  Output -
+!   theta_beta - (0) value of (lambda/sigma)^beta,
+!                (i) ith derivative of (lambda/sigma)^beta, i = 1, max_order
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: max_order
+      REAL ( KIND = rp_ ), INTENT( IN ) :: beta, lambda, sigma
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: theta_beta( 0 : max_order )
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e
+!-----------------------------------------------
+
+      REAL ( KIND = rp_ ) :: los, oos
+
+      los = lambda / sigma
+      oos = one / sigma
+
+      theta_beta( 0 ) = los ** beta
+      IF ( beta == one ) THEN
+        theta_beta( 1 ) = oos
+        IF ( max_order == 1 ) RETURN
+        theta_beta( 2 ) = zero
+        IF ( max_order == 2 ) RETURN
+        theta_beta( 3 ) = zero
+      ELSE IF ( beta == two ) THEN
+        theta_beta( 1 ) = two * los * oos
+        IF ( max_order == 1 ) RETURN
+        theta_beta( 2 ) = oos ** 2
+        IF ( max_order == 2 ) RETURN
+        theta_beta( 3 ) = zero
+      ELSE
+        theta_beta( 1 ) = beta * ( los ** ( beta - one ) ) * oos
+        IF ( max_order == 1 ) RETURN
+        theta_beta( 2 ) = beta * ( los ** ( beta - two ) ) *                   &
+                          ( beta - one ) * oos ** 2
+        IF ( max_order == 2 ) RETURN
+        theta_beta( 3 ) = beta * ( los ** ( beta - three ) ) *                 &
+                          ( beta - one ) * ( beta - two ) * oos ** 3
+      END IF
+      RETURN
+
+!  End of subroutine LLSR_theta_derivs
+
+      END SUBROUTINE LLSR_theta_derivs
+
+!-*-*-*-*-*-  L L S R _ R E Q U I R E D _ R O O T  F U C T I O N   -*-*-*-*-*-
+
+      FUNCTION LLSR_required_root( positive, nroots, roots )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Determine the required root of the three roots of the secular equation.
+!  This is either the most positive root (positive=.TRUE.) or the least
+!  negative one (positive=.FALSE.)
+!
+!  Arguments:
+!  =========
+!
+!  Input -
+!   positive - .TRUE. if the largest positive root is required,
+!               .FALSE. if the least negative one
+!   nroots - number of roots
+!   roots - roots in increasing order
+!  Output -
+!   LLSR_required root - the required root
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      REAL ( KIND = rp_ ) :: LLSR_required_root
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nroots
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: roots
+      LOGICAL, INTENT( IN ) :: positive
+
+      IF ( positive ) THEN
+        IF ( SIZE( roots ) == 3 ) THEN
+          IF ( nroots == 3 ) THEN
+            LLSR_required_root = roots( 3 )
+          ELSE IF ( nroots == 2 ) THEN
+            LLSR_required_root = roots( 2 )
+          ELSE
+            LLSR_required_root = roots( 1 )
+          END IF
+        ELSE
+          IF ( nroots == 2 ) THEN
+            LLSR_required_root = roots( 2 )
+          ELSE
+            LLSR_required_root = roots( 1 )
+          END IF
+        END IF
+      ELSE
+        IF ( SIZE( roots ) == 3 ) THEN
+          IF ( nroots == 3 ) THEN
+            IF ( roots( 3 ) > zero ) THEN
+              IF ( roots( 2 ) > zero ) THEN
+                LLSR_required_root = roots( 1 )
+              ELSE
+                LLSR_required_root = roots( 2 )
+              END IF
+            ELSE
+              LLSR_required_root = roots( 3 )
+            END IF
+          ELSE IF ( nroots == 2 ) THEN
+            IF ( roots( 2 ) > zero ) THEN
+              LLSR_required_root = roots( 1 )
+            ELSE
+              LLSR_required_root = roots( 2 )
+            END IF
+          ELSE
+            LLSR_required_root = roots( 1 )
+          END IF
+        ELSE
+          IF ( nroots == 2 ) THEN
+            IF ( roots( 2 ) > zero ) THEN
+              LLSR_required_root = roots( 1 )
+            ELSE
+              LLSR_required_root = roots( 2 )
+            END IF
+          ELSE
+            LLSR_required_root = roots( 1 )
+          END IF
+        END IF
+      END IF
+      RETURN
+
+!  End of function LLSR_required_root
+
+      END FUNCTION LLSR_required_root
+
+!-*-*-*-*-*-  L L S R _ L A M B D A  _ R O O T  F U C T I O N   -*-*-*-*-*-
+
+      FUNCTION LLSR_lambda_root( a, b, power )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Find the positive root of lambda + a = b/lambda^power
+!
+!  Arguments:
+!  =========
+!
+!  Input -
+!   a, b, power - data for the above problem (with b, power > 0)
+!  Output -
+!   LLSR_lambda root - the required root
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      REAL ( KIND = rp_ ) :: LLSR_lambda_root
+      REAL ( KIND = rp_ ), INTENT( IN ) :: a, b, power
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e
+!-----------------------------------------------
+
+      INTEGER ( KIND = ip_ ) :: nroots, it
+      INTEGER ( KIND = ip_ ), PARAMETER :: newton_max = 10
+      REAL ( KIND = rp_ ) :: lambda, phi, phip, d_lambda, other, power_plus_1
+
+!  special case: a = 0 = b
+
+      IF ( a == zero .AND. b == zero ) THEN
+        LLSR_lambda_root = zero ; RETURN
+      END IF
+
+!  compute as initial lower bound on the root
+
+      IF ( power == one ) THEN
+        CALL ROOTS_quadratic( - b , a, one, roots_tol, nroots, other,          &
+                              lambda, roots_debug )
+      ELSE
+        power_plus_1 = power + one
+
+!  when power > 1, 1/lambda <= 1/lambda^p for lambda in (0,1]
+
+        IF ( power > one ) THEN
+          CALL ROOTS_quadratic( - b , a, one, roots_tol, nroots, other,        &
+                                lambda, roots_debug )
+          lambda = MIN( one, lambda )
+        ELSE
+          lambda = epsmch
+        END IF
+
+!  check if lambda = 1 is acceptable
+
+        IF ( one + a <= b ) lambda = MAX( lambda, one )
+
+!  when a > 0, find where the tangent to b/lambda^power at
+!  lambda = b^(1/power+1) intersects lambda + a
+
+        IF ( a >= zero ) THEN
+          lambda = MAX( lambda, b ** ( one / power_plus_1 ) - a / power_plus_1 )
+
+!  when a < 0, both the lambda-intercept of lambda + a and the interection
+!  of lambda with beta / lambda^(1/power+1) give lower bounds on the root
+
+        ELSE
+          lambda = MAX( lambda, - a, b ** ( one / power_plus_1 ) )
+        END IF
+
+!  perform Newton's method to refine the root
+
+        DO it = 1, newton_max
+          phi = lambda + a - b / ( lambda ** power )
+          IF ( ABS( phi ) <= ten * epsmch *                                   &
+                 MAX(  lambda + a, b / ( lambda ** power ) ) ) EXIT
+          phip = one + b * power / ( lambda ** ( power + one ) )
+          d_lambda = - phi / phip
+          IF ( ABS( d_lambda ) <= epsmch * MAX( one, lambda ) ) EXIT
+          lambda = lambda + d_lambda
+        END DO
+      END IF
+      LLSR_lambda_root = lambda
+
+      RETURN
+
+!  End of function LLSR_lambda_root
+
+      END FUNCTION LLSR_lambda_root
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
@@ -2242,18 +3077,18 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-  G A L A H A D -  L L S T _ i m p o r t _ A _ S U B R O U T I N E -*-*-
+!-*-*-  G A L A H A D -  L L S R _ i m p o r t _ A _ S U B R O U T I N E -*-*-
 
-     SUBROUTINE LLST_import( control, data, status, m, n,                      &
+     SUBROUTINE LLSR_import( control, data, status, m, n,                      &
                              A_type, A_ne, A_row, A_col, A_ptr )
 
 !  import fixed problem data for the problem Jacobian A into internal
 !  storage prior to solution. Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading
-!   comments to LLST_solve
+!   comments to LLSR_solve
 !
-!  data is a scalar variable of type LLST_full_data_type used for internal data
+!  data is a scalar variable of type LLSR_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
@@ -2305,8 +3140,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( LLST_control_type ), INTENT( INOUT ) :: control
-     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LLSR_control_type ), INTENT( INOUT ) :: control
+     TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: A_ne
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -2321,12 +3156,12 @@
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
-     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
-     data%llst_control = control
+     WRITE( data%llsr_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     data%llsr_control = control
 
-     error = data%llst_control%error
-     space_critical = data%llst_control%space_critical
-     deallocate_error_fatal = data%llst_control%space_critical
+     error = data%llsr_control%error
+     space_critical = data%llsr_control%space_critical
+     deallocate_error_fatal = data%llsr_control%space_critical
 
 !  flag that S is not currently used
 
@@ -2342,38 +3177,38 @@
      CASE ( 'coordinate', 'COORDINATE' )
        IF ( .NOT. ( PRESENT( A_ne ) .AND. PRESENT( A_row ) .AND.              &
                     PRESENT( A_col ) ) ) THEN
-         data%llst_inform%status = GALAHAD_error_optional
+         data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%A%type, 'COORDINATE', data%llst_inform%alloc_status )
+       CALL SMT_put( data%A%type, 'COORDINATE', data%llsr_inform%alloc_status )
        data%A%ne = A_ne
 
-       array_name = 'llst: data%A%row'
+       array_name = 'llsr: data%A%row'
        CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%A%col'
+       array_name = 'llsr: data%A%col'
        CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%A%val'
+       array_name = 'llsr: data%A%val'
        CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
          data%A%row( : data%A%ne ) = A_row( : data%A%ne )
@@ -2385,43 +3220,43 @@
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_col ) .AND. PRESENT( A_ptr ) ) ) THEN
-         data%llst_inform%status = GALAHAD_error_optional
+         data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
        CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
-                     data%llst_inform%alloc_status )
+                     data%llsr_inform%alloc_status )
        IF ( data%f_indexing ) THEN
          data%A%ne = A_ptr( m + 1 ) - 1
        ELSE
          data%A%ne = A_ptr( m + 1 )
        END IF
 
-       array_name = 'llst: data%A%ptr'
+       array_name = 'llsr: data%A%ptr'
        CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%A%col'
+       array_name = 'llsr: data%A%col'
        CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%A%val'
+       array_name = 'llsr: data%A%val'
        CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
          data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
@@ -2432,20 +3267,20 @@
        END IF
 
      CASE ( 'dense', 'DENSE' )
-       CALL SMT_put( data%A%type, 'DENSE', data%llst_inform%alloc_status )
+       CALL SMT_put( data%A%type, 'DENSE', data%llsr_inform%alloc_status )
        data%A%ne = m * n
 
-       array_name = 'llst: data%A%val'
+       array_name = 'llsr: data%A%val'
        CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
      CASE DEFAULT
-       data%llst_inform%status = GALAHAD_error_unknown_storage
+       data%llsr_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
 
@@ -2455,22 +3290,22 @@
 !  error returns
 
  900 CONTINUE
-     status = data%llst_inform%status
+     status = data%llsr_inform%status
      RETURN
 
-!  End of subroutine LLST_import
+!  End of subroutine LLSR_import
 
-     END SUBROUTINE LLST_import
+     END SUBROUTINE LLSR_import
 
 !-  G A L A H A D - L L T R _ i m p o r t _ s c a l i n g  S U B R O U T I N E -
 
-     SUBROUTINE LLST_import_scaling( data, status, S_type, S_ne, S_row,        &
+     SUBROUTINE LLSR_import_scaling( data, status, S_type, S_ne, S_row,        &
                                      S_col, S_ptr )
 
 !  import fixed problem data for the scaling matrix S into internal
 !  storage prior to solution. Arguments are as follows:
 
-!  data is a scalar variable of type LLST_full_data_type used for internal data
+!  data is a scalar variable of type LLSR_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
@@ -2518,7 +3353,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: S_ne
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: S_type
@@ -2534,10 +3369,10 @@
 
 !  copy control to data
 
-     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
-     error = data%llst_control%error
-     space_critical = data%llst_control%space_critical
-     deallocate_error_fatal = data%llst_control%space_critical
+     WRITE( data%llsr_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     error = data%llsr_control%error
+     space_critical = data%llsr_control%space_critical
+     deallocate_error_fatal = data%llsr_control%space_critical
 
 !  recover the dimension
 
@@ -2549,38 +3384,38 @@
      CASE ( 'coordinate', 'COORDINATE' )
        IF ( .NOT. ( PRESENT( S_ne ) .AND. PRESENT( S_row ) .AND.               &
                     PRESENT( S_col ) ) ) THEN
-         data%llst_inform%status = GALAHAD_error_optional
+         data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%S%type, 'COORDINATE', data%llst_inform%alloc_status )
+       CALL SMT_put( data%S%type, 'COORDINATE', data%llsr_inform%alloc_status )
        data%S%n = n ; data%S%ne = S_ne
 
-       array_name = 'llst: data%S%row'
+       array_name = 'llsr: data%S%row'
        CALL SPACE_resize_array( data%S%ne, data%S%row,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%S%col'
+       array_name = 'llsr: data%S%col'
        CALL SPACE_resize_array( data%S%ne, data%S%col,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%S%val'
+       array_name = 'llsr: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
          data%S%row( : data%S%ne ) = S_row( : data%S%ne )
@@ -2592,11 +3427,11 @@
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( S_col ) .AND. PRESENT( S_ptr ) ) ) THEN
-         data%llst_inform%status = GALAHAD_error_optional
+         data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
        CALL SMT_put( data%S%type, 'SPARSE_BY_ROWS',                            &
-                     data%llst_inform%alloc_status )
+                     data%llsr_inform%alloc_status )
        data%S%n = n
        IF ( data%f_indexing ) THEN
          data%S%ne = S_ptr( n + 1 ) - 1
@@ -2604,32 +3439,32 @@
          data%S%ne = S_ptr( n + 1 )
        END IF
 
-       array_name = 'llst: data%S%ptr'
+       array_name = 'llsr: data%S%ptr'
        CALL SPACE_resize_array( n + 1, data%S%ptr,                             &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%S%col'
+       array_name = 'llsr: data%S%col'
        CALL SPACE_resize_array( data%S%ne, data%S%col,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
-       array_name = 'llst: data%S%val'
+       array_name = 'llsr: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
          data%S%ptr( : n + 1 ) = S_ptr( : n + 1 )
@@ -2640,37 +3475,37 @@
        END IF
 
      CASE ( 'dense', 'DENSE' )
-       CALL SMT_put( data%S%type, 'DENSE', data%llst_inform%alloc_status )
+       CALL SMT_put( data%S%type, 'DENSE', data%llsr_inform%alloc_status )
        data%S%n = n ; data%S%ne = ( n * ( n + 1 ) ) / 2
 
-       array_name = 'llst: data%S%val'
+       array_name = 'llsr: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
      CASE ( 'diagonal', 'DIAGONAL' )
-       CALL SMT_put( data%S%type, 'DIAGONAL', data%llst_inform%alloc_status )
+       CALL SMT_put( data%S%type, 'DIAGONAL', data%llsr_inform%alloc_status )
        data%S%n = n ; data%S%ne = n
 
-       array_name = 'llst: data%S%val'
+       array_name = 'llsr: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
-              data%llst_inform%status, data%llst_inform%alloc_status,          &
+              data%llsr_inform%status, data%llsr_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-              bad_alloc = data%llst_inform%bad_alloc, out = error )
-       IF ( data%llst_inform%status /= 0 ) GO TO 900
+              bad_alloc = data%llsr_inform%bad_alloc, out = error )
+       IF ( data%llsr_inform%status /= 0 ) GO TO 900
 
      CASE ( 'identity', 'IDENTITY' )
-       CALL SMT_put( data%S%type, 'IDENTITY', data%llst_inform%alloc_status )
+       CALL SMT_put( data%S%type, 'IDENTITY', data%llsr_inform%alloc_status )
        data%S%n = n ; data%S%ne = 0
 
      CASE DEFAULT
-       data%llst_inform%status = GALAHAD_error_unknown_storage
+       data%llsr_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
 
@@ -2681,53 +3516,54 @@
 !  error returns
 
  900 CONTINUE
-     status = data%llst_inform%status
+     status = data%llsr_inform%status
      RETURN
 
-!  End of subroutine LLST_import_scaling
+!  End of subroutine LLSR_import_scaling
 
-     END SUBROUTINE LLST_import_scaling
+     END SUBROUTINE LLSR_import_scaling
 
-! - G A L A H A D -  L L S T _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+! - G A L A H A D -  L L S R _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
-     SUBROUTINE LLST_reset_control( control, data, status )
+     SUBROUTINE LLSR_reset_control( control, data, status )
 
 !  reset control parameters after import if required.
-!  See LLST_solve for a description of the required arguments
+!  See LLSR_solve for a description of the required arguments
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( LLST_control_type ), INTENT( IN ) :: control
-     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LLSR_control_type ), INTENT( IN ) :: control
+     TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
-     data%llst_control = control
+     data%llsr_control = control
 
 !  flag a successful call
 
      status = GALAHAD_ok
      RETURN
 
-!  end of subroutine LLST_reset_control
+!  end of subroutine LLSR_reset_control
 
-     END SUBROUTINE LLST_reset_control
+     END SUBROUTINE LLSR_reset_control
 
-!-  G A L A H A D -  L L S T _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+!-  G A L A H A D -  L L S R _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
 
-     SUBROUTINE LLST_solve_problem( data, status, radius, A_val, B, X, S_val )
+     SUBROUTINE LLSR_solve_problem( data, status, power, weight, A_val,        &
+                                    B, X, S_val )
 
-!  solve the trust-region problem whose structure was previously
-!  imported. See LLST_solve for a description of the required arguments.
+!  solve the regularized least-squares problem whose structure was previously
+!  imported. See LLSR_solve for a description of the required arguments.
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  data is a scalar variable of type LLST_full_data_type used for internal data
+!  data is a scalar variable of type LLSR_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
@@ -2742,12 +3578,15 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the
+!   -3. The restriction n > 0, power, weight > 0, m >= 0 or requirement that the
 !       types contain a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
 !       'DIAGONAL' or 'IDENTITY' has been violated.
 !
-!  radius is a scalar of type default real, that holds the positive value
-!   of the trust-region radius.
+!  weight is a scalar of type default real, that holds the positive value
+!   of the regularization weight
+!
+!  weight is a scalar of type default real, that holds the positive value
+!   of the regularization weight
 !
 !  A_val is a one-dimensional array of size a_ne and type default real
 !   that holds the values of the entries of the objective Jacobian A.
@@ -2762,13 +3601,13 @@
 !
 !  S_val is an optional one-dimensional array of size s_ne and type default
 !   real that holds the values of the entries of the lower triangular part of
-!   the scaling matrix M in the storage scheme specified in llst_import. This
+!   the scaling matrix M in the storage scheme specified in llsr_import. This
 !   need not be given if M is the identity matrix
 !
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+     TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( IN ) :: power, weight
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
@@ -2790,60 +3629,60 @@
 
        IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
        IF ( .NOT. data%use_s ) THEN
-         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                          data%llst_control, data%llst_inform )
+         CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,   &
+                          data%llsr_control, data%llsr_inform )
 
        ELSE
          IF ( .NOT. PRESENT( S_val ) ) THEN
-           data%llst_inform%status = GALAHAD_error_optional
+           data%llsr_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF
          IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
-         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                          data%llst_control, data%llst_inform, S = data%S )
+         CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,   &
+                          data%llsr_control, data%llsr_inform, S = data%S )
        END IF
 
-     status = data%llst_inform%status
+     status = data%llsr_inform%status
      RETURN
 
 !  error returns
 
  900 CONTINUE
-     status = data%llst_inform%status
+     status = data%llsr_inform%status
      RETURN
 
-!  End of subroutine LLST_solve_problem
+!  End of subroutine LLSR_solve_problem
 
-     END SUBROUTINE LLST_solve_problem
+     END SUBROUTINE LLSR_solve_problem
 
-!-  G A L A H A D -  L L S T _ i n f o r m a t i o n   S U B R O U T I N E  -
+!-  G A L A H A D -  L L S R _ i n f o r m a t i o n   S U B R O U T I N E  -
 
-      SUBROUTINE LLST_information( data, inform, status )
+      SUBROUTINE LLSR_information( data, inform, status )
 
-!  return solver information during or after solution by LLST
-!  See LLST_solve for a description of the required arguments
+!  return solver information during or after solution by LLSR
+!  See LLSR_solve for a description of the required arguments
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( LLST_full_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( LLSR_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( LLSR_inform_type ), INTENT( OUT ) :: inform
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
-      inform = data%llst_inform
+      inform = data%llsr_inform
 
 !  flag a successful call
 
       status = GALAHAD_ok
       RETURN
 
-!  end of subroutine LLST_information
+!  end of subroutine LLSR_information
 
-      END SUBROUTINE LLST_information
+      END SUBROUTINE LLSR_information
 
-!-*-*-*-*-  End of G A L A H A D _ L L S T  d o u b l e  M O D U L E  -*-*-*-*-
+!-*-*-*-*-  End of G A L A H A D _ L L S R  d o u b l e  M O D U L E  -*-*-*-*-
 
-    END MODULE GALAHAD_LLST_precision
+    END MODULE GALAHAD_LLSR_precision

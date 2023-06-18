@@ -4185,7 +4185,7 @@
           IF ( inform%x_norm <= target ) THEN
             IF ( inform%x_norm < target ) THEN
 
-!  compute the step alpha so that X + alpha E_i_hard lies on the trust-region
+!  compute the step alpha so that X + alpha E_i_hard lies on the target
 !  boundary and gives the smaller value of q
 
               utx = X( i_hard ) / target
