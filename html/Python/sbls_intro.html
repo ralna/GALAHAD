@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>purpose &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'sbls_intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="purpose">
+<h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
+<p>Given a <strong>block, symmetric matrix</strong>
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{H} = \begin{pmatrix}H &amp; A^T \\ A  &amp; - C\end{pmatrix},\end{split}\]</div>
+
+the <code class="docutils literal notranslate"><span class="pre">sbls</span></code> package constructs a variety of <strong>preconditioners</strong> of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}.\end{split}\]</div>
+
+Here, the leading-block matrix <span class="math notranslate nohighlight">\(G\)</span> is a suitably-chosen
+approximation to <span class="math notranslate nohighlight">\(H\)</span>; it may either be prescribed <strong>explicitly</strong>, in
+which case a symmetric indefinite factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span>
+will be formed using the \galahad\ package {\tt SLS},
+or <strong>implicitly</strong>, by requiring certain sub-blocks of <span class="math notranslate nohighlight">\(G\)</span>
+be zero. In the latter case, a factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span> will be
+obtained implicitly (and more efficiently) without recourse to <code class="docutils literal notranslate"><span class="pre">sls</span></code>.
+In particular, for implicit preconditioners, a reordering
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_1^T \\
+G_{21}^{} &amp; G_{22}^{} &amp; A_2^T \\ A_{1}^{} &amp; A_{2}^{} &amp; - C
+\end{pmatrix} P^T\end{split}\]</div>
+
+involving a suitable permutation <span class="math notranslate nohighlight">\(P\)</span> will be found, for some
+invertible sub-block (“basis”) <span class="math notranslate nohighlight">\(A_1\)</span> of the columns of <span class="math notranslate nohighlight">\(A\)</span>;
+the selection and factorization of <span class="math notranslate nohighlight">\(A_1\)</span> uses the package <code class="docutils literal notranslate"><span class="pre">uls</span></code>.
+Once the preconditioner has been constructed,
+solutions to the preconditioning system
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix} =
+\begin{pmatrix}a \\ b\end{pmatrix}\end{split}\]</div>
+
+may be obtained by the package. Full advantage is taken of any zero
+coefficients in the matrices <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(C\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/sbls.pdf for additional details.</p>
+</section>
+<section id="method">
+<h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
+<p>The method used depends on whether an explicit or implicit
+factorization is required. In the explicit case, the
+package is really little more than a wrapper for the
+symmetric, indefinite linear solver <code class="docutils literal notranslate"><span class="pre">SLS</span></code> in
+which the system matrix <span class="math notranslate nohighlight">\(K_G\)</span> is assembled from its constituents
+<span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(C\)</span> and whichever <span class="math notranslate nohighlight">\(G\)</span> is requested by the user.
+Implicit-factorization preconditioners are more involved,
+and there is a large variety of different possibilities. The
+essential ideas are described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and A. J. Wathen.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>On implicit-factorization constraint preconditioners’’.
+In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
+Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
+Springer Verlag (2006) 61–82</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On iterative methods and implicit-factorization preconditioners for
+regularized saddle-point systems’’.
+<em>SIAM Journal on Matrix Analysis and Applications</em> <strong>28(1)</strong> (2006) 170–189.</p>
+</div></blockquote>
+<p>The range-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_G = \begin{pmatrix}G &amp; 0 \\ A &amp; I\end{pmatrix}
+\begin{pmatrix}G^{-1} &amp; 0 \\ 0 &amp; - S\end{pmatrix}
+\begin{pmatrix}G &amp; A^T \\ 0 &amp; I\end{pmatrix},\end{split}\]</div>
+
+where the <a href="#id5"><span class="problematic" id="id6">``</span></a>Schur complement’’ <span class="math notranslate nohighlight">\(S = C + A G^{-1} A^T\)</span>.
+Such a method requires that <span class="math notranslate nohighlight">\(S\)</span> is easily invertible. This is often the
+case when <span class="math notranslate nohighlight">\(G\)</span> is a diagonal matrix, in which case <span class="math notranslate nohighlight">\(S\)</span> is frequently
+sparse, or when <span class="math notranslate nohighlight">\(m \ll n\)</span> in which case <span class="math notranslate nohighlight">\(S\)</span>
+is small and a dense Cholesky factorization may be used.</p>
+<p>When <span class="math notranslate nohighlight">\(C = 0\)</span>, the null-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; 0 &amp; I \\ G_{21}^{} &amp; I &amp; A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} &amp; 0 &amp; 0
+\end{pmatrix} \begin{pmatrix}
+0 &amp; 0 &amp; I \\ \;\;\; 0 \;\; &amp; \;\; R \;\; &amp; 0 \\ I &amp; 0 &amp; - G_{11}^{}
+\end{pmatrix} \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_{1}^T \\ 0 &amp; I &amp; 0 \\ I &amp; A_{1}^{-1} A_{2}^{} &amp; 0
+\end{pmatrix} P^T,\end{split}\]</div>
+
+where the <a href="#id7"><span class="problematic" id="id8">``</span></a>reduced Hessian’’
+<div class="math notranslate nohighlight">
+\[\begin{split}R = ( - A_{2}^{T} A_1^{-T} \;\; I )
+\begin{pmatrix}G_{11}^{} &amp; G_{21}^{T} \\ G_{21}^{} &amp; G_{22}^{}\end{pmatrix}
+\begin{pmatrix}- A_1^{-1} A_2^{} \\ I\end{pmatrix}\end{split}\]</div>
+
+and <span class="math notranslate nohighlight">\(P\)</span> is a suitably-chosen permutation for which <span class="math notranslate nohighlight">\(A_1\)</span> is invertible.
+The method is most useful when <span class="math notranslate nohighlight">\(m \approx n\)</span> as then the dimension
+of <span class="math notranslate nohighlight">\(R\)</span> is small and a dense Cholesky factorization may be used.</p>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/sbls_intro.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
