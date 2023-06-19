@@ -420,7 +420,7 @@ if build_tests and build_ciface
       file = test[2]
       test(name,
            executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language : 'c',
-                                  include_directories : libgalahad_include , install : true, install_dir : c_tests_folder),
+                                  include_directories : libgalahad_include, install : true, install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
            is_parallel : false)
     endforeach
@@ -436,7 +436,7 @@ if build_examples and build_double
     name = example[0]
     file = example[1]
     executable(name, file, link_with : libgalahad_double, dependencies : libgalahad_deps, link_language : 'fortran',
-                           install : true, install_dir : fortran_examples_folder)
+                           include_directories : libgalahad_include, install : true, install_dir : fortran_examples_folder)
   endforeach
 endif
 
