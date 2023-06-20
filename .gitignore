@@ -6,5 +6,7 @@ bin/sys/*
 **/*.mexa64
 html/Python/.doctrees
 html/Python/.buildinfo
+html/Python/_sources
 html/C/.doctrees
 html/C/.buildinfo
+html/C/_sources
