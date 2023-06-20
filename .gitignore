@@ -4,3 +4,7 @@ versions/*
 makefiles/*
 bin/sys/*
 **/*.mexa64
+html/Python/.doctrees
+html/Python/.buildinfo
+html/C/.doctrees
+html/C/.buildinfo
