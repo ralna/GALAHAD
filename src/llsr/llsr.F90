@@ -1009,10 +1009,6 @@
       IF ( printt ) WRITE( out, "( A,  ' time( assembly ) = ', F0.2 )" )       &
         prefix, clock_now - clock_start
 
-!  set c = A^T b
-
-      CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
-
 !  =====================
 !  Array (re)allocations
 !  =====================
@@ -1037,16 +1033,20 @@
 
 !  allocate U and Z if necessary
 
+      array_name = 'llsr: U'
+      CALL SPACE_resize_array( data%npm, data%U,                             &
+        inform%status, inform%alloc_status, array_name = array_name,         &
+        deallocate_error_fatal = control%deallocate_error_fatal,             &
+        exact_size = control%space_critical,                                 &
+        bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
+
+!  set c = A^T b
+
+      CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
+
       IF ( p > two ) THEN
         pm2 = p - two ; oopm2 = one / pm2
-
-        array_name = 'llsr: U'
-        CALL SPACE_resize_array( data%npm, data%U,                             &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= 0 ) GO TO 910
 
         array_name = 'llsr: Z'
         CALL SPACE_resize_array( data%npm, data%Z,                             &
@@ -1376,6 +1376,7 @@
                           lambda_l + theta_eps * ( lambda_u - lambda_l ) )
           END IF
         END IF
+        lambda = lambda + lambda_pert
       ELSE ! p == 2
         lambda = sigma
         lambda_l = sigma
@@ -1422,17 +1423,16 @@
 !  introduce lambda * S to form K(lambda)
 
         IF ( unit_s ) THEN
-!         data%H_sbls%val( : data%s_ne ) = lambda
-          data%H_sbls%val( : data%s_ne ) = lambda_pert
+          data%H_sbls%val( : data%s_ne ) = lambda
         ELSE
           IF ( SMT_get( S%type ) == 'COORDINATE' .OR.                          &
                SMT_get( S%type ) == 'SPARSE_BY_ROWS' .OR.                      &
                SMT_get( S%type ) == 'DENSE' .OR.                               &
                SMT_get( S%type ) == 'DIAGONAL' .OR.                            &
                SMT_get( S%type ) == 'SCALED_IDENTITY' ) THEN
-            data%H_sbls%val( : data%s_ne ) = lambda_pert * S%val( : data%s_ne )
+            data%H_sbls%val( : data%s_ne ) = lambda * S%val( : data%s_ne )
           ELSE
-            data%H_sbls%val( : data%s_ne ) = lambda_pert
+            data%H_sbls%val( : data%s_ne ) = lambda
           END IF
         END IF
 
@@ -1482,7 +1482,6 @@
           inform%time%clock_solve =                                            &
             inform%time%clock_factorize + clock_now - clock_record
           IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
-
 !  compute the S-norm of x, ||x||_S
 
           IF ( unit_s ) THEN
@@ -1496,6 +1495,10 @@
             inform%x_norm = SQRT( x_norm2( 0 ) )
           END IF
 
+!  compute the two-norm of the residual, ||A x - b||_2 = ||y - b||_2
+
+          inform%r_norm = TWO_NORM( B - data%U( n + 1 : data%npm ) )
+
 !  special p = 2 case
 
           IF ( p == two ) THEN
@@ -1506,10 +1509,6 @@
 !  compute the target value ( lambda / sigma )^(1/(p-2))
 
           target = ( lambda / weight ) ** oopm2
-
-!  compute the two-norm of the residual, ||A x - b||_2 = ||y - b||_2
-
-          inform%r_norm = TWO_NORM( B - data%U( n + 1 : data%npm ) )
 
 !  reset the interval bounds (the secular equation is irrelevant)
 
@@ -1973,27 +1972,29 @@
 !  compute pi_beta = ||x||^beta and theta_beta = (lambda/sigma)^beta and
 !  their derivatives when beta = - 0.4
 
-                beta = - point4
-                CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-                CALL LLSR_theta_derivs( 3, beta, lambda, sigma,                &
-                                       theta_beta( : 3 )  )
+                IF ( lambda > 0 ) THEN
+                  beta = - point4
+                  CALL LLSR_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                  CALL LLSR_theta_derivs( 3, beta, lambda, sigma,              &
+                                          theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)
 
-                a_0 = pi_beta( 0 ) - theta_beta( 0 )
-                a_1 = pi_beta( 1 ) - theta_beta( 1 )
-                a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
-                a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
-                a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
-                IF ( a_max > zero ) THEN
-                  a_0 = a_0 / a_max ; a_1 = a_1 / a_max
-                  a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  a_0 = pi_beta( 0 ) - theta_beta( 0 )
+                  a_1 = pi_beta( 1 ) - theta_beta( 1 )
+                  a_2 = half * ( pi_beta( 2 ) - theta_beta( 2 ) )
+                  a_3 = sixth * ( pi_beta( 3 ) - theta_beta( 3 ) )
+                  a_max = MAX( ABS( a_0 ), ABS( a_1 ), ABS( a_2 ), ABS( a_3 ) )
+                  IF ( a_max > zero ) THEN
+                    a_0 = a_0 / a_max ; a_1 = a_1 / a_max
+                    a_2 = a_2 / a_max ; a_3 = a_3 / a_max
+                  END IF
+                  CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,     &
+                                    roots( 1 ), roots( 2 ), roots( 3 ),        &
+                                    roots_debug )
+                  n_lambda = n_lambda + 1
+                  lambda_new( n_lambda ) = lambda + roots( 1 )
                 END IF
-                CALL ROOTS_cubic( a_0, a_1, a_2, a_3, roots_tol, nroots,       &
-                                  roots( 1 ), roots( 2 ), roots( 3 ),          &
-                                  roots_debug )
-                n_lambda = n_lambda + 1
-                lambda_new( n_lambda ) = lambda + roots( 1 )
 
 !  more general p
 

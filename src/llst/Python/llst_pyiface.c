@@ -537,6 +537,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidiOO|iO", kwlist, 
                                     &m, &n, &radius, &A_ne, &py_A_val, &py_b, 
                                     &S_ne, &py_S_val))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_b, m))

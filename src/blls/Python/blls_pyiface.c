@@ -546,6 +546,7 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
     if(!PyArg_ParseTuple(args, "iiOiOOOOOO", &n, &m, &py_w, 
                          &A_ne, &py_A_val, &py_b, &py_x_l, &py_x_u, 
                          &py_x, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("w", py_w, m))

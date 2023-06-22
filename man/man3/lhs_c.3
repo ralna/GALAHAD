@@ -1,4 +1,4 @@
-.TH "galahad_lhs.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD LHS" \" -*- nroff -*-
+.TH "galahad_lhs.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD LHS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -39,6 +39,9 @@ galahad_lhs.h
 .br
 .ti -1c
 .RI "void \fBlhs_get_seed\fP (int *seed)"
+.br
+.ti -1c
+.RI "void \fBlhs_information\fP (void **data, struct \fBlhs_inform_type\fP *inform, int *status)"
 .br
 .ti -1c
 .RI "void \fBlhs_terminate\fP (void **data, struct \fBlhs_control_type\fP *control, struct \fBlhs_inform_type\fP *inform)"
@@ -128,14 +131,98 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 .SH "Function Documentation"
 .PP 
 .SS "void lhs_initialize (void ** data, struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see fit_control_type)
+.br
+\fIinform\fP is a struct containing output information (see fit_inform_type) 
+.RE
+.PP
 
 .SS "void lhs_read_specfile (struct \fBlhs_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters\&.
+.PP
+By default, the spcification file will be named RUNLHS\&.SPC and lie in the current directory\&. Refer to Table 2\&.1 in the fortran documentation provided in $GALAHAD/doc/lhs\&.pdf for a list of keywords that may be set\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP a struct containing control information (see above) 
+.br
+\fIspecfile\fP a character string containing the name of the specfile 
+.RE
+.PP
 
 .SS "void lhs_ihs (int n_dimen, int n_points, int * seed, int ** X, const struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform, void ** data)"
-
+The improved distributed hyper-cube sampling algorithm\&.
+.PP
+Discussion:
+.PP
+n_points points in an n_dimen dimensional Latin hyper-cube are to be selected\&. Each of the coordinate dimensions is discretized to the values 1 through n\&. The points are to be chosen in such a way that no two points have any coordinate value in common\&. This is a standard Latin hypercube requirement, and there are many solutions\&.
+.PP
+This algorithm differs in that it tries to pick a solution which has the property that the points are 'spread out' as evenly as possible\&. It does this by determining an optimal even spacing, and using the DUPLICATION factor to allow it to choose the best of the various options available to it\&.
+.PP
+Reference:
+.PP
+Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, American Institute of Aeronautics and Astronautics Paper 2002-1274
+.PP
+\fBParameters\fP
+.RS 4
+\fIn_dimen\fP is a scalar variable of type int that specifies the spatial dimension
+.br
+\fIn_points\fP is a scalar variable of type int that specifies the number of points to be generated
+.br
+\fIseed\fP is a scalar variable of type int, that gives a seed for the random number generator used
+.br
+\fIX\fP is an array variable of type int with dimensions [n_dimen][n_points] that gives the hyper-cube points
+.br
+\fIcontrol,inform,data\fP - see lhs_initialize
+.RE
+.PP
+.PP
+ 
 .SS "void lhs_get_seed (int * seed)"
+Get a seed for the random number generator\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIseed\fP is a scalar variable of type int that gives the pseudorandom seed value\&. 
+.RE
+.PP
+
+.SS "void lhs_information (void ** data, struct \fBlhs_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBlhs_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
 
 .SS "void lhs_terminate (void ** data, struct \fBlhs_control_type\fP * control, struct \fBlhs_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBlhs_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBlhs_inform_type\fP) 
+.RE
+.PP
 
 .SH "Author"
 .PP 

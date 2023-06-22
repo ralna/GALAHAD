@@ -510,6 +510,7 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args){
     if(!PyArg_ParseTuple(args, "iidOiOOOOOOOO", &n, &m, &f, &py_g,
                          &A_ne, &py_A_val, &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

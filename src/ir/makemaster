@@ -22,7 +22,7 @@ DEPENDENCIES = make_sls_deps make_sls make_lmt make_qpt make_mop
 
 #  other packages that depend on package
 
-DEPENDS = llst rqs trs
+DEPENDS = llsr llst rqs trs
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

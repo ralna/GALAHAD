@@ -27,6 +27,7 @@ galdoxy_html lsqp
 galdoxy_html lsrt
 galdoxy_html lstr
 galdoxy_html nls
+galdoxy_html presolve
 galdoxy_html psls
 galdoxy_html qpa
 galdoxy_html qpb

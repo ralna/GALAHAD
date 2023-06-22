@@ -1,4 +1,4 @@
-.TH "galahad_lsrt.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD LSRT" \" -*- nroff -*-
+.TH "galahad_lsrt.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD LSRT" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -53,7 +53,7 @@ galahad_lsrt.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Given a real m by n matrix A, a real m vector b and scalars sigma>0 and p >= 2, this package finds an \fBapproximate minimizer of the regularised linear-least-squares objective function 1/2|| A x - b||_2^2 + \\frac{1}{p} sigma || x ||_2^p\&. \fP This problem commonly occurs as a subproblem in nonlinear optimization calculations involving cubic regularisation, and may be used to regularise the solution of under-determined or ill-conditioned linear least-squares problems\&. The method may be suitable for large m and/or n as no factorization involving A is required\&. Reverse communication is used to obtain matrix-vector products of the form u + A v and v + A^T u\&.
+Given a real m by n matrix A, a real m vector b and scalars sigma>0 and p >= 2, this package finds an \fBapproximate minimizer of the regularized linear-least-squares objective function 1/2|| A x - b||_2^2 + \\frac{1}{p} sigma || x ||_2^p\&. \fP This problem commonly occurs as a subproblem in nonlinear optimization calculations involving cubic regularization, and may be used to regularize the solution of under-determined or ill-conditioned linear least-squares problems\&. The method may be suitable for large m and/or n as no factorization involving A is required\&. Reverse communication is used to obtain matrix-vector products of the form u + A v and v + A^T u\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -68,14 +68,14 @@ The required solution x necessarily satisfies the optimality condition A^T ( A x
 The method is iterative\&. Starting with the vector u_1 = b, a bi-diagonalisation process is used to generate the vectors v_k and u_k+1 so that the n by k matrix V_k = ( v_1 \&.\&.\&. v_k) and the m by (k+1) matrix U_k = ( u_1 \&.\&.\&. u_{k+1}) together satisfy \[A V_k = U_{k+1} B_k \;\mbox{and}\; b = ||b||_2 U_{k+1} e_1\]  
 \n
 \n
- where B_k is (k+1) by k and lower bi-diagonal, U_k and V_k have orthonormal columns and e_1 is the first unit vector\&. The solution sought is of the form x_k = V_k y_k, where y_k solves the bi-diagonal regularised least-squares problem \[(1) \;\;\; \min || B_k y - ||b|| e_1 ||_2 + \frac{1}{p} sigma || y ||_2^p.\]  
+ where B_k is (k+1) by k and lower bi-diagonal, U_k and V_k have orthonormal columns and e_1 is the first unit vector\&. The solution sought is of the form x_k = V_k y_k, where y_k solves the bi-diagonal regularized least-squares problem \[(1) \;\;\; \min 1/2 || B_k y - ||b|| e_1 ||_2^2 + \frac{1}{p} sigma || y ||_2^p.\]  
 \n
-   (1) min || B_k y - ||b|| e_1 ||_2  + 1/p sigma || y||^p_2.
+   (1) min 1/2 || B_k y - ||b|| e_1 ||_2^2  + 1/p sigma || y||^p_2.
 \n
  To minimize (1), the optimality conditions \[( B_k^T ( B_k^{} y(lambda) - ||b|| e_1^{} ) + lambda y(lambda) = 0,\]  
 \n
 \n
- where lambda = sigma ||y(lambda)||_2^{p-2} ||, are used as the basis of an iteration\&. The vector y(lambda) is equivalently the solution to the regularised least-squares problem \[(2) \;\;\; \min \left || \vect{ B_k \\ lambda^{1/2} I } y - ||b|| e_1^{} \right ||_2.\]  
+ where lambda = sigma ||y(lambda)||_2^{p-2} , are used as the basis of an iteration\&. The vector y(lambda) is equivalently the solution to the regularized least-squares problem \[(2) \;\;\; \min \left || \vect{ B_k \\ lambda^{1/2} I } y - ||b|| e_1^{} \right ||_2.\]  
 \n
     (2)    min  ||  B_k y - ||b|| e_1 ||
                 ||    lambda^{1/2} y  ||
@@ -88,7 +88,7 @@ The method is iterative\&. Starting with the vector u_1 = b, a bi-diagonalisatio
 .PP
 Special code is used in the special case p=2, as in this case a single pass suffices\&.
 .SS "Reference"
-A complete description of the un- and quadratically-regularised cases is given by
+A complete description of the un- and quadratically-regularized cases is given by
 .PP
 C\&. C\&. Paige and M\&. A\&. Saunders, LSQR: an algorithm for sparse linear equations and sparse least squares\&. ACM Transactions on Mathematical Software, 8(1):43--71, 1982
 .PP

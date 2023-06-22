@@ -1,4 +1,4 @@
-.TH "galahad_sec.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD SEC" \" -*- nroff -*-
+.TH "galahad_sec.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD SEC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,6 +23,19 @@ galahad_sec.h
 .br
 .ti -1c
 .RI "struct \fBsec_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsec_initialize\fP (struct \fBsec_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBsec_information\fP (void **data, struct \fBsec_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBsec_terminate\fP (void **data, struct \fBsec_control_type\fP *control, struct \fBsec_inform_type\fP *inform)"
 .br
 .in -1c
 .SH "Detailed Description"
@@ -92,6 +105,55 @@ int \fIstatus\fP return status\&. Possible valuesa are:
 .PP
 .RE
 .PP
+.SH "Function Documentation"
+.PP 
+.SS "void sec_initialize (struct \fBsec_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBsec_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The initialization was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void sec_information (void ** data, struct \fBsec_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBsec_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void sec_terminate (void ** data, struct \fBsec_control_type\fP * control, struct \fBsec_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBsec_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBsec_inform_type\fP) 
+.RE
+.PP
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for C interfaces to GALAHAD SEC from the source code\&.

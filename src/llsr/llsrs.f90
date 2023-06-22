@@ -6,7 +6,7 @@
    INTEGER, PARAMETER :: m = 1000, n = 2 * m + 1   ! problem dimensions
    INTEGER :: i, l
    REAL ( KIND = working ) :: power = 3.0_working ! cubic regularization
-   REAL ( KIND = working ) :: weight = 0.1_working ! weigth of 1/10th
+   REAL ( KIND = working ) :: weight = 0.1_working ! weight of 1/10th
    REAL ( KIND = working ), DIMENSION( n ) :: X
    REAL ( KIND = working ), DIMENSION( m ) :: B
    TYPE ( SMT_type ) :: A, S
@@ -14,7 +14,6 @@
    TYPE ( LLSR_control_type ) :: control
    TYPE ( LLSR_inform_type ) :: inform
    CALL LLSR_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 1
    control%sbls_control%symmetric_linear_solver = "sytr  "
    control%sbls_control%definite_linear_solver = "sytr  "
    B = one                               ! The term b is a vector e of ones

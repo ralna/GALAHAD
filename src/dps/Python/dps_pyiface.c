@@ -401,6 +401,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args){
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iddOiO", &n, &radius, &f, &py_g,
                          &H_ne, &py_H_val))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -454,6 +455,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args){
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "idddOiO", &n, &power, &weight, &f, &py_g,
                          &H_ne, &py_H_val))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

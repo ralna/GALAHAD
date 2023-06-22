@@ -710,10 +710,12 @@ static PyObject* py_trs_solve_problem(PyObject *self, PyObject *args,
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","radius","f","g","H_ne","H_val","M_ne","M_val",
                              "m","A_ne","A_val",NULL};
+
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iddOiO|iOiiO", kwlist, 
                                     &n, &radius, &f, &py_g,
                                     &H_ne, &py_H_val, &M_ne, &py_M_val, 
                                     &m, &A_ne, &py_A_val))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

@@ -1,4 +1,4 @@
-.TH "galahad_trs.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD TRS" \" -*- nroff -*-
+.TH "galahad_trs.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD TRS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -89,7 +89,7 @@ Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montr
 .SS "Originally released"
 October 2008, C interface December 2021\&.
 .SS "Method"
-The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= Delta is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of \[\mbox{(2)}\;\;\; (H + lambda M)x(lambda) + A^T y(lambda) = - c \;\mbox{and}\; A x(lambda) = 0.\]  
+The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= Delta is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of \[\mbox{(2)}\;\;\; (H + lambda M)x(lambda) + A^T y(lambda) = - c \;\mbox{and}\; A x(lambda) = 0;\]  
 \n
    (2)    (H + lambda M)x(lambda) + A^T y(lambda) = - c and
                       A x(lambda) = 0;
@@ -371,7 +371,7 @@ int \fIstatus\fP reported return status:
 .IP "\(bu" 2
 -15 M does not appear to be strictly diagonally dominant 
 .IP "\(bu" 2
--16 ill-conditioning has prevented furthr progress 
+-16 ill-conditioning has prevented further progress 
 .PP
 
 .br

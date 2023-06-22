@@ -1,4 +1,4 @@
-.TH "galahad_hash.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD HASH" \" -*- nroff -*-
+.TH "galahad_hash.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD HASH" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,7 +29,7 @@ galahad_hash.h
 
 .in +1c
 .ti -1c
-.RI "void \fBhash_initialize\fP (void **data, struct \fBhash_control_type\fP *control, int *status)"
+.RI "void \fBhash_initialize\fP (int nchar, int length, void **data, struct \fBhash_control_type\fP *control, struct \fBhash_inform_type\fP *inform)"
 .br
 .ti -1c
 .RI "void \fBhash_information\fP (void **data, struct \fBhash_inform_type\fP *inform, int *status)"
@@ -97,7 +97,7 @@ int \fIstatus\fP return status\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0 The insertion or deletion was succesful\&. 
+0 The initialization, insertion or deletion was succesful\&. 
 .IP "\(bu" 2
 -1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
@@ -118,21 +118,20 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 .PP
 .SH "Function Documentation"
 .PP 
-.SS "void hash_initialize (void ** data, struct \fBhash_control_type\fP * control, int * status)"
+.SS "void hash_initialize (int nchar, int length, void ** data, struct \fBhash_control_type\fP * control, struct \fBhash_inform_type\fP * inform)"
 Set default control values and initialize private data
 .PP
 \fBParameters\fP
 .RS 4
+\fInchar\fP is a scalar variable of type int, that holds the number of characters permitted in each word in the hash table
+.br
+\fIlength\fP is a scalar variable of type int, that holds the maximum number of words that can be held in the dictionary
+.br
 \fIdata\fP holds private internal data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBhash_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The initialization was succesful\&. 
-.PP
+\fIinform\fP is a struct containing output information (see \fBhash_inform_type\fP) 
 .RE
 .PP
 
