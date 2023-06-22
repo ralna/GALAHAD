@@ -94,7 +94,11 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
+        if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dssids=false
+        else
           meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad
+        fi
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
