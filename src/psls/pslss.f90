@@ -9,7 +9,7 @@
    INTEGER, PARAMETER :: n = 5
    INTEGER, PARAMETER :: ne = 7
    REAL ( KIND = wp ) :: X( n )
-   INTEGER :: i, s
+   INTEGER :: s
 ! allocate and set lower triangle of matrix in co-ordinate form
    CALL SMT_put( matrix%type, 'COORDINATE', s )
    matrix%n = n ; matrix%ne = ne

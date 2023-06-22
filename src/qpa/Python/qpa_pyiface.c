@@ -712,6 +712,7 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args){
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -807,6 +808,7 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args){
                          &H_ne, &py_H_val, &rho_g, &rho_b, &A_ne, &py_A_val, 
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))
@@ -902,6 +904,7 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args){
                          &H_ne, &py_H_val, &rho_g, &A_ne, &py_A_val, 
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

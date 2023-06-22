@@ -317,6 +317,7 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args){
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iiidOO", &status, &m, &n, &radius, 
                          &py_u, &py_v))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("u", py_u, m))

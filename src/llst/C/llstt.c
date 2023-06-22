@@ -37,7 +37,7 @@ int main(void) {
      l++;
      A_row[l] = i; 
      A_col[l] = m+i;  
-     A_val[l] = i;
+     A_val[l] = i+1;
      l++;
      A_row[l] = i; 
      A_col[l] = n-1;  

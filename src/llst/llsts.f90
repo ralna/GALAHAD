@@ -13,7 +13,6 @@
    TYPE ( LLST_control_type ) :: control
    TYPE ( LLST_inform_type ) :: inform
    CALL LLST_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 1
    control%sbls_control%symmetric_linear_solver = "sytr  "
    control%sbls_control%definite_linear_solver = "sytr  "
    B = one                               ! The term b is a vector e of ones

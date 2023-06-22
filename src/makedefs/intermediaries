@@ -252,6 +252,11 @@ make_lls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
 
+make_llsr:
+	( cd $(GALAHAD)/src/llsr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llsr.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llsr )
+
 make_llst:
 	( cd $(GALAHAD)/src/llst ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llst.o \
@@ -1550,6 +1555,11 @@ make_ciface_lls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
 
+make_ciface_llsr:
+	( cd $(GALAHAD)/src/llsr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llsr_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llsr )
+
 make_ciface_llst:
 	( cd $(GALAHAD)/src/llst ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llst_ciface.o \
@@ -2171,6 +2181,11 @@ make_pyiface_lls:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_pyiface_llsr:
+	( cd $(GALAHAD)/src/llsr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llsr_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llsr )
 
 make_pyiface_llst:
 	( cd $(GALAHAD)/src/llst ; \

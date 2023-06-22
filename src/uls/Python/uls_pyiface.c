@@ -459,6 +459,7 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args){
 
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iiOb", &m, &n, &py_sol, &trans))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_sol, n))

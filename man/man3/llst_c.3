@@ -1,4 +1,4 @@
-.TH "galahad_llst.h" 3 "Fri Jun 2 2023" "C interfaces to GALAHAD LLST" \" -*- nroff -*-
+.TH "galahad_llst.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD LLST" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -86,13 +86,13 @@ October 2008, C interface May 2023\&.
 .SS "Terminology"
 The required solution x_* necessarily satisfies the optimality condition A^T A x_* + lambda_* S x_* = A^T b, where lambda_* >= 0 is a Lagrange multiplier corresponding to the constraint ||x||_S <= Delta; for the equality-constrained problem ||x||_S = Delta and the multiplier is unconstrained\&.
 .SS "Method"
-The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds, including those that may involve the Cholesky factorization of S\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= Delta is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of  
+The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds, including those that may involve the Cholesky factorization of S\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_S >= Delta is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of  
   \f[\mbox{(2)}\;\;\; 
   (A^T A  + lambda S)x(lambda) = A^T b;\f]
 \n
    (2)    (A^T A  + lambda S)x(lambda) = A^T b;
 \n
- along the way the possibility that ||x(0)||_M <= Delta is examined, and if this transpires the process is terminated with x_* = x(0)\&. Once the terminating lambda from the first phase has been discovered, the second phase consists of applying Newton or higher-order iterations to the nonlinear ``secular'' equation ||x(lambda)||_M = Delta with the knowledge that such iterations are both globally and ultimately rapidly convergent\&.
+ along the way the possibility that ||x(0)||_S <= Delta is examined, and if this transpires the process is terminated with x_* = x(0)\&. Once the terminating lambda from the first phase has been discovered, the second phase consists of applying Newton or higher-order iterations to the nonlinear ``secular'' equation ||x(lambda)||_S = Delta with the knowledge that such iterations are both globally and ultimately rapidly convergent\&.
 .PP
 The dominant cost is the requirement that we solve a sequence of linear systems (2)\&. This may be rewritten as \[\mbox{(3)}\;\;\; \mat{cc}{ lambda S & A^T \\ A & - I} \vect{x(lambda) \\ y(lambda)} = \vect{ A^T b \\ 0}\]  
 \n
@@ -290,7 +290,7 @@ history derived type as a C struct
 real_wp_ \fIlambda\fP the value of lambda 
 .br
 .PP
-real_wp_ \fIx_norm\fP the corresponding value of ||x(lambda)||_M 
+real_wp_ \fIx_norm\fP the corresponding value of ||x(lambda)||_S 
 .br
 .PP
 real_wp_ \fIr_norm\fP the corresponding value of ||A x(lambda) - b||_2 

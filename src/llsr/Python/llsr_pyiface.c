@@ -1,9 +1,9 @@
-//* \file llst_pyiface.c */
+//* \file llsr_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-06-05 AT 14:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-22 AT 07:30 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_LLST PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-*-*-  GALAHAD_LLSR PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes & Nick Gould
@@ -16,7 +16,7 @@
  */
 
 #include "galahad_python.h"
-#include "galahad_llst.h"
+#include "galahad_llsr.h"
 
 /* Nested SBLS, SLS and IR control and inform prototypes */
 bool sbls_update_control(struct sbls_control_type *control,
@@ -34,8 +34,8 @@ PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
-static struct llst_control_type control;  // control struct
-static struct llst_inform_type inform;    // inform struct
+static struct llsr_control_type control;  // control struct
+static struct llsr_inform_type inform;    // inform struct
 static bool init_called = false;         // record if initialise was called
 static bool load_called = false;         // record if load was called
 static bool load_scaling_called = false; // record if load_scaling was called
@@ -45,7 +45,7 @@ static int status = 0;                   // exit status
 
 /* Update the control options: use C defaults but update any passed via Python*/
 // NB not static as it is used for nested control within TRU Python interface
-bool llst_update_control(struct llst_control_type *control,
+bool llsr_update_control(struct llsr_control_type *control,
                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -190,7 +190,7 @@ bool llst_update_control(struct llst_control_type *control,
 
 /* Take the control struct from C and turn it into a python options dict */
 // NB not static as it is used for nested inform within TRU Python interface
-PyObject* llst_make_options_dict(const struct llst_control_type *control){
+PyObject* llsr_make_options_dict(const struct llsr_control_type *control){
     PyObject *py_options = PyDict_New();
     PyDict_SetItemString(py_options, "error",
                          PyLong_FromLong(control->error));
@@ -214,8 +214,6 @@ PyObject* llst_make_options_dict(const struct llst_control_type *control){
                          PyFloat_FromDouble(control->upper));
     PyDict_SetItemString(py_options, "stop_normal",
                          PyFloat_FromDouble(control->stop_normal));
-    PyDict_SetItemString(py_options, "equality_problem",
-                         PyBool_FromLong(control->equality_problem));
     PyDict_SetItemString(py_options, "use_initial_multiplier",
                          PyBool_FromLong(control->use_initial_multiplier));
     PyDict_SetItemString(py_options, "space_critical",
@@ -237,7 +235,7 @@ PyObject* llst_make_options_dict(const struct llst_control_type *control){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the time struct from C and turn it into a python dictionary */
-static PyObject* llst_make_time_dict(const struct llst_time_type *time){
+static PyObject* llsr_make_time_dict(const struct llsr_time_type *time){
     PyObject *py_time = PyDict_New();
 
     // Set float/double time entries
@@ -267,7 +265,7 @@ static PyObject* llst_make_time_dict(const struct llst_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE HISTORY    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the time struct from C and turn it into a python dictionary */
-static PyObject* llst_make_history_dict(const struct llst_history_type *history){
+static PyObject* llsr_make_history_dict(const struct llsr_history_type *history){
     PyObject *py_history = PyDict_New();
 
     // Set float/double history entries
@@ -285,7 +283,7 @@ static PyObject* llst_make_history_dict(const struct llst_history_type *history)
 
 /* Take the inform struct from C and turn it into a python dictionary */
 // NB not static as it is used for nested control within TRU Python interface
-PyObject* llst_make_inform_dict(const struct llst_inform_type *inform){
+PyObject* llsr_make_inform_dict(const struct llsr_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -320,7 +318,7 @@ PyObject* llst_make_inform_dict(const struct llst_inform_type *inform){
 
     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time",
-                         llst_make_time_dict(&inform->time));
+                         llsr_make_time_dict(&inform->time));
 
     // Set dictionaries from subservient packages
     PyDict_SetItemString(py_inform, "sbls_inform",
@@ -333,24 +331,24 @@ PyObject* llst_make_inform_dict(const struct llst_inform_type *inform){
     return py_inform;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   LLST_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   LLSR_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_initialize(PyObject *self){
+static PyObject* py_llsr_initialize(PyObject *self){
 
-    // Call llst_initialize
-    llst_initialize(&data, &control, &status);
+    // Call llsr_initialize
+    llsr_initialize(&data, &control, &status);
 
-    // Record that llst has been initialised
+    // Record that llsr has been initialised
     init_called = true;
 
     // Return options Python dictionary
-    PyObject *py_options = llst_make_options_dict(&control);
+    PyObject *py_options = llsr_make_options_dict(&control);
     return Py_BuildValue("O", py_options);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   LLSR_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
+static PyObject* py_llsr_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
     PyObject *py_options = NULL;
     int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
@@ -402,14 +400,14 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
     }
 
     // Reset control options
-    llst_reset_control(&control, &data, &status);
+    llsr_reset_control(&control, &data, &status);
 
-    // Update llst control options
-    if(!llst_update_control(&control, py_options))
+    // Update llsr control options
+    if(!llsr_update_control(&control, py_options))
         return NULL;
 
-    // Call llst_import
-    llst_import(&control, &data, &status, m, n,
+    // Call llsr_import
+    llsr_import(&control, &data, &status, m, n,
                 A_type, A_ne, A_row, A_col, A_ptr);
 
     // Free allocated memory
@@ -421,7 +419,7 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!check_error_codes(status))
         return NULL;
 
-    // Record that llst structures been initialised
+    // Record that llsr structures been initialised
     load_called = true;
 
     // Return None boilerplate
@@ -429,9 +427,9 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD_SCALING    -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   LLSR_LOAD_SCALING    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
+static PyObject* py_llsr_load_scaling(PyObject *self, PyObject *args,
                                       PyObject *keywds){
     PyArrayObject *py_S_row, *py_S_col, *py_S_ptr;
     PyObject *py_options = NULL;
@@ -484,14 +482,14 @@ static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
     }
 
     // Reset control options
-    llst_reset_control(&control, &data, &status);
+    llsr_reset_control(&control, &data, &status);
 
-    // Update llst control options
-    if(!llst_update_control(&control, py_options))
+    // Update llsr control options
+    if(!llsr_update_control(&control, py_options))
         return NULL;
 
-    // Call llst_import
-    llst_import_scaling(&control, &data, &status, n,
+    // Call llsr_import
+    llsr_import_scaling(&control, &data, &status, n,
                         S_type, S_ne, S_row, S_col, S_ptr);
 
     // Free allocated memory
@@ -503,7 +501,7 @@ static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
     if(!check_error_codes(status))
         return NULL;
 
-    // Record that llst M structure been initialised
+    // Record that llsr M structure been initialised
     load_scaling_called = true;
 
     // Return None boilerplate
@@ -511,9 +509,9 @@ static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   LLST_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   LLSR_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
+static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
                                        PyObject *keywds){
     PyArrayObject *py_A_val, *py_b, *py_S_val = NULL;
     double *A_val, *b, *S_val = NULL;
@@ -525,12 +523,13 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"m","n","power, weight","A_ne","A_val","b",
+    static char *kwlist[] = {"m","n","power", "weight","A_ne","A_val","b",
                              "S_ne","S_val",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiddiOO|iO", kwlist,
-                                    &m, &n, &power, weight, &A_ne, &py_A_val,
+                                    &m, &n, &power, &weight, &A_ne, &py_A_val,
                                     &py_b, &S_ne, &py_S_val))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_b, m))
@@ -553,8 +552,8 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
-    // Call llst_solve_problem
-    llst_solve_problem(&data, &status, m, n, power, weight, A_ne, A_val, b, x,
+    // Call llsr_solve_problem
+    llsr_solve_problem(&data, &status, m, n, power, weight, A_ne, A_val, b, x,
                        S_ne, S_val);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
 
@@ -575,34 +574,34 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
 
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   LLST_INFORMATION   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   LLSR_INFORMATION   -*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_information(PyObject *self){
+static PyObject* py_llsr_information(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call llst_information
-    llst_information(&data, &inform, &status);
+    // Call llsr_information
+    llsr_information(&data, &inform, &status);
 
     // Return status and inform Python dictionary
-    PyObject *py_inform = llst_make_inform_dict(&inform);
+    PyObject *py_inform = llsr_make_inform_dict(&inform);
     return Py_BuildValue("O", py_inform);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   LLST_TERMINATE   -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   LLSR_TERMINATE   -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_terminate(PyObject *self){
+static PyObject* py_llsr_terminate(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call llst_terminate
-    llst_terminate(&data, &control, &inform);
+    // Call llsr_terminate
+    llsr_terminate(&data, &control, &inform);
 
-    // require future calls start with llst_initialize
+    // require future calls start with llsr_initialize
     init_called = false;
     load_called = false;
     load_scaling_called = false;
@@ -612,37 +611,33 @@ static PyObject* py_llst_terminate(PyObject *self){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE LLST PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE LLSR PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
 
-/* llst python module method table */
-static PyMethodDef llst_module_methods[] = {
-    {"initialize", (PyCFunction) py_llst_initialize, METH_NOARGS,NULL},
-    {"load", (PyCFunction) py_llst_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"load_scaling", (PyCFunction) py_llst_load_scaling, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_llst_solve_problem, METH_VARARGS, NULL},
-    {"information", (PyCFunction) py_llst_information, METH_NOARGS, NULL},
-    {"terminate", (PyCFunction) py_llst_terminate, METH_NOARGS, NULL},
+/* llsr python module method table */
+static PyMethodDef llsr_module_methods[] = {
+    {"initialize", (PyCFunction) py_llsr_initialize, METH_NOARGS,NULL},
+    {"load", (PyCFunction) py_llsr_load, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"load_scaling", (PyCFunction) py_llsr_load_scaling, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_problem", (PyCFunction) py_llsr_solve_problem, METH_VARARGS, NULL},
+    {"information", (PyCFunction) py_llsr_information, METH_NOARGS, NULL},
+    {"terminate", (PyCFunction) py_llsr_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
-/* llst python module documentation */
+/* llsr python module documentation */
 
-PyDoc_STRVAR(llst_module_doc,
+PyDoc_STRVAR(llsr_module_doc,
 
-"The llst package uses matrix factorization to find the global minimizer \n"
-"of a quadratic objective function within an ellipsoidal region; this is \n"
-"commonly known as the trust-region subproblem.\n"
-"The aim is to minimize the linear least-squares objective function\n"
-"||A x - b||_2, \n"
-"where the vector x is required to satisfy \n"
-"the ellipsoidal trust-region constraint ||x||_S <= Delta, \n"
-"and where the S-norm of x is defined to be ||x||_S = sqrt{x^T S x},\n"
-"and where the radius Delta > 0.\n"
-"\n"
-"The package may also be used to solve the related problem in which x is\n"
-"instead required to satisfy the equality constraint ||x||_M = Delta.\n"
+"Given a real m by n matrix A, a real n by n symmetric diagonally-dominant\n"
+"matrix S, a real m vector b and scalars sigma>0 and $p>=2$,\n" 
+"the llsr package finds a minimizer of the regularized\n"
+"linear least-squares objective function\n"
+"   1/2 || A x  - b ||_2^w + sigma/p ||x||_S^p,\n"
+"where the S-norm of x is  ||x||_S = sqrt{x^T S x}.\n"
+"This problem commonly occurs as a subproblem in nonlinear\n"
+"least-squares calculations.\n"
 "The matrix S need not be provided in the commonly-occurring\n"
-"l_2-trust-region case for which S = I, the n by n identity matrix.\n"
+"l_2-regularization case for which S = I, the n by n identity matrix.\n"
 "\n"
 "Factorization of matrices of the form A^T A + lambda S, or\n"
 "( lambda S  A^T )\n"
@@ -651,23 +646,23 @@ PyDoc_STRVAR(llst_module_doc,
 "most suited for the case where such a factorization may be found\n"
 "efficiently. If this is not the case, the package gltr may be preferred.\n"
 "\n"
-"See $GALAHAD/html/Python/llst.html for argument lists, call order\n"
+"See $GALAHAD/html/Python/llsr.html for argument lists, call order\n"
 "and other details.\n"
 "\n"
 );
 
-/* llst python module definition */
+/* llsr python module definition */
 static struct PyModuleDef module = {
    PyModuleDef_HEAD_INIT,
-   "llst",               /* name of module */
-   llst_module_doc,      /* module documentation, may be NULL */
+   "llsr",               /* name of module */
+   llsr_module_doc,      /* module documentation, may be NULL */
    -1,                  /* size of per-interpreter state of the module,or -1
                            if the module keeps state in global variables */
-   llst_module_methods   /* module methods */
+   llsr_module_methods   /* module methods */
 };
 
 /* Python module initialization */
-PyMODINIT_FUNC PyInit_llst(void) { // must be same as module name above
+PyMODINIT_FUNC PyInit_llsr(void) { // must be same as module name above
     import_array();  // for NumPy arrays
     return PyModule_Create(&module);
 }

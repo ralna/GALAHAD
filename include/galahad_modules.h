@@ -51,6 +51,7 @@
 #define GALAHAD_LCF_precision GALAHAD_LCF_single
 #define GALAHAD_LHS_precision GALAHAD_LHS_single
 #define GALAHAD_LLS_precision GALAHAD_LLS_single
+#define GALAHAD_LLSR_precision GALAHAD_LLSR_single
 #define GALAHAD_LLST_precision GALAHAD_LLST_single
 #define GALAHAD_LMS_precision GALAHAD_LMS_single
 #define GALAHAD_LMT_precision GALAHAD_LMT_single
@@ -443,6 +444,7 @@
 #define GALAHAD_LCF_precision GALAHAD_LCF_double
 #define GALAHAD_LHS_precision GALAHAD_LHS_double
 #define GALAHAD_LLS_precision GALAHAD_LLS_double
+#define GALAHAD_LLSR_precision GALAHAD_LLSR_double
 #define GALAHAD_LLST_precision GALAHAD_LLST_double
 #define GALAHAD_LMS_precision GALAHAD_LMS_double
 #define GALAHAD_LMT_precision GALAHAD_LMT_double
