@@ -1,4 +1,4 @@
-** CURRENT STATUS OF PACKAGES 2023-03-05 **
+** CURRENT STATUS OF PACKAGES 2023-06-21 **
 
 CONVERSION TO NEW MAKEMASTERS & C/PYTHON/JULIA INTERFACES
 ---------------------------------------------------------
@@ -6,60 +6,62 @@ CONVERSION TO NEW MAKEMASTERS & C/PYTHON/JULIA INTERFACES
 M = makemaster done, C = C interface planned, C+ = C interface done
                      C- = C interface to structures done
                      P+ = Python interface done
+                     P- = Python dictionaries done
 
 ampl
 arc                       M C+ P+
 basic                     M
 bgo                       M C+ P+
-blls                      M C+
-bqp                       M C+
+blls                      M C+ P+
+bqp                       M C+ P+
 bqpb                      M (replace with specialised cqp?) C+
-bsc                       M C-
-ccqp                      M C+
+bsc                       M C- P-
+ccqp                      M C+ P+
 cdqp                      M C
 check                     M (build cutest interface?)
 checkpoint                M
 clock                     M
-convert                   M C-
+convert                   M C- P-
 copyright                 M
-cqp                       M C+
+cqp                       M C+ P+
 cpu_time                  M
-cro                       M C+
+cro                       M C+ P+
 cutest_functions          M
 demo                      M
 dgo                       M C+ P+
-dlp                       M C+
-dps                       M C+
-dqp                       M C+
+dlp                       M C+ P+
+dps                       M C+ P+
+dqp                       M C+ P+
 dum
-eqp                       M C+
-fdc                       M C+
+eqp                       M C+ P+
+fdc                       M C+ P+
 fdh                       M C- (need to adapt fdhs2, error in test)
 filter                    M
 filtrane                  M C
-fit                       M C-
+fit                       M C- P-
 general
-glrt                      M C+
-gls                       M C
-gltr                      M C+
+glrt                      M C+ P+
+gls                       M C+ P+
+gltr                      M C+ P+
 hsl
-ir                        M
+ir                        M C- P-
 l1qp                      M
-l2rt                      M C+
+l2rt                      M C+ P+
 lancelot                  M
 lancelot_simple           M
 lapack
 lhs                       M C
 lls                       M
-llst                      M
-lms                       M C-
+llsr                      M C+ P+
+llst                      M C+ P+
+lms                       M C- P-
 lmt                       M
-lpa                       M C+
-lpb                       M C+
+lpa                       M C+ P+
+lpb                       M C+ P+
 lpqp                      M
-lsqp                      M C+
-lsrt                      M C+
-lstr                      M C+
+lsqp                      M C+ P+
+lsrt                      M C+ P+
+lstr                      M C+ P+
 miqr                      M
 mop                       M
 nlpt                      M
@@ -67,29 +69,29 @@ nls                       M C+ P+
 norms                     M
 opt                       M
 pdqp                      M C
-presolve                  M C
+presolve                  M C- P-
 problem                   M
-psls                      M C+
+psls                      M C+ P+
 ptrans                    M
 qp                        M C
-qpa                       M C+
-qpb                       M C+
+qpa                       M C+ P+
+qpb                       M C+ P+
 qpc                       M C
 qpd                       M
 qpp                       M
 qpt                       M
 rand                      M
-roots                     M C-
-rpd                       M C+
-rqs                       M C+
-sbls                      M C+
+roots                     M C- P-
+rpd                       M C+ P+
+rqs                       M C+ P+
+sbls                      M C+ P+
 scale                     M
 scaling                   M
-scu                       M C-
-sec                       M C-
-sha                       M C-
-sils                      M
-sls                       M C+
+scu                       M C- P-
+sec                       M C- P-
+sha                       M C- P-
+sils                      M C- P-
+sls                       M C+ P+
 smt                       M
 sort                      M
 space                     M
@@ -101,13 +103,13 @@ symbols                   M
 tools                     M
 trans                     M
 trb                       M C+ P+
-trs                       M C+
+trs                       M C+ P+
 tru                       M C+ P+
 ugo                       M C+ P+
-uls                       M C+
+uls                       M C+ P+
 userdata                  M
 warm                      M
-wcp                       M C+
+wcp                       M C+ P+
 zd11                      M
 
 forthcoming:

@@ -1,7 +1,7 @@
 //* \file llsr.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-06-13 AT 16:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-06-21 AT 07:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LLSR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -22,10 +22,10 @@
   \subsection llsr_purpose Purpose
 
   Given a real \f$m\f$ by \f$n\f$ matrix \f$A\f$,
-  a real \f$n\f$ by \f$n\f$ symmetric diagonally dominant matrix \f$S\f$
-  a real \f$m\f$ vector \f$b\f$ and a scalar \f$\Delta>0\f$, this package 
-  finds a <b> minimizer of the regularized linear least-squares objective 
-  function
+  a real \f$n\f$ by \f$n\f$ symmetric diagonally dominant-matrix \f$S\f$,
+  a real \f$m\f$ vector \f$b\f$ and scalars \f$\sigma>0\f$ and $p >= 2$, 
+  this package finds a <b> minimizer of the regularized linear least-squares 
+  objective function </b>
   \f[1/2 \| A x  - b \|_2^w + \sigma/p \|x\|_S^p,\f] 
   where the \f$S\f$-norm of \f$x\f$ is  \f$\|x\|_S = \sqrt{x^T S x}\f$.
   This problem commonly occurs as a subproblem in nonlinear
@@ -321,7 +321,7 @@ struct llsr_control_type {
     real_wp_ upper;
 
     /// \brief
-    /// stop when \f$| \|x\| - (\lambda/\sigma)^{1/(p-2)| \leq\f$
+    /// stop when \f$| \|x\| - (\lambda/\sigma)^{1/(p-2)}| \leq\f$
     /// stop_normal * max( 1, \f$\|x\|\f$ )
     real_wp_ stop_normal;
 
@@ -646,7 +646,7 @@ void llsr_import_scaling( struct llsr_control_type *control,
     n must be positive.
 
  @param[in]  S_type is a one-dimensional array of type char that specifies the
-   \link main_symmetris_matrices symmetric storage scheme \endlink
+   \link main_symmetric_matrices symmetric storage scheme \endlink
    used for the matrix \f$S\f$. It should be one of 'coordinate',
    'sparse_by_rows', 'dense' or 'diagonal'; lower or upper
    case variants are allowed.

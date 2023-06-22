@@ -1,7 +1,7 @@
-from galahad import llst
+from galahad import llsr
 import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
-print("\n** python test: llst")
+print("\n** python test: llsr")
 
 # set parameters
 n = 3
@@ -32,7 +32,7 @@ power = 3.0
 weight = 10.0
 
 # allocate internal data and set default options
-options = llst.initialize()
+options = llsr.initialize()
 
 # set some non-default options
 options['print_level'] = 0
@@ -40,29 +40,29 @@ options['definite_linear_solver'] = 'sytr '
 #print("options:", options)
 
 # load data (and optionally non-default options)
-llst.load(m, n, A_type, A_ne, A_row, A_col, A_ptr, options)
+llsr.load(m, n, A_type, A_ne, A_row, A_col, A_ptr, options)
 
 # find minimum of linear least-squares objective within the trust region
 print("\n solve problem 1")
-x = llst.solve_problem(m, n, power, weight, A_ne, A_val, b)
+x = llsr.solve_problem(m, n, power, weight, A_ne, A_val, b)
 print(" x:",x)
 
 # get information
-inform = llst.information()
+inform = llsr.information()
 print(" ||r||: %.4f" % inform['r_norm'])
 
 # load data (and optionally non-default options)
-llst.load_scaling(n, S_type, S_ne, S_row, S_col, S_ptr)
+llsr.load_scaling(n, S_type, S_ne, S_row, S_col, S_ptr)
 
 # find minimum of linear least-squares objective within the trust region
 print("\n solve problem 2 with additional non-unit scaling")
-x = llst.solve_problem(m, n, power, weight, A_ne, A_val, b, S_ne, S_val)
+x = llsr.solve_problem(m, n, power, weight, A_ne, A_val, b, S_ne, S_val)
 print(" x:",x)
 
 # get information
-inform = llst.information()
+inform = llsr.information()
 print(" ||r||: %.4f" % inform['r_norm'])
 
 # deallocate internal data
 
-llst.terminate()
+llsr.terminate()

@@ -606,12 +606,12 @@ set to the number of unknowns, $n$. {\bf Restriction: } $n  >  0$.
 \itt{power} is a scalar \intentin\ variable of type default \realdp,
 that must be set on initial entry
 to the value of the regularization power, $p$.
-{\bf Restriction: } $\power \geq 2$.
+{\bf Restriction: } {\tt power} $\geq 2$.
 
 \itt{weight} is a scalar \intentin\ variable of type default \realdp,
 that must be set on initial entry
 to the value of the regularization weight, $\sigma$.
-{\bf Restriction: } $\weight > 0$.
+{\bf Restriction: } {\tt weight} $> 0$.
 
 \ittf{A} is a scalar \intentin\ argument of type {\tt SMT\_TYPE}
 that holds the constraint matrix $\bmA$. The following components are used:
@@ -847,7 +847,7 @@ and {\tt inform\%bad\_alloc}, respectively.
 One of the restrictions
 {\tt n > 0},
 {\tt m > 0},
-{\tt power \geq 2}
+{\tt power} $\geq$ {\tt 2}
 or
 {\tt weight > 0}
 has been violated.

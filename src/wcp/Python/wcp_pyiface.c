@@ -675,6 +675,7 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args){
     if(!PyArg_ParseTuple(args, "iiiOOOOOOOOOO|O", &n, &m, 
                          &A_ne, &py_A_val, &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y_l, &py_y_u, &py_z_l, &py_z_u, &py_g))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("A_val", py_A_val, A_ne))

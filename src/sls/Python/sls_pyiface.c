@@ -843,6 +843,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args){
 
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iO", &n, &py_sol))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_sol, n))
@@ -884,6 +885,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args){
 
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "siO", &part, &n, &py_b))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_b, n))

@@ -25,7 +25,7 @@
    p%A%col = (/ 1, 1, 2, 3, 3 /) ; p%A%ne = a_ne
 ! problem data complete
    CALL SLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 1                       ! print one line/iteration
+!  control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  control%CONVERT_control%print_level = 3
    inform%status = 1

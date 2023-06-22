@@ -797,6 +797,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
     if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g, 
                          &H_ne, &py_H_val, &py_x_l, &py_x_u,
                          &py_x, &py_z))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

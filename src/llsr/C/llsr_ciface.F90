@@ -153,7 +153,6 @@
     fcontrol%stop_normal = ccontrol%stop_normal
 
     ! Logicals
-    fcontrol%equality_problem = ccontrol%equality_problem
     fcontrol%use_initial_multiplier = ccontrol%use_initial_multiplier
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
@@ -204,7 +203,6 @@
     ccontrol%stop_normal = fcontrol%stop_normal
 
     ! Logicals
-    ccontrol%equality_problem = fcontrol%equality_problem
     ccontrol%use_initial_multiplier = fcontrol%use_initial_multiplier
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
@@ -615,8 +613,8 @@
 !  C interface to fortran llsr_solve_problem
 !  ----------------------------------------
 
-  SUBROUTINE llsr_solve_problem( cdata, status, m, n, power, weight, ane, aval, b,    &
-                                 x, sne, sval ) BIND( C )
+  SUBROUTINE llsr_solve_problem( cdata, status, m, n, power, weight, ane,      &
+                                 aval, b, x, sne, sval ) BIND( C )
   USE GALAHAD_LLSR_precision_ciface
   IMPLICIT NONE
 

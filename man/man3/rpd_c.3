@@ -1,4 +1,4 @@
-.TH "galahad_rpd.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
+.TH "galahad_rpd.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -66,6 +66,9 @@ galahad_rpd.h
 .br
 .ti -1c
 .RI "void \fBrpd_get_z\fP (void **data, int *status, int n, real_wp_ z[])"
+.br
+.ti -1c
+.RI "void \fBrpd_information\fP (void **data, struct \fBrpd_inform_type\fP *inform, int *status)"
 .br
 .ti -1c
 .RI "void \fBrpd_terminate\fP (void **data, struct \fBrpd_control_type\fP *control, struct \fBrpd_inform_type\fP *inform)"
@@ -642,6 +645,24 @@ Recover the initial values of the dual variables z\&.
 \fIn\fP is a scalar variable of type int, that holds the number of variables\&.
 .br
 \fIz\fP is a one-dimensional array of size n and type double, that gives the initial values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&. 
+.RE
+.PP
+
+.SS "void rpd_information (void ** data, struct \fBrpd_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBrpd_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
 .RE
 .PP
 

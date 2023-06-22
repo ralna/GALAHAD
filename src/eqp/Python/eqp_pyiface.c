@@ -586,6 +586,7 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
     if(!PyArg_ParseTuple(args, "iidOiOiOOOO", &n, &m, &f, &py_g, 
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
                          &py_c, &py_x, &py_y))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("g", py_g, n))

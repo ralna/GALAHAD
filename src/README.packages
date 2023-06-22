@@ -41,6 +41,7 @@ lanc        | alpha  | improved LANCELOT
 lapack      | ok     | required LAPACK/BLAS (no doc)
 lhs         | beta   | Latin Hypercube samples
 lls         | beta   | trust-region constrained linear-least squares via PCG
+llsr        | ok     | regularized linear least-squares via sbls
 llst        | ok     | trust-region regularized linear least-squares via sbls
 lms         | ok     | limited-memory Hessian approximation
 lmsc        | alpha  | limited-memory Hessian approximation with constraints

@@ -1,0 +1,515 @@
+.TH "galahad_sils.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD SILS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+galahad_sils.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_cfunctions\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsils_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBsils_ainfo_type\fP"
+.br
+.ti -1c
+.RI "struct \fBsils_finfo_type\fP"
+.br
+.ti -1c
+.RI "struct \fBsils_sinfo_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsils_initialize\fP (void **data, struct \fBsils_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBsils_read_specfile\fP (struct \fBsils_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBsils_import\fP (struct \fBsils_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBsils_reset_control\fP (struct \fBsils_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBsils_information\fP (void **data, struct \fBsils_ainfo_type\fP *ainfo, struct \fBsils_finfo_type\fP *finfo, struct \fBsils_sinfo_type\fP *sinfo, int *status)"
+.br
+.ti -1c
+.RI "void \fBsils_finalize\fP (void **data, struct \fBsils_control_type\fP *control, int *status)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+This package \fBsolves sparse symmetric system of linear equations\&.\fP\&. Given an n by n sparse matrix A = {a_{ij}}, and an n vector b, the package solves the system A x = b\&. The matrix A need not be definite\&. There is an option for iterative refinement\&.
+.PP
+Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&. Extended functionality is available using the GALAHAD package sls\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.PP
+Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
+.SS "Originally released"
+April 2001, C interface December 2021\&.
+.SS "Method"
+The method used is a direct method based on a sparse variant of Gaussian elimination and is discussed further by
+.PP
+I\&. S\&. Duff and J\&. K\&. Reid (1983), ACM Trans\&. Math\&. Software \fB9\fP pp\&.302-325\&.
+.SS "Symmetric matrix storage formats"
+The symmetric n by n coefficient matrix A may be presented and stored in a variety of convenient input formats\&. Crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since A is symmetric, only the lower triangular part (that is the part A_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array val will hold the value A_{ij} (and, by symmetry, A_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct sils_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIICNTL[30]\fP MA27 internal integer controls\&. 
+.br
+.PP
+int \fIlp\fP Unit for error messages\&. 
+.br
+.PP
+int \fIwp\fP Unit for warning messages\&. 
+.br
+.PP
+int \fImp\fP Unit for monitor output\&. 
+.br
+.PP
+int \fIsp\fP Unit for statistical output\&. 
+.br
+.PP
+int \fIldiag\fP Controls level of diagnostic output\&. 
+.br
+.PP
+int \fIla\fP Initial size for real array for the factors\&. If less than nrlnec, default size used\&. 
+.br
+.PP
+int \fIliw\fP Initial size for integer array for the factors\&. If less than nirnec, default size used\&. 
+.br
+.PP
+int \fImaxla\fP Max\&. size for real array for the factors\&. 
+.br
+.PP
+int \fImaxliw\fP Max\&. size for integer array for the factors\&. 
+.br
+.PP
+int \fIpivoting\fP Controls pivoting\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1 Numerical pivoting will be performed\&. 
+.IP "\(bu" 2
+2 No pivoting will be performed and an error exit will occur immediately a pivot sign change is detected\&. 
+.IP "\(bu" 2
+3 No pivoting will be performed and an error exit will occur if a zero pivot is detected\&. 
+.IP "\(bu" 2
+4 No pivoting is performed but pivots are changed to all be positive\&. 
+.PP
+
+.br
+.PP
+int \fInemin\fP Minimum number of eliminations in a step (unused) 
+.br
+.PP
+int \fIfactorblocking\fP Level 3 blocking in factorize (unused) 
+.br
+.PP
+int \fIsolveblocking\fP Level 2 and 3 blocking in solve\&. 
+.br
+.PP
+int \fIthresh\fP Controls threshold for detecting full rows in analyse, registered as percentage of N, 100 Only fully dense rows detected (default) 
+.br
+.PP
+int \fIordering\fP Controls ordering: Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0 AMD using HSL's MC47 
+.IP "\(bu" 2
+1 User defined 
+.IP "\(bu" 2
+2 AMD using HSL's MC50 
+.IP "\(bu" 2
+3 Min deg as in HSL's MA57 
+.IP "\(bu" 2
+4 Metis_nodend ordering 
+.IP "\(bu" 2
+5 Ordering chosen depending on matrix characteristics\&. At the moment choices are HSL's MC50 or Metis_nodend 
+.IP "\(bu" 2
+>5 Presently equivalent to 5 but may chnage 
+.PP
+
+.br
+.PP
+int \fIscaling\fP Controls scaling: Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0 No scaling 
+.IP "\(bu" 2
+>0 Scaling using HSL's MC64 but may change for > 1 
+.PP
+
+.br
+.PP
+real_wp_ \fICNTL[5]\fP MA27 internal real controls\&. 
+.br
+.PP
+real_wp_ \fImultiplier\fP Factor by which arrays sizes are to be increased if they are too small\&. 
+.br
+.PP
+real_wp_ \fIreduce\fP If previously allocated internal workspace arrays are greater than reduce times the currently required sizes, they are reset to current requirment\&. 
+.br
+.PP
+real_wp_ \fIu\fP Pivot threshold\&. 
+.br
+.PP
+real_wp_ \fIstatic_tolerance\fP used for setting static pivot level 
+.br
+.PP
+real_wp_ \fIstatic_level\fP used for switch to static 
+.br
+.PP
+real_wp_ \fItolerance\fP Anything less than this is considered zero\&. 
+.br
+.PP
+real_wp_ \fIconvergence\fP used to monitor convergence in iterative refinement 
+.br
+.PP
+.RE
+.PP
+.SH "struct sils_ainfo_type"
+.PP 
+ainfo derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIflag\fP Flags success or failure case\&. 
+.br
+.PP
+int \fImore\fP More information on failure\&. 
+.br
+.PP
+int \fInsteps\fP Number of elimination steps\&. 
+.br
+.PP
+int \fInrltot\fP Size for a without compression\&. 
+.br
+.PP
+int \fInirtot\fP Size for iw without compression\&. 
+.br
+.PP
+int \fInrlnec\fP Size for a with compression\&. 
+.br
+.PP
+int \fInirnec\fP Size for iw with compression\&. 
+.br
+.PP
+int \fInrladu\fP Number of reals to hold factors\&. 
+.br
+.PP
+int \fIniradu\fP Number of integers to hold factors\&. 
+.br
+.PP
+int \fIncmpa\fP Number of compresses\&. 
+.br
+.PP
+int \fIoor\fP Number of indices out-of-range\&. 
+.br
+.PP
+int \fIdup\fP Number of duplicates\&. 
+.br
+.PP
+int \fImaxfrt\fP Forecast maximum front size\&. 
+.br
+.PP
+int \fIstat\fP STAT value after allocate failure\&. 
+.br
+.PP
+int \fIfaulty\fP legacy component, now not used 
+.br
+.PP
+real_wp_ \fIopsa\fP Anticipated number of operations in assembly\&. 
+.br
+.PP
+real_wp_ \fIopse\fP Anticipated number of operations in elimination\&. 
+.br
+.PP
+.RE
+.PP
+.SH "struct sils_finfo_type"
+.PP 
+finfo derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIflag\fP Flags success or failure case\&. 
+.br
+.PP
+int \fImore\fP More information on failure\&. 
+.br
+.PP
+int \fImaxfrt\fP Largest front size\&. 
+.br
+.PP
+int \fInebdu\fP Number of entries in factors\&. 
+.br
+.PP
+int \fInrlbdu\fP Number of reals that hold factors\&. 
+.br
+.PP
+int \fInirbdu\fP Number of integers that hold factors\&. 
+.br
+.PP
+int \fInrltot\fP Size for a without compression\&. 
+.br
+.PP
+int \fInirtot\fP Size for iw without compression\&. 
+.br
+.PP
+int \fInrlnec\fP Size for a with compression\&. 
+.br
+.PP
+int \fInirnec\fP Size for iw with compression\&. 
+.br
+.PP
+int \fIncmpbr\fP Number of compresses of real data\&. 
+.br
+.PP
+int \fIncmpbi\fP Number of compresses of integer data\&. 
+.br
+.PP
+int \fIntwo\fP Number of 2x2 pivots\&. 
+.br
+.PP
+int \fIneig\fP Number of negative eigenvalues\&. 
+.br
+.PP
+int \fIdelay\fP Number of delayed pivots (total) 
+.br
+.PP
+int \fIsignc\fP Number of pivot sign changes when control\&.pivoting=3\&. 
+.br
+.PP
+int \fInstatic\fP Number of static pivots chosen\&. 
+.br
+.PP
+int \fImodstep\fP First pivot modification when control\&.pivoting=4\&. 
+.br
+.PP
+int \fIrank\fP Rank of original factorization\&. 
+.br
+.PP
+int \fIstat\fP STAT value after allocate failure\&. 
+.br
+.PP
+int \fIfaulty\fP legacy component, now not used 
+.br
+.PP
+int \fIstep\fP legacy component, now not used 
+.br
+.PP
+real_wp_ \fIopsa\fP 
+.SH "operations in assembly"
+.PP
+
+.br
+.PP
+real_wp_ \fIopse\fP number of operations in elimination 
+.br
+.PP
+real_wp_ \fIopsb\fP Additional number of operations for BLAS\&. 
+.br
+.PP
+real_wp_ \fImaxchange\fP Largest control\&.pivoting=4 modification\&. 
+.br
+.PP
+real_wp_ \fIsmin\fP Minimum scaling factor\&. 
+.br
+.PP
+real_wp_ \fIsmax\fP Maximum scaling factor\&. 
+.br
+.PP
+.RE
+.PP
+.SH "struct sils_sinfo_type"
+.PP 
+sinfo derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIflag\fP Flags success or failure case\&. 
+.br
+.PP
+int \fIstat\fP STAT value after allocate failure\&. 
+.br
+.PP
+real_wp_ \fIcond\fP Condition number of matrix (category 1 eqs) 
+.br
+.PP
+real_wp_ \fIcond2\fP Condition number of matrix (category 2 eqs) 
+.br
+.PP
+real_wp_ \fIberr\fP Backward error for the system (category 1 eqs) 
+.br
+.PP
+real_wp_ \fIberr2\fP Backward error for the system (category 2 eqs) 
+.br
+.PP
+real_wp_ \fIerror\fP Estimate of forward error\&. 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void sils_initialize (void ** data, struct \fBsils_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data 
+.br
+\fIcontrol\fP is a struct containing control information (see \fBsils_control_type\fP) 
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void sils_read_specfile (struct \fBsils_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters\&. By default, the spcification file will be named RUNSILS\&.SPC and lie in the current directory\&. Refer to Table 2\&.1 in the fortran documentation provided in $GALAHAD/doc/sils\&.pdf for a list of keywords that may be set\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBsils_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void sils_import (struct \fBsils_control_type\fP * control, void ** data, int * status)"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsils_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
+.PP
+.RE
+.PP
+
+.SS "void sils_reset_control (struct \fBsils_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsils_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void sils_information (void ** data, struct \fBsils_ainfo_type\fP * ainfo, struct \fBsils_finfo_type\fP * finfo, struct \fBsils_sinfo_type\fP * sinfo, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIainfo\fP is a struct containing output information (see \fBsils_ainfo_type\fP)
+.br
+\fIfinfo\fP is a struct containing output information (see \fBsils_finfo_type\fP)
+.br
+\fIsinfo\fP is a struct containing output information (see \fBsils_sinfo_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void sils_finalize (void ** data, struct \fBsils_control_type\fP * control, int * status)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBsils_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.IP "\(bu" 2
+/= 0\&. The Fortran STAT value of an allocate or deallocate statement that has failed\&. 
+.PP
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD SILS from the source code\&.

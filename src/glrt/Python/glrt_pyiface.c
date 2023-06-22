@@ -330,6 +330,7 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args){
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iiddOO", &status, &n, &power, &weight,
                          &py_r, &py_v))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("r", py_r, n))

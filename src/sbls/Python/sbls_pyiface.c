@@ -694,6 +694,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args){
 
     // Parse positional arguments
     if(!PyArg_ParseTuple(args, "iiO", &n, &m, &py_sol))
+        return NULL;
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_sol, n + m))

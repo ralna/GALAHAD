@@ -1,4 +1,4 @@
-.TH "galahad_ir.h" 3 "Wed May 3 2023" "C interfaces to GALAHAD IR" \" -*- nroff -*-
+.TH "galahad_ir.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD IR" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,6 +23,19 @@ galahad_ir.h
 .br
 .ti -1c
 .RI "struct \fBir_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBir_initialize\fP (void **data, struct \fBir_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBir_information\fP (void **data, struct \fBir_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBir_terminate\fP (void **data, struct \fBir_control_type\fP *control, struct \fBir_inform_type\fP *inform)"
 .br
 .in -1c
 .SH "Detailed Description"
@@ -123,6 +136,57 @@ real_wp_ \fInorm_final_residual\fP the infinity norm of the final residual
 .PP
 .RE
 .PP
+.SH "Function Documentation"
+.PP 
+.SS "void ir_initialize (void ** data, struct \fBir_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBir_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The initialization was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void ir_information (void ** data, struct \fBir_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBir_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void ir_terminate (void ** data, struct \fBir_control_type\fP * control, struct \fBir_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBir_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBir_inform_type\fP) 
+.RE
+.PP
+
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for C interfaces to GALAHAD IR from the source code\&.
