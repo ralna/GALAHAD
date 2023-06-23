@@ -56,7 +56,7 @@ galahad_compile () {
       fi
     fi
 
-    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+    if [[ $PYTHON_REQUIRED == "1" && $PREC == "double" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_pyiface $MACROS"
       else
@@ -172,7 +172,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
-    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+    if [[ $PYTHON_REQUIRED == "1" && $PREC == "double" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_pyiface $MACROS"
       else
@@ -235,7 +235,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
-    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+    if [[ $PYTHON_REQUIRED == "1" && $PREC == "double" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq_pyiface $MACROS"
       else
@@ -288,7 +288,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
-    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+    if [[ $PYTHON_REQUIRED == "1" && $PREC == "double" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc_pyiface $MACROS"
       else
@@ -374,7 +374,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
-    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+    if [[ $PYTHON_REQUIRED == "1" && $PREC == "double" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_pyiface $MACROS"
       else
