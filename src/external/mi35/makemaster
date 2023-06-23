@@ -76,7 +76,7 @@ MI35D = blas lapack $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_zb01i.o) \
 mi35: mi35_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI35 routines ($(PRECIS) $(SUCC)"
 mi35_silent: mi35_$(PRECIS)
-mi35_single: $(MI35I)
+mi35_single: $(MI35S)
 mi35_double: $(MI35D)
 
 #  lapack packages
