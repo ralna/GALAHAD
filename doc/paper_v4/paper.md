@@ -91,50 +91,50 @@ a second C header file provides the C access.
 A current list of major packages with C interfaces and their functionality
 is as follows:
 
-| package | purpose                                                                                    |
-| :-------| -------                                                                                    |
-| uls     | unsymmetric linear systems (external bridge)                                               |
-| sls     | symmetric linear systems (external bridge)                                                 |
-| sbls    | symmetric block linear systems                                                             |
-| psls    | preconditioners for symmetric linear systems                                               |
-| fdc     | determine consistency and redundancy of linear systems                                     |
-| lpa     | linear programming using an active-set method (external bridge)                            |
-| lpb     | linear programming using an interior-point method                                          |
-| wcp     | linear feasibility using an interior-point method                                          |
-| blls    | bound-constrained linear least-squares problems using a gradient-projection method         |
-| presolve| simplify quadratic programs prior to solution                                              |
-| bqp     | bound-constrained convex quadratic programming using a gradient-projection method          |
-| bqpb    | bound-constrained convex quadratic programming using an interior-point method              |
-| lsqp    | linear and separable quadratic programming using an interior-point method                  |
-| cqp     | convex quadratic programming using an interior-point method                                |
-| dqp     | convex quadratic programming using a dual active-set method                                |
-| eqp     | equality-constrained quadratic programming using an iterative method                       |
-| trs     | the trust-region subproblem using matrix factorization                                     |
-| gltr    | the trust-region subproblem using matrix-vector products                                   |
-| rqs     | the regularized quadratic subproblem using matrix factorization                            |
-| glrt    | the regularized quadratic subproblem using matrix-vector products                          |
-| dps     | the trust-region and regularized quadratic subproblems in a diagonalising norm             |
-| llsr    | the regularized linear least-squares subproblem matrix factorization                       |
-| llst    | the linear least-squares trust-region subproblem matrix factorization                      |
-| lstr    | the linear least-squares trust-region subproblem using matrix-vector products              |
-| lsrt    | the regularized linear least-squares subproblem using matrix-vector products               |
-| l2rt    | the regularized linear $l_2$ norm subproblem using matrix-vector products                  |
-| qpa     | general quadratic programming using an active-set method                                   |
-| qpb     | general quadratic programming using an interior-point method                               |
-| blls    | bound-constrained linear-least-squares using a gradient-projection method                  |
-| tru     | unconstrained optimization using a trust-region method                                     |
-| arc     | unconstrained optimization using a regularization method                                   |
-| nls     | least-squares optimization using a regularization method                                   |
-| trb     | bound-constrained optimization using a gradient-projection trust-region method             |
-| ugo     | univariate global optimization                                                             |
-| bgo     | multivariate global optimization in a box using a multi-start trust-region method          |
-| dgo     | multivariate global optimization in a box using a deterministic partition-and-bound method |
+| package | purpose |
+| :-------| ------- |
+| uls | unsymmetric linear systems (external bridge) |
+| sls | symmetric linear systems (external bridge) |
+| sbls | symmetric block linear systems |
+| psls | preconditioners for symmetric linear systems |
+| fdc | determine consistency and redundancy of linear systems |
+| lpa | linear programming using an active-set method (external bridge) |
+| lpb | linear programming using an interior-point method |
+| wcp | linear feasibility using an interior-point method |
+| blls | bound-constrained linear least-squares problems using a gradient-projection method |
+| presolve| simplify quadratic programs prior to solution |
+| bqp | bound-constrained convex quadratic programming using a gradient-projection method |
+| bqpb | bound-constrained convex quadratic programming using an interior-point method |
+| lsqp | linear and separable quadratic programming using an interior-point method |
+| cqp | convex quadratic programming using an interior-point method |
+| dqp | convex quadratic programming using a dual active-set method |
+| eqp | equality-constrained quadratic programming using an iterative method |
+| trs | the trust-region subproblem using matrix factorization |
+| gltr | the trust-region subproblem using matrix-vector products |
+| rqs | the regularized quadratic subproblem using matrix factorization |
+| glrt | the regularized quadratic subproblem using matrix-vector products |
+| dps | the trust-region and regularized quadratic subproblems in a diagonalising norm |
+| llsr | the regularized linear least-squares subproblem matrix factorization |
+| llst | the linear least-squares trust-region subproblem matrix factorization |
+| lstr | the linear least-squares trust-region subproblem using matrix-vector products |
+| lsrt | the regularized linear least-squares subproblem using matrix-vector products |
+| l2rt | the regularized linear $l_2$ norm subproblem using matrix-vector products |
+| qpa | general quadratic programming using an active-set method |
+| qpb | general quadratic programming using an interior-point method |
+| blls | bound-constrained linear-least-squares using a gradient-projection method |
+| tru | unconstrained optimization using a trust-region method |
+| arc | unconstrained optimization using a regularization method |
+| nls | least-squares optimization using a regularization method |
+| trb | bound-constrained optimization using a gradient-projection trust-region method |
+| ugo | univariate global optimization |
+| bgo | multivariate global optimization in a box using a multi-start trust-region method |
+| dgo | multivariate global optimization in a box using a deterministic partition-and-bound method |
 
 Interfaces to other `GALAHAD` packages, such as `LANCELOT` and `FILTRANE`
 will be provided as time and demand permit. Future extensions to provide
 follow-on interfaces to Python and Julia using the C functionality are underway.
 
-`GALAHAD` is easy to install using its own make -based system.  Fortran
+`GALAHAD` is easy to install using its own make -based system. Fortran
 documentation is provided in PDF via LaTeX, while HTML, PDF and man
 documents for the C packages are available using Doxygen, Doxyrest and Sphinx.
 
