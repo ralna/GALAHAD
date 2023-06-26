@@ -2,7 +2,7 @@
 
 /*
  * THIS VERSION: GALAHAD 4.0 - 2022-03-13 AT 10:15 GMT.
-/*
+ *
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_HASH C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -11,7 +11,7 @@
  *
  *  History -
  *   originally released GALAHAD Version 3.3. August 11th 2021
-/*
+ *
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
