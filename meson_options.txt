@@ -1,7 +1,7 @@
 option('modules',
        type : 'boolean',
        value : true,
-       description : 'option to install Fortran modules and submodules')
+       description : 'option to install Fortran modules')
 
 option('ciface',
        type : 'boolean',
@@ -11,7 +11,7 @@ option('ciface',
 option('pythoniface',
        type : 'boolean',
        value : false,
-       description : 'whether to build the Python interface in double precision')
+       description : 'whether to build the Python interfaces in double precision')
 
 option('examples',
        type : 'boolean',
@@ -26,17 +26,17 @@ option('tests',
 option('single',
        type : 'boolean',
        value : true,
-       description : 'whether to generate the single precision libraries, tests and examples')
+       description : 'whether to generate the single precision library, tests and examples')
 
 option('double',
        type : 'boolean',
        value : true,
-       description : 'whether to generate the double precision libraries, tests and examples')
+       description : 'whether to generate the double precision library, tests and examples')
 
 option('ssids',
        type : 'boolean',
        value : true,
-       description : 'whether to build ssids as well as the related tests and examples')
+       description : 'whether to build ssids')
 
 option('libblas',
        type : 'string',
@@ -46,12 +46,12 @@ option('libblas',
 option('liblapack',
        type : 'string',
        value : 'openblas',
-       description : 'option for BLAS library switching')
+       description : 'option for LAPACK library switching')
 
 option('libmetis',
        type : 'string',
        value : 'metis',
-       description : 'option for METIS 4 library switching')
+       description : 'option for METIS library switching')
 
 option('libhsl',
        type : 'string',
@@ -111,7 +111,7 @@ option('liblapack_path',
 option('libmetis_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search METIS 4 library')
+       description : 'Additional directories to search METIS library')
 
 option('libhsl_path',
        type : 'array',
@@ -156,7 +156,7 @@ option('libmumps_path',
 option('libmkl_pardiso_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search Intel MKL library library')
+       description : 'Additional directories to search Intel MKL library')
 
 option('libampl_path',
        type : 'array',
