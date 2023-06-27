@@ -14,16 +14,48 @@ meson setup builddir [options...]
 ```
 creates the build directory `builddir` and populates it in preparation for a build.
 
-Currently supported options:
-* `-Dciface=true`: build C interfaces (default: `false`);
-* `-Dhslarchive-galahad=/path/to/folder`: path to folder containing `hslarchive-galahad` uncompressed and extracted (enables the GLS and SILS modules);
-* `-Dlibblas=/path/to/folder,libname`: name and location of a BLAS library;
-* `-Dliblapack=/path/to/folder,libname`: name and location of a LAPACK library.
+Currently supported options with their default value:
+* `-Dmodules=true`: install Fortran modules;
+* `-Dciface=true`: build the C interfaces;
+* `-Dpythoniface=false`: build the Python interfaces in double precision;
+* `-Dexamples=true`: generate the examples;
+* `-Dtests=true`: generate the tests;
+* `-Dsingle=true`: generate the single precision library, tests and examples;
+* `-Ddouble=true`: generate the double precision library, tests and examples;
+* `-Dssids=true`: build ssids;
+* `-Dlibblas=openblas`: BLAS library switching;
+* `-Dliblapack=openblas`: LAPACK library switching;
+* `-Dlibmetis=metis`: METIS library switching;
+* `-Dlibhsl=hsl`: HSL library switching;
+* `-Dlibcutest=cutest`: HSL library switching;
+* `-Dlibwsmp=wsmp`: WSMP library switching;
+* `-Dlibumfpack=umfpack`: UMFPACK library switching;
+* `-Dlibpardiso=pardiso`: PARDISO library switching;
+* `-Dlibspmf=spmf`: SPMF library switching;
+* `-Dlibpastix=pastix`: PASTIX library switching;
+* `-Dlibmkl_pardiso=mkl_pardiso`: Intel MKL PARDISO library switching;
+* `-Dlibampl=ampl`: AMPL library switching;
+* `-Dlibblas_path=[]`: additional directories to search BLAS library;
+* `-Dliblapack_path=[]`: additional directories to search LAPACK library;
+* `-Dlibmetis_path=[]`: additional directories to search METIS library;
+* `-Dlibhsl_path=[]`: additional directories to search HSL library;
+* `-Dlibcutest_path=[]`: additional directories to search CUTEST library;
+* `-Dlibwsmp_path=[]`: additional directories to search WSMP library;
+* `-Dlibumfpack_path=[]`: additional directories to search UMFPACK library;
+* `-Dlibpardiso_path=[]`: additional directories to search PARDISO library;
+* `-Dlibspmf_path=[]`: additional directories to search SPMF library;
+* `-Dlibpastix_path=[]`: additional directories to search PASTIX library;
+* `-Dlibmumps_path=[]`: additional directories to search MUMPS libraries;
+* `-Dlibmkl_pardiso_path=[]`: additional directories to search Intel MKL library;
+* `-Dlibampl_path=[]`: additional directories to search AMPL library library;
+* `-Dlibhsl_modules[]`: additional directories to search HSL modules;
+* `-Dlibmetis_version=5`: version of the METIS library.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and `FC` shell variables.
 For instance,
 ```
-CC=icc FC=ifort CXX=icpc meson setup builddir [options...]
+CC=icc CXX=icpc FC=ifort meson setup builddir [options...]
+CC=icx CXX=icpx FC=ifx meson setup builddir [options...]
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers and linkers.
 
@@ -66,10 +98,13 @@ meson test -C builddir ugo_single
 
 Tests belonging to a suite can be run as follows:
 ```
+meson test -C builddir --suite ugo
 meson test -C builddir --suite single
+meson test -C builddir --suite C
 ```
 
 Currently supported suites:
+* `package`;
 * `fortran`;
 * `C`;
 * `single`;
