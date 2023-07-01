@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA48 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-12-19
+#  This version: 2023-07-01
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -40,11 +40,11 @@ ma48d = blas $(HLGD)(mc71d.o) \
 ma51s = $(ma48s) $(HLGS)(ma51s.o)
 ma51d = $(ma48d) $(HLGD)(ma51d.o)
 
-RMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(LAPACK) $(BLAS)
-RMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+RMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(HSL) $(LAPACK) $(BLAS)
+RMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(HSL) $(LAPACK) $(BLAS)
 
-RHSLMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(LAPACK) $(BLAS)
-RHSLMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+RHSLMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(HSL) $(LAPACK) $(BLAS)
+RHSLMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(HSL) $(LAPACK) $(BLAS)
 
 all: ma48
 test: test_ma
@@ -153,36 +153,36 @@ $(HLG)(mc71d.o): $(MA48)/mc71d.f
 
 mc13s.o: $(HLG)(mc13s.o)
 
-$(HLG)(mc13s.o): ../ma33/mc13s.f
+$(HLG)(mc13s.o): $(MA33)/mc13s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc13s"
-	$(CP) ../ma33/mc13s.f $(OBJ)/mc13s.f90
+	$(CP) $(MA33)/mc13s.f $(OBJ)/mc13s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13s.f90
 	cd $(OBJ) ; $(HARR) mc13s.o ; $(RM) mc13s.f90 mc13s.o
 	@printf '[ OK ]\n'
 
 mc13d.o: $(HLG)(mc13d.o)
 
-$(HLG)(mc13d.o): ../ma33/mc13d.f
+$(HLG)(mc13d.o): $(MA33)/mc13d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc13d"
-	$(CP) ../ma33/mc13d.f $(OBJ)/mc13d.f90
+	$(CP) $(MA33)/mc13d.f $(OBJ)/mc13d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13d.f90
 	cd $(OBJ) ; $(HARR) mc13d.o ; $(RM) mc13d.f90 mc13d.o
 	@printf '[ OK ]\n'
 
 mc21s.o: $(HLG)(mc21s.o)
 
-$(HLG)(mc21s.o): ../ma33/mc21s.f
+$(HLG)(mc21s.o): $(MA33)/mc21s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
-	$(CP) ../ma33/mc21s.f $(OBJ)/mc21s.f90
+	$(CP) $(MA33)/mc21s.f $(OBJ)/mc21s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21s.f90
 	cd $(OBJ) ; $(HARR) mc21s.o ; $(RM) mc21s.f90 mc21s.o
 	@printf '[ OK ]\n'
 
 mc21d.o: $(HLG)(mc21d.o)
 
-$(HLG)(mc21d.o): ../ma33/mc21d.f
+$(HLG)(mc21d.o): $(MA33)/mc21d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21d"
-	$(CP) ../ma33/mc21d.f $(OBJ)/mc21d.f90
+	$(CP) $(MA33)/mc21d.f $(OBJ)/mc21d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21d.f90
 	cd $(OBJ) ; $(HARR) mc21d.o ; $(RM) mc21d.f90 mc21d.o
 	@printf '[ OK ]\n'
@@ -341,16 +341,16 @@ $(HLG)(btf.o): ../btf/btf.f
 
 #  test programs
 
-$(OBJS)/hsl_ma48ss.o: $(MA48)/hsl_ma48ss.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48ss "
-	$(CP) $(MA48)/hsl_ma48ss.f90 $(OBJ)/hsl_ma48ss.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48ss.f90
+$(OBJS)/ma48ss.o: ./ma48ss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma48ss "
+	$(CP) ./ma48ss.f90 $(OBJ)/ma48ss.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) ma48ss.f90
 	@printf '[ OK ]\n'
 
-$(OBJD)/hsl_ma48ds.o: $(MA48)/hsl_ma48ds.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48ds "
-	$(CP) $(MA48)/hsl_ma48ds.f90 $(OBJ)/hsl_ma48ds.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48ds.f90
+$(OBJD)/ma48ds.o: ./ma48ds.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma48ds "
+	$(CP) ./ma48ds.f90 $(OBJ)/ma48ds.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) ma48ds.f90
 	@printf '[ OK ]\n'
 
 #  book keeping

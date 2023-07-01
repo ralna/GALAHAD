@@ -65,7 +65,8 @@ private:
  * Deallocation is not supported.
  */
 class Pool {
-   const size_t PAGE_SIZE = 8*1024*1024; // 8MB
+//   const size_t PAGE_SIZE = 8*1024*1024; // 8MB
+   const size_t PAGE_SIZE = 0; // recommended by mjacobse
 public:
    Pool(size_t initial_size)
    : top_page_(new Page(std::max(PAGE_SIZE, initial_size)))

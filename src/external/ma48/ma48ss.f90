@@ -43,7 +43,7 @@
 
 !  Write row and column reorderings
 
-   CALL MA48_special_rows_and_cols( FACTORS, rank, ROWS, COLS, info )
+   CALL MA48_special_rows_and_cols( FACTORS, rank, ROWS, COLS, CONTROL, info )
    WRITE( 6, "( A, /, ( 10I5 ) )" ) ' row orderings:', ROWS( : rank )
    WRITE( 6, "( A, /, ( 10I5 ) )" ) ' column orderings:', COLS( : rank )
 
