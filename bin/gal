@@ -454,6 +454,14 @@ elif [[ $2 == 'bqpb' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqpb update
   [[ ! -L RUNBQPB.SPC ]] && ln -s ~/.galahad/specs/RUNBQPB.SPC RUNBQPB.SPC
 
+# clls
+
+elif [[ $2 == 'clls' ]]; then
+  RUNMAIN=$GALOBJ/runclls_sif_$PRECIS.o
+  [[ ! -e ~/.galahad/specs/RUNCLLS.SPC ]] && $GALOBJ/buildspec clls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec clls update
+  [[ ! -L RUNCLLS.SPC ]] && ln -s ~/.galahad/specs/RUNCLLS.SPC RUNCLLS.SPC
+
 # pdqp
 
 elif [[ $2 == 'pdqp' ]]; then
@@ -678,6 +686,15 @@ elif [[ $2 == 'tr1' ]]; then
   [[ ! -e ~/.galahad/specs/RUNTR1.SPC ]] && $GALOBJ/buildspec tr1
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tr1 update
   [[ ! -L RUNTR1.SPC ]] && ln -s ~/.galahad/specs/RUNTR1.SPC RUNTR1.SPC
+
+# tr2
+
+elif [[ $2 == 'tr2' ]]; then
+  RUNMAIN=$GALOBJ/runtr2_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTR2.SPC ]] && $GALOBJ/buildspec tr2
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tr2 update
+  [[ ! -L RUNTR2.SPC ]] && ln -s ~/.galahad/specs/RUNTR2.SPC RUNTR2.SPC
 
 # bgo
 
