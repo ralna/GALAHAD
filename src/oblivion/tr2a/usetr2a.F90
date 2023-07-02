@@ -221,8 +221,7 @@
 !  Initialize the problem data
 
      cutest_control%input = input ; cutest_control%error = control%error
-     CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
-                             no_hessian = .NOT. control%find_sparse_hessian )
+     CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata )
 
 !  Read a previous solution file for a re-entry
 
@@ -237,7 +236,7 @@
        REWIND( wfiledevice )
        READ( wfiledevice, "( A10 )" ) name
        IF ( name /= nlp%pname ) THEN
-         WRITE( out, "( /, ' *** Exit from usetr2a: re-entry requested with',   &
+         WRITE( out, "( /, ' *** Exit from usetr2a: re-entry requested with',  &
         &         ' data for problem ', A10, /,                                &
         &         '     but the most recently decoded problem is ', A10 )" )   &
           name, nlp%pname
@@ -245,20 +244,20 @@
        END IF
        READ( wfiledevice, "( I8 )" )i
        IF ( i /= nlp%n ) THEN
-         WRITE( out, "( /, ' *** Exit from usetr2a: number of variables'      , &
+         WRITE( out, "( /, ' *** Exit from usetr2a: number of variables',      &
         &        ' changed from ', I0,' to ', I0,' on re-entry ' )" ) nlp%n, i
          STOP
        END IF
        READ( wfiledevice, "( I8 )" )i
        IF ( i /= nlp%m ) THEN
-         WRITE( out, "( /, ' *** Exit from usetr2a: number of residuals',       &
+         WRITE( out, "( /, ' *** Exit from usetr2a: number of residuals',      &
         &        ' changed from ', I0, ' to ', I0, ' on re-entry ' )" ) nlp%m, i
          STOP
        END IF
        DO i = 1, nlp%n
          READ( wfiledevice, "( ES24.16, 2X, A10 )" ) nlp%X( i ), name
          IF ( name /= nlp%VNAMES( i ) ) THEN
-           WRITE( out, "( /, ' *** Exit from usetr2a: variable named ',         &
+           WRITE( out, "( /, ' *** Exit from usetr2a: variable named ',        &
           &  A, ' out of order on re-entry ' )" ) TRIM( name )
            STOP
          END IF
@@ -272,9 +271,9 @@
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-     CALL TR2A_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
-                     eval_H = CUTEST_eval_H )
+     CALL TR2A_solve( nlp, control, inform, data, userdata,                    &
+                      eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,          &
+                      eval_H = CUTEST_eval_H )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( /, ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -288,14 +287,14 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( inform%status == GALAHAD_ok .OR.                                &
+        IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-            inform%norm_g, inform%iter, inform%g_eval,                       &
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_g, inform%iter, inform%g_eval,                         &
             inform%time%clock_total, inform%status
         ELSE
-          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-            inform%norm_g, - inform%iter, - inform%g_eval,                   &
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_g, - inform%iter, - inform%g_eval,                     &
             - inform%time%clock_total, inform%status
         END IF
       END IF

@@ -213,10 +213,6 @@
 
        LOGICAL :: renormalize_radius = .FALSE.
 
-!   is a sparse Hessian approximation required?
-
-       LOGICAL :: find_sparse_hessian = .FALSE.
-
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
 
@@ -374,8 +370,7 @@
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
-       LOGICAL :: monotone, f_is_nan, non_trivial_p
-       LOGICAL :: sparse_hessian, successful
+       LOGICAL :: monotone, f_is_nan, non_trivial_p, successful
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: bndry = ' '
@@ -553,7 +548,6 @@
 !  hessian-available                               yes
 !  sub-problem-direct                              no
 !  renormalize-radius                              no
-!  find-sparse-hessian                             no
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
@@ -604,10 +598,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: renormalize_radius                   &
                                             = clock_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: find_sparse_hessian                  &
-                                            = renormalize_radius + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
-                                            = find_sparse_hessian + 1
+                                            = renormalize_radius + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
@@ -655,7 +647,6 @@
 !  Logical key-words
 
      spec( renormalize_radius )%keyword = 'renormalize-radius'
-     spec( find_sparse_hessian )%keyword = 'find-sparse-hessian'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -759,9 +750,6 @@
 
      CALL SPECFILE_assign_value( spec( renormalize_radius ),                   &
                                  control%renormalize_radius,                   &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( find_sparse_hessian ),                  &
-                                 control%find_sparse_hessian,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
@@ -1470,7 +1458,7 @@ data%control%SHA_control%print_level = 0
      data%clock_now = data%clock_now - data%clock_start
 
      IF ( data%printi ) WRITE( data%out, "( /, A, '  Problem: ', A,            &
-    &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
+    &   ' (n = ', I0, '): TR2A stopping tolerance =', ES11.4, / )" )           &
        prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
 
 !  ============================================================================
@@ -1505,17 +1493,10 @@ data%control%SHA_control%print_level = 0
          data%print_1st_header = .FALSE.
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
          IF ( inform%iter > 0 ) THEN
-           IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
-             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
-                data%bndry, data%negcur, data%perturb, inform%obj,             &
-                inform%norm_g, data%ratio, inform%radius, data%s_norm,         &
-                data%hmax_error, data%clock_now
-           ELSE
-             WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
-                data%bndry, data%negcur, data%perturb, inform%obj,             &
-                inform%norm_g, data%ratio, inform%radius, data%s_norm,         &
-                data%clock_now
-           END IF
+           WRITE( data%out, 2120 ) prefix, char_iter, data%accept,             &
+              data%bndry, data%negcur, data%perturb, inform%obj,               &
+              inform%norm_g, data%ratio, inform%radius, data%s_norm,           &
+              data%hmax_error, data%clock_now
          ELSE
            WRITE( data%out, 2140 ) prefix, char_iter, inform%obj,              &
                inform%norm_g, inform%radius, data%clock_now
@@ -1582,17 +1563,11 @@ data%control%SHA_control%print_level = 0
 !  if a new Hessian approximation is desired, compute the exact Hessian as a
 !  comparison
 
-!      data%sparse_hessian = inform%iter > 1 .AND. data%successful .AND.       &
-!                            data%control%find_sparse_hessian
-       data%sparse_hessian = .TRUE.
-
-       IF ( data%sparse_hessian ) THEN
-         IF ( data%reverse_h ) THEN
-           data%branch = 110 ; inform%status = 4 ; RETURN
-         ELSE
-           CALL eval_H( data%eval_status, nlp%X( : nlp%n ), userdata,          &
-                        nlp%H%val( : nlp%H%ne ) )
-         END IF
+       IF ( data%reverse_h ) THEN
+         data%branch = 110 ; inform%status = 4 ; RETURN
+       ELSE
+         CALL eval_H( data%eval_status, nlp%X( : nlp%n ), userdata,            &
+                      data%VAL_est( : nlp%H%ne ) )
        END IF
 
 !  return from reverse communication to obtain the Hessian
@@ -1602,79 +1577,77 @@ data%control%SHA_control%print_level = 0
 !  if a sparsity-based secant approximation of the Hessian is required,
 !  record the latest step and gradient difference
 
-       IF ( data%sparse_hessian ) THEN
-         data%latest_diff = data%latest_diff + 1
-         IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
-!        data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
-         data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
-         data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
+       data%latest_diff = data%latest_diff + 1
+       IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
+!      data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
+       data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
+       data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
 !write(6,*) ' latest ', data%latest_diff
 !write(6,*) 's', data%DX_past( : , data%latest_diff )
 
 !  record the column positions in DX and DG of the ordered latest differences
 !  (most to least recent)
 
-         IF ( data%total_diffs < data%max_diffs ) THEN
-           DO i = data%total_diffs, 1, - 1
-             data%PAST( i + 1 ) = data%PAST( i )
-           END DO
-           data%total_diffs = data%total_diffs + 1
-           data%PAST( 1 ) = data%total_diffs
-         ELSE
-           DO i = data%max_diffs - 1, 1, - 1
-             data%PAST( i + 1 ) = data%PAST( i )
-           END DO
-           data%PAST( 1 ) = data%latest_diff
-         END IF
+       IF ( data%total_diffs < data%max_diffs ) THEN
+         DO i = data%total_diffs, 1, - 1
+           data%PAST( i + 1 ) = data%PAST( i )
+         END DO
+         data%total_diffs = data%total_diffs + 1
+         data%PAST( 1 ) = data%total_diffs
+       ELSE
+         DO i = data%max_diffs - 1, 1, - 1
+           data%PAST( i + 1 ) = data%PAST( i )
+         END DO
+         data%PAST( 1 ) = data%latest_diff
+       END IF
 
-         IF ( test_s ) THEN
-           data%DX_svd( : nlp%n, : data%total_diffs ) =                        &
-             data%DX_past( : nlp%n, : data%total_diffs )
+       IF ( test_s ) THEN
+         data%DX_svd( : nlp%n, : data%total_diffs ) =                          &
+           data%DX_past( : nlp%n, : data%total_diffs )
 
-           CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,         &
-                       nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,       &
-                       data%WORK_svd, data%lwork_svd, info_svd )
+         CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,           &
+                     nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,         &
+                     data%WORK_svd, data%lwork_svd, info_svd )
 
-!          write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
-!            info_svd, data%S_svd( : data%total_diffs )
-         END IF
+!        write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
+!          info_svd, data%S_svd( : data%total_diffs )
+       END IF
 
 !write(6,"( ' PAST ', /, 20( I0 :, ' ' ) )" ) &
 ! ( data%PAST( i ), i = 1, data%total_diffs )
 
 !  compute the new Hessian estimates
 
-         CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
-                            data%total_diffs, data%PAST,                       &
-                            nlp%n, data%total_diffs, data%DX_past,             &
-                            nlp%n, data%total_diffs, data%DG_past,             &
-                            data%VAL_est, data%SHA_data,                       &
-                            data%control%SHA_control, inform%SHA_inform )
+       CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,               &
+                          data%total_diffs, data%PAST,                         &
+                          nlp%n, data%total_diffs, data%DX_past,               &
+                          nlp%n, data%total_diffs, data%DG_past,               &
+                          nlp%H%val( : nlp%H%ne ), data%SHA_data,              &
+                          data%control%SHA_control, inform%SHA_inform )
 
-         IF ( inform%SHA_inform%status == 0 ) THEN
-           data%hmax_error =                                                   &
-             MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                          &
-                            data%VAL_est( : nlp%H%ne ) ) /                     &
-                     MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
-           IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
-             IF ( test_s ) THEN
-               WRITE( data%out, "( '    row    col     true         est',      &
-              & '       error' )" )
-               DO i = 1, nlp%H%ne
-                 WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),         &
-                   nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),          &
-                   ABS( nlp%H%val( i ) - data%VAL_est( i ) )
-               END DO
-             ELSE
-               WRITE( data%out, "( ' max error = ', ES9.2 )" ) data%hmax_error
-             END IF
+       IF ( inform%SHA_inform%status == 0 ) THEN
+         data%hmax_error =                                                     &
+           MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                            &
+                          data%VAL_est( : nlp%H%ne ) ) /                       &
+                   MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
+         IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
+           IF ( test_s ) THEN
+             WRITE( data%out, "( '    row    col     true         est',        &
+            & '       error' )" )
+             DO i = 1, nlp%H%ne
+               WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),           &
+                 nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),            &
+                 ABS( nlp%H%val( i ) - data%VAL_est( i ) )
+             END DO
+           ELSE
+             WRITE( data%out, "( ' max error = ', ES9.2 )" ) data%hmax_error
            END IF
-!          nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
-         ELSE
-           data%hmax_error = HUGE( one )
-           WRITE( data%out, "( ' SHA status = ', I0 )" )                       &
-             inform%SHA_inform%status
          END IF
+!        nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
+       ELSE
+         data%hmax_error = HUGE( one )
+         WRITE( data%out, "( ' SHA status = ', I0 )" )                         &
+           inform%SHA_inform%status
        END IF
 
 !  ============================================================================
@@ -1685,7 +1658,7 @@ data%control%SHA_control%print_level = 0
 
 !  solve the trust-region subproblem
 
-       CALL TRS_solve( nlp%n, inform%radius, zero, nlp%G, nlp%H, data%S,      &
+       CALL TRS_solve( nlp%n, inform%radius, zero, nlp%G, nlp%H, data%S,       &
                        data%TRS_data, control%TRS_control, inform%TRS_inform )
 
        data%model = inform%TRS_inform%obj
@@ -1950,7 +1923,7 @@ data%control%SHA_control%print_level = 0
              data%clock_now = data%clock_now - data%clock_start
              char_iter = STRING_integer_6( inform%iter +                       &
                                              data%advanced_start_iter )
-             IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+             IF ( inform%iter > 1 ) THEN
                WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
                   data%bndry, data%negcur, data%perturb, inform%obj,           &
                   inform%norm_g, data%ratio, inform%radius, data%s_norm,       &
@@ -2021,10 +1994,9 @@ data%control%SHA_control%print_level = 0
          data%accept = 'a'
          inform%obj = data%f_trial
 
-!  If necessary, temporarily store the old gradient
+!  temporarily store the old gradient
 
-         IF ( data%control%find_sparse_hessian )                               &
-           data%G_current( : nlp%n ) = nlp%G( : nlp%n )
+         data%G_current( : nlp%n ) = nlp%G( : nlp%n )
 
 !  evaluate the gradient of the objective function
 
@@ -2129,7 +2101,7 @@ data%control%SHA_control%print_level = 0
           inform%iter < data%stop_print .AND.                                  &
           MOD( inform%iter + 1 - data%start_print, data%print_gap ) /= 0 ) THEN
        char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-       IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+       IF ( inform%iter > 1 ) THEN
          WRITE( data%out, 2120 ) prefix, char_iter, data%accept,               &
             data%bndry, data%negcur, data%perturb, inform%obj,                 &
             inform%norm_g, data%ratio, inform%radius, data%s_norm,             &
@@ -2142,13 +2114,13 @@ data%control%SHA_control%print_level = 0
        END IF
      END IF
 
-     IF ( inform%iter > 1 .AND. data%control%find_sparse_hessian ) THEN
+     IF ( inform%iter > 1 ) THEN
 !      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
          WRITE( data%out, "( /, &
         &                 '    row    col     true         est       error' )" )
          DO i = 1, nlp%H%ne
            WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),               &
-             nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),                &
+             nlp%H%col( i ), data%VAL_est( i ), nlp%H%val( i ),                &
              ABS( nlp%H%val( i ) - data%VAL_est( i ) )
          END DO
 !      END IF
@@ -2189,7 +2161,7 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !         END DO
 !      END DO
        WRITE( data%out, "( /, A, '  Problem: ', A,                             &
-      &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4 )" )             &
+      &   ' (n = ', I0, '): TR2A stopping tolerance =', ES11.4 )" )            &
          prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
        IF ( .NOT. data%monotone ) WRITE( data%out,                             &
            "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&

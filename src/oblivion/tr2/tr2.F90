@@ -1470,7 +1470,7 @@ data%control%SHA_control%print_level = 0
      data%clock_now = data%clock_now - data%clock_start
 
      IF ( data%printi ) WRITE( data%out, "( /, A, '  Problem: ', A,            &
-    &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4, / )" )            &
+    &   ' (n = ', I0, '): TR2 stopping tolerance =', ES11.4, / )" )            &
        prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
 
 !  ============================================================================
@@ -2189,7 +2189,7 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !         END DO
 !      END DO
        WRITE( data%out, "( /, A, '  Problem: ', A,                             &
-      &   ' (n = ', I0, '): TRU stopping tolerance =', ES11.4 )" )             &
+      &   ' (n = ', I0, '): TR2 stopping tolerance =', ES11.4 )" )             &
          prefix, TRIM( nlp%pname ), nlp%n, data%stop_g
        IF ( .NOT. data%monotone ) WRITE( data%out,                             &
            "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
