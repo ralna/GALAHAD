@@ -1,18 +1,18 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-07-01 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-07-02 AT 12:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-  G A L A H A D   R U N T R 2 _ S I F  *-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-  G A L A H A D   R U N T R 2 A _ S I F  *-*-*-*-*-*-*-*-
 
 !  Nick Gould, Dominique Orban and Philippe Toint, for GALAHAD productions
 !  Copyright reserved
-!  July 1st 2023
+!  July 2nd 2023
 
-   PROGRAM RUNTR2_SIF_precision
+   PROGRAM RUNTR2A_SIF_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_USETR2_precision
+   USE GALAHAD_USETR2A_precision
 
-!  Main program for the SIF interface to TR2, a second-order (Neton-like)
+!  Main program for the SIF interface to TR2A, a first-order (steepest-descent)
 !  trust-region algorithm for unconstrained optimization
 
 !  Problem insif characteristics
@@ -35,13 +35,13 @@
 
 !  Call the SIF interface
 
-   CALL USE_TR2( insif )
+   CALL USE_TR2A( insif )
 
 !  Close the data input file 
 
    CLOSE( insif )
    STOP
 
-!  End of RUNTR2_SIF_precision
+!  End of RUNTR2A_SIF_precision
 
-   END PROGRAM RUNTR2_SIF_precision
+   END PROGRAM RUNTR2A_SIF_precision

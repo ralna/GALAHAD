@@ -1,23 +1,23 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-07-01 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-07-02 AT 12:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D _ T R 2   M O D U L E  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ T R 2 A   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released GALAHAD Version 4.2. July 1st 2023
+!   originally released GALAHAD Version 4.2. July 2nd 2023
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_TR2_precision
+   MODULE GALAHAD_TR2A_precision
 
 !     --------------------------------------------------------
 !    |                                                        |
-!    | TR2, a second-order (Newton-like) trust-region         |
+!    | TR2A, a second-order (Secant-based) trust-region       |
 !    |  algorithm for unconstrained optimization              |
 !    |                                                        |
 !    |   Aim: find a (local) minimizer of the objective f(x)  |
@@ -43,23 +43,23 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: TR2_initialize, TR2_read_specfile, TR2_solve,                   &
-               TR2_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
-               TR2_import, TR2_solve_direct, TR2_solve_reverse,                &
-               TR2_full_initialize, TR2_full_terminate, TR2_reset_control,     &
-               TR2_information
+     PUBLIC :: TR2A_initialize, TR2A_read_specfile, TR2A_solve,                &
+               TR2A_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
+               TR2A_import, TR2A_solve_direct, TR2A_solve_reverse,             &
+               TR2A_full_initialize, TR2A_full_terminate, TR2A_reset_control,  &
+               TR2A_information
 
 !----------------------
 !   I n t e r f a c e s
 !----------------------
 
-     INTERFACE TR2_initialize
-       MODULE PROCEDURE TR2_initialize, TR2_full_initialize
-     END INTERFACE TR2_initialize
+     INTERFACE TR2A_initialize
+       MODULE PROCEDURE TR2A_initialize, TR2A_full_initialize
+     END INTERFACE TR2A_initialize
 
-     INTERFACE TR2_terminate
-       MODULE PROCEDURE TR2_terminate, TR2_full_terminate
-     END INTERFACE TR2_terminate
+     INTERFACE TR2A_terminate
+       MODULE PROCEDURE TR2A_terminate, TR2A_full_terminate
+     END INTERFACE TR2A_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -104,7 +104,7 @@
 !   control derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: TR2_control_type
+     TYPE, PUBLIC :: TR2A_control_type
 
 !   error and warning diagnostics occur on stream error
 
@@ -240,13 +240,13 @@
 !  control parameters for TRS
 
        TYPE ( TRS_control_type ) :: TRS_control
-     END TYPE TR2_control_type
+     END TYPE TR2A_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: TR2_time_type
+     TYPE, PUBLIC :: TR2A_time_type
 
 !  the total CPU time spent in the package
 
@@ -294,9 +294,9 @@
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: TR2_inform_type
+     TYPE, PUBLIC :: TR2A_inform_type
 
-!  return status. See TR2_solve for details
+!  return status. See TR2A_solve for details
 
        INTEGER ( KIND = ip_ ) :: status = 0
 
@@ -325,12 +325,12 @@
        INTEGER ( KIND = ip_ ) :: g_eval = 0
 
 !  the value of the objective function at the best estimate of the solution
-!   determined by TR2_solve
+!   determined by TR2A_solve
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the norm of the gradient of the objective function at the best estimate
-!   of the solution determined by TR2_solve
+!   of the solution determined by TR2A_solve
 
        REAL ( KIND = rp_ ) :: norm_g = HUGE( one )
 
@@ -340,7 +340,7 @@
 
 !  timings (see above)
 
-       TYPE ( TR2_time_type ) :: time
+       TYPE ( TR2A_time_type ) :: time
 
 !  inform parameters for SHA
 
@@ -349,13 +349,13 @@
 !  inform parameters for TRS
 
        TYPE ( TRS_inform_type ) :: TRS_inform
-     END TYPE TR2_inform_type
+     END TYPE TR2A_inform_type
 
 !  - - - - - - - - - -
 !   data derived types
 !  - - - - - - - - - -
 
-     TYPE, PUBLIC :: TR2_data_type
+     TYPE, PUBLIC :: TR2A_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: advanced_start_iter, lbfgs_mem, max_hist
@@ -406,7 +406,7 @@
 
 !  copy of controls
 
-       TYPE ( TR2_control_type ) :: control
+       TYPE ( TR2A_control_type ) :: control
 
 !  data for SHA
 
@@ -415,22 +415,22 @@
 !  data for TRS
 
        TYPE ( TRS_data_type ) :: TRS_data
-     END TYPE TR2_data_type
+     END TYPE TR2A_data_type
 
-     TYPE, PUBLIC :: TR2_full_data_type
+     TYPE, PUBLIC :: TR2A_full_data_type
        LOGICAL :: f_indexing = .TRUE.
-       TYPE ( TR2_data_type ) :: tr2_data
-       TYPE ( TR2_control_type ) :: tr2_control
-       TYPE ( TR2_inform_type ) :: tr2_inform
+       TYPE ( TR2A_data_type ) :: tr2a_data
+       TYPE ( TR2A_control_type ) :: tr2a_control
+       TYPE ( TR2A_inform_type ) :: tr2a_inform
        TYPE ( NLPT_problem_type ) :: nlp
        TYPE ( GALAHAD_userdata_type ) :: userdata
-     END TYPE TR2_full_data_type
+     END TYPE TR2A_full_data_type
 
    CONTAINS
 
-!-*-*-  G A L A H A D -  T R 2 _ I N I T I A L I Z E  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D -  T R 2 A _ I N I T I A L I Z E  S U B R O U T I N E  -*-
 
-     SUBROUTINE TR2_initialize( data, control, inform )
+     SUBROUTINE TR2A_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -448,9 +448,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TR2_control_type ), INTENT( OUT ) :: control
-     TYPE ( TR2_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( TR2A_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( OUT ) :: control
+     TYPE ( TR2A_inform_type ), INTENT( OUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -476,13 +476,13 @@
 
      RETURN
 
-!  End of subroutine TR2_initialize
+!  End of subroutine TR2A_initialize
 
-     END SUBROUTINE TR2_initialize
+     END SUBROUTINE TR2A_initialize
 
-!- G A L A H A D -  T R 2 _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+! G A L A H A D -  T R 2 A _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
 
-     SUBROUTINE TR2_full_initialize( data, control, inform )
+     SUBROUTINE TR2A_full_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -500,28 +500,28 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TR2_control_type ), INTENT( OUT ) :: control
-     TYPE ( TR2_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( OUT ) :: control
+     TYPE ( TR2A_inform_type ), INTENT( OUT ) :: inform
 
-     CALL TR2_initialize( data%tr2_data, data%tr2_control, data%tr2_inform )
-     control = data%tr2_control
-     inform = data%tr2_inform
+     CALL TR2A_initialize( data%tr2a_data, data%tr2a_control, data%tr2a_inform )
+     control = data%tr2a_control
+     inform = data%tr2a_inform
 
      RETURN
 
-!  End of subroutine TR2_full_initialize
+!  End of subroutine TR2A_full_initialize
 
-     END SUBROUTINE TR2_full_initialize
+     END SUBROUTINE TR2A_full_initialize
 
-!-*-*-*-*-   T R 2 _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
+!-*-*-*-*-   T R 2 A _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
-     SUBROUTINE TR2_read_specfile( control, device, alt_specname )
+     SUBROUTINE TR2A_read_specfile( control, device, alt_specname )
 
 !  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by TR2_initialize could (roughly)
+!  The default values as given by TR2A_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN TRU SPECIFICATIONS (DEFAULT)
@@ -564,7 +564,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_control_type ), INTENT( INOUT ) :: control
+     TYPE ( TR2A_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -614,7 +614,7 @@
                                             = deallocate_error_fatal + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'TR2 '
+     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'TR2A '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -793,24 +793,24 @@
 
      RETURN
 
-     END SUBROUTINE TR2_read_specfile
+     END SUBROUTINE TR2A_read_specfile
 
-!-*-*-*-  G A L A H A D -  T R 2 _ s o l v e  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  T R 2 A _ s o l v e  S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE TR2_solve( nlp, control, inform, data, userdata,               &
+     SUBROUTINE TR2A_solve( nlp, control, inform, data, userdata,               &
                            eval_F, eval_G, eval_H )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  TR2_solve, a first-order trust-region method for finding a local
+!  TR2A_solve, a first-order trust-region method for finding a local
 !    unconstrained minimizer of a given function
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_TR2.
+!  For full details see the specification sheet for GALAHAD_TR2A.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_TR2_precision
+!  ** GALAHAD_TR2A_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -839,10 +839,10 @@
 !   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
-! control is a scalar variable of type TR2_control_type. See TR2_initialize
+! control is a scalar variable of type TR2A_control_type. See TR2A_initialize
 !  for details
 !
-! inform is a scalar variable of type TR2_inform_type. On initial entry,
+! inform is a scalar variable of type TR2A_inform_type. On initial entry,
 !  inform%status should be set to 1. On exit, the following components will
 !  have been set:
 !
@@ -954,7 +954,7 @@
 !   value of the norm of the objective function gradient at the best estimate
 !   of the solution found.
 !
-!  time is a scalar variable of type TR2_time_type whose components are used to
+!  time is a scalar variable of type TR2A_time_type whose components are used to
 !   hold elapsed CPU and clock times for the various parts of the calculation.
 !   Components are:
 !
@@ -989,7 +989,7 @@
 !    clock_solve is a scalar variable of type default real, that gives
 !     the clock time spent using the factors to solve relevant linear equations.
 !
-!  data is a scalar variable of type TR2_data_type used for internal data.
+!  data is a scalar variable of type TR2A_data_type used for internal data.
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
@@ -1010,7 +1010,7 @@
 !   given below (see the interface blocks). The value of the objective
 !   function f(x) evaluated at x=X must be returned in f, and the status
 !   variable set to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_F is not present, TR2_solve will
+!   be set to a nonzero value. If eval_F is not present, TR2A_solve will
 !   return to the user with inform%status = 2 each time an evaluation is
 !   required.
 !
@@ -1019,7 +1019,7 @@
 !   nabla_x f(x) of the objective function evaluated at x=X must be returned in
 !   G, and the status variable set to 0. If the evaluation is impossible at X,
 !   status should be set to a nonzero value. If eval_G is not present,
-!   TR2_solve will return to the user with inform%status = 3 each time an
+!   TR2A_solve will return to the user with inform%status = 3 each time an
 !   evaluation is required.
 !
 !  eval_H is an optional subroutine which if present must have the arguments
@@ -1027,7 +1027,7 @@
 !   nabla_xx f(x) of the objective function evaluated at x=X must be returned in
 !   H in the same order as presented in nlp%H, and the status variable set to 0.
 !   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_H is not present, TR2_solve will return to the user with
+!   value. If eval_H is not present, TR2A_solve will return to the user with
 !   inform%status = 4 each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1037,9 +1037,9 @@
 !-----------------------------------------------
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-     TYPE ( TR2_control_type ), INTENT( IN ) :: control
-     TYPE ( TR2_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( TR2_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( IN ) :: control
+     TYPE ( TR2A_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TR2A_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G, eval_H
 
@@ -1135,7 +1135,7 @@
 
 !  allocate sufficient space for the problem
 
-     array_name = 'tr2: data%X_current'
+     array_name = 'tr2a: data%X_current'
      CALL SPACE_resize_array( nlp%n, data%X_current, inform%status,            &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1143,7 +1143,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%G_current'
+     array_name = 'tr2a: data%G_current'
      CALL SPACE_resize_array( nlp%n, data%G_current, inform%status,            &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1151,7 +1151,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%S'
+     array_name = 'tr2a: data%S'
      CALL SPACE_resize_array( nlp%n, data%S, inform%status,                    &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1159,7 +1159,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%V'
+     array_name = 'tr2a: data%V'
      CALL SPACE_resize_array( nlp%n, data%V, inform%status,                    &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1168,7 +1168,7 @@
      IF ( inform%status /= 0 ) GO TO 980
 
      IF ( control%advanced_start > 0 ) THEN
-       array_name = 'tr2: data%X_best'
+       array_name = 'tr2a: data%X_best'
        CALL SPACE_resize_array( nlp%n, data%X_best, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1268,7 +1268,7 @@
 !  allocate further arrays
 
      IF ( .NOT. data%monotone ) THEN
-       array_name = 'tr2: data%F_hist'
+       array_name = 'tr2a: data%F_hist'
        CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
               inform%status,                                                   &
               inform%alloc_status, array_name = array_name,                    &
@@ -1277,7 +1277,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'tr2: data%D_hist'
+       array_name = 'tr2a: data%D_hist'
        CALL SPACE_resize_array( data%non_monotone_history + 1, data%D_hist,    &
               inform%status,                                                   &
               inform%alloc_status, array_name = array_name,                    &
@@ -1370,7 +1370,7 @@ data%control%SHA_control%print_level = 0
      IF ( data%printi ) WRITE( data%out, "( A,                                 &
     &  ' maximum # of differences required = ', I0 )" ) prefix, data%max_diffs
 
-     array_name = 'tr2: data%DX_past'
+     array_name = 'tr2a: data%DX_past'
      CALL SPACE_resize_array( nlp%n, data%max_diffs, data%DX_past,             &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1378,7 +1378,7 @@ data%control%SHA_control%print_level = 0
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%DX_svd'
+     array_name = 'tr2a: data%DX_svd'
      CALL SPACE_resize_array( nlp%n, data%max_diffs, data%DX_svd,              &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1386,7 +1386,7 @@ data%control%SHA_control%print_level = 0
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%DG_past'
+     array_name = 'tr2a: data%DG_past'
      CALL SPACE_resize_array( nlp%n, data%max_diffs, data%DG_past,             &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1394,7 +1394,7 @@ data%control%SHA_control%print_level = 0
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%PAST'
+     array_name = 'tr2a: data%PAST'
      CALL SPACE_resize_array( data%max_diffs, data%PAST, inform%status,        &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1402,7 +1402,7 @@ data%control%SHA_control%print_level = 0
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'tr2: data%VAL_est'
+     array_name = 'tr2a: data%VAL_est'
      CALL SPACE_resize_array( nlp%H%ne, data%VAL_est, inform%status,           &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1411,7 +1411,7 @@ data%control%SHA_control%print_level = 0
      IF ( inform%status /= 0 ) GO TO 980
 
      IF ( test_s ) THEN
-       array_name = 'tr2: data%U_svd'
+       array_name = 'tr2a: data%U_svd'
        CALL SPACE_resize_array( 1, 1, data%U_svd, inform%status,               &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1419,7 +1419,7 @@ data%control%SHA_control%print_level = 0
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'tr2: data%VT_svd'
+       array_name = 'tr2a: data%VT_svd'
        CALL SPACE_resize_array( 1, 1, data%VT_svd, inform%status,              &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1427,7 +1427,7 @@ data%control%SHA_control%print_level = 0
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'tr2: data%S_svd'
+       array_name = 'tr2a: data%S_svd'
        i = MIN( nlp%n, data%max_diffs )
        CALL SPACE_resize_array( i, data%S_svd, inform%status,                  &
               inform%alloc_status, array_name = array_name,                    &
@@ -1436,7 +1436,7 @@ data%control%SHA_control%print_level = 0
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'tr2: data%WORK_svd'
+       array_name = 'tr2a: data%WORK_svd'
        CALL SPACE_resize_array( 1, data%WORK_svd, inform%status,               &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1449,7 +1449,7 @@ data%control%SHA_control%print_level = 0
                     data%WORK_svd, - 1, info_svd )
        data%lwork_svd = INT( data%WORK_svd( 1 ) )
 
-       array_name = 'tr2: data%WORK_svd'
+       array_name = 'tr2a: data%WORK_svd'
        CALL SPACE_resize_array( data%lwork_svd, data%WORK_svd,                 &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -2216,7 +2216,7 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      IF ( control%error > 0 ) THEN
-       CALL SYMBOLS_status( inform%status, control%error, prefix, 'TR2_solve' )
+       CALL SYMBOLS_status( inform%status, control%error, prefix, 'TR2A_solve' )
        WRITE( control%error, "( ' ' )" )
      END IF
      RETURN
@@ -2242,13 +2242,13 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
  2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES11.4, ES9.1, 2ES8.1, 8X, F8.2 )
  2140 FORMAT( A, A6, 5X, ES12.4, ES11.4, 9X, ES8.1, 16X, F8.2 )
 
- !  End of subroutine TR2_solve
+ !  End of subroutine TR2A_solve
 
-     END SUBROUTINE TR2_solve
+     END SUBROUTINE TR2A_solve
 
-!-*-*-  G A L A H A D -  T R 2 _ t e r m i n a t e  S U B R O U T I N E -*-*-
+!-*-*-  G A L A H A D -  T R 2 A _ t e r m i n a t e  S U B R O U T I N E -*-*-
 
-     SUBROUTINE TR2_terminate( data, control, inform )
+     SUBROUTINE TR2A_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2260,9 +2260,9 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TR2_control_type ), INTENT( IN ) :: control
-     TYPE ( TR2_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TR2A_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( IN ) :: control
+     TYPE ( TR2A_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -2273,121 +2273,121 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'tr2: data%X_best'
+     array_name = 'tr2a: data%X_best'
      CALL SPACE_dealloc_array( data%X_best,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%X_current'
+     array_name = 'tr2a: data%X_current'
      CALL SPACE_dealloc_array( data%X_current,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%G_current'
+     array_name = 'tr2a: data%G_current'
      CALL SPACE_dealloc_array( data%G_current,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%S'
+     array_name = 'tr2a: data%S'
      CALL SPACE_dealloc_array( data%S,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%V'
+     array_name = 'tr2a: data%V'
      CALL SPACE_dealloc_array( data%V,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%RHO'
+     array_name = 'tr2a: data%RHO'
      CALL SPACE_dealloc_array( data%RHO,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%ALPHA'
+     array_name = 'tr2a: data%ALPHA'
      CALL SPACE_dealloc_array( data%ALPHA,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%D_hist'
+     array_name = 'tr2a: data%D_hist'
      CALL SPACE_dealloc_array( data%D_hist,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%F_hist'
+     array_name = 'tr2a: data%F_hist'
      CALL SPACE_dealloc_array( data%F_hist,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%DX'
+     array_name = 'tr2a: data%DX'
      CALL SPACE_dealloc_array( data%DX,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%DG'
+     array_name = 'tr2a: data%DG'
      CALL SPACE_dealloc_array( data%DG,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%DX_past'
+     array_name = 'tr2a: data%DX_past'
      CALL SPACE_dealloc_array( data%DX_past,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%DG_past'
+     array_name = 'tr2a: data%DG_past'
      CALL SPACE_dealloc_array( data%DG_past,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%PAST'
+     array_name = 'tr2a: data%PAST'
      CALL SPACE_dealloc_array( data%PAST,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%VAL_est'
+     array_name = 'tr2a: data%VAL_est'
      CALL SPACE_dealloc_array( data%VAL_est,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%DX_svd'
+     array_name = 'tr2a: data%DX_svd'
      CALL SPACE_dealloc_array( data%DX_svd,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%U_svd'
+     array_name = 'tr2a: data%U_svd'
      CALL SPACE_dealloc_array( data%U_svd,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%VT_svd'
+     array_name = 'tr2a: data%VT_svd'
      CALL SPACE_dealloc_array( data%VT_svd,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%S_svd'
+     array_name = 'tr2a: data%S_svd'
      CALL SPACE_dealloc_array( data%S_svd,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%WORK_svd'
+     array_name = 'tr2a: data%WORK_svd'
      CALL SPACE_dealloc_array( data%WORK_svd,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -2418,13 +2418,13 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 
      RETURN
 
-!  End of subroutine TR2_terminate
+!  End of subroutine TR2A_terminate
 
-     END SUBROUTINE TR2_terminate
+     END SUBROUTINE TR2A_terminate
 
-!-  G A L A H A D -  T R 2 _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+!-  G A L A H A D -  T R 2 A _ f u l l _ t e r m i n a t e  S U B R O U T I N E
 
-     SUBROUTINE TR2_full_terminate( data, control, inform )
+     SUBROUTINE TR2A_full_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2436,9 +2436,9 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TR2_control_type ), INTENT( IN ) :: control
-     TYPE ( TR2_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( IN ) :: control
+     TYPE ( TR2A_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -2448,54 +2448,54 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 
 !  deallocate workspace
 
-     CALL TR2_terminate( data%tr2_data, data%tr2_control, data%tr2_inform )
-     inform = data%tr2_inform
+     CALL TR2A_terminate( data%tr2a_data, data%tr2a_control, data%tr2a_inform )
+     inform = data%tr2a_inform
 
 !  deallocate any internal problem arrays
 
-     array_name = 'tr2: data%nlp%X'
+     array_name = 'tr2a: data%nlp%X'
      CALL SPACE_dealloc_array( data%nlp%X,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%G'
+     array_name = 'tr2a: data%nlp%G'
      CALL SPACE_dealloc_array( data%nlp%G,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%Z'
+     array_name = 'tr2a: data%nlp%Z'
      CALL SPACE_dealloc_array( data%nlp%Z,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%H%row'
+     array_name = 'tr2a: data%nlp%H%row'
      CALL SPACE_dealloc_array( data%nlp%H%row,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%H%col'
+     array_name = 'tr2a: data%nlp%H%col'
      CALL SPACE_dealloc_array( data%nlp%H%col,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%H%ptr'
+     array_name = 'tr2a: data%nlp%H%ptr'
      CALL SPACE_dealloc_array( data%nlp%H%ptr,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%H%val'
+     array_name = 'tr2a: data%nlp%H%val'
      CALL SPACE_dealloc_array( data%nlp%H%val,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tr2: data%nlp%H%type'
+     array_name = 'tr2a: data%nlp%H%type'
      CALL SPACE_dealloc_array( data%nlp%H%type,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -2503,9 +2503,9 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 
      RETURN
 
-!  End of subroutine TR2_full_terminate
+!  End of subroutine TR2A_full_terminate
 
-     END SUBROUTINE TR2_full_terminate
+     END SUBROUTINE TR2A_full_terminate
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
@@ -2515,17 +2515,17 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-*-*-  G A L A H A D -  T R 2 _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+!-*-*-*-*-  G A L A H A D -  T R 2 A _ i m p o r t _ S U B R O U T I N E -*-*-*-
 
-     SUBROUTINE TR2_import( control, data, status, n )
+     SUBROUTINE TR2A_import( control, data, status, n )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading
-!   comments to TR2_solve
+!   comments to TR2A_solve
 !
-!  data is a scalar variable of type TR2_full_data_type used for internal data
+!  data is a scalar variable of type TR2A_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
@@ -2552,8 +2552,8 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_control_type ), INTENT( INOUT ) :: control
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( INOUT ) :: control
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
@@ -2566,31 +2566,31 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !  copy control to data
 
      WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
-     data%tr2_control = control
+     data%tr2a_control = control
 
-     error = data%tr2_control%error
-     space_critical = data%tr2_control%space_critical
-     deallocate_error_fatal = data%tr2_control%deallocate_error_fatal
+     error = data%tr2a_control%error
+     space_critical = data%tr2a_control%space_critical
+     deallocate_error_fatal = data%tr2a_control%deallocate_error_fatal
 
 !  allocate space if required
 
-     array_name = 'tr2: data%nlp%X'
+     array_name = 'tr2a: data%nlp%X'
      CALL SPACE_resize_array( n, data%nlp%X,                                   &
-            data%tr2_inform%status, data%tr2_inform%alloc_status,              &
+            data%tr2a_inform%status, data%tr2a_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
             exact_size = space_critical,                                       &
-            bad_alloc = data%tr2_inform%bad_alloc, out = error )
-     IF ( data%tr2_inform%status /= 0 ) GO TO 900
+            bad_alloc = data%tr2a_inform%bad_alloc, out = error )
+     IF ( data%tr2a_inform%status /= 0 ) GO TO 900
 
-     array_name = 'tr2: data%nlp%G'
+     array_name = 'tr2a: data%nlp%G'
      CALL SPACE_resize_array( n, data%nlp%G,                                   &
-            data%tr2_inform%status, data%tr2_inform%alloc_status,              &
+            data%tr2a_inform%status, data%tr2a_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
             exact_size = space_critical,                                       &
-            bad_alloc = data%tr2_inform%bad_alloc, out = error )
-     IF ( data%tr2_inform%status /= 0 ) GO TO 900
+            bad_alloc = data%tr2a_inform%bad_alloc, out = error )
+     IF ( data%tr2a_inform%status /= 0 ) GO TO 900
 
      data%nlp%n = n
 
@@ -2600,49 +2600,49 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !  error returns
 
  900 CONTINUE
-     status =  data%tr2_inform%status
+     status =  data%tr2a_inform%status
      RETURN
 
-!  End of subroutine TR2_import
+!  End of subroutine TR2A_import
 
-     END SUBROUTINE TR2_import
+     END SUBROUTINE TR2A_import
 
-!-  G A L A H A D -  T R 2 _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+! - G A L A H A D -  T R 2 A _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
-     SUBROUTINE TR2_reset_control( control, data, status )
+     SUBROUTINE TR2A_reset_control( control, data, status )
 
 !  reset control parameters after import if required.
-!  See TR2_solve for a description of the required arguments
+!  See TR2A_solve for a description of the required arguments
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_control_type ), INTENT( IN ) :: control
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_control_type ), INTENT( IN ) :: control
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
-     data%tr2_control = control
+     data%tr2a_control = control
 
 !  flag a successful call
 
      status = GALAHAD_ready_to_solve
      RETURN
 
-!  end of subroutine TR2_reset_control
+!  end of subroutine TR2A_reset_control
 
-     END SUBROUTINE TR2_reset_control
+     END SUBROUTINE TR2A_reset_control
 
-! - G A L A H A D -  T R 2 _ s o l v e _ d i r e c t   S U B R O U T I N E -
+! - G A L A H A D -  T R 2 A _ s o l v e _ d i r e c t   S U B R O U T I N E -
 
-     SUBROUTINE TR2_solve_direct( data, userdata, status, X, G,           &
-                                  eval_F, eval_G )
+     SUBROUTINE TR2A_solve_direct( data, userdata, status, X, G,               &
+                                   eval_F, eval_G )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations
-!  are available via subroutine calls. See TR2_solve for a description
+!  are available via subroutine calls. See TR2A_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -2650,40 +2650,40 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G
 
-     data%tr2_inform%status = status
-     IF ( data%tr2_inform%status == 1 )                                        &
+     data%tr2a_inform%status = status
+     IF ( data%tr2a_inform%status == 1 )                                       &
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
 
 !  call the solver
 
-     CALL TR2_solve( data%nlp, data%tr2_control, data%tr2_inform,              &
-                     data%tr2_data, userdata, eval_F = eval_F,                 &
-                     eval_G = eval_G )
+     CALL TR2A_solve( data%nlp, data%tr2a_control, data%tr2a_inform,           &
+                      data%tr2a_data, userdata, eval_F = eval_F,               &
+                      eval_G = eval_G )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( data%tr2_inform%status == GALAHAD_ok )                               &
+     IF ( data%tr2a_inform%status == GALAHAD_ok )                              &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     status = data%tr2_inform%status
+     status = data%tr2a_inform%status
 
      RETURN
 
-!  end of subroutine TR2_solve_direct
+!  end of subroutine TR2A_solve_direct
 
-     END SUBROUTINE TR2_solve_direct
+     END SUBROUTINE TR2A_solve_direct
 
-!-  G A L A H A D -  T R 2 _ s o l v e _ r e v e r s e _ S U B R O U T I N E -
+!-  G A L A H A D -  T R 2 A _ s o l v e _ r e v e r s e _ S U B R O U T I N E -
 
-     SUBROUTINE TR2_solve_reverse( data, status, eval_status, X, f, G ) !,U,V)
+     SUBROUTINE TR2A_solve_reverse( data, status, eval_status, X, f, G ) !,U,V)
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
-!  available via reverse communication. See TR2_solve for a description
+!  available via reverse communication. See TR2A_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -2691,7 +2691,7 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
      REAL ( KIND = rp_ ), INTENT( IN ) :: f
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
@@ -2701,80 +2701,80 @@ write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
 
 !  recover data from reverse communication
 
-     data%tr2_inform%status = status
-     data%tr2_data%eval_status = eval_status
-     SELECT CASE ( data%tr2_inform%status )
+     data%tr2a_inform%status = status
+     data%tr2a_data%eval_status = eval_status
+     SELECT CASE ( data%tr2a_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
      CASE ( 2 )
-       data%tr2_data%eval_status = eval_status
+       data%tr2a_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
      CASE( 3 )
-       data%tr2_data%eval_status = eval_status
+       data%tr2a_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
 !    CASE( 4 )
-!      data%tr2_data%eval_status = eval_status
+!      data%tr2a_data%eval_status = eval_status
 !      IF ( eval_status == 0 )                                                 &
 !        data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
 !    CASE( 6 )
-!      data%tr2_data%eval_status = eval_status
+!      data%tr2a_data%eval_status = eval_status
 !      IF ( eval_status == 0 )                                                 &
-!        data%tr2_data%U( : data%nlp%n ) = U( : data%nlp%n )
+!        data%tr2a_data%U( : data%nlp%n ) = U( : data%nlp%n )
      END SELECT
 
 !  call the solver
 
-     CALL TR2_solve( data%nlp, data%tr2_control, data%tr2_inform,              &
-                     data%tr2_data, data%userdata )
+     CALL TR2A_solve( data%nlp, data%tr2a_control, data%tr2a_inform,           &
+                      data%tr2a_data, data%userdata )
 
 !  collect data for reverse communication
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     SELECT CASE ( data%tr2_inform%status )
+     SELECT CASE ( data%tr2a_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
 !    CASE( 6 )
-!      V( : data%nlp%n ) = data%tr2_data%V( : data%nlp%n )
+!      V( : data%nlp%n ) = data%tr2a_data%V( : data%nlp%n )
      CASE( 5 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
-         data%tr2_inform%status
+         data%tr2a_inform%status
      END SELECT
-     status = data%tr2_inform%status
+     status = data%tr2a_inform%status
 
      RETURN
 
-!  end of subroutine TR2_solve_reverse
+!  end of subroutine TR2A_solve_reverse
 
-     END SUBROUTINE TR2_solve_reverse
+     END SUBROUTINE TR2A_solve_reverse
 
-!-  G A L A H A D -  T R 2 _ i n f o r m a t i o n   S U B R O U T I N E  -
+!-  G A L A H A D -  T R 2 A _ i n f o r m a t i o n   S U B R O U T I N E  -
 
-     SUBROUTINE TR2_information( data, inform, status )
+     SUBROUTINE TR2A_information( data, inform, status )
 
 !  return solver information during or after solution by TRU
-!  See TR2_solve for a description of the required arguments
+!  See TR2A_solve for a description of the required arguments
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TR2_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TR2_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TR2A_inform_type ), INTENT( OUT ) :: inform
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
-     inform = data%tr2_inform
+     inform = data%tr2a_inform
 
 !  flag a successful call
 
      status = GALAHAD_ok
      RETURN
 
-!  end of subroutine TR2_information
+!  end of subroutine TR2A_information
 
-     END SUBROUTINE TR2_information
+     END SUBROUTINE TR2A_information
 
-!  End of module GALAHAD_TR2
+!  End of module GALAHAD_TR2A
 
-   END MODULE GALAHAD_TR2_precision
+   END MODULE GALAHAD_TR2A_precision
