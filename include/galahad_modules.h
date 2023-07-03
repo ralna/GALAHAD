@@ -100,7 +100,11 @@
 #define GALAHAD_TR1_precision GALAHAD_TR1_single
 #define GALAHAD_SEC_precision GALAHAD_SEC_single
 #define GALAHAD_SHA_precision GALAHAD_SHA_single
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision HSL_MA57_single
+#else
 #define GALAHAD_SILS_precision GALAHAD_SILS_single
+#endif
 #define GALAHAD_SLLS_precision GALAHAD_SLLS_single
 #define GALAHAD_SLS_precision GALAHAD_SLS_single
 #define GALAHAD_SMT_precision GALAHAD_SMT_single
@@ -493,7 +497,11 @@
 #define GALAHAD_TR1_precision GALAHAD_TR1_double
 #define GALAHAD_SEC_precision GALAHAD_SEC_double
 #define GALAHAD_SHA_precision GALAHAD_SHA_double
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision HSL_MA57_double
+#else
 #define GALAHAD_SILS_precision GALAHAD_SILS_double
+#endif
 #define GALAHAD_SLLS_precision GALAHAD_SLLS_double
 #define GALAHAD_SLS_precision GALAHAD_SLS_double
 #define GALAHAD_SMT_precision GALAHAD_SMT_double
@@ -784,4 +792,25 @@
 #define INQPC_precision INQPC_double
 #define INQP_precision INQP_double
 #define c_precision c_double
+#endif
+
+#ifdef LANCELOT_USE_MA57
+#define SILS_control MA57_control
+#define SILS_factors MA57_factors
+#define SILS_ainfo MA57_ainfo
+#define SILS_finfo MA57_finfo
+#define SILS_sinfo MA57_sinfo
+#define SILS_data MA57_data
+#define SILS_cntl MA57_cntl
+#define SILS_infoa MA57_infoa
+#define SILS_infof MA57_infof
+#define SILS_infos MA57_infos
+#define SILS_initialize MA57_initialize
+#define SILS_analyse MA57_analyse
+#define SILS_factorize MA57_factorize
+#define SILS_solve MA57_solve
+#define SILS_part_solve MA57_part_solve
+#define SILS_enquire MA57_enquire
+#define SILS_alter_d MA57_alter_d
+#define SILS_finalize MA57_finalize
 #endif

@@ -1,13 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
-
-#ifdef LANCELOT_USE_MA57
-#define GALAHAD_SILS_precision HSL_MA57_precision 
-#define SILS_factors MA57_factors
-#define SILS_enquire MA57_enquire
-#define SILS_alter_d MA57_alter_d
-#define SILS_control MA57_control
-#define SILS_part_solve MA57_part_solve
-#endif
+! THIS VERSION: GALAHAD 4.2 - 2023-07-03 AT 16:00 GMT.
 
 #include "galahad_modules.h"
 

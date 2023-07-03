@@ -1,27 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
-
-#ifdef LANCELOT_USE_MA57
-#define SILS_control MA57_control
-#define SILS_factors MA57_factors
-#define SILS_ainfo MA57_ainfo
-#define SILS_finfo MA57_finfo
-#define SILS_sinfo MA57_sinfo
-#define SILS_data MA57_data
-#define SILS_cntl MA57_cntl
-#define SILS_infoa MA57_infoa
-#define SILS_infof MA57_infof
-#define SILS_infos MA57_infof
-#define SILS_analyse MA57_analyse
-#define SILS_factorize MA57_factorize
-#define SILS_solve MA57_solve
-#endif
+! THIS VERSION: GALAHAD 4.2 - 2023-07-03 AT 16:05 GMT.
 
 #include "galahad_modules.h"
-
-#ifdef LANCELOT_USE_MA57
-#define GALAHAD_SILS_double HSL_MA57_double
-#define GALAHAD_SILS_single HSL_MA57_single
-#endif
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-   PRECN   M O D U L E  -*-*-*-*-*-*-*-*-
 
