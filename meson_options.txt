@@ -41,132 +41,132 @@ option('ssids',
 option('libblas',
        type : 'string',
        value : 'openblas',
-       description : 'option for BLAS library switching')
+       description : 'BLAS library against which to link')
 
 option('liblapack',
        type : 'string',
        value : 'openblas',
-       description : 'option for LAPACK library switching')
+       description : 'LAPACK library against which to link')
 
 option('libmetis',
        type : 'string',
        value : 'metis',
-       description : 'option for METIS library switching')
+       description : 'METIS library against which to link')
 
 option('libhsl',
        type : 'string',
        value : 'hsl',
-       description : 'option for HSL library switching')
+       description : 'HSL library against which to link')
 
 option('libcutest',
        type : 'string',
        value : 'cutest',
-       description : 'option for CUTEST library switching')
+       description : 'CUTEST library against which to link')
 
 option('libwsmp',
        type : 'string',
        value : 'wsmp',
-       description : 'option for WSMP library switching')
+       description : 'WSMP library against which to link')
 
 option('libumfpack',
        type : 'string',
        value : 'umfpack',
-       description : 'option for UMFPACK library switching')
+       description : 'UMFPACK library against which to link')
 
 option('libpardiso',
        type : 'string',
        value : 'pardiso',
-       description : 'option for PARDISO library switching')
+       description : 'PARDISO library against which to link')
 
 option('libspmf',
        type : 'string',
        value : 'spmf',
-       description : 'option for SPMF library switching')
+       description : 'SPMF library against which to link')
 
 option('libpastix',
        type : 'string',
        value : 'pastix',
-       description : 'option for PASTIX library switching')
+       description : 'PASTIX library against which to link')
 
 option('libmkl_pardiso',
        type : 'string',
        value : 'mkl_rt',
-       description : 'option for Intel MKL PARDISO library switching')
+       description : 'Intel MKL PARDISO library against which to link')
 
 option('libampl',
        type : 'string',
        value : 'ampl',
-       description : 'option for AMPL library switching')
+       description : 'AMPL library against which to link')
 
 option('libblas_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search BLAS library')
+       description : 'Additional directories to search for the BLAS library')
 
 option('liblapack_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search LAPACK library')
+       description : 'Additional directories to search for the LAPACK library')
 
 option('libmetis_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search METIS library')
+       description : 'Additional directories to search for the METIS library')
 
 option('libhsl_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search HSL library')
+       description : 'Additional directories to search for the HSL library')
 
 option('libcutest_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search CUTEST library')
+       description : 'Additional directories to search for the CUTEST library')
 
 option('libwsmp_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search WSMP library')
+       description : 'Additional directories to search for the WSMP library')
 
 option('libumfpack_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search UMFPACK library')
+       description : 'Additional directories to search for the UMFPACK library')
 
 option('libpardiso_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search PARDISO library')
+       description : 'Additional directories to search for the PARDISO library')
 
 option('libspmf_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search SPMF library')
+       description : 'Additional directories to search for the SPMF library')
 
 option('libpastix_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search PASTIX library')
+       description : 'Additional directories to search for the PASTIX library')
 
 option('libmumps_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search MUMPS libraries')
+       description : 'Additional directories to search for the MUMPS libraries')
 
 option('libmkl_pardiso_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search Intel MKL library')
+       description : 'Additional directories to search for the Intel MKL library')
 
 option('libampl_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search AMPL library library')
+       description : 'Additional directories to search for the AMPL library library')
 
 option('libhsl_modules',
        type : 'array',
        value : [],
-       description : 'Additional directories to search HSL modules')
+       description : 'Additional directories to search for the HSL modules')
 
 option('libmetis_version',
        type : 'combo',
