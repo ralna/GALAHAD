@@ -547,13 +547,14 @@ if (( $CUTEST_REQUIRED )) ; then
 else
   echo 'CUTESTVERSION='                                            >> $SYSFILE
 fi
+echo '#  External libraries, see $GALAHAD/doc/README.external'     >> $SYSFILE
 echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
 echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
 echo 'HSL="'$HSL'"'                                                >> $SYSFILE
 echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
 echo 'METIS=-lgalahad_metis_dummy'                                 >> $SYSFILE
-echo 'METIS4="'$METIS4'"'                                          >> $SYSFILE
-echo 'METIS5="'$METIS5'"'                                          >> $SYSFILE
+#echo 'METIS4="'$METIS4'"'                                          >> $SYSFILE
+#echo 'METIS5="'$METIS5'"'                                          >> $SYSFILE
 echo 'PARMETIS="'$PARMETIS'"'                                      >> $SYSFILE
 echo 'SCOTCH="'$SCOTCH'"'                                          >> $SYSFILE
 echo 'PTSCOTCH="'$PTSCOTCH'"'                                      >> $SYSFILE
@@ -684,9 +685,7 @@ else
   echo 'MA97BUG = '                                                >> $MAKEFILE
 fi
 echo ' '                                                           >> $MAKEFILE
-echo '#  Libraries'                                                >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
+echo '#  External libraries, see $GALAHAD/doc/README.external'     >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- BLAS --'                                               >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
@@ -707,8 +706,8 @@ echo ' '                                                           >> $MAKEFILE
 echo '#  -- Metis --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'METIS = -lgalahad_metis_dummy'                               >> $MAKEFILE
-echo 'METIS4 = '$METIS4                                            >> $MAKEFILE
-echo 'METIS5 = '$METIS5                                            >> $MAKEFILE
+#echo 'METIS4 = '$METIS4                                            >> $MAKEFILE
+#echo 'METIS5 = '$METIS5                                            >> $MAKEFILE
 echo 'PARMETIS = '$PARMETIS                                        >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- Scotch --'                                             >> $MAKEFILE
@@ -744,6 +743,10 @@ echo ' '                                                           >> $MAKEFILE
 echo '#  -- UMFPACK --'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'UMFPACK = '$UMFPACK                                          >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- PLplot --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  proper or dummy SSIDS package?'                           >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

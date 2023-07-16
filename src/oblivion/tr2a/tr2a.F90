@@ -785,8 +785,8 @@
 
 !-*-*-*-  G A L A H A D -  T R 2 A _ s o l v e  S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE TR2A_solve( nlp, control, inform, data, userdata,               &
-                           eval_F, eval_G, eval_H )
+     SUBROUTINE TR2A_solve( nlp, control, inform, data, userdata,              &
+                            eval_F, eval_G, eval_H )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1446,6 +1446,11 @@ data%control%SHA_control%print_level = 0
        IF ( inform%status /= 0 ) GO TO 980
      END IF
 
+!  initialize H as 0
+
+     nlp%H%val( : nlp%H%ne ) = zero
+     data%successful = .FALSE.
+     
 !  compute the stopping tolerance
 
 !    write(6,*) ' stop a, r, g ', control%stop_g_absolute,                     &
@@ -1493,10 +1498,17 @@ data%control%SHA_control%print_level = 0
          data%print_1st_header = .FALSE.
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
          IF ( inform%iter > 0 ) THEN
-           WRITE( data%out, 2120 ) prefix, char_iter, data%accept,             &
-              data%bndry, data%negcur, data%perturb, inform%obj,               &
-              inform%norm_g, data%ratio, inform%radius, data%s_norm,           &
-              data%hmax_error, data%clock_now
+           IF ( data%successful ) THEN
+             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
+                data%bndry, data%negcur, data%perturb, inform%obj,             &
+                inform%norm_g, data%ratio, data%old_radius, data%s_norm,       &
+                data%hmax_error, data%clock_now
+           ELSE
+             WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
+                data%bndry, data%negcur, data%perturb, inform%obj,             &
+                inform%norm_g, data%ratio, data%old_radius, data%s_norm,       &
+                data%clock_now
+           END IF 
          ELSE
            WRITE( data%out, 2140 ) prefix, char_iter, inform%obj,              &
                inform%norm_g, inform%radius, data%clock_now
@@ -1574,82 +1586,6 @@ data%control%SHA_control%print_level = 0
 
    110 CONTINUE
 
-!  if a sparsity-based secant approximation of the Hessian is required,
-!  record the latest step and gradient difference
-
-       data%latest_diff = data%latest_diff + 1
-       IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
-!      data%DX_past( : , data%latest_diff ) = nlp%X - data%X_current
-       data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
-       data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
-!write(6,*) ' latest ', data%latest_diff
-!write(6,*) 's', data%DX_past( : , data%latest_diff )
-
-!  record the column positions in DX and DG of the ordered latest differences
-!  (most to least recent)
-
-       IF ( data%total_diffs < data%max_diffs ) THEN
-         DO i = data%total_diffs, 1, - 1
-           data%PAST( i + 1 ) = data%PAST( i )
-         END DO
-         data%total_diffs = data%total_diffs + 1
-         data%PAST( 1 ) = data%total_diffs
-       ELSE
-         DO i = data%max_diffs - 1, 1, - 1
-           data%PAST( i + 1 ) = data%PAST( i )
-         END DO
-         data%PAST( 1 ) = data%latest_diff
-       END IF
-
-       IF ( test_s ) THEN
-         data%DX_svd( : nlp%n, : data%total_diffs ) =                          &
-           data%DX_past( : nlp%n, : data%total_diffs )
-
-         CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,           &
-                     nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,         &
-                     data%WORK_svd, data%lwork_svd, info_svd )
-
-!        write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
-!          info_svd, data%S_svd( : data%total_diffs )
-       END IF
-
-!write(6,"( ' PAST ', /, 20( I0 :, ' ' ) )" ) &
-! ( data%PAST( i ), i = 1, data%total_diffs )
-
-!  compute the new Hessian estimates
-
-       CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,               &
-                          data%total_diffs, data%PAST,                         &
-                          nlp%n, data%total_diffs, data%DX_past,               &
-                          nlp%n, data%total_diffs, data%DG_past,               &
-                          nlp%H%val( : nlp%H%ne ), data%SHA_data,              &
-                          data%control%SHA_control, inform%SHA_inform )
-
-       IF ( inform%SHA_inform%status == 0 ) THEN
-         data%hmax_error =                                                     &
-           MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                            &
-                          data%VAL_est( : nlp%H%ne ) ) /                       &
-                   MAX( 1.0_rp_, ABS( nlp%H%val( : nlp%H%ne ) ) ) ) )
-         IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
-           IF ( test_s ) THEN
-             WRITE( data%out, "( '    row    col     true         est',        &
-            & '       error' )" )
-             DO i = 1, nlp%H%ne
-               WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),           &
-                 nlp%H%col( i ), nlp%H%val( i ), data%VAL_est( i ),            &
-                 ABS( nlp%H%val( i ) - data%VAL_est( i ) )
-             END DO
-           ELSE
-             WRITE( data%out, "( ' max error = ', ES9.2 )" ) data%hmax_error
-           END IF
-         END IF
-!        nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
-       ELSE
-         data%hmax_error = HUGE( one )
-         WRITE( data%out, "( ' SHA status = ', I0 )" )                         &
-           inform%SHA_inform%status
-       END IF
-
 !  ============================================================================
 !  2. Calculate the search direction, s
 !  ============================================================================
@@ -1660,6 +1596,7 @@ data%control%SHA_control%print_level = 0
 
        CALL TRS_solve( nlp%n, inform%radius, zero, nlp%G, nlp%H, data%S,       &
                        data%TRS_data, control%TRS_control, inform%TRS_inform )
+!write(6,"( ' S = ', /, ( 5ES12.4 ) )" ) data%S( : nlp%n )
 
        data%model = inform%TRS_inform%obj
        data%s_norm = inform%TRS_inform%x_norm
@@ -1697,7 +1634,7 @@ data%control%SHA_control%print_level = 0
 
 !  record the current point
 
-       data%X_current( : nlp%n )  = nlp%X( : nlp%n )
+       data%X_current( : nlp%n ) = nlp%X( : nlp%n )
 
 !  form the trial point
 
@@ -2005,6 +1942,7 @@ data%control%SHA_control%print_level = 0
          ELSE
            CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                    &
                         userdata, nlp%G( : nlp%n ) )
+!rite(6,"( ' Y = ', /, ( 5ES12.4 ) )" ) nlp%G - data%G_current
          END IF
        ELSE
          data%accept = 'r'
@@ -2044,6 +1982,89 @@ data%control%SHA_control%print_level = 0
 !            data%F_hist( data%non_monotone_history + 2 - data%max_hist :      &
 !                         data%non_monotone_history + 1 )
          END IF
+
+!  As a sparsity-based secant approximation of the Hessian is required,
+!  record the latest step and gradient difference
+
+if ( data%s_norm <= 0.01_rp_ ) then
+         data%latest_diff = data%latest_diff + 1
+         IF ( data%latest_diff > data%max_diffs ) data%latest_diff = 1
+         data%DX_past( : , data%latest_diff ) = data%S( : nlp%n )
+         data%DG_past( : , data%latest_diff ) = nlp%G - data%G_current
+
+!write(6,"( ' latest = ', I0 )" ) data%latest_diff
+!write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
+! data%DX_past( : nlp%n, data%latest_diff )
+!write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
+! data%DG_past( : nlp%n, data%latest_diff )
+
+!  record the column positions in DX and DG of the ordered latest differences
+!  (most to least recent)
+
+         IF ( data%total_diffs < data%max_diffs ) THEN
+           DO i = data%total_diffs, 1, - 1
+             data%PAST( i + 1 ) = data%PAST( i )
+           END DO
+           data%total_diffs = data%total_diffs + 1
+           data%PAST( 1 ) = data%total_diffs
+         ELSE
+           DO i = data%max_diffs - 1, 1, - 1
+             data%PAST( i + 1 ) = data%PAST( i )
+           END DO
+           data%PAST( 1 ) = data%latest_diff
+         END IF
+
+         IF ( test_s ) THEN
+           data%DX_svd( : nlp%n, : data%total_diffs ) =                        &
+             data%DX_past( : nlp%n, : data%total_diffs )
+
+           CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,         &
+                       nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,       &
+                       data%WORK_svd, data%lwork_svd, info_svd )
+
+!          write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" ) &
+!            info_svd, data%S_svd( : data%total_diffs )
+         END IF
+
+!write(6,"( ' PAST ', /, 20( I0 :, ' ' ) )" ) &
+! ( data%PAST( i ), i = 1, data%total_diffs )
+
+!  compute the new Hessian estimates
+
+         CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
+                            data%total_diffs, data%PAST,                       &
+                            nlp%n, data%total_diffs, data%DX_past,             &
+                            nlp%n, data%total_diffs, data%DG_past,             &
+                            nlp%H%val( : nlp%H%ne ), data%SHA_data,            &
+                            data%control%SHA_control, inform%SHA_inform )
+
+         IF ( inform%SHA_inform%status == 0 ) THEN
+           data%hmax_error =                                                   &
+             MAXVAL( ABS( ( nlp%H%val( : nlp%H%ne ) -                          &
+                            data%VAL_est( : nlp%H%ne ) ) /                     &
+                     MAX( 1.0_rp_, ABS( data%val_est( : nlp%H%ne ) ) ) ) )
+!          IF ( data%out > 0 ) THEN
+           IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
+             IF ( test_s ) THEN
+!            IF ( .TRUE. ) THEN
+               WRITE( data%out, "( '    row    col     true         est',      &
+              & '       error' )" )
+               DO i = 1, nlp%H%ne
+                 WRITE( data%out, "( 2I7, 3ES12.4 )" ) nlp%H%row( i ),         &
+                   nlp%H%col( i ), data%VAL_est( i ), nlp%H%val( i ),          &
+                   ABS( nlp%H%val( i ) - data%VAL_est( i ) )
+               END DO
+             ELSE
+               WRITE( data%out, "( ' max error = ', ES9.2 )" ) data%hmax_error
+             END IF
+           END IF
+!          nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
+         ELSE
+           data%hmax_error = HUGE( one )
+           WRITE( data%out, "( ' SHA status = ', I0 )" )                       &
+             inform%SHA_inform%status
+         END IF
+END IF
        END IF
 
 !  record the clock time
@@ -2095,8 +2116,6 @@ data%control%SHA_control%print_level = 0
 !  ============================================================================
 
  900 CONTINUE
-
-
      IF ( inform%iter >= data%start_print .AND.                                &
           inform%iter < data%stop_print .AND.                                  &
           MOD( inform%iter + 1 - data%start_print, data%print_gap ) /= 0 ) THEN
@@ -2125,11 +2144,18 @@ data%control%SHA_control%print_level = 0
          END DO
 !      END IF
      END IF
-
+write(6,"( ' latest = ', I0 )" ) data%latest_diff
 write(6,"( ' DX = ', /, ( 5ES12.4 ) )" ) &
  data%DX_past( : nlp%n, data%latest_diff )
 write(6,"( ' DG = ', /, ( 5ES12.4 ) )" ) &
  data%DG_past( : nlp%n, data%latest_diff )
+
+DO i = 1, data%max_diffs
+write(6,"( ' DX(', I0, ') = ', /, ( 5ES12.4 ) )" ) &
+ i, data%DX_past( : nlp%n, i )
+write(6,"( ' DG(', I0, ') = ', /, ( 5ES12.4 ) )" ) &
+ i, data%DG_past( : nlp%n, i )
+END DO
 
 !  print details of solution
 

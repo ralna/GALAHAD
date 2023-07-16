@@ -1099,6 +1099,7 @@
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
       INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui, status
       INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride
+      INTEGER ( KIND = ip_ ) :: dense_linear_solver
       LOGICAL :: sym
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
@@ -1281,7 +1282,8 @@
 !       ^           ^                  ^      for k=PK(i),..,P(i+1)-1 with
 !       |           |                  |      those for k=PU(i),..,P(i+1)-1
 !     PK(i)        PU(i)            PK(i+1)   still to be determined
-
+!     = pki        = pui            = pkip1
+!
 !  run through the rows finding the unknown entries (backwards when
 !  not exploiting symmetry)
 
@@ -1307,9 +1309,15 @@
 !  -----------------------------
 
         IF ( sym ) THEN
-          pui = data%PU( i ) ; nu = pkip1 - pui
+          pui = data%PU( i )
+
+!  find nu new components of B given mu (s,y) data pairs
+
+          nu = pkip1 - pui
           IF ( nu == 0 ) CYCLE
           mu = MIN( nu + control%extra_differences, m_available )
+
+!write(6,*) ' m_available, mu, nu ', m_available, mu, nu
 
 !  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
 !    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
@@ -1373,7 +1381,12 @@
 
 !  solve A x = b
 
-          CALL SHA_solve_system( control%dense_linear_solver, mu, nu,          &
+          IF ( mu == nu ) THEN
+            dense_linear_solver = control%dense_linear_solver
+          ELSE
+            dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+          END IF
+          CALL SHA_solve_system( dense_linear_solver, mu, nu,                  &
                                  data%A, data%la1, data%B, data%lb1,           &
                                  data%solve_system_data, i,                    &
                                  control%out, control%print_level, info )
@@ -1423,7 +1436,12 @@
 
 !  solve A x = b
 
-            CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
+            IF ( mu + 1 == nu ) THEN
+              dense_linear_solver = control%dense_linear_solver
+            ELSE
+              dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+            END IF
+            CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,            &
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
@@ -1515,7 +1533,12 @@
           IF ( control%out > 0 .AND. control%print_level > 1 )                 &
             WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
               COL( data%PTR( pki : pkip1 - 1 ) )
-          CALL SHA_solve_system( control%dense_linear_solver, mu, nu, data%A,  &
+          IF ( mu == nu ) THEN
+            dense_linear_solver = control%dense_linear_solver
+          ELSE
+            dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+          END IF
+          CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,          &
                                  data%la1, data%B, data%lb1,                   &
                                  data%solve_system_data, i,                    &
                                  control%out, control%print_level, info )
@@ -1549,7 +1572,12 @@
 
 !  solve A x = b
 
-            CALL SHA_solve_system( control%dense_linear_solver, mu + 1, nu,    &
+            IF ( mu + 1 == nu ) THEN
+              dense_linear_solver = control%dense_linear_solver
+            ELSE
+              dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+            END IF
+            CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,            &
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
