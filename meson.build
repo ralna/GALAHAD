@@ -116,8 +116,10 @@ elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'in
   add_global_link_arguments('-qopenmp', language : 'fortran')
 endif
 
-if cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
+if cxx.get_id() == 'gcc'
   add_global_arguments('-fopenmp', language : 'cpp')
+elif cxx.get_id() == 'clang'
+  add_global_arguments('-fopenmp=libomp', language : 'cpp')
 elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm' or cxx.get_id() == 'intel-llvm-cl'
   add_global_arguments('-qopenmp', language : 'cpp')
 endif
