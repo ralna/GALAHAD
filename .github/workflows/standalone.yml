@@ -64,6 +64,8 @@ jobs:
         shell: bash
         run: |
           brew install gfortran llvm libomp
+          export LDFLAGS="-L/usr/local/opt/llvm/lib"
+          export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
