@@ -1,11 +1,19 @@
 libgalahad_src += files('sha.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/sha_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += [['sha', files('Python/sha_pyiface.c')]]
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usesha.F90', 'runsha_sif.F90')
 endif
 
 galahad_tests += [['sha', 'shat', files('shat.F90')]]
+
+galahad_python_tests += [['sha', 'sha_py', files('Python/test_sha.py')]]
 
 galahad_examples += [['shas', files('shas.f90')]]

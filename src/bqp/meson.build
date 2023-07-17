@@ -1,8 +1,15 @@
 libgalahad_src += files('bqp.F90')
+
 galahad_binaries += [['inbqp', files('inbqp.F90')]]
+
 if build_ciface
   libgalahad_c_src += files('C/bqp_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += [['bqp', files('Python/bqp_pyiface.c')]]
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usebqp.F90', 'runbqp_sif.F90')
 endif
@@ -12,6 +19,8 @@ galahad_tests += [['bqp', 'bqpt', files('bqpt.F90')],
 
 galahad_c_tests += [['bqp', 'bqpt_c', files('C/bqpt.c')],
                     ['bqp', 'bqptf_c', files('C/bqptf.c')]]
+
+galahad_python_tests += [['bqp', 'bqp_py', files('Python/test_bqp.py')]]
 
 galahad_examples += [['bqps', files('bqps.f90')],
                      ['bqps2', files('bqps2.f90')],
