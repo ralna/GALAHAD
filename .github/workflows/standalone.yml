@@ -21,21 +21,9 @@ jobs:
           - os: macos-latest
             compiler: clang
             compiler_version: 14
-            cc_cmd: clang
+            cc_cmd: /usr/local/Cellar/llvm/16.0.6/bin/clang
             fc_cmd: gfortran-13
-            cxx_cmd: clang++
-          - os: ubuntu-latest
-            compiler: intel
-            compiler_version: 2021.9
-            cc_cmd: icc
-            fc_cmd: ifort
-            cxx_cmd: icpc
-          - os: macos-latest
-            compiler: intel
-            compiler_version: 2021.9
-            cc_cmd: icc
-            fc_cmd: ifort
-            cxx_cmd: icpc
+            cxx_cmd: /usr/local/Cellar/llvm/16.0.6/bin/clang++
           - os: ubuntu-latest
             compiler: intel-llvm
             compiler_version: 2023.1
@@ -112,7 +100,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson_log
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
           path: builddir/meson-logs/testlog.txt
 
       - name: Install GALAHAD
@@ -122,7 +110,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson_log
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
           path: builddir/meson-logs/testlog.txt
 
       - name: Test GALAHAD
@@ -132,5 +120,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson_log
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
           path: builddir/meson-logs/testlog.txt
