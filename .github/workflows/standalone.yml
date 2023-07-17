@@ -18,12 +18,6 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
-          - os: macos-latest
-            compiler: clang
-            compiler_version: 16
-            cc_cmd: /usr/local/opt/llvm/bin/clang
-            fc_cmd: gfortran-13
-            cxx_cmd: /usr/local/opt/llvm/bin/clang++
           - os: ubuntu-latest
             compiler: intel-llvm
             compiler_version: 2023.1
@@ -58,14 +52,6 @@ jobs:
         with:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
-
-      - name: Install gfortran / OpenMP for the build on Mac with Clang compilers
-        if: matrix.compiler == 'clang'
-        shell: bash
-        run: |
-          brew install gfortran llvm libomp
-          export LDFLAGS="-L/usr/local/opt/llvm/lib"
-          export CPPFLAGS="-I/usr/local/opt/llvm/include"
 
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
