@@ -17,7 +17,6 @@
    control%print_level = 1
    control%max_factorizations = 100
 !  control%sbls_control%print_level = 1
-   control%equality_problem = .TRUE.
    B = one                               ! The term b is a vector of ones
    A%m = m ; A%n = n ; A%ne = m          ! A^T = ( I : Diag(1:n) )
    CALL SMT_put( A%type, 'COORDINATE', i )
