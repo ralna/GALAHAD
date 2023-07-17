@@ -1,7 +1,13 @@
 libgalahad_src += files('nls.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/nls_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += [['nls', files('Python/nls_pyiface.c')]]
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usenls.F90', 'runnls_sif.F90')
 endif
@@ -11,6 +17,8 @@ galahad_tests += [['nls', 'nlst', files('nlst.F90')],
 
 galahad_c_tests += [['nls', 'nlst_c', files('C/nlst.c')],
                     ['nls', 'nlstf_c', files('C/nlstf.c')]]
+
+galahad_python_tests += [['nls', 'nls_py', files('Python/test_nls.py')]]
 
 galahad_examples += [['nlss', files('nlss.f90')],
                      ['nlss2', files('nlss2.f90')],

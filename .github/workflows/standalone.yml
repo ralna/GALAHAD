@@ -43,7 +43,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Meson and Ninja
-        run: pip install meson ninja
+        run: pip install meson ninja numpy
 
       - name: Set the environment variable GALAHAD
         shell: bash
@@ -82,7 +82,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
