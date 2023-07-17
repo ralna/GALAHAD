@@ -1,1 +1,1 @@
-libgalahad_src += files('clock.F90')
+libgalahad_multi_src += files('clock.F90')
