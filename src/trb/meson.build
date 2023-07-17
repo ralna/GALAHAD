@@ -1,7 +1,13 @@
 libgalahad_src += files('trb.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/trb_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += [['trb', files('Python/trb_pyiface.c')]]
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usetrb.F90', 'runtrb_sif.F90')
 endif
@@ -11,6 +17,8 @@ galahad_tests += [['trb', 'trbt', files('trbt.F90')],
 
 galahad_c_tests += [['trb', 'trbt_c', files('C/trbt.c')],
                     ['trb', 'trbtf_c', files('C/trbtf.c')]]
+
+galahad_python_tests += [['trb', 'trb_py', files('Python/test_trb.py')]]
 
 galahad_examples += [['trbs', files('trbs.f90')],
                      ['trbs2', files('trbs2.f90')],

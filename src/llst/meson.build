@@ -4,11 +4,17 @@ if build_ciface
   libgalahad_c_src += files('C/llst_ciface.F90')
 endif
 
+if build_pythoniface
+  libgalahad_python_src += [['llst', files('Python/llst_pyiface.c')]]
+endif
+
 galahad_tests += [['llst', 'llstt', files('llstt.F90')],
                   ['llst', 'llstti', files('llstti.F90')]]
 
 galahad_c_tests += [['llst', 'llstt_c', files('C/llstt.c')],
                     ['llst', 'llsttf_c', files('C/llsttf.c')]]
+
+galahad_python_tests += [['llst', 'llst_py', files('Python/test_llst.py')]]
 
 galahad_examples += [['llsts', files('llsts.f90')],
                      ['llsts2', files('llsts2.f90')],

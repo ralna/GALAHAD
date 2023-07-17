@@ -1,8 +1,15 @@
 libgalahad_src += files('lms.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/lms_ciface.F90')
 endif
 
+if build_pythoniface
+  libgalahad_python_src += [['lms', files('Python/lms_pyiface.c')]]
+endif
+
 galahad_tests += [['lms', 'lmst', files('lmst.F90')]]
+
+galahad_python_tests += [['lms', 'lms_py', files('Python/test_lms.py')]]
 
 galahad_examples += [['lmss', files('lmss.f90')]]

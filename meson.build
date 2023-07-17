@@ -3,7 +3,7 @@ project(
   'c', 'cpp', 'fortran',
   version: '5.0.0',
   license: 'BSD-3',
-  meson_version: '>= 0.61.0',
+  meson_version: '>= 0.63.0',
   default_options: [
     'buildtype=debug',
     'libdir=lib',
@@ -19,6 +19,7 @@ cxx = meson.get_compiler('cpp')
 fc = meson.get_compiler('fortran')
 fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
+py = import('python').find_installation()
 
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
@@ -149,11 +150,13 @@ libgalahad_c_src = []
 libgalahad_cpp_src = []
 libgalahad_cutest_src = []
 libgalahad_ampl_src = []
+libgalahad_python_src = []
 
 galahad_examples = []
 galahad_c_examples = []
 galahad_tests = []
 galahad_c_tests = []
+galahad_python_tests = []
 
 # Headers and Fortran modules
 libgalahad_include = [include_directories('include'),
@@ -337,6 +340,41 @@ if build_double
                               install : true)
 endif
 
+if build_pythoniface and build_ciface and build_double
+  incdir_numpy = run_command(py,
+    ['-c', 'import numpy; print(numpy.get_include())'],
+    check : true
+  ).stdout().strip()
+  libgalahad_include += [incdir_numpy]
+
+  py_src = []
+  foreach interface: libgalahad_python_src
+    file = interface[1]
+    py_src += file
+  endforeach
+
+  py.extension_module('galahad',
+                      sources : py_src,
+                      link_with : libgalahad_double,
+                      link_language : 'c',
+                      include_directories : libgalahad_include,
+                      subdir : 'galahad',
+                      install : true)
+
+  # foreach interface: libgalahad_python_src
+  #   name = interface[0]
+  #   file = interface[1]
+
+  #   py.extension_module(name,
+  #                       sources : file,
+  #                       link_with : libgalahad_double,
+  #                       link_language : 'c',
+  #                       include_directories : libgalahad_include,
+  #                       subdir : 'galahad',
+  #                       install : true)
+  # endforeach
+endif
+
 # Binaries
 foreach binary: galahad_binaries
   binname = binary[0]
@@ -394,6 +432,15 @@ if build_tests
       package = test[0]
       name = test[1] + '_' + precision
       file = test[2]
+
+      deps_tests = libgalahad_deps
+      if precision == 'single'
+        deps_tests += libgalahad_single_deps
+      endif
+      if precision == 'double'
+        deps_tests += libgalahad_double_deps
+      endif
+
       if not (name == 'croti_single')
         test(name,
              executable(name, file, fortran_args : args_precision, link_with : libgalahad_precision, dependencies : libgalahad_deps + libgalahad_single_deps + libgalahad_double_deps,
@@ -425,6 +472,24 @@ if build_tests and build_ciface
            suite : [package, precision, 'C'],
            is_parallel : false)
     endforeach
+  endforeach
+endif
+
+# Python tests
+if build_tests and build_pythoniface and build_ciface and build_double
+
+  pypathdir = meson.current_build_dir()
+
+  foreach test: galahad_python_tests
+    package = test[0]
+    name = test[1]
+    file = test[2]
+    test(name,
+         py,
+         args : file,
+         suite : [package, 'Python'],
+         env : ['PYTHONPATH=' + pypathdir],
+         is_parallel : false)
   endforeach
 endif
 

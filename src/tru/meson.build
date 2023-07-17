@@ -1,7 +1,13 @@
 libgalahad_src += files('tru.F90')
+
 if build_ciface
   libgalahad_c_src += files('C/tru_ciface.F90')
 endif
+
+if build_pythoniface
+  libgalahad_python_src += [['tru', files('Python/tru_pyiface.c')]]
+endif
+
 if libcutest.found()
   libgalahad_cutest_src += files('usetru.F90', 'runtru_sif.F90')
 endif
@@ -11,6 +17,8 @@ galahad_tests += [['tru', 'trut', files('trut.F90')],
 
 galahad_c_tests += [['tru', 'trut_c', files('C/trut.c')],
                     ['tru', 'trutf_c', files('C/trutf.c')]]
+
+galahad_python_tests += [['tru', 'tru_py', files('Python/test_tru.py')]]
 
 galahad_examples += [['trus', files('trus.f90')],
                      ['trus2', files('trus2.f90')],
