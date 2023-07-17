@@ -25,6 +25,13 @@ jobs:
             fc_cmd: ifort
             cxx_cmd: icpx
             allow_failure: true
+          - os: ubuntu-latest
+            compiler: intel-llvm
+            compiler_version: 2023.1
+            cc_cmd: icx
+            fc_cmd: ifx
+            cxx_cmd: icpx
+            allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -88,8 +95,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
-          path: builddir/meson-logs/testlog.txt
+          name: ${{ matrix.os }}_meson-log.txt
+          path: builddir/meson-logs/meson-log.txt
 
       - name: Install GALAHAD
         shell: bash
@@ -98,8 +105,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
-          path: builddir/meson-logs/testlog.txt
+          name: ${{ matrix.os }}_install-log.txt
+          path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
         shell: bash
@@ -108,5 +115,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.compiler_version }}_meson_log
+          name: ${{ matrix.os }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
