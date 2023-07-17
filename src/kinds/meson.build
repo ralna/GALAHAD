@@ -1,1 +1,1 @@
-libgalahad_src += files('kinds.F90')
+libgalahad_multi_src += files('kinds.F90')
