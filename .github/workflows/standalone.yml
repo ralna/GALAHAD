@@ -20,10 +20,10 @@ jobs:
             cxx_cmd: g++
           - os: macos-latest
             compiler: clang
-            compiler_version: 14
-            cc_cmd: /usr/local/Cellar/llvm/16.0.6/bin/clang
+            compiler_version: 16
+            cc_cmd: /usr/local/opt/llvm/bin/clang
             fc_cmd: gfortran-13
-            cxx_cmd: /usr/local/Cellar/llvm/16.0.6/bin/clang++
+            cxx_cmd: /usr/local/opt/llvm/bin/clang++
           - os: ubuntu-latest
             compiler: intel-llvm
             compiler_version: 2023.1
