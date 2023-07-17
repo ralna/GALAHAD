@@ -78,7 +78,6 @@
      IF ( pass == 2 ) weight = - one
      IF ( pass == 3 ) CALL SMT_put( A%type, 'UNCOORDINATE', i )
      IF ( pass == 4 ) CALL SMT_put( S%type, 'UNDIAGONAL', i )
-!     IF ( pass == 1 ) control%equality_problem = .TRUE.
      IF ( pass == 5 ) THEN
        control%max_factorizations = 1
        weight = 100.0_rp_

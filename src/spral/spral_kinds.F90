@@ -88,16 +88,3 @@ MODULE SPRAL_KINDS_double
   INTEGER, PARAMETER :: C_RP_ = rpc_
 
 END MODULE SPRAL_KINDS_double
-
-!-*-*-*-  S P R A L _  K I N D S _  P R E C I S I O N  M O D U L E   -*-*-*-
-
-MODULE SPRAL_KINDS_precision
-  USE SPRAL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!-----------------------------------------------------------------
-!  R e a l  k i n d s  ( d u m m y  t o  f o r c e  s c a n n e r)
-!-----------------------------------------------------------------
-
-END MODULE SPRAL_KINDS_precision
