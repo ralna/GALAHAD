@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.compiler_version }}
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.fc_cmd }}/${{ matrix.compiler_version }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson-log.txt
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_meson-log.txt
           path: builddir/meson-logs/meson-log.txt
 
       - name: Install GALAHAD
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_install-log.txt
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_install-log.txt
           path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
@@ -115,5 +115,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_testlog.txt
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
