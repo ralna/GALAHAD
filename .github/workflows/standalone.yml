@@ -7,35 +7,31 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.compiler_version }}
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.fc_cmd }}/${{ matrix.compiler_version }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         compiler_version: [10, 11, 12]
         include:
           - compiler: gnu
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
-          - os: windows-2019
-            compiler: intel
-            compiler_version: latest
-            cc_cmd: icl
-            fc_cmd: ifort
-            cxx_cmd: icl
           - os: ubuntu-latest
-            compiler: intel
-            compiler_version: latest
-            cc_cmd: icc
+            compiler: intel-llvm
+            compiler_version: 2023.1
+            cc_cmd: icx
             fc_cmd: ifort
-            cxx_cmd: icpc
-          - os: macos-latest
-            compiler: intel
-            compiler_version: latest
-            cc_cmd: icc
-            fc_cmd: ifort
-            cxx_cmd: icpc
+            cxx_cmd: icpx
+            allow_failure: true
+          - os: ubuntu-latest
+            compiler: intel-llvm
+            compiler_version: 2023.1
+            cc_cmd: icx
+            fc_cmd: ifx
+            cxx_cmd: icpx
+            allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -53,22 +49,35 @@ jobs:
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
+          echo "OMP_NESTED=TRUE" >> $GITHUB_ENV
+          echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
-      - name: Install GNU  C and Fortran compilers
+      - name: Install GNU compilers
         if: matrix.compiler == 'gnu'
         uses: awvwgk/setup-fortran@main
         with:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
-      - name: Install Intel OpenAPI C and Fortran compilers
+      - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
-        uses: modflowpy/install-intelfortran-action@v1
+        uses: awvwgk/setup-fortran@main
+        with:
+          compiler: intel-classic
+          version: ${{ matrix.compiler_version }}
+
+      - name: Install nextgen Intel compilers
+        if: matrix.compiler == 'intel-llvm'
+        uses: awvwgk/setup-fortran@main
+        with:
+          compiler: intel
+          version: ${{ matrix.compiler_version }}
 
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
@@ -77,6 +86,7 @@ jobs:
       # Uncomment this section to obtain ssh access to VM
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
+      #
 
       - name: Build GALAHAD
         shell: bash
@@ -85,8 +95,18 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson_log
-          path: builddir/meson-logs/testlog.txt
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_meson-log.txt
+          path: builddir/meson-logs/meson-log.txt
+
+      - name: Install GALAHAD
+        shell: bash
+        run: |
+          meson install -C builddir
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_install-log.txt
+          path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
         shell: bash
@@ -95,5 +115,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_meson_log
+          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
