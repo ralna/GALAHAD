@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      - name: Install GNU C and Fortran compilers
+      - name: Install GNU  C and Fortran compilers
         if: matrix.compiler == 'gnu'
         uses: awvwgk/setup-fortran@main
         with:
