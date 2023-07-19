@@ -347,32 +347,18 @@ if build_pythoniface and build_ciface and build_double
   ).stdout().strip()
   libgalahad_include += [incdir_numpy]
 
-  py_src = []
   foreach interface: libgalahad_python_src
+    name = interface[0]
     file = interface[1]
-    py_src += file
+
+    py.extension_module(name,
+                        sources : file,
+                        link_with : libgalahad_double,
+                        link_language : 'c',
+                        include_directories : libgalahad_include,
+                        subdir : 'galahad',
+                        install : true)
   endforeach
-
-  py.extension_module('galahad',
-                      sources : py_src,
-                      link_with : libgalahad_double,
-                      link_language : 'c',
-                      include_directories : libgalahad_include,
-                      subdir : 'galahad',
-                      install : true)
-
-  # foreach interface: libgalahad_python_src
-  #   name = interface[0]
-  #   file = interface[1]
-
-  #   py.extension_module(name,
-  #                       sources : file,
-  #                       link_with : libgalahad_double,
-  #                       link_language : 'c',
-  #                       include_directories : libgalahad_include,
-  #                       subdir : 'galahad',
-  #                       install : true)
-  # endforeach
 endif
 
 # Binaries
@@ -478,8 +464,6 @@ endif
 # Python tests
 if build_tests and build_pythoniface and build_ciface and build_double
 
-  pypathdir = meson.current_build_dir()
-
   foreach test: galahad_python_tests
     package = test[0]
     name = test[1]
@@ -488,7 +472,7 @@ if build_tests and build_pythoniface and build_ciface and build_double
          py,
          args : file,
          suite : [package, 'Python'],
-         env : ['PYTHONPATH=' + pypathdir],
+         env : ['PYTHONPATH=' + py.get_install_dir()],
          is_parallel : false)
   endforeach
 endif
