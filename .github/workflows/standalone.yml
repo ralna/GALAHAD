@@ -84,9 +84,9 @@ jobs:
           CXX: ${{ matrix.cxx_cmd }}
 
       # Uncomment this section to obtain ssh access to VM
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #
+      - name: Setup tmate session
+        if: matrix.os == 'windows-latest'
+        uses: mxschmitt/action-tmate@v3
 
       - name: Build GALAHAD
         shell: bash
