@@ -1,0 +1,20 @@
+.. index:: pair: table; xxx_inform_type
+.. _doxid-structxxx__inform__type:
+
+xxx_inform_type structure
+-------------------------
+
+.. toctree::
+	:hidden:
+
+.. _details-structxxx__inform__type:
+
+detailed documentation
+----------------------
+
+inform derived type as a C struct
+
+components
+~~~~~~~~~~
+
+.. ---------------------------------------------------------------------------

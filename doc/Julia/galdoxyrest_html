@@ -1,0 +1,138 @@
+#!/bin/bash
+
+#  syntax: galdoxyrest_html package
+
+#  create the Julia documentation for GALAHAD.
+#  currently this will produce html
+
+#  Nick Gould, June 13th 2023
+
+#  does the package exist?
+
+export package=$1
+if [ -d "$GALAHAD/src/$package" ]; then
+  export PACKAGE=${package^^}
+elif [ $package == "galahad" ]; then
+  export PACKAGE=
+else
+  echo "Error: package $package does not exist."
+  exit 1
+fi
+
+export DOXYREST_DIR=/usr/local/src/doxyrest
+export DOXYREST_FRAME_DIR=$DOXYREST_DIR/frame
+export RST=$GALAHAD/doc/Python/rst-dir
+
+#  check to see if the rst package already exists
+
+if [ -e "$RST/$package.rst" ]; then
+  read -p "file $package.rst already exists. Proceed? (yes/NO) " yn
+  case $yn in
+	yes ) echo "ok, we will proceed";;
+	y ) echo "ok, we will proceed";;
+	* ) echo "we will not overwrite. stopping";
+		exit 1;;
+  esac
+fi
+
+#  make sure that required subdirectories exist
+
+mkdir -p $package
+mkdir -p $package/xml-dir $package/rst-dir $package/html-dir
+
+#  build the html documentation
+
+echo "building html"
+
+cp $GALAHAD/include/galahad_$package.h $package/galahad_$package.h
+ln -fs $GALAHAD/include/galahad_precision.h $package/.
+ln -fs $GALAHAD/include/galahad_cfunctions.h $package/.
+ln -fs $GALAHAD/doc/src/galahad.small.png $package/.
+
+ln -fs $PWD/conf.py $package/.
+ln -fs $PWD/index.rst $package/.
+
+( cd ./$package ; \
+
+#  generate xml
+
+  echo "generating xml ..." ; \
+  doxygen ../Doxyrestfile_html ; \
+
+#  generate rst
+
+  echo "generating rst ..." ; \
+  doxyrest -c ../doxyrest-config.lua -F $RST/frame/gal_cfamily \
+    -F $RST/frame/common ; \
+#  doxyrest -c ../doxyrest-config.lua -F $DOXYREST_FRAME_DIR/cfamily \
+#    -F $DOXYREST_FRAME_DIR/common ; \
+#  doxyrest -c ../doxyrest-config.lua -F $DOXYREST_FRAME_DIR/lua \
+#    -F $DOXYREST_FRAME_DIR/common -F $DOXYREST_FRAME_DIR/cfamily ; \
+  doxyrest -v ; \
+
+  sed "s/xxx/$package/gI" $RST/template > $RST/$package.rst
+  sed -n '/Call order/,$p' rst-dir/page_index.rst > 1
+  sed '/See Section/,$d' < 1 >> $RST/$package.rst
+
+#  sed "s/xxx/$package/gI" $RST/template_functions > 1
+#  cat 1 rst-dir/global.rst > $RST/${package}_functions.rst
+
+   cp rst-dir/global.rst $RST/${package}_functions.rst
+
+  if [ -e rst-dir/struct_${package}_control_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_control > 1
+#    cat 1 rst-dir/struct_${package}_control_type.rst > \
+#                         $RST/struct_${package}_control_type.rst
+   cp rst-dir/struct_${package}_control_type.rst \
+      $RST/struct_${package}_control_type.rst
+  fi
+
+  if [ -e rst-dir/struct_${package}_subproblem_control_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_control > 1
+#    cat 1 rst-dir/struct_${package}_control_type.rst > \
+#                         $RST/struct_${package}_control_type.rst
+   cp rst-dir/struct_${package}_subproblem_control_type.rst \
+      $RST/struct_${package}_subproblem_control_type.rst
+  fi
+
+  if [ -e rst-dir/struct_${package}_time_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_time > 1
+#    cat 1 rst-dir/struct_${package}_time_type.rst > \
+#                         $RST/struct_${package}_time_type.rst
+   cp rst-dir/struct_${package}_time_type.rst \
+      $RST/struct_${package}_time_type.rst
+  fi
+
+  if [ -e rst-dir/struct_${package}_inform_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_inform > 1
+#    cat 1 rst-dir/struct_${package}_inform_type.rst > \
+#                         $RST/struct_${package}_inform_type.rst
+    cp rst-dir/struct_${package}_inform_type.rst \
+       $RST/struct_${package}_inform_type.rst
+  fi
+
+  if [ -e rst-dir/struct_${package}_subproblem_inform_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_inform > 1
+#    cat 1 rst-dir/struct_${package}_inform_type.rst > \
+#                         $RST/struct_${package}_inform_type.rst
+    cp rst-dir/struct_${package}_subproblem_inform_type.rst \
+       $RST/struct_${package}_subproblem_inform_type.rst
+  fi
+
+  if [ -e rst-dir/struct_${package}_history_type.rst ]; then
+#    sed "s/xxx/$package/gI" $RST/template_history > 1
+#    cat 1 rst-dir/struct_${package}_history_type.rst > \
+#                         $RST/struct_${package}_history_type.rst
+    cp rst-dir/struct_${package}_history_type.rst \
+       $RST/struct_${package}_history_type.rst
+  fi
+
+#  generate html
+#  echo "generating html ..." ; \
+#  sphinx-build -b html rst-dir html-dir -c ./ ; \
+#  sphinx-build -b html rst-dir html-dir -c ./ ; \
+
+#  rm -r xml-dir rst-dir html-dir
+  rm conf.py index.rst 1
+  rm galahad_precision.h galahad_cfunctions.h galahad.small.png
+  echo "generation finished !!" )

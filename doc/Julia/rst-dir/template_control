@@ -1,0 +1,20 @@
+.. index:: pair: table; xxx_control_type
+.. _doxid-structxxx__control__type:
+
+xxx_control_type structure
+--------------------------
+
+.. toctree::
+	:hidden:
+
+.. _details-structxxx__control__type:
+
+detailed documentation
+----------------------
+
+control derived type as a C struct
+
+components
+~~~~~~~~~~
+
+.. ---------------------------------------------------------------------------
