@@ -862,6 +862,98 @@
 *     End of DBDSQR
 *
       END
+*> \brief \b DCOMBSSQ adds two scaled sum of squares quantities.
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DCOMBSSQ( V1, V2 )
+*
+*       .. Array Arguments ..
+*       DOUBLE PRECISION   V1( 2 ), V2( 2 )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DCOMBSSQ adds two scaled sum of squares quantities, V1 := V1 + V2.
+*> That is,
+*>
+*>    V1_scale**2 * V1_sumsq := V1_scale**2 * V1_sumsq
+*>                            + V2_scale**2 * V2_sumsq
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in,out] V1
+*> \verbatim
+*>          V1 is DOUBLE PRECISION array, dimension (2).
+*>          The first scaled sum.
+*>          V1(1) = V1_scale, V1(2) = V1_sumsq.
+*> \endverbatim
+*>
+*> \param[in] V2
+*> \verbatim
+*>          V2 is DOUBLE PRECISION array, dimension (2).
+*>          The second scaled sum.
+*>          V2(1) = V2_scale, V2(2) = V2_sumsq.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup OTHERauxiliary
+*
+*  =====================================================================
+      SUBROUTINE DCOMBSSQ( V1, V2 )
+*
+*  -- LAPACK auxiliary routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2018
+*
+*     .. Array Arguments ..
+      DOUBLE PRECISION   V1( 2 ), V2( 2 )
+*     ..
+*
+* =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+*     ..
+*     .. Executable Statements ..
+*
+      IF( V1( 1 ).GE.V2( 1 ) ) THEN
+         IF( V1( 1 ).NE.ZERO ) THEN
+            V1( 2 ) = V1( 2 ) + ( V2( 1 ) / V1( 1 ) )**2 * V2( 2 )
+         ELSE
+            V1( 2 ) = V1( 2 ) + V2( 2 )
+         END IF
+      ELSE
+         V1( 2 ) = V2( 2 ) + ( V1( 1 ) / V2( 1 ) )**2 * V1( 2 )
+         V1( 1 ) = V2( 1 )
+      END IF
+      RETURN
+*
+*     End of DCOMBSSQ
+*
+      END
 *> \brief \b DGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
 *
 *  =========== DOCUMENTATION ===========
@@ -9684,6 +9776,275 @@
       RETURN
 *
 *     End of DGETRF
+*
+      END
+*> \brief \b DGETRF2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*  Definition:
+*  ===========
+*
+*       RECURSIVE SUBROUTINE DGETRF2( M, N, A, LDA, IPIV, INFO )
+*
+*       .. Scalar Arguments ..
+*       INTEGER            INFO, LDA, M, N
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       DOUBLE PRECISION   A( LDA, * )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DGETRF2 computes an LU factorization of a general M-by-N matrix A
+*> using partial pivoting with row interchanges.
+*>
+*> The factorization has the form
+*>    A = P * L * U
+*> where P is a permutation matrix, L is lower triangular with unit
+*> diagonal elements (lower trapezoidal if m > n), and U is upper
+*> triangular (upper trapezoidal if m < n).
+*>
+*> This is the recursive version of the algorithm. It divides
+*> the matrix into four submatrices:
+*>
+*>        [  A11 | A12  ]  where A11 is n1 by n1 and A22 is n2 by n2
+*>    A = [ -----|----- ]  with n1 = min(m,n)/2
+*>        [  A21 | A22  ]       n2 = n-n1
+*>
+*>                                       [ A11 ]
+*> The subroutine calls itself to factor [ --- ],
+*>                                       [ A12 ]
+*>                 [ A12 ]
+*> do the swaps on [ --- ], solve A12, update A22,
+*>                 [ A22 ]
+*>
+*> then calls itself to factor A22 and do the swaps on A21.
+*>
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix A.  M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is DOUBLE PRECISION array, dimension (LDA,N)
+*>          On entry, the M-by-N matrix to be factored.
+*>          On exit, the factors L and U from the factorization
+*>          A = P*L*U; the unit diagonal elements of L are not stored.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (min(M,N))
+*>          The pivot indices; for 1 <= i <= min(M,N), row i of the
+*>          matrix was interchanged with row IPIV(i).
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*>          > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
+*>                has been completed, but the factor U is exactly
+*>                singular, and division by zero will occur if it is used
+*>                to solve a system of equations.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup doubleGEcomputational
+*
+*  =====================================================================
+      RECURSIVE SUBROUTINE DGETRF2( M, N, A, LDA, IPIV, INFO )
+*
+*  -- LAPACK computational routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*
+*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, M, N
+*     ..
+*     .. Array Arguments ..
+      INTEGER            IPIV( * )
+      DOUBLE PRECISION   A( LDA, * )
+*     ..
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+*     ..
+*     .. Local Scalars ..
+      DOUBLE PRECISION   SFMIN, TEMP
+      INTEGER            I, IINFO, N1, N2
+*     ..
+*     .. External Functions ..
+      DOUBLE PRECISION   DLAMCH
+      INTEGER            IDAMAX
+      EXTERNAL           DLAMCH, IDAMAX
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           DGEMM, DSCAL, DLASWP, DTRSM, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters
+*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DGETRF2', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+
+      IF ( M.EQ.1 ) THEN
+*
+*        Use unblocked code for one row case
+*        Just need to handle IPIV and INFO
+*
+         IPIV( 1 ) = 1
+         IF ( A(1,1).EQ.ZERO )
+     $      INFO = 1
+*
+      ELSE IF( N.EQ.1 ) THEN
+*
+*        Use unblocked code for one column case
+*
+*
+*        Compute machine safe minimum
+*
+         SFMIN = DLAMCH('S')
+*
+*        Find pivot and test for singularity
+*
+         I = IDAMAX( M, A( 1, 1 ), 1 )
+         IPIV( 1 ) = I
+         IF( A( I, 1 ).NE.ZERO ) THEN
+*
+*           Apply the interchange
+*
+            IF( I.NE.1 ) THEN
+               TEMP = A( 1, 1 )
+               A( 1, 1 ) = A( I, 1 )
+               A( I, 1 ) = TEMP
+            END IF
+*
+*           Compute elements 2:M of the column
+*
+            IF( ABS(A( 1, 1 )) .GE. SFMIN ) THEN
+               CALL DSCAL( M-1, ONE / A( 1, 1 ), A( 2, 1 ), 1 )
+            ELSE
+               DO 10 I = 1, M-1
+                  A( 1+I, 1 ) = A( 1+I, 1 ) / A( 1, 1 )
+   10          CONTINUE
+            END IF
+*
+         ELSE
+            INFO = 1
+         END IF
+*
+      ELSE
+*
+*        Use recursive code
+*
+         N1 = MIN( M, N ) / 2
+         N2 = N-N1
+*
+*               [ A11 ]
+*        Factor [ --- ]
+*               [ A21 ]
+*
+         CALL DGETRF2( M, N1, A, LDA, IPIV, IINFO )
+
+         IF ( INFO.EQ.0 .AND. IINFO.GT.0 )
+     $      INFO = IINFO
+*
+*                              [ A12 ]
+*        Apply interchanges to [ --- ]
+*                              [ A22 ]
+*
+         CALL DLASWP( N2, A( 1, N1+1 ), LDA, 1, N1, IPIV, 1 )
+*
+*        Solve A12
+*
+         CALL DTRSM( 'L', 'L', 'N', 'U', N1, N2, ONE, A, LDA,
+     $               A( 1, N1+1 ), LDA )
+*
+*        Update A22
+*
+         CALL DGEMM( 'N', 'N', M-N1, N2, N1, -ONE, A( N1+1, 1 ), LDA,
+     $               A( 1, N1+1 ), LDA, ONE, A( N1+1, N1+1 ), LDA )
+*
+*        Factor A22
+*
+         CALL DGETRF2( M-N1, N2, A( N1+1, N1+1 ), LDA, IPIV( N1+1 ),
+     $                 IINFO )
+*
+*        Adjust INFO and the pivot indices
+*
+         IF ( INFO.EQ.0 .AND. IINFO.GT.0 )
+     $      INFO = IINFO + N1
+         DO 20 I = N1+1, MIN( M, N )
+            IPIV( I ) = IPIV( I ) + N1
+   20    CONTINUE
+*
+*        Apply interchanges to A21
+*
+         CALL DLASWP( N1, A( 1, 1 ), LDA, N1+1, MIN( M, N), IPIV, 1 )
+*
+      END IF
+      RETURN
+*
+*     End of DGETRF2
 *
       END
 *> \brief \b DGETRS
@@ -40687,6 +41048,240 @@
 *     End of DPOTRF
 *
       END
+*> \brief \b DPOTRF2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*  Definition:
+*  ===========
+*
+*       RECURSIVE SUBROUTINE DPOTRF2( UPLO, N, A, LDA, INFO )
+*
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO
+*       INTEGER            INFO, LDA, N
+*       ..
+*       .. Array Arguments ..
+*       REAL               A( LDA, * )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DPOTRF2 computes the Cholesky factorization of a real symmetric
+*> positive definite matrix A using the recursive algorithm.
+*>
+*> The factorization has the form
+*>    A = U**T * U,  if UPLO = 'U', or
+*>    A = L  * L**T,  if UPLO = 'L',
+*> where U is an upper triangular matrix and L is lower triangular.
+*>
+*> This is the recursive version of the algorithm. It divides
+*> the matrix into four submatrices:
+*>
+*>        [  A11 | A12  ]  where A11 is n1 by n1 and A22 is n2 by n2
+*>    A = [ -----|----- ]  with n1 = n/2
+*>        [  A21 | A22  ]       n2 = n-n1
+*>
+*> The subroutine calls itself to factor A11. Update and scale A21
+*> or A12, update A22 then calls itself to factor A22.
+*>
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          = 'U':  Upper triangle of A is stored;
+*>          = 'L':  Lower triangle of A is stored.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is DOUBLE PRECISION array, dimension (LDA,N)
+*>          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+*>          N-by-N upper triangular part of A contains the upper
+*>          triangular part of the matrix A, and the strictly lower
+*>          triangular part of A is not referenced.  If UPLO = 'L', the
+*>          leading N-by-N lower triangular part of A contains the lower
+*>          triangular part of the matrix A, and the strictly upper
+*>          triangular part of A is not referenced.
+*>
+*>          On exit, if INFO = 0, the factor U or L from the Cholesky
+*>          factorization A = U**T*U or A = L*L**T.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*>          > 0:  if INFO = i, the leading minor of order i is not
+*>                positive definite, and the factorization could not be
+*>                completed.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup doublePOcomputational
+*
+*  =====================================================================
+      RECURSIVE SUBROUTINE DPOTRF2( UPLO, N, A, LDA, INFO )
+*
+*  -- LAPACK computational routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*
+*     .. Scalar Arguments ..
+      CHARACTER          UPLO
+      INTEGER            INFO, LDA, N
+*     ..
+*     .. Array Arguments ..
+      DOUBLE PRECISION   A( LDA, * )
+*     ..
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            UPPER
+      INTEGER            N1, N2, IINFO
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME, DISNAN
+      EXTERNAL           LSAME, DISNAN
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           DSYRK, DTRSM, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, SQRT
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters
+*
+      INFO = 0
+      UPPER = LSAME( UPLO, 'U' )
+      IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DPOTRF2', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     N=1 case
+*
+      IF( N.EQ.1 ) THEN
+*
+*        Test for non-positive-definiteness
+*
+         IF( A( 1, 1 ).LE.ZERO.OR.DISNAN( A( 1, 1 ) ) ) THEN
+            INFO = 1
+            RETURN
+         END IF
+*
+*        Factor
+*
+         A( 1, 1 ) = SQRT( A( 1, 1 ) )
+*
+*     Use recursive code
+*
+      ELSE
+         N1 = N/2
+         N2 = N-N1
+*
+*        Factor A11
+*
+         CALL DPOTRF2( UPLO, N1, A( 1, 1 ), LDA, IINFO )
+         IF ( IINFO.NE.0 ) THEN
+            INFO = IINFO
+            RETURN
+         END IF
+*
+*        Compute the Cholesky factorization A = U**T*U
+*
+         IF( UPPER ) THEN
+*
+*           Update and scale A12
+*
+            CALL DTRSM( 'L', 'U', 'T', 'N', N1, N2, ONE,
+     $                  A( 1, 1 ), LDA, A( 1, N1+1 ), LDA )
+*
+*           Update and factor A22
+*
+            CALL DSYRK( UPLO, 'T', N2, N1, -ONE, A( 1, N1+1 ), LDA,
+     $                  ONE, A( N1+1, N1+1 ), LDA )
+            CALL DPOTRF2( UPLO, N2, A( N1+1, N1+1 ), LDA, IINFO )
+            IF ( IINFO.NE.0 ) THEN
+               INFO = IINFO + N1
+               RETURN
+            END IF
+*
+*        Compute the Cholesky factorization A = L*L**T
+*
+         ELSE
+*
+*           Update and scale A21
+*
+            CALL DTRSM( 'R', 'L', 'T', 'N', N2, N1, ONE,
+     $                  A( 1, 1 ), LDA, A( N1+1, 1 ), LDA )
+*
+*           Update and factor A22
+*
+            CALL DSYRK( UPLO, 'N', N2, N1, -ONE, A( N1+1, 1 ), LDA,
+     $                  ONE, A( N1+1, N1+1 ), LDA )
+            CALL DPOTRF2( UPLO, N2, A( N1+1, N1+1 ), LDA, IINFO )
+            IF ( IINFO.NE.0 ) THEN
+               INFO = IINFO + N1
+               RETURN
+            END IF
+         END IF
+      END IF
+      RETURN
+*
+*     End of DPOTRF2
+*
+      END
 *> \brief \b DPOTRS
 *
 *  =========== DOCUMENTATION ===========
@@ -49514,6 +50109,98 @@
 *     End of SBDSQR
 *
       END
+*> \brief \b SCOMBSSQ adds two scaled sum of squares quantities
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SCOMBSSQ( V1, V2 )
+*
+*       .. Array Arguments ..
+*       REAL               V1( 2 ), V2( 2 )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SCOMBSSQ adds two scaled sum of squares quantities, V1 := V1 + V2.
+*> That is,
+*>
+*>    V1_scale**2 * V1_sumsq := V1_scale**2 * V1_sumsq
+*>                            + V2_scale**2 * V2_sumsq
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in,out] V1
+*> \verbatim
+*>          V1 is REAL array, dimension (2).
+*>          The first scaled sum.
+*>          V1(1) = V1_scale, V1(2) = V1_sumsq.
+*> \endverbatim
+*>
+*> \param[in] V2
+*> \verbatim
+*>          V2 is REAL array, dimension (2).
+*>          The second scaled sum.
+*>          V2(1) = V2_scale, V2(2) = V2_sumsq.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup OTHERauxiliary
+*
+*  =====================================================================
+      SUBROUTINE SCOMBSSQ( V1, V2 )
+*
+*  -- LAPACK auxiliary routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2018
+*
+*     .. Array Arguments ..
+      REAL               V1( 2 ), V2( 2 )
+*     ..
+*
+* =====================================================================
+*
+*     .. Parameters ..
+      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+*     ..
+*     .. Executable Statements ..
+*
+      IF( V1( 1 ).GE.V2( 1 ) ) THEN
+         IF( V1( 1 ).NE.ZERO ) THEN
+            V1( 2 ) = V1( 2 ) + ( V2( 1 ) / V1( 1 ) )**2 * V2( 2 )
+         ELSE
+            V1( 2 ) = V1( 2 ) + V2( 2 )
+         END IF
+      ELSE
+         V1( 2 ) = V2( 2 ) + ( V1( 1 ) / V2( 1 ) )**2 * V1( 2 )
+         V1( 1 ) = V2( 1 )
+      END IF
+      RETURN
+*
+*     End of SCOMBSSQ
+*
+      END
 *> \brief \b SGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
 *
 *  =========== DOCUMENTATION ===========
@@ -58336,6 +59023,275 @@
 *     End of SGETRF
 *
       END
+*> \brief \b SGETRF2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*  Definition:
+*  ===========
+*
+*       RECURSIVE SUBROUTINE SGETRF2( M, N, A, LDA, IPIV, INFO )
+*
+*       .. Scalar Arguments ..
+*       INTEGER            INFO, LDA, M, N
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       REAL               A( LDA, * )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SGETRF2 computes an LU factorization of a general M-by-N matrix A
+*> using partial pivoting with row interchanges.
+*>
+*> The factorization has the form
+*>    A = P * L * U
+*> where P is a permutation matrix, L is lower triangular with unit
+*> diagonal elements (lower trapezoidal if m > n), and U is upper
+*> triangular (upper trapezoidal if m < n).
+*>
+*> This is the recursive version of the algorithm. It divides
+*> the matrix into four submatrices:
+*>
+*>        [  A11 | A12  ]  where A11 is n1 by n1 and A22 is n2 by n2
+*>    A = [ -----|----- ]  with n1 = min(m,n)/2
+*>        [  A21 | A22  ]       n2 = n-n1
+*>
+*>                                       [ A11 ]
+*> The subroutine calls itself to factor [ --- ],
+*>                                       [ A12 ]
+*>                 [ A12 ]
+*> do the swaps on [ --- ], solve A12, update A22,
+*>                 [ A22 ]
+*>
+*> then calls itself to factor A22 and do the swaps on A21.
+*>
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix A.  M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is REAL array, dimension (LDA,N)
+*>          On entry, the M-by-N matrix to be factored.
+*>          On exit, the factors L and U from the factorization
+*>          A = P*L*U; the unit diagonal elements of L are not stored.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (min(M,N))
+*>          The pivot indices; for 1 <= i <= min(M,N), row i of the
+*>          matrix was interchanged with row IPIV(i).
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*>          > 0:  if INFO = i, U(i,i) is exactly zero. The factorization
+*>                has been completed, but the factor U is exactly
+*>                singular, and division by zero will occur if it is used
+*>                to solve a system of equations.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup realGEcomputational
+*
+*  =====================================================================
+      RECURSIVE SUBROUTINE SGETRF2( M, N, A, LDA, IPIV, INFO )
+*
+*  -- LAPACK computational routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*
+*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, M, N
+*     ..
+*     .. Array Arguments ..
+      INTEGER            IPIV( * )
+      REAL               A( LDA, * )
+*     ..
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+*     ..
+*     .. Local Scalars ..
+      REAL               SFMIN, TEMP
+      INTEGER            I, IINFO, n1, n2
+*     ..
+*     .. External Functions ..
+      REAL               SLAMCH
+      INTEGER            ISAMAX
+      EXTERNAL           SLAMCH, ISAMAX
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           SGEMM, SSCAL, SLASWP, STRSM, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters
+*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'SGETRF2', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+
+      IF ( M.EQ.1 ) THEN
+*
+*        Use unblocked code for one row case
+*        Just need to handle IPIV and INFO
+*
+         IPIV( 1 ) = 1
+         IF ( A(1,1).EQ.ZERO )
+     $      INFO = 1
+*
+      ELSE IF( N.EQ.1 ) THEN
+*
+*        Use unblocked code for one column case
+*
+*
+*        Compute machine safe minimum
+*
+         SFMIN = SLAMCH('S')
+*
+*        Find pivot and test for singularity
+*
+         I = ISAMAX( M, A( 1, 1 ), 1 )
+         IPIV( 1 ) = I
+         IF( A( I, 1 ).NE.ZERO ) THEN
+*
+*           Apply the interchange
+*
+            IF( I.NE.1 ) THEN
+               TEMP = A( 1, 1 )
+               A( 1, 1 ) = A( I, 1 )
+               A( I, 1 ) = TEMP
+            END IF
+*
+*           Compute elements 2:M of the column
+*
+            IF( ABS(A( 1, 1 )) .GE. SFMIN ) THEN
+               CALL SSCAL( M-1, ONE / A( 1, 1 ), A( 2, 1 ), 1 )
+            ELSE
+               DO 10 I = 1, M-1
+                  A( 1+I, 1 ) = A( 1+I, 1 ) / A( 1, 1 )
+   10          CONTINUE
+            END IF
+*
+         ELSE
+            INFO = 1
+         END IF
+*
+      ELSE
+*
+*        Use recursive code
+*
+         N1 = MIN( M, N ) / 2
+         N2 = N-N1
+*
+*               [ A11 ]
+*        Factor [ --- ]
+*               [ A21 ]
+*
+         CALL SGETRF2( m, n1, A, lda, ipiv, iinfo )
+
+         IF ( info.EQ.0 .AND. iinfo.GT.0 )
+     $      info = iinfo
+*
+*                              [ A12 ]
+*        Apply interchanges to [ --- ]
+*                              [ A22 ]
+*
+         CALL SLASWP( N2, A( 1, N1+1 ), LDA, 1, N1, IPIV, 1 )
+*
+*        Solve A12
+*
+         CALL STRSM( 'L', 'L', 'N', 'U', N1, N2, ONE, A, LDA,
+     $               A( 1, N1+1 ), LDA )
+*
+*        Update A22
+*
+         CALL SGEMM( 'N', 'N', M-N1, N2, N1, -ONE, A( N1+1, 1 ), LDA,
+     $               A( 1, N1+1 ), LDA, ONE, A( N1+1, N1+1 ), LDA )
+*
+*        Factor A22
+*
+         CALL SGETRF2( M-N1, N2, A( N1+1, N1+1 ), LDA, IPIV( N1+1 ),
+     $                 IINFO )
+*
+*        Adjust INFO and the pivot indices
+*
+         IF ( INFO.EQ.0 .AND. IINFO.GT.0 )
+     $      INFO = IINFO + N1
+         DO 20 I = N1+1, MIN( M, N )
+            IPIV( I ) = IPIV( I ) + N1
+   20    CONTINUE
+*
+*        Apply interchanges to A21
+*
+         CALL SLASWP( N1, A( 1, 1 ), LDA, N1+1, MIN( M, N), IPIV, 1 )
+*
+      END IF
+      RETURN
+*
+*     End of SGETRF2
+*
+      END
 *> \brief \b SGETRS
 *
 *  =========== DOCUMENTATION ===========
@@ -63939,6 +64895,194 @@
 *     End of SLALSD
 *
       END
+*> \brief \b SLAMCH
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*  Definition:
+*  ===========
+*
+*      REAL             FUNCTION SLAMCH( CMACH )
+*
+*     .. Scalar Arguments ..
+*      CHARACTER          CMACH
+*     ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SLAMCH determines single precision machine parameters.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] CMACH
+*> \verbatim
+*>          CMACH is CHARACTER*1
+*>          Specifies the value to be returned by SLAMCH:
+*>          = 'E' or 'e',   SLAMCH := eps
+*>          = 'S' or 's ,   SLAMCH := sfmin
+*>          = 'B' or 'b',   SLAMCH := base
+*>          = 'P' or 'p',   SLAMCH := eps*base
+*>          = 'N' or 'n',   SLAMCH := t
+*>          = 'R' or 'r',   SLAMCH := rnd
+*>          = 'M' or 'm',   SLAMCH := emin
+*>          = 'U' or 'u',   SLAMCH := rmin
+*>          = 'L' or 'l',   SLAMCH := emax
+*>          = 'O' or 'o',   SLAMCH := rmax
+*>          where
+*>          eps   = relative machine precision
+*>          sfmin = safe minimum, such that 1/sfmin does not overflow
+*>          base  = base of the machine
+*>          prec  = eps*base
+*>          t     = number of (base) digits in the mantissa
+*>          rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
+*>          emin  = minimum exponent before (gradual) underflow
+*>          rmin  = underflow threshold - base**(emin-1)
+*>          emax  = largest exponent before overflow
+*>          rmax  = overflow threshold  - (base**emax)*(1-eps)
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup auxOTHERauxiliary
+*
+*  =====================================================================
+      REAL             FUNCTION SLAMCH( CMACH )
+*
+*  -- LAPACK auxiliary routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*
+*     .. Scalar Arguments ..
+      CHARACTER          CMACH
+*     ..
+*
+* =====================================================================
+*
+*     .. Parameters ..
+      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+*     ..
+*     .. Local Scalars ..
+      REAL               RND, EPS, SFMIN, SMALL, RMACH
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          DIGITS, EPSILON, HUGE, MAXEXPONENT,
+     $                   MINEXPONENT, RADIX, TINY
+*     ..
+*     .. Executable Statements ..
+*
+*
+*     Assume rounding, not chopping. Always.
+*
+      RND = ONE
+*
+      IF( ONE.EQ.RND ) THEN
+         EPS = EPSILON(ZERO) * 0.5
+      ELSE
+         EPS = EPSILON(ZERO)
+      END IF
+*
+      IF( LSAME( CMACH, 'E' ) ) THEN
+         RMACH = EPS
+      ELSE IF( LSAME( CMACH, 'S' ) ) THEN
+         SFMIN = TINY(ZERO)
+         SMALL = ONE / HUGE(ZERO)
+         IF( SMALL.GE.SFMIN ) THEN
+*
+*           Use SMALL plus a bit, to avoid the possibility of rounding
+*           causing overflow when computing  1/sfmin.
+*
+            SFMIN = SMALL*( ONE+EPS )
+         END IF
+         RMACH = SFMIN
+      ELSE IF( LSAME( CMACH, 'B' ) ) THEN
+         RMACH = RADIX(ZERO)
+      ELSE IF( LSAME( CMACH, 'P' ) ) THEN
+         RMACH = EPS * RADIX(ZERO)
+      ELSE IF( LSAME( CMACH, 'N' ) ) THEN
+         RMACH = DIGITS(ZERO)
+      ELSE IF( LSAME( CMACH, 'R' ) ) THEN
+         RMACH = RND
+      ELSE IF( LSAME( CMACH, 'M' ) ) THEN
+         RMACH = MINEXPONENT(ZERO)
+      ELSE IF( LSAME( CMACH, 'U' ) ) THEN
+         RMACH = tiny(zero)
+      ELSE IF( LSAME( CMACH, 'L' ) ) THEN
+         RMACH = MAXEXPONENT(ZERO)
+      ELSE IF( LSAME( CMACH, 'O' ) ) THEN
+         RMACH = HUGE(ZERO)
+      ELSE
+         RMACH = ZERO
+      END IF
+*
+      SLAMCH = RMACH
+      RETURN
+*
+*     End of SLAMCH
+*
+      END
+************************************************************************
+*> \brief \b SLAMC3
+*> \details
+*> \b Purpose:
+*> \verbatim
+*> SLAMC3  is intended to force  A  and  B  to be stored prior to doing
+*> the addition of  A  and  B ,  for use in situations where optimizers
+*> might hold one of these in a register.
+*> \endverbatim
+*> \author LAPACK is a software package provided by Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
+*> \ingroup auxOTHERauxiliary
+*>
+*> \param[in] A
+*> \verbatim
+*> \endverbatim
+*>
+*> \param[in] B
+*> \verbatim
+*>          The values A and B.
+*> \endverbatim
+*>
+*
+      REAL             FUNCTION SLAMC3( A, B )
+*
+*  -- LAPACK auxiliary routine --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*
+*     .. Scalar Arguments ..
+      REAL               A, B
+*     ..
+* =====================================================================
+*
+*     .. Executable Statements ..
+*
+      SLAMC3 = A + B
+*
+      RETURN
+*
+*     End of SLAMC3
+*
+      END
+*
+************************************************************************
 *> \brief \b SLAMRG creates a permutation list to merge the entries of two independently sorted sets into a single set sorted in ascending order.
 *
 *  =========== DOCUMENTATION ===========
@@ -88806,6 +89950,240 @@
       RETURN
 *
 *     End of SPOTRF
+*
+      END
+*> \brief \b SPOTRF2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
+*
+*  Definition:
+*  ===========
+*
+*       RECURSIVE SUBROUTINE SPOTRF2( UPLO, N, A, LDA, INFO )
+*
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO
+*       INTEGER            INFO, LDA, N
+*       ..
+*       .. Array Arguments ..
+*       REAL               A( LDA, * )
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SPOTRF2 computes the Cholesky factorization of a real symmetric
+*> positive definite matrix A using the recursive algorithm.
+*>
+*> The factorization has the form
+*>    A = U**T * U,  if UPLO = 'U', or
+*>    A = L  * L**T,  if UPLO = 'L',
+*> where U is an upper triangular matrix and L is lower triangular.
+*>
+*> This is the recursive version of the algorithm. It divides
+*> the matrix into four submatrices:
+*>
+*>        [  A11 | A12  ]  where A11 is n1 by n1 and A22 is n2 by n2
+*>    A = [ -----|----- ]  with n1 = n/2
+*>        [  A21 | A22  ]       n2 = n-n1
+*>
+*> The subroutine calls itself to factor A11. Update and scale A21
+*> or A12, update A22 then call itself to factor A22.
+*>
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          = 'U':  Upper triangle of A is stored;
+*>          = 'L':  Lower triangle of A is stored.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is REAL array, dimension (LDA,N)
+*>          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+*>          N-by-N upper triangular part of A contains the upper
+*>          triangular part of the matrix A, and the strictly lower
+*>          triangular part of A is not referenced.  If UPLO = 'L', the
+*>          leading N-by-N lower triangular part of A contains the lower
+*>          triangular part of the matrix A, and the strictly upper
+*>          triangular part of A is not referenced.
+*>
+*>          On exit, if INFO = 0, the factor U or L from the Cholesky
+*>          factorization A = U**T*U or A = L*L**T.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*>          > 0:  if INFO = i, the leading minor of order i is not
+*>                positive definite, and the factorization could not be
+*>                completed.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \ingroup realPOcomputational
+*
+*  =====================================================================
+      RECURSIVE SUBROUTINE SPOTRF2( UPLO, N, A, LDA, INFO )
+*
+*  -- LAPACK computational routine --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*
+*     .. Scalar Arguments ..
+      CHARACTER          UPLO
+      INTEGER            INFO, LDA, N
+*     ..
+*     .. Array Arguments ..
+      REAL               A( LDA, * )
+*     ..
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO=0.0E+0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            UPPER
+      INTEGER            N1, N2, IINFO
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME, SISNAN
+      EXTERNAL           LSAME, SISNAN
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           SSYRK, STRSM, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, SQRT
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters
+*
+      INFO = 0
+      UPPER = LSAME( UPLO, 'U' )
+      IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'SPOTRF2', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     N=1 case
+*
+      IF( N.EQ.1 ) THEN
+*
+*        Test for non-positive-definiteness
+*
+         IF( A( 1, 1 ).LE.ZERO.OR.SISNAN( A( 1, 1 ) ) ) THEN
+            INFO = 1
+            RETURN
+         END IF
+*
+*        Factor
+*
+         A( 1, 1 ) = SQRT( A( 1, 1 ) )
+*
+*     Use recursive code
+*
+      ELSE
+         N1 = N/2
+         N2 = N-N1
+*
+*        Factor A11
+*
+         CALL SPOTRF2( UPLO, N1, A( 1, 1 ), LDA, IINFO )
+         IF ( IINFO.NE.0 ) THEN
+            INFO = IINFO
+            RETURN
+         END IF
+*
+*        Compute the Cholesky factorization A = U**T*U
+*
+         IF( UPPER ) THEN
+*
+*           Update and scale A12
+*
+            CALL STRSM( 'L', 'U', 'T', 'N', N1, N2, ONE,
+     $                  A( 1, 1 ), LDA, A( 1, N1+1 ), LDA )
+*
+*           Update and factor A22
+*
+            CALL SSYRK( UPLO, 'T', N2, N1, -ONE, A( 1, N1+1 ), LDA,
+     $                  ONE, A( N1+1, N1+1 ), LDA )
+            CALL SPOTRF2( UPLO, N2, A( N1+1, N1+1 ), LDA, IINFO )
+            IF ( IINFO.NE.0 ) THEN
+               INFO = IINFO + N1
+               RETURN
+            END IF
+*
+*        Compute the Cholesky factorization A = L*L**T
+*
+         ELSE
+*
+*           Update and scale A21
+*
+            CALL STRSM( 'R', 'L', 'T', 'N', N2, N1, ONE,
+     $                  A( 1, 1 ), LDA, A( N1+1, 1 ), LDA )
+*
+*           Update and factor A22
+*
+            CALL SSYRK( UPLO, 'N', N2, N1, -ONE, A( N1+1, 1 ), LDA,
+     $                  ONE, A( N1+1, N1+1 ), LDA )
+            CALL SPOTRF2( UPLO, N2, A( N1+1, N1+1 ), LDA, IINFO )
+            IF ( IINFO.NE.0 ) THEN
+               INFO = IINFO + N1
+               RETURN
+            END IF
+         END IF
+      END IF
+      RETURN
+*
+*     End of SPOTRF2
 *
       END
 *> \brief \b SPOTRS
