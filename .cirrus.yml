@@ -21,9 +21,9 @@ task:
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
-      FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --prefix=~/galahad -Dpythoniface=true
+      FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir -Dpythoniface=true
     else
-      FC=gfortran-12 CC=gcc-12 CXX=g++-12 meson setup builddir --prefix=~/galahad -Dpythoniface=true
+      FC=gfortran-12 CC=gcc-12 CXX=g++-12 meson setup builddir -Dpythoniface=true
     fi
   build_script: |
     meson compile -C builddir
