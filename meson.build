@@ -340,6 +340,7 @@ if build_double
                               install : true)
 endif
 
+# Python interface
 if build_pythoniface and build_ciface and build_double
   incdir_numpy = run_command(py,
     ['-c', 'import numpy; print(numpy.get_include())'],
@@ -347,6 +348,10 @@ if build_pythoniface and build_ciface and build_double
   ).stdout().strip()
   libgalahad_include += [incdir_numpy]
 
+  # install python metadata
+  install_data(files('doc/PYTHON_METADATA'), install_dir : join_paths(py.get_install_dir(),'galahad-'+meson.project_version()+'.dist-info'))
+
+  # compile and install python interfaces
   foreach interface: libgalahad_python_src
     name = interface[0]
     file = interface[1]

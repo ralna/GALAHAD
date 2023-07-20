@@ -5,7 +5,9 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += [['fdc', files('Python/fdc_pyiface.c')]]
+  libgalahad_python_src += [['fdc', files('Python/fdc_pyiface.c',
+                                          '../sls/Python/sls_pyiface.c','../uls/Python/uls_pyiface.c','../sils/Python/sils_pyiface.c',
+                                          '../gls/Python/gls_pyiface.c')]]
 endif
 
 galahad_tests += [['fdc', 'fdct', files('fdct.F90')],

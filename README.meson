@@ -107,6 +107,7 @@ Currently supported suites:
 * `package`;
 * `fortran`;
 * `C`;
+* `Python`;
 * `single`;
 * `double`.
 

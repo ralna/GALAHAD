@@ -514,14 +514,14 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
                              "C_type","C_ne","C_row","C_col","C_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOsiOOO|O", 
-                                    kwlist, &n, &m, 
-                                    &H_type, &H_ne, &py_H_row, 
-                                    &py_H_col, &py_H_ptr, 
-                                    &A_type, &A_ne, &py_A_row, 
-                                    &py_A_col, &py_A_ptr, 
-                                    &C_type, &C_ne, &py_C_row, 
-                                    &py_C_col, &py_C_ptr, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOsiOOOsiOOO|O",
+                                    kwlist, &n, &m,
+                                    &H_type, &H_ne, &py_H_row,
+                                    &py_H_col, &py_H_ptr,
+                                    &A_type, &A_ne, &py_A_row,
+                                    &py_A_col, &py_A_ptr,
+                                    &C_type, &C_ne, &py_C_row,
+                                    &py_C_col, &py_C_ptr,
                                     &py_options))
         return NULL;
 
@@ -611,7 +611,7 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call sbls_analyse_matrix
-    sbls_import(&control, &data, &status, n, m, 
+    sbls_import(&control, &data, &status, n, m,
                 H_type, H_ne, H_row, H_col, H_ptr,
                 A_type, A_ne, A_row, A_col, A_ptr,
                 C_type, C_ne, C_row, C_col, C_ptr);
@@ -638,7 +638,8 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SBLS_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_H_val, *py_A_val, *py_C_val, *py_D;
+    PyArrayObject *py_H_val, *py_A_val, *py_C_val;
+    PyArrayObject *py_D = NULL;
     double *H_val, *A_val, *C_val, *D;
     int n, m, H_ne, A_ne, C_ne;
 
@@ -651,7 +652,7 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
                              "C_ne","C_val","D",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOiO|O",
-                                    kwlist, &n, &m, &H_ne, &py_H_val, &A_ne, 
+                                    kwlist, &n, &m, &H_ne, &py_H_val, &A_ne,
                                     &py_A_val, &C_ne, &py_C_val, &py_D ))
         return NULL;
 
@@ -666,10 +667,10 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
     H_val = (double *) PyArray_DATA(py_H_val);
     A_val = (double *) PyArray_DATA(py_A_val);
     C_val = (double *) PyArray_DATA(py_C_val);
-    D = (double *) PyArray_DATA(py_D);
+    if(py_D != NULL) D = (double *) PyArray_DATA(py_D);
 
     // Call sbls_factorize_matrix
-    sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val, 
+    sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
                           C_ne, C_val, D );
 
     // Raise any status errors
@@ -706,7 +707,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args){
     // Call sbls_solve_direct
     sbls_solve_system(&data, &status, n, m, sol);
     // for( int i = 0; i < n; i++) printf("x %f\n", sol[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -763,7 +764,7 @@ static PyObject* py_sbls_terminate(PyObject *self){
 static PyMethodDef sbls_module_methods[] = {
     {"initialize", (PyCFunction) py_sbls_initialize, METH_NOARGS,NULL},
     {"load", (PyCFunction) py_sbls_load, METH_VARARGS, NULL},
-    {"factorize_matrix", (PyCFunction) py_sbls_factorize_matrix, 
+    {"factorize_matrix", (PyCFunction) py_sbls_factorize_matrix,
       METH_VARARGS, NULL},
     {"solve_system", (PyCFunction) py_sbls_solve_system, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_sbls_information, METH_NOARGS, NULL},

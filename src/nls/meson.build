@@ -5,7 +5,10 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += [['nls', files('Python/nls_pyiface.c')]]
+  libgalahad_python_src += [['nls', files('Python/nls_pyiface.c',
+                                          '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../gltr/Python/gltr_pyiface.c',
+                                          '../glrt/Python/glrt_pyiface.c','../rqs/Python/rqs_pyiface.c','../psls/Python/psls_pyiface.c',
+                                          '../bsc/Python/bsc_pyiface.c','../roots/Python/roots_pyiface.c','../sils/Python/sils_pyiface.c',)]]
 endif
 
 if libcutest.found()

@@ -39,9 +39,8 @@ b = np.array([1.0,3.0,5.0])
 #print("transpose x:",xt)
 
 # get information
-inform = gls.information()
-print("rank:",inform['rank'])
+ainform, finform, sinform = gls.information()
+print("rank:",ainform['rank'])
 
 # deallocate internal data
-
-gls.terminate()
+gls.finalize()
