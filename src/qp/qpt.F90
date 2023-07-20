@@ -50,7 +50,11 @@
      IF ( status == - GALAHAD_error_ill_conditioned ) CYCLE
      IF ( status == - GALAHAD_error_tiny_step ) CYCLE
 !    IF ( status == - GALAHAD_error_max_iterations ) CYCLE
+#ifdef GALAHAD_SINGLE
+     IF ( status == - GALAHAD_error_cpu_limit ) CYCLE
+#else
 !    IF ( status == - GALAHAD_error_cpu_limit ) CYCLE
+#endif
      IF ( status == - GALAHAD_error_inertia ) CYCLE
      IF ( status == - GALAHAD_error_file ) CYCLE
      IF ( status == - GALAHAD_error_io ) CYCLE
@@ -863,7 +867,7 @@
 
    CONTAINS
      SUBROUTINE WHICH_sls( control )
-     TYPE ( QP_control_type ) :: control        
+     TYPE ( QP_control_type ) :: control
 #include "galahad_sls_defaults.h"
      control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
      control%QPB_control%FDC_control%use_sls = use_sls
@@ -949,6 +953,3 @@
         = definite_linear_solver
      END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_QP_EXAMPLE
-
-
-
