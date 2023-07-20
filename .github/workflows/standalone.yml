@@ -20,7 +20,7 @@ jobs:
             cxx_cmd: g++
           - os: macos-latest
             compiler: intel
-            compiler_version: 2023.2
+            compiler_version: 2021.10
             cc_cmd: icx
             fc_cmd: ifort
             cxx_cmd: icpx
