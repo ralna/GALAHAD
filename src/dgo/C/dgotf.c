@@ -18,22 +18,22 @@ struct userdata_type {
 int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
 int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
 int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
-int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
                 const void * );
 int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
 int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
                const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
                bool got_h, const void * );
-int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
           const void * );
 int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void * );
 int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void * );
-int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[],
                const void * );
 int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                    bool got_h, const void * );
-int shessprod_diag( int n, const real_wp_ x[], int nnz_v, 
+int shessprod_diag( int n, const real_wp_ x[], int nnz_v,
                     const int index_nz_v[],
                     const real_wp_ v[], int *nnz_u, int index_nz_u[],
                     real_wp_ u[], bool got_h, const void * );
@@ -410,10 +410,10 @@ int main(void) {
 
 }
 
-// Objective function 
-int fun( int n, 
-         const real_wp_ x[], 
-         real_wp_ *f, 
+// Objective function
+int fun( int n,
+         const real_wp_ x[],
+         real_wp_ *f,
          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -426,9 +426,9 @@ int fun( int n,
 }
 
 // Gradient of the objective
-int grad( int n, 
-          const real_wp_ x[], 
-          real_wp_ g[], 
+int grad( int n,
+          const real_wp_ x[],
+          real_wp_ g[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -442,15 +442,15 @@ int grad( int n,
 }
 
 // Hessian of the objective
-int hess( int n, 
-          int ne, 
-          const real_wp_ x[], 
-          real_wp_ hval[], 
+int hess( int n,
+          int ne,
+          const real_wp_ x[],
+          real_wp_ hval[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
+
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -460,15 +460,15 @@ int hess( int n,
 }
 
 // Dense Hessian
-int hess_dense( int n, 
-                int ne, 
-                const real_wp_ x[], 
-                real_wp_ hval[], 
-                const void *userdata ){ 
+int hess_dense( int n,
+                int ne,
+                const real_wp_ x[],
+                real_wp_ hval[],
+                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
+
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 0.0;
     hval[2] = 2.0;
@@ -479,17 +479,17 @@ int hess_dense( int n,
 }
 
 // Hessian-vector product
-int hessprod( int n, 
-              const real_wp_ x[], 
-              real_wp_ u[], 
-              const real_wp_ v[], 
-              bool got_h, 
+int hessprod( int n,
+              const real_wp_ x[],
+              real_wp_ u[],
+              const real_wp_ v[],
+              bool got_h,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
-    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+
+    u[0] = u[0] + 2.0 * ( v[0] + v[2] )
            - mag * freq * freq * cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -497,15 +497,15 @@ int hessprod( int n,
 }
 
 // Sparse Hessian-vector product
-int shessprod( int n, 
-               const real_wp_ x[], 
-               int nnz_v, 
-               const int index_nz_v[], 
-               const real_wp_ v[], 
-               int *nnz_u, 
-               int index_nz_u[], 
-               real_wp_ u[], 
-               bool got_h, 
+int shessprod( int n,
+               const real_wp_ x[],
+               int nnz_v,
+               const int index_nz_v[],
+               const real_wp_ v[],
+               int *nnz_u,
+               int index_nz_u[],
+               real_wp_ u[],
+               bool got_h,
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -517,7 +517,7 @@ int shessprod( int n,
         int j = index_nz_v[i];
         switch(j){
             case 1:
-                p[0] = p[0] + 2.0 * v[0] 
+                p[0] = p[0] + 2.0 * v[0]
                      - mag * freq * freq * cos(freq*x[0]) * v[0];
                 used[0] = true;
                 p[2] = p[2] + 2.0 * v[0];
@@ -551,10 +551,10 @@ int shessprod( int n,
 }
 
 // Apply preconditioner
-int prec( int n, 
-          const real_wp_ x[], 
-          real_wp_ u[], 
-          const real_wp_ v[], 
+int prec( int n,
+          const real_wp_ x[],
+          real_wp_ u[],
+          const real_wp_ v[],
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -562,10 +562,10 @@ int prec( int n,
    return 0;
 }
 
-// Objective function 
-int fun_diag( int n, 
-              const real_wp_ x[], 
-              real_wp_ *f, 
+// Objective function
+int fun_diag( int n,
+              const real_wp_ x[],
+              real_wp_ *f,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -578,9 +578,9 @@ int fun_diag( int n,
 }
 
 // Gradient of the objective
-int grad_diag( int n, 
-               const real_wp_ x[], 
-               real_wp_ g[], 
+int grad_diag( int n,
+               const real_wp_ x[],
+               real_wp_ g[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -594,10 +594,10 @@ int grad_diag( int n,
 }
 
 // Hessian of the objective
-int hess_diag( int n, 
-               int ne, 
-               const real_wp_ x[], 
-               real_wp_ hval[], 
+int hess_diag( int n,
+               int ne,
+               const real_wp_ x[],
+               real_wp_ hval[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -607,14 +607,14 @@ int hess_diag( int n,
     hval[1] = 2.0;
     hval[2] = 2.0;
     return 0;
-}  
+}
 
 // Hessian-vector product
-int hessprod_diag( int n, 
-                   const real_wp_ x[], 
-                   real_wp_ u[], 
-                   const real_wp_ v[], 
-                   bool got_h, 
+int hessprod_diag( int n,
+                   const real_wp_ x[],
+                   real_wp_ u[],
+                   const real_wp_ v[],
+                   bool got_h,
                    const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -627,15 +627,15 @@ int hessprod_diag( int n,
 }
 
 // Sparse Hessian-vector product
-int shessprod_diag( int n, 
-                    const real_wp_ x[], 
-                    int nnz_v, 
-                    const int index_nz_v[], 
-                    const real_wp_ v[], 
-                    int *nnz_u, 
-                    int index_nz_u[], 
-                    real_wp_ u[], 
-                    bool got_h, 
+int shessprod_diag( int n,
+                    const real_wp_ x[],
+                    int nnz_v,
+                    const int index_nz_v[],
+                    const real_wp_ v[],
+                    int *nnz_u,
+                    int index_nz_u[],
+                    real_wp_ u[],
+                    bool got_h,
                     const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;

@@ -307,7 +307,6 @@ if build_single
                               fortran_args : extra_args_single,
                               cpp_args : extra_args_single,
                               link_language : 'fortran',
-                              link_args : '-lstdc++',
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -332,7 +331,6 @@ if build_double
                               fortran_args : extra_args_double,
                               cpp_args : extra_args_double,
                               link_language : 'fortran',
-                              link_args : '-lstdc++',
                               include_directories: libgalahad_include,
                               install : true)
 endif

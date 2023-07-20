@@ -1094,16 +1094,24 @@
 
         IF ( control%cpu_time_limit >= zero ) THEN
           IF ( QPA_control%cpu_time_limit >= zero ) THEN
-            QPA_control%cpu_time_limit = MIN( control%cpu_time_limit,          &
-              QPA_control%cpu_time_limit )
+            IF ( QPA_control%cpu_time_limit < zero ) THEN
+              QPA_control%cpu_time_limit = control%cpu_time_limit
+            ELSE
+              QPA_control%cpu_time_limit = MIN( control%cpu_time_limit,        &
+                QPA_control%cpu_time_limit )
+            END IF
           ELSE
             QPA_control%cpu_time_limit = control%cpu_time_limit
           END IF
         END IF
         IF ( control%clock_time_limit >= zero ) THEN
           IF ( QPA_control%clock_time_limit >= zero ) THEN
-            QPA_control%clock_time_limit = MIN( control%clock_time_limit,      &
-              QPA_control%clock_time_limit )
+            IF ( QPA_control%clock_time_limit < zero ) THEN
+              QPA_control%clock_time_limit = control%cpu_time_limit
+            ELSE
+              QPA_control%clock_time_limit = MIN( control%clock_time_limit,    &
+                QPA_control%clock_time_limit )
+            END IF
           ELSE
             QPA_control%clock_time_limit = control%clock_time_limit
           END IF
@@ -1117,15 +1125,24 @@
 
         IF ( control%cpu_time_limit >= zero ) THEN
           IF ( QPB_control%cpu_time_limit >= zero ) THEN
-            QPB_control%cpu_time_limit = MIN( control%cpu_time_limit,          &
-               QPB_control%cpu_time_limit )
+            IF ( QPB_control%cpu_time_limit < zero ) THEN
+              QPB_control%cpu_time_limit = control%cpu_time_limit
+            ELSE
+              QPB_control%cpu_time_limit = MIN( control%cpu_time_limit,        &
+                 QPB_control%cpu_time_limit )
+            END IF
           ELSE
             QPB_control%cpu_time_limit = control%cpu_time_limit
           END IF
           IF ( QPB_control%LSQP_control%cpu_time_limit >= zero ) THEN
-            QPB_control%LSQP_control%cpu_time_limit =                          &
-              MIN( control%cpu_time_limit,                                     &
-                   QPB_control%LSQP_control%cpu_time_limit )
+            IF ( QPB_control%LSQP_control%cpu_time_limit < zero ) THEN
+              QPB_control%LSQP_control%cpu_time_limit =                        &
+                control%cpu_time_limit
+            ELSE
+              QPB_control%LSQP_control%cpu_time_limit =                        &
+                MIN( control%cpu_time_limit,                                   &
+                     QPB_control%LSQP_control%cpu_time_limit )
+            END IF
           ELSE
             QPB_control%LSQP_control%cpu_time_limit =                          &
               control%cpu_time_limit
@@ -1133,15 +1150,24 @@
         END IF
         IF ( control%clock_time_limit >= zero ) THEN
           IF ( QPB_control%clock_time_limit >= zero ) THEN
-            QPB_control%clock_time_limit = MIN( control%clock_time_limit,      &
-               QPB_control%clock_time_limit )
+            IF ( QPB_control%clock_time_limit < zero ) THEN
+              QPB_control%clock_time_limit = control%clock_time_limit
+            ELSE
+              QPB_control%clock_time_limit = MIN( control%clock_time_limit,    &
+                 QPB_control%clock_time_limit )
+            END IF
           ELSE
             QPB_control%clock_time_limit = control%clock_time_limit
           END IF
           IF ( QPB_control%LSQP_control%clock_time_limit >= zero ) THEN
-            QPB_control%LSQP_control%clock_time_limit =                        &
-              MIN( control%clock_time_limit,                                   &
-                   QPB_control%LSQP_control%clock_time_limit )
+            IF ( QPB_control%LSQP_control%clock_time_limit < zero ) THEN
+              QPB_control%LSQP_control%clock_time_limit =                      &
+                control%clock_time_limit
+            ELSE
+              QPB_control%LSQP_control%clock_time_limit =                      &
+                MIN( control%clock_time_limit,                                 &
+                     QPB_control%LSQP_control%clock_time_limit )
+            END IF
           ELSE
             QPB_control%LSQP_control%clock_time_limit =                        &
               control%clock_time_limit
