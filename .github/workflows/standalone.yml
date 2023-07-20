@@ -18,13 +18,6 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
-          - os: macos-latest
-            compiler: intel
-            compiler_version: 2021.10
-            cc_cmd: icx
-            fc_cmd: ifort
-            cxx_cmd: icpx
-            allow_failure: true
           - os: ubuntu-latest
             compiler: intel-llvm
             compiler_version: 2023.2
@@ -32,13 +25,13 @@ jobs:
             fc_cmd: ifort
             cxx_cmd: icpx
             allow_failure: true
-          - os: ubuntu-latest
-            compiler: intel-llvm
-            compiler_version: 2023.2
-            cc_cmd: icx
-            fc_cmd: ifx
-            cxx_cmd: icpx
-            allow_failure: true
+          # - os: ubuntu-latest
+          #   compiler: intel-llvm
+          #   compiler_version: 2023.2
+          #   cc_cmd: icx
+          #   fc_cmd: ifx
+          #   cxx_cmd: icpx
+          #   allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
