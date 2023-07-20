@@ -18,16 +18,23 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
-          - os: ubuntu-latest
-            compiler: intel-llvm
-            compiler_version: 2023.1
+          - os: macos-latest
+            compiler: intel
+            compiler_version: 2023.2
             cc_cmd: icx
             fc_cmd: ifort
             cxx_cmd: icpx
             allow_failure: true
           - os: ubuntu-latest
             compiler: intel-llvm
-            compiler_version: 2023.1
+            compiler_version: 2023.2
+            cc_cmd: icx
+            fc_cmd: ifort
+            cxx_cmd: icpx
+            allow_failure: true
+          - os: ubuntu-latest
+            compiler: intel-llvm
+            compiler_version: 2023.2
             cc_cmd: icx
             fc_cmd: ifx
             cxx_cmd: icpx
@@ -60,21 +67,21 @@ jobs:
 
       - name: Install GNU compilers
         if: matrix.compiler == 'gnu'
-        uses: awvwgk/setup-fortran@main
+        uses: awvwgk/setup-fortran@intel-2023.2.0
         with:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
-        uses: awvwgk/setup-fortran@main
+        uses: awvwgk/setup-fortran@intel-2023.2.0
         with:
           compiler: intel-classic
           version: ${{ matrix.compiler_version }}
 
       - name: Install nextgen Intel compilers
         if: matrix.compiler == 'intel-llvm'
-        uses: awvwgk/setup-fortran@main
+        uses: awvwgk/setup-fortran@intel-2023.2.0
         with:
           compiler: intel
           version: ${{ matrix.compiler_version }}
