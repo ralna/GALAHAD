@@ -35,7 +35,7 @@ PROGRAM TEST_PARDISO
       IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_rp_
     END DO
     IA( n + 1 ) = n + 1
-  ELSE 
+  ELSE
     nz = 18
     ALLOCATE( A( nz ), JA( nz ) )
     IA = (/ 1, 5, 8, 10, 12, 15, 17, 18, 19 /)
@@ -66,7 +66,7 @@ PROGRAM TEST_PARDISO
 
   DO i = 1, 64
     IPARM( i ) = 0
-    PT( i )%DUMMY = 0 
+    PT( i )%DUMMY = 0
   END DO
 
 !  set up PARDISO control parameters
@@ -94,6 +94,12 @@ PROGRAM TEST_PARDISO
 ! IPARM( 19 ) = -1 ! Output: Mflops for LU factorization
 ! IPARM( 20 ) = 0 ! Output: Numbers of CG Iterations
 ! IPARM( 27 ) = 1 ! check matrix
+! IPARM( 28 ) = 0 ! double precision, = 1 is single precision
+#ifdef GALAHAD_SINGLE
+  IPARM( 28 ) = 1
+#else
+  IPARM( 28 ) = 0
+#endif
 
   maxfct = 1
   mnum = 1
@@ -122,7 +128,7 @@ PROGRAM TEST_PARDISO
 
   ELSE
 
-!  reordering and Symbolic Factorization, This step also allocates all memory 
+!  reordering and Symbolic Factorization, This step also allocates all memory
 !  that is necessary for the factorization
 
     phase = 11 ! only reordering and symbolic factorization
@@ -168,7 +174,7 @@ PROGRAM TEST_PARDISO
 
 !  termination and release of memory
 
-1 CONTINUE 
+1 CONTINUE
   phase = - 1 ! release internal memory
   CALL MKL_PARDISO_SOLVE( PT, maxfct, mnum, mtype, phase, n, ddum, idum, idum, &
                           idum, nrhs, IPARM, msglvl, ddum, ddum_out, error )
