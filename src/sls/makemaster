@@ -36,7 +36,7 @@ CDEPENDS = ir_ciface sbls_ciface trs_ciface rqs_ciface
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
-PYDEPENDENCIES =
+PYDEPENDENCIES = make_pyiface_sils
 
 #  other python interface packages that depend on current interface package
 

@@ -5,7 +5,7 @@ import numpy as np
 dgo.initialize()
 
 # set some non-default options
-options = {'print_level' : 3, 'ugo_options' : {'print_level' : 4}}
+options = {'print_level' : 1, 'ugo_options' : {'print_level' : 0}}
 print(options)
 
 # set bounds
@@ -30,7 +30,7 @@ def eval_f(x):
 def eval_g(x):
     return np.array([2*x[0],2*x[1]])
 def eval_h(x):
-    return np.array([2,2])
+    return np.array([2.,2.])
 def eval_hprod(x,u,v):
     return np.array([u[0]+2*v[0],u[1]+2*v[1]])
 
@@ -38,7 +38,7 @@ def eval_hprod(x,u,v):
 x = np.array([2.,2.])
 
 # find optimum
-x, g = dgo.solve(n, H_ne, x, eval_f, eval_g, eval_h, eval_hprod)
+x, g = dgo.solve(n, H_ne, x, eval_f, eval_g, eval_h)
 print("x:",x)
 print("g:",g)
 

@@ -7,7 +7,9 @@ if build_ciface
 endif
 
 if build_pythoniface
-  libgalahad_python_src += [['qpa', files('Python/qpa_pyiface.c')]]
+  libgalahad_python_src += [['qpa', files('Python/qpa_pyiface.c',
+                                          '../sbls/Python/sbls_pyiface.c','../gltr/Python/gltr_pyiface.c','../sls/Python/sls_pyiface.c',
+                                          '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c', '../gls/Python/gls_pyiface.c',)]]
 endif
 
 if libcutest.found()
