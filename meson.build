@@ -104,24 +104,7 @@ libmkl_pardiso = fc.find_library(libmkl_pardiso_name, dirs : libmkl_pardiso_path
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 lm = cc.find_library('m', required : false)
 
-# OpenMP
-if fc.get_id() == 'nagfor'
-  add_global_arguments('-openmp', language : 'fortran')
-  add_global_link_arguments('-openmp', language : 'fortran')
-elif fc.get_id() == 'gcc'
-  add_global_arguments('-fopenmp', language : 'fortran')
-  add_global_link_arguments('-fopenmp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
-  add_global_arguments('-qopenmp', language : 'fortran')
-  add_global_link_arguments('-qopenmp', language : 'fortran')
-endif
-
-if cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
-  add_global_arguments('-fopenmp', language : 'cpp')
-elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm' or cxx.get_id() == 'intel-llvm-cl'
-  add_global_arguments('-qopenmp', language : 'cpp')
-endif
-
+libomp = dependency('openmp', language : 'fortran', required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
 libhwloc = dependency('hwloc', required : false)
 
@@ -129,7 +112,7 @@ libgalahad_single_deps = [libsmumps]
 libgalahad_double_deps = [libdmumps]
 libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libcutest,
                    libwsmp, libumfpack, libpardiso, libspmf, libpastix,
-                   libmkl_pardiso, libampl, libmpi, libhwloc]
+                   libmkl_pardiso, libampl, libomp, libmpi, libhwloc]
 
 libgalahad_single_src = []
 libgalahad_double_src = []
