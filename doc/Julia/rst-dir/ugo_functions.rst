@@ -11,108 +11,18 @@ overview of functions provided
 	struct_ugo_time_type.rst
 
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`ugo_control_type<doxid-structugo__control__type>`;
-	struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`;
-	struct :ref:`ugo_time_type<doxid-structugo__time__type>`;
-
-	// function calls
-
-	void :ref:`ugo_initialize<doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78>`(void** data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, int* status);
-	void :ref:`ugo_read_specfile<doxid-galahad__ugo_8h_1a6819d58a728f3bf97232ed719e72fb91>`(struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, const char specfile[]);
-
-	void :ref:`ugo_import<doxid-galahad__ugo_8h_1a8bcbdf9ef1229535b77d9991eb543dcb>`(
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_l,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_u
-	);
-
-	void :ref:`ugo_reset_control<doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40>`(
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`ugo_solve_direct<doxid-galahad__ugo_8h_1aa5b2949ab17e25a0a0c24f38c0d61a1a>`(
-		void** data,
-		void* userdata,
-		int* status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h,
-		int(*)(:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_fgh
-	);
-
-	void :ref:`ugo_solve_reverse<doxid-galahad__ugo_8h_1a0b8f123f8e67bb0cb8a27c5ce87c824c>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h
-	);
-
-	void :ref:`ugo_information<doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee>`(void** data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, int* status);
-
-	void :ref:`ugo_terminate<doxid-galahad__ugo_8h_1ad9485926c547bb783aea3ee1adb3b084>`(
-		void** data,
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; ugo_initialize
 .. _doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_initialize(void** data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, int* status)
+	ugo_initialize(data, control, status)
 
 Set default control values and initialize private data
-
 
 
 .. rubric:: Parameters:
@@ -133,18 +43,18 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; ugo_read_specfile
 .. _doxid-galahad__ugo_8h_1a6819d58a728f3bf97232ed719e72fb91:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_read_specfile(struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, const char specfile[])
+	ugo_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNUGO.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
 
@@ -168,16 +78,10 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; ugo_import
 .. _doxid-galahad__ugo_8h_1a8bcbdf9ef1229535b77d9991eb543dcb:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_import(
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_l,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_u
-	)
+	ugo_import(control, data, status, x_l, x_u)
 
 Import problem data into internal storage prior to solution.
 
@@ -201,13 +105,13 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 
 	*
@@ -223,14 +127,10 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; ugo_reset_control
 .. _doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_reset_control(
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status
-	)
+	ugo_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -254,27 +154,18 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; ugo_solve_direct
 .. _doxid-galahad__ugo_8h_1aa5b2949ab17e25a0a0c24f38c0d61a1a:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_solve_direct(
-		void** data,
-		void* userdata,
-		int* status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h,
-		int(*)(:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_fgh
-	)
+	ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
 
@@ -300,27 +191,27 @@ This version is for the case where all function/derivative information is availa
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 	*
@@ -346,34 +237,26 @@ This version is for the case where all function/derivative information is availa
 	*
 		- eval_fgh
 
-		- 
+		-
 		  is a user-provided function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_fgh( double x,
 		  	              double *f,
 		  	              double *g,
 		  	              double *h,
 		  	              const void *userdata)
-		  
+
 		  The value of the objective function :math:`f(x)` and its first derivative :math:`f^{\prime}(x)` evaluated at x= :math:`x` must be assigned to f and g respectively, and the function return value set to 0. In addition, if control.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative :math:`f^{\prime\prime}(x)` in h; it need not be assigned otherwise. If the evaluation is impossible at x, return should be set to a nonzero value.
 
 .. index:: pair: function; ugo_solve_reverse
 .. _doxid-galahad__ugo_8h_1a0b8f123f8e67bb0cb8a27c5ce87c824c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_solve_reverse(
-		void** data,
-		int* status,
-		int* eval_status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h
-	)
+	ugo_solve_reverse(data, status, eval_status, x, f, g, h)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
 
@@ -394,35 +277,35 @@ This version is for the case where function/derivative information is only avail
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
-		  
-		  
-		  
+
+
+
 		  * 3. The user should compute the objective function value :math:`f(x)` and its first derivative :math:`f^{\prime}(x)`, and then re-enter the function. The required values should be set in f and g respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate :math:`f(x)` or :math:`f^{\prime}(x)` - for instance, if the function or its first derivative are undefined at x - the user need not set f or g, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = false.
-		  
-		  
-		  
+
+
+
 		  * 4. The user should compute the objective function value :math:`f(x)` and its first two derivatives :math:`f^{\prime}(x)` and :math:`f^{\prime\prime}(x)` at x= :math:`x`, and then re-enter the function. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate :math:`f(x)`, :math:`f^{\prime}(x)` or :math:`f^{\prime\prime}(x)` - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = true.
 
 	*
@@ -453,10 +336,10 @@ This version is for the case where function/derivative information is only avail
 .. index:: pair: function; ugo_information
 .. _doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_information(void** data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, int* status)
+	ugo_information(data, inform, status)
 
 Provides output information
 
@@ -480,22 +363,18 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; ugo_terminate
 .. _doxid-galahad__ugo_8h_1ad9485926c547bb783aea3ee1adb3b084:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ugo_terminate(
-		void** data,
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform
-	)
+	ugo_terminate(data, control, inform)
 
 Deallocate all internal private storage
 
@@ -520,4 +399,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)
-
