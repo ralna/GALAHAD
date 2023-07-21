@@ -10,5 +10,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
       text = replace(text, keys => vals)
     end
   end
+
+  lines = split(test, "\n")
+  nlines = length(lines)
+
   write(path, text)
 end
