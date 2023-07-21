@@ -5,21 +5,24 @@ Summary: Python interfaces to GALAHAD
 Home-page: https://github.com/ralna/GALAHAD
 Author: Nick Gould and Jaroslav Fowkes
 Author-email: nick.gould@stfc.ac.uk, jaroslav.fowkes@stfc.ac.uk
-License: GNU LGPL
+License: BSD License
 Download-URL: https://github.com/ralna/GALAHAD/releases/
 Project-URL: Bug Tracker, https://github.com/ralna/GALAHAD/issues/
 Project-URL: Documentation, https://www.galahad.rl.ac.uk
 Project-URL: Source Code, https://github.com/ralna/GALAHAD/
 Keywords: mathematics optimization
 Platform: Linux
+Platform: MacOS
+Platform: Windows
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
 Classifier: Framework :: IPython
 Classifier: Framework :: Jupyter
 Classifier: Intended Audience :: Science/Research
-Classifier: License :: OSI Approved :: GNU Lesser General Public License (LGPL)
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: POSIX :: Linux
 Classifier: Operating System :: MacOS
-Classifier: Operating System :: Unix
+Operating System :: Microsoft :: Windows
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
 Classifier: Topic :: Scientific/Engineering
