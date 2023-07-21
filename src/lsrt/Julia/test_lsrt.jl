@@ -1,0 +1,1 @@
+../../../GALAHAD.jl/test/test_lsrt.jl
