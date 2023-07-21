@@ -7,7 +7,7 @@ GALAHAD PSLS package
 
 .. include:: ../../Python/psls_intro.rst
 
-.. include:: ../../Python/psls_storage.rst
+.. include:: psls_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD PSLS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the psls package must be 
+To solve a given problem, functions from the psls package must be
 called in the following order:
 
 * :ref:`psls_initialize <doxid-galahad__psls_8h_1af5cb66dbf5b9e4f094e2e0a29631fd1b>` - provide default control parameters and set up initial data structures
@@ -29,9 +29,9 @@ called in the following order:
 * :ref:`psls_reset_control <doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * one of
-  
+
   * :ref:`psls_form_preconditioner <doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1>` - form and factorize a preconditioner :math:`P` of the matrix :math:`A`
-  
+
   * :ref:`psls_form_subset_preconditioner <doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65>` - form and factorize a preconditioner :math:`P` of a symmetric submatrix of the matrix :math:`A`
 
 * :ref:`psls_update_preconditioner <doxid-galahad__psls_8h_1a42a8097e64b527cff18ab66c07a32d1d>` (optional) - update the preconditioner :math:`P` when rows (amd columns) are removed
@@ -42,7 +42,7 @@ called in the following order:
 
 * :ref:`psls_terminate <doxid-galahad__psls_8h_1ab62a2e262e7466fac3a2dc8cd300720d>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_psls_examples>` section for 
+See the :ref:`examples <doxid-index_psls_examples>` section for
 illustrations of use.
 
 callable functions
@@ -70,7 +70,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/psls/C/pslst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

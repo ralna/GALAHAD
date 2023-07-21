@@ -7,7 +7,7 @@ GALAHAD CRO package
 
 .. include:: ../../Python/cro_intro.rst
 
-.. include:: ../../Python/cro_storage.rst
+.. include:: cro_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD CRO package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the cro package must be 
+To solve a given problem, functions from the cro package must be
 called in the following order:
 
 To solve a given problem, functions from the cro package must be called in the following order:
@@ -30,7 +30,7 @@ To solve a given problem, functions from the cro package must be called in the f
 
 * :ref:`cro_terminate <doxid-galahad__cro_8h_1ae0692951f03b0999f73a8f68b7d62212>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_cro_examples>` section for 
+See the :ref:`examples <doxid-index_cro_examples>` section for
 illustrations of use.
 
 callable functions
@@ -58,7 +58,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/cro/C/crot.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

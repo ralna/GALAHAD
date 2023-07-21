@@ -7,7 +7,7 @@ GALAHAD TRS package
 
 .. include:: ../../Python/trs_intro.rst
 
-.. include:: ../../Python/trs_storage.rst
+.. include:: trs_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD TRS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the trs package must be 
+To solve a given problem, functions from the trs package must be
 called in the following order:
 
 * :ref:`trs_initialize <doxid-galahad__trs_8h_1acb066d992c4ec394402bc7b7317e1163>` - provide default control parameters and set up initial data structures
@@ -38,7 +38,7 @@ called in the following order:
 
 * :ref:`trs_terminate <doxid-galahad__trs_8h_1ab5cf0077db0631814fdd03599a585376>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_trs_examples>` section for 
+See the :ref:`examples <doxid-index_trs_examples>` section for
 illustrations of use.
 
 callable functions
@@ -68,7 +68,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/trs/C/trst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
@@ -81,4 +81,3 @@ the code is available in $GALAHAD/src/trs/C/trstf.c .
 
 .. include :: ../../../src/trs/C/trstf.c
    :code: C
-

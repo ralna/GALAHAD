@@ -7,7 +7,7 @@ GALAHAD SBLS package
 
 .. include:: ../../Python/sbls_intro.rst
 
-.. include:: ../../Python/sbls_storage.rst
+.. include:: sbls_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD SBLS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the sbls package must be 
+To solve a given problem, functions from the sbls package must be
 called in the following order:
 
 * :ref:`sbls_initialize <doxid-galahad__sbls_8h_1a30b1a9463e4abd5cfa0150ffb30569a9>` - provide default control parameters and set up initial data structures
@@ -36,7 +36,7 @@ called in the following order:
 
 * :ref:`sbls_terminate <doxid-galahad__sbls_8h_1a73d7d29d113a62c48cc176146539bca5>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_sbls_examples>` section for 
+See the :ref:`examples <doxid-index_sbls_examples>` section for
 illustrations of use.
 
 callable functions
@@ -64,7 +64,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/sbls/C/sblst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

@@ -7,7 +7,7 @@ GALAHAD NLS package
 
 .. include:: ../../Python/nls_intro.rst
 
-.. include:: ../../Python/nls_storage.rst
+.. include:: nls_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD NLS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the nls package must be 
+To solve a given problem, functions from the nls package must be
 called in the following order:
 
 To solve a given problem, functions from the nls package must be called in the following order:
@@ -31,20 +31,20 @@ To solve a given problem, functions from the nls package must be called in the f
 * :ref:`nls_reset_control <doxid-galahad__nls_8h_1a07f0857c9923ad0f92d51ed00833afda>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`nls_solve_with_mat <doxid-galahad__nls_8h_1ae923c2e6afabb3563fe0998d45b715c4>` - solve using function calls to evaluate function, gradient and Hessian values
-  
+
   * :ref:`nls_solve_without_mat <doxid-galahad__nls_8h_1a692ecbfaa428584e60aa4c33d7278a64>` - solve using function calls to evaluate function and gradient values and Hessian-vector products
-  
+
   * :ref:`nls_solve_reverse_with_mat <doxid-galahad__nls_8h_1a9ad89605640c53c33ddd5894b5e3edd1>` - solve returning to the calling program to obtain function, gradient and Hessian values, or
-  
+
   * :ref:`nls_solve_reverse_without_mat <doxid-galahad__nls_8h_1a6dddd928c19adec0abf76bdb2d75da17>` - solve returning to the calling prorgram to obtain function and gradient values and Hessian-vector products
 
 * :ref:`nls_information <doxid-galahad__nls_8h_1a765da96b0a1f3d07dab53cc3400c22d8>` (optional) - recover information about the solution and solution process
 
 * :ref:`nls_terminate <doxid-galahad__nls_8h_1a7babe9112dfad1eb7b57b70135704ab0>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_nls_examples>` section for 
+See the :ref:`examples <doxid-index_nls_examples>` section for
 illustrations of use.
 
 callable functions
@@ -76,7 +76,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/nls/C/nlst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

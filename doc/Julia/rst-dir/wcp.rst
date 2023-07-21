@@ -7,7 +7,7 @@ GALAHAD WCP package
 
 .. include:: ../../Python/wcp_intro.rst
 
-.. include:: ../../Python/wcp_storage.rst
+.. include:: wcp_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD WCP package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the wcp package must be 
+To solve a given problem, functions from the wcp package must be
 called in the following order:
 
 * :ref:`wcp_initialize <doxid-galahad__wcp_8h_1a78c76e090a879684ca1fa3ab17f55f34>` - provide default control parameters and set up initial data structures
@@ -34,7 +34,7 @@ called in the following order:
 
 * :ref:`wcp_terminate <doxid-galahad__wcp_8h_1a0b1cc55b8418826d80e4435ab555e256>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_wcp_examples>` section for 
+See the :ref:`examples <doxid-index_wcp_examples>` section for
 illustrations of use.
 
 callable functions
@@ -62,7 +62,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/wcp/C/wcpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

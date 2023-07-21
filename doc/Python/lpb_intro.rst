@@ -4,11 +4,11 @@ purpose
 The ``lpb`` package uses a **primal-dual interior-point method** to solve a
 given **linear program**.
 The aim is to minimize the linear objective function
-$$q(x) = f + g^T x$$ 
+$$q(x) = f + g^T x$$
 subject to the general linear constraints and simple bounds
 $$c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,$$
-where $A$ is a given $m$ by $n$ matrix,  
-$g$ is a vector, $f$ is a scalar, and any of the components 
+where $A$ is a given $m$ by $n$ matrix,
+$g$ is a vector, $f$ is a scalar, and any of the components
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
@@ -17,7 +17,7 @@ involving a large number of unknowns $x$.
 See Section 4 of $GALAHAD/doc/lpb.pdf for additional details.
 
 terminology
-----------
+-----------
 
 Any required solution $x$ necessarily satisfies
 the **primal optimality conditions**
@@ -25,10 +25,10 @@ $$A x = c\;\;\mbox{(1a)}$$
 and
 $$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(1b)}$$
 the **dual optimality conditions**
-$$g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\; 
+$$g = A^{T} y + z,\;\;  y = y_l + y_u \;\;\mbox{and}\;\;
 z = z_l + z_u,\;\;\mbox{(2a)}$$
 and
-$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; 
+$$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\;
 z_u \leq 0,\;\;\mbox{(2b)}$$
 and the **complementary slackness conditions**
 $$( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
@@ -40,7 +40,7 @@ respectively, and where the vector inequalities hold component-wise.
 method
 ------
 
-Primal-dual interior point methods iterate towards a point that satisfies 
+Primal-dual interior point methods iterate towards a point that satisfies
 these optimality conditions by ultimately aiming to satisfy
 (1a), (2a) and (3), while ensuring that (1b) and (2b) are
 satisfied as strict inequalities at each stage.
@@ -56,7 +56,7 @@ overall violation of (1a), (2a) and (3),
 rather than reducing each of the terms individually. Given an estimate
 $v = (x, \; c, \; y, \; y^{l}, \; y^{u}, \; z, \; z^{l}, \; z^{u})$
 of the primal-dual variables, a correction
-$\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \; 
+$\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \;
 y^{u} ,\;z,\;z^{l} ,\;z^{u} )$
 is obtained by solving a suitable linear system of Newton equations for the
 nonlinear systems (1a), (2a) and a parameterized ``residual
@@ -71,7 +71,7 @@ which make up the complementary slackness
 from their average value. The parameter that controls the perturbation
 of (3) is ultimately driven to zero.
 
-The Newton equations are solved  by applying the matrix factorization 
+The Newton equations are solved  by applying the matrix factorization
 package ``SBLS``, but there are options
 to factorize the matrix as a whole (the so-called "augmented system"
 approach), to perform a block elimination first (the "Schur-complement"
@@ -91,20 +91,20 @@ references
 The basic algorithm is a generalisation of those of
 
   Y. Zhang,
-  ``On the convergence of a class of infeasible interior-point methods 
+  ``On the convergence of a class of infeasible interior-point methods
   for the horizontal linear complementarity problem''.
   *SIAM J. Optimization* **4(1)** (1994) 208-227,
 
-and 
+and
 
   G. Zhao and J. Sun,
-  ``On the rate of local convergence of high-order infeasible 
+  ``On the rate of local convergence of high-order infeasible
   path-following algorithms for $P_*$ linear complementarity problems''.
   *Computational Optimization and Applications* **14(1)* (1999) 293-307,
 
 with many enhancements described by
 
   N. I. M. Gould, D. Orban and D. P. Robinson,
-  ``Trajectory-following methods for large-scale degenerate 
+  ``Trajectory-following methods for large-scale degenerate
   convex quadratic programming'',
   *Mathematical Programming Computation* **5(2)** (2013) 113-142.

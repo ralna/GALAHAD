@@ -7,7 +7,7 @@ GALAHAD LPB package
 
 .. include:: ../../Python/lpb_intro.rst
 
-.. include:: ../../Python/lpb_storage.rst
+.. include:: lpb_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD LPB package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the lpb package must be 
+To solve a given problem, functions from the lpb package must be
 called in the following order:
 
 * :ref:`lpb_initialize <doxid-galahad__lpb_8h_1a63dd5d968d870274e0abc9c3e1e553f6>` - provide default control parameters and set up initial data structures
@@ -35,7 +35,7 @@ called in the following order:
 * :ref:`lpb_terminate <doxid-galahad__lpb_8h_1ac7258f2afb0b15c191838ecfa377d264>` - deallocate data structures
 
 
-See the :ref:`examples <doxid-index_lpb_examples>` section for 
+See the :ref:`examples <doxid-index_lpb_examples>` section for
 illustrations of use.
 
 callable functions
@@ -63,7 +63,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/lpb/C/lpbt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

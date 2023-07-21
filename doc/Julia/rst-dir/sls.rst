@@ -7,7 +7,7 @@ GALAHAD SLS package
 
 .. include:: ../../Python/sls_intro.rst
 
-.. include:: ../../Python/sls_storage.rst
+.. include:: sls_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD SLS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the sls package must be 
+To solve a given problem, functions from the sls package must be
 called in the following order:
 
 * :ref:`sls_initialize <doxid-galahad__sls_8h_1a1d8a0c73587ca6d7f5333d41b3e2472a>` - provide default control parameters and set up initial data structures
@@ -31,16 +31,16 @@ called in the following order:
 * :ref:`sls_factorize_matrix <doxid-galahad__sls_8h_1ab6666f5eb7b0bdbbc9c9b52b7a2e2c41>` - form and factorize the matrix :math:`A`
 
 * one of
-  
+
   * :ref:`sls_solve_system <doxid-galahad__sls_8h_1a1b3e7546b59b06160c51e16b6781bc0b>` - solve the linear system of equations :math:`Ax=b`
-  
+
   * :ref:`sls_partial_solve_system <doxid-galahad__sls_8h_1ac66dc50d8b54acab90d70ae649b92905>` - solve a linear system :math:`Mx=b` involving one of the matrix factors :math:`M` of :math:`A`
 
 * :ref:`sls_information <doxid-galahad__sls_8h_1a0ca4a126813c3aafac9d791a152b233c>` (optional) - recover information about the solution and solution process
 
 * :ref:`sls_terminate <doxid-galahad__sls_8h_1aa5aafa378e3500ce31783e13c3395d30>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_sls_examples>` section for 
+See the :ref:`examples <doxid-index_sls_examples>` section for
 illustrations of use.
 
 callable functions
@@ -68,7 +68,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/sls/C/slst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

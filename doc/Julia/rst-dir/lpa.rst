@@ -7,7 +7,7 @@ GALAHAD LPA package
 
 .. include:: ../../Python/lpa_intro.rst
 
-.. include:: ../../Python/lpa_storage.rst
+.. include:: lpa_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD LPA package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the lpa package must be 
+To solve a given problem, functions from the lpa package must be
 called in the following order:
 
 To solve a given problem, functions from the lpa package must be called in the following order:
@@ -36,7 +36,7 @@ To solve a given problem, functions from the lpa package must be called in the f
 
 * :ref:`lpa_terminate <doxid-galahad__lpa_8h_1a7c2959b854911544161f0d3699d18d05>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_lpa_examples>` section for 
+See the :ref:`examples <doxid-index_lpa_examples>` section for
 illustrations of use.
 
 callable functions
@@ -64,7 +64,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/lpa/C/lpat.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
@@ -77,4 +77,3 @@ the code is available in $GALAHAD/src/lpa/C/lpatf.c .
 
 .. include :: ../../../src/lpa/C/lpatf.c
    :code: C
-

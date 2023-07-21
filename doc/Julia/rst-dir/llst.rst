@@ -7,7 +7,7 @@ GALAHAD LLST package
 
 .. include:: ../../Python/llst_intro.rst
 
-.. include:: ../../Python/llst_storage.rst
+.. include:: llst_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD LLST package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the llst package must be 
+To solve a given problem, functions from the llst package must be
 called in the following order:
 
 * :ref:`llst_initialize <doxid-galahad__llst_8h_1a9da7a4daba2ceaf875fbd24fe42fbe1f>` - provide default control parameters and set up initial data structures
@@ -37,7 +37,7 @@ called in the following order:
 * :ref:`llst_terminate <doxid-galahad__llst_8h_1a3d7693551362082a30094e7dea5a2a66>` - deallocate data structures
 
 
-See the :ref:`examples <doxid-index_llst_examples>` section for 
+See the :ref:`examples <doxid-index_llst_examples>` section for
 illustrations of use.
 
 callable functions
@@ -67,7 +67,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/llst/C/llstt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

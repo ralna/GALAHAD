@@ -7,7 +7,7 @@ GALAHAD CQP package
 
 .. include:: ../../Python/cqp_intro.rst
 
-.. include:: ../../Python/cqp_storage.rst
+.. include:: cqp_storage.rst
 
 .. toctree::
 	:hidden:
@@ -28,16 +28,16 @@ To solve a given problem, functions from the cqp package must be called in the f
 * :ref:`cqp_reset_control <doxid-galahad__cqp_8h_1a9f7ccb0cffa909a2be7556edda430190>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`cqp_solve_qp <doxid-galahad__cqp_8h_1ac2d720ee7b719bf63c3fa208d37f1bc1>` - solve the quadratic program
-  
+
   * :ref:`cqp_solve_sldqp <doxid-galahad__cqp_8h_1a311864de053b1cbbf78b1cbab052e56e>` - solve the shifted least-distance problem
 
 * :ref:`cqp_information <doxid-galahad__cqp_8h_1adfb7589696e4e07fdb65f02bc42c5daf>` (optional) - recover information about the solution and solution process
 
 * :ref:`cqp_terminate <doxid-galahad__cqp_8h_1a84e12e9e546f51762d305333dce68e2b>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_cqp_examples>` section for illustrations 
+See the :ref:`examples <doxid-index_cqp_examples>` section for illustrations
 of use.
 
 callable functions
@@ -66,7 +66,7 @@ convex quadratic program;
 the code is available in $GALAHAD/src/cqp/C/cqpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

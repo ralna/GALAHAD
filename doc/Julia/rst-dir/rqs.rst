@@ -7,7 +7,7 @@ GALAHAD RQS package
 
 .. include:: ../../Python/rqs_intro.rst
 
-.. include:: ../../Python/rqs_storage.rst
+.. include:: rqs_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD RQS package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the rqs package must be 
+To solve a given problem, functions from the rqs package must be
 called in the following order:
 
 * :ref:`rqs_initialize <doxid-galahad__rqs_8h_1aeb8c3e1a278c83094aaaf185e9833fac>` - provide default control parameters and set up initial data structures
@@ -38,7 +38,7 @@ called in the following order:
 
 * :ref:`rqs_terminate <doxid-galahad__rqs_8h_1ae1f727eadfaada300dc6a5e268ac2b74>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_rqs_examples>` section for 
+See the :ref:`examples <doxid-index_rqs_examples>` section for
 illustrations of use.
 
 callable functions
@@ -68,7 +68,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/rqs/C/rqst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

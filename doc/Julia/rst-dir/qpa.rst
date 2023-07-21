@@ -7,7 +7,7 @@ GALAHAD QPA package
 
 .. include:: ../../Python/qpa_intro.rst
 
-.. include:: ../../Python/qpa_storage.rst
+.. include:: qpa_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD QPA package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the qpa package must be 
+To solve a given problem, functions from the qpa package must be
 called in the following order:
 
 * :ref:`qpa_initialize <doxid-galahad__qpa_8h_1afc82144e136ab34fe8a7aea4acd870fc>` - provide default control parameters and set up initial data structures
@@ -29,18 +29,18 @@ called in the following order:
 * :ref:`qpa_reset_control <doxid-galahad__qpa_8h_1a9d60441b2beaddb4c653156592ffc1ea>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`qpa_solve_qp <doxid-galahad__qpa_8h_1af9c60939ef803461d90631dd48cb55d7>` - solve the quadratic program (2)-(4)
-  
+
   * :ref:`qpa_solve_l1qp <doxid-galahad__qpa_8h_1a1a95adb548b743128e0df4ab4e801f19>` - solve the l1 quadratic program (1)
-  
+
   * :ref:`qpa_solve_bcl1qp <doxid-galahad__qpa_8h_1a5b5ef5f0d8134d8f02b1da62a04a3ace>` - solve the bound constrained l1 quadratic program (4)-(5)
 
 * :ref:`qpa_information <doxid-galahad__qpa_8h_1a631cf6ec1a95b27c712ace4fa7dc06f0>` (optional) - recover information about the solution and solution process
 
 * :ref:`qpa_terminate <doxid-galahad__qpa_8h_1a18b73b54796470edc039e3ac85bd30d5>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_qpa_examples>` section for 
+See the :ref:`examples <doxid-index_qpa_examples>` section for
 illustrations of use.
 
 callable functions
@@ -68,7 +68,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/qpa/C/qpat.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

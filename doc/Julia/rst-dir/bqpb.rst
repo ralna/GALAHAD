@@ -7,7 +7,7 @@ GALAHAD BQPB package
 
 .. include:: ../../Python/bqpb_intro.rst
 
-.. include:: ../../Python/bqpb_storage.rst
+.. include:: bqpb_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD BQPB package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the bqpb package must be 
+To solve a given problem, functions from the bqpb package must be
 called in the following order:
 
 * :ref:`bqpb_initialize <doxid-galahad__bqpb_8h_1ad8fc12f75d4b6ca96fd0912785a04b6f>` - provide default control parameters and set up initial data structures
@@ -29,16 +29,16 @@ called in the following order:
 * :ref:`bqpb_reset_control <doxid-galahad__bqpb_8h_1a28853e7625bc052a96d6189ac3c8bd04>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`bqpb_solve_qp <doxid-galahad__bqpb_8h_1afdd78a23df912116a044a3cd87b082c1>` - solve the bound-constrained quadratic program
-  
+
   * :ref:`bqpb_solve_sldqp <doxid-galahad__bqpb_8h_1aa1378c5f67c67450b853cd33f978e0d7>` - solve the bound-constrained shifted least-distance problem
 
 * :ref:`bqpb_information <doxid-galahad__bqpb_8h_1a01c7e22011ff22e8084be1e8a26d84c6>` (optional) - recover information about the solution and solution process
 
 * :ref:`bqpb_terminate <doxid-galahad__bqpb_8h_1a6a2b870d2c3d4907b4551e7abc700893>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_bqpb_examples>` section for 
+See the :ref:`examples <doxid-index_bqpb_examples>` section for
 illustrations of use.
 
 callable functions
@@ -66,7 +66,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/bqpb/C/bqpbt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

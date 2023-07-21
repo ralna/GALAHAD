@@ -2,7 +2,7 @@
 .. _doxid-structllst__time__type:
 
 llst_time_type structure
------------------------
+------------------------
 
 .. toctree::
 	:hidden:
@@ -11,10 +11,10 @@ llst_time_type structure
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_llst.h>
-	
+
 	struct llst_time_type {
 		// fields
-	
+
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`total<doxid-structllst__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`assemble<doxid-structllst__time__type_1ae84d232eee798a974ebaeb9c82d623f4>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`analyse<doxid-structllst__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
@@ -135,4 +135,3 @@ clock time spent factorizing :math:`K(\lambda)`
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_solve
 
 clock time spent solving linear systems inolving :math:`K(\lambda)`
-

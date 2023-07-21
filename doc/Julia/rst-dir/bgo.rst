@@ -7,7 +7,7 @@ GALAHAD BGO package
 
 .. include:: ../../Python/bgo_intro.rst
 
-.. include:: ../../Python/bgo_storage.rst
+.. include:: bgo_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD BGO package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the bgo package must be 
+To solve a given problem, functions from the bgo package must be
 called in the following order:
 
 * :ref:`bgo_initialize <doxid-galahad__bgo_8h_1a5d2b6e10b7c04279d6037e9abd32e19f>` - provide default control parameters and set up initial data structures
@@ -29,20 +29,20 @@ called in the following order:
 * :ref:`bgo_reset_control <doxid-galahad__bgo_8h_1acd46c656b1551f4659d725e65b70e1e6>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`bgo_solve_with_mat <doxid-galahad__bgo_8h_1ab9193a994bd19d94aa97156e83345bd4>` - solve using function calls to evaluate function, gradient and Hessian values
-  
+
   * :ref:`bgo_solve_without_mat <doxid-galahad__bgo_8h_1aeaa490762fe0950e577509ade6ae36d5>` - solve using function calls to evaluate function and gradient values and Hessian-vector products
-  
+
   * :ref:`bgo_solve_reverse_with_mat <doxid-galahad__bgo_8h_1af99998a6921ff67b79e6558fb2a27f2f>` - solve returning to the calling program to obtain function, gradient and Hessian values, or
-  
+
   * :ref:`bgo_solve_reverse_without_mat <doxid-galahad__bgo_8h_1a84e69267132736f46cb7b5970a24b772>` - solve returning to the calling prorgram to obtain function and gradient values and Hessian-vector products
 
 * :ref:`bgo_information <doxid-galahad__bgo_8h_1a96c2a39622f5c497a4286f5e8ebc4ddc>` (optional) - recover information about the solution and solution process
 
 * :ref:`bgo_terminate <doxid-galahad__bgo_8h_1ae41275e1234f0e01ff2aae00746d94d6>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_bgo_examples>` section for 
+See the :ref:`examples <doxid-index_bgo_examples>` section for
 illustrations of use.
 
 callable functions
@@ -70,7 +70,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/bgo/C/bgot.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

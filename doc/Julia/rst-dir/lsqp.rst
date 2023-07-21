@@ -7,7 +7,7 @@ GALAHAD LSQP package
 
 .. include:: ../../Python/lsqp_intro.rst
 
-.. include:: ../../Python/lsqp_storage.rst
+.. include:: lsqp_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD LSQP package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the lsqp package must be 
+To solve a given problem, functions from the lsqp package must be
 called in the following order:
 
 * :ref:`lsqp_initialize <doxid-galahad__lsqp_8h_1aac395e385cae77c266ec108f21e9e8f9>` - provide default control parameters and set up initial data structures
@@ -34,7 +34,7 @@ called in the following order:
 
 * :ref:`lsqp_terminate <doxid-galahad__lsqp_8h_1a7a9c9d7589c1acb11f0e2a579b1d8053>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_lsqp_examples>` section for 
+See the :ref:`examples <doxid-index_lsqp_examples>` section for
 illustrations of use.
 
 callable functions
@@ -62,7 +62,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/lsqp/C/lsqpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

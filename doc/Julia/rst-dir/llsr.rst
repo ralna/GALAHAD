@@ -7,7 +7,7 @@ GALAHAD LLSR package
 
 .. include:: ../../Python/llsr_intro.rst
 
-.. include:: ../../Python/llsr_storage.rst
+.. include:: llsr_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD LLSR package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the llsr package must be 
+To solve a given problem, functions from the llsr package must be
 called in the following order:
 
 * :ref:`llsr_initialize <doxid-galahad__llsr_8h_1a926f9824ab2e2bc71450a4d0b483879d>` - provide default control parameters and set up initial data structures
@@ -36,7 +36,7 @@ called in the following order:
 
 * :ref:`llsr_terminate <doxid-galahad__llsr_8h_1af05d27e76348279a8c9c16298a819609>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_llsr_examples>` section for 
+See the :ref:`examples <doxid-index_llsr_examples>` section for
 illustrations of use.
 
 callable functions
@@ -66,7 +66,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/llsr/C/llsrt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

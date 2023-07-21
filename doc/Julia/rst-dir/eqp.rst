@@ -7,7 +7,7 @@ GALAHAD EQP package
 
 .. include:: ../../Python/eqp_intro.rst
 
-.. include:: ../../Python/eqp_storage.rst
+.. include:: eqp_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD EQP package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the eqp package must be 
+To solve a given problem, functions from the eqp package must be
 called in the following order:
 
 * :ref:`eqp_initialize <doxid-galahad__eqp_8h_1a0d6a00469fba32b588f74c05a386626d>` - provide default control parameters and set up initial data structures
@@ -29,9 +29,9 @@ called in the following order:
 * :ref:`eqp_reset_control <doxid-galahad__eqp_8h_1a1b8074313bdc2176203d0c0e9ea87c24>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`eqp_solve_qp <doxid-galahad__eqp_8h_1abf97ed5ee46d2b3fd9a6f75023a95c3d>` - solve the quadratic program
-  
+
   * :ref:`eqp_solve_sldqp <doxid-galahad__eqp_8h_1aaadb310c329e4857b3ad373bcee69e6f>` - solve the shifted least-distance problem
 
 * :ref:`eqp_resolve_qp <doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f>` (optional) - resolve the problem with the same Hessian and Jacobian, but different :math:`g`, :math:`f` and/or :math:`c`
@@ -40,7 +40,7 @@ called in the following order:
 
 * :ref:`eqp_terminate <doxid-galahad__eqp_8h_1a237e3d3e43c6819205b3f303418324e0>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_eqp_examples>` section for 
+See the :ref:`examples <doxid-index_eqp_examples>` section for
 illustrations of use.
 
 callable functions
@@ -68,7 +68,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/eqp/C/eqpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.

@@ -7,7 +7,7 @@ GALAHAD FDC package
 
 .. include:: ../../Python/fdc_intro.rst
 
-.. include:: ../../Python/fdc_storage.rst
+.. include:: fdc_storage.rst
 
 .. toctree::
 	:hidden:
@@ -17,7 +17,7 @@ GALAHAD FDC package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the fdc package must be 
+To solve a given problem, functions from the fdc package must be
 called in the following order:
 
 * :ref:`fdc_initialize <doxid-galahad__fdc_8h_1a09ed47873fc4b54eac5b10958939459b>` - provide default control parameters and set up initial data structures
@@ -28,7 +28,7 @@ called in the following order:
 
 * :ref:`fdc_terminate <doxid-galahad__fdc_8h_1a9c0167379258891dee32b35e0529b9f9>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_fdc_examples>` section for 
+See the :ref:`examples <doxid-index_fdc_examples>` section for
 illustrations of use.
 
 callable functions
@@ -56,7 +56,7 @@ This is an example of how to use the package to ... ;
 the code is available in $GALAHAD/src/fdc/C/fdct.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
+Notice that C-style indexing is used, and that this is flaggeed by setting
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
 if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
@@ -69,4 +69,3 @@ the code is available in $GALAHAD/src/fdc/C/fdctf.c .
 
 .. include :: ../../../src/fdc/C/fdctf.c
    :code: C
-
