@@ -1,3 +1,6 @@
+# slstf.jl
+# Full test SLS for the Julia interface
+
 maxabsarray(a) = maximum(abs.(a))
 
 using GALAHAD

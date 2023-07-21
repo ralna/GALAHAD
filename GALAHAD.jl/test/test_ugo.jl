@@ -1,5 +1,5 @@
 # test_ugo.jl
-# Simple code to test the Julia interface of UGO
+# Simple code to test the Julia interface to UGO
 
 using GALAHAD
 using Printf
