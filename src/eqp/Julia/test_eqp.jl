@@ -1,0 +1,1 @@
+../../../GALAHAD.jl/test/test_eqp.jl
