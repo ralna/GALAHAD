@@ -48,12 +48,12 @@ end
 
 function presolve_initialize(data, control, status)
     @ccall libgalahad_double.presolve_initialize(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{presolve_control_type},
+                                                 control::Ref{presolve_control_type},
                                                  status::Ptr{Cint})::Cvoid
 end
 
 function presolve_read_specfile(control, specfile)
-    @ccall libgalahad_double.presolve_read_specfile(control::Ptr{presolve_control_type},
+    @ccall libgalahad_double.presolve_read_specfile(control::Ref{presolve_control_type},
                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -61,7 +61,7 @@ function presolve_import_problem(control, data, status, n, m, H_type, H_ne, H_ro
                                  H_ptr, H_val, g, f, A_type, A_ne, A_row, A_col, A_ptr,
                                  A_val, c_l, c_u, x_l, x_u, n_out, m_out, H_ne_out,
                                  A_ne_out)
-    @ccall libgalahad_double.presolve_import_problem(control::Ptr{presolve_control_type},
+    @ccall libgalahad_double.presolve_import_problem(control::Ref{presolve_control_type},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint}, n::Cint, m::Cint,
                                                      H_type::Ptr{Cchar}, H_ne::Cint,
@@ -115,12 +115,12 @@ end
 
 function presolve_information(data, inform, status)
     @ccall libgalahad_double.presolve_information(data::Ptr{Ptr{Cvoid}},
-                                                  inform::Ptr{presolve_inform_type},
+                                                  inform::Ref{presolve_inform_type},
                                                   status::Ptr{Cint})::Cvoid
 end
 
 function presolve_terminate(data, control, inform)
     @ccall libgalahad_double.presolve_terminate(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{presolve_control_type},
-                                                inform::Ptr{presolve_inform_type})::Cvoid
+                                                control::Ref{presolve_control_type},
+                                                inform::Ref{presolve_inform_type})::Cvoid
 end

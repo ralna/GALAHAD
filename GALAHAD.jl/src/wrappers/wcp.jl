@@ -91,17 +91,17 @@ end
 
 function wcp_initialize(data, control, status)
     @ccall libgalahad_double.wcp_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{wcp_control_type},
+                                            control::Ref{wcp_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function wcp_read_specfile(control, specfile)
-    @ccall libgalahad_double.wcp_read_specfile(control::Ptr{wcp_control_type},
+    @ccall libgalahad_double.wcp_read_specfile(control::Ref{wcp_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.wcp_import(control::Ptr{wcp_control_type},
+    @ccall libgalahad_double.wcp_import(control::Ref{wcp_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                         A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -109,7 +109,7 @@ function wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
 end
 
 function wcp_reset_control(control, data, status)
-    @ccall libgalahad_double.wcp_reset_control(control::Ptr{wcp_control_type},
+    @ccall libgalahad_double.wcp_reset_control(control::Ref{wcp_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -129,12 +129,12 @@ end
 
 function wcp_information(data, inform, status)
     @ccall libgalahad_double.wcp_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{wcp_inform_type},
+                                             inform::Ref{wcp_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function wcp_terminate(data, control, inform)
     @ccall libgalahad_double.wcp_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{wcp_control_type},
-                                           inform::Ptr{wcp_inform_type})::Cvoid
+                                           control::Ref{wcp_control_type},
+                                           inform::Ref{wcp_inform_type})::Cvoid
 end

@@ -115,18 +115,18 @@ end
 
 function qpb_initialize(data, control, status)
     @ccall libgalahad_double.qpb_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{qpb_control_type},
+                                            control::Ref{qpb_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function qpb_read_specfile(control, specfile)
-    @ccall libgalahad_double.qpb_read_specfile(control::Ptr{qpb_control_type},
+    @ccall libgalahad_double.qpb_read_specfile(control::Ref{qpb_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function qpb_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
                     A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.qpb_import(control::Ptr{qpb_control_type},
+    @ccall libgalahad_double.qpb_import(control::Ref{qpb_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
                                         H_row::Ptr{Cint}, H_col::Ptr{Cint},
@@ -136,7 +136,7 @@ function qpb_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_p
 end
 
 function qpb_reset_control(control, data, status)
-    @ccall libgalahad_double.qpb_reset_control(control::Ptr{qpb_control_type},
+    @ccall libgalahad_double.qpb_reset_control(control::Ref{qpb_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -156,12 +156,12 @@ end
 
 function qpb_information(data, inform, status)
     @ccall libgalahad_double.qpb_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{qpb_inform_type},
+                                             inform::Ref{qpb_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function qpb_terminate(data, control, inform)
     @ccall libgalahad_double.qpb_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{qpb_control_type},
-                                           inform::Ptr{qpb_inform_type})::Cvoid
+                                           control::Ref{qpb_control_type},
+                                           inform::Ref{qpb_inform_type})::Cvoid
 end

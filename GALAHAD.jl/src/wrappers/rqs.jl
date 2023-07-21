@@ -70,17 +70,17 @@ end
 
 function rqs_initialize(data, control, status)
     @ccall libgalahad_double.rqs_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{rqs_control_type},
+                                            control::Ref{rqs_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function rqs_read_specfile(control, specfile)
-    @ccall libgalahad_double.rqs_read_specfile(control::Ptr{rqs_control_type},
+    @ccall libgalahad_double.rqs_read_specfile(control::Ref{rqs_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function rqs_import(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.rqs_import(control::Ptr{rqs_control_type},
+    @ccall libgalahad_double.rqs_import(control::Ref{rqs_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         H_type::Ptr{Cchar}, H_ne::Cint, H_row::Ptr{Cint},
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
@@ -99,7 +99,7 @@ function rqs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 end
 
 function rqs_reset_control(control, data, status)
-    @ccall libgalahad_double.rqs_reset_control(control::Ptr{rqs_control_type},
+    @ccall libgalahad_double.rqs_reset_control(control::Ref{rqs_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -117,12 +117,12 @@ end
 
 function rqs_information(data, inform, status)
     @ccall libgalahad_double.rqs_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{rqs_inform_type},
+                                             inform::Ref{rqs_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function rqs_terminate(data, control, inform)
     @ccall libgalahad_double.rqs_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{rqs_control_type},
-                                           inform::Ptr{rqs_inform_type})::Cvoid
+                                           control::Ref{rqs_control_type},
+                                           inform::Ref{rqs_inform_type})::Cvoid
 end

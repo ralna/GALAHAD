@@ -55,17 +55,17 @@ end
 
 function uls_initialize(solver, data, control, status)
     @ccall libgalahad_double.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{uls_control_type},
+                                            control::Ref{uls_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function uls_read_specfile(control, specfile)
-    @ccall libgalahad_double.uls_read_specfile(control::Ptr{uls_control_type},
+    @ccall libgalahad_double.uls_read_specfile(control::Ref{uls_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function uls_factorize_matrix(control, data, status, m, n, type, ne, val, row, col, ptr)
-    @ccall libgalahad_double.uls_factorize_matrix(control::Ptr{uls_control_type},
+    @ccall libgalahad_double.uls_factorize_matrix(control::Ref{uls_control_type},
                                                   data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                   m::Cint, n::Cint, type::Ptr{Cchar},
                                                   ne::Cint, val::Ptr{Float64},
@@ -74,7 +74,7 @@ function uls_factorize_matrix(control, data, status, m, n, type, ne, val, row, c
 end
 
 function uls_reset_control(control, data, status)
-    @ccall libgalahad_double.uls_reset_control(control::Ptr{uls_control_type},
+    @ccall libgalahad_double.uls_reset_control(control::Ref{uls_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -87,12 +87,12 @@ end
 
 function uls_information(data, inform, status)
     @ccall libgalahad_double.uls_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{uls_inform_type},
+                                             inform::Ref{uls_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function uls_terminate(data, control, inform)
     @ccall libgalahad_double.uls_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{uls_control_type},
-                                           inform::Ptr{uls_inform_type})::Cvoid
+                                           control::Ref{uls_control_type},
+                                           inform::Ref{uls_inform_type})::Cvoid
 end

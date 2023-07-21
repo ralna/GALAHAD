@@ -109,17 +109,17 @@ end
 
 function lpb_initialize(data, control, status)
     @ccall libgalahad_double.lpb_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lpb_control_type},
+                                            control::Ref{lpb_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function lpb_read_specfile(control, specfile)
-    @ccall libgalahad_double.lpb_read_specfile(control::Ptr{lpb_control_type},
+    @ccall libgalahad_double.lpb_read_specfile(control::Ref{lpb_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function lpb_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.lpb_import(control::Ptr{lpb_control_type},
+    @ccall libgalahad_double.lpb_import(control::Ref{lpb_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                         A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -127,7 +127,7 @@ function lpb_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
 end
 
 function lpb_reset_control(control, data, status)
-    @ccall libgalahad_double.lpb_reset_control(control::Ptr{lpb_control_type},
+    @ccall libgalahad_double.lpb_reset_control(control::Ref{lpb_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -146,12 +146,12 @@ end
 
 function lpb_information(data, inform, status)
     @ccall libgalahad_double.lpb_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{lpb_inform_type},
+                                             inform::Ref{lpb_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function lpb_terminate(data, control, inform)
     @ccall libgalahad_double.lpb_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{lpb_control_type},
-                                           inform::Ptr{lpb_inform_type})::Cvoid
+                                           control::Ref{lpb_control_type},
+                                           inform::Ref{lpb_inform_type})::Cvoid
 end

@@ -10,12 +10,12 @@ end
 
 function scu_information(data, inform, status)
     @ccall libgalahad_double.scu_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{scu_inform_type},
+                                             inform::Ref{scu_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function scu_terminate(data, control, inform)
     @ccall libgalahad_double.scu_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{scu_control_type},
-                                           inform::Ptr{scu_inform_type})::Cvoid
+                                           control::Ref{scu_control_type},
+                                           inform::Ref{scu_inform_type})::Cvoid
 end

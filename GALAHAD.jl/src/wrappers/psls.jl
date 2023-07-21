@@ -69,24 +69,24 @@ end
 
 function psls_initialize(data, control, status)
     @ccall libgalahad_double.psls_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{psls_control_type},
+                                             control::Ref{psls_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function psls_read_specfile(control, specfile)
-    @ccall libgalahad_double.psls_read_specfile(control::Ptr{psls_control_type},
+    @ccall libgalahad_double.psls_read_specfile(control::Ref{psls_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function psls_import(control, data, status, n, type, ne, row, col, ptr)
-    @ccall libgalahad_double.psls_import(control::Ptr{psls_control_type},
+    @ccall libgalahad_double.psls_import(control::Ref{psls_control_type},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          type::Ptr{Cchar}, ne::Cint, row::Ptr{Cint},
                                          col::Ptr{Cint}, ptr::Ptr{Cint})::Cvoid
 end
 
 function psls_reset_control(control, data, status)
-    @ccall libgalahad_double.psls_reset_control(control::Ptr{psls_control_type},
+    @ccall libgalahad_double.psls_reset_control(control::Ref{psls_control_type},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -120,12 +120,12 @@ end
 
 function psls_information(data, inform, status)
     @ccall libgalahad_double.psls_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{psls_inform_type},
+                                              inform::Ref{psls_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function psls_terminate(data, control, inform)
     @ccall libgalahad_double.psls_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{psls_control_type},
-                                            inform::Ptr{psls_inform_type})::Cvoid
+                                            control::Ref{psls_control_type},
+                                            inform::Ref{psls_inform_type})::Cvoid
 end

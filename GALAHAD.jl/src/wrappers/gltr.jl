@@ -43,17 +43,17 @@ end
 
 function gltr_initialize(data, control, status)
     @ccall libgalahad_double.gltr_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{gltr_control_type},
+                                             control::Ref{gltr_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function gltr_read_specfile(control, specfile)
-    @ccall libgalahad_double.gltr_read_specfile(control::Ptr{gltr_control_type},
+    @ccall libgalahad_double.gltr_read_specfile(control::Ref{gltr_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function gltr_import_control(control, data, status)
-    @ccall libgalahad_double.gltr_import_control(control::Ptr{gltr_control_type},
+    @ccall libgalahad_double.gltr_import_control(control::Ref{gltr_control_type},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -67,12 +67,12 @@ end
 
 function gltr_information(data, inform, status)
     @ccall libgalahad_double.gltr_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{gltr_inform_type},
+                                              inform::Ref{gltr_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function gltr_terminate(data, control, inform)
     @ccall libgalahad_double.gltr_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{gltr_control_type},
-                                            inform::Ptr{gltr_inform_type})::Cvoid
+                                            control::Ref{gltr_control_type},
+                                            inform::Ref{gltr_inform_type})::Cvoid
 end

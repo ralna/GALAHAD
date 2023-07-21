@@ -16,18 +16,18 @@ end
 function hash_initialize(nchar, length, data, control, inform)
     @ccall libgalahad_double.hash_initialize(nchar::Cint, length::Cint,
                                              data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{hash_control_type},
-                                             inform::Ptr{hash_inform_type})::Cvoid
+                                             control::Ref{hash_control_type},
+                                             inform::Ref{hash_inform_type})::Cvoid
 end
 
 function hash_information(data, inform, status)
     @ccall libgalahad_double.hash_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{hash_inform_type},
+                                              inform::Ref{hash_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function hash_terminate(data, control, inform)
     @ccall libgalahad_double.hash_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{hash_control_type},
-                                            inform::Ptr{hash_inform_type})::Cvoid
+                                            control::Ref{hash_control_type},
+                                            inform::Ref{hash_inform_type})::Cvoid
 end

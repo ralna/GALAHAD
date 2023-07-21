@@ -24,18 +24,18 @@ end
 
 function sha_initialize(data, control, status)
     @ccall libgalahad_double.sha_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{sha_control_type},
+                                            control::Ref{sha_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function sha_information(data, inform, status)
     @ccall libgalahad_double.sha_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{sha_inform_type},
+                                             inform::Ref{sha_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function sha_terminate(data, control, inform)
     @ccall libgalahad_double.sha_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{sha_control_type},
-                                           inform::Ptr{sha_inform_type})::Cvoid
+                                           control::Ref{sha_control_type},
+                                           inform::Ref{sha_inform_type})::Cvoid
 end

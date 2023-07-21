@@ -19,18 +19,18 @@ end
 
 function roots_initialize(data, control, status)
     @ccall libgalahad_double.roots_initialize(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{roots_control_type},
+                                              control::Ref{roots_control_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function roots_information(data, inform, status)
     @ccall libgalahad_double.roots_information(data::Ptr{Ptr{Cvoid}},
-                                               inform::Ptr{roots_inform_type},
+                                               inform::Ref{roots_inform_type},
                                                status::Ptr{Cint})::Cvoid
 end
 
 function roots_terminate(data, control, inform)
     @ccall libgalahad_double.roots_terminate(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{roots_control_type},
-                                             inform::Ptr{roots_inform_type})::Cvoid
+                                             control::Ref{roots_control_type},
+                                             inform::Ref{roots_inform_type})::Cvoid
 end

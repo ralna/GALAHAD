@@ -94,24 +94,24 @@ end
 
 function tru_initialize(data, control, status)
     @ccall libgalahad_double.tru_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{tru_control_type},
+                                            control::Ref{tru_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function tru_read_specfile(control, specfile)
-    @ccall libgalahad_double.tru_read_specfile(control::Ptr{tru_control_type},
+    @ccall libgalahad_double.tru_read_specfile(control::Ref{tru_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function tru_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.tru_import(control::Ptr{tru_control_type},
+    @ccall libgalahad_double.tru_import(control::Ref{tru_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
 function tru_reset_control(control, data, status)
-    @ccall libgalahad_double.tru_reset_control(control::Ptr{tru_control_type},
+    @ccall libgalahad_double.tru_reset_control(control::Ref{tru_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -160,12 +160,12 @@ end
 
 function tru_information(data, inform, status)
     @ccall libgalahad_double.tru_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{tru_inform_type},
+                                             inform::Ref{tru_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function tru_terminate(data, control, inform)
     @ccall libgalahad_double.tru_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{tru_control_type},
-                                           inform::Ptr{tru_inform_type})::Cvoid
+                                           control::Ref{tru_control_type},
+                                           inform::Ref{tru_inform_type})::Cvoid
 end

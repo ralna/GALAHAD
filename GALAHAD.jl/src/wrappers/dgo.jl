@@ -61,17 +61,17 @@ end
 
 function dgo_initialize(data, control, status)
     @ccall libgalahad_double.dgo_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{dgo_control_type},
+                                            control::Ref{dgo_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function dgo_read_specfile(control, specfile)
-    @ccall libgalahad_double.dgo_read_specfile(control::Ptr{dgo_control_type},
+    @ccall libgalahad_double.dgo_read_specfile(control::Ref{dgo_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function dgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.dgo_import(control::Ptr{dgo_control_type},
+    @ccall libgalahad_double.dgo_import(control::Ref{dgo_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         x_l::Ptr{Float64}, x_u::Ptr{Float64},
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
@@ -79,7 +79,7 @@ function dgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col
 end
 
 function dgo_reset_control(control, data, status)
-    @ccall libgalahad_double.dgo_reset_control(control::Ptr{dgo_control_type},
+    @ccall libgalahad_double.dgo_reset_control(control::Ref{dgo_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -135,12 +135,12 @@ end
 
 function dgo_information(data, inform, status)
     @ccall libgalahad_double.dgo_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{dgo_inform_type},
+                                             inform::Ref{dgo_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function dgo_terminate(data, control, inform)
     @ccall libgalahad_double.dgo_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{dgo_control_type},
-                                           inform::Ptr{dgo_inform_type})::Cvoid
+                                           control::Ref{dgo_control_type},
+                                           inform::Ref{dgo_inform_type})::Cvoid
 end

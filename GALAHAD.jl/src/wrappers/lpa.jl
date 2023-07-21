@@ -59,17 +59,17 @@ end
 
 function lpa_initialize(data, control, status)
     @ccall libgalahad_double.lpa_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lpa_control_type},
+                                            control::Ref{lpa_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function lpa_read_specfile(control, specfile)
-    @ccall libgalahad_double.lpa_read_specfile(control::Ptr{lpa_control_type},
+    @ccall libgalahad_double.lpa_read_specfile(control::Ref{lpa_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function lpa_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.lpa_import(control::Ptr{lpa_control_type},
+    @ccall libgalahad_double.lpa_import(control::Ref{lpa_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                         A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -77,7 +77,7 @@ function lpa_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
 end
 
 function lpa_reset_control(control, data, status)
-    @ccall libgalahad_double.lpa_reset_control(control::Ptr{lpa_control_type},
+    @ccall libgalahad_double.lpa_reset_control(control::Ref{lpa_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -96,12 +96,12 @@ end
 
 function lpa_information(data, inform, status)
     @ccall libgalahad_double.lpa_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{lpa_inform_type},
+                                             inform::Ref{lpa_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function lpa_terminate(data, control, inform)
     @ccall libgalahad_double.lpa_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{lpa_control_type},
-                                           inform::Ptr{lpa_inform_type})::Cvoid
+                                           control::Ref{lpa_control_type},
+                                           inform::Ref{lpa_inform_type})::Cvoid
 end

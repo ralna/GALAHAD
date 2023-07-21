@@ -46,12 +46,12 @@ end
 
 function cro_initialize(data, control, status)
     @ccall libgalahad_double.cro_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{cro_control_type},
+                                            control::Ref{cro_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function cro_read_specfile(control, specfile)
-    @ccall libgalahad_double.cro_read_specfile(control::Ptr{cro_control_type},
+    @ccall libgalahad_double.cro_read_specfile(control::Ref{cro_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -59,8 +59,8 @@ function cro_crossover_solution(data, control, inform, n, m, m_equal, h_ne, H_va
                                 H_ptr, a_ne, A_val, A_col, A_ptr, g, c_l, c_u, x_l, x_u, x,
                                 c, y, z, x_stat, c_stat)
     @ccall libgalahad_double.cro_crossover_solution(data::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{cro_control_type},
-                                                    inform::Ptr{cro_inform_type}, n::Cint,
+                                                    control::Ref{cro_control_type},
+                                                    inform::Ref{cro_inform_type}, n::Cint,
                                                     m::Cint, m_equal::Cint, h_ne::Cint,
                                                     H_val::Ptr{Float64}, H_col::Ptr{Cint},
                                                     H_ptr::Ptr{Cint}, a_ne::Cint,
@@ -76,6 +76,6 @@ end
 
 function cro_terminate(data, control, inform)
     @ccall libgalahad_double.cro_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{cro_control_type},
-                                           inform::Ptr{cro_inform_type})::Cvoid
+                                           control::Ref{cro_control_type},
+                                           inform::Ref{cro_inform_type})::Cvoid
 end

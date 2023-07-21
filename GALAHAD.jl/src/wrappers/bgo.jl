@@ -49,17 +49,17 @@ end
 
 function bgo_initialize(data, control, status)
     @ccall libgalahad_double.bgo_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{bgo_control_type},
+                                            control::Ref{bgo_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function bgo_read_specfile(control, specfile)
-    @ccall libgalahad_double.bgo_read_specfile(control::Ptr{bgo_control_type},
+    @ccall libgalahad_double.bgo_read_specfile(control::Ref{bgo_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function bgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.bgo_import(control::Ptr{bgo_control_type},
+    @ccall libgalahad_double.bgo_import(control::Ref{bgo_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         x_l::Ptr{Float64}, x_u::Ptr{Float64},
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
@@ -67,7 +67,7 @@ function bgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col
 end
 
 function bgo_reset_control(control, data, status)
-    @ccall libgalahad_double.bgo_reset_control(control::Ptr{bgo_control_type},
+    @ccall libgalahad_double.bgo_reset_control(control::Ref{bgo_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -123,12 +123,12 @@ end
 
 function bgo_information(data, inform, status)
     @ccall libgalahad_double.bgo_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{bgo_inform_type},
+                                             inform::Ref{bgo_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function bgo_terminate(data, control, inform)
     @ccall libgalahad_double.bgo_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{bgo_control_type},
-                                           inform::Ptr{bgo_inform_type})::Cvoid
+                                           control::Ref{bgo_control_type},
+                                           inform::Ref{bgo_inform_type})::Cvoid
 end

@@ -19,14 +19,14 @@ end
 
 function rpd_initialize(data, control, status)
     @ccall libgalahad_double.rpd_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{rpd_control_type},
+                                            control::Ref{rpd_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function rpd_get_stats(qplib_file, qplib_file_len, control, data, status, p_type, n, m,
                        h_ne, a_ne, h_c_ne)
     @ccall libgalahad_double.rpd_get_stats(qplib_file::Ptr{Cchar}, qplib_file_len::Cint,
-                                           control::Ptr{rpd_control_type},
+                                           control::Ref{rpd_control_type},
                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            p_type::Ptr{Cchar}, n::Ptr{Cint}, m::Ptr{Cint},
                                            h_ne::Ptr{Cint}, a_ne::Ptr{Cint},
@@ -94,12 +94,12 @@ end
 
 function rpd_information(data, inform, status)
     @ccall libgalahad_double.rpd_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{rpd_inform_type},
+                                             inform::Ref{rpd_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function rpd_terminate(data, control, inform)
     @ccall libgalahad_double.rpd_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{rpd_control_type},
-                                           inform::Ptr{rpd_inform_type})::Cvoid
+                                           control::Ref{rpd_control_type},
+                                           inform::Ref{rpd_inform_type})::Cvoid
 end

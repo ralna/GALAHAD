@@ -97,17 +97,17 @@ end
 
 function trb_initialize(data, control, status)
     @ccall libgalahad_double.trb_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{trb_control_type},
+                                            control::Ref{trb_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function trb_read_specfile(control, specfile)
-    @ccall libgalahad_double.trb_read_specfile(control::Ptr{trb_control_type},
+    @ccall libgalahad_double.trb_read_specfile(control::Ref{trb_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function trb_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.trb_import(control::Ptr{trb_control_type},
+    @ccall libgalahad_double.trb_import(control::Ref{trb_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         x_l::Ptr{Float64}, x_u::Ptr{Float64},
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
@@ -115,7 +115,7 @@ function trb_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col
 end
 
 function trb_reset_control(control, data, status)
-    @ccall libgalahad_double.trb_reset_control(control::Ptr{trb_control_type},
+    @ccall libgalahad_double.trb_reset_control(control::Ref{trb_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -170,12 +170,12 @@ end
 
 function trb_information(data, inform, status)
     @ccall libgalahad_double.trb_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{trb_inform_type},
+                                             inform::Ref{trb_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function trb_terminate(data, control, inform)
     @ccall libgalahad_double.trb_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{trb_control_type},
-                                           inform::Ptr{trb_inform_type})::Cvoid
+                                           control::Ref{trb_control_type},
+                                           inform::Ref{trb_inform_type})::Cvoid
 end

@@ -43,20 +43,20 @@ end
 
 function fdc_initialize(data, control, status)
     @ccall libgalahad_double.fdc_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{fdc_control_type},
+                                            control::Ref{fdc_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function fdc_read_specfile(control, specfile)
-    @ccall libgalahad_double.fdc_read_specfile(control::Ptr{fdc_control_type},
+    @ccall libgalahad_double.fdc_read_specfile(control::Ref{fdc_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function fdc_find_dependent_rows(control, data, inform, status, m, n, A_ne, A_col, A_ptr,
                                  A_val, b, n_depen, depen)
-    @ccall libgalahad_double.fdc_find_dependent_rows(control::Ptr{fdc_control_type},
+    @ccall libgalahad_double.fdc_find_dependent_rows(control::Ref{fdc_control_type},
                                                      data::Ptr{Ptr{Cvoid}},
-                                                     inform::Ptr{fdc_inform_type},
+                                                     inform::Ref{fdc_inform_type},
                                                      status::Ptr{Cint}, m::Cint, n::Cint,
                                                      A_ne::Cint, A_col::Ptr{Cint},
                                                      A_ptr::Ptr{Cint}, A_val::Ptr{Float64},
@@ -66,6 +66,6 @@ end
 
 function fdc_terminate(data, control, inform)
     @ccall libgalahad_double.fdc_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{fdc_control_type},
-                                           inform::Ptr{fdc_inform_type})::Cvoid
+                                           control::Ref{fdc_control_type},
+                                           inform::Ref{fdc_inform_type})::Cvoid
 end
