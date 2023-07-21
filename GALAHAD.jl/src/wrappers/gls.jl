@@ -61,32 +61,32 @@ end
 
 function gls_initialize(data, control)
     @ccall libgalahad_double.gls_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{gls_control})::Cvoid
+                                            control::Ref{gls_control})::Cvoid
 end
 
 function gls_read_specfile(control, specfile)
-    @ccall libgalahad_double.gls_read_specfile(control::Ptr{gls_control},
+    @ccall libgalahad_double.gls_read_specfile(control::Ref{gls_control},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function gls_import(control, data, status)
-    @ccall libgalahad_double.gls_import(control::Ptr{gls_control}, data::Ptr{Ptr{Cvoid}},
+    @ccall libgalahad_double.gls_import(control::Ref{gls_control}, data::Ptr{Ptr{Cvoid}},
                                         status::Ptr{Cint})::Cvoid
 end
 
 function gls_reset_control(control, data, status)
-    @ccall libgalahad_double.gls_reset_control(control::Ptr{gls_control},
+    @ccall libgalahad_double.gls_reset_control(control::Ref{gls_control},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
 function gls_information(data, ainfo, finfo, sinfo, status)
-    @ccall libgalahad_double.gls_information(data::Ptr{Ptr{Cvoid}}, ainfo::Ptr{gls_ainfo},
-                                             finfo::Ptr{gls_finfo}, sinfo::Ptr{gls_sinfo},
+    @ccall libgalahad_double.gls_information(data::Ptr{Ptr{Cvoid}}, ainfo::Ref{gls_ainfo},
+                                             finfo::Ref{gls_finfo}, sinfo::Ref{gls_sinfo},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function gls_finalize(data, control, status)
-    @ccall libgalahad_double.gls_finalize(data::Ptr{Ptr{Cvoid}}, control::Ptr{gls_control},
+    @ccall libgalahad_double.gls_finalize(data::Ptr{Ptr{Cvoid}}, control::Ref{gls_control},
                                           status::Ptr{Cint})::Cvoid
 end

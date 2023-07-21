@@ -76,18 +76,18 @@ end
 
 function sbls_initialize(data, control, status)
     @ccall libgalahad_double.sbls_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{sbls_control_type},
+                                             control::Ref{sbls_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function sbls_read_specfile(control, specfile)
-    @ccall libgalahad_double.sbls_read_specfile(control::Ptr{sbls_control_type},
+    @ccall libgalahad_double.sbls_read_specfile(control::Ref{sbls_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function sbls_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
                      A_ne, A_row, A_col, A_ptr, C_type, C_ne, C_row, C_col, C_ptr)
-    @ccall libgalahad_double.sbls_import(control::Ptr{sbls_control_type},
+    @ccall libgalahad_double.sbls_import(control::Ref{sbls_control_type},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
                                          H_row::Ptr{Cint}, H_col::Ptr{Cint},
@@ -99,7 +99,7 @@ function sbls_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_
 end
 
 function sbls_reset_control(control, data, status)
-    @ccall libgalahad_double.sbls_reset_control(control::Ptr{sbls_control_type},
+    @ccall libgalahad_double.sbls_reset_control(control::Ref{sbls_control_type},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -120,12 +120,12 @@ end
 
 function sbls_information(data, inform, status)
     @ccall libgalahad_double.sbls_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{sbls_inform_type},
+                                              inform::Ref{sbls_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function sbls_terminate(data, control, inform)
     @ccall libgalahad_double.sbls_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{sbls_control_type},
-                                            inform::Ptr{sbls_inform_type})::Cvoid
+                                            control::Ref{sbls_control_type},
+                                            inform::Ref{sbls_inform_type})::Cvoid
 end

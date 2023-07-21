@@ -40,17 +40,17 @@ end
 
 function lsrt_initialize(data, control, status)
     @ccall libgalahad_double.lsrt_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{lsrt_control_type},
+                                             control::Ref{lsrt_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function lsrt_read_specfile(control, specfile)
-    @ccall libgalahad_double.lsrt_read_specfile(control::Ptr{lsrt_control_type},
+    @ccall libgalahad_double.lsrt_read_specfile(control::Ref{lsrt_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function lsrt_import_control(control, data, status)
-    @ccall libgalahad_double.lsrt_import_control(control::Ptr{lsrt_control_type},
+    @ccall libgalahad_double.lsrt_import_control(control::Ref{lsrt_control_type},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -64,12 +64,12 @@ end
 
 function lsrt_information(data, inform, status)
     @ccall libgalahad_double.lsrt_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{lsrt_inform_type},
+                                              inform::Ref{lsrt_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function lsrt_terminate(data, control, inform)
     @ccall libgalahad_double.lsrt_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lsrt_control_type},
-                                            inform::Ptr{lsrt_inform_type})::Cvoid
+                                            control::Ref{lsrt_control_type},
+                                            inform::Ref{lsrt_inform_type})::Cvoid
 end

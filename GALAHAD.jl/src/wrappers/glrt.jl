@@ -39,17 +39,17 @@ end
 
 function glrt_initialize(data, control, status)
     @ccall libgalahad_double.glrt_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{glrt_control_type},
+                                             control::Ref{glrt_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function glrt_read_specfile(control, specfile)
-    @ccall libgalahad_double.glrt_read_specfile(control::Ptr{glrt_control_type},
+    @ccall libgalahad_double.glrt_read_specfile(control::Ref{glrt_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function glrt_import_control(control, data, status)
-    @ccall libgalahad_double.glrt_import_control(control::Ptr{glrt_control_type},
+    @ccall libgalahad_double.glrt_import_control(control::Ref{glrt_control_type},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -63,12 +63,12 @@ end
 
 function glrt_information(data, inform, status)
     @ccall libgalahad_double.glrt_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{glrt_inform_type},
+                                              inform::Ref{glrt_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function glrt_terminate(data, control, inform)
     @ccall libgalahad_double.glrt_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{glrt_control_type},
-                                            inform::Ptr{glrt_inform_type})::Cvoid
+                                            control::Ref{glrt_control_type},
+                                            inform::Ref{glrt_inform_type})::Cvoid
 end

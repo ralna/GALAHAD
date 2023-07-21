@@ -40,17 +40,17 @@ end
 
 function l2rt_initialize(data, control, status)
     @ccall libgalahad_double.l2rt_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{l2rt_control_type},
+                                             control::Ref{l2rt_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function l2rt_read_specfile(control, specfile)
-    @ccall libgalahad_double.l2rt_read_specfile(control::Ptr{l2rt_control_type},
+    @ccall libgalahad_double.l2rt_read_specfile(control::Ref{l2rt_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function l2rt_import_control(control, data, status)
-    @ccall libgalahad_double.l2rt_import_control(control::Ptr{l2rt_control_type},
+    @ccall libgalahad_double.l2rt_import_control(control::Ref{l2rt_control_type},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -65,12 +65,12 @@ end
 
 function l2rt_information(data, inform, status)
     @ccall libgalahad_double.l2rt_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{l2rt_inform_type},
+                                              inform::Ref{l2rt_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function l2rt_terminate(data, control, inform)
     @ccall libgalahad_double.l2rt_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{l2rt_control_type},
-                                            inform::Ptr{l2rt_inform_type})::Cvoid
+                                            control::Ref{l2rt_control_type},
+                                            inform::Ref{l2rt_inform_type})::Cvoid
 end

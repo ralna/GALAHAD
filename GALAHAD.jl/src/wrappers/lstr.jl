@@ -39,17 +39,17 @@ end
 
 function lstr_initialize(data, control, status)
     @ccall libgalahad_double.lstr_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{lstr_control_type},
+                                             control::Ref{lstr_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function lstr_read_specfile(control, specfile)
-    @ccall libgalahad_double.lstr_read_specfile(control::Ptr{lstr_control_type},
+    @ccall libgalahad_double.lstr_read_specfile(control::Ref{lstr_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function lstr_import_control(control, data, status)
-    @ccall libgalahad_double.lstr_import_control(control::Ptr{lstr_control_type},
+    @ccall libgalahad_double.lstr_import_control(control::Ref{lstr_control_type},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -63,12 +63,12 @@ end
 
 function lstr_information(data, inform, status)
     @ccall libgalahad_double.lstr_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{lstr_inform_type},
+                                              inform::Ref{lstr_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function lstr_terminate(data, control, inform)
     @ccall libgalahad_double.lstr_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lstr_control_type},
-                                            inform::Ptr{lstr_inform_type})::Cvoid
+                                            control::Ref{lstr_control_type},
+                                            inform::Ref{lstr_inform_type})::Cvoid
 end

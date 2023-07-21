@@ -30,17 +30,17 @@ end
 
 function icfs_initialize(data, control, status)
     @ccall libgalahad_double.icfs_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{icfs_control_type},
+                                             control::Ref{icfs_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function icfs_read_specfile(control, specfile)
-    @ccall libgalahad_double.icfs_read_specfile(control::Ptr{icfs_control_type},
+    @ccall libgalahad_double.icfs_read_specfile(control::Ref{icfs_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function icfs_reset_control(control, data, status)
-    @ccall libgalahad_double.icfs_reset_control(control::Ptr{icfs_control_type},
+    @ccall libgalahad_double.icfs_reset_control(control::Ref{icfs_control_type},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -58,12 +58,12 @@ end
 
 function icfs_information(data, inform, status)
     @ccall libgalahad_double.icfs_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{icfs_inform_type},
+                                              inform::Ref{icfs_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function icfs_terminate(data, control, inform)
     @ccall libgalahad_double.icfs_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{icfs_control_type},
-                                            inform::Ptr{icfs_inform_type})::Cvoid
+                                            control::Ref{icfs_control_type},
+                                            inform::Ref{icfs_inform_type})::Cvoid
 end

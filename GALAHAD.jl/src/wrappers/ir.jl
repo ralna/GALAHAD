@@ -23,18 +23,18 @@ end
 
 function ir_initialize(data, control, status)
     @ccall libgalahad_double.ir_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{ir_control_type},
+                                           control::Ref{ir_control_type},
                                            status::Ptr{Cint})::Cvoid
 end
 
 function ir_information(data, inform, status)
     @ccall libgalahad_double.ir_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ptr{ir_inform_type},
+                                            inform::Ref{ir_inform_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function ir_terminate(data, control, inform)
     @ccall libgalahad_double.ir_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{ir_control_type},
-                                          inform::Ptr{ir_inform_type})::Cvoid
+                                          control::Ref{ir_control_type},
+                                          inform::Ref{ir_inform_type})::Cvoid
 end

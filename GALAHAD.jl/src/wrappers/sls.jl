@@ -153,17 +153,17 @@ end
 
 function sls_initialize(solver, data, control, status)
     @ccall libgalahad_double.sls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{sls_control_type},
+                                            control::Ref{sls_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function sls_read_specfile(control, specfile)
-    @ccall libgalahad_double.sls_read_specfile(control::Ptr{sls_control_type},
+    @ccall libgalahad_double.sls_read_specfile(control::Ref{sls_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function sls_analyse_matrix(control, data, status, n, type, ne, row, col, ptr)
-    @ccall libgalahad_double.sls_analyse_matrix(control::Ptr{sls_control_type},
+    @ccall libgalahad_double.sls_analyse_matrix(control::Ref{sls_control_type},
                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 n::Cint, type::Ptr{Cchar}, ne::Cint,
                                                 row::Ptr{Cint}, col::Ptr{Cint},
@@ -171,7 +171,7 @@ function sls_analyse_matrix(control, data, status, n, type, ne, row, col, ptr)
 end
 
 function sls_reset_control(control, data, status)
-    @ccall libgalahad_double.sls_reset_control(control::Ptr{sls_control_type},
+    @ccall libgalahad_double.sls_reset_control(control::Ref{sls_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -195,12 +195,12 @@ end
 
 function sls_information(data, inform, status)
     @ccall libgalahad_double.sls_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{sls_inform_type},
+                                             inform::Ref{sls_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function sls_terminate(data, control, inform)
     @ccall libgalahad_double.sls_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{sls_control_type},
-                                           inform::Ptr{sls_inform_type})::Cvoid
+                                           control::Ref{sls_control_type},
+                                           inform::Ref{sls_inform_type})::Cvoid
 end

@@ -67,18 +67,18 @@ end
 
 function eqp_initialize(data, control, status)
     @ccall libgalahad_double.eqp_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{eqp_control_type},
+                                            control::Ref{eqp_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function eqp_read_specfile(control, specfile)
-    @ccall libgalahad_double.eqp_read_specfile(control::Ptr{eqp_control_type},
+    @ccall libgalahad_double.eqp_read_specfile(control::Ref{eqp_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function eqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
                     A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.eqp_import(control::Ptr{eqp_control_type},
+    @ccall libgalahad_double.eqp_import(control::Ref{eqp_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
                                         H_row::Ptr{Cint}, H_col::Ptr{Cint},
@@ -88,7 +88,7 @@ function eqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_p
 end
 
 function eqp_reset_control(control, data, status)
-    @ccall libgalahad_double.eqp_reset_control(control::Ptr{eqp_control_type},
+    @ccall libgalahad_double.eqp_reset_control(control::Ref{eqp_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -119,12 +119,12 @@ end
 
 function eqp_information(data, inform, status)
     @ccall libgalahad_double.eqp_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{eqp_inform_type},
+                                             inform::Ref{eqp_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function eqp_terminate(data, control, inform)
     @ccall libgalahad_double.eqp_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{eqp_control_type},
-                                           inform::Ptr{eqp_inform_type})::Cvoid
+                                           control::Ref{eqp_control_type},
+                                           inform::Ref{eqp_inform_type})::Cvoid
 end

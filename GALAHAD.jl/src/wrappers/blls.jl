@@ -65,17 +65,17 @@ end
 
 function blls_initialize(data, control, status)
     @ccall libgalahad_double.blls_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{blls_control_type},
+                                             control::Ref{blls_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function blls_read_specfile(control, specfile)
-    @ccall libgalahad_double.blls_read_specfile(control::Ptr{blls_control_type},
+    @ccall libgalahad_double.blls_read_specfile(control::Ref{blls_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function blls_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.blls_import(control::Ptr{blls_control_type},
+    @ccall libgalahad_double.blls_import(control::Ref{blls_control_type},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                          A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -83,13 +83,13 @@ function blls_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_
 end
 
 function blls_import_without_a(control, data, status, n, m)
-    @ccall libgalahad_double.blls_import_without_a(control::Ptr{blls_control_type},
+    @ccall libgalahad_double.blls_import_without_a(control::Ref{blls_control_type},
                                                    data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                    n::Cint, m::Cint)::Cvoid
 end
 
 function blls_reset_control(control, data, status)
-    @ccall libgalahad_double.blls_reset_control(control::Ptr{blls_control_type},
+    @ccall libgalahad_double.blls_reset_control(control::Ref{blls_control_type},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -128,12 +128,12 @@ end
 
 function blls_information(data, inform, status)
     @ccall libgalahad_double.blls_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{blls_inform_type},
+                                              inform::Ref{blls_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function blls_terminate(data, control, inform)
     @ccall libgalahad_double.blls_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{blls_control_type},
-                                            inform::Ptr{blls_inform_type})::Cvoid
+                                            control::Ref{blls_control_type},
+                                            inform::Ref{blls_inform_type})::Cvoid
 end

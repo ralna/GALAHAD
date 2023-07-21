@@ -105,18 +105,18 @@ end
 
 function dqp_initialize(data, control, status)
     @ccall libgalahad_double.dqp_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{dqp_control_type},
+                                            control::Ref{dqp_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function dqp_read_specfile(control, specfile)
-    @ccall libgalahad_double.dqp_read_specfile(control::Ptr{dqp_control_type},
+    @ccall libgalahad_double.dqp_read_specfile(control::Ref{dqp_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function dqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
                     A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.dqp_import(control::Ptr{dqp_control_type},
+    @ccall libgalahad_double.dqp_import(control::Ref{dqp_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
                                         H_row::Ptr{Cint}, H_col::Ptr{Cint},
@@ -126,7 +126,7 @@ function dqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_p
 end
 
 function dqp_reset_control(control, data, status)
-    @ccall libgalahad_double.dqp_reset_control(control::Ptr{dqp_control_type},
+    @ccall libgalahad_double.dqp_reset_control(control::Ref{dqp_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -159,12 +159,12 @@ end
 
 function dqp_information(data, inform, status)
     @ccall libgalahad_double.dqp_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{dqp_inform_type},
+                                             inform::Ref{dqp_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function dqp_terminate(data, control, inform)
     @ccall libgalahad_double.dqp_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{dqp_control_type},
-                                           inform::Ptr{dqp_inform_type})::Cvoid
+                                           control::Ref{dqp_control_type},
+                                           inform::Ref{dqp_inform_type})::Cvoid
 end

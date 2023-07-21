@@ -93,17 +93,17 @@ end
 
 function lsqp_initialize(data, control, status)
     @ccall libgalahad_double.lsqp_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{lsqp_control_type},
+                                             control::Ref{lsqp_control_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function lsqp_read_specfile(control, specfile)
-    @ccall libgalahad_double.lsqp_read_specfile(control::Ptr{lsqp_control_type},
+    @ccall libgalahad_double.lsqp_read_specfile(control::Ref{lsqp_control_type},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function lsqp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-    @ccall libgalahad_double.lsqp_import(control::Ptr{lsqp_control_type},
+    @ccall libgalahad_double.lsqp_import(control::Ref{lsqp_control_type},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                          A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -111,7 +111,7 @@ function lsqp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_
 end
 
 function lsqp_reset_control(control, data, status)
-    @ccall libgalahad_double.lsqp_reset_control(control::Ptr{lsqp_control_type},
+    @ccall libgalahad_double.lsqp_reset_control(control::Ref{lsqp_control_type},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -131,12 +131,12 @@ end
 
 function lsqp_information(data, inform, status)
     @ccall libgalahad_double.lsqp_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{lsqp_inform_type},
+                                              inform::Ref{lsqp_inform_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
 function lsqp_terminate(data, control, inform)
     @ccall libgalahad_double.lsqp_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lsqp_control_type},
-                                            inform::Ptr{lsqp_inform_type})::Cvoid
+                                            control::Ref{lsqp_control_type},
+                                            inform::Ref{lsqp_inform_type})::Cvoid
 end

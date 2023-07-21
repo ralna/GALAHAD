@@ -72,17 +72,17 @@ end
 
 function trs_initialize(data, control, status)
     @ccall libgalahad_double.trs_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{trs_control_type},
+                                            control::Ref{trs_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function trs_read_specfile(control, specfile)
-    @ccall libgalahad_double.trs_read_specfile(control::Ptr{trs_control_type},
+    @ccall libgalahad_double.trs_read_specfile(control::Ref{trs_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function trs_import(control, data, status, n, H_type, H_ne, H_row, H_col, H_ptr)
-    @ccall libgalahad_double.trs_import(control::Ptr{trs_control_type},
+    @ccall libgalahad_double.trs_import(control::Ref{trs_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         H_type::Ptr{Cchar}, H_ne::Cint, H_row::Ptr{Cint},
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
@@ -101,7 +101,7 @@ function trs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 end
 
 function trs_reset_control(control, data, status)
-    @ccall libgalahad_double.trs_reset_control(control::Ptr{trs_control_type},
+    @ccall libgalahad_double.trs_reset_control(control::Ref{trs_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -119,12 +119,12 @@ end
 
 function trs_information(data, inform, status)
     @ccall libgalahad_double.trs_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{trs_inform_type},
+                                             inform::Ref{trs_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function trs_terminate(data, control, inform)
     @ccall libgalahad_double.trs_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{trs_control_type},
-                                           inform::Ptr{trs_inform_type})::Cvoid
+                                           control::Ref{trs_control_type},
+                                           inform::Ref{trs_inform_type})::Cvoid
 end

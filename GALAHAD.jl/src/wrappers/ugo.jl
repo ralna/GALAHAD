@@ -48,23 +48,23 @@ end
 
 function ugo_initialize(data, control, status)
     @ccall libgalahad_double.ugo_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{ugo_control_type},
+                                            control::Ref{ugo_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
 function ugo_read_specfile(control, specfile)
-    @ccall libgalahad_double.ugo_read_specfile(control::Ptr{ugo_control_type},
+    @ccall libgalahad_double.ugo_read_specfile(control::Ref{ugo_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function ugo_import(control, data, status, x_l, x_u)
-    @ccall libgalahad_double.ugo_import(control::Ptr{ugo_control_type},
+    @ccall libgalahad_double.ugo_import(control::Ref{ugo_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                         x_l::Ptr{Float64}, x_u::Ptr{Float64})::Cvoid
 end
 
 function ugo_reset_control(control, data, status)
-    @ccall libgalahad_double.ugo_reset_control(control::Ptr{ugo_control_type},
+    @ccall libgalahad_double.ugo_reset_control(control::Ref{ugo_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -85,12 +85,12 @@ end
 
 function ugo_information(data, inform, status)
     @ccall libgalahad_double.ugo_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{ugo_inform_type},
+                                             inform::Ref{ugo_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function ugo_terminate(data, control, inform)
     @ccall libgalahad_double.ugo_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{ugo_control_type},
-                                           inform::Ptr{ugo_inform_type})::Cvoid
+                                           control::Ref{ugo_control_type},
+                                           inform::Ref{ugo_inform_type})::Cvoid
 end

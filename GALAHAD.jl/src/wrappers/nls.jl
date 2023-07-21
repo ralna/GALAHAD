@@ -176,18 +176,18 @@ end
 
 function nls_initialize(data, control, inform)
     @ccall libgalahad_double.nls_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{nls_control_type},
-                                            inform::Ptr{nls_inform_type})::Cvoid
+                                            control::Ref{nls_control_type},
+                                            inform::Ref{nls_inform_type})::Cvoid
 end
 
 function nls_read_specfile(control, specfile)
-    @ccall libgalahad_double.nls_read_specfile(control::Ptr{nls_control_type},
+    @ccall libgalahad_double.nls_read_specfile(control::Ref{nls_control_type},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function nls_import(control, data, status, n, m, J_type, J_ne, J_row, J_col, J_ptr, H_type,
                     H_ne, H_row, H_col, H_ptr, P_type, P_ne, P_row, P_col, P_ptr, w)
-    @ccall libgalahad_double.nls_import(control::Ptr{nls_control_type},
+    @ccall libgalahad_double.nls_import(control::Ref{nls_control_type},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, J_type::Ptr{Cchar}, J_ne::Cint,
                                         J_row::Ptr{Cint}, J_col::Ptr{Cint},
@@ -199,7 +199,7 @@ function nls_import(control, data, status, n, m, J_type, J_ne, J_row, J_col, J_p
 end
 
 function nls_reset_control(control, data, status)
-    @ccall libgalahad_double.nls_reset_control(control::Ptr{nls_control_type},
+    @ccall libgalahad_double.nls_reset_control(control::Ref{nls_control_type},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -258,12 +258,12 @@ end
 
 function nls_information(data, inform, status)
     @ccall libgalahad_double.nls_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{nls_inform_type},
+                                             inform::Ref{nls_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function nls_terminate(data, control, inform)
     @ccall libgalahad_double.nls_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{nls_control_type},
-                                           inform::Ptr{nls_inform_type})::Cvoid
+                                           control::Ref{nls_control_type},
+                                           inform::Ref{nls_inform_type})::Cvoid
 end
