@@ -11,8 +11,6 @@ else
   # const GALAHAD_INSTALLATION = "YGGDRASIL"
 end
 
-galahad_version() = v"5.0.0"
-
 # packages without dependencies.
 include("wrappers/bsc.jl")
 include("wrappers/convert.jl")
@@ -22,7 +20,6 @@ include("wrappers/gls.jl")
 include("wrappers/gltr.jl")
 include("wrappers/hash.jl")
 include("wrappers/hsl.jl")
-include("wrappers/icfs.jl")
 include("wrappers/ir.jl")
 include("wrappers/l2rt.jl")
 include("wrappers/lhs.jl")
@@ -39,115 +36,91 @@ include("wrappers/sils.jl")
 include("wrappers/ugo.jl")
 include("wrappers/ssids.jl")
 
-# sls requires sils, ma57, ma77, ma86, ma87, ma97, ssids, mc64, mc68.
+# sls requires sils.
 include("wrappers/sls.jl")
 
-# rqs requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir.
+# rqs requires sls, sils, ir.
 include("wrappers/rqs.jl")
 
-# dps requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids, mc64, mc68.
+# dps requires sls, sils.
 include("wrappers/dps.jl")
 
-# psls requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, mi28.
+# psls requires sls, sils.
 include("wrappers/psls.jl")
 
-# arc requires rqs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, glrt, dps, psls, mi28, lms, sha.
+# arc requires rqs, sls, sils, ir, glrt, dps, psls, lms, sha.
 include("wrappers/arc.jl")
 
-# trs requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir.
+# trs requires sls, sils, ir.
 include("wrappers/trs.jl")
 
-# trb requires trs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, gltr, psls, mi28, lms, sha.
+# trb requires trs, sls, sils, ir, gltr, psls, lms, sha.
 include("wrappers/trb.jl")
 
-# bgo requires trb, trs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, gltr, psls, mi28, lms, sha, ugo, lhs.
+# bgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, lhs.
 include("wrappers/bgo.jl")
 
-# uls requires gls, ma48.
+# uls requires gls.
 include("wrappers/uls.jl")
 
-# sbls requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48.
+# sbls requires sls, sils, uls, gls.
 include("wrappers/sbls.jl")
 
-# blls requires sbls, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, convert.
+# blls requires sbls, sls, sils, uls, gls, convert.
 include("wrappers/blls.jl")
 
-# bqp requires sbls, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48.
+# bqp requires sbls, sls, sils, uls, gls.
 include("wrappers/bqp.jl")
 
-# fdc requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48.
+# fdc requires sls, sils, uls, gls.
 include("wrappers/fdc.jl")
 
-# cro requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, sbls, uls, gls, ma48, ir, scu.
+# cro requires sls, sils, sbls, uls, gls, ir, scu.
 include("wrappers/cro.jl")
 
-# bqpb requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, fit, roots, cro, ir, scu, rpd.
+# bqpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/bqpb.jl")
 
-# ccqp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, fit, roots, cro, ir, scu, rpd.
+# ccqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/ccqp.jl")
 
-# cqp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, fit, roots, cro, ir, scu, rpd.
+# cqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/cqp.jl")
 
-# dgo requires trb, trs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, gltr, psls, mi28, lms, sha, ugo, hash.
+# dgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, hash.
 include("wrappers/dgo.jl")
 
-# dqp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, gltr, scu, rpd.
+# dqp requires fdc, sls, sils, uls, gls, sbls, gltr, scu, rpd.
 include("wrappers/dqp.jl")
 
-# eqp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, gltr.
+# eqp requires fdc, sls, sils, uls, gls, sbls, gltr.
 include("wrappers/eqp.jl")
 
 # lpa requires rpd.
 include("wrappers/lpa.jl")
 
-# lpb requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, fit, roots, cro, ir, scu, rpd.
+# lpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/lpb.jl")
 
-# lsqp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls.
+# lsqp requires fdc, sls, sils, uls, gls, sbls.
 include("wrappers/lsqp.jl")
 
-# nls requires rqs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, glrt, psls, mi28, bsc, roots.
+# nls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
 include("wrappers/nls.jl")
 
-# qpa requires sls, sils, ma57, ma77, ma86, ma87, ma97, ssids, mc64, mc68.
+# qpa requires sls, sils.
 include("wrappers/qpa.jl")
 
-# qpb requires lsqp, fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls, gltr, fit.
+# qpb requires lsqp, fdc, sls, sils, uls, gls, sbls, gltr, fit.
 include("wrappers/qpb.jl")
 
-# slls requires sbls, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, convert.
+# slls requires sbls, sls, sils, uls, gls, convert.
 include("wrappers/slls.jl")
 
-# tru requires trs, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, ir, gltr, dps, psls, mi28, lms, sec, sha.
+# tru requires trs, sls, sils, ir, gltr, dps, psls, lms, sec, sha.
 include("wrappers/tru.jl")
 
-# wcp requires fdc, sls, sils, ma57, ma77, ma86, ma87, ma97, ssids,
-# mc64, mc68, uls, gls, ma48, sbls.
+# wcp requires fdc, sls, sils, uls, gls, sbls.
 include("wrappers/wcp.jl")
 
 end # module GALAHAD

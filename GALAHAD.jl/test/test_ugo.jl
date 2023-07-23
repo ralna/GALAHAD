@@ -27,8 +27,8 @@ end
 
 # Derived types
 data = [Ptr{Ptr{Cvoid}}()]
-control = ugo_control_type()
-inform = ugo_inform_type()
+control = ugo_control_type{Float64}()
+inform = ugo_inform_type{Float64}()
 
 # Initialize UGO
 status = Ref{Cint}()

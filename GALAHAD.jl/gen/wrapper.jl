@@ -44,15 +44,17 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   rewrite!(path, name, optimized)
 
   # Generate a Julia folder with symbolic links
-  current_folder = pwd()
-  cd("../../src/$name")
-  !isdir("Julia") && mkdir("Julia")
-  cd("Julia")
-  rm("$name.jl", force=true)
-  rm("test_$name.jl", force=true)
-  symlink("../../../GALAHAD.jl/src/wrappers/$name.jl", "$name.jl")
-  symlink("../../../GALAHAD.jl/test/test_$name.jl", "test_$name.jl")
-  cd(current_folder)
+  if (name ≠ "hsl") && (name ≠ "ssids")
+    current_folder = pwd()
+    cd("../../src/$name")
+    !isdir("Julia") && mkdir("Julia")
+    cd("Julia")
+    rm("$name.jl", force=true)
+    rm("test_$name.jl", force=true)
+    symlink("../../../GALAHAD.jl/src/wrappers/$name.jl", "$name.jl")
+    symlink("../../../GALAHAD.jl/test/test_$name.jl", "test_$name.jl")
+    cd(current_folder)
+  end
 
   return nothing
 end
@@ -82,7 +84,7 @@ function main(name::String="all"; optimized::Bool=false)
   (name == "all" || name == "gltr")     && wrapper("gltr", ["$galahad/galahad_gltr.h"], optimized)
   (name == "all" || name == "hash")     && wrapper("hash", ["$galahad/galahad_hash.h"], optimized)
   (name == "all" || name == "hsl")      && wrapper("hsl", ["$galahad/hsl_ma48.h", "$galahad/hsl_ma57.h", "$galahad/hsl_ma77.h", "$galahad/hsl_ma86.h", "$galahad/hsl_ma87.h", "$galahad/hsl_ma97.h", "$galahad/hsl_mc64.h", "$galahad/hsl_mc68.h", "$galahad/hsl_mi20.h", "$galahad/hsl_mi28.h"], optimized)
-  (name == "all" || name == "icfs")     && wrapper("icfs", ["$galahad/galahad_icfs.h"], optimized)
+  # (name == "all" || name == "icfs")     && wrapper("icfs", ["$galahad/galahad_icfs.h"], optimized)
   (name == "all" || name == "ir")       && wrapper("ir", ["$galahad/galahad_ir.h"], optimized)
   (name == "all" || name == "l2rt")     && wrapper("l2rt", ["$galahad/galahad_l2rt.h"], optimized)
   (name == "all" || name == "lhs")      && wrapper("lhs", ["$galahad/galahad_lhs.h"], optimized)
