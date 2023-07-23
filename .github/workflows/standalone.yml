@@ -60,21 +60,21 @@ jobs:
 
       - name: Install GNU compilers
         if: matrix.compiler == 'gnu'
-        uses: awvwgk/setup-fortran@intel-2023.2.0
+        uses: awvwgk/setup-fortran@main
         with:
           compiler: gcc
           version: ${{ matrix.compiler_version }}
 
       - name: Install classic Intel compilers
         if: matrix.compiler == 'intel'
-        uses: awvwgk/setup-fortran@intel-2023.2.0
+        uses: awvwgk/setup-fortran@main
         with:
           compiler: intel-classic
           version: ${{ matrix.compiler_version }}
 
       - name: Install nextgen Intel compilers
         if: matrix.compiler == 'intel-llvm'
-        uses: awvwgk/setup-fortran@intel-2023.2.0
+        uses: awvwgk/setup-fortran@main
         with:
           compiler: intel
           version: ${{ matrix.compiler_version }}
