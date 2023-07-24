@@ -448,7 +448,7 @@ static PyObject* py_psls_form_preconditioner(PyObject *self, PyObject *args, PyO
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"A_ne","A_val"};
+    static char *kwlist[] = {"A_ne","A_val",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iO",
                                     kwlist, &A_ne, &py_A_val))
@@ -487,7 +487,7 @@ static PyObject* py_psls_form_subset_preconditioner(PyObject *self, PyObject *ar
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"A_ne","A_val","n_sub","sub"};
+    static char *kwlist[] = {"A_ne","A_val","n_sub","sub",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOiO",
                                     kwlist, &A_ne, &py_A_val, &n_sub, &py_sub))

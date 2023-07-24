@@ -648,7 +648,7 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","m","H_ne","H_val","A_ne","A_val",
-                             "C_ne","C_val","D"};
+                             "C_ne","C_val","D",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOiO|O",
                                     kwlist, &n, &m, &H_ne, &py_H_val, &A_ne, 

@@ -524,7 +524,7 @@ static PyObject* py_rqs_load_m(PyObject *self, PyObject *args,
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","M_type","M_ne","M_row","M_col","M_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n, 
                                     &M_type, &M_ne, &py_M_row,
@@ -606,7 +606,7 @@ static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"m","A_type","A_ne","A_row","A_col","A_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &m, 
                                     &A_type, &A_ne, &py_A_row,

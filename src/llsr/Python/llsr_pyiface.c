@@ -443,7 +443,7 @@ static PyObject* py_llsr_load_scaling(PyObject *self, PyObject *args,
 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","S_type","S_ne","S_row","S_col","S_ptr",
-                             "options"};
+                             "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
                                     &S_type, &S_ne, &py_S_row,

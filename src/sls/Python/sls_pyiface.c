@@ -804,7 +804,7 @@ static PyObject* py_sls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"A_ne","A_val"};
+    static char *kwlist[] = {"A_ne","A_val",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iO",
                                     kwlist, &A_ne, &py_A_val))
