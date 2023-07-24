@@ -1282,8 +1282,7 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
                              "J_type","J_ne","J_row","J_col","J_ptr",
                              "H_type","H_ne","H_row","H_col","H_ptr",
                              "P_type","P_ne","P_row","P_col","P_ptr",
-                             "w","options"};
-//                           "options",NULL};
+                             "w","options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|siOOOsiOOOOO",
                                     kwlist, &n, &m,
