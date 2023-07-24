@@ -13,6 +13,7 @@ mutable struct ir_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   ir_control_type{T}() where T = new()
 end
 
@@ -24,6 +25,7 @@ mutable struct ir_inform_type{T}
   bad_alloc::NTuple{81,Cchar}
   norm_initial_residual::T
   norm_final_residual::T
+
   ir_inform_type{T}() where T = new()
 end
 

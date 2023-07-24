@@ -20,6 +20,7 @@ mutable struct dps_control_type{T}
   symmetric_linear_solver::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
+
   dps_control_type{T}() where T = new()
 end
 
@@ -34,6 +35,7 @@ mutable struct dps_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   dps_time_type{T}() where T = new()
 end
 
@@ -53,6 +55,7 @@ mutable struct dps_inform_type{T}
   bad_alloc::NTuple{81,Cchar}
   time::dps_time_type{T}
   sls_inform::sls_inform_type{T}
+
   dps_inform_type{T}() where T = new()
 end
 

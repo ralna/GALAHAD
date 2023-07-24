@@ -123,4 +123,10 @@ include("wrappers/tru.jl")
 # wcp requires fdc, sls, sils, uls, gls, sbls.
 include("wrappers/wcp.jl")
 
+# llsr requires sbls, sls, sils, uls, gls, ir.
+include("wrappers/llsr.jl")
+
+# llst requires sbls, sls, sils, uls, gls, ir.
+include("wrappers/llst.jl")
+
 end # module GALAHAD

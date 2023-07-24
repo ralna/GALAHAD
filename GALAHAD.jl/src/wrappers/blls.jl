@@ -38,6 +38,7 @@ mutable struct blls_control_type{T}
   prefix::NTuple{31,Cchar}
   sbls_control::sbls_control_type{T}
   convert_control::convert_control_type
+
   blls_control_type{T}() where T = new()
 end
 
@@ -52,6 +53,7 @@ mutable struct blls_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   blls_time_type{T}() where T = new()
 end
 
@@ -69,6 +71,7 @@ mutable struct blls_inform_type{T}
   time::blls_time_type{T}
   sbls_inform::sbls_inform_type{T}
   convert_inform::convert_inform_type{T}
+
   blls_inform_type{T}() where T = new()
 end
 

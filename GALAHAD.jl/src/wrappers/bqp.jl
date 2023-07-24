@@ -30,6 +30,7 @@ mutable struct bqp_control_type{T}
   sif_file_name::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
   sbls_control::sbls_control_type{T}
+
   bqp_control_type{T}() where T = new()
 end
 
@@ -40,6 +41,7 @@ mutable struct bqp_time_type
   analyse::Float32
   factorize::Float32
   solve::Float32
+
   bqp_time_type() = new()
 end
 
@@ -56,6 +58,7 @@ mutable struct bqp_inform_type{T}
   bad_alloc::NTuple{81,Cchar}
   time::bqp_time_type
   sbls_inform::sbls_inform_type{T}
+
   bqp_inform_type{T}() where T = new()
 end
 

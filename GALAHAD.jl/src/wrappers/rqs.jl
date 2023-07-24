@@ -30,6 +30,7 @@ mutable struct rqs_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   ir_control::ir_control_type{T}
+
   rqs_control_type{T}() where T = new()
 end
 
@@ -46,6 +47,7 @@ mutable struct rqs_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   rqs_time_type{T}() where T = new()
 end
 
@@ -54,6 +56,7 @@ export rqs_history_type
 mutable struct rqs_history_type{T}
   lambda::T
   x_norm::T
+
   rqs_history_type{T}() where T = new()
 end
 
@@ -74,9 +77,10 @@ mutable struct rqs_inform_type{T}
   hard_case::Bool
   bad_alloc::NTuple{81,Cchar}
   time::rqs_time_type{T}
-  history::NTuple{100,rqs_history_type}
+  history::NTuple{100,rqs_history_type{T}}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
+
   rqs_inform_type{T}() where T = new()
 end
 

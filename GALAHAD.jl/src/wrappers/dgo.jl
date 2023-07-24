@@ -31,6 +31,7 @@ mutable struct dgo_control_type{T}
   hash_control::hash_control_type
   ugo_control::ugo_control_type{T}
   trb_control::trb_control_type{T}
+
   dgo_control_type{T}() where T = new()
 end
 
@@ -43,6 +44,7 @@ mutable struct dgo_time_type{T}
   clock_total::T
   clock_univariate_global::T
   clock_multivariate_local::T
+
   dgo_time_type{T}() where T = new()
 end
 
@@ -65,6 +67,7 @@ mutable struct dgo_inform_type{T}
   hash_inform::hash_inform_type
   ugo_inform::ugo_inform_type{T}
   trb_inform::trb_inform_type{T}
+
   dgo_inform_type{T}() where T = new()
 end
 

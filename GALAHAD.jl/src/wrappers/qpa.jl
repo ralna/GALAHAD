@@ -52,6 +52,7 @@ mutable struct qpa_control_type{T}
   prefix::NTuple{31,Cchar}
   each_interval::Bool
   sls_control::sls_control_type{T}
+
   qpa_control_type{T}() where T = new()
 end
 
@@ -68,6 +69,7 @@ mutable struct qpa_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   qpa_time_type{T}() where T = new()
 end
 
@@ -93,6 +95,7 @@ mutable struct qpa_inform_type{T}
   merit::T
   time::qpa_time_type{T}
   sls_inform::sls_inform_type{T}
+
   qpa_inform_type{T}() where T = new()
 end
 

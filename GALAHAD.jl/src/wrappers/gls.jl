@@ -24,6 +24,7 @@ mutable struct gls_control_type{T}
   cgce::T
   diagonal_pivoting::Bool
   struct_abort::Bool
+
   gls_control_type{T}() where T = new()
 end
 
@@ -45,6 +46,7 @@ mutable struct gls_ainfo_type{T}
   sblock::Cint
   tblock::Cint
   ops::T
+
   gls_ainfo_type{T}() where T = new()
 end
 
@@ -59,6 +61,7 @@ mutable struct gls_finfo_type{T}
   rank::Cint
   stat::Cint
   ops::T
+
   gls_finfo_type{T}() where T = new()
 end
 
@@ -68,6 +71,7 @@ mutable struct gls_sinfo_type
   flag::Cint
   more::Cint
   stat::Cint
+
   gls_sinfo_type() = new()
 end
 

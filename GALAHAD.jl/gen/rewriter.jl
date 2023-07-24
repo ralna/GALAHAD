@@ -1,9 +1,9 @@
 packages = ("arc", "bgo", "blls", "bqp", "bqpb", "bsc", "ccqp", "convert",
             "cqp", "cro", "dgo", "dps", "dqp", "eqp", "fdc", "fit", "glrt",
-            "gls", "gltr", "hash", "ir", "l2rt", "lhs", "lms", "lpa", "lpb",
-            "lsqp", "lsrt", "lstr", "nls", "presolve", "psls", "qpa", "qpb",
-            "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
-            "slls", "sls", "trb", "trs", "tru", "ugo", "uls", "wcp")
+            "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
+            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "presolve", "psls",
+            "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha",
+            "sils", "slls", "sls", "trb", "trs", "tru", "ugo", "uls", "wcp")
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
@@ -34,6 +34,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
       for package in packages
         if "$(package)_$(type)_type" ∉ nonparametric_structures
           text = replace(text, "::$(package)_$(type)_type" => "::$(package)_$(type)_type{T}")
+          text = replace(text, ",$(package)_$(type)_type}" => ",$(package)_$(type)_type{T}}")
         end
       end
     end
@@ -86,9 +87,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
         structure = replace(structure, "real_wp_" => "T")
         if structure_name ∉ nonparametric_structures
           structure = replace(structure, structure_name => structure_name * "{T}")
-          structure = replace(structure, "end\n" => "  " * structure_name * "{T}() where T = new()\nend\n")
+          structure = replace(structure, "end\n" => "\n  " * structure_name * "{T}() where T = new()\nend\n")
         else
-          structure = replace(structure, "end\n" => "  " * structure_name * "() = new()\nend\n")
+          structure = replace(structure, "end\n" => "\n  " * structure_name * "() = new()\nend\n")
         end
         if index == 1
           text = text * "export " * structure_name * "\n\n" * structure

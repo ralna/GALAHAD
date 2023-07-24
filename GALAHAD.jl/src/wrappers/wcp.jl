@@ -52,6 +52,7 @@ mutable struct wcp_control_type{T}
   prefix::NTuple{31,Cchar}
   fdc_control::fdc_control_type{T}
   sbls_control::sbls_control_type{T}
+
   wcp_control_type{T}() where T = new()
 end
 
@@ -70,6 +71,7 @@ mutable struct wcp_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   wcp_time_type{T}() where T = new()
 end
 
@@ -95,6 +97,7 @@ mutable struct wcp_inform_type{T}
   time::wcp_time_type{T}
   fdc_inform::fdc_inform_type{T}
   sbls_inform::sbls_inform_type{T}
+
   wcp_inform_type{T}() where T = new()
 end
 

@@ -27,6 +27,7 @@ mutable struct uls_control_type{T}
   acceptable_residual_relative::T
   acceptable_residual_absolute::T
   prefix::NTuple{31,Cchar}
+
   uls_control_type{T}() where T = new()
 end
 
@@ -56,6 +57,7 @@ mutable struct uls_inform_type{T}
   ma48_finfo::ma48_finfo{T}
   ma48_sinfo::ma48_sinfo
   lapack_error::Cint
+
   uls_inform_type{T}() where T = new()
 end
 

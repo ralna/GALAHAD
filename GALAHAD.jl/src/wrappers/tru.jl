@@ -50,6 +50,7 @@ mutable struct tru_control_type{T}
   lms_control_prec::lms_control_type{T}
   sec_control::sec_control_type{T}
   sha_control::sha_control_type
+
   tru_control_type{T}() where T = new()
 end
 
@@ -66,6 +67,7 @@ mutable struct tru_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   tru_time_type{T}() where T = new()
 end
 
@@ -98,6 +100,7 @@ mutable struct tru_inform_type{T}
   lms_inform_prec::lms_inform_type{T}
   sec_inform::sec_inform_type
   sha_inform::sha_inform_type
+
   tru_inform_type{T}() where T = new()
 end
 

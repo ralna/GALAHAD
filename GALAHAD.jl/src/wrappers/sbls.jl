@@ -42,6 +42,7 @@ mutable struct sbls_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   uls_control::uls_control_type{T}
+
   sbls_control_type{T}() where T = new()
 end
 
@@ -56,6 +57,7 @@ mutable struct sbls_time_type{T}
   clock_form::T
   clock_factorize::T
   clock_apply::T
+
   sbls_time_type{T}() where T = new()
 end
 
@@ -80,6 +82,7 @@ mutable struct sbls_inform_type{T}
   time::sbls_time_type{T}
   sls_inform::sls_inform_type{T}
   uls_inform::uls_inform_type{T}
+
   sbls_inform_type{T}() where T = new()
 end
 

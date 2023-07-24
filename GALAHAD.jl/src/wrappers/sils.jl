@@ -27,6 +27,7 @@ mutable struct sils_control_type{T}
   static_level::T
   tolerance::T
   convergence::T
+
   sils_control_type{T}() where T = new()
 end
 
@@ -50,6 +51,7 @@ mutable struct sils_ainfo_type{T}
   faulty::Cint
   opsa::T
   opse::T
+
   sils_ainfo_type{T}() where T = new()
 end
 
@@ -84,6 +86,7 @@ mutable struct sils_finfo_type{T}
   maxchange::T
   smin::T
   smax::T
+
   sils_finfo_type{T}() where T = new()
 end
 
@@ -97,6 +100,7 @@ mutable struct sils_sinfo_type{T}
   berr::T
   berr2::T
   error::T
+
   sils_sinfo_type{T}() where T = new()
 end
 

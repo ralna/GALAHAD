@@ -52,6 +52,7 @@ mutable struct sls_control_type{T}
   out_of_core_indefinite_file::NTuple{401,Cchar}
   out_of_core_restart_file::NTuple{501,Cchar}
   prefix::NTuple{31,Cchar}
+
   sls_control_type{T}() where T = new()
 end
 
@@ -74,6 +75,7 @@ mutable struct sls_time_type{T}
   clock_analyse_external::T
   clock_factorize_external::T
   clock_solve_external::T
+
   sls_time_type{T}() where T = new()
 end
 
@@ -157,6 +159,7 @@ mutable struct sls_inform_type{T}
   wsmp_dparm::NTuple{64,T}
   mpi_ierr::Cint
   lapack_error::Cint
+
   sls_inform_type{T}() where T = new()
 end
 

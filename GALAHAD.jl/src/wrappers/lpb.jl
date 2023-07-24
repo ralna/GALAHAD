@@ -60,6 +60,7 @@ mutable struct lpb_control_type{T}
   fit_control::fit_control_type
   roots_control::roots_control_type{T}
   cro_control::cro_control_type{T}
+
   lpb_control_type{T}() where T = new()
 end
 
@@ -78,6 +79,7 @@ mutable struct lpb_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   lpb_time_type{T}() where T = new()
 end
 
@@ -113,6 +115,7 @@ mutable struct lpb_inform_type{T}
   roots_inform::roots_inform_type
   cro_inform::cro_inform_type{T}
   rpd_inform::rpd_inform_type
+
   lpb_inform_type{T}() where T = new()
 end
 

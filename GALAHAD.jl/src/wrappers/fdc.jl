@@ -19,6 +19,7 @@ mutable struct fdc_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   uls_control::uls_control_type{T}
+
   fdc_control_type{T}() where T = new()
 end
 
@@ -31,6 +32,7 @@ mutable struct fdc_time_type{T}
   clock_total::T
   clock_analyse::T
   clock_factorize::T
+
   fdc_time_type{T}() where T = new()
 end
 
@@ -47,6 +49,7 @@ mutable struct fdc_inform_type{T}
   time::fdc_time_type{T}
   sls_inform::sls_inform_type{T}
   uls_inform::uls_inform_type{T}
+
   fdc_inform_type{T}() where T = new()
 end
 

@@ -7,6 +7,7 @@ mutable struct hash_control_type
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   hash_control_type() = new()
 end
 
@@ -16,6 +17,7 @@ mutable struct hash_inform_type
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
+
   hash_inform_type() = new()
 end
 

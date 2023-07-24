@@ -35,6 +35,7 @@ mutable struct slls_control_type{T}
   prefix::NTuple{31,Cchar}
   sbls_control::sbls_control_type{T}
   convert_control::convert_control_type
+
   slls_control_type{T}() where T = new()
 end
 
@@ -45,6 +46,7 @@ mutable struct slls_time_type
   analyse::Float32
   factorize::Float32
   solve::Float32
+
   slls_time_type() = new()
 end
 
@@ -62,6 +64,7 @@ mutable struct slls_inform_type{T}
   time::slls_time_type
   sbls_inform::sbls_inform_type{T}
   convert_inform::convert_inform_type{T}
+
   slls_inform_type{T}() where T = new()
 end
 

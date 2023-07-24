@@ -21,6 +21,7 @@ mutable struct ma48_control{T}
   diagonal_pivoting::Cint
   fill_in::Cint
   switch_mode::Cint
+
   ma48_control{T}() where T = new()
 end
 
@@ -44,6 +45,7 @@ mutable struct ma48_ainfo{T}
   lblock::Cint
   sblock::Cint
   tblock::Clong
+
   ma48_ainfo{T}() where T = new()
 end
 
@@ -59,6 +61,7 @@ mutable struct ma48_finfo{T}
   drop::Clong
   rank::Cint
   stat::Cint
+
   ma48_finfo{T}() where T = new()
 end
 
@@ -68,6 +71,7 @@ mutable struct ma48_sinfo
   flag::Cint
   more::Cint
   stat::Cint
+
   ma48_sinfo() = new()
 end
 
@@ -102,6 +106,7 @@ mutable struct ma57_control{T}
   rank_deficient::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma57_control{T}() where T = new()
 end
 
@@ -127,6 +132,7 @@ mutable struct ma57_ainfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma57_ainfo{T}() where T = new()
 end
 
@@ -161,6 +167,7 @@ mutable struct ma57_finfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma57_finfo{T}() where T = new()
 end
 
@@ -176,6 +183,7 @@ mutable struct ma57_sinfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma57_sinfo{T}() where T = new()
 end
 
@@ -211,6 +219,7 @@ mutable struct ma77_control{T}
   ispare::NTuple{5,Cint}
   lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
+
   ma77_control{T}() where T = new()
 end
 
@@ -251,6 +260,7 @@ mutable struct ma77_info{T}
   ispare::NTuple{5,Cint}
   lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
+
   ma77_info{T}() where T = new()
 end
 
@@ -272,6 +282,7 @@ mutable struct ma86_control{T}
   u::T
   umin::T
   scaling::Cint
+
   ma86_control{T}() where T = new()
 end
 
@@ -294,6 +305,7 @@ mutable struct ma86_info{T}
   pool_size::Cint
   stat::Cint
   usmall::T
+
   ma86_info{T}() where T = new()
 end
 
@@ -311,6 +323,7 @@ mutable struct ma87_control{T}
   diag_zero_minus::T
   diag_zero_plus::T
   unused::NTuple{40,Cchar}
+
   ma87_control{T}() where T = new()
 end
 
@@ -327,6 +340,7 @@ mutable struct ma87_info{T}
   stat::Cint
   num_zero::Cint
   unused::NTuple{40,Cchar}
+
   ma87_info{T}() where T = new()
 end
 
@@ -352,6 +366,7 @@ mutable struct ma97_control{T}
   consist_tol::T
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma97_control{T}() where T = new()
 end
 
@@ -377,6 +392,7 @@ mutable struct ma97_info{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
+
   ma97_info{T}() where T = new()
 end
 
@@ -389,6 +405,7 @@ mutable struct mc64_control
   sp::Cint
   ldiag::Cint
   checking::Cint
+
   mc64_control() = new()
 end
 
@@ -399,6 +416,7 @@ mutable struct mc64_info
   more::Cint
   strucrank::Cint
   stat::Cint
+
   mc64_info() = new()
 end
 
@@ -415,6 +433,7 @@ mutable struct mc68_control
   print_level::Cint
   row_full_thresh::Cint
   row_search::Cint
+
   mc68_control() = new()
 end
 
@@ -431,6 +450,7 @@ mutable struct mc68_info
   l_workspace::Clong
   zb01_info::Cint
   n_dense_rows::Cint
+
   mc68_info() = new()
 end
 
@@ -460,6 +480,7 @@ mutable struct mi20_control{T}
   print::Cint
   error::Cint
   one_pass_coarsen::Cint
+
   mi20_control{T}() where T = new()
 end
 
@@ -474,6 +495,7 @@ mutable struct mi20_solve_control{T}
   max_its::Cint
   preconditioner_side::Cint
   rel_tol::T
+
   mi20_solve_control{T}() where T = new()
 end
 
@@ -488,6 +510,7 @@ mutable struct mi20_info{T}
   getrf_info::Cint
   iterations::Cint
   residual::T
+
   mi20_info{T}() where T = new()
 end
 
@@ -509,6 +532,7 @@ mutable struct mi28_control{T}
   tau2::T
   unit_error::Cint
   unit_warning::Cint
+
   mi28_control{T}() where T = new()
 end
 
@@ -531,5 +555,6 @@ mutable struct mi28_info{T}
   size_r::Clong
   stat::Cint
   alpha::T
+
   mi28_info{T}() where T = new()
 end

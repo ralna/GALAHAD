@@ -33,6 +33,7 @@ mutable struct trs_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   ir_control::ir_control_type{T}
+
   trs_control_type{T}() where T = new()
 end
 
@@ -49,6 +50,7 @@ mutable struct trs_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   trs_time_type{T}() where T = new()
 end
 
@@ -57,6 +59,7 @@ export trs_history_type
 mutable struct trs_history_type{T}
   lambda::T
   x_norm::T
+
   trs_history_type{T}() where T = new()
 end
 
@@ -76,9 +79,10 @@ mutable struct trs_inform_type{T}
   hard_case::Bool
   bad_alloc::NTuple{81,Cchar}
   time::trs_time_type{T}
-  history::NTuple{100,trs_history_type}
+  history::NTuple{100,trs_history_type{T}}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
+
   trs_inform_type{T}() where T = new()
 end
 

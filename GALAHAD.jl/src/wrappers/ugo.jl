@@ -29,6 +29,7 @@ mutable struct ugo_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   ugo_control_type{T}() where T = new()
 end
 
@@ -37,6 +38,7 @@ export ugo_time_type
 mutable struct ugo_time_type{T}
   total::Float32
   clock_total::T
+
   ugo_time_type{T}() where T = new()
 end
 
@@ -52,7 +54,12 @@ mutable struct ugo_inform_type{T}
   g_eval::Cint
   h_eval::Cint
   time::ugo_time_type{T}
-  ugo_inform_type{T}() where T = new()
+
+  function ugo_inform_type{T}() where T
+    type = new()
+    type.time = ugo_time_type{T}()
+    return type
+  end
 end
 
 export ugo_initialize_s

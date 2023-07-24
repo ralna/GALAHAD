@@ -57,6 +57,7 @@ mutable struct dqp_control_type{T}
   sls_control::sls_control_type{T}
   sbls_control::sbls_control_type{T}
   gltr_control::gltr_control_type{T}
+
   dqp_control_type{T}() where T = new()
 end
 
@@ -77,6 +78,7 @@ mutable struct dqp_time_type{T}
   clock_factorize::T
   clock_solve::T
   clock_search::T
+
   dqp_time_type{T}() where T = new()
 end
 
@@ -109,6 +111,7 @@ mutable struct dqp_inform_type{T}
   scu_status::Cint
   scu_inform::scu_inform_type
   rpd_inform::rpd_inform_type
+
   dqp_inform_type{T}() where T = new()
 end
 

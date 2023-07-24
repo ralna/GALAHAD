@@ -8,6 +8,7 @@ mutable struct sec_control_type{T}
   h_initial::T
   update_skip_tol::T
   prefix::NTuple{31,Cchar}
+
   sec_control_type{T}() where T = new()
 end
 
@@ -15,6 +16,7 @@ export sec_inform_type
 
 mutable struct sec_inform_type
   status::Cint
+
   sec_inform_type() = new()
 end
 

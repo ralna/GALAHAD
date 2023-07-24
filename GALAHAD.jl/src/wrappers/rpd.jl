@@ -8,6 +8,7 @@ mutable struct rpd_control_type
   print_level::Cint
   space_critical::Bool
   deallocate_error_fatal::Bool
+
   rpd_control_type() = new()
 end
 
@@ -20,6 +21,7 @@ mutable struct rpd_inform_type
   io_status::Cint
   line::Cint
   p_type::NTuple{4,Cchar}
+
   rpd_inform_type() = new()
 end
 

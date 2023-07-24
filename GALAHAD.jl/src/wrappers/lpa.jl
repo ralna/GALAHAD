@@ -35,6 +35,7 @@ mutable struct lpa_control_type{T}
   sif_file_name::NTuple{31,Cchar}
   qplib_file_name::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
+
   lpa_control_type{T}() where T = new()
 end
 
@@ -45,6 +46,7 @@ mutable struct lpa_time_type{T}
   preprocess::T
   clock_total::T
   clock_preprocess::T
+
   lpa_time_type{T}() where T = new()
 end
 
@@ -63,6 +65,7 @@ mutable struct lpa_inform_type{T}
   RINFO::NTuple{40,T}
   time::lpa_time_type{T}
   rpd_inform::rpd_inform_type
+
   lpa_inform_type{T}() where T = new()
 end
 

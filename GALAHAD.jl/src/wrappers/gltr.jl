@@ -24,6 +24,7 @@ mutable struct gltr_control_type{T}
   print_ritz_values::Bool
   ritz_file_name::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
+
   gltr_control_type{T}() where T = new()
 end
 
@@ -44,6 +45,7 @@ mutable struct gltr_inform_type{T}
   leftmost::T
   negative_curvature::Bool
   hard_case::Bool
+
   gltr_inform_type{T}() where T = new()
 end
 
