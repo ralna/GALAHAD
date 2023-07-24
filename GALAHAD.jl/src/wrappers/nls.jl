@@ -50,6 +50,7 @@ mutable struct nls_subproblem_control_type{T}
   psls_control::psls_control_type{T}
   bsc_control::bsc_control_type
   roots_control::roots_control_type{T}
+
   nls_subproblem_control_type{T}() where T = new()
 end
 
@@ -107,6 +108,7 @@ mutable struct nls_control_type{T}
   bsc_control::bsc_control_type
   roots_control::roots_control_type{T}
   subproblem_control::nls_subproblem_control_type{T}
+
   nls_control_type{T}() where T = new()
 end
 
@@ -123,6 +125,7 @@ mutable struct nls_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   nls_time_type{T}() where T = new()
 end
 
@@ -154,6 +157,7 @@ mutable struct nls_subproblem_inform_type{T}
   psls_inform::psls_inform_type{T}
   bsc_inform::bsc_inform_type{T}
   roots_inform::roots_inform_type
+
   nls_subproblem_inform_type{T}() where T = new()
 end
 
@@ -186,6 +190,7 @@ mutable struct nls_inform_type{T}
   psls_inform::psls_inform_type{T}
   bsc_inform::bsc_inform_type{T}
   roots_inform::roots_inform_type
+
   nls_inform_type{T}() where T = new()
 end
 

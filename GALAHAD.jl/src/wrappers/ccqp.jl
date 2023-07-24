@@ -62,6 +62,7 @@ mutable struct ccqp_control_type{T}
   fit_control::fit_control_type
   roots_control::roots_control_type{T}
   cro_control::cro_control_type{T}
+
   ccqp_control_type{T}() where T = new()
 end
 
@@ -80,6 +81,7 @@ mutable struct ccqp_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   ccqp_time_type{T}() where T = new()
 end
 
@@ -115,6 +117,7 @@ mutable struct ccqp_inform_type{T}
   roots_inform::roots_inform_type
   cro_inform::cro_inform_type{T}
   rpd_inform::rpd_inform_type
+
   ccqp_inform_type{T}() where T = new()
 end
 

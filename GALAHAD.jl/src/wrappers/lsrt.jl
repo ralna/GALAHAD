@@ -21,6 +21,7 @@ mutable struct lsrt_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   lsrt_control_type{T}() where T = new()
 end
 
@@ -41,6 +42,7 @@ mutable struct lsrt_inform_type{T}
   r_norm::T
   Atr_norm::T
   biter_mean::T
+
   lsrt_inform_type{T}() where T = new()
 end
 

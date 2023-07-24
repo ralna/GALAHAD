@@ -11,6 +11,7 @@ mutable struct convert_control_type
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   convert_control_type() = new()
 end
 
@@ -19,6 +20,7 @@ export convert_time_type
 mutable struct convert_time_type{T}
   total::T
   clock_total::T
+
   convert_time_type{T}() where T = new()
 end
 
@@ -30,6 +32,7 @@ mutable struct convert_inform_type{T}
   duplicates::Cint
   bad_alloc::NTuple{81,Cchar}
   time::convert_time_type{T}
+
   convert_inform_type{T}() where T = new()
 end
 

@@ -38,6 +38,7 @@ mutable struct presolve_control_type{T}
   pivot_tol::T
   min_rel_improve::T
   max_growth_factor::T
+
   presolve_control_type{T}() where T = new()
 end
 
@@ -49,6 +50,7 @@ mutable struct presolve_inform_type
   status_continued::Cint
   nbr_transforms::Cint
   message::NTuple{3,NTuple{81,Cchar}}
+
   presolve_inform_type() = new()
 end
 

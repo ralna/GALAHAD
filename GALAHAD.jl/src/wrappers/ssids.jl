@@ -25,6 +25,7 @@ mutable struct spral_ssids_options{T}
   multiplier::T
   min_loadbalance::Cfloat
   failed_pivot_method::Cint
+
   spral_ssids_options{T}() where T = new()
 end
 
@@ -52,5 +53,6 @@ mutable struct spral_ssids_inform
   nparts::Cint
   cpu_flops::Int64
   gpu_flops::Int64
+
   spral_ssids_inform() = new()
 end

@@ -23,6 +23,7 @@ mutable struct psls_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   mi28_control::mi28_control{T}
+
   psls_control_type{T}() where T = new()
 end
 
@@ -41,6 +42,7 @@ mutable struct psls_time_type{T}
   clock_factorize::T
   clock_solve::T
   clock_update::T
+
   psls_time_type{T}() where T = new()
 end
 
@@ -73,6 +75,7 @@ mutable struct psls_inform_type{T}
   time::psls_time_type{T}
   sls_inform::sls_inform_type{T}
   mi28_info::mi28_info{T}
+
   psls_inform_type{T}() where T = new()
 end
 

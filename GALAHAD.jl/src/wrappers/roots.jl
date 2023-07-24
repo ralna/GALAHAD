@@ -11,6 +11,7 @@ mutable struct roots_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   roots_control_type{T}() where T = new()
 end
 
@@ -20,6 +21,7 @@ mutable struct roots_inform_type
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
+
   roots_inform_type() = new()
 end
 

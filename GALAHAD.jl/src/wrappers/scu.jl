@@ -2,6 +2,7 @@ export scu_control_type
 
 mutable struct scu_control_type
   f_indexing::Bool
+
   scu_control_type() = new()
 end
 
@@ -11,6 +12,7 @@ mutable struct scu_inform_type
   status::Cint
   alloc_status::Cint
   inertia::NTuple{3,Cint}
+
   scu_inform_type() = new()
 end
 

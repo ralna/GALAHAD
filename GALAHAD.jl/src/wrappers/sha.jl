@@ -12,6 +12,7 @@ mutable struct sha_control_type
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   sha_control_type() = new()
 end
 
@@ -25,6 +26,7 @@ mutable struct sha_inform_type
   max_reduced_degree::Cint
   bad_row::Cint
   bad_alloc::NTuple{81,Cchar}
+
   sha_inform_type() = new()
 end
 

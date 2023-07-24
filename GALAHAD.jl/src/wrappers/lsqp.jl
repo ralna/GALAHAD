@@ -57,6 +57,7 @@ mutable struct lsqp_control_type{T}
   prefix::NTuple{31,Cchar}
   fdc_control::fdc_control_type{T}
   sbls_control::sbls_control_type{T}
+
   lsqp_control_type{T}() where T = new()
 end
 
@@ -75,6 +76,7 @@ mutable struct lsqp_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   lsqp_time_type{T}() where T = new()
 end
 
@@ -97,6 +99,7 @@ mutable struct lsqp_inform_type{T}
   time::lsqp_time_type{T}
   fdc_inform::fdc_inform_type{T}
   sbls_inform::sbls_inform_type{T}
+
   lsqp_inform_type{T}() where T = new()
 end
 

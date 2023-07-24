@@ -11,6 +11,7 @@ mutable struct lms_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   lms_control_type{T}() where T = new()
 end
 
@@ -25,6 +26,7 @@ mutable struct lms_time_type{T}
   clock_setup::T
   clock_form::T
   clock_apply::T
+
   lms_time_type{T}() where T = new()
 end
 
@@ -37,6 +39,7 @@ mutable struct lms_inform_type{T}
   updates_skipped::Bool
   bad_alloc::NTuple{81,Cchar}
   time::lms_time_type{T}
+
   lms_inform_type{T}() where T = new()
 end
 

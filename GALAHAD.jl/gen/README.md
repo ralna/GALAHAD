@@ -34,6 +34,8 @@ The possible values for `library` are:
 - `"ir"`;
 - `"l2rt"`;
 - `"lhs"`;
+- `"llsr"`;
+- `"llst"`;
 - `"lms"`;
 - `"lpa"`;
 - `"lpb"`;

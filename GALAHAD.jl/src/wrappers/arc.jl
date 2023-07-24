@@ -53,6 +53,7 @@ mutable struct arc_control_type{T}
   lms_control::lms_control_type{T}
   lms_control_prec::lms_control_type{T}
   sha_control::sha_control_type
+
   arc_control_type{T}() where T = new()
 end
 
@@ -69,6 +70,7 @@ mutable struct arc_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   arc_time_type{T}() where T = new()
 end
 
@@ -100,6 +102,7 @@ mutable struct arc_inform_type{T}
   lms_inform::lms_inform_type{T}
   lms_inform_prec::lms_inform_type{T}
   sha_inform::sha_inform_type
+
   arc_inform_type{T}() where T = new()
 end
 

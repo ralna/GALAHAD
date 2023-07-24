@@ -19,6 +19,7 @@ mutable struct cro_control_type{T}
   sbls_control::sbls_control_type{T}
   uls_control::uls_control_type{T}
   ir_control::ir_control_type{T}
+
   cro_control_type{T}() where T = new()
 end
 
@@ -33,6 +34,7 @@ mutable struct cro_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
+
   cro_time_type{T}() where T = new()
 end
 
@@ -50,6 +52,7 @@ mutable struct cro_inform_type{T}
   scu_status::Cint
   scu_inform::scu_inform_type
   ir_inform::ir_inform_type{T}
+
   cro_inform_type{T}() where T = new()
 end
 

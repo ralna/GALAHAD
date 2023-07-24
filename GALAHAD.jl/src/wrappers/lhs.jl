@@ -8,6 +8,7 @@ mutable struct lhs_control_type
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   lhs_control_type() = new()
 end
 
@@ -17,6 +18,7 @@ mutable struct lhs_inform_type
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
+
   lhs_inform_type() = new()
 end
 

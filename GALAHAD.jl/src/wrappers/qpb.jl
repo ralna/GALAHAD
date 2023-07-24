@@ -67,6 +67,7 @@ mutable struct qpb_control_type{T}
   sbls_control::sbls_control_type{T}
   gltr_control::gltr_control_type{T}
   fit_control::fit_control_type
+
   qpb_control_type{T}() where T = new()
 end
 
@@ -93,6 +94,7 @@ mutable struct qpb_time_type{T}
   clock_phase1_analyse::T
   clock_phase1_factorize::T
   clock_phase1_solve::T
+
   qpb_time_type{T}() where T = new()
 end
 
@@ -119,6 +121,7 @@ mutable struct qpb_inform_type{T}
   sbls_inform::sbls_inform_type{T}
   gltr_inform::gltr_inform_type{T}
   fit_inform::fit_inform_type
+
   qpb_inform_type{T}() where T = new()
 end
 

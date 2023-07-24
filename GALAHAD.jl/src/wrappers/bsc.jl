@@ -12,6 +12,7 @@ mutable struct bsc_control_type
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
+
   bsc_control_type() = new()
 end
 
@@ -25,6 +26,7 @@ mutable struct bsc_inform_type{T}
   exceeds_max_col::Cint
   time::T
   clock_time::T
+
   bsc_inform_type{T}() where T = new()
 end
 
