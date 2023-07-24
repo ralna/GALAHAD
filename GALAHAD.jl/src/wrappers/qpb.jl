@@ -68,7 +68,15 @@ mutable struct qpb_control_type{T}
   gltr_control::gltr_control_type{T}
   fit_control::fit_control_type
 
-  qpb_control_type{T}() where T = new()
+  function qpb_control_type{T}() where T
+    type = new()
+    type.lsqp_control = lsqp_control_type{T}()
+    type.fdc_control = fdc_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    type.gltr_control = gltr_control_type{T}()
+    type.fit_control = fit_control_type()
+    return type
+  end
 end
 
 export qpb_time_type
@@ -122,7 +130,16 @@ mutable struct qpb_inform_type{T}
   gltr_inform::gltr_inform_type{T}
   fit_inform::fit_inform_type
 
-  qpb_inform_type{T}() where T = new()
+  function qpb_inform_type{T}() where T
+    type = new()
+    type.time = qpb_time_type{T}()
+    type.lsqp_inform = lsqp_inform_type{T}()
+    type.fdc_inform = fdc_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    type.gltr_inform = gltr_inform_type{T}()
+    type.fit_inform = fit_inform_type()
+    return type
+  end
 end
 
 export qpb_initialize_s

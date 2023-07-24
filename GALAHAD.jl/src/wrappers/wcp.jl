@@ -53,7 +53,12 @@ mutable struct wcp_control_type{T}
   fdc_control::fdc_control_type{T}
   sbls_control::sbls_control_type{T}
 
-  wcp_control_type{T}() where T = new()
+  function wcp_control_type{T}() where T
+    type = new()
+    type.fdc_control = fdc_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    return type
+  end
 end
 
 export wcp_time_type
@@ -98,7 +103,13 @@ mutable struct wcp_inform_type{T}
   fdc_inform::fdc_inform_type{T}
   sbls_inform::sbls_inform_type{T}
 
-  wcp_inform_type{T}() where T = new()
+  function wcp_inform_type{T}() where T
+    type = new()
+    type.time = wcp_time_type{T}()
+    type.fdc_inform = fdc_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    return type
+  end
 end
 
 export wcp_initialize_s

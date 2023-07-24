@@ -63,7 +63,15 @@ mutable struct cqp_control_type{T}
   roots_control::roots_control_type{T}
   cro_control::cro_control_type{T}
 
-  cqp_control_type{T}() where T = new()
+  function cqp_control_type{T}() where T
+    type = new()
+    type.fdc_control = fdc_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    type.fit_control = fit_control_type()
+    type.roots_control = roots_control_type{T}()
+    type.cro_control = cro_control_type{T}()
+    return type
+  end
 end
 
 export cqp_time_type
@@ -118,7 +126,17 @@ mutable struct cqp_inform_type{T}
   cro_inform::cro_inform_type{T}
   rpd_inform::rpd_inform_type
 
-  cqp_inform_type{T}() where T = new()
+  function cqp_inform_type{T}() where T
+    type = new()
+    type.time = cqp_time_type{T}()
+    type.fdc_inform = fdc_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    type.fit_inform = fit_inform_type()
+    type.roots_inform = roots_inform_type()
+    type.cro_inform = cro_inform_type{T}()
+    type.rpd_inform = rpd_inform_type()
+    return type
+  end
 end
 
 export cqp_initialize_s

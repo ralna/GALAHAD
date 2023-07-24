@@ -21,7 +21,11 @@ mutable struct dps_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
 
-  dps_control_type{T}() where T = new()
+  function dps_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    return type
+  end
 end
 
 export dps_time_type
@@ -56,7 +60,12 @@ mutable struct dps_inform_type{T}
   time::dps_time_type{T}
   sls_inform::sls_inform_type{T}
 
-  dps_inform_type{T}() where T = new()
+  function dps_inform_type{T}() where T
+    type = new()
+    type.time = dps_time_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    return type
+  end
 end
 
 export dps_initialize_s

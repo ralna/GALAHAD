@@ -20,7 +20,14 @@ mutable struct cro_control_type{T}
   uls_control::uls_control_type{T}
   ir_control::ir_control_type{T}
 
-  cro_control_type{T}() where T = new()
+  function cro_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    type.uls_control = uls_control_type{T}()
+    type.ir_control = ir_control_type{T}()
+    return type
+  end
 end
 
 export cro_time_type
@@ -53,7 +60,16 @@ mutable struct cro_inform_type{T}
   scu_inform::scu_inform_type
   ir_inform::ir_inform_type{T}
 
-  cro_inform_type{T}() where T = new()
+  function cro_inform_type{T}() where T
+    type = new()
+    type.time = cro_time_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    type.uls_inform = uls_inform_type{T}()
+    type.scu_inform = scu_inform_type()
+    type.ir_inform = ir_inform_type{T}()
+    return type
+  end
 end
 
 export cro_initialize_s

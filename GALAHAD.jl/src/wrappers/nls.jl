@@ -51,7 +51,15 @@ mutable struct nls_subproblem_control_type{T}
   bsc_control::bsc_control_type
   roots_control::roots_control_type{T}
 
-  nls_subproblem_control_type{T}() where T = new()
+  function nls_subproblem_control_type{T}() where T
+    type = new()
+    type.rqs_control = rqs_control_type{T}()
+    type.glrt_control = glrt_control_type{T}()
+    type.psls_control = psls_control_type{T}()
+    type.bsc_control = bsc_control_type()
+    type.roots_control = roots_control_type{T}()
+    return type
+  end
 end
 
 export nls_control_type
@@ -109,7 +117,16 @@ mutable struct nls_control_type{T}
   roots_control::roots_control_type{T}
   subproblem_control::nls_subproblem_control_type{T}
 
-  nls_control_type{T}() where T = new()
+  function nls_control_type{T}() where T
+    type = new()
+    type.rqs_control = rqs_control_type{T}()
+    type.glrt_control = glrt_control_type{T}()
+    type.psls_control = psls_control_type{T}()
+    type.bsc_control = bsc_control_type()
+    type.roots_control = roots_control_type{T}()
+    type.subproblem_control = nls_subproblem_control_type{T}()
+    return type
+  end
 end
 
 export nls_time_type
@@ -158,7 +175,16 @@ mutable struct nls_subproblem_inform_type{T}
   bsc_inform::bsc_inform_type{T}
   roots_inform::roots_inform_type
 
-  nls_subproblem_inform_type{T}() where T = new()
+  function nls_subproblem_inform_type{T}() where T
+    type = new()
+    type.time = nls_time_type{T}()
+    type.rqs_inform = rqs_inform_type{T}()
+    type.glrt_inform = glrt_inform_type{T}()
+    type.psls_inform = psls_inform_type{T}()
+    type.bsc_inform = bsc_inform_type{T}()
+    type.roots_inform = roots_inform_type()
+    return type
+  end
 end
 
 export nls_inform_type
@@ -191,7 +217,17 @@ mutable struct nls_inform_type{T}
   bsc_inform::bsc_inform_type{T}
   roots_inform::roots_inform_type
 
-  nls_inform_type{T}() where T = new()
+  function nls_inform_type{T}() where T
+    type = new()
+    type.time = nls_time_type{T}()
+    type.subproblem_inform = nls_subproblem_inform_type{T}()
+    type.rqs_inform = rqs_inform_type{T}()
+    type.glrt_inform = glrt_inform_type{T}()
+    type.psls_inform = psls_inform_type{T}()
+    type.bsc_inform = bsc_inform_type{T}()
+    type.roots_inform = roots_inform_type()
+    return type
+  end
 end
 
 export nls_initialize_s

@@ -58,7 +58,16 @@ mutable struct uls_inform_type{T}
   ma48_sinfo::ma48_sinfo
   lapack_error::Cint
 
-  uls_inform_type{T}() where T = new()
+  function uls_inform_type{T}() where T
+    type = new()
+    type.gls_ainfo_type = gls_ainfo_type{T}()
+    type.gls_finfo_type = gls_finfo_type{T}()
+    type.gls_sinfo_type = gls_sinfo_type()
+    type.ma48_ainfo = ma48_ainfo{T}()
+    type.ma48_finfo = ma48_finfo{T}()
+    type.ma48_sinfo = ma48_sinfo()
+    return type
+  end
 end
 
 export uls_initialize_s

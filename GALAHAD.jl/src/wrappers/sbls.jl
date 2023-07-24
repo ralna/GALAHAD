@@ -43,7 +43,12 @@ mutable struct sbls_control_type{T}
   sls_control::sls_control_type{T}
   uls_control::uls_control_type{T}
 
-  sbls_control_type{T}() where T = new()
+  function sbls_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    type.uls_control = uls_control_type{T}()
+    return type
+  end
 end
 
 export sbls_time_type
@@ -83,7 +88,13 @@ mutable struct sbls_inform_type{T}
   sls_inform::sls_inform_type{T}
   uls_inform::uls_inform_type{T}
 
-  sbls_inform_type{T}() where T = new()
+  function sbls_inform_type{T}() where T
+    type = new()
+    type.time = sbls_time_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    type.uls_inform = uls_inform_type{T}()
+    return type
+  end
 end
 
 export sbls_initialize_s

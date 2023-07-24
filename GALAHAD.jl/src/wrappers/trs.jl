@@ -34,7 +34,12 @@ mutable struct trs_control_type{T}
   sls_control::sls_control_type{T}
   ir_control::ir_control_type{T}
 
-  trs_control_type{T}() where T = new()
+  function trs_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    type.ir_control = ir_control_type{T}()
+    return type
+  end
 end
 
 export trs_time_type
@@ -83,7 +88,14 @@ mutable struct trs_inform_type{T}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
 
-  trs_inform_type{T}() where T = new()
+  function trs_inform_type{T}() where T
+    type = new()
+    type.time = trs_time_type{T}()
+    type.history = ntuple(x -> trs_history_type{T}(), 100)
+    type.sls_inform = sls_inform_type{T}()
+    type.ir_inform = ir_inform_type{T}()
+    return type
+  end
 end
 
 export trs_initialize_s

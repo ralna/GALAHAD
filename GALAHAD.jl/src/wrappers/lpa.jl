@@ -66,7 +66,12 @@ mutable struct lpa_inform_type{T}
   time::lpa_time_type{T}
   rpd_inform::rpd_inform_type
 
-  lpa_inform_type{T}() where T = new()
+  function lpa_inform_type{T}() where T
+    type = new()
+    type.time = lpa_time_type{T}()
+    type.rpd_inform = rpd_inform_type()
+    return type
+  end
 end
 
 export lpa_initialize_s

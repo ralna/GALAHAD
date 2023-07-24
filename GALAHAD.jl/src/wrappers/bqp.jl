@@ -31,7 +31,11 @@ mutable struct bqp_control_type{T}
   prefix::NTuple{31,Cchar}
   sbls_control::sbls_control_type{T}
 
-  bqp_control_type{T}() where T = new()
+  function bqp_control_type{T}() where T
+    type = new()
+    type.sbls_control = sbls_control_type{T}()
+    return type
+  end
 end
 
 export bqp_time_type
@@ -59,7 +63,12 @@ mutable struct bqp_inform_type{T}
   time::bqp_time_type
   sbls_inform::sbls_inform_type{T}
 
-  bqp_inform_type{T}() where T = new()
+  function bqp_inform_type{T}() where T
+    type = new()
+    type.time = bqp_time_type()
+    type.sbls_inform = sbls_inform_type{T}()
+    return type
+  end
 end
 
 export bqp_initialize_s
