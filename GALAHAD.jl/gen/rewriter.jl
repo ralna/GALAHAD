@@ -15,7 +15,6 @@ nonparametric_structures = ("slls_time_type", "sha_control_type", "sha_inform_ty
                             "fit_control_type", "fit_inform_type", "spral_ssids_inform", "ma48_sinfo",
                             "mc64_control", "mc64_info", "mc68_control", "mc68_info")
 
-# bug ifcs header
 function rewrite!(path::String, name::String, optimized::Bool)
   text = read(path, String)
   if optimized
@@ -87,7 +86,11 @@ function rewrite!(path::String, name::String, optimized::Bool)
         structure = replace(structure, "real_wp_" => "T")
         if structure_name ∉ nonparametric_structures
           structure = replace(structure, structure_name => structure_name * "{T}")
-          structure = replace(structure, "end\n" => "\n  " * structure_name * "{T}() where T = new()\nend\n")
+          if count("_type", structure) > 1
+            structure = replace(structure, "end\n" => "\n  function " * structure_name * "{T}() where T\n    type = new()\n    # TODO!\n    return type\n  end\nend\n")
+          else
+            structure = replace(structure, "end\n" => "\n  " * structure_name * "{T}() where T = new()\nend\n")
+          end
         else
           structure = replace(structure, "end\n" => "\n  " * structure_name * "() = new()\nend\n")
         end

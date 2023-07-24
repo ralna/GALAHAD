@@ -20,7 +20,12 @@ mutable struct fdc_control_type{T}
   sls_control::sls_control_type{T}
   uls_control::uls_control_type{T}
 
-  fdc_control_type{T}() where T = new()
+  function fdc_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    type.uls_control = uls_control_type{T}()
+    return type
+  end
 end
 
 export fdc_time_type
@@ -50,7 +55,13 @@ mutable struct fdc_inform_type{T}
   sls_inform::sls_inform_type{T}
   uls_inform::uls_inform_type{T}
 
-  fdc_inform_type{T}() where T = new()
+  function fdc_inform_type{T}() where T
+    type = new()
+    type.time = fdc_time_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    type.uls_inform = uls_inform_type{T}()
+    return type
+  end
 end
 
 export fdc_initialize_s

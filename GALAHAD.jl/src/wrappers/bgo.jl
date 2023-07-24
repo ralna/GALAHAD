@@ -24,7 +24,13 @@ mutable struct bgo_control_type{T}
   lhs_control::lhs_control_type
   trb_control::trb_control_type{T}
 
-  bgo_control_type{T}() where T = new()
+  function bgo_control_type{T}() where T
+    type = new()
+    type.ugo_control = ugo_control_type{T}()
+    type.lhs_control = lhs_control_type()
+    type.trb_control = trb_control_type{T}()
+    return type
+  end
 end
 
 export bgo_time_type
@@ -56,7 +62,14 @@ mutable struct bgo_inform_type{T}
   lhs_inform::lhs_inform_type
   trb_inform::trb_inform_type{T}
 
-  bgo_inform_type{T}() where T = new()
+  function bgo_inform_type{T}() where T
+    type = new()
+    type.time = bgo_time_type{T}()
+    type.ugo_inform = ugo_inform_type{T}()
+    type.lhs_inform = lhs_inform_type()
+    type.trb_inform = trb_inform_type{T}()
+    return type
+  end
 end
 
 export bgo_initialize_s

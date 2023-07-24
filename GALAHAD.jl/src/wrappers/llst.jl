@@ -23,7 +23,13 @@ mutable struct llst_control_type{T}
   sls_control::sls_control_type{T}
   ir_control::ir_control_type{T}
 
-  llst_control_type{T}() where T = new()
+  function llst_control_type{T}() where T
+    type = new()
+    type.sbls_control = sbls_control_type{T}()
+    type.sls_control = sls_control_type{T}()
+    type.ir_control = ir_control_type{T}()
+    return type
+  end
 end
 
 export llst_time_type
@@ -70,7 +76,15 @@ mutable struct llst_inform_type{T}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
 
-  llst_inform_type{T}() where T = new()
+  function llst_inform_type{T}() where T
+    type = new()
+    type.time = llst_time_type{T}()
+    type.history = ntuple(x -> llst_history_type{T}(), 100)
+    type.sbls_inform = sbls_inform_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    type.ir_inform = ir_inform_type{T}()
+    return type
+  end
 end
 
 export llst_initialize_s

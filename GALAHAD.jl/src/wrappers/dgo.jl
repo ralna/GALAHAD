@@ -32,7 +32,13 @@ mutable struct dgo_control_type{T}
   ugo_control::ugo_control_type{T}
   trb_control::trb_control_type{T}
 
-  dgo_control_type{T}() where T = new()
+  function dgo_control_type{T}() where T
+    type = new()
+    type.hash_control = hash_control_type()
+    type.ugo_control = ugo_control_type{T}()
+    type.trb_control = trb_control_type{T}()
+    return type
+  end
 end
 
 export dgo_time_type
@@ -68,7 +74,14 @@ mutable struct dgo_inform_type{T}
   ugo_inform::ugo_inform_type{T}
   trb_inform::trb_inform_type{T}
 
-  dgo_inform_type{T}() where T = new()
+  function dgo_inform_type{T}() where T
+    type = new()
+    type.time = dgo_time_type{T}()
+    type.hash_inform = hash_inform_type()
+    type.ugo_inform = ugo_inform_type{T}()
+    type.trb_inform = trb_inform_type{T}()
+    return type
+  end
 end
 
 export dgo_initialize_s

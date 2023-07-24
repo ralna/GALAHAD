@@ -31,7 +31,12 @@ mutable struct rqs_control_type{T}
   sls_control::sls_control_type{T}
   ir_control::ir_control_type{T}
 
-  rqs_control_type{T}() where T = new()
+  function rqs_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    type.ir_control = ir_control_type{T}()
+    return type
+  end
 end
 
 export rqs_time_type
@@ -81,7 +86,14 @@ mutable struct rqs_inform_type{T}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
 
-  rqs_inform_type{T}() where T = new()
+  function rqs_inform_type{T}() where T
+    type = new()
+    type.time = rqs_time_type{T}()
+    type.history = ntuple(x -> rqs_history_type{T}(), 100)
+    type.sls_inform = sls_inform_type{T}()
+    type.ir_inform = ir_inform_type{T}()
+    return type
+  end
 end
 
 export rqs_initialize_s

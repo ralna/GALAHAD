@@ -39,7 +39,13 @@ mutable struct eqp_control_type{T}
   sbls_control::sbls_control_type{T}
   gltr_control::gltr_control_type{T}
 
-  eqp_control_type{T}() where T = new()
+  function eqp_control_type{T}() where T
+    type = new()
+    type.fdc_control = fdc_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    type.gltr_control = gltr_control_type{T}()
+    return type
+  end
 end
 
 export eqp_time_type
@@ -74,7 +80,14 @@ mutable struct eqp_inform_type{T}
   sbls_inform::sbls_inform_type{T}
   gltr_inform::gltr_inform_type{T}
 
-  eqp_inform_type{T}() where T = new()
+  function eqp_inform_type{T}() where T
+    type = new()
+    type.time = eqp_time_type{T}()
+    type.fdc_inform = fdc_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    type.gltr_inform = gltr_inform_type{T}()
+    return type
+  end
 end
 
 export eqp_initialize_s

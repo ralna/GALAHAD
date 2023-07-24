@@ -51,7 +51,18 @@ mutable struct tru_control_type{T}
   sec_control::sec_control_type{T}
   sha_control::sha_control_type
 
-  tru_control_type{T}() where T = new()
+  function tru_control_type{T}() where T
+    type = new()
+    type.trs_control = trs_control_type{T}()
+    type.gltr_control = gltr_control_type{T}()
+    type.dps_control = dps_control_type{T}()
+    type.psls_control = psls_control_type{T}()
+    type.lms_control = lms_control_type{T}()
+    type.lms_control_prec = lms_control_type{T}()
+    type.sec_control = sec_control_type{T}()
+    type.sha_control = sha_control_type()
+    return type
+  end
 end
 
 export tru_time_type
@@ -101,7 +112,19 @@ mutable struct tru_inform_type{T}
   sec_inform::sec_inform_type
   sha_inform::sha_inform_type
 
-  tru_inform_type{T}() where T = new()
+  function tru_inform_type{T}() where T
+    type = new()
+    type.time = tru_time_type{T}()
+    type.trs_inform = trs_inform_type{T}()
+    type.gltr_inform = gltr_inform_type{T}()
+    type.dps_inform = dps_inform_type{T}()
+    type.psls_inform = psls_inform_type{T}()
+    type.lms_inform = lms_inform_type{T}()
+    type.lms_inform_prec = lms_inform_type{T}()
+    type.sec_inform = sec_inform_type()
+    type.sha_inform = sha_inform_type()
+    return type
+  end
 end
 
 export tru_initialize_s

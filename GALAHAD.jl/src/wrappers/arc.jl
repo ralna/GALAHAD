@@ -54,7 +54,17 @@ mutable struct arc_control_type{T}
   lms_control_prec::lms_control_type{T}
   sha_control::sha_control_type
 
-  arc_control_type{T}() where T = new()
+  function arc_control_type{T}() where T
+    type = new()
+    type.rqs_control = rqs_control_type{T}()
+    type.glrt_control = glrt_control_type{T}()
+    type.dps_control = dps_control_type{T}()
+    type.psls_control = psls_control_type{T}()
+    type.lms_control = lms_control_type{T}()
+    type.lms_control_prec = lms_control_type{T}()
+    type.sha_control = sha_control_type()
+    return type
+  end
 end
 
 export arc_time_type
@@ -103,7 +113,18 @@ mutable struct arc_inform_type{T}
   lms_inform_prec::lms_inform_type{T}
   sha_inform::sha_inform_type
 
-  arc_inform_type{T}() where T = new()
+  function arc_inform_type{T}() where T
+    type = new()
+    type.time = arc_time_type{T}()
+    type.rqs_inform = rqs_inform_type{T}()
+    type.glrt_inform = glrt_inform_type{T}()
+    type.dps_inform = dps_inform_type{T}()
+    type.psls_inform = psls_inform_type{T}()
+    type.lms_inform = lms_inform_type{T}()
+    type.lms_inform_prec = lms_inform_type{T}()
+    type.sha_inform = sha_inform_type()
+    return type
+  end
 end
 
 export arc_initialize_s

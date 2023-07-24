@@ -53,7 +53,11 @@ mutable struct qpa_control_type{T}
   each_interval::Bool
   sls_control::sls_control_type{T}
 
-  qpa_control_type{T}() where T = new()
+  function qpa_control_type{T}() where T
+    type = new()
+    type.sls_control = sls_control_type{T}()
+    return type
+  end
 end
 
 export qpa_time_type
@@ -96,7 +100,12 @@ mutable struct qpa_inform_type{T}
   time::qpa_time_type{T}
   sls_inform::sls_inform_type{T}
 
-  qpa_inform_type{T}() where T = new()
+  function qpa_inform_type{T}() where T
+    type = new()
+    type.time = qpa_time_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    return type
+  end
 end
 
 export qpa_initialize_s

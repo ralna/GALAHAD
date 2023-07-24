@@ -160,7 +160,24 @@ mutable struct sls_inform_type{T}
   mpi_ierr::Cint
   lapack_error::Cint
 
-  sls_inform_type{T}() where T = new()
+  function sls_inform_type{T}() where T
+    type = new()
+    type.time = sls_time_type{T}()
+    type.sils_ainfo = sils_ainfo_type{T}()
+    type.sils_finfo = sils_finfo_type{T}()
+    type.sils_sinfo = sils_sinfo_type{T}()
+    type.ma57_ainfo = ma57_ainfo{T}()
+    type.ma57_finfo = ma57_finfo{T}()
+    type.ma57_sinfo = ma57_sinfo{T}()
+    type.ma77_info = ma77_info{T}()
+    type.ma86_info = ma86_info{T}()
+    type.ma87_info = ma87_info{T}()
+    type.ma97_info = ma97_info{T}()
+    type.ssids_inform = spral_ssids_inform()
+    type.mc64_info = mc64_info()
+    type.mc68_info = mc68_info()
+    return type
+  end
 end
 
 export sls_initialize_s

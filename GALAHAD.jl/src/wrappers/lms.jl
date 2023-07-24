@@ -40,7 +40,11 @@ mutable struct lms_inform_type{T}
   bad_alloc::NTuple{81,Cchar}
   time::lms_time_type{T}
 
-  lms_inform_type{T}() where T = new()
+  function lms_inform_type{T}() where T
+    type = new()
+    type.time = lms_time_type{T}()
+    return type
+  end
 end
 
 export lms_initialize_s

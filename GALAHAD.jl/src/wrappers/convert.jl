@@ -33,7 +33,11 @@ mutable struct convert_inform_type{T}
   bad_alloc::NTuple{81,Cchar}
   time::convert_time_type{T}
 
-  convert_inform_type{T}() where T = new()
+  function convert_inform_type{T}() where T
+    type = new()
+    type.time = convert_time_type{T}()
+    return type
+  end
 end
 
 export convert_initialize_s

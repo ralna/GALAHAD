@@ -58,7 +58,14 @@ mutable struct dqp_control_type{T}
   sbls_control::sbls_control_type{T}
   gltr_control::gltr_control_type{T}
 
-  dqp_control_type{T}() where T = new()
+  function dqp_control_type{T}() where T
+    type = new()
+    type.fdc_control = fdc_control_type{T}()
+    type.sls_control = sls_control_type{T}()
+    type.sbls_control = sbls_control_type{T}()
+    type.gltr_control = gltr_control_type{T}()
+    return type
+  end
 end
 
 export dqp_time_type
@@ -112,7 +119,17 @@ mutable struct dqp_inform_type{T}
   scu_inform::scu_inform_type
   rpd_inform::rpd_inform_type
 
-  dqp_inform_type{T}() where T = new()
+  function dqp_inform_type{T}() where T
+    type = new()
+    type.time = dqp_time_type{T}()
+    type.fdc_inform = fdc_inform_type{T}()
+    type.sls_inform = sls_inform_type{T}()
+    type.sbls_inform = sbls_inform_type{T}()
+    type.gltr_inform = gltr_inform_type{T}()
+    type.scu_inform = scu_inform_type()
+    type.rpd_inform = rpd_inform_type()
+    return type
+  end
 end
 
 export dqp_initialize_s
