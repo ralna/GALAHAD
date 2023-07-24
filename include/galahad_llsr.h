@@ -1,4 +1,4 @@
-//* \file llsr.h */
+//* \file galahad_llsr.h */
 
 /*
  * THIS VERSION: GALAHAD 4.1 - 2023-06-21 AT 07:40 GMT.

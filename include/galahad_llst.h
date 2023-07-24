@@ -1,4 +1,4 @@
-//* \file llst.h */
+//* \file galahad_llst.h */
 
 /*
  * THIS VERSION: GALAHAD 4.0 - 2023-05-21 AT 15:20 GMT.
