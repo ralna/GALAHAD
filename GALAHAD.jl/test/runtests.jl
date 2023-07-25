@@ -9,6 +9,8 @@ packages = ("arc", "bgo", "blls", "bqp", "bqpb", "bsc", "ccqp", "convert",
             "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha",
             "sils", "slls", "sls", "trb", "trs", "tru", "ugo", "uls", "wcp")
 
+include("test_structures.jl")
+
 # for package in packages
 #   @testset "$package" begin
 #     include("test_$package.jl")
