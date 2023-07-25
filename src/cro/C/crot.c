@@ -41,8 +41,8 @@ int main(void) {
     real_wp_ c_l[] = {10.0,9.0,-INFINITY};
     real_wp_ c_u[] = {10.0,INFINITY,10.0};
     real_wp_ x_l[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
-    real_wp_ x_u[]  = {INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,
-                       INFINITY,INFINITY,INFINITY,INFINITY,INFINITY};
+    real_wp_ x_u[] = {INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,
+                      INFINITY,INFINITY,INFINITY,INFINITY,INFINITY};
 
     // provide optimal variables, Lagrange multipliers and dual variables
     real_wp_ x[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0, 1.0,1.0,1.0};
@@ -55,7 +55,6 @@ int main(void) {
 
     // Set output storage
 
-    char st;
     int status;
 
     printf(" C sparse matrix indexing\n\n");
