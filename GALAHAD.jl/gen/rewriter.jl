@@ -16,6 +16,7 @@ nonparametric_structures = ("slls_time_type", "sha_control_type", "sha_inform_ty
                             "mc64_control", "mc64_info", "mc68_control", "mc68_info")
 
 function rewrite!(path::String, name::String, optimized::Bool)
+  structures = "# Structures for $name\n"
   text = read(path, String)
   if optimized
     text = replace(text, "struct " => "mutable struct ")
@@ -86,6 +87,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
         structure = replace(structure, "real_wp_" => "T")
         if structure_name ∉ nonparametric_structures
           structure = replace(structure, structure_name => structure_name * "{T}")
+          structures = structures * "$(structure_name){Float32}()\n"
+          structures = structures * "$(structure_name){Float64}()\n"
           if count("_type", structure) > 1
             structure = replace(structure, "end\n" => "\n  function " * structure_name * "{T}() where T\n    type = new()\n    # TODO!\n    return type\n  end\nend\n")
           else
@@ -93,6 +96,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
           end
         else
           structure = replace(structure, "end\n" => "\n  " * structure_name * "() = new()\nend\n")
+          structures = structures * "$(structure_name)()\n"
         end
         if index == 1
           text = text * "export " * structure_name * "\n\n" * structure
@@ -104,5 +108,10 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
   end
+  isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "")
+  test = read("../test/test_structures.jl", String)
+  structures = structures * "\n"
+  write("../test/test_structures.jl", test * structures)
+
   write(path, text)
 end
