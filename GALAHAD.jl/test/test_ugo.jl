@@ -7,21 +7,21 @@ using Printf
 # Test problem objective
 function objf(x)
   a = 10.0
-  res = x[] * x[] * cos( a*x[] )
+  res = x * x * cos( a*x )
   return Ref{Float64}(res)
 end
 
 # Test problem first derivative
 function gradf(x)
   a = 10.0
-  res = - a[] * x[] * x[] * sin( a*x[] ) + 2.0 * x[] * cos( a*x[] )
+  res = - a * x * x * sin( a*x ) + 2.0 * x * cos( a*x )
   return Ref{Float64}(res)
 end
 
 # Test problem second derivative
 function hessf(x)
   a = 10.0
-  res = - a[] * a* x[] * x[] * cos( a*x[] ) - 4.0 * a * x[] * sin( a*x[] ) + 2.0 * cos( a*x[] )
+  res = - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x ) + 2.0 * cos( a*x )
   return Ref{Float64}(res)
 end
 
@@ -69,11 +69,11 @@ while true
 
   # Evaluate f(x) and its derivatives as required
   if (status[] ≥ 2)  # need objective
-    global f = objf(x)
+    global f = objf(x[])
     if (status[] ≥ 3)  # need first derivative
-      global g = gradf(x)
+      global g = gradf(x[])
       if (status[] ≥ 4) # need second derivative
-        global h = hessf(x)
+        global h = hessf(x[])
       end
     end
   else  # the solution has been found (or an error has occured)
