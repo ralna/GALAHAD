@@ -63,7 +63,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a linear least-squares
+trust-region subproblem;
 the code is available in $GALAHAD/src/llst/C/llstt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

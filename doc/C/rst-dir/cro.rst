@@ -54,7 +54,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to crossover from a 
+primal-dual QP solution to a basic one;
 the code is available in $GALAHAD/src/cro/C/crot.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

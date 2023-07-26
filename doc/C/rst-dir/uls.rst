@@ -47,8 +47,6 @@ available structures
 
 .. include :: struct_uls_control_type.rst
 
-.. include :: struct_uls_time_type.rst
-
 .. include :: struct_uls_inform_type.rst
 
 |	:ref:`genindex`
@@ -58,7 +56,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a linear system;
 the code is available in $GALAHAD/src/uls/C/ulst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
@@ -74,3 +72,4 @@ This is the same example, but now fortran-style indexing is used;
 the code is available in $GALAHAD/src/uls/C/ulstf.c .
 
 .. include :: ../../../src/uls/C/ulstf.c
+   :code: C

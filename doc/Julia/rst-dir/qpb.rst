@@ -58,20 +58,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/qpb/C/qpbt.c .
+This is an example of how to use the package to solve a quadratic program;
+the code is available in $GALAHAD/src/qpb/Julia/test_qpb.jl .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/qpb/C/qpbt.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/qpb/C/qpbtf.c .
-
-.. include :: ../../../src/qpb/C/qpbtf.c
-   :code: C
+.. include :: ../../../src/qpb/Julia/test_qpb.jl
+   :code: julia

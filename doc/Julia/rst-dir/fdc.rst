@@ -52,20 +52,10 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/fdc/C/fdct.c .
+This is an example of how to use the package to find a subset of independent 
+linear constraints; the code is available in 
+$GALAHAD/src/fdc/Julia/test_fdc.jl .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/fdc/C/fdct.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/fdc/C/fdctf.c .
-
-.. include :: ../../../src/fdc/C/fdctf.c
-   :code: C
+.. include :: ../../../src/fdc/Julia/test_fdc.jl
+   :code: julia

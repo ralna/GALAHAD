@@ -59,9 +59,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to solve a given
-convex quadratic program;
-the code is available in $GALAHAD/src/dqp/C/dqpt.c .
+This is an example of how to use the package to solve a given convex quadratic 
+program; the code is available in $GALAHAD/src/dqp/C/dqpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 

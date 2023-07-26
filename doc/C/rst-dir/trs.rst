@@ -64,7 +64,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a trust-region subproblem;
 the code is available in $GALAHAD/src/trs/C/trst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

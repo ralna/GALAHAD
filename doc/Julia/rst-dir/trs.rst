@@ -64,20 +64,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/trs/C/trst.c .
+This is an example of how to use the package to solve a trust-region subproblem;
+the code is available in $GALAHAD/src/trs/Julia/test_trs.jl .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/trs/C/trst.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/trs/C/trstf.c .
-
-.. include :: ../../../src/trs/C/trstf.c
-   :code: C
+.. include :: ../../../src/trs/Julia/test_trs.jl
+   :code: julia

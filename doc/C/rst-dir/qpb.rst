@@ -58,7 +58,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a quadratic program;
 the code is available in $GALAHAD/src/qpb/C/qpbt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

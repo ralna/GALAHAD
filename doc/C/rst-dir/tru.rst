@@ -66,8 +66,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/tru/C/trut.c .
+This is an example of how to use the package to minimize a multi-dimenstional
+objective function; the code is available in $GALAHAD/src/tru/C/trut.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 

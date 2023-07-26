@@ -7,8 +7,6 @@ GALAHAD LSRT package
 
 .. include:: ../../Python/lsrt_intro.rst
 
-.. include:: ../../Python/lsrt_storage.rst
-
 .. toctree::
 	:hidden:
 
@@ -54,20 +52,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/lsrt/C/lsrtt.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+This is an example of how to use the package to solve a regularized linear 
+least-squares problem; the code is available in 
+$GALAHAD/src/lsrt/Julia/test_lsrt.jl .
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/lsrt/C/lsrtt.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/lsrt/C/lsrttf.c .
-
-.. include :: ../../../src/lsrt/C/lsrttf.c
-   :code: C
+.. include :: ../../../src/lsrt/Julia/test_lsrt.jl
+   :code: julia

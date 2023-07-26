@@ -2,7 +2,7 @@
 .. _doxid-structsils__control__type:
 
 sils_control_type structure
---------------------------
+---------------------------
 
 .. toctree::
 	:hidden:

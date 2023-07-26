@@ -7,8 +7,6 @@ GALAHAD SILS package
 
 .. include:: ../../Python/sils_intro.rst
 
-.. include:: ../../Python/sils_storage.rst
-
 .. toctree::
 	:hidden:
 

@@ -64,20 +64,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/sls/C/slst.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+This is an example of how to use the package to solve a symmetric system of 
+linear equations; the code is available in $GALAHAD/src/sls/Julia/test_sls.jl .
+A variety of supported  matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/sls/C/slst.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/sls/C/slstf.c .
-
-.. include :: ../../../src/sls/C/slstf.c
-   :code: C
+.. include :: ../../../src/sls/Julia/test_sls.jl
+   :code: julia

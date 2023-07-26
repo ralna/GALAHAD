@@ -7,8 +7,6 @@ GALAHAD L2RT package
 
 .. include:: ../../Python/l2rt_intro.rst
 
-.. include:: ../../Python/l2rt_storage.rst
-
 .. toctree::
 	:hidden:
 
@@ -54,20 +52,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/l2rt/C/l2rtt.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+This is an example of how to use the package to solve a regularized 
+least-Euclidean-norm subproblem;
+the code is available in $GALAHAD/src/l2rt/Julia/test_l2rt.jl .
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/l2rt/C/l2rtt.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/l2rt/C/l2rttf.c .
-
-.. include :: ../../../src/l2rt/C/l2rttf.c
-   :code: C
+.. include :: ../../../src/l2rt/Julia/test_l2rt.jl
+   :code: julia

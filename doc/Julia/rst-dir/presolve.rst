@@ -7,8 +7,6 @@ GALAHAD PRESOLVE package
 
 .. include:: ../../Python/presolve_intro.rst
 
-.. include:: ../../Python/presolve_storage.rst
-
 .. toctree::
 	:hidden:
 
@@ -47,8 +45,6 @@ available structures
 
 .. include :: struct_presolve_control_type.rst
 
-.. include :: struct_presolve_time_type.rst
-
 .. include :: struct_presolve_inform_type.rst
 
 |	:ref:`genindex`
@@ -58,20 +54,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/presolve/C/presolvet.c .
+This is an example of how to use the package to presolve a quadratic program;
+the code is available in $GALAHAD/src/presolve/Julia/test_presolve.jl .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting 
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/presolve/C/presolvet.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/presolve/C/presolvetf.c .
-
-.. include :: ../../../src/presolve/C/presolvetf.c
-   :code: C
+.. include :: ../../../src/presolve/Julia/test_presolve.jl
+   :code: julia

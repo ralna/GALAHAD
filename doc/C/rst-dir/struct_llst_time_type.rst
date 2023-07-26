@@ -2,7 +2,7 @@
 .. _doxid-structllst__time__type:
 
 llst_time_type structure
------------------------
+------------------------
 
 .. toctree::
 	:hidden:

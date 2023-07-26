@@ -59,9 +59,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a linear program;
 the code is available in $GALAHAD/src/lpb/C/lpbt.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+A variety of supported constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``

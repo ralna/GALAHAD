@@ -66,8 +66,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/blls/C/bllst.c .
+This is an example of how to use the package to solve a bound-constrained 
+linear least-squares problem; the code is available in 
+$GALAHAD/src/blls/C/bllst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 

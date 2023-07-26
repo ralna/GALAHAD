@@ -58,7 +58,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to find a well-centred point;
 the code is available in $GALAHAD/src/wcp/C/wcpt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

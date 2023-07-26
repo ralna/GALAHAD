@@ -7,8 +7,6 @@ GALAHAD PRESOLVE package
 
 .. include:: ../../Python/presolve_intro.rst
 
-.. include:: ../../Python/presolve_storage.rst
-
 .. toctree::
 	:hidden:
 
@@ -58,7 +56,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to presolve a quadratic program;
 the code is available in $GALAHAD/src/presolve/C/presolvet.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

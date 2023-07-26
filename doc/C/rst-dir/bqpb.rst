@@ -62,7 +62,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a bound-constrained QP;
 the code is available in $GALAHAD/src/bqpb/C/bqpbt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

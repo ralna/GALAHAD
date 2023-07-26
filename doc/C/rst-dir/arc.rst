@@ -66,9 +66,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/arc/C/arct.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+This is an example of how to use the package to minimize a multi-dimensional
+objective function; the code is available in $GALAHAD/src/arc/C/arct.c .
+A variety of supported Hessian matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``

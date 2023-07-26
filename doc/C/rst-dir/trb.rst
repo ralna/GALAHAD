@@ -66,9 +66,10 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a bound-constrained
+multi-dimensional optimization problem;
 the code is available in $GALAHAD/src/trb/C/trbt.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+A variety of supported Hessian matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``

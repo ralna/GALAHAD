@@ -757,7 +757,7 @@ called in the following order:</p>
 <li><p><a class="reference internal" href="bsc_functions.html#doxid-galahad-bsc-8h-1a4c0ae2150d39c240539e1d3be836b0af"><span class="std std-ref">bsc_information</span></a> (optional) - recover information about the process</p></li>
 <li><p><a class="reference internal" href="bsc_functions.html#doxid-galahad-bsc-8h-1a3a8a2f875e681225b4851d060e310271"><span class="std std-ref">bsc_terminate</span></a> - deallocate data structures</p></li>
 </ul>
-<p>See the <a class="reference internal" href="#doxid-index-bsc-examples"><span class="std std-ref">examples</span></a> section for
+<p>See the <span class="xref std std-ref">examples</span> section for
 illustrations of use.</p>
 </section>
 <section id="callable-functions">
@@ -991,18 +991,6 @@ illustrations of use.</p>
 </div>
 </section>
 </section>
-<section id="example-calls">
-<span id="doxid-index-bsc-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
-<p>This is an example of how to use the package to … ;
-the code is available in $GALAHAD/src/bsc/C/bsct.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.</p>
-<p>Notice that C-style indexing is used, and that this is flaggeed by setting
-<code class="docutils literal notranslate"><span class="pre">control.f_indexing</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>. The floating-point type <code class="docutils literal notranslate"><span class="pre">real_wp_</span></code>
-is set in <code class="docutils literal notranslate"><span class="pre">galahad_precision.h</span></code> to <code class="docutils literal notranslate"><span class="pre">double</span></code> by default, but to <code class="docutils literal notranslate"><span class="pre">float</span></code>
-if the preproccesor variable <code class="docutils literal notranslate"><span class="pre">GALAHAD_SINGLE</span></code> is defined.</p>
-<p>This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/bsc/C/bsctf.c .</p>
-</section>
 </section>
 
 
@@ -1111,11 +1099,6 @@ the code is available in $GALAHAD/src/bsc/C/bsctf.c .</p>
     </a>
    </li>
   </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#example-calls">
-   example calls
-  </a>
  </li>
 </ul>
 

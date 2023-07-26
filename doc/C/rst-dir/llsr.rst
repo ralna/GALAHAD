@@ -62,7 +62,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to solve a regularized linear
+least-squares subproblem;
 the code is available in $GALAHAD/src/llsr/C/llsrt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 

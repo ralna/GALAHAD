@@ -799,7 +799,7 @@ called in the following order:</p>
 <li><p><a class="reference internal" href="scu_functions.html#doxid-galahad-scu-8h-1ad52752848139c1772e7d5bb4aa2a3f6d"><span class="std std-ref">scu_information</span></a> (optional) - recover information about the solution and solution process</p></li>
 <li><p><a class="reference internal" href="scu_functions.html#doxid-galahad-scu-8h-1a6fc2d5a0cb41e7c912661c5101d2ffad"><span class="std std-ref">scu_terminate</span></a> - deallocate data structures</p></li>
 </ul>
-<p>See the <a class="reference internal" href="#doxid-index-scu-examples"><span class="std std-ref">examples</span></a> section for
+<p>See the <span class="xref std std-ref">examples</span> section for
 illustrations of use.</p>
 </section>
 <section id="callable-functions">
@@ -948,18 +948,6 @@ illustrations of use.</p>
 </div>
 </section>
 </section>
-<section id="example-calls">
-<span id="doxid-index-scu-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
-<p>This is an example of how to use the package to … ;
-the code is available in $GALAHAD/src/scu/C/scut.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.</p>
-<p>Notice that C-style indexing is used, and that this is flaggeed by setting
-<code class="docutils literal notranslate"><span class="pre">control.f_indexing</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>. The floating-point type <code class="docutils literal notranslate"><span class="pre">real_wp_</span></code>
-is set in <code class="docutils literal notranslate"><span class="pre">galahad_precision.h</span></code> to <code class="docutils literal notranslate"><span class="pre">double</span></code> by default, but to <code class="docutils literal notranslate"><span class="pre">float</span></code>
-if the preproccesor variable <code class="docutils literal notranslate"><span class="pre">GALAHAD_SINGLE</span></code> is defined.</p>
-<p>This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/scu/C/scutf.c .</p>
-</section>
 </section>
 
 
@@ -1073,11 +1061,6 @@ the code is available in $GALAHAD/src/scu/C/scutf.c .</p>
     </a>
    </li>
   </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#example-calls">
-   example calls
-  </a>
  </li>
 </ul>
 

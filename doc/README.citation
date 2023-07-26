@@ -1,9 +1,16 @@
 Use of GALAHAD may be cited as
 
-  N. I. M. Gould, D. Orban, and Ph. L. Toint,
+  N. I. M. Gould, D. Orban and Ph. L. Toint,
   "GALAHAD, a library of thread-safe Fortran 90 packages for
    large-scale nonlinear optimization",
-  ACM Transactions on Mathematical Software 29 (4) 353-372 (2007)"
+  ACM Transactions on Mathematical Software 29 (4) 353-372 (2007)
+  DOI:10.1145/962437.962438
+  
+  J. Fowkes and N. I. M. Gould,
+  "GALAHAD 4.0: an open source library of Fortran packages with C 
+   and Matlab interfaces for continuous optimization",
+  Journal of Open Source Software￼8(87), 4882 (2023),
+  DOI: 10.21105/joss.04882
 
 or, using BiBTeX, as
 
@@ -12,4 +19,15 @@ or, using BiBTeX, as
  title   = {{\sf GALAHAD}---a library of thread-safe {F}ortran 90 packages
             for large-scale nonlinear optimization},
  journal = {ACM Transactions on Mathematical Software}
- volume  = 29, number = 4, pages = {353--372}, year = 2003}
+ volume  = 29, number = 4, pages = {353--372}, year = 2003,
+ doi     = {10.1145/962437.962438}}
+
+@article{FowkGoul23:joss,
+ author  = {J. M. Fowkes and N. I. M. Gould},
+ title   = {{\sf GALAHAD} 4.0: an open source library of {F}ortran packages 
+           with {C} and {M}atlab interfaces for continuous optimization},
+ journal = {Journal of Open Source Software},
+ volume  = 8, number = 87, pages = {4882}, year = 2023,
+ doi     = {10.21105/joss.04882}}
+
+

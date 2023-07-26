@@ -72,8 +72,8 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/nls/C/nlst.c .
+This is an example of how to use the package to solve a nonlinear least-squares
+problem; the code is available in $GALAHAD/src/nls/C/nlst.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 

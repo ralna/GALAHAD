@@ -58,20 +58,10 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/wcp/C/wcpt.c .
+This is an example of how to use the package to find a well-centred point;
+the code is available in $GALAHAD/src/wcp/Julia/test_wcp.jl .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
+.. include :: ../../../src/wcp/Julia/test_wcp.jl
+   :code: julia
 
-.. include :: ../../../src/wcp/C/wcpt.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/wcp/C/wcptf.c .
-
-.. include :: ../../../src/wcp/C/wcptf.c
-   :code: C

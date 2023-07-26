@@ -66,20 +66,10 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
-the code is available in $GALAHAD/src/tru/C/trut.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+This is an example of how to use the package to minimize a multi-dimenstional
+objective function; the code is available in 
+$GALAHAD/src/tru/Julia/test_tru.jl .
+A variety of supported Hessian matrix storage formats are shown.
 
-Notice that C-style indexing is used, and that this is flaggeed by setting
-``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``
-is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
-
-.. include :: ../../../src/tru/C/trut.c
-   :code: C
-
-This is the same example, but now fortran-style indexing is used;
-the code is available in $GALAHAD/src/tru/C/trutf.c .
-
-.. include :: ../../../src/tru/C/trutf.c
-   :code: C
+.. include :: ../../../src/tru/Julia/test_tru.jl
+   :code: julia

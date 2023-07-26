@@ -7,8 +7,6 @@ GALAHAD gls package
 
 .. include:: ../../Python/gls_intro.rst
 
-.. include:: ../../Python/gls_storage.rst
-
 .. toctree::
 	:hidden:
 

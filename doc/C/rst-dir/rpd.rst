@@ -7,8 +7,6 @@ GALAHAD RPD package
 
 .. include:: ../../Python/rpd_intro.rst
 
-.. include:: ../../Python/rpd_storage.rst
-
 .. toctree::
 	:hidden:
 
@@ -63,8 +61,6 @@ available structures
 
 .. include :: struct_rpd_control_type.rst
 
-.. include :: struct_rpd_time_type.rst
-
 .. include :: struct_rpd_inform_type.rst
 
 |	:ref:`genindex`
@@ -74,7 +70,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to ... ;
+This is an example of how to use the package to read and write a QP;
 the code is available in $GALAHAD/src/rpd/C/rpdt.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
