@@ -86,7 +86,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dexamples=false -Dsingle=false
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
@@ -120,7 +120,7 @@ jobs:
       - name: Test GALAHAD
         shell: bash
         run: |
-          meson test -C builddir --suite=Python
+          meson test -C builddir
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
