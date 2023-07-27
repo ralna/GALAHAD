@@ -20,6 +20,7 @@ fc = meson.get_compiler('fortran')
 fc_compiler = find_program(fc.cmd_array())
 fs = import('fs')
 py = import('python').find_installation()
+host_system = host_machine.system()
 
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
@@ -467,7 +468,7 @@ if build_tests and build_ciface
 endif
 
 # Python tests
-if build_tests and build_pythoniface and build_ciface and build_double
+if build_tests and build_pythoniface and build_ciface and build_double and host_system != 'windows'
 
   foreach test: galahad_python_tests
     package = test[0]
