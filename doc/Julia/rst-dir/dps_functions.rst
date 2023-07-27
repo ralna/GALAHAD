@@ -10,129 +10,13 @@ overview of functions provided
 	struct_dps_time_type.rst
 	struct_dps_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`dps_control_type<doxid-structdps__control__type>`;
-	struct :ref:`dps_inform_type<doxid-structdps__inform__type>`;
-	struct :ref:`dps_time_type<doxid-structdps__time__type>`;
-
-	// global functions
-
-	void :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status);
-	void :ref:`dps_read_specfile<doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf>`(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[]);
-
-	void :ref:`dps_import<doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee>`(
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	);
-
-	void :ref:`dps_reset_control<doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c>`(
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`dps_solve_tr_problem<doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5>`(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
-	);
-
-	void :ref:`dps_solve_rq_problem<doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6>`(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
-	);
-
-	void :ref:`dps_resolve_tr_problem<doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d>`(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
-	);
-
-	void :ref:`dps_resolve_rq_problem<doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a>`(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
-	);
-
-	void :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status);
-
-	void :ref:`dps_terminate<doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e>`(
-		void** data,
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; dps_initialize
 .. _doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_initialize(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
@@ -159,15 +43,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; dps_read_specfile
 .. _doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[])
@@ -194,7 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; dps_import
 .. _doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_import(
@@ -231,15 +115,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
 
 	*
@@ -275,7 +159,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; dps_reset_control
 .. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_reset_control(
@@ -306,15 +190,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; dps_solve_tr_problem
 .. _doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_solve_tr_problem(
@@ -346,27 +230,27 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -40. An error has occured when building the preconditioner.
 
 	*
@@ -407,7 +291,7 @@ Find the global minimizer of the trust-region problem (1).
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_solve_rq_problem(
@@ -440,27 +324,27 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -40. An error has occured when building the preconditioner.
 
 	*
@@ -506,7 +390,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_resolve_tr_problem(
@@ -536,21 +420,21 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
 
 	*
@@ -581,7 +465,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_resolve_rq_problem(
@@ -612,19 +496,19 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
 
 	*
@@ -660,7 +544,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_information(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
@@ -687,15 +571,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; dps_terminate
 .. _doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void dps_terminate(
@@ -727,4 +611,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
-

@@ -10,95 +10,13 @@ overview of functions provided
 	struct_cro_inform_type.rst
 	struct_cro_time_type.rst
 
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`cro_control_type<doxid-structcro__control__type>`;
-	struct :ref:`cro_inform_type<doxid-structcro__inform__type>`;
-	struct :ref:`cro_time_type<doxid-structcro__time__type>`;
-
-	// function calls
-
-	void :ref:`cro_initialize<doxid-galahad__cro_8h_1aeb10643b5d27efef952b60d9ba0eb206>`(void** data, struct :ref:`cro_control_type<doxid-structcro__control__type>`* control, int* status);
-	void :ref:`cro_read_specfile<doxid-galahad__cro_8h_1a55c7770ae26847b5c17055c290a54c2a>`(struct :ref:`cro_control_type<doxid-structcro__control__type>`* control, const char specfile[]);
-
-	void :ref:`cro_crossover_solution<doxid-galahad__cro_8h_1a1ab8bdd6e394fe4d89c1c2acba8a5a7b>`(
-		void** data,
-		struct :ref:`cro_control_type<doxid-structcro__control__type>`* control,
-		struct :ref:`cro_inform_type<doxid-structcro__inform__type>`* inform,
-		int n,
-		int m,
-		int m_equal,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const int H_col[],
-		const int H_ptr[],
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		int c_stat[]
-	);
-
-	void :ref:`cro_terminate<doxid-galahad__cro_8h_1ae0692951f03b0999f73a8f68b7d62212>`(
-		void** data,
-		struct :ref:`cro_control_type<doxid-structcro__control__type>`* control,
-		struct :ref:`cro_inform_type<doxid-structcro__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; cro_initialize
 .. _doxid-galahad__cro_8h_1aeb10643b5d27efef952b60d9ba0eb206:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cro_initialize(void** data, struct :ref:`cro_control_type<doxid-structcro__control__type>`* control, int* status)
@@ -125,15 +43,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The initialization was succesful.
 
 .. index:: pair: function; cro_read_specfile
 .. _doxid-galahad__cro_8h_1a55c7770ae26847b5c17055c290a54c2a:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cro_read_specfile(struct :ref:`cro_control_type<doxid-structcro__control__type>`* control, const char specfile[])
@@ -160,7 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; cro_crossover_solution
 .. _doxid-galahad__cro_8h_1a1ab8bdd6e394fe4d89c1c2acba8a5a7b:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cro_crossover_solution(
@@ -213,31 +131,31 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- inform
 
-		- 
+		-
 		  is a struct containing output information (see :ref:`cro_inform_type <doxid-structcro__inform__type>`). The component .status gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The crossover was succesful.
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 or m >= m_equal >= 0 has been violated.
-		  
+
 		  * -4 the bound constraints are inconsistent.
-		  
+
 		  * -5 the general constraints are likely inconsistent.
-		  
+
 		  * -9 an error has occured in SLS_analyse.
-		  
+
 		  * -10 an error has occured in SLS_factorize.
-		  
+
 		  * -11 an error has occured in SLS_solve.
-		  
+
 		  * -12 an error has occured in ULS_factorize.
-		  
+
 		  * -14 an error has occured in ULS_solve.
-		  
+
 		  * -16 the residuals are large; the factorization may be unsatisfactory.
 
 	*
@@ -353,7 +271,7 @@ Crosover the solution from a primal-dual to a basic one.
 .. index:: pair: function; cro_terminate
 .. _doxid-galahad__cro_8h_1ae0692951f03b0999f73a8f68b7d62212:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cro_terminate(
@@ -385,4 +303,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`cro_inform_type <doxid-structcro__inform__type>`)
-

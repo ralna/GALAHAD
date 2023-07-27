@@ -11,70 +11,13 @@ overview of functions provided
 	struct_gls_finfo.rst
 	struct_gls_sinfo.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`gls_ainfo<doxid-structgls__ainfo>`;
-	struct :ref:`gls_control<doxid-structgls__control>`;
-	struct :ref:`gls_finfo<doxid-structgls__finfo>`;
-	struct :ref:`gls_sinfo<doxid-structgls__sinfo>`;
-
-	// global functions
-
-	void :ref:`gls_initialize<doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5>`(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control);
-	void :ref:`gls_read_specfile<doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176>`(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[]);
-	void :ref:`gls_import<doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status);
-	void :ref:`gls_reset_control<doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status);
-
-	void :ref:`gls_information<doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47>`(
-		void** data,
-		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
-		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
-		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
-		int* status
-	);
-
-	void :ref:`gls_finalize<doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390>`(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control, int* status);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; gls_initialize
 .. _doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_initialize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control)
@@ -101,7 +44,7 @@ Set default control values and initialize private data
 .. index:: pair: function; gls_read_specfile
 .. _doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[])
@@ -128,7 +71,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; gls_import
 .. _doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_import(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
@@ -155,21 +98,21 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
 
 .. index:: pair: function; gls_reset_control
 .. _doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_reset_control(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
@@ -196,15 +139,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; gls_information
 .. _doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_information(
@@ -247,15 +190,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; gls_finalize
 .. _doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void gls_finalize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control, int* status)
@@ -282,8 +225,7 @@ Deallocate all internal private storage
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
-		  * 0. The values were recorded succesfully
 
+		  * 0. The values were recorded succesfully

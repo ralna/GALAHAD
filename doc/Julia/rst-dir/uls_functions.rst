@@ -9,99 +9,13 @@ overview of functions provided
 	struct_uls_control_type.rst
 	struct_uls_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`uls_control_type<doxid-structuls__control__type>`;
-	struct :ref:`uls_inform_type<doxid-structuls__inform__type>`;
-
-	// global functions
-
-	void :ref:`uls_initialize<doxid-galahad__uls_8h_1a7afb5f2dde112e60686a5527a8f37ca4>`(
-		const char solver[],
-		void** data,
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`uls_read_specfile<doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef>`(struct :ref:`uls_control_type<doxid-structuls__control__type>`* control, const char specfile[]);
-
-	void :ref:`uls_factorize_matrix<doxid-galahad__uls_8h_1a6c0599479b84ee7d7c4ee7c473b76a83>`(
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const char type[],
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		const int row[],
-		const int col[],
-		const int ptr[]
-	);
-
-	void :ref:`uls_reset_control<doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881>`(
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`uls_solve_system<doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[],
-		bool trans
-	);
-
-	void :ref:`uls_information<doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf>`(void** data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, int* status);
-
-	void :ref:`uls_terminate<doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435>`(
-		void** data,
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; uls_initialize
 .. _doxid-galahad__uls_8h_1a7afb5f2dde112e60686a5527a8f37ca4:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_initialize(
@@ -140,17 +54,17 @@ Select solver, set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful.
-		  
+
 		  * -26. The requested solver is not available.
 
 .. index:: pair: function; uls_read_specfile
 .. _doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_read_specfile(struct :ref:`uls_control_type<doxid-structuls__control__type>`* control, const char specfile[])
@@ -177,7 +91,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; uls_factorize_matrix
 .. _doxid-galahad__uls_8h_1a6c0599479b84ee7d7c4ee7c473b76a83:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_factorize_matrix(
@@ -216,27 +130,27 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The import, analysis and factorization were conducted succesfully.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 and m> 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
-		  
+
 		  * -26. The requested solver is not available.
-		  
+
 		  * -29. This option is not available with this solver.
-		  
+
 		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
-		  
+
 		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
 
 	*
@@ -282,7 +196,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_reset_control(
@@ -313,15 +227,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; uls_solve_system
 .. _doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_solve_system(
@@ -350,21 +264,21 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package.
-		  
+
 		  Possible values are:
-		  
+
 		  * 0. The required solution was obtained.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-		  
+
 		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
 
 	*
@@ -390,7 +304,7 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 .. index:: pair: function; uls_information
 .. _doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_information(void** data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, int* status)
@@ -417,15 +331,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; uls_terminate
 .. _doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void uls_terminate(
@@ -457,4 +371,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`uls_inform_type <doxid-structuls__inform__type>`)
-

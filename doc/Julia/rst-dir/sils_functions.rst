@@ -11,91 +11,13 @@ overview of functions provided
 	struct_sils_finfo_type.rst
 	struct_sils_sinfo_type.rst
 
-.. _details-global:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-	// namespaces
-
-	namespace :ref:`conf<doxid-namespaceconf>`;
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>`;
-	struct :ref:`sils_control_type<doxid-structsils__control__type>`;
-	struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>`;
-	struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>`;
-
-	// global functions
-
-	void :ref:`sils_initialize<doxid-galahad__sils_8h_1adfa46fc519194d9acfbeccac4c5a1af3>`(
-		void** data,
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`sils_read_specfile<doxid-galahad__sils_8h_1a12447d25d91610c87b4c8ce7744aefd7>`(
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		const char specfile[]
-	);
-
-	void :ref:`sils_import<doxid-galahad__sils_8h_1a78d5647031a8a4522541064853b021ba>`(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void** data, int* status);
-
-	void :ref:`sils_reset_control<doxid-galahad__sils_8h_1a34e5304b29c89525543cd512f426ac4f>`(
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`sils_information<doxid-galahad__sils_8h_1a27320b6d18c7508283cfb19dc8fecf37>`(
-		void** data,
-		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>`* ainfo,
-		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>`* finfo,
-		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>`* sinfo,
-		int* status
-	);
-
-	void :ref:`sils_finalize<doxid-galahad__sils_8h_1aa862612cd37fce35b1d35bd6ad295d82>`(void** data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; sils_initialize
 .. _doxid-galahad__sils_8h_1adfa46fc519194d9acfbeccac4c5a1af3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_initialize(
@@ -126,15 +48,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; sils_read_specfile
 .. _doxid-galahad__sils_8h_1a12447d25d91610c87b4c8ce7744aefd7:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_read_specfile(
@@ -164,7 +86,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; sils_import
 .. _doxid-galahad__sils_8h_1a78d5647031a8a4522541064853b021ba:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_import(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void** data, int* status)
@@ -191,21 +113,21 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
 
 .. index:: pair: function; sils_reset_control
 .. _doxid-galahad__sils_8h_1a34e5304b29c89525543cd512f426ac4f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_reset_control(
@@ -236,15 +158,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; sils_information
 .. _doxid-galahad__sils_8h_1a27320b6d18c7508283cfb19dc8fecf37:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_information(
@@ -287,15 +209,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; sils_finalize
 .. _doxid-galahad__sils_8h_1aa862612cd37fce35b1d35bd6ad295d82:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void sils_finalize(void** data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status)
@@ -322,10 +244,9 @@ Deallocate all internal private storage
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
-		  * 0. The values were recorded succesfully
-		  
-		  * :math:`\neq` 0. The Fortran STAT value of an allocate or deallocate statement that has failed.
 
+		  * 0. The values were recorded succesfully
+
+		  * :math:`\neq` 0. The Fortran STAT value of an allocate or deallocate statement that has failed.

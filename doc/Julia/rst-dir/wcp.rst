@@ -37,6 +37,12 @@ called in the following order:
 See the :ref:`examples <doxid-index_wcp_examples>` section for
 illustrations of use.
 
+parametric real type T
+----------------------
+
+Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+
 callable functions
 ------------------
 
@@ -64,4 +70,3 @@ A variety of supported Hessian and constraint matrix storage formats are shown.
 
 .. include :: ../../../src/wcp/Julia/test_wcp.jl
    :code: julia
-

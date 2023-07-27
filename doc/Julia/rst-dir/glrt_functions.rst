@@ -9,89 +9,13 @@ overview of functions provided
 	struct_glrt_control_type.rst
 	struct_glrt_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`glrt_control_type<doxid-structglrt__control__type>`;
-	struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`;
-
-	// global functions
-
-	void :ref:`glrt_initialize<doxid-galahad__glrt_8h_1a3a086b68a942ba1049f1d6a1b4724d32>`(
-		void** data,
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`glrt_read_specfile<doxid-galahad__glrt_8h_1a4a436dfac6a63cf991cd629b3ed0e725>`(
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		const char specfile[]
-	);
-
-	void :ref:`glrt_import_control<doxid-galahad__glrt_8h_1a722a069ab53a2f47dae17d01d6b505a1>`(
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`glrt_solve_problem<doxid-galahad__glrt_8h_1aa5e9905bd3a79584bc5133b7f7a6816f>`(
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` vector[]
-	);
-
-	void :ref:`glrt_information<doxid-galahad__glrt_8h_1a3570dffe8910d5f3cb86020a65566c8d>`(void** data, struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform, int* status);
-
-	void :ref:`glrt_terminate<doxid-galahad__glrt_8h_1a107fe137aba04a93fdbcbb0b9e768812>`(
-		void** data,
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; glrt_initialize
 .. _doxid-galahad__glrt_8h_1a3a086b68a942ba1049f1d6a1b4724d32:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_initialize(
@@ -122,15 +46,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; glrt_read_specfile
 .. _doxid-galahad__glrt_8h_1a4a436dfac6a63cf991cd629b3ed0e725:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_read_specfile(
@@ -160,7 +84,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; glrt_import_control
 .. _doxid-galahad__glrt_8h_1a722a069ab53a2f47dae17d01d6b505a1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_import_control(
@@ -191,15 +115,15 @@ Import control parameters prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; glrt_solve_problem
 .. _doxid-galahad__glrt_8h_1aa5e9905bd3a79584bc5133b7f7a6816f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_solve_problem(
@@ -230,35 +154,35 @@ Solve the regularized-quadratic problem using reverse communication.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  This must be set to
-		  
+
 		  * 1. on initial entry. Set r (below) to :math:`c` for this entry.
-		  
+
 		  * 6. the iteration is to be restarted with a larger weight but with all other data unchanged. Set r (below) to :math:`c` for this entry.
-		  
+
 		  Possible exit values are:
-		  
+
 		  * 0. the solution has been found
-		  
+
 		  * 2. the inverse of :math:`M` must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged. This will only happen if control.unitm is false
-		  
+
 		  * 3. the product :math:`H` \* vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
-		  
+
 		  * 4. The iteration must be restarted. Reset r (below) to :math:`c` and re-enter with all other data unchanged.
-		  
+
 		  * -1. an array allocation has failed
-		  
+
 		  * -2. an array deallocation has failed
-		  
+
 		  * -3. n and/or radius is not positive
-		  
+
 		  * -7. the problem is unbounded from below. This can only happen if power = 2, and in this case the objective is unbounded along the arc x + t vector as t goes to infinity
-		  
+
 		  * -15. the matrix :math:`M` appears to be indefinite
-		  
+
 		  * -18. the iteration limit has been exceeded
 
 	*
@@ -294,7 +218,7 @@ Solve the regularized-quadratic problem using reverse communication.
 .. index:: pair: function; glrt_information
 .. _doxid-galahad__glrt_8h_1a3570dffe8910d5f3cb86020a65566c8d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_information(void** data, struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform, int* status)
@@ -321,15 +245,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; glrt_terminate
 .. _doxid-galahad__glrt_8h_1a107fe137aba04a93fdbcbb0b9e768812:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void glrt_terminate(
@@ -361,4 +285,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`glrt_inform_type <doxid-structglrt__inform__type>`)
-

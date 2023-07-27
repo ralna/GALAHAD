@@ -11,120 +11,13 @@ overview of functions provided
 	struct_llsr_history_type.rst
 	struct_llsr_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`llsr_control_type<doxid-structllsr__control__type>`;
-	struct :ref:`llsr_history_type<doxid-structllsr__history__type>`;
-	struct :ref:`llsr_inform_type<doxid-structllsr__inform__type>`;
-	struct :ref:`llsr_time_type<doxid-structllsr__time__type>`;
-
-	// global functions
-
-	void :ref:`llsr_initialize<doxid-galahad__llsr_8h_1a926f9824ab2e2bc71450a4d0b483879d>`(
-		void** data,
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`llsr_read_specfile<doxid-galahad__llsr_8h_1a01bf988188420284ac4c125fef947efb>`(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		const char specfile[]
-	);
-
-	void :ref:`llsr_import<doxid-galahad__llsr_8h_1ac2dd0bee9270e6295c63a5365186070f>`(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	);
-
-	void :ref:`llsr_import_scaling<doxid-galahad__llsr_8h_1a75f3108d65fc8100776af18f6adf4c2c>`(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const char S_type[],
-		int S_ne,
-		const int S_row[],
-		const int S_col[],
-		const int S_ptr[]
-	);
-
-	void :ref:`llsr_reset_control<doxid-galahad__llsr_8h_1a9a9e3ae8ce66a5b7933b06061208c50c>`(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`llsr_solve_problem<doxid-galahad__llsr_8h_1aa702f5ffcde083da921921c4e1131d89>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		int A_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		int S_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` S_val[]
-	);
-
-	void :ref:`llsr_information<doxid-galahad__llsr_8h_1a1ba2eb99bc6364f476b85c7f507d43a2>`(void** data, struct :ref:`llsr_inform_type<doxid-structllsr__inform__type>`* inform, int* status);
-
-	void :ref:`llsr_terminate<doxid-galahad__llsr_8h_1af05d27e76348279a8c9c16298a819609>`(
-		void** data,
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		struct :ref:`llsr_inform_type<doxid-structllsr__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; llsr_initialize
 .. _doxid-galahad__llsr_8h_1a926f9824ab2e2bc71450a4d0b483879d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_initialize(
@@ -155,15 +48,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; llsr_read_specfile
 .. _doxid-galahad__llsr_8h_1a01bf988188420284ac4c125fef947efb:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_read_specfile(
@@ -193,7 +86,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; llsr_import
 .. _doxid-galahad__llsr_8h_1ac2dd0bee9270e6295c63a5365186070f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_import(
@@ -231,15 +124,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
 
 	*
@@ -280,7 +173,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; llsr_import_scaling
 .. _doxid-galahad__llsr_8h_1a75f3108d65fc8100776af18f6adf4c2c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_import_scaling(
@@ -317,15 +210,15 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
@@ -361,7 +254,7 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 .. index:: pair: function; llsr_reset_control
 .. _doxid-galahad__llsr_8h_1a9a9e3ae8ce66a5b7933b06061208c50c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_reset_control(
@@ -392,15 +285,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; llsr_solve_problem
 .. _doxid-galahad__llsr_8h_1aa702f5ffcde083da921921c4e1131d89:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_solve_problem(
@@ -435,31 +328,31 @@ Solve the regularization-region problem.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 and m > 0 or requirement that A_type or A_type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -15. The matrix :math:`S` does not appear to be strictly diagonally dominant.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
 
 	*
@@ -515,7 +408,7 @@ Solve the regularization-region problem.
 .. index:: pair: function; llsr_information
 .. _doxid-galahad__llsr_8h_1a1ba2eb99bc6364f476b85c7f507d43a2:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_information(void** data, struct :ref:`llsr_inform_type<doxid-structllsr__inform__type>`* inform, int* status)
@@ -542,15 +435,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; llsr_terminate
 .. _doxid-galahad__llsr_8h_1af05d27e76348279a8c9c16298a819609:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void llsr_terminate(
@@ -582,4 +475,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`llsr_inform_type <doxid-structllsr__inform__type>`)
-

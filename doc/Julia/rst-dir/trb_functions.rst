@@ -10,147 +10,13 @@ overview of functions provided
 	struct_trb_inform_type.rst
 	struct_trb_time_type.rst
 
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`trb_control_type<doxid-structtrb__control__type>`;
-	struct :ref:`trb_inform_type<doxid-structtrb__inform__type>`;
-	struct :ref:`trb_time_type<doxid-structtrb__time__type>`;
-
-	// function calls
-
-	void :ref:`trb_initialize<doxid-galahad__trb_8h_1a9bffc46178a3e0b7eb2927d1c50440a1>`(void** data, struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control, int* status);
-	void :ref:`trb_read_specfile<doxid-galahad__trb_8h_1a4eaafdaf5187c8b91c119ce9395469e9>`(struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control, const char specfile[]);
-
-	void :ref:`trb_import<doxid-galahad__trb_8h_1a13bc38fb28201adb78af7acf910ff0d8>`(
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	);
-
-	void :ref:`trb_reset_control<doxid-galahad__trb_8h_1a550c3ca1966ea0fa9de84423b8658cd7>`(
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`trb_solve_with_mat<doxid-galahad__trb_8h_1a5a58e6c0c022eb451f14c82d653967f7>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_h,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
-	);
-
-	void :ref:`trb_solve_without_mat<doxid-galahad__trb_8h_1a376b81748cec0bf992542d80b8d38f49>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int, const int[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int*, int[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_shprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
-	);
-
-	void :ref:`trb_solve_reverse_with_mat<doxid-galahad__trb_8h_1a7bb520e36666386824b216a84be08837>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
-	);
-
-	void :ref:`trb_solve_reverse_without_mat<doxid-galahad__trb_8h_1a95eac11acf02fe0d6eb4bc39ace5a100>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		int index_nz_v[],
-		int* nnz_v,
-		const int index_nz_u[],
-		int nnz_u
-	);
-
-	void :ref:`trb_information<doxid-galahad__trb_8h_1a105f41a31d49c59885c3372090bec776>`(void** data, struct :ref:`trb_inform_type<doxid-structtrb__inform__type>`* inform, int* status);
-
-	void :ref:`trb_terminate<doxid-galahad__trb_8h_1a739c7a44ddd0ce7b350cfa6da54948d0>`(
-		void** data,
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control,
-		struct :ref:`trb_inform_type<doxid-structtrb__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; trb_initialize
 .. _doxid-galahad__trb_8h_1a9bffc46178a3e0b7eb2927d1c50440a1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_initialize(void** data, struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control, int* status)
@@ -177,15 +43,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; trb_read_specfile
 .. _doxid-galahad__trb_8h_1a4eaafdaf5187c8b91c119ce9395469e9:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_read_specfile(struct :ref:`trb_control_type<doxid-structtrb__control__type>`* control, const char specfile[])
@@ -212,7 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; trb_import
 .. _doxid-galahad__trb_8h_1a13bc38fb28201adb78af7acf910ff0d8:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_import(
@@ -251,15 +117,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
 
 	*
@@ -305,7 +171,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; trb_reset_control
 .. _doxid-galahad__trb_8h_1a550c3ca1966ea0fa9de84423b8658cd7:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_reset_control(
@@ -336,15 +202,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; trb_solve_with_mat
 .. _doxid-galahad__trb_8h_1a5a58e6c0c022eb451f14c82d653967f7:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_solve_with_mat(
@@ -385,37 +251,37 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 	*
@@ -441,57 +307,57 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- eval_f
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_f( int n, const double x[], double *f, const void *userdata )
-		  
+
 		  The value of the objective function :math:`f(x)` evaluated at x= :math:`x` must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
 	*
 		- eval_g
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_g( int n, const double x[], double g[], const void *userdata )
-		  
+
 		  The components of the gradient :math:`g = \nabla_x f(x`) of the objective function evaluated at x= :math:`x` must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
 
 	*
 		- eval_h
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_h( int n, int ne, const double x[], double h[],
 		  	            const void *userdata )
-		  
+
 		  The nonzeros of the Hessian :math:`H = \nabla_{xx}f(x)` of the objective function evaluated at x= :math:`x` must be assigned to h in the same order as presented to trb_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
 
 	*
 		- eval_prec
 
-		- 
+		-
 		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_prec( int n, const double x[], double u[], const double v[],
 		  	               const void *userdata )
-		  
+
 		  The product :math:`u = P(x) v` of the user's preconditioner :math:`P(x)` evaluated at :math:`x` with the vector v = :math:`v`, the result :math:`u` must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 .. index:: pair: function; trb_solve_without_mat
 .. _doxid-galahad__trb_8h_1a376b81748cec0bf992542d80b8d38f49:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_solve_without_mat(
@@ -512,7 +378,7 @@ Find a local minimizer of a given function subject to simple bounds on the varia
 
 This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, and all function/derivative information is available by function calls.
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 
 	int eval_g( int n, const double x[], double g[], const void *userdata )
 
@@ -538,37 +404,37 @@ The components of the gradient :math:`g = \nabla_x f(x`) of the objective functi
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 	*
@@ -589,13 +455,13 @@ The components of the gradient :math:`g = \nabla_x f(x`) of the objective functi
 	*
 		- eval_f
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_f( int n, const double x[], double *f, const void *userdata )
-		  
+
 		  The value of the objective function :math:`f(x)` evaluated at x= :math:`x` must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
 	*
@@ -606,48 +472,48 @@ The components of the gradient :math:`g = \nabla_x f(x`) of the objective functi
 	*
 		- eval_hprod
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_hprod( int n, const double x[], double u[], const double v[],
 		  	                bool got_h, const void *userdata )
-		  
+
 		  The sum :math:`u + \nabla_{xx}f(x) v` of the product of the Hessian :math:`\nabla_{xx}f(x)` of the objective function evaluated at x= :math:`x` with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
 
 	*
 		- eval_shprod
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_shprod( int n, const double x[], int nnz_v,
 		  	                 const int index_nz_v[], const double v[],
 		  	                 int *nnz_u, int index_nz_u[], double u[],
 		  	                 bool got_h, const void *userdata )
-		  
+
 		  The product :math:`u = \nabla_{xx}f(x) v` of the Hessian :math:`\nabla_{xx}f(x)` of the objective function evaluated at :math:`x` with the sparse vector v= :math:`v` must be returned in u, and the function return value set to 0. Only the components index_nz_v[0:nnz_v-1] of v are nonzero, and the remaining components may not have been be set. On exit, the user must indicate the nnz_u indices of u that are nonzero in index_nz_u[0:nnz_u-1], and only these components of u need be set. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 	*
 		- eval_prec
 
-		- 
+		-
 		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_prec( int n, const double x[], double u[], const double v[],
 		  	               const void *userdata )
-		  
+
 		  The product :math:`u = P(x) v` of the user's preconditioner :math:`P(x)` evaluated at :math:`x` with the vector v = :math:`v`, the result :math:`u` must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 .. index:: pair: function; trb_solve_reverse_with_mat
 .. _doxid-galahad__trb_8h_1a7bb520e36666386824b216a84be08837:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_solve_reverse_with_mat(
@@ -683,45 +549,45 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 		  * 2. The user should compute the objective function value :math:`f(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate :math:`f(x)` for instance, if the function is undefined at :math:`x` the user need not set f, but should then set eval_status to a non-zero value.
-		  
+
 		  * 3. The user should compute the gradient of the objective function :math:`\nabla_x f(x)` at the point :math:`x` indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_x f(x)` for instance if a component of the gradient is undefined at :math:`x` -the user need not set g, but should then set eval_status to a non-zero value.
-		  
+
 		  * 4. The user should compute the Hessian of the objective function :math:`\nabla_{xx}f(x)` at the point x indicated in :math:`x` and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of :math:`H` should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_{xx}f(x)` for instance, if a component of the Hessian is undefined at :math:`x` the user need not set H_val, but should then set eval_status to a non-zero value.
-		  
+
 		  * 6. The user should compute the product :math:`u = P(x)v` of their preconditioner :math:`P(x)` at the point x indicated in :math:`x` with the vector :math:`v` and then re-enter the function. The vector :math:`v` is given in v, the resulting vector :math:`u = P(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
 
 	*
@@ -772,7 +638,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. index:: pair: function; trb_solve_reverse_without_mat
 .. _doxid-galahad__trb_8h_1a95eac11acf02fe0d6eb4bc39ace5a100:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_solve_reverse_without_mat(
@@ -810,47 +676,47 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -7. The objective function appears to be unbounded from below
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 		  * 2. The user should compute the objective function value :math:`f(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate :math:`f(x)` for instance, if the function is undefined at :math:`x` the user need not set f, but should then set eval_status to a non-zero value.
-		  
+
 		  * 3. The user should compute the gradient of the objective function :math:`\nabla_x f(x)` at the point :math:`x` indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_x f(x)` for instance if a component of the gradient is undefined at :math:`x` -the user need not set g, but should then set eval_status to a non-zero value.
-		  
+
 		  * 5. The user should compute the product :math:`\nabla_{xx}f(x)v` of the Hessian of the objective function :math:`\nabla_{xx}f(x)` at the point :math:`x` indicated in x with the vector :math:`v`, add the result to the vector :math:`u` and then re-enter the function. The vectors :math:`u` and :math:`v` are given in u and v respectively, the resulting vector :math:`u + \nabla_{xx}f(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the Hessian is undefined at :math:`x` the user need not alter u, but should then set eval_status to a non-zero value.
-		  
+
 		  * 6. The user should compute the product :math:`u = P(x)v` of their preconditioner :math:`P(x)` at the point x indicated in :math:`x` with the vector :math:`v` and then re-enter the function. The vector :math:`v` is given in v, the resulting vector :math:`u = P(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
-		  
+
 		  * 7. The user should compute the product :math:`u = \nabla_{xx}f(x)v` of the Hessian of the objective function :math:`\nabla_{xx}f(x)` at the point :math:`x` indicated in x with the **sparse** vector v= :math:`v` and then re-enter the function. The nonzeros of :math:`v` are stored in v[index_nz_v[0:nnz_v-1]] while the nonzeros of :math:`u` should be returned in u[index_nz_u[0:nnz_u-1]]; the user must set nnz_u and index_nz_u accordingly, and set eval_status to 0. If the user is unable to evaluate the product for instance, if a component of the Hessian is undefined at :math:`x` the user need not alter u, but should then set eval_status to a non-zero value.
 
 	*
@@ -911,7 +777,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. index:: pair: function; trb_information
 .. _doxid-galahad__trb_8h_1a105f41a31d49c59885c3372090bec776:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_information(void** data, struct :ref:`trb_inform_type<doxid-structtrb__inform__type>`* inform, int* status)
@@ -938,15 +804,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; trb_terminate
 .. _doxid-galahad__trb_8h_1a739c7a44ddd0ce7b350cfa6da54948d0:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void trb_terminate(
@@ -978,4 +844,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`trb_inform_type <doxid-structtrb__inform__type>`)
-

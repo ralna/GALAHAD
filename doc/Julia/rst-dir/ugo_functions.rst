@@ -1,26 +1,12 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_ugo_control_type.rst
-	struct_ugo_inform_type.rst
-	struct_ugo_time_type.rst
-
-
-function calls
---------------
-
 .. index:: pair: function; ugo_initialize
 .. _doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_initialize(data, control, status)
+        ugo_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -38,13 +24,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32, that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -54,7 +40,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_read_specfile(control, specfile)
+        ugo_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNUGO.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
 
@@ -68,7 +54,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- specfile
@@ -81,7 +67,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_import(control, data, status, x_l, x_u)
+        ugo_import(control, data, status, x_l, x_u)
 
 Import problem data into internal storage prior to solution.
 
@@ -95,7 +81,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- data
@@ -106,7 +92,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32, that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -117,12 +103,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- x_l
 
-		- is a scalar variable of type double, that holds the value :math:`x^l` of the lower bound on the optimization variable :math:`x`.
+		- is a scalar variable of type T, that holds the value :math:`x^l` of the lower bound on the optimization variable :math:`x`.
 
 	*
 		- x_u
 
-		- is a scalar variable of type double, that holds the value :math:`x^u` of the upper bound on the optimization variable :math:`x`.
+		- is a scalar variable of type T, that holds the value :math:`x^u` of the upper bound on the optimization variable :math:`x`.
 
 .. index:: pair: function; ugo_reset_control
 .. _doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40:
@@ -130,7 +116,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_reset_control(control, data, status)
+        ugo_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -144,7 +130,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- data
@@ -155,7 +141,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32, that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -165,7 +151,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
+        ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
 
@@ -192,7 +178,7 @@ This version is for the case where all function/derivative information is availa
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32, that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -217,22 +203,22 @@ This version is for the case where all function/derivative information is availa
 	*
 		- x
 
-		- is a scalar variable of type double, that holds the value of the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the value of the approximate global minimizer :math:`x` after a successful (status = 0) call.
 
 	*
 		- f
 
-		- is a scalar variable of type double, that holds the the value of the objective function :math:`f(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the objective function :math:`f(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
 
 	*
 		- g
 
-		- is a scalar variable of type double, that holds the the value of the gradient of the objective function :math:`f^{\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the gradient of the objective function :math:`f^{\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
 
 	*
 		- h
 
-		- is a scalar variable of type double, that holds the the value of the second derivative of the objective function :math:`f^{\prime\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the second derivative of the objective function :math:`f^{\prime\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
 
 	*
 		- eval_fgh
@@ -242,11 +228,7 @@ This version is for the case where all function/derivative information is availa
 
 		  .. ref-code-block:: julia
 
-		  	int eval_fgh( double x,
-		  	              double *f,
-		  	              double *g,
-		  	              double *h,
-		  	              const void *userdata)
+		  	eval_fgh(x, f, g, h, userdata)
 
 		  The value of the objective function :math:`f(x)` and its first derivative :math:`f^{\prime}(x)` evaluated at x= :math:`x` must be assigned to f and g respectively, and the function return value set to 0. In addition, if control.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative :math:`f^{\prime\prime}(x)` in h; it need not be assigned otherwise. If the evaluation is impossible at x, return should be set to a nonzero value.
 
@@ -256,7 +238,7 @@ This version is for the case where all function/derivative information is availa
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_solve_reverse(data, status, eval_status, x, f, g, h)
+        ugo_solve_reverse(data, status, eval_status, x, f, g, h)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
 
@@ -278,7 +260,7 @@ This version is for the case where function/derivative information is only avail
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32, that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -311,27 +293,27 @@ This version is for the case where function/derivative information is only avail
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function and its derivatives can be provided (see above).
+		- is a scalar variable of type Int32, that is used to indicate if objective function and its derivatives can be provided (see above).
 
 	*
 		- x
 
-		- is a scalar variable of type double, that holds the next value of :math:`x` at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that holds the next value of :math:`x` at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
 
 	*
 		- f
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of :math:`f(x)` if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f(x)` if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
 
 	*
 		- g
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of :math:`f^{\prime}(x)` if required by status > 0 (see above), and will return the value of the first derivative of :math:`f` at the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f^{\prime}(x)` if required by status > 0 (see above), and will return the value of the first derivative of :math:`f` at the approximate global minimizer when status = 0
 
 	*
 		- h
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of :math:`f^{\prime\prime}(x)` if required by status > 0 (see above), and will return the value of the second derivative of :math:`f` at the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f^{\prime\prime}(x)` if required by status > 0 (see above), and will return the value of the second derivative of :math:`f` at the approximate global minimizer when status = 0
 
 .. index:: pair: function; ugo_information
 .. _doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee:
@@ -339,7 +321,7 @@ This version is for the case where function/derivative information is only avail
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_information(data, inform, status)
+        ugo_information(data, inform, status)
 
 Provides output information
 
@@ -358,13 +340,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)
+		- is a structure containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32, that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -374,7 +356,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	ugo_terminate(data, control, inform)
+        ugo_terminate(data, control, inform)
 
 Deallocate all internal private storage
 
@@ -393,9 +375,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)
+		- is a structure containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)

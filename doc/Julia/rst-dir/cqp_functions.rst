@@ -10,139 +10,13 @@ overview of functions provided
 	struct_cqp_inform_type.rst
 	struct_cqp_time_type.rst
 
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`cqp_control_type<doxid-structcqp__control__type>`;
-	struct :ref:`cqp_inform_type<doxid-structcqp__inform__type>`;
-	struct :ref:`cqp_time_type<doxid-structcqp__time__type>`;
-
-	// function calls
-
-	void :ref:`cqp_initialize<doxid-galahad__cqp_8h_1a782387ad9cccc5f2e2da9df9016fb923>`(void** data, struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control, int* status);
-	void :ref:`cqp_read_specfile<doxid-galahad__cqp_8h_1ade439e5e06c2852fcb089bb39a667a74>`(struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control, const char specfile[]);
-
-	void :ref:`cqp_import<doxid-galahad__cqp_8h_1a6a2be17b6f871df80bbac93940b83af3>`(
-		struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	);
-
-	void :ref:`cqp_reset_control<doxid-galahad__cqp_8h_1a9f7ccb0cffa909a2be7556edda430190>`(
-		struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`cqp_solve_qp<doxid-galahad__cqp_8h_1ac2d720ee7b719bf63c3fa208d37f1bc1>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		int c_stat[]
-	);
-
-	void :ref:`cqp_solve_sldqp<doxid-galahad__cqp_8h_1a311864de053b1cbbf78b1cbab052e56e>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x0[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		int c_stat[]
-	);
-
-	void :ref:`cqp_information<doxid-galahad__cqp_8h_1adfb7589696e4e07fdb65f02bc42c5daf>`(void** data, struct :ref:`cqp_inform_type<doxid-structcqp__inform__type>`* inform, int* status);
-
-	void :ref:`cqp_terminate<doxid-galahad__cqp_8h_1a84e12e9e546f51762d305333dce68e2b>`(
-		void** data,
-		struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control,
-		struct :ref:`cqp_inform_type<doxid-structcqp__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; cqp_initialize
 .. _doxid-galahad__cqp_8h_1a782387ad9cccc5f2e2da9df9016fb923:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_initialize(void** data, struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control, int* status)
@@ -169,15 +43,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; cqp_read_specfile
 .. _doxid-galahad__cqp_8h_1ade439e5e06c2852fcb089bb39a667a74:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_read_specfile(struct :ref:`cqp_control_type<doxid-structcqp__control__type>`* control, const char specfile[])
@@ -204,7 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; cqp_import
 .. _doxid-galahad__cqp_8h_1a6a2be17b6f871df80bbac93940b83af3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_import(
@@ -247,17 +121,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
-		  
+
 		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
 
 	*
@@ -323,7 +197,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; cqp_reset_control
 .. _doxid-galahad__cqp_8h_1a9f7ccb0cffa909a2be7556edda430190:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_reset_control(
@@ -354,15 +228,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; cqp_solve_qp
 .. _doxid-galahad__cqp_8h_1ac2d720ee7b719bf63c3fa208d37f1bc1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_solve_qp(
@@ -405,39 +279,39 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
-		  
+
 		  * -5. The simple-bound constraints are inconsistent.
-		  
+
 		  * -7. The constraints appear to have no feasible point.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
 
 	*
@@ -533,7 +407,7 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 .. index:: pair: function; cqp_solve_sldqp
 .. _doxid-galahad__cqp_8h_1a311864de053b1cbbf78b1cbab052e56e:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_solve_sldqp(
@@ -576,37 +450,37 @@ Solve the shifted least-distance quadratic program
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
-		  
+
 		  * -5. The simple-bound constraints are inconsistent.
-		  
+
 		  * -7. The constraints appear to have no feasible point.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
 	*
@@ -702,7 +576,7 @@ Solve the shifted least-distance quadratic program
 .. index:: pair: function; cqp_information
 .. _doxid-galahad__cqp_8h_1adfb7589696e4e07fdb65f02bc42c5daf:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_information(void** data, struct :ref:`cqp_inform_type<doxid-structcqp__inform__type>`* inform, int* status)
@@ -729,15 +603,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; cqp_terminate
 .. _doxid-galahad__cqp_8h_1a84e12e9e546f51762d305333dce68e2b:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void cqp_terminate(
@@ -769,4 +643,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`cqp_inform_type <doxid-structcqp__inform__type>`)
-

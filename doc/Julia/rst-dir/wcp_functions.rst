@@ -1,122 +1,12 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_wcp_control_type.rst
-	struct_wcp_inform_type.rst
-	struct_wcp_time_type.rst
-
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`wcp_control_type<doxid-structwcp__control__type>`;
-	struct :ref:`wcp_inform_type<doxid-structwcp__inform__type>`;
-	struct :ref:`wcp_time_type<doxid-structwcp__time__type>`;
-
-	// function calls
-
-	void :ref:`wcp_initialize<doxid-galahad__wcp_8h_1a78c76e090a879684ca1fa3ab17f55f34>`(void** data, struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control, int* status);
-	void :ref:`wcp_read_specfile<doxid-galahad__wcp_8h_1af50523066dbb40bc7f955e0ef35881a9>`(struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control, const char specfile[]);
-
-	void :ref:`wcp_import<doxid-galahad__wcp_8h_1a91b5d7b341c1333669564a1abacc2ad9>`(
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	);
-
-	void :ref:`wcp_reset_control<doxid-galahad__wcp_8h_1a4b6ac93a46f87e3e986286c415155dd3>`(
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`wcp_find_wcp<doxid-galahad__wcp_8h_1a5ca84b359a491ced6fdb1c0927b25243>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[],
-		int x_stat[],
-		int c_stat[]
-	);
-
-	void :ref:`wcp_information<doxid-galahad__wcp_8h_1aa3f76e788325ffff83f98dffa7ab8eb2>`(void** data, struct :ref:`wcp_inform_type<doxid-structwcp__inform__type>`* inform, int* status);
-
-	void :ref:`wcp_terminate<doxid-galahad__wcp_8h_1a0b1cc55b8418826d80e4435ab555e256>`(
-		void** data,
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		struct :ref:`wcp_inform_type<doxid-structwcp__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
-function calls
---------------
-
 .. index:: pair: function; wcp_initialize
 .. _doxid-galahad__wcp_8h_1a78c76e090a879684ca1fa3ab17f55f34:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_initialize(void** data, struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control, int* status)
+        wcp_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -140,18 +30,18 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; wcp_read_specfile
 .. _doxid-galahad__wcp_8h_1af50523066dbb40bc7f955e0ef35881a9:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_read_specfile(struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control, const char specfile[])
+        wcp_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNWCP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/wcp.pdf for a list of keywords that may be set.
 
@@ -175,21 +65,10 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; wcp_import
 .. _doxid-galahad__wcp_8h_1a91b5d7b341c1333669564a1abacc2ad9:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_import(
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -213,15 +92,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
-		  * 0. The import was succesful
-		  
+
+		  * 0. The import was succesful.
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
 
 	*
@@ -262,18 +141,12 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; wcp_reset_control
 .. _doxid-galahad__wcp_8h_1a4b6ac93a46f87e3e986286c415155dd3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_reset_control(
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		void** data,
-		int* status
-	)
+        wcp_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -293,38 +166,19 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; wcp_find_wcp
 .. _doxid-galahad__wcp_8h_1a5ca84b359a491ced6fdb1c0927b25243:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_find_wcp(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[],
-		int x_stat[],
-		int c_stat[]
-	)
+         wcp_find_wcp(data, status, n, m, g, a_ne, A_val, c_l, c_u,
+                      x_l, x_u, x, c, y_l, y_u, z_l, z_u, x_stat, c_stat)
 
 Find a well-centered point in the feasible region
 
@@ -343,37 +197,37 @@ Find a well-centered point in the feasible region
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
-		  
+
 		  * -4. The constraint bounds are inconsistent.
-		  
+
 		  * -5. The constraints appear to have no feasible point.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
 	*
@@ -464,10 +318,10 @@ Find a well-centered point in the feasible region
 .. index:: pair: function; wcp_information
 .. _doxid-galahad__wcp_8h_1aa3f76e788325ffff83f98dffa7ab8eb2:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_information(void** data, struct :ref:`wcp_inform_type<doxid-structwcp__inform__type>`* inform, int* status)
+        wcp_information(data, inform, status)
 
 Provides output information.
 
@@ -491,22 +345,18 @@ Provides output information.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; wcp_terminate
 .. _doxid-galahad__wcp_8h_1a0b1cc55b8418826d80e4435ab555e256:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void wcp_terminate(
-		void** data,
-		struct :ref:`wcp_control_type<doxid-structwcp__control__type>`* control,
-		struct :ref:`wcp_inform_type<doxid-structwcp__inform__type>`* inform
-	)
+        wcp_terminate_s(data, control, inform)
 
 Deallocate all internal private storage.
 
@@ -531,4 +381,3 @@ Deallocate all internal private storage.
 		- inform
 
 		- is a struct containing output information (see :ref:`wcp_inform_type <doxid-structwcp__inform__type>`)
-

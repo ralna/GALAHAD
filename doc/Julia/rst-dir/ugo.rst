@@ -15,7 +15,7 @@ GALAHAD UGO package
 introduction to function calls
 ------------------------------
 
-To solve a given problem, functions from the ugo package must be 
+To solve a given problem, functions from the ugo package must be
 called in the following order:
 
 * :ref:`ugo_initialize <doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78>` - provide default control parameters and set up initial data structures
@@ -27,17 +27,23 @@ called in the following order:
 * :ref:`ugo_reset_control <doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
-  
+
   * :ref:`ugo_solve_direct <doxid-galahad__ugo_8h_1aa5b2949ab17e25a0a0c24f38c0d61a1a>` - solve using function calls to evaluate function and derivative values, or
-  
+
   * :ref:`ugo_solve_reverse <doxid-galahad__ugo_8h_1a0b8f123f8e67bb0cb8a27c5ce87c824c>` - solve returning to the calling program to obtain function and derivative values
 
 * :ref:`ugo_information <doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee>` (optional) - recover information about the solution and solution process
 
 * :ref:`ugo_terminate <doxid-galahad__ugo_8h_1ad9485926c547bb783aea3ee1adb3b084>` - deallocate data structures
 
-See the :ref:`examples <doxid-index_ugo_examples>` section for 
+See the :ref:`examples <doxid-index_ugo_examples>` section for
 illustrations of use.
+
+parametric real type T
+----------------------
+
+Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
 
 callable functions
 ------------------

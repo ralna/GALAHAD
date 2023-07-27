@@ -10,129 +10,13 @@ overview of functions provided
 	struct_bqp_inform_type.rst
 	struct_bqp_time_type.rst
 
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`bqp_control_type<doxid-structbqp__control__type>`;
-	struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`;
-	struct :ref:`bqp_time_type<doxid-structbqp__time__type>`;
-
-	// function calls
-
-	void :ref:`bqp_initialize<doxid-galahad__bqp_8h_1a4466621895dd2314f1b3c21b4bc7f615>`(void** data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status);
-	void :ref:`bqp_read_specfile<doxid-galahad__bqp_8h_1a0e3ffdd29be95753292694c7619a43e6>`(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const char specfile[]);
-
-	void :ref:`bqp_import<doxid-galahad__bqp_8h_1a0cfa65e832fd80e3dfcf9e0c65a69e56>`(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	);
-
-	void :ref:`bqp_import_without_h<doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e>`(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n
-	);
-
-	void :ref:`bqp_reset_control<doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850>`(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`bqp_solve_given_h<doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308>`(
-		void** data,
-		int* status,
-		int n,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[]
-	);
-
-	void :ref:`bqp_solve_reverse_h_prod<doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755>`(
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` prod[],
-		int nz_v[],
-		int* nz_v_start,
-		int* nz_v_end,
-		const int nz_prod[],
-		int nz_prod_end
-	);
-
-	void :ref:`bqp_information<doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362>`(void** data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status);
-
-	void :ref:`bqp_terminate<doxid-galahad__bqp_8h_1a34db499197d1fd6fb78b294473796fbc>`(
-		void** data,
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; bqp_initialize
 .. _doxid-galahad__bqp_8h_1a4466621895dd2314f1b3c21b4bc7f615:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_initialize(void** data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status)
@@ -159,15 +43,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; bqp_read_specfile
 .. _doxid-galahad__bqp_8h_1a0e3ffdd29be95753292694c7619a43e6:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_read_specfile(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const char specfile[])
@@ -194,7 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; bqp_import
 .. _doxid-galahad__bqp_8h_1a0cfa65e832fd80e3dfcf9e0c65a69e56:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_import(
@@ -231,15 +115,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
@@ -275,7 +159,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; bqp_import_without_h
 .. _doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_import_without_h(
@@ -307,15 +191,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 has been violated.
 
 	*
@@ -326,7 +210,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; bqp_reset_control
 .. _doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_reset_control(
@@ -357,15 +241,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; bqp_solve_given_h
 .. _doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_solve_given_h(
@@ -400,41 +284,41 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
-		  
+
 		  * -4. The simple-bound constraints are inconsistent.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
-		  
+
 		  * -23. An entry from the strict upper triangle of :math:`H` has been
 
 	*
@@ -490,7 +374,7 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 .. index:: pair: function; bqp_solve_reverse_h_prod
 .. _doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_solve_reverse_h_prod(
@@ -530,45 +414,45 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful.
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
-		  
+
 		  * -4. The simple-bound constraints are inconsistent.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
-		  
+
 		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
 
 		  * 2. The product :math:`Hv` of the Hessian :math:`H` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`Hv` must be returned in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
-		  
+
 		  * 3. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting product :math:`Hv` must be placed in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
-		  
+
 		  * 4. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting **nonzeros** in the product :math:`Hv` must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeros placed in nz_prod[0 : nz_prod_end-1]. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged. Typically v will be very sparse (i.e., nz_p_end-nz_p_start will be small).
 
 	*
@@ -649,7 +533,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 .. index:: pair: function; bqp_information
 .. _doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_information(void** data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status)
@@ -676,15 +560,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; bqp_terminate
 .. _doxid-galahad__bqp_8h_1a34db499197d1fd6fb78b294473796fbc:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void bqp_terminate(
@@ -716,4 +600,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`bqp_inform_type <doxid-structbqp__inform__type>`)
-

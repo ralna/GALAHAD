@@ -9,89 +9,13 @@ overview of functions provided
 	struct_lstr_control_type.rst
 	struct_lstr_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`lstr_control_type<doxid-structlstr__control__type>`;
-	struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`;
-
-	// global functions
-
-	void :ref:`lstr_initialize<doxid-galahad__lstr_8h_1ae423bf7ffc77c89f461448ca1f5c286c>`(
-		void** data,
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`lstr_read_specfile<doxid-galahad__lstr_8h_1a3d3fa989fe4c3b40cd7e296249d2205d>`(
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		const char specfile[]
-	);
-
-	void :ref:`lstr_import_control<doxid-galahad__lstr_8h_1a1a8ad63d944dc046fd2040554d6d01e5>`(
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`lstr_solve_problem<doxid-galahad__lstr_8h_1af3355e5a8df63a9c7173eb974a1e7562>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
-	);
-
-	void :ref:`lstr_information<doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481>`(void** data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status);
-
-	void :ref:`lstr_terminate<doxid-galahad__lstr_8h_1aa198189942e179e52699e1fedfcdf9d1>`(
-		void** data,
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; lstr_initialize
 .. _doxid-galahad__lstr_8h_1ae423bf7ffc77c89f461448ca1f5c286c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_initialize(
@@ -122,15 +46,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; lstr_read_specfile
 .. _doxid-galahad__lstr_8h_1a3d3fa989fe4c3b40cd7e296249d2205d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_read_specfile(
@@ -160,7 +84,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; lstr_import_control
 .. _doxid-galahad__lstr_8h_1a1a8ad63d944dc046fd2040554d6d01e5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_import_control(
@@ -191,15 +115,15 @@ Import control parameters prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; lstr_solve_problem
 .. _doxid-galahad__lstr_8h_1af3355e5a8df63a9c7173eb974a1e7562:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_solve_problem(
@@ -230,49 +154,49 @@ Solve the trust-region least-squares problem using reverse communication.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  This must be set to
-		  
+
 		  * 1. on initial entry. Set u (below) to :math:`b` for this entry.
-		  
+
 		  * 5. the iteration is to be restarted with a smaller radius but with all other data unchanged. Set u (below) to :math:`b` for this entry.
-		  
+
 		  Possible exit values are:
-		  
+
 		  * 0. the solution has been found
-		  
+
 		  * 2. The user must perform the operation
-		    
+
 		    .. math::
-		    
+
 		    	u := u + A v,
-		    
+
 		    \n
 		                   u := u + A v,
 		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`u` must overwrite the content of u. No argument except u should be altered before recalling the function
-		  
+
 		  * 3. The user must perform the operation
-		    
+
 		    .. math::
-		    
+
 		    	v := v + A^T u,
-		    
+
 		    \n
 		                   v := v + A^T u,
 		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`v` must overwrite the content of v. No argument except v should be altered before recalling the function
-		  
+
 		  * 4. The user must reset u (below) to :math:`b` are recall the function. No argument except u should be altered before recalling the function
-		  
+
 		  * -1. an array allocation has failed
-		  
+
 		  * -2. an array deallocation has failed
-		  
+
 		  * -3. one or more of n, m or weight violates allowed bounds
-		  
+
 		  * -18. the iteration limit has been exceeded
-		  
+
 		  * -25. status is negative on entry
 
 	*
@@ -308,7 +232,7 @@ Solve the trust-region least-squares problem using reverse communication.
 .. index:: pair: function; lstr_information
 .. _doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_information(void** data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status)
@@ -335,15 +259,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; lstr_terminate
 .. _doxid-galahad__lstr_8h_1aa198189942e179e52699e1fedfcdf9d1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void lstr_terminate(
@@ -375,4 +299,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`lstr_inform_type <doxid-structlstr__inform__type>`)
-

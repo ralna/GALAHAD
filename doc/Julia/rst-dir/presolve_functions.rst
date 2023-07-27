@@ -9,153 +9,13 @@ overview of functions provided
 	struct_presolve_control_type.rst
 	struct_presolve_inform_type.rst
 
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-	// namespaces
-
-	namespace :ref:`conf<doxid-namespaceconf>`;
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`;
-	struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`;
-
-	// global functions
-
-	void :ref:`presolve_initialize<doxid-galahad__presolve_8h_1a30348a4e0a189046f55d995941693ed9>`(
-		void** data,
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		int* status
-	);
-
-	void :ref:`presolve_read_specfile<doxid-galahad__presolve_8h_1a78f57f6dd2885f41e9b79cc784ff673f>`(
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		const char specfile[]
-	);
-
-	void :ref:`presolve_import_problem<doxid-galahad__presolve_8h_1aca96df1bce848a32af9f599a11c4c991>`(
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		int* n_out,
-		int* m_out,
-		int* H_ne_out,
-		int* A_ne_out
-	);
-
-	void :ref:`presolve_transform_problem<doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int H_ne,
-		int H_col[],
-		int H_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		int A_ne,
-		int A_col[],
-		int A_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[]
-	);
-
-	void :ref:`presolve_restore_solution<doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495>`(
-		void** data,
-		int* status,
-		int n_in,
-		int m_in,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_in[],
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[]
-	);
-
-	void :ref:`presolve_information<doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b>`(
-		void** data,
-		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform,
-		int* status
-	);
-
-	void :ref:`presolve_terminate<doxid-galahad__presolve_8h_1abe2d3138390135885716064c3befb36b>`(
-		void** data,
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform
-	);
-
-.. _details-global:
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; presolve_initialize
 .. _doxid-galahad__presolve_8h_1a30348a4e0a189046f55d995941693ed9:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_initialize(
@@ -186,15 +46,15 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The import was succesful.
 
 .. index:: pair: function; presolve_read_specfile
 .. _doxid-galahad__presolve_8h_1a78f57f6dd2885f41e9b79cc784ff673f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_read_specfile(
@@ -224,7 +84,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; presolve_import_problem
 .. _doxid-galahad__presolve_8h_1aca96df1bce848a32af9f599a11c4c991:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_import_problem(
@@ -279,17 +139,17 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
-		  
+
 		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
 
 	*
@@ -415,7 +275,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 .. index:: pair: function; presolve_transform_problem
 .. _doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_transform_problem(
@@ -460,15 +320,15 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The input values n, m, A_ne or H_ne do not agree with those output as necessary from presolve_import_problem.
 
 	*
@@ -574,7 +434,7 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 .. index:: pair: function; presolve_restore_solution
 .. _doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_restore_solution(
@@ -611,15 +471,15 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 0. The import was succesful
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The input values n, m, n_in and m_in do not agree with those input to and output as necessary from presolve_import_problem.
 
 	*
@@ -685,7 +545,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 .. index:: pair: function; presolve_information
 .. _doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_information(
@@ -716,15 +576,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; presolve_terminate
 .. _doxid-galahad__presolve_8h_1abe2d3138390135885716064c3befb36b:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void presolve_terminate(
@@ -756,4 +616,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`presolve_inform_type <doxid-structpresolve__inform__type>`)
-

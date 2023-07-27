@@ -12,176 +12,13 @@ overview of functions provided
 	struct_nls_inform_type.rst
 	struct_nls_time_type.rst
 
-
-.. ref-code-block:: cpp
-	:class: doxyrest-overview-code-block
-
-	
-
-	// typedefs
-
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
-
-	// structs
-
-	struct :ref:`nls_subproblem_control_type<doxid-structnls__subproblem__control__type>`;
-	struct :ref:`nls_control_type<doxid-structnls__control__type>`;
-	struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>`;
-	struct :ref:`nls_inform_type<doxid-structnls__inform__type>`;
-	struct :ref:`nls_time_type<doxid-structnls__time__type>`;
-
-	// function calls
-
-	void :ref:`nls_initialize<doxid-galahad__nls_8h_1aa344bb15b74ab3b3ee6afb2de072b19f>`(
-		void** data,
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform
-	);
-
-	void :ref:`nls_read_specfile<doxid-galahad__nls_8h_1adf9db7eff2fce137ae2abd2e013c47b3>`(struct :ref:`nls_control_type<doxid-structnls__control__type>`* control, const char specfile[]);
-
-	void :ref:`nls_import<doxid-galahad__nls_8h_1a3f0eb83fd31ee4108156f2e84176389d>`(
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const char J_type[],
-		int J_ne,
-		const int J_row[],
-		const int J_col[],
-		const int J_ptr[],
-		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const char P_type[],
-		int P_ne,
-		const int P_row[],
-		const int P_col[],
-		const int P_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[]
-	);
-
-	void :ref:`nls_reset_control<doxid-galahad__nls_8h_1a07f0857c9923ad0f92d51ed00833afda>`(
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		void** data,
-		int* status
-	);
-
-	void :ref:`nls_solve_with_mat<doxid-galahad__nls_8h_1ae923c2e6afabb3563fe0998d45b715c4>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_c,
-		int j_ne,
-		int(*)(int, int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_j,
-		int h_ne,
-		int(*)(int, int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_h,
-		int p_ne,
-		int(*)(int, int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprods
-	);
-
-	void :ref:`nls_solve_without_mat<doxid-galahad__nls_8h_1a692ecbfaa428584e60aa4c33d7278a64>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_c,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const bool, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_jprod,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int p_ne,
-		int(*)(int, int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprods
-	);
-
-	void :ref:`nls_solve_reverse_with_mat<doxid-galahad__nls_8h_1a9ad89605640c53c33ddd5894b5e3edd1>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int j_ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` J_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		int h_ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		int p_ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` P_val[]
-	);
-
-	void :ref:`nls_solve_reverse_without_mat<doxid-galahad__nls_8h_1a6dddd928c19adec0abf76bdb2d75da17>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		bool* transpose,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		int p_ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` P_val[]
-	);
-
-	void :ref:`nls_information<doxid-galahad__nls_8h_1a765da96b0a1f3d07dab53cc3400c22d8>`(void** data, struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform, int* status);
-
-	void :ref:`nls_terminate<doxid-galahad__nls_8h_1a7babe9112dfad1eb7b57b70135704ab0>`(
-		void** data,
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform
-	);
-
-.. _details-global:
-
-
-typedefs
---------
-
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef float real_sp_
-
-``real_sp_`` is real single precision
-
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	typedef double real_wp_
-
-``real_wp_`` is the real working precision used
-
 function calls
 --------------
 
 .. index:: pair: function; nls_initialize
 .. _doxid-galahad__nls_8h_1aa344bb15b74ab3b3ee6afb2de072b19f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_initialize(
@@ -217,7 +54,7 @@ Set default control values and initialize private data
 .. index:: pair: function; nls_read_specfile
 .. _doxid-galahad__nls_8h_1adf9db7eff2fce137ae2abd2e013c47b3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_read_specfile(struct :ref:`nls_control_type<doxid-structnls__control__type>`* control, const char specfile[])
@@ -244,7 +81,7 @@ Read the content of a specification file, and assign values associated with give
 .. index:: pair: function; nls_import
 .. _doxid-galahad__nls_8h_1a3f0eb83fd31ee4108156f2e84176389d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_import(
@@ -293,15 +130,15 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
-		  
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restrictions n > 0, m > 0 or requirement that J/H/P_type contains its relevant string 'dense', 'dense_by_columns', 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'diagonal' or 'absent' has been violated.
 
 	*
@@ -397,7 +234,7 @@ Import problem data into internal storage prior to solution.
 .. index:: pair: function; nls_reset_control
 .. _doxid-galahad__nls_8h_1a07f0857c9923ad0f92d51ed00833afda:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_reset_control(
@@ -428,15 +265,15 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
-		  
+
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
 .. index:: pair: function; nls_solve_with_mat
 .. _doxid-galahad__nls_8h_1ae923c2e6afabb3563fe0998d45b715c4:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_solve_with_mat(
@@ -481,37 +318,37 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 	*
@@ -542,13 +379,13 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- eval_c
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_c( int n, const double x[], double c[], const void *userdata )
-		  
+
 		  The componnts of the residual function :math:`c(x)` evaluated at x= :math:`x` must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
 
 	*
@@ -559,14 +396,14 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- eval_j
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_j( int n, int m, int jne, const double x[], double j[],
 		  	            const void *userdata )
-		  
+
 		  The components of the Jacobian :math:`J = \nabla_x c(x`) of the residuals must be assigned to j in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_j`` via the structure ``userdata``.
 
 	*
@@ -577,14 +414,14 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- eval_h
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_h( int n, int m, int hne, const double x[], const double y[],
 		  	            double h[], const void *userdata )
-		  
+
 		  The nonzeros of the matrix :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` of the weighted residual Hessian evaluated at x= :math:`x` and y= :math:`y` must be assigned to h in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
 
 	*
@@ -595,21 +432,21 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- eval_hprods
 
-		- 
+		-
 		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_hprods( int n, int m, int pne, const double x[],
 		  	                    const double v[], double p[], bool got_h,
 		  	                    const void *userdata ) );
-		  
+
 		  The entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` must be returned in p and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
 
 .. index:: pair: function; nls_solve_without_mat
 .. _doxid-galahad__nls_8h_1a692ecbfaa428584e60aa4c33d7278a64:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_solve_without_mat(
@@ -652,37 +489,37 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
 	*
@@ -713,41 +550,41 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- eval_c
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_c( int n, const double x[], double c[], const void *userdata )
-		  
+
 		  The componnts of the residual function :math:`c(x)` evaluated at x= :math:`x` must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
 
 	*
 		- eval_jprod
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_jprod( int n, int m, const double x[], bool transpose,
 		  	                double u[], const double v[], bool got_j,
 		  	                const void *userdata )
-		  
+
 		  The sum :math:`u + \nabla_{x}c_(x) v` (if tranpose is false) or The sum :math:`u + (\nabla_{x}c_(x))^T v` (if tranpose is true) bewteen the product of the Jacobian :math:`\nabla_{x}c_(x)` or its tranpose with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_jprod`` via the structure ``userdata``.
 
 	*
 		- eval_hprod
 
-		- 
+		-
 		  is a user-supplied function that must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_hprod( int n, int m, const double x[], const double y[],
 		  	                double u[], const double v[], bool got_h,
 		  	                const void *userdata )
-		  
+
 		  The sum :math:`u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v` of the product of the weighted residual Hessian :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` evaluated at x= :math:`x` and y= :math:`y` with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessians have already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
 
 	*
@@ -758,21 +595,21 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- eval_hprods
 
-		- 
+		-
 		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
-		  
-		  .. ref-code-block:: cpp
-		  
+
+		  .. ref-code-block:: julia
+
 		  	int eval_hprods( int n, int m, int p_ne, const double x[],
 		  	                 const double v[], double pval[], bool got_h,
 		  	                 const void *userdata )
-		  
+
 		  The entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` must be returned in pval and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
 
 .. index:: pair: function; nls_solve_reverse_with_mat
 .. _doxid-galahad__nls_8h_1a9ad89605640c53c33ddd5894b5e3edd1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_solve_reverse_with_mat(
@@ -813,49 +650,49 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
+
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
-		  
-		  
-		  
+
+
+
 		  * 2. The user should compute the vector of residuals :math:`c(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate :math:`c(x)` for instance, if the function is undefined at :math:`x` the user need not set c, but should then set eval_status to a non-zero value.
-		  
-		  
-		  
+
+
+
 		  * 3. The user should compute the Jacobian of the vector of residual functions, :math:`\nabla_x c(x)`, at the point :math:`x` indicated in x and then re-enter the function. The l-th component of the Jacobian stored according to the scheme specified for the remainder of :math:`J` in the earlier call to nls_import should be set in J_val[l], for l = 0, ..., J_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`J` for instance, if a component of the matrix is undefined at :math:`x` the user need not set J_val, but should then set eval_status to a non-zero value.
 
 		  * 4. The user should compute the matrix :math:`H = \sum_{i=1}^m v_i \nabla_{xx}c_i(x)` of weighted residual Hessian evaluated at x= :math:`x` and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`H` in the earlier call to nls_import should be set in H_val[l], for l = 0, ..., H_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`H` for instance, if a component of the matrix is undefined at :math:`x` the user need not set H_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if the Gauss-Newton model is selected.
-		  
+
 		  * 7. The user should compute the entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`P` in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`P` for instance, if a component of the matrix is undefined at :math:`x` the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
 
 	*
@@ -931,7 +768,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. index:: pair: function; nls_solve_reverse_without_mat
 .. _doxid-galahad__nls_8h_1a6dddd928c19adec0abf76bdb2d75da17:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_solve_reverse_without_mat(
@@ -970,55 +807,55 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
-		  
+
 		  On initial entry, status must be set to 1.
-		  
+
 		  Possible exit are:
-		  
+
 		  * 0. The run was succesful
-		  
-		  
-		  
+
+
+
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
+
 		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
-		  
+
 		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
 
 		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-		  
+
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
-		  
-		  
-		  
+
+
+
 		  * -17. The step is too small to make further impact.
-		  
+
 		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
+
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
-		  
-		  
-		  
+
+
+
 		  * 2. The user should compute the vector of residuals :math:`c(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate :math:`c(x)` for instance, if the function is undefined at :math:`x` the user need not set c, but should then set eval_status to a non-zero value.
-		  
-		  
-		  
+
+
+
 		  * 5. The user should compute the sum :math:`u + \nabla_{x}c_(x) v` (if tranpose is false) or :math:`u + (\nabla_{x}c_(x))^T v` (if tranpose is true) between the product of the Jacobian :math:`\nabla_{x}c_(x)` or its tranpose with the vector v= :math:`v` and the vector u = $ :math:`u`, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the Jacobian is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
-		  
-		  
-		  
+
+
+
 		  * 6. The user should compute the sum :math:`u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v` between the product of the weighted residual Hessian :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` evaluated at x= :math:`x` and y= :math:`y` with the vector v= :math:`v` and the the vector u = $ :math:`u`, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the weifghted residual Hessian is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
-		  
-		  
-		  
+
+
+
 		  * 7. The user should compute the entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`P` in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`P` for instance, if a component of the matrix is undefined at :math:`x` the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
 
 	*
@@ -1084,7 +921,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. index:: pair: function; nls_information
 .. _doxid-galahad__nls_8h_1a765da96b0a1f3d07dab53cc3400c22d8:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_information(void** data, struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform, int* status)
@@ -1111,15 +948,15 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
-		  
+
 		  * 0. The values were recorded succesfully
 
 .. index:: pair: function; nls_terminate
 .. _doxid-galahad__nls_8h_1a7babe9112dfad1eb7b57b70135704ab0:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	void nls_terminate(
@@ -1151,4 +988,3 @@ Deallocate all internal private storage
 		- inform
 
 		- is a struct containing output information (see :ref:`nls_inform_type <doxid-structnls__inform__type>`)
-
