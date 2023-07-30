@@ -7,7 +7,7 @@ lms_inform_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_lms.h>
@@ -15,10 +15,10 @@ lms_inform_type structure
 	struct lms_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
-		bool :ref:`updates_skipped<doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8>`;
+		Int32 :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		Int32 :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		Int32 :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
+		Bool :ref:`updates_skipped<doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8>`;
 		char :ref:`bad_alloc<doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`lms_time_type<doxid-structlms__time__type>` :ref:`time<doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05>`;
 	};
@@ -27,7 +27,7 @@ lms_inform_type structure
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -35,10 +35,10 @@ components
 .. index:: pair: variable; status
 .. _doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int status
+	Int32 status
 
 the return status. Possible values are:
 
@@ -57,47 +57,47 @@ the return status. Possible values are:
 .. index:: pair: variable; alloc_status
 .. _doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	Int32 alloc_status
 
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; length
 .. _doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int length
+	Int32 length
 
 the number of pairs (s,y) currently used to represent the limited-memory matrix.
 
 .. index:: pair: variable; updates_skipped
 .. _doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool updates_skipped
+	Bool updates_skipped
 
 have (s,y) pairs been skipped when forming the limited-memory matrix?
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char bad_alloc[81]
+	NTuple{81,Cchar} bad_alloc
 
 the name of the array for which an allocation/deallocation error occurred.
 
 .. index:: pair: variable; time
 .. _doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	struct :ref:`lms_time_type<doxid-structlms__time__type>` time

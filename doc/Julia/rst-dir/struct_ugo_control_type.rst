@@ -46,7 +46,7 @@ ugo_control_type structure
 detailed documentation
 ----------------------
 
-control derived type as a C struct
+control derived type as a Julia structure
 
 components
 ~~~~~~~~~~

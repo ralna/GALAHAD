@@ -7,7 +7,7 @@ rpd_inform_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_rpd.h>
@@ -15,11 +15,11 @@ rpd_inform_type structure
 	struct rpd_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		Int32 :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		Int32 :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
-		int :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
+		Int32 :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
+		Int32 :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
 		char :ref:`p_type<doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397>`[4];
 	};
 .. _details-structrpd__inform__type:
@@ -27,7 +27,7 @@ rpd_inform_type structure
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -35,10 +35,10 @@ components
 .. index:: pair: variable; status
 .. _doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int status
+	Int32 status
 
 return status. Possible values are:
 
@@ -57,47 +57,47 @@ return status. Possible values are:
 .. index:: pair: variable; alloc_status
 .. _doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	Int32 alloc_status
 
 the status of the last attempted allocation or deallocation
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char bad_alloc[81]
+	NTuple{81,Cchar} bad_alloc
 
 the name of the array for which an allocation or deallocation error occurred
 
 .. index:: pair: variable; io_status
 .. _doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int io_status
+	Int32 io_status
 
 status from last read attempt
 
 .. index:: pair: variable; line
 .. _doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int line
+	Int32 line
 
 number of last line read from i/o file
 
 .. index:: pair: variable; p_type
 .. _doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
 	char p_type[4]

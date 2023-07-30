@@ -19,7 +19,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_initialize(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
+	void dps_initialize(void** data, structure :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -38,13 +38,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -54,7 +54,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[])
+	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDPS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
 
@@ -68,7 +68,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- specfile
@@ -85,9 +85,9 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		const char H_type[],
-		int ne,
+		Int32 n,
+		const Vararg{Cchar} H_type[],
+		Int32 ne,
 		const int H_row[],
 		const int H_col[],
 		const int H_ptr[]
@@ -105,7 +105,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,32 +129,32 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; dps_reset_control
 .. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
@@ -180,7 +180,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- data
@@ -191,7 +191,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -204,13 +204,13 @@ Reset control parameters after import if required.
 	void dps_solve_tr_problem(
 		void** data,
 		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		Int32 n,
+		Int32 ne,
+		T H_val[],
+		T c[],
+		T f,
+		T radius,
+		T x[]
 	)
 
 Find the global minimizer of the trust-region problem (1).
@@ -231,7 +231,7 @@ Find the global minimizer of the trust-region problem (1).
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -256,37 +256,37 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, :math:`\Delta > 0`.
+		- is a scalar variable pointer of type T that holds the value of the trust-region radius, :math:`\Delta > 0`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
@@ -297,14 +297,14 @@ Find the global minimizer of the trust-region problem (1).
 	void dps_solve_rq_problem(
 		void** data,
 		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		Int32 n,
+		Int32 ne,
+		T H_val[],
+		T c[],
+		T f,
+		T power,
+		T weight,
+		T x[]
 	)
 
 Find the global minimizer of the regularized-quadartic problem (2).
@@ -325,7 +325,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -350,42 +350,42 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization weight, :math:`\sigma > 0`.
+		- is a scalar variable pointer of type T that holds the value of the regularization weight, :math:`\sigma > 0`.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization power, :math:`p \geq 2`.
+		- is a scalar variable pointer of type T that holds the value of the regularization power, :math:`p \geq 2`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
@@ -396,11 +396,11 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	void dps_resolve_tr_problem(
 		void** data,
 		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		Int32 n,
+		T c[],
+		T f,
+		T radius,
+		T x[]
 	)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
@@ -421,7 +421,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -440,27 +440,27 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the constant term :math:`f` in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, :math:`\Delta > 0`.
+		- is a scalar variable pointer of type T that holds the value of the trust-region radius, :math:`\Delta > 0`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
@@ -471,12 +471,12 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	void dps_resolve_rq_problem(
 		void** data,
 		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		Int32 n,
+		T c[],
+		T f,
+		T power,
+		T weight,
+		T x[]
 	)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
@@ -497,7 +497,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -514,32 +514,32 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization weight, :math:`\sigma > 0`.
+		- is a scalar variable pointer of type T that holds the value of the regularization weight, :math:`\sigma > 0`.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization power, :math:`p \geq 2`.
+		- is a scalar variable pointer of type T that holds the value of the regularization power, :math:`p \geq 2`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
@@ -547,7 +547,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_information(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
+	void dps_information(void** data, structure :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -566,13 +566,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
+		- is a structure containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -605,9 +605,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure containing control information (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)
+		- is a structure containing output information (see :ref:`dps_inform_type <doxid-structdps__inform__type>`)

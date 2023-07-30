@@ -42,13 +42,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
+		- is a structure containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -60,7 +60,7 @@ Set default control values and initialize private data
 
 	void psls_read_specfile(
 		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNPSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/psls.pdf for a list of keywords that may be set.
@@ -75,7 +75,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
+		- is a structure containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
 
 	*
 		- specfile
@@ -92,9 +92,9 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		const char type[],
-		int ne,
+		Int32 n,
+		const Vararg{Cchar} type[],
+		Int32 ne,
 		const int row[],
 		const int col[],
 		const int ptr[]
@@ -112,7 +112,7 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
 
 	*
 		- data
@@ -123,7 +123,7 @@ Import structural matrix data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -136,32 +136,32 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`A`.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; psls_reset_control
 .. _doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab:
@@ -187,7 +187,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
 
 	*
 		- data
@@ -198,7 +198,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -211,8 +211,8 @@ Reset control parameters after import if required.
 	void psls_form_preconditioner(
 		void** data,
 		int* status,
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[]
+		Int32 ne,
+		const T val[]
 	)
 
 Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
@@ -233,7 +233,7 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -252,12 +252,12 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
 
 .. index:: pair: function; psls_form_subset_preconditioner
 .. _doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65:
@@ -268,9 +268,9 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 	void psls_form_subset_preconditioner(
 		void** data,
 		int* status,
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		int n_sub,
+		Int32 ne,
+		const T val[],
+		Int32 n_sub,
 		const int sub[]
 	)
 
@@ -292,7 +292,7 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -311,22 +311,22 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
 
 	*
 		- n_sub
 
-		- is a scalar variable of type int, that holds the number of rows (and columns) of the required submatrix of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows (and columns) of the required submatrix of :math:`A`.
 
 	*
 		- sub
 
-		- is a one-dimensional array of size n_sub and type int, that holds the indices of the rows of required submatrix.
+		- is a one-dimensional array of size n_sub and type Int32 that holds the indices of the rows of required submatrix.
 
 .. index:: pair: function; psls_update_preconditioner
 .. _doxid-galahad__psls_8h_1a42a8097e64b527cff18ab66c07a32d1d:
@@ -337,9 +337,9 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 	void psls_update_preconditioner(
 		void** data,
 		int* status,
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		int n_del,
+		Int32 ne,
+		const T val[],
+		Int32 n_del,
 		const int del[]
 	)
 
@@ -361,7 +361,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -380,22 +380,22 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
 
 	*
 		- n_del
 
-		- is a scalar variable of type int, that holds the number of rows (and columns) of (sub) matrix that are to be deleted.
+		- is a scalar variable of type Int32 that holds the number of rows (and columns) of (sub) matrix that are to be deleted.
 
 	*
 		- del
 
-		- is a one-dimensional array of size n_fix and type int, that holds the indices of the rows that are to be deleted.
+		- is a one-dimensional array of size n_fix and type Int32 that holds the indices of the rows that are to be deleted.
 
 .. index:: pair: function; psls_apply_preconditioner
 .. _doxid-galahad__psls_8h_1a1bae97d4a0e63bce7380422ed83306e8:
@@ -403,7 +403,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_apply_preconditioner(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
+	void psls_apply_preconditioner(void** data, int* status, int n, T sol[])
 
 Solve the linear system :math:`Px=b`.
 
@@ -423,7 +423,7 @@ Solve the linear system :math:`Px=b`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -438,7 +438,7 @@ Solve the linear system :math:`Px=b`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vectors :math:`b` and :math:`x`.
 
 	*
 		- sol
@@ -451,7 +451,7 @@ Solve the linear system :math:`Px=b`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_information(void** data, struct :ref:`psls_inform_type<doxid-structpsls__inform__type>`* inform, int* status)
+	void psls_information(void** data, structure :ref:`psls_inform_type<doxid-structpsls__inform__type>`* inform, int* status)
 
 Provide output information
 
@@ -470,13 +470,13 @@ Provide output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`psls_inform_type <doxid-structpsls__inform__type>`)
+		- is a structure containing output information (see :ref:`psls_inform_type <doxid-structpsls__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -509,9 +509,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
+		- is a structure containing control information (see :ref:`psls_control_type <doxid-structpsls__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`psls_inform_type <doxid-structpsls__inform__type>`)
+		- is a structure containing output information (see :ref:`psls_inform_type <doxid-structpsls__inform__type>`)

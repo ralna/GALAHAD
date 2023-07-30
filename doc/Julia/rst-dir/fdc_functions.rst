@@ -19,7 +19,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_initialize(void** data, struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, int* status)
+	void fdc_initialize(void** data, structure :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -38,13 +38,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
+		- is a structure containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -54,7 +54,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_read_specfile(struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, const char specfile[])
+	void fdc_read_specfile(struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
@@ -68,7 +68,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
+		- is a structure containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
 
 	*
 		- specfile
@@ -86,15 +86,15 @@ Read the content of a specification file, and assign values associated with give
 		void** data,
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform,
 		int* status,
-		int m,
-		int n,
-		int A_ne,
+		Int32 m,
+		Int32 n,
+		Int32 A_ne,
 		const int A_col[],
 		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
+		const T A_val[],
+		const T b[],
 		int* n_depen,
-		int depen[]
+		Int32 depen[]
 	)
 
 Find dependent rows and, if any, check if :math:`A x = b` is consistent
@@ -109,7 +109,7 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
+		- is a structure containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
 
 	*
 		- data
@@ -119,13 +119,13 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`fdc_inform_type <doxid-structfdc__inform__type>`)
+		- is a structure containing output information (see :ref:`fdc_inform_type <doxid-structfdc__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  Possible exit are:
 
@@ -148,47 +148,47 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows of :math:`A`.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of columns of :math:`A`.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of nonzero entries in :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of nonzero entries in :math:`A`.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of :math:`A` in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of :math:`A`, as well as the total number of entries.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the :math:`A` ordered as in A_col and A_ptr.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the :math:`A` ordered as in A_col and A_ptr.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the linear term :math:`b` in the constraints. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the linear term :math:`b` in the constraints. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
 
 	*
 		- n_depen
 
-		- is a scalar variable of type int, that holds the number of dependent constraints, if any.
+		- is a scalar variable of type Int32 that holds the number of dependent constraints, if any.
 
 	*
 		- depen
 
-		- is a one-dimensional array of size m and type int, whose first n_depen components contain the indices of dependent constraints.
+		- is a one-dimensional array of size m and type Int32 whose first n_depen components contain the indices of dependent constraints.
 
 .. index:: pair: function; fdc_terminate
 .. _doxid-galahad__fdc_8h_1a9c0167379258891dee32b35e0529b9f9:
@@ -219,9 +219,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
+		- is a structure containing control information (see :ref:`fdc_control_type <doxid-structfdc__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`fdc_inform_type <doxid-structfdc__inform__type>`)
+		- is a structure containing output information (see :ref:`fdc_inform_type <doxid-structfdc__inform__type>`)

@@ -41,13 +41,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
+		- is a structure containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -59,7 +59,7 @@ Set default control values and initialize private data
 
 	void l2rt_read_specfile(
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNL2RT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/l2rt.pdf for a list of keywords that may be set.
@@ -74,7 +74,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
+		- is a structure containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
 
 	*
 		- specfile
@@ -105,7 +105,7 @@ Import control parameters prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import control parameters prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,14 +129,14 @@ Import control parameters prior to solution.
 	void l2rt_solve_problem(
 		void** data,
 		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` shift,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		Int32 m,
+		Int32 n,
+		const T power,
+		const T weight,
+		const T shift,
+		T x[],
+		T u[],
+		T v[]
 	)
 
 Solve the regularized-least-squares problem using reverse communication.
@@ -157,7 +157,7 @@ Solve the regularized-least-squares problem using reverse communication.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  This must be set to
 
@@ -202,42 +202,42 @@ Solve the regularized-least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
+		- is a scalar variable of type Int32 that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
+		- is a scalar variable of type Int32 that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
 
 	*
 		- power
 
-		- is a scalar of type double, that holds the regularization power, :math:`p \geq 2`
+		- is a scalar of type T that holds the regularization power, :math:`p \geq 2`
 
 	*
 		- weight
 
-		- is a scalar of type double, that holds the regularization weight, :math:`\sigma > 0`
+		- is a scalar of type T that holds the regularization weight, :math:`\sigma > 0`
 
 	*
 		- shift
 
-		- is a scalar of type double, that holds the shift, :math:`\mu`
+		- is a scalar of type T that holds the shift, :math:`\mu`
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- u
 
-		- is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size m and type T that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size n and type T that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 .. index:: pair: function; l2rt_information
 .. _doxid-galahad__l2rt_8h_1a4fa18245556cf87b255b2b9ac5748ca9:
@@ -245,7 +245,7 @@ Solve the regularized-least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_information(void** data, struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, int* status)
+	void l2rt_information(void** data, structure :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -264,13 +264,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`l2rt_inform_type <doxid-structl2rt__inform__type>`)
+		- is a structure containing output information (see :ref:`l2rt_inform_type <doxid-structl2rt__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -303,9 +303,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
+		- is a structure containing control information (see :ref:`l2rt_control_type <doxid-structl2rt__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`l2rt_inform_type <doxid-structl2rt__inform__type>`)
+		- is a structure containing output information (see :ref:`l2rt_inform_type <doxid-structl2rt__inform__type>`)

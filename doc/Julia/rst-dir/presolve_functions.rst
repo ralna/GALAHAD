@@ -41,13 +41,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
+		- is a structure containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -59,7 +59,7 @@ Set default control values and initialize private data
 
 	void presolve_read_specfile(
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
@@ -74,7 +74,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
+		- is a structure containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
 
 	*
 		- specfile
@@ -91,26 +91,26 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		int m,
-		const char H_type[],
-		int H_ne,
+		Int32 n,
+		Int32 m,
+		const Vararg{Cchar} H_type[],
+		Int32 H_ne,
 		const int H_row[],
 		const int H_col[],
 		const int H_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const char A_type[],
-		int A_ne,
+		const T H_val[],
+		const T g[],
+		const T f,
+		const Vararg{Cchar} A_type[],
+		Int32 A_ne,
 		const int A_row[],
 		const int A_col[],
 		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
+		const T A_val[],
+		const T c_l[],
+		const T c_u[],
+		const T x_l[],
+		const T x_u[],
 		int* n_out,
 		int* m_out,
 		int* H_ne_out,
@@ -129,7 +129,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
 
 	*
 		- data
@@ -140,7 +140,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful
 
@@ -155,122 +155,122 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type Int32 that holds the number of general linear constraints.
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that holds the lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
+		- is a one-dimensional array of size m and type T that holds the lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that holds the upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
+		- is a one-dimensional array of size m and type T that holds the upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- n_out
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem.
+		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem.
 
 	*
 		- m_out
 
-		- is a scalar variable of type int, that holds the number of general linear constraints in the transformed problem.
+		- is a scalar variable of type Int32 that holds the number of general linear constraints in the transformed problem.
 
 	*
 		- H_ne_out
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`H` in the transformed problem.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the transformed problem.
 
 	*
 		- A_ne_out
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` in the transformed problem.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the transformed problem.
 
 .. index:: pair: function; presolve_transform_problem
 .. _doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1:
@@ -281,26 +281,26 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	void presolve_transform_problem(
 		void** data,
 		int* status,
-		int n,
-		int m,
-		int H_ne,
-		int H_col[],
-		int H_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		int A_ne,
-		int A_col[],
-		int A_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[]
+		Int32 n,
+		Int32 m,
+		Int32 H_ne,
+		Int32 H_col[],
+		Int32 H_ptr[],
+		T H_val[],
+		T g[],
+		T* f,
+		Int32 A_ne,
+		Int32 A_col[],
+		Int32 A_ptr[],
+		T A_val[],
+		T c_l[],
+		T c_u[],
+		T x_l[],
+		T x_u[],
+		T y_l[],
+		T y_u[],
+		T z_l[],
+		T z_u[]
 	)
 
 Apply the presolve algorithm to simplify the input problem, and output the transformed variant
@@ -321,7 +321,7 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful
 
@@ -334,102 +334,102 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the transformed :math:`H`. This must match the value H_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the transformed :math:`H`. This must match the value H_ne_out from the last call to presolve_import_problem.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of the transformed :math:`H` in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of the transformed :math:`H` in the sparse row-wise storage scheme.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of the transformed :math:`H` in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of the transformed :math:`H` in the sparse row-wise storage scheme.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the the transformed Hessian matrix :math:`H` in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the the transformed Hessian matrix :math:`H` in the sparse row-wise storage scheme.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the the transformed linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the the transformed linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the transformed constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the transformed constant term :math:`f` of the objective function.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the transformed :math:`A`. This must match the value A_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of entries in the transformed :math:`A`. This must match the value A_ne_out from the last call to presolve_import_problem.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of the transformed :math:`A` in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of the transformed :math:`A` in the sparse row-wise storage scheme.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the transformed :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the transformed :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the transformed constraint Jacobian matrix :math:`A` in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the transformed constraint Jacobian matrix :math:`A` in the sparse row-wise storage scheme.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that holds the transformed lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
+		- is a one-dimensional array of size m and type T that holds the transformed lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that holds the transformed upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
+		- is a one-dimensional array of size m and type T that holds the transformed upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the transformed lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the transformed lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the transformed upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the transformed upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- y_l
 
-		- is a one-dimensional array of size m and type double, that holds the implied lower bounds :math:`y^l` on the transformed Lagrange multipliers :math:`y`. The i-th component of y_l, i = 0, ... , m-1, contains :math:`y^l_i`.
+		- is a one-dimensional array of size m and type T that holds the implied lower bounds :math:`y^l` on the transformed Lagrange multipliers :math:`y`. The i-th component of y_l, i = 0, ... , m-1, contains :math:`y^l_i`.
 
 	*
 		- y_u
 
-		- is a one-dimensional array of size m and type double, that holds the implied upper bounds :math:`y^u` on the transformed Lagrange multipliers :math:`y`. The i-th component of y_u, i = 0, ... , m-1, contains :math:`y^u_i`.
+		- is a one-dimensional array of size m and type T that holds the implied upper bounds :math:`y^u` on the transformed Lagrange multipliers :math:`y`. The i-th component of y_u, i = 0, ... , m-1, contains :math:`y^u_i`.
 
 	*
 		- z_l
 
-		- is a one-dimensional array of size m and type double, that holds the implied lower bounds :math:`y^l` on the transformed dual variables :math:`z`. The j-th component of z_l, j = 0, ... , n-1, contains :math:`z^l_i`.
+		- is a one-dimensional array of size m and type T that holds the implied lower bounds :math:`y^l` on the transformed dual variables :math:`z`. The j-th component of z_l, j = 0, ... , n-1, contains :math:`z^l_i`.
 
 	*
 		- z_u
 
-		- is a one-dimensional array of size m and type double, that holds the implied upper bounds :math:`y^u` on the transformed dual variables :math:`z`. The j-th component of z_u, j = 0, ... , n-1, contains :math:`z^u_i`.
+		- is a one-dimensional array of size m and type T that holds the implied upper bounds :math:`y^u` on the transformed dual variables :math:`z`. The j-th component of z_u, j = 0, ... , n-1, contains :math:`z^u_i`.
 
 .. index:: pair: function; presolve_restore_solution
 .. _doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495:
@@ -440,18 +440,18 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	void presolve_restore_solution(
 		void** data,
 		int* status,
-		int n_in,
-		int m_in,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_in[],
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[]
+		Int32 n_in,
+		Int32 m_in,
+		const T x_in[],
+		const T c_in[],
+		const T y_in[],
+		const T z_in[],
+		Int32 n,
+		Int32 m,
+		T x[],
+		T c[],
+		T y[],
+		T z[]
 	)
 
 Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
@@ -472,7 +472,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful
 
@@ -485,62 +485,62 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- n_in
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m_in
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- x_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the transformed values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n_in and type T that holds the transformed values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- c_in
 
-		- is a one-dimensional array of size m and type double, that holds the transformed residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
+		- is a one-dimensional array of size m and type T that holds the transformed residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
 
 	*
 		- y_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the values :math:`y` of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
+		- is a one-dimensional array of size n_in and type T that holds the values :math:`y` of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
 
 	*
 		- z_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the values :math:`z` of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n_in and type T that holds the values :math:`z` of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
+		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the transformed values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the transformed values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type double, that holds the transformed residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
+		- is a one-dimensional array of size m and type T that holds the transformed residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`y` of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`y` of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`z` of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
 
 .. index:: pair: function; presolve_information
 .. _doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b:
@@ -571,13 +571,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`presolve_inform_type <doxid-structpresolve__inform__type>`)
+		- is a structure containing output information (see :ref:`presolve_inform_type <doxid-structpresolve__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -610,9 +610,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
+		- is a structure containing control information (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`presolve_inform_type <doxid-structpresolve__inform__type>`)
+		- is a structure containing output information (see :ref:`presolve_inform_type <doxid-structpresolve__inform__type>`)

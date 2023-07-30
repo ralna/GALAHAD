@@ -18,7 +18,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_initialize(void** data, struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, int* status)
+	void rpd_initialize(void** data, structure :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -37,13 +37,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
+		- is a structure containing control information (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -55,7 +55,7 @@ Set default control values and initialize private data
 
 	void rpd_get_stats(
 		char qplib_file[],
-		int qplib_file_len,
+		Int32 qplib_file_len,
 		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
 		void** data,
 		int* status,
@@ -79,17 +79,17 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- qplib_file
 
-		- is a one-dimensional array of type char that specifies the name of the QPLIB file that is to be read.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the name of the QPLIB file that is to be read.
 
 	*
 		- qplib_file_len
 
-		- is a scalar variable of type int, that gives the number of characters in the name encoded in qplib_file.
+		- is a scalar variable of type Int32 that gives the number of characters in the name encoded in qplib_file.
 
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
 
 	*
 		- data
@@ -100,7 +100,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -112,7 +112,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 		- p_type
 
 		-
-		  is a one-dimensional array of size 4 and type char that specifies the type of quadratic programming problem encoded in the QPLIB file.
+		  is a one-dimensional array of size 4 and type Vararg{Cchar} that specifies the type of quadratic programming problem encoded in the QPLIB file.
 
 
 
@@ -173,27 +173,27 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type Int32 that holds the number of general constraints.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`H` stored in the sparse symmetric co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` stored in the sparse symmetric co-ordinate storage scheme.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` stored in the sparse co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` stored in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`H_c` stored in the joint sparse co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H_c` stored in the joint sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_g
 .. _doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a:
@@ -201,7 +201,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_g(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[])
+	void rpd_get_g(void** data, int* status, int n, T g[])
 
 Recover the linear term :math:`g` from in objective function
 
@@ -221,7 +221,7 @@ Recover the linear term :math:`g` from in objective function
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -230,12 +230,12 @@ Recover the linear term :math:`g` from in objective function
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that gives the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that gives the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
 
 .. index:: pair: function; rpd_get_f
 .. _doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c:
@@ -243,7 +243,7 @@ Recover the linear term :math:`g` from in objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_f(void** data, int* status, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f)
+	void rpd_get_f(void** data, int* status, T* f)
 
 Recover the constant term :math:`f` in the objective function.
 
@@ -263,7 +263,7 @@ Recover the constant term :math:`f` in the objective function.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -272,7 +272,7 @@ Recover the constant term :math:`f` in the objective function.
 	*
 		- f
 
-		- is a scalar of type double, that gives the constant term :math:`f` from the objective function.
+		- is a scalar of type T that gives the constant term :math:`f` from the objective function.
 
 .. index:: pair: function; rpd_get_xlu
 .. _doxid-galahad__rpd_8h_1a6a5cbf68b561cc6db0ba08304d28787c:
@@ -283,9 +283,9 @@ Recover the constant term :math:`f` in the objective function.
 	void rpd_get_xlu(
 		void** data,
 		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[]
+		Int32 n,
+		T x_l[],
+		T x_u[]
 	)
 
 Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
@@ -306,7 +306,7 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -315,17 +315,17 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that gives the lower bounds :math:`x_l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`(x_l)_j`.
+		- is a one-dimensional array of size n and type T that gives the lower bounds :math:`x_l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`(x_l)_j`.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that gives the upper bounds :math:`x_u` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`(x_u)_j`.
+		- is a one-dimensional array of size n and type T that gives the upper bounds :math:`x_u` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`(x_u)_j`.
 
 .. index:: pair: function; rpd_get_clu
 .. _doxid-galahad__rpd_8h_1aa3b44968b109ed194ed2bb04009f35ac:
@@ -336,9 +336,9 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 	void rpd_get_clu(
 		void** data,
 		int* status,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[]
+		Int32 m,
+		T c_l[],
+		T c_u[]
 	)
 
 Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
@@ -359,7 +359,7 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -368,17 +368,17 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type Int32 that holds the number of general constraints.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that gives the lower bounds :math:`c_l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`(c_l)_i`.
+		- is a one-dimensional array of size m and type T that gives the lower bounds :math:`c_l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`(c_l)_i`.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that gives the upper bounds :math:`c_u` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`(c_u)_i`.
+		- is a one-dimensional array of size m and type T that gives the upper bounds :math:`c_u` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`(c_u)_i`.
 
 .. index:: pair: function; rpd_get_h
 .. _doxid-galahad__rpd_8h_1a02021324df6f485160d327f2f5fca0d3:
@@ -389,10 +389,10 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 	void rpd_get_h(
 		void** data,
 		int* status,
-		int h_ne,
-		int h_row[],
-		int h_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_val[]
+		Int32 h_ne,
+		Int32 h_row[],
+		Int32 h_col[],
+		T h_val[]
 	)
 
 Recover the Hessian term :math:`H` in the objective function.
@@ -413,7 +413,7 @@ Recover the Hessian term :math:`H` in the objective function.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -422,22 +422,22 @@ Recover the Hessian term :math:`H` in the objective function.
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
 
 	*
 		- h_row
 
-		- is a one-dimensional array of size h_ne and type int, that gives the row indices of the lower triangular part of :math:`H` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of :math:`H` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
 
 	*
 		- h_col
 
-		- is a one-dimensional array of size h_ne and type int, that gives the column indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type Int32 that gives the column indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme.
 
 	*
 		- h_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_a
 .. _doxid-galahad__rpd_8h_1a8b0c3c507b12512b09ee4ec92596148e:
@@ -448,10 +448,10 @@ Recover the Hessian term :math:`H` in the objective function.
 	void rpd_get_a(
 		void** data,
 		int* status,
-		int a_ne,
-		int a_row[],
-		int a_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` a_val[]
+		Int32 a_ne,
+		Int32 a_row[],
+		Int32 a_col[],
+		T a_val[]
 	)
 
 Recover the Jacobian term :math:`A` in the constraints.
@@ -472,7 +472,7 @@ Recover the Jacobian term :math:`A` in the constraints.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -481,22 +481,22 @@ Recover the Jacobian term :math:`A` in the constraints.
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
 
 	*
 		- a_row
 
-		- is a one-dimensional array of size a_ne and type int, that gives the row indices of :math:`A` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of :math:`A` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
 
 	*
 		- a_col
 
-		- is a one-dimensional array of size a_ne and type int, that gives the column indices of :math:`A` in the sparse co-ordinate, storage scheme.
+		- is a one-dimensional array of size a_ne and type Int32 that gives the column indices of :math:`A` in the sparse co-ordinate, storage scheme.
 
 	*
 		- a_val
 
-		- is a one-dimensional array of size a_ne and type double, that gives the values of the entries of the constraint Jacobian matrix :math:`A` in the sparse co-ordinate scheme.
+		- is a one-dimensional array of size a_ne and type T that gives the values of the entries of the constraint Jacobian matrix :math:`A` in the sparse co-ordinate scheme.
 
 .. index:: pair: function; rpd_get_h_c
 .. _doxid-galahad__rpd_8h_1a55ae091188ad0d88920565549bd47451:
@@ -507,11 +507,11 @@ Recover the Jacobian term :math:`A` in the constraints.
 	void rpd_get_h_c(
 		void** data,
 		int* status,
-		int h_c_ne,
-		int h_c_ptr[],
-		int h_c_row[],
-		int h_c_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_c_val[]
+		Int32 h_c_ne,
+		Int32 h_c_ptr[],
+		Int32 h_c_row[],
+		Int32 h_c_col[],
+		T h_c_val[]
 	)
 
 Recover the Hessian terms :math:`H_c` in the constraints.
@@ -532,7 +532,7 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -541,27 +541,27 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 	*
 		- h_c_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
 
 	*
 		- h_c_ptr
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the constraint indices of the lower triangular part of :math:`H_c` in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of :math:`H_c` in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
 
 	*
 		- h_c_row
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the row indices of the lower triangular part of :math:`H_c` in the joint sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the row indices of the lower triangular part of :math:`H_c` in the joint sparse co-ordinate storage scheme.
 
 	*
 		- h_c_col
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the column indices of the lower triangular part of :math:`H_c` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the column indices of the lower triangular part of :math:`H_c` in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_val
 
-		- is a one-dimensional array of size h_c_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H_c` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H_c` in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_x_type
 .. _doxid-galahad__rpd_8h_1af784ecc65c925575788a494bd8118f4d:
@@ -589,7 +589,7 @@ Recover the types of the variables :math:`x`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -598,13 +598,13 @@ Recover the types of the variables :math:`x`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- x_type
 
 		-
-		  is a one-dimensional array of size n and type int, that specifies the type of each variable :math:`x`. Specifically, for j = 0, ... , n-1, x(j) =
+		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable :math:`x`. Specifically, for j = 0, ... , n-1, x(j) =
 
 		  * 0 variable :math:`x_j` is continuous,
 
@@ -618,7 +618,7 @@ Recover the types of the variables :math:`x`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_x(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[])
+	void rpd_get_x(void** data, int* status, int n, T x[])
 
 Recover the initial values of the variables :math:`x`.
 
@@ -638,7 +638,7 @@ Recover the initial values of the variables :math:`x`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -647,12 +647,12 @@ Recover the initial values of the variables :math:`x`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that gives the initial values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 .. index:: pair: function; rpd_get_y
 .. _doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5:
@@ -660,7 +660,7 @@ Recover the initial values of the variables :math:`x`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_y(void** data, int* status, int m, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[])
+	void rpd_get_y(void** data, int* status, int m, T y[])
 
 Recover the initial values of the Lagrange multipliers :math:`y`.
 
@@ -680,7 +680,7 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -689,12 +689,12 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type Int32 that holds the number of general constraints.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that gives the initial values :math:`y` of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values :math:`y` of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
 
 .. index:: pair: function; rpd_get_z
 .. _doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3:
@@ -702,7 +702,7 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_z(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[])
+	void rpd_get_z(void** data, int* status, int n, T z[])
 
 Recover the initial values of the dual variables :math:`z`.
 
@@ -722,7 +722,7 @@ Recover the initial values of the dual variables :math:`z`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The statistics have been recovered succesfully.
 
@@ -731,12 +731,12 @@ Recover the initial values of the dual variables :math:`z`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that gives the initial values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
 
 .. index:: pair: function; rpd_information
 .. _doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3:
@@ -744,7 +744,7 @@ Recover the initial values of the dual variables :math:`z`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_information(void** data, struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, int* status)
+	void rpd_information(void** data, structure :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -763,13 +763,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`rpd_inform_type <doxid-structrpd__inform__type>`)
+		- is a structure containing output information (see :ref:`rpd_inform_type <doxid-structrpd__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -802,9 +802,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
+		- is a structure containing control information (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`rpd_inform_type <doxid-structrpd__inform__type>`)
+		- is a structure containing output information (see :ref:`rpd_inform_type <doxid-structrpd__inform__type>`)

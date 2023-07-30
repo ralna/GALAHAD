@@ -41,12 +41,12 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see fit_control_type)
+		- is a structure containing control information (see fit_control_type)
 
 	*
 		- inform
 
-		- is a struct containing output information (see fit_inform_type)
+		- is a structure containing output information (see fit_inform_type)
 
 .. index:: pair: function; lhs_read_specfile
 .. _doxid-galahad__lhs_8h_1a38254f580fde3732f4f4e83e08180e63:
@@ -54,7 +54,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_read_specfile(struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control, const char specfile[])
+	void lhs_read_specfile(struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters.
 
@@ -70,7 +70,7 @@ By default, the spcification file will be named RUNLHS.SPC and lie in the curren
 	*
 		- control
 
-		- a struct containing control information (see above)
+		- a structure containing control information (see above)
 
 	*
 		- specfile
@@ -84,11 +84,11 @@ By default, the spcification file will be named RUNLHS.SPC and lie in the curren
 	:class: doxyrest-title-code-block
 
 	void lhs_ihs(
-		int n_dimen,
-		int n_points,
+		Int32 n_dimen,
+		Int32 n_points,
 		int* seed,
 		int** X,
-		const struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
+		const structure :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
 		void** data
 	)
@@ -125,7 +125,7 @@ Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, Amer
 	*
 		- seed
 
-		- is a scalar variable of type int, that gives a seed for the random number generator used
+		- is a scalar variable of type Int32 that gives a seed for the random number generator used
 
 	*
 		- X
@@ -175,7 +175,7 @@ Get a seed for the random number generator.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_information(void** data, struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, int* status)
+	void lhs_information(void** data, structure :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -194,13 +194,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)
+		- is a structure containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -233,9 +233,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`lhs_control_type <doxid-structlhs__control__type>`)
+		- is a structure containing control information (see :ref:`lhs_control_type <doxid-structlhs__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)
+		- is a structure containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)

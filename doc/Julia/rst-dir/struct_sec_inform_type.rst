@@ -7,7 +7,7 @@ sec_inform_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_sec.h>
@@ -15,14 +15,14 @@ sec_inform_type structure
 	struct sec_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		Int32 :ref:`status<doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
 	};
 .. _details-structsec__inform__type:
 
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -30,10 +30,10 @@ components
 .. index:: pair: variable; status
 .. _doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int status
+	Int32 status
 
 return status. Possible valuesa are:
 

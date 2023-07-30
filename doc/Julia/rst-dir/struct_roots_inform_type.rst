@@ -7,7 +7,7 @@ roots_inform_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_roots.h>
@@ -15,8 +15,8 @@ roots_inform_type structure
 	struct roots_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structroots__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		Int32 :ref:`status<doxid-structroots__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		Int32 :ref:`alloc_status<doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structroots__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 	};
 .. _details-structroots__inform__type:
@@ -24,7 +24,7 @@ roots_inform_type structure
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -32,10 +32,10 @@ components
 .. index:: pair: variable; status
 .. _doxid-structroots__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int status
+	Int32 status
 
 return status. Possible values are:
 
@@ -50,20 +50,20 @@ return status. Possible values are:
 .. index:: pair: variable; alloc_status
 .. _doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	Int32 alloc_status
 
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structroots__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char bad_alloc[81]
+	NTuple{81,Cchar} bad_alloc
 
 the name of the array for which an allocation/deallocation error occurred
 

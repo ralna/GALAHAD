@@ -42,13 +42,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
+		- is a structure containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -60,7 +60,7 @@ Set default control values and initialize private data
 
 	void sbls_read_specfile(
 		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSBLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sbls.pdf for a list of keywords that may be set.
@@ -75,7 +75,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
+		- is a structure containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
 
 	*
 		- specfile
@@ -92,20 +92,20 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		int m,
-		const char H_type[],
-		int H_ne,
+		Int32 n,
+		Int32 m,
+		const Vararg{Cchar} H_type[],
+		Int32 H_ne,
 		const int H_row[],
 		const int H_col[],
 		const int H_ptr[],
-		const char A_type[],
-		int A_ne,
+		const Vararg{Cchar} A_type[],
+		Int32 A_ne,
 		const int A_row[],
 		const int A_col[],
 		const int A_ptr[],
-		const char C_type[],
-		int C_ne,
+		const Vararg{Cchar} C_type[],
+		Int32 C_ne,
 		const int C_row[],
 		const int C_col[],
 		const int C_ptr[]
@@ -123,7 +123,7 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
 
 	*
 		- data
@@ -134,7 +134,7 @@ Import structural matrix data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -147,87 +147,87 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`H`.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`C`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`C`.
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- C_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`C`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`C=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`C`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`C=0`; lower or upper case variants are allowed.
 
 	*
 		- C_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- C_row
 
-		- is a one-dimensional array of size C_ne and type int, that holds the row indices of the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- C_col
 
-		- is a one-dimensional array of size C_ne and type int, that holds the column indices of the lower triangular part of :math:`C` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of :math:`C` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- C_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`C`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`C`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; sbls_reset_control
 .. _doxid-galahad__sbls_8h_1afdfe80ab659c2936d23802b6a6103eb8:
@@ -253,7 +253,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
 
 	*
 		- data
@@ -264,7 +264,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -277,14 +277,14 @@ Reset control parameters after import if required.
 	void sbls_factorize_matrix(
 		void** data,
 		int* status,
-		int n,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		int c_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` C_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` D[]
+		Int32 n,
+		Int32 h_ne,
+		const T H_val[],
+		Int32 a_ne,
+		const T A_val[],
+		Int32 c_ne,
+		const T C_val[],
+		const T D[]
 	)
 
 Form and factorize the block matrix
@@ -314,7 +314,7 @@ Form and factorize the block matrix
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -355,42 +355,42 @@ Form and factorize the block matrix
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`H`.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`H`.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`H` in any of the available storage schemes
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`H` in any of the available storage schemes
 
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the unsymmetric matrix :math:`A`.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the unsymmetric matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the unsymmetric matrix :math:`A` in any of the available storage schemes.
 
 	*
 		- c_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`C`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`C`.
 
 	*
 		- C_val
 
-		- is a one-dimensional array of size c_ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`C` in any of the available storage schemes
+		- is a one-dimensional array of size c_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`C` in any of the available storage schemes
 
 	*
 		- D
 
-		- is a one-dimensional array of size n and type double, that holds the values of the entries of the diagonal matrix :math:`D` that is required if the user has specified control.preconditioner = 5. It need not be set otherwise.
+		- is a one-dimensional array of size n and type T that holds the values of the entries of the diagonal matrix :math:`D` that is required if the user has specified control.preconditioner = 5. It need not be set otherwise.
 
 .. index:: pair: function; sbls_solve_system
 .. _doxid-galahad__sbls_8h_1a2c3ae7b15fc1c43771d395540c37b9fa:
@@ -398,7 +398,7 @@ Form and factorize the block matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_solve_system(void** data, int* status, int n, int m, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
+	void sbls_solve_system(void** data, int* status, int n, int m, T sol[])
 
 Solve the block linear system
 
@@ -427,7 +427,7 @@ Solve the block linear system
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -450,12 +450,12 @@ Solve the block linear system
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vector :math:`a`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vector :math:`a`.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of entries in the vector :math:`b`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vector :math:`b`.
 
 	*
 		- sol
@@ -468,7 +468,7 @@ Solve the block linear system
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_information(void** data, struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>`* inform, int* status)
+	void sbls_information(void** data, structure :ref:`sbls_inform_type<doxid-structsbls__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -487,13 +487,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`sbls_inform_type <doxid-structsbls__inform__type>`)
+		- is a structure containing output information (see :ref:`sbls_inform_type <doxid-structsbls__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -526,9 +526,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
+		- is a structure containing control information (see :ref:`sbls_control_type <doxid-structsbls__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`sbls_inform_type <doxid-structsbls__inform__type>`)
+		- is a structure containing output information (see :ref:`sbls_inform_type <doxid-structsbls__inform__type>`)

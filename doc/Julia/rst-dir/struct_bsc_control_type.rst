@@ -7,7 +7,7 @@ bsc_control_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_bsc.h>
@@ -15,16 +15,16 @@ bsc_control_type structure
 	struct bsc_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		int :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		int :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
-		bool :ref:`s_also_by_column<doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd>`;
-		bool :ref:`space_critical<doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
+		Bool :ref:`f_indexing<doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
+		Int32 :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		Int32 :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		Int32 :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		Int32 :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
+		Int32 :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
+		Int32 :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
+		Bool :ref:`s_also_by_column<doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd>`;
+		Bool :ref:`space_critical<doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
+		Bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structbsc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
 	};
 .. _details-structbsc__control__type:
@@ -32,7 +32,7 @@ bsc_control_type structure
 detailed documentation
 ----------------------
 
-control derived type as a C struct
+control derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -40,60 +40,60 @@ components
 .. index:: pair: variable; f_indexing
 .. _doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool f_indexing
+	Bool f_indexing
 
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
 .. _doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int error
+	Int32 error
 
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
 .. _doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int out
+	Int32 out
 
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
 .. _doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int print_level
+	Int32 print_level
 
 the level of output required is specified by print_level
 
 .. index:: pair: variable; max_col
 .. _doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int max_col
+	Int32 max_col
 
 maximum permitted number of nonzeros in a column of :math:`A`; -ve means unlimit
 
 .. index:: pair: variable; new_a
 .. _doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int new_a
+	Int32 new_a
 
 how much has :math:`A` changed since it was last accessed:
 
@@ -108,50 +108,50 @@ how much has :math:`A` changed since it was last accessed:
 .. index:: pair: variable; extra_space_s
 .. _doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int extra_space_s
+	Int32 extra_space_s
 
 how much extra space is to be allocated in :math:`S` above that needed to hold the Schur complement
 
 .. index:: pair: variable; s_also_by_column
 .. _doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool s_also_by_column
+	Bool s_also_by_column
 
 should s.ptr also be set to indicate the first entry in each column of :math:`S`
 
 .. index:: pair: variable; space_critical
 .. _doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool space_critical
+	Bool space_critical
 
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
 .. _doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool deallocate_error_fatal
+	Bool deallocate_error_fatal
 
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; prefix
 .. _doxid-structbsc__control__type_1a1dc05936393ba705f516a0c275df4ffc:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char prefix[31]
+	NTuple{31,Cchar} prefix
 
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 

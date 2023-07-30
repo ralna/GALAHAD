@@ -20,7 +20,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_initialize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control)
+	void gls_initialize(void** data, structure :ref:`gls_control<doxid-structgls__control>`* control)
 
 Set default control values and initialize private data
 
@@ -39,7 +39,7 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a structure containing control information (see :ref:`gls_control <doxid-structgls__control>`)
 
 .. index:: pair: function; gls_read_specfile
 .. _doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176:
@@ -47,7 +47,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[])
+	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
 
@@ -61,7 +61,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a structure containing control information (see :ref:`gls_control <doxid-structgls__control>`)
 
 	*
 		- specfile
@@ -88,7 +88,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
 
 	*
 		- data
@@ -99,7 +99,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,7 +129,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
 
 	*
 		- data
@@ -140,7 +140,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -175,23 +175,23 @@ Provides output information
 	*
 		- ainfo
 
-		- is a struct containing analysis output information (see :ref:`gls_ainfo <doxid-structgls__ainfo>`)
+		- is a structure containing analysis output information (see :ref:`gls_ainfo <doxid-structgls__ainfo>`)
 
 	*
 		- finfo
 
-		- is a struct containing factorization output information (see :ref:`gls_finfo <doxid-structgls__finfo>`)
+		- is a structure containing factorization output information (see :ref:`gls_finfo <doxid-structgls__finfo>`)
 
 	*
 		- sinfo
 
-		- is a struct containing solver output information (see :ref:`gls_sinfo <doxid-structgls__sinfo>`)
+		- is a structure containing solver output information (see :ref:`gls_sinfo <doxid-structgls__sinfo>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -201,7 +201,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_finalize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control, int* status)
+	void gls_finalize(void** data, structure :ref:`gls_control<doxid-structgls__control>`* control, int* status)
 
 Deallocate all internal private storage
 
@@ -220,12 +220,12 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a structure containing control information (see :ref:`gls_control <doxid-structgls__control>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully

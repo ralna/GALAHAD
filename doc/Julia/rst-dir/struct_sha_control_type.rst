@@ -7,7 +7,7 @@ sha_control_type structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_sha.h>
@@ -15,16 +15,16 @@ sha_control_type structure
 	struct sha_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
-		int :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
-		int :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
-		int :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
-		bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
+		Bool :ref:`f_indexing<doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
+		Int32 :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		Int32 :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		Int32 :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		Int32 :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
+		Int32 :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
+		Int32 :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
+		Int32 :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
+		Bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
+		Bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
 	};
 .. _details-structsha__control__type:
@@ -32,7 +32,7 @@ sha_control_type structure
 detailed documentation
 ----------------------
 
-control derived type as a C struct
+control derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -40,50 +40,50 @@ components
 .. index:: pair: variable; f_indexing
 .. _doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool f_indexing
+	Bool f_indexing
 
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
 .. _doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int error
+	Int32 error
 
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
 .. _doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int out
+	Int32 out
 
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
 .. _doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int print_level
+	Int32 print_level
 
 the level of output required. <= 0 gives no output, = 1 gives a one-line summary for every iteration, = 2 gives a summary of the inner iteration for each iteration, >= 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; approximation_algorithm
 .. _doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int approximation_algorithm
+	Int32 approximation_algorithm
 
 which approximation algorithm should be used?
 
@@ -98,10 +98,10 @@ which approximation algorithm should be used?
 .. index:: pair: variable; dense_linear_solver
 .. _doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int dense_linear_solver
+	Int32 dense_linear_solver
 
 which dense linear equation solver should be used?
 
@@ -116,50 +116,50 @@ which dense linear equation solver should be used?
 .. index:: pair: variable; max_sparse_degree
 .. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int max_sparse_degree
+	Int32 max_sparse_degree
 
 the maximum sparse degree if the combined version is used
 
 .. index:: pair: variable; extra_differences
 .. _doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int extra_differences
+	Int32 extra_differences
 
 if available use an addition extra_differences differences
 
 .. index:: pair: variable; space_critical
 .. _doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool space_critical
+	Bool space_critical
 
 if space is critical, ensure allocated arrays are no bigger than needed
 
 .. index:: pair: variable; deallocate_error_fatal
 .. _doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	bool deallocate_error_fatal
+	Bool deallocate_error_fatal
 
 exit if any deallocation fails
 
 .. index:: pair: variable; prefix
 .. _doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char prefix[31]
+	NTuple{31,Cchar} prefix
 
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 

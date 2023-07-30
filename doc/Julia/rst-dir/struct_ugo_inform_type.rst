@@ -27,7 +27,7 @@ ugo_inform_type structure
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~

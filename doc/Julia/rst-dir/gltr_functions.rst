@@ -41,13 +41,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
+		- is a structure containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -59,7 +59,7 @@ Set default control values and initialize private data
 
 	void gltr_read_specfile(
 		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gltr.pdf for a list of keywords that may be set.
@@ -74,7 +74,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
+		- is a structure containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
 
 	*
 		- specfile
@@ -105,7 +105,7 @@ Import control parameters prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import control parameters prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,11 +129,11 @@ Import control parameters prior to solution.
 	void gltr_solve_problem(
 		void** data,
 		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` vector[]
+		Int32 n,
+		const T radius,
+		T x[],
+		T r[],
+		T vector[]
 	)
 
 Solve the trust-region problem using reverse communication.
@@ -154,7 +154,7 @@ Solve the trust-region problem using reverse communication.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  This must be set to
 
@@ -189,27 +189,27 @@ Solve the trust-region problem using reverse communication.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- radius
 
-		- is a scalar of type double, that holds the trust-region radius, :math:`\Delta`, used. radius must be strictly positive
+		- is a scalar of type T that holds the trust-region radius, :math:`\Delta`, used. radius must be strictly positive
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- r
 
-		- is a one-dimensional array of size n and type double, that that must be set to :math:`c` on entry (status = 1) and re-entry ! (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
+		- is a one-dimensional array of size n and type T that that must be set to :math:`c` on entry (status = 1) and re-entry ! (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
 
 	*
 		- vector
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 2 and 3 as directed.
+		- is a one-dimensional array of size n and type T that should be used and reset appropriately when status = 2 and 3 as directed.
 
 .. index:: pair: function; gltr_information
 .. _doxid-galahad__gltr_8h_1a1b1b4d87884833c4bfe184ff79c1e2bb:
@@ -217,7 +217,7 @@ Solve the trust-region problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_information(void** data, struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform, int* status)
+	void gltr_information(void** data, structure :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -236,13 +236,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`gltr_inform_type <doxid-structgltr__inform__type>`)
+		- is a structure containing output information (see :ref:`gltr_inform_type <doxid-structgltr__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -275,9 +275,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
+		- is a structure containing control information (see :ref:`gltr_control_type <doxid-structgltr__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`gltr_inform_type <doxid-structgltr__inform__type>`)
+		- is a structure containing output information (see :ref:`gltr_inform_type <doxid-structgltr__inform__type>`)

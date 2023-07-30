@@ -20,7 +20,7 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void sls_initialize(
-		const char solver[],
+		const Vararg{Cchar} solver[],
 		void** data,
 		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
 		int* status
@@ -38,7 +38,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -48,13 +48,13 @@ Select solver, set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
+		- is a structure containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -66,7 +66,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_read_specfile(struct :ref:`sls_control_type<doxid-structsls__control__type>`* control, const char specfile[])
+	void sls_read_specfile(struct :ref:`sls_control_type<doxid-structsls__control__type>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sls.pdf for a list of keywords that may be set.
 
@@ -80,7 +80,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
+		- is a structure containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
 
 	*
 		- specfile
@@ -97,9 +97,9 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		const char type[],
-		int ne,
+		Int32 n,
+		const Vararg{Cchar} type[],
+		Int32 ne,
 		const int row[],
 		const int col[],
 		const int ptr[]
@@ -117,7 +117,7 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sls_control_type <doxid-structsls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sls_control_type <doxid-structsls__control__type>`)
 
 	*
 		- data
@@ -128,7 +128,7 @@ Import structural matrix data into internal storage prior to solution
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -165,32 +165,32 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`A`.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; sls_reset_control
 .. _doxid-galahad__sls_8h_1aacc344b8cdf0b1c27965f191382372e4:
@@ -216,7 +216,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sls_control_type <doxid-structsls__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sls_control_type <doxid-structsls__control__type>`)
 
 	*
 		- data
@@ -227,7 +227,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -240,8 +240,8 @@ Reset control parameters after import if required.
 	void sls_factorize_matrix(
 		void** data,
 		int* status,
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[]
+		Int32 ne,
+		const T val[]
 	)
 
 Form and factorize the symmetric matrix :math:`A`.
@@ -262,7 +262,7 @@ Form and factorize the symmetric matrix :math:`A`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -299,12 +299,12 @@ Form and factorize the symmetric matrix :math:`A`.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
 
 .. index:: pair: function; sls_solve_system
 .. _doxid-galahad__sls_8h_1a1b3e7546b59b06160c51e16b6781bc0b:
@@ -312,7 +312,7 @@ Form and factorize the symmetric matrix :math:`A`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_solve_system(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
+	void sls_solve_system(void** data, int* status, int n, T sol[])
 
 Solve the linear system :math:`Ax=b`.
 
@@ -332,7 +332,7 @@ Solve the linear system :math:`Ax=b`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -351,7 +351,7 @@ Solve the linear system :math:`Ax=b`.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vectors :math:`b` and :math:`x`.
 
 	*
 		- sol
@@ -365,11 +365,11 @@ Solve the linear system :math:`Ax=b`.
 	:class: doxyrest-title-code-block
 
 	void sls_partial_solve_system(
-		const char part[],
+		const Vararg{Cchar} part[],
 		void** data,
 		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[]
+		Int32 n,
+		T sol[]
 	)
 
 Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear system :math:`Mx=b`, where :math:`M` is one of :math:`L`, :math:`D`, :math:`U` or :math:`S = L \sqrt{D}`.
@@ -384,7 +384,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 	*
 		- part
 
-		- is a one-dimensional array of type char that specifies the component :math:`M` of the factorization that is to be used. It should be one of "L", "D", "U" or "S", and these correspond to the parts :math:`L`, :math:`D`, :math:`U` and :math:`S`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the component :math:`M` of the factorization that is to be used. It should be one of "L", "D", "U" or "S", and these correspond to the parts :math:`L`, :math:`D`, :math:`U` and :math:`S`; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -395,7 +395,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -416,7 +416,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vectors :math:`b` and :math:`x`.
 
 	*
 		- sol
@@ -429,7 +429,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_information(void** data, struct :ref:`sls_inform_type<doxid-structsls__inform__type>`* inform, int* status)
+	void sls_information(void** data, structure :ref:`sls_inform_type<doxid-structsls__inform__type>`* inform, int* status)
 
 Provide output information
 
@@ -448,13 +448,13 @@ Provide output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`sls_inform_type <doxid-structsls__inform__type>`)
+		- is a structure containing output information (see :ref:`sls_inform_type <doxid-structsls__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -487,9 +487,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
+		- is a structure containing control information (see :ref:`sls_control_type <doxid-structsls__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`sls_inform_type <doxid-structsls__inform__type>`)
+		- is a structure containing output information (see :ref:`sls_inform_type <doxid-structsls__inform__type>`)

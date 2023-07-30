@@ -19,8 +19,8 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void hash_initialize(
-		int nchar,
-		int length,
+		Int32 nchar,
+		Int32 length,
 		void** data,
 		struct :ref:`hash_control_type<doxid-structhash__control__type>`* control,
 		struct :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform
@@ -38,12 +38,12 @@ Set default control values and initialize private data
 	*
 		- nchar
 
-		- is a scalar variable of type int, that holds the number of characters permitted in each word in the hash table
+		- is a scalar variable of type Int32 that holds the number of characters permitted in each word in the hash table
 
 	*
 		- length
 
-		- is a scalar variable of type int, that holds the maximum number of words that can be held in the dictionary
+		- is a scalar variable of type Int32 that holds the maximum number of words that can be held in the dictionary
 
 	*
 		- data
@@ -53,12 +53,12 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`hash_control_type <doxid-structhash__control__type>`)
+		- is a structure containing control information (see :ref:`hash_control_type <doxid-structhash__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)
+		- is a structure containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)
 
 .. index:: pair: function; hash_information
 .. _doxid-galahad__hash_8h_1a7f73a5ca2bbdc3af1b7793f7b14ed13f:
@@ -66,7 +66,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void hash_information(void** data, struct :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform, int* status)
+	void hash_information(void** data, structure :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -85,13 +85,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)
+		- is a structure containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -124,9 +124,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`hash_control_type <doxid-structhash__control__type>`)
+		- is a structure containing control information (see :ref:`hash_control_type <doxid-structhash__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)
+		- is a structure containing output information (see :ref:`hash_inform_type <doxid-structhash__inform__type>`)

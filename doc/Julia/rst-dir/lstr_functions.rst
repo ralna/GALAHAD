@@ -41,13 +41,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
+		- is a structure containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -59,7 +59,7 @@ Set default control values and initialize private data
 
 	void lstr_read_specfile(
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lstr.pdf for a list of keywords that may be set.
@@ -74,7 +74,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
+		- is a structure containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
 
 	*
 		- specfile
@@ -105,7 +105,7 @@ Import control parameters prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import control parameters prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,12 +129,12 @@ Import control parameters prior to solution.
 	void lstr_solve_problem(
 		void** data,
 		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		Int32 m,
+		Int32 n,
+		const T radius,
+		T x[],
+		T u[],
+		T v[]
 	)
 
 Solve the trust-region least-squares problem using reverse communication.
@@ -155,7 +155,7 @@ Solve the trust-region least-squares problem using reverse communication.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  This must be set to
 
@@ -202,32 +202,32 @@ Solve the trust-region least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
+		- is a scalar variable of type Int32 that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
+		- is a scalar variable of type Int32 that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
 
 	*
 		- radius
 
-		- is a scalar of type double, that holds the trust-region radius, :math:`\Delta > 0`
+		- is a scalar of type T that holds the trust-region radius, :math:`\Delta > 0`
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- u
 
-		- is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size m and type T that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size n and type T that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 .. index:: pair: function; lstr_information
 .. _doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481:
@@ -235,7 +235,7 @@ Solve the trust-region least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_information(void** data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status)
+	void lstr_information(void** data, structure :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -254,13 +254,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`lstr_inform_type <doxid-structlstr__inform__type>`)
+		- is a structure containing output information (see :ref:`lstr_inform_type <doxid-structlstr__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -293,9 +293,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
+		- is a structure containing control information (see :ref:`lstr_control_type <doxid-structlstr__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`lstr_inform_type <doxid-structlstr__inform__type>`)
+		- is a structure containing output information (see :ref:`lstr_inform_type <doxid-structlstr__inform__type>`)

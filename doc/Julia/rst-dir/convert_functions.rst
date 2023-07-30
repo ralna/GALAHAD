@@ -43,13 +43,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`convert_control_type <doxid-structconvert__control__type>`)
+		- is a structure containing control information (see :ref:`convert_control_type <doxid-structconvert__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The initialization was succesful.
 
@@ -82,13 +82,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`convert_inform_type <doxid-structconvert__inform__type>`)
+		- is a structure containing output information (see :ref:`convert_inform_type <doxid-structconvert__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -121,9 +121,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`convert_control_type <doxid-structconvert__control__type>`)
+		- is a structure containing control information (see :ref:`convert_control_type <doxid-structconvert__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`convert_inform_type <doxid-structconvert__inform__type>`)
+		- is a structure containing output information (see :ref:`convert_inform_type <doxid-structconvert__inform__type>`)

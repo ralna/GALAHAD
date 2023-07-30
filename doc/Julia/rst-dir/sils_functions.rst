@@ -43,13 +43,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
+		- is a structure containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -61,7 +61,7 @@ Set default control values and initialize private data
 
 	void sils_read_specfile(
 		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSILS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sils.pdf for a list of keywords that may be set.
@@ -76,7 +76,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
+		- is a structure containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
 
 	*
 		- specfile
@@ -103,7 +103,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sils_control_type <doxid-structsils__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sils_control_type <doxid-structsils__control__type>`)
 
 	*
 		- data
@@ -114,7 +114,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -148,7 +148,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`sils_control_type <doxid-structsils__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`sils_control_type <doxid-structsils__control__type>`)
 
 	*
 		- data
@@ -159,7 +159,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -194,23 +194,23 @@ Provides output information
 	*
 		- ainfo
 
-		- is a struct containing output information (see :ref:`sils_ainfo_type <doxid-structsils__ainfo__type>`)
+		- is a structure containing output information (see :ref:`sils_ainfo_type <doxid-structsils__ainfo__type>`)
 
 	*
 		- finfo
 
-		- is a struct containing output information (see :ref:`sils_finfo_type <doxid-structsils__finfo__type>`)
+		- is a structure containing output information (see :ref:`sils_finfo_type <doxid-structsils__finfo__type>`)
 
 	*
 		- sinfo
 
-		- is a struct containing output information (see :ref:`sils_sinfo_type <doxid-structsils__sinfo__type>`)
+		- is a structure containing output information (see :ref:`sils_sinfo_type <doxid-structsils__sinfo__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -220,7 +220,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_finalize(void** data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status)
+	void sils_finalize(void** data, structure :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status)
 
 Deallocate all internal private storage
 
@@ -239,13 +239,13 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
+		- is a structure containing control information (see :ref:`sils_control_type <doxid-structsils__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 

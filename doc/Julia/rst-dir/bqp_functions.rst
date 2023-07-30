@@ -19,7 +19,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_initialize(void** data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status)
+	void bqp_initialize(void** data, structure :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -38,13 +38,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -54,7 +54,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_read_specfile(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const char specfile[])
+	void bqp_read_specfile(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const Vararg{Cchar} specfile[])
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/bqp.pdf for a list of keywords that may be set.
 
@@ -68,7 +68,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- specfile
@@ -85,9 +85,9 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		const char H_type[],
-		int ne,
+		Int32 n,
+		const Vararg{Cchar} H_type[],
+		Int32 ne,
 		const int H_row[],
 		const int H_col[],
 		const int H_ptr[]
@@ -105,7 +105,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,32 +129,32 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; bqp_import_without_h
 .. _doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e:
@@ -166,7 +166,7 @@ Import problem data into internal storage prior to solution.
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
 		void** data,
 		int* status,
-		int n
+		Int32 n
 	)
 
 Import problem data into internal storage prior to solution.
@@ -181,7 +181,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- data
@@ -192,7 +192,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -205,7 +205,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type Int32 that holds the number of variables.
 
 .. index:: pair: function; bqp_reset_control
 .. _doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850:
@@ -231,7 +231,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- data
@@ -242,7 +242,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -255,16 +255,16 @@ Reset control parameters after import if required.
 	void bqp_solve_given_h(
 		void** data,
 		int* status,
-		int n,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[]
+		Int32 n,
+		Int32 h_ne,
+		const T H_val[],
+		const T g[],
+		const T f,
+		const T x_l[],
+		const T x_u[],
+		T x[],
+		T z[],
+		Int32 x_stat[]
 	)
 
 Solve the bound-constrained quadratic program when the Hessian :math:`H` is available.
@@ -285,7 +285,7 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -324,52 +324,52 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; bqp_solve_reverse_h_prod
 .. _doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755:
@@ -380,21 +380,21 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 	void bqp_solve_reverse_h_prod(
 		void** data,
 		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` prod[],
-		int nz_v[],
+		Int32 n,
+		const T g[],
+		const T f,
+		const T x_l[],
+		const T x_u[],
+		T x[],
+		T z[],
+		Int32 x_stat[],
+		T v[],
+		const T prod[],
+		Int32 nz_v[],
 		int* nz_v_start,
 		int* nz_v_end,
 		const int nz_prod[],
-		int nz_prod_end
+		Int32 nz_prod_end
 	)
 
 Solve the bound-constrained quadratic program when the products of the Hessian :math:`H` with specified vectors may be computed by the calling program.
@@ -415,7 +415,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  Possible exit are:
 
@@ -458,77 +458,77 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details)
 
 	*
 		- prod
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details)
 
 	*
 		- nz_v
 
-		- is a one-dimensional array of size n and type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_v_start
 
-		- is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_v_end
 
-		- is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_prod
 
-		- is a one-dimensional array of size n and type int, that is used for reverse communication (see status=4 above for details)
+		- is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=4 above for details)
 
 	*
 		- nz_prod_end
 
-		- is a scalar of type int, that is used for reverse communication (see status=4 above for details)
+		- is a scalar of type Int32 that is used for reverse communication (see status=4 above for details)
 
 .. index:: pair: function; bqp_information
 .. _doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362:
@@ -536,7 +536,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_information(void** data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status)
+	void bqp_information(void** data, structure :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -555,13 +555,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`bqp_inform_type <doxid-structbqp__inform__type>`)
+		- is a structure containing output information (see :ref:`bqp_inform_type <doxid-structbqp__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -594,9 +594,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
+		- is a structure containing control information (see :ref:`bqp_control_type <doxid-structbqp__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`bqp_inform_type <doxid-structbqp__inform__type>`)
+		- is a structure containing output information (see :ref:`bqp_inform_type <doxid-structbqp__inform__type>`)

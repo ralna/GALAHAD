@@ -19,7 +19,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bsc_initialize(void** data, struct :ref:`bsc_control_type<doxid-structbsc__control__type>`* control, int* status)
+	void bsc_initialize(void** data, structure :ref:`bsc_control_type<doxid-structbsc__control__type>`* control, int* status)
 
 Set default control values and initialize private data
 
@@ -38,13 +38,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`bsc_control_type <doxid-structbsc__control__type>`)
+		- is a structure containing control information (see :ref:`bsc_control_type <doxid-structbsc__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The initialization was succesful.
 
@@ -54,7 +54,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bsc_information(void** data, struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>`* inform, int* status)
+	void bsc_information(void** data, structure :ref:`bsc_inform_type<doxid-structbsc__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -73,13 +73,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`bsc_inform_type <doxid-structbsc__inform__type>`)
+		- is a structure containing output information (see :ref:`bsc_inform_type <doxid-structbsc__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -112,9 +112,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`bsc_control_type <doxid-structbsc__control__type>`)
+		- is a structure containing control information (see :ref:`bsc_control_type <doxid-structbsc__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`bsc_inform_type <doxid-structbsc__inform__type>`)
+		- is a structure containing output information (see :ref:`bsc_inform_type <doxid-structbsc__inform__type>`)

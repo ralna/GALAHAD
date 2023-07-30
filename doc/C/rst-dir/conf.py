@@ -88,3 +88,5 @@ html_static_path = ['_static']
 html_css_files = [
     'css/custom.css',
 ]
+
+rst_epilog = "\n.. include:: .special.rst\n"

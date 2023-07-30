@@ -7,7 +7,7 @@ gls_finfo structure
 .. toctree::
 	:hidden:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_gls.h>
@@ -15,21 +15,21 @@ gls_finfo structure
 	struct gls_finfo {
 		// fields
 	
-		int :ref:`flag<doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf>`;
-		int :ref:`more<doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		int :ref:`size_factor<doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49>`;
-		int :ref:`len_factorize<doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
-		int :ref:`drop<doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd>`;
-		int :ref:`rank<doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		int :ref:`stat<doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`ops<doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7>`;
+		Int32 :ref:`flag<doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf>`;
+		Int32 :ref:`more<doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
+		Int32 :ref:`size_factor<doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49>`;
+		Int32 :ref:`len_factorize<doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
+		Int32 :ref:`drop<doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd>`;
+		Int32 :ref:`rank<doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
+		Int32 :ref:`stat<doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
+		T :ref:`ops<doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7>`;
 	};
 .. _details-structgls__finfo:
 
 detailed documentation
 ----------------------
 
-finfo derived type as a C struct
+finfo derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -37,80 +37,80 @@ components
 .. index:: pair: variable; flag
 .. _doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int flag
+	Int32 flag
 
 Flags success or failure case.
 
 .. index:: pair: variable; more
 .. _doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int more
+	Int32 more
 
 More information on failure.
 
 .. index:: pair: variable; size_factor
 .. _doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int size_factor
+	Int32 size_factor
 
 Number of words to hold factors.
 
 .. index:: pair: variable; len_factorize
 .. _doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int len_factorize
+	Int32 len_factorize
 
 Size for subsequent factorization.
 
 .. index:: pair: variable; drop
 .. _doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int drop
+	Int32 drop
 
 Number of entries dropped.
 
 .. index:: pair: variable; rank
 .. _doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int rank
+	Int32 rank
 
 Estimated rank.
 
 .. index:: pair: variable; stat
 .. _doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int stat
+	Int32 stat
 
 Status value after allocate failure.
 
 .. index:: pair: variable; ops
 .. _doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7:
 
-.. ref-code-block:: cpp
+.. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` ops
+	T ops
 
 Number of operations in elimination.
 

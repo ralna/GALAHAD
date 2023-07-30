@@ -36,7 +36,7 @@ wcp_inform_type structure
 detailed documentation
 ----------------------
 
-inform derived type as a C struct
+inform derived type as a Julia structure
 
 components
 ~~~~~~~~~~
@@ -97,7 +97,7 @@ the return status from the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int64_t factorization_integer
+	Int64 factorization_integer
 
 the total integer workspace required for the factorization
 
@@ -107,7 +107,7 @@ the total integer workspace required for the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	int64_t factorization_real
+	Int64 factorization_real
 
 the total real workspace required for the factorization
 

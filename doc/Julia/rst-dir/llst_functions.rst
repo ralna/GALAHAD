@@ -43,13 +43,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -61,7 +61,7 @@ Set default control values and initialize private data
 
 	void llst_read_specfile(
 		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
@@ -76,7 +76,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- specfile
@@ -93,10 +93,10 @@ Read the content of a specification file, and assign values associated with give
 		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
 		void** data,
 		int* status,
-		int m,
-		int n,
-		const char A_type[],
-		int A_ne,
+		Int32 m,
+		Int32 n,
+		const Vararg{Cchar} A_type[],
+		Int32 A_ne,
 		const int A_row[],
 		const int A_col[],
 		const int A_ptr[]
@@ -114,7 +114,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- data
@@ -125,7 +125,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -138,37 +138,37 @@ Import problem data into internal storage prior to solution.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of residuals, i.e., the number of rows of :math:`A`. m must be positive.
+		- is a scalar variable of type Int32 that holds the number of residuals, i.e., the number of rows of :math:`A`. m must be positive.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables, i.e., the number of columns of :math:`A`. n must be positive.
+		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of columns of :math:`A`. n must be positive.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A` if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A` if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A`, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A`, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; llst_import_scaling
 .. _doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f:
@@ -180,9 +180,9 @@ Import problem data into internal storage prior to solution.
 		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
 		void** data,
 		int* status,
-		int n,
-		const char S_type[],
-		int S_ne,
+		Int32 n,
+		const Vararg{Cchar} S_type[],
+		Int32 S_ne,
 		const int S_row[],
 		const int S_col[],
 		const int S_ptr[]
@@ -200,7 +200,7 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- data
@@ -211,7 +211,7 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -224,32 +224,32 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables, i.e., the number of rows and columns of :math:`S`. n must be positive.
+		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of rows and columns of :math:`S`. n must be positive.
 
 	*
 		- S_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid->` used for the matrix :math:`S`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid->` used for the matrix :math:`S`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
 
 	*
 		- S_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- S_row
 
-		- is a one-dimensional array of size S_ne and type int, that holds the row indices of the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- S_col
 
-		- is a one-dimensional array of size S_ne and type int, that holds the column indices of the lower triangular part of :math:`S` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of :math:`S` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- S_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`S`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`S`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; llst_reset_control
 .. _doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41:
@@ -275,7 +275,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- data
@@ -286,7 +286,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -299,15 +299,15 @@ Reset control parameters after import if required.
 	void llst_solve_problem(
 		void** data,
 		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		int A_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		int S_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` S_val[]
+		Int32 m,
+		Int32 n,
+		const T radius,
+		Int32 A_ne,
+		const T A_val[],
+		const T b[],
+		T x[],
+		Int32 S_ne,
+		const T S_val[]
 	)
 
 Solve the trust-region problem.
@@ -328,7 +328,7 @@ Solve the trust-region problem.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  Possible exit are:
 
@@ -357,47 +357,47 @@ Solve the trust-region problem.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of residuals
+		- is a scalar variable of type Int32 that holds the number of residuals
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- radius
 
-		- is a scalar of type double, that holds the trust-region radius, :math:`\Delta`, used. radius must be strictly positive
+		- is a scalar of type T that holds the trust-region radius, :math:`\Delta`, used. radius must be strictly positive
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the observation matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the observation matrix :math:`A`.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the observation matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the observation matrix :math:`A` in any of the available storage schemes.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the values :math:`b` of observations. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the values :math:`b` of observations. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- S_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the scaling matrix :math:`S` if it not the identity matrix.
+		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix :math:`S` if it not the identity matrix.
 
 	*
 		- S_val
 
-		- is a one-dimensional array of size S_ne and type double, that holds the values of the entries of the scaling matrix :math:`S` in any of the available storage schemes. If S_val is NULL, :math:`S` will be taken to be the identity matrix.
+		- is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix :math:`S` in any of the available storage schemes. If S_val is NULL, :math:`S` will be taken to be the identity matrix.
 
 .. index:: pair: function; llst_information
 .. _doxid-galahad__llst_8h_1a88854815d1c936131dcc762c64275d6f:
@@ -405,7 +405,7 @@ Solve the trust-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_information(void** data, struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform, int* status)
+	void llst_information(void** data, structure :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -424,13 +424,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`llst_inform_type <doxid-structllst__inform__type>`)
+		- is a structure containing output information (see :ref:`llst_inform_type <doxid-structllst__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -463,9 +463,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
+		- is a structure containing control information (see :ref:`llst_control_type <doxid-structllst__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`llst_inform_type <doxid-structllst__inform__type>`)
+		- is a structure containing output information (see :ref:`llst_inform_type <doxid-structllst__inform__type>`)

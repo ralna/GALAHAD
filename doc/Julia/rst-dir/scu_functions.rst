@@ -18,7 +18,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void scu_information(void** data, struct :ref:`scu_inform_type<doxid-structscu__inform__type>`* inform, int* status)
+	void scu_information(void** data, structure :ref:`scu_inform_type<doxid-structscu__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -37,13 +37,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`scu_inform_type <doxid-structscu__inform__type>`)
+		- is a structure containing output information (see :ref:`scu_inform_type <doxid-structscu__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -76,9 +76,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`scu_control_type <doxid-structscu__control__type>`)
+		- is a structure containing control information (see :ref:`scu_control_type <doxid-structscu__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`scu_inform_type <doxid-structscu__inform__type>`)
+		- is a structure containing output information (see :ref:`scu_inform_type <doxid-structscu__inform__type>`)

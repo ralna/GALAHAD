@@ -30,7 +30,7 @@ wcp_time_type structure
 detailed documentation
 ----------------------
 
-time derived type as a C struct
+time derived type as a Julia structure
 
 components
 ~~~~~~~~~~

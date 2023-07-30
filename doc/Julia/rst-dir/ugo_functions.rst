@@ -1,5 +1,8 @@
 .. _global:
 
+callable functions
+------------------
+
 .. index:: pair: function; ugo_initialize
 .. _doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78:
 

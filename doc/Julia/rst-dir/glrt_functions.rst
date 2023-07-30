@@ -41,13 +41,13 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
+		- is a structure containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The import was succesful.
 
@@ -59,7 +59,7 @@ Set default control values and initialize private data
 
 	void glrt_read_specfile(
 		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		const char specfile[]
+		const Vararg{Cchar} specfile[]
 	)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLRT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/glrt.pdf for a list of keywords that may be set.
@@ -74,7 +74,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
+		- is a structure containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
 
 	*
 		- specfile
@@ -105,7 +105,7 @@ Import control parameters prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
 
 	*
 		- data
@@ -116,7 +116,7 @@ Import control parameters prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -129,12 +129,12 @@ Import control parameters prior to solution.
 	void glrt_solve_problem(
 		void** data,
 		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` vector[]
+		Int32 n,
+		const T power,
+		const T weight,
+		T x[],
+		T r[],
+		T vector[]
 	)
 
 Solve the regularized-quadratic problem using reverse communication.
@@ -155,7 +155,7 @@ Solve the regularized-quadratic problem using reverse communication.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  This must be set to
 
@@ -188,32 +188,32 @@ Solve the regularized-quadratic problem using reverse communication.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- power
 
-		- is a scalar of type double, that holds the egularization power, :math:`p \geq 2`
+		- is a scalar of type T that holds the egularization power, :math:`p \geq 2`
 
 	*
 		- weight
 
-		- is a scalar of type double, that holds the positive regularization weight, :math:`\sigma`
+		- is a scalar of type T that holds the positive regularization weight, :math:`\sigma`
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
 
 	*
 		- r
 
-		- is a one-dimensional array of size n and type double, that that must be set to :math:`c` on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
+		- is a one-dimensional array of size n and type T that that must be set to :math:`c` on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
 
 	*
 		- vector
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 2 and 3 as directed.
+		- is a one-dimensional array of size n and type T that should be used and reset appropriately when status = 2 and 3 as directed.
 
 .. index:: pair: function; glrt_information
 .. _doxid-galahad__glrt_8h_1a3570dffe8910d5f3cb86020a65566c8d:
@@ -221,7 +221,7 @@ Solve the regularized-quadratic problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_information(void** data, struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform, int* status)
+	void glrt_information(void** data, structure :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform, int* status)
 
 Provides output information
 
@@ -240,13 +240,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`glrt_inform_type <doxid-structglrt__inform__type>`)
+		- is a structure containing output information (see :ref:`glrt_inform_type <doxid-structglrt__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -279,9 +279,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
+		- is a structure containing control information (see :ref:`glrt_control_type <doxid-structglrt__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`glrt_inform_type <doxid-structglrt__inform__type>`)
+		- is a structure containing output information (see :ref:`glrt_inform_type <doxid-structglrt__inform__type>`)
