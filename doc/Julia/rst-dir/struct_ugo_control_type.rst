@@ -12,20 +12,20 @@ ugo_control_type structure
 	:class: doxyrest-overview-code-block
 
         struct ugo_control_type{T}
-          error::Cint
-          out::Cint
-          print_level::Cint
-          start_print::Cint
-          stop_print::Cint
-          print_gap::Cint
-          maxit::Cint
-          initial_points::Cint
-          storage_increment::Cint
-          buffer::Cint
-          lipschitz_estimate_used::Cint
-          next_interval_selection::Cint
-          refine_with_newton::Cint
-          alive_unit::Cint
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          initial_points::Int32
+          storage_increment::Int32
+          buffer::Int32
+          lipschitz_estimate_used::Int32
+          next_interval_selection::Int32
+          refine_with_newton::Int32
+          alive_unit::Int32
           alive_file::NTuple{31,Cchar}
           stop_length::T
           small_g_for_newton::T

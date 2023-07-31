@@ -79,12 +79,13 @@
        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  which approximation algorithm should be used?
-!    0 : unsymmetric (alg 2.1 in paper)
-!    1 : symmetric (alg 2.2 in paper)
-!    2 : composite (alg 2.3 in paper)
-!    3 : composite 2 (alg 2.2/3 in paper)
+!    1 : unsymmetric (alg 2.1 in paper)
+!    2 : symmetric (alg 2.2 in paper)
+!    3 : composite (alg 2.3 in paper)
+!    4 : composite 2 (alg 2.4 in paper)
+!    5 : cautious (alg 2.5 in paper)
 
-       INTEGER ( KIND = ip_ ) :: approximation_algorithm = 2
+       INTEGER ( KIND = ip_ ) :: approximation_algorithm = 3
 
 !  which dense linear equation solver should be used?
 !    1 : Gaussian elimination
@@ -499,7 +500,7 @@
       data%n = n ; data%nz = nz
       inform%status = GALAHAD_ok
 
-!  allocate space for starting address PK and row count COUNT
+!  allocate space for starting address PK and unsymmetric row count COUNT
 
       array_name = 'SHA: data%PK'
       CALL SPACE_resize_array( n + 1, data%PK,                                 &
@@ -517,7 +518,7 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  determine how many nonzeros there are in each row of the whole matrix 
+!  determine how many nonzeros there are in each row of the whole matrix
 !  (both upper and lower parts)
 
       data%COUNT = 0
@@ -527,7 +528,7 @@
         IF ( i /= j ) data%COUNT( j ) = data%COUNT( j ) + 1
       END DO
 
-!  now set the starting addresses PK for each row of the whole matrix in the 
+!  now set the starting addresses PK for each row of the whole matrix in the
 !  pointer array PTR
 
       data%PK( 1 ) = 1
@@ -540,8 +541,8 @@
       max_row = MAXVAL( data%COUNT( 1 : n ) )
       inform%max_degree = max_row
 
-!  allocate space for the list of rows of increasing degrees (DEGREE), as well 
-!  the first and last positions for those of a given degree (FIRST & LAST) and 
+!  allocate space for the list of rows of increasing degrees (DEGREE), as well
+!  the first and last positions for those of a given degree (FIRST & LAST) and
 !  pointers from the rows to the list of degrees (DEGREE_inv)
 
       array_name = 'SHA: data%DEGREE'
@@ -577,13 +578,15 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  count the number of rows with each degree 
+!  count the number of rows with each degree
 
       data%LAST( 0 : max_row ) = 0
       DO i = 1, n
         data%LAST( data%COUNT( i ) ) = data%LAST( data%COUNT( i ) ) + 1
       END DO
       IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
+        WRITE( control%out, "( ' algorithm ', I0 )" )                          &
+          control%approximation_algorithm
         WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
         CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
       END IF
@@ -609,7 +612,7 @@
 !  .. and reset the starting positions
 
       DO i = max_row - 1, 0, - 1
-        data%FIRST( i + 1 ) =  data%FIRST( i )
+        data%FIRST( i + 1 ) = data%FIRST( i )
       END DO
       data%FIRST( 0 ) = 1
 
@@ -626,7 +629,7 @@
 
       IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
         DO i = 0, max_row
-          WRITE( control%out, "( ' degree ', I0, ' rows:' )" ) i
+          WRITE( control%out, "( ' degree ', I0, ' involves rows:' )" ) i
           IF ( data%FIRST( i ) <= data%LAST( i ) )                             &
             WRITE( control%out, "( 10( :, 1X, I0 ) )" )                        &
              ( data%DEGREE( l ), l = data%FIRST( i ), data%LAST( i ) )
@@ -637,7 +640,7 @@
 
 !  allocate space for PTR to hold mappings from the rows back to the
 !  coordinate storage, and its "shadow" PTR_lower set so that entries k and
-!  PTR_lower(k) of PTR correspond to the "upper" and "lower" triangular entries 
+!  PTR_lower(k) of PTR correspond to the "upper" and "lower" triangular entries
 !  (i,j) and (j,i)
 
       array_name = 'SHA: data%PTR'
@@ -683,7 +686,7 @@
 
       IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
         DO i = 1, n
-          WRITE( control%out, "( ' row ', I0 )" ) i
+          WRITE( control%out, "( ' row ', I0, ' has entries' )" ) i
           WRITE( control%out, "( 1X, 6( '(', I0, ',', I0, ')', : ) )" )        &
             ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ), l = data%PK( i ),    &
               data%PK( i + 1 ) - 1 )
@@ -699,6 +702,7 @@
             ROW( data%PTR( data%PTR_lower( l ) ) )
         END DO
       END IF
+stop
 
 !  allocate further workspace to record row (inverse) permutations and the
 !  starting addresses for undetermined entries in each row
@@ -725,11 +729,13 @@
 
       data%approximation_algorithm_used = control%approximation_algorithm
 
-!  ----------------------------------
-!  algorithms 0-2 (aka paper 2.1-2.3)
-!  ----------------------------------
+      SELECT CASE ( control%approximation_algorithm )
 
-      IF ( control%approximation_algorithm <= 2 ) THEN
+!  ----------------------------------------------
+!  algorithms 1-3 and 5 (aka paper 2.1-2.3 & 2.5)
+!  ----------------------------------------------
+
+      CASE ( 1 : 3, 4 )
 
 !  find a row with the lowest count
 
@@ -836,10 +842,10 @@
 !        write( control%out,"( 3I0 )" ) i, data%PU( i ), data%PK( i + 1 ) - 1
 !      END DO
 
-        IF ( control%approximation_algorithm == 1 ) THEN
+        IF ( control%approximation_algorithm == 2 ) THEN
           data%differences_needed                                              &
             = MAXVAL( data%PK( 2 : n + 1 ) -  data%PU( 1 : n ) )
-        ELSE IF ( control%approximation_algorithm == 2 ) THEN
+        ELSE IF ( control%approximation_algorithm == 3 ) THEN
           data%differences_needed = 0
           DO i = 1, n
             IF ( data%PK( i + 1 ) - data%PK( i ) <=                            &
@@ -870,11 +876,11 @@
                                        data%LAST )
         END IF
 
-!  -----------------------------
-!  algorithm 3 (aka paper 2.2/3)
-!  -----------------------------
+!  ---------------------------
+!  algorithm 3 (aka paper 2.4)
+!  ---------------------------
 
-      ELSE
+      CASE DEFAULT
         data%unsym_rows = 0
         DO i = 1, n
 
@@ -948,7 +954,7 @@
 !      &   /, ' max reduced degree = ', I0 )" )                                &
 !         inform%max_degree, data%differences_needed, inform%max_reduced_degree
         END IF
-      END IF
+      END SELECT
       inform%differences_needed = data%differences_needed
 
 !  prepare to return
@@ -1114,10 +1120,10 @@
         inform%status = GALAHAD_error_call_order ; GO TO 900
       END IF
 
-      IF ( ( control%approximation_algorithm >= 3 .AND.                        &
-             data%approximation_algorithm_used < 3 ) .OR.                      &
-           ( control%approximation_algorithm < 3 .AND.                         &
-             data%approximation_algorithm_used >= 3 ) ) THEN
+      IF ( ( control%approximation_algorithm >= 4 .AND.                        &
+             data%approximation_algorithm_used < 4 ) .OR.                      &
+           ( control%approximation_algorithm < 4 .AND.                         &
+             data%approximation_algorithm_used >= 4 ) ) THEN
         WRITE(6, "( ' incorrect approximation algorithm following analysis' )" )
         inform%status = - 116 ; GO TO 900
       END IF
@@ -1287,7 +1293,7 @@
 !  run through the rows finding the unknown entries (backwards when
 !  not exploiting symmetry)
 
-      IF ( control%approximation_algorithm > 0 ) THEN
+      IF ( control%approximation_algorithm > 1 ) THEN
         ii_start = 1 ; ii_end = n ; ii_stride = 1
       ELSE
         ii_start = n ; ii_end = 1 ; ii_stride = - 1
@@ -1300,9 +1306,9 @@
 
 !  decide whether to exploit symmetry or not
 
-        sym = control%approximation_algorithm == 1 .OR.                        &
-              control%approximation_algorithm == 3 .OR.                        &
-            ( control%approximation_algorithm == 2 .AND. nu > m_available )
+        sym = control%approximation_algorithm == 2 .OR.                        &
+              control%approximation_algorithm == 4 .OR.                        &
+            ( control%approximation_algorithm == 3 .AND. nu > m_available )
 
 !  -----------------------------
 !  methods that exploit symmetry
@@ -1340,7 +1346,7 @@
 
             j = COL( kk )
             IF ( j == i ) j = ROW( kk )
-            jj = jj + 1 ; data%COUNT( jj ) = j            
+            jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  subtract B_{ij} s_{jl} from b
 
@@ -1362,7 +1368,7 @@
 
             j = COL( kk )
             IF ( j == i ) j = ROW( kk )
-            jj = jj + 1 ; data%COUNT( jj ) = j            
+            jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  set the entries of A
 
@@ -1712,8 +1718,8 @@
           CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, status )
         END IF
-!       IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
-!         status = MAX( m, n ) + 1
+        IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
+          status = MAX( m, n ) + 1
           IF( printi ) THEN
             WRITE( out, "( ' matrix singular, sigma_min/sigma_1 = ',           &
            &       ES11.4 )" )  data%S( MIN( m, n ) ) / data%S( 1 )
@@ -1730,8 +1736,9 @@
             END IF
           END IF
         END IF
-!     END IF
-      IF ( printi ) THEN
+      END IF
+      IF ( .FALSE. ) THEN
+!     IF ( printi ) THEN
         IF ( rank > 0 ) THEN
           WRITE( out, "( ' row ', I0, ', m ', I0, ', n ', I0, ', rank ',       &
          &       I0, ', kappa ', ES11.4 )" )                                   &

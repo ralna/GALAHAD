@@ -12,14 +12,14 @@ ugo_inform_type structure
 	:class: doxyrest-overview-code-block
 
         struct ugo_inform_type{T}
-          status::Cint
-          eval_status::Cint
-          alloc_status::Cint
+          status::Int32
+          eval_status::Int32
+          alloc_status::Int32
           bad_alloc::NTuple{81,Cchar}
-          iter::Cint
-          f_eval::Cint
-          g_eval::Cint
-          h_eval::Cint
+          iter::Int32
+          f_eval::Int32
+          g_eval::Int32
+          h_eval::Int32
           time::ugo_time_type{T}
 
 .. _details-structugo__inform__type:

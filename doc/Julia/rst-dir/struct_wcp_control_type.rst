@@ -13,21 +13,21 @@ wcp_control_type structure
 
         struct wcp_control_type{T}
           f_indexing::Bool
-          error::Cint
-          out::Cint
-          print_level::Cint
-          start_print::Cint
-          stop_print::Cint
-          maxit::Cint
-          initial_point::Cint
-          factor::Cint
-          max_col::Cint
-          indmin::Cint
-          valmin::Cint
-          itref_max::Cint
-          infeas_max::Cint
-          perturbation_strategy::Cint
-          restore_problem::Cint
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          initial_point::Int32
+          factor::Int32
+          max_col::Int32
+          indmin::Int32
+          valmin::Int32
+          itref_max::Int32
+          infeas_max::Int32
+          perturbation_strategy::Int32
+          restore_problem::Int32
           infinity::T
           stop_p::T
           stop_d::T

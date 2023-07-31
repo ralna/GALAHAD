@@ -11,18 +11,18 @@ wcp_inform_type structure
 	:class: doxyrest-overview-code-block
 
         struct wcp_inform_type{T}
-          status::Cint
-          alloc_status::Cint
+          status::Int32
+          alloc_status::Int32
           bad_alloc::NTuple{81,Cchar}
-          iter::Cint
-          factorization_status::Cint
+          iter::Int32
+          factorization_status::Int32
           factorization_integer::Int64
           factorization_real::Int64
-          nfacts::Cint
-          c_implicit::Cint
-          x_implicit::Cint
-          y_implicit::Cint
-          z_implicit::Cint
+          nfacts::Int32
+          c_implicit::Int32
+          x_implicit::Int32
+          y_implicit::Int32
+          z_implicit::Int32
           obj::T
           mu_final_target_max::T
           non_negligible_pivot::T

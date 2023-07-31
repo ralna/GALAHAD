@@ -13,20 +13,20 @@ cqp_control_type structure
 
         struct cqp_control_type{T}
           f_indexing::Bool
-          error::Cint
-          out::Cint
-          print_level::Cint
-          start_print::Cint
-          stop_print::Cint
-          maxit::Cint
-          infeas_max::Cint
-          muzero_fixed::Cint
-          restore_problem::Cint
-          indicator_type::Cint
-          arc::Cint
-          series_order::Cint
-          sif_file_device::Cint
-          qplib_file_device::Cint
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          infeas_max::Int32
+          muzero_fixed::Int32
+          restore_problem::Int32
+          indicator_type::Int32
+          arc::Int32
+          series_order::Int32
+          sif_file_device::Int32
+          qplib_file_device::Int32
           infinity::T
           stop_abs_p::T
           stop_rel_p::T
@@ -723,4 +723,3 @@ control parameters for ROOTS
 	struct :ref:`cro_control_type<doxid-structcro__control__type>` cro_control
 
 control parameters for CRO
-

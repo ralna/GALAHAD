@@ -12,16 +12,16 @@ cqp_inform_type structure
 	:class: doxyrest-overview-code-block
 
         struct cqp_inform_type{T}
-          status::Cint
-          alloc_status::Cint
+          status::Int32
+          alloc_status::Int32
           bad_alloc::NTuple{81,Cchar}
-          iter::Cint
-          factorization_status::Cint
+          iter::Int32
+          factorization_status::Int32
           factorization_integer::Int64
           factorization_real::Int64
-          nfacts::Cint
-          nbacts::Cint
-          threads::Cint
+          nfacts::Int32
+          nbacts::Int32
+          threads::Int32
           obj::T
           primal_infeasibility::T
           dual_infeasibility::T
@@ -32,7 +32,7 @@ cqp_inform_type structure
           potential::T
           non_negligible_pivot::T
           feasible::Bool
-          checkpointsIter::NTuple{16,Cint}
+          checkpointsIter::NTuple{16,Int32}
           checkpointsTime::NTuple{16,T}
           time::cqp_time_type{T}
           fdc_inform::fdc_inform_type{T}
@@ -341,4 +341,3 @@ inform parameters for CRO
 	struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` rpd_inform
 
 inform parameters for RPD
-

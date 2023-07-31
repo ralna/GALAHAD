@@ -374,7 +374,7 @@
 
        IF ( inform%differences_needed <= max_sy ) THEN
          difs = inform%differences_needed
-         control%approximation_algorithm = 0
+         control%approximation_algorithm = 1
 
          CALL CLOCK_time( clocks )
          CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
@@ -410,7 +410,7 @@
 
        IF ( inform%differences_needed <= max_sy ) THEN
          difs = inform%differences_needed
-         control%approximation_algorithm = 1
+         control%approximation_algorithm = 2
 
          CALL CLOCK_time( clocks )
          CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
@@ -456,7 +456,7 @@
 !  approximate the Hessian
 
 !    IF ( inform%differences_needed <= max_sy ) THEN
-!      control%approximation_algorithm = 0
+!      control%approximation_algorithm = 1
 !      difs = inform%differences_needed
 
        CALL CLOCK_time( clocks )

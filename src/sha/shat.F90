@@ -23,7 +23,7 @@
    ROW = (/ 1, 1, 1, 1, 1, 2, 3, 4, 5 /)
    COL = (/ 1, 2, 3, 4, 5, 2, 3, 4, 5 /)
    VAL = (/ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 /)
-   DO algorithm = 0, 3
+   DO algorithm = 1, 4
      CALL SHA_initialize( data, control, inform )              ! initialize
      control%approximation_algorithm = algorithm
      WRITE( 6, "( /, ' Approximation algorithm ', I0 )" ) algorithm
