@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_roots_control_type.rst
-	struct_roots_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; roots_initialize
 .. _doxid-galahad__roots_8h_1ac504c30e3b55ef425516ad7cf1638a76:
@@ -18,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void roots_initialize(
-		void** data,
-		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
-		int* status
-	)
+        function roots_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -57,15 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void roots_information(
-		void** data,
-		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform,
-		int* status
-	)
+        function roots_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -96,15 +75,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void roots_terminate(
-		void** data,
-		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
-		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform
-	)
+        function roots_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_ir_control_type.rst
-	struct_ir_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; ir_initialize
 .. _doxid-galahad__ir_8h_1a1da2baeef0fe4c8e8937674a0c491c14:
@@ -18,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ir_initialize(void** data, structure :ref:`ir_control_type<doxid-structir__control__type>`* control, int* status)
+        function ir_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -53,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ir_information(void** data, structure :ref:`ir_inform_type<doxid-structir__inform__type>`* inform, int* status)
+        function ir_information(data, inform, status)
 
 Provides output information
 
@@ -88,11 +77,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void ir_terminate(
-		void** data,
-		struct :ref:`ir_control_type<doxid-structir__control__type>`* control,
-		struct :ref:`ir_inform_type<doxid-structir__inform__type>`* inform
-	)
+        function ir_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

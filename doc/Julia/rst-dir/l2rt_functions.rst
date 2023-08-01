@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_l2rt_control_type.rst
-	struct_l2rt_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; l2rt_initialize
 .. _doxid-galahad__l2rt_8h_1a0103448a3db662f9c483f9f44a5112bc:
@@ -18,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_initialize(
-		void** data,
-		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		int* status
-	)
+        function l2rt_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -57,10 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_read_specfile(
-		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function l2rt_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNL2RT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/l2rt.pdf for a list of keywords that may be set.
 
@@ -87,15 +69,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_import_control(
-		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function l2rt_import_control(control, data, status)
 
 Import control parameters prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -126,18 +102,8 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_solve_problem(
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const T power,
-		const T weight,
-		const T shift,
-		T x[],
-		T u[],
-		T v[]
-	)
+        function l2rt_solve_problem(data, status, m, n, power, weight, shift, 
+                                    x, u, v)
 
 Solve the regularized-least-squares problem using reverse communication.
 
@@ -245,7 +211,7 @@ Solve the regularized-least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_information(void** data, structure :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, int* status)
+        function l2rt_information(data, inform, status)
 
 Provides output information
 
@@ -280,11 +246,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void l2rt_terminate(
-		void** data,
-		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform
-	)
+        function l2rt_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

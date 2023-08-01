@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_qpa_control_type.rst
-	struct_qpa_inform_type.rst
-	struct_qpa_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; qpa_initialize
 .. _doxid-galahad__qpa_8h_1afc82144e136ab34fe8a7aea4acd870fc:
@@ -19,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_initialize(void** data, structure :ref:`qpa_control_type<doxid-structqpa__control__type>`* control, int* status)
+        function qpa_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -54,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_read_specfile(struct :ref:`qpa_control_type<doxid-structqpa__control__type>`* control, const Vararg{Cchar} specfile[])
+        function qpa_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNQPA.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/qpa.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -81,27 +67,11 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_import(
-		struct :ref:`qpa_control_type<doxid-structqpa__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function qpa_import(control, data, status, n, m, 
+                            H_type, H_ne, H_row, H_col, H_ptr,
+                            A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -200,15 +170,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_reset_control(
-		struct :ref:`qpa_control_type<doxid-structqpa__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function qpa_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -239,32 +203,11 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_solve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function qpa_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
+                              a_ne, A_val, c_l, c_u, x_l, x_u, 
+                              x, c, y, z, x_stat, c_stat)
 
 Solve the quadratic program (2)-(4).
-
-
 
 .. rubric:: Parameters:
 
@@ -408,34 +351,11 @@ Solve the quadratic program (2)-(4).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_solve_l1qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		const T rho_g,
-		const T rho_b,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function qpa_solve_l1qp(data, status, n, m, h_ne, H_val, g, f, 
+                                 rho_g, rho_b, a_ne, A_val, c_l, c_u, 
+                                 x_l, x_u, x, c, y, z, x_stat, c_stat)
 
 Solve the l_1 quadratic program (1).
-
-
 
 .. rubric:: Parameters:
 
@@ -589,33 +509,11 @@ Solve the l_1 quadratic program (1).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_solve_bcl1qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		const T rho_g,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function qpa_solve_bcl1qp(data, status, n, m, h_ne, H_val, g, f, 
+                                  rho_g, a_ne, A_val, c_l, c_u, x_l, x_u, 
+                                  x, c, y, z, x_stat, c_stat)
 
 Solve the bound-constrained l_1 quadratic program (4)-(5)
-
-
 
 .. rubric:: Parameters:
 
@@ -764,11 +662,9 @@ Solve the bound-constrained l_1 quadratic program (4)-(5)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_information(void** data, structure :ref:`qpa_inform_type<doxid-structqpa__inform__type>`* inform, int* status)
+        function qpa_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -799,15 +695,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void qpa_terminate(
-		void** data,
-		struct :ref:`qpa_control_type<doxid-structqpa__control__type>`* control,
-		struct :ref:`qpa_inform_type<doxid-structqpa__inform__type>`* inform
-	)
+        function qpa_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

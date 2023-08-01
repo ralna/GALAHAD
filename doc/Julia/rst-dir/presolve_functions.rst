@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_presolve_control_type.rst
-	struct_presolve_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; presolve_initialize
 .. _doxid-galahad__presolve_8h_1a30348a4e0a189046f55d995941693ed9:
@@ -18,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_initialize(
-		void** data,
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		int* status
-	)
+        function presolve_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -57,14 +44,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_read_specfile(
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function presolve_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
-
-
 
 .. rubric:: Parameters:
 
@@ -87,39 +69,14 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_import_problem(
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const T H_val[],
-		const T g[],
-		const T f,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[],
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		int* n_out,
-		int* m_out,
-		int* H_ne_out,
-		int* A_ne_out
-	)
+        function presolve_import_problem(control, data, status, n, m, 
+                                         H_type, H_ne, H_row, H_col, H_ptr, 
+                                         H_val,  g, f, A_type, A_ne, A_row, 
+                                         A_col, A_ptr, A_val, c_l, c_u, 
+                                         x_l, x_u, n_out, m_out, H_ne_out,
+                                         A_ne_out)
 
 Import the initial data, and apply the presolve algorithm to report crucial characteristics of the transformed variant
-
-
 
 .. rubric:: Parameters:
 
@@ -278,34 +235,12 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_transform_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 H_ne,
-		Int32 H_col[],
-		Int32 H_ptr[],
-		T H_val[],
-		T g[],
-		T* f,
-		Int32 A_ne,
-		Int32 A_col[],
-		Int32 A_ptr[],
-		T A_val[],
-		T c_l[],
-		T c_u[],
-		T x_l[],
-		T x_u[],
-		T y_l[],
-		T y_u[],
-		T z_l[],
-		T z_u[]
-	)
+        function presolve_transform_problem(data, status, n, m, H_ne, H_col, 
+                                            H_ptr, H_val, g, f, A_ne, A_col, 
+                                            A_ptr, A_val, c_l, c_u, x_l, x_u,
+                                            y_l, y_u, z_l, z_u)
 
 Apply the presolve algorithm to simplify the input problem, and output the transformed variant
-
-
 
 .. rubric:: Parameters:
 
@@ -437,26 +372,10 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_restore_solution(
-		void** data,
-		int* status,
-		Int32 n_in,
-		Int32 m_in,
-		const T x_in[],
-		const T c_in[],
-		const T y_in[],
-		const T z_in[],
-		Int32 n,
-		Int32 m,
-		T x[],
-		T c[],
-		T y[],
-		T z[]
-	)
+        function presolve_restore_solution(data, status, n_in, m_in, x_in, 
+                                            c_in, y_in, z_in, n, m, x, c, y, z)
 
 Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
-
-
 
 .. rubric:: Parameters:
 
@@ -548,15 +467,9 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_information(
-		void** data,
-		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform,
-		int* status
-	)
+        function presolve_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -587,15 +500,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void presolve_terminate(
-		void** data,
-		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform
-	)
+        function presolve_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

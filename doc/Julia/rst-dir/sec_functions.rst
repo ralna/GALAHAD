@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_sec_control_type.rst
-	struct_sec_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; sec_initialize
 .. _doxid-galahad__sec_8h_1adf7e7f81c32214d1e79170023d5d47e5:
@@ -18,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sec_initialize(struct :ref:`sec_control_type<doxid-structsec__control__type>`* control, int* status)
+        function sec_initialize(control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -48,11 +37,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sec_information(void** data, structure :ref:`sec_inform_type<doxid-structsec__inform__type>`* inform, int* status)
+        function sec_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -83,15 +70,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sec_terminate(
-		void** data,
-		struct :ref:`sec_control_type<doxid-structsec__control__type>`* control,
-		struct :ref:`sec_inform_type<doxid-structsec__inform__type>`* inform
-	)
+        function sec_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

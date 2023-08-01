@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_dqp_control_type.rst
-	struct_dqp_inform_type.rst
-	struct_dqp_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; dqp_initialize
 .. _doxid-galahad__dqp_8h_1a19aea950ca15a63e11702af3b4e777a2:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_initialize(void** data, structure :ref:`dqp_control_type<doxid-structdqp__control__type>`* control, int* status)
+        function dqp_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_read_specfile(struct :ref:`dqp_control_type<doxid-structdqp__control__type>`* control, const Vararg{Cchar} specfile[])
+        function dqp_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dqp.pdf for a list of keywords that may be set.
 
@@ -81,23 +71,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_import(
-		struct :ref:`dqp_control_type<doxid-structdqp__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function dqp_import(control, data, status, n, m, 
+                            H_type, H_ne, H_row, H_col, H_ptr, 
+                            A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -200,11 +176,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_reset_control(
-		struct :ref:`dqp_control_type<doxid-structdqp__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function dqp_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -239,28 +211,9 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_solve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function dqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
+                              a_ne, A_val, c_l, c_u, x_l, x_u, 
+                              x, c, y, z, x_stat, c_stat)
 
 Solve the quadratic program when the Hessian :math:`H` is available.
 
@@ -410,28 +363,9 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_solve_sldqp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T w[],
-		const T x0[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function dqp_solve_sldqp(data, status, n, m, w, x0, g, f, 
+                                 a_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, c, y, z, x_stat, c_stat)
 
 Solve the shifted least-distance quadratic program
 
@@ -581,7 +515,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_information(void** data, structure :ref:`dqp_inform_type<doxid-structdqp__inform__type>`* inform, int* status)
+        function dqp_information(data, inform, status)
 
 Provides output information
 
@@ -616,11 +550,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dqp_terminate(
-		void** data,
-		struct :ref:`dqp_control_type<doxid-structdqp__control__type>`* control,
-		struct :ref:`dqp_inform_type<doxid-structdqp__inform__type>`* inform
-	)
+        function dqp_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

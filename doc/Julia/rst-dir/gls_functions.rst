@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_gls_control.rst
-	struct_gls_ainfo.rst
-	struct_gls_finfo.rst
-	struct_gls_sinfo.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; gls_initialize
 .. _doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5:
@@ -20,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_initialize(void** data, structure :ref:`gls_control<doxid-structgls__control>`* control)
+        function gls_initialize(data, control)
 
 Set default control values and initialize private data
 
@@ -47,7 +36,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const Vararg{Cchar} specfile[])
+        function gls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
 
@@ -74,7 +63,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_import(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
+        function gls_import(control, data, status)
 
 Import problem data into internal storage prior to solution.
 
@@ -115,7 +104,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_reset_control(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
+        function gls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -150,13 +139,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_information(
-		void** data,
-		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
-		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
-		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
-		int* status
-	)
+        function gls_information(data, ainfo, finfo, sinfo, status)
 
 Provides output information
 
@@ -201,7 +184,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gls_finalize(void** data, structure :ref:`gls_control<doxid-structgls__control>`* control, int* status)
+        function gls_finalize(data, control, status)
 
 Deallocate all internal private storage
 

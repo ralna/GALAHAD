@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_fit_control_type.rst
-	struct_fit_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; fit_initialize
 .. _doxid-galahad__fit_8h_1a53019c0890b67dbc8c8efa541e652a73:
@@ -18,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fit_initialize(void** data, structure :ref:`fit_control_type<doxid-structfit__control__type>`* control, int* status)
+        function fit_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -53,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fit_information(void** data, structure :ref:`fit_inform_type<doxid-structfit__inform__type>`* inform, int* status)
+        function fit_information(data, inform, status)
 
 Provides output information
 
@@ -88,11 +79,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fit_terminate(
-		void** data,
-		struct :ref:`fit_control_type<doxid-structfit__control__type>`* control,
-		struct :ref:`fit_inform_type<doxid-structfit__inform__type>`* inform
-	)
+        function fit_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_gltr_control_type.rst
-	struct_gltr_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; gltr_initialize
 .. _doxid-galahad__gltr_8h_1ac06a7060d9355146e801157c2f29ca5c:
@@ -18,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_initialize(
-		void** data,
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
-		int* status
-	)
+        function gltr_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -57,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_read_specfile(
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function gltr_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gltr.pdf for a list of keywords that may be set.
 
@@ -87,11 +71,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_import_control(
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function gltr_import_control(control, data, status)
 
 Import control parameters prior to solution.
 
@@ -126,15 +106,7 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_solve_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		const T radius,
-		T x[],
-		T r[],
-		T vector[]
-	)
+        function gltr_solve_problem(data, status, n, radius, x, r, vector)
 
 Solve the trust-region problem using reverse communication.
 
@@ -217,7 +189,7 @@ Solve the trust-region problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_information(void** data, structure :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform, int* status)
+        function gltr_information(data, inform, status)
 
 Provides output information
 
@@ -252,11 +224,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void gltr_terminate(
-		void** data,
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>`* control,
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>`* inform
-	)
+        function gltr_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lpb_control_type.rst
-	struct_lpb_inform_type.rst
-	struct_lpb_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lpb_initialize
 .. _doxid-galahad__lpb_8h_1a63dd5d968d870274e0abc9c3e1e553f6:
@@ -19,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_initialize(void** data, structure :ref:`lpb_control_type<doxid-structlpb__control__type>`* control, int* status)
+        function lpb_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -54,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_read_specfile(struct :ref:`lpb_control_type<doxid-structlpb__control__type>`* control, const Vararg{Cchar} specfile[])
+        function lpb_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLPB.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lpb.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -81,22 +67,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_import(
-		struct :ref:`lpb_control_type<doxid-structlpb__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function lpb_import(control, data, status, n, m, 
+                            A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -168,15 +142,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_reset_control(
-		struct :ref:`lpb_control_type<doxid-structlpb__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function lpb_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -207,30 +175,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_solve_lp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function lpb_solve_lp(data, status, n, m, g, f, a_ne, A_val, 
+                              c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
 
 Solve the linear program.
-
-
 
 .. rubric:: Parameters:
 
@@ -364,11 +312,9 @@ Solve the linear program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_information(void** data, structure :ref:`lpb_inform_type<doxid-structlpb__inform__type>`* inform, int* status)
+        function lpb_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -399,15 +345,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpb_terminate(
-		void** data,
-		struct :ref:`lpb_control_type<doxid-structlpb__control__type>`* control,
-		struct :ref:`lpb_inform_type<doxid-structlpb__inform__type>`* inform
-	)
+        function lpb_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

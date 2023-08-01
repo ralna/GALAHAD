@@ -1,19 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_nls_subproblem_control_type.rst
-	struct_nls_control_type.rst
-	struct_nls_subproblem_inform_type.rst
-	struct_nls_inform_type.rst
-	struct_nls_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; nls_initialize
 .. _doxid-galahad__nls_8h_1aa344bb15b74ab3b3ee6afb2de072b19f:
@@ -21,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_initialize(
-		void** data,
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform
-	)
+        function nls_initialize(data, control, inform)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -57,11 +39,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_read_specfile(struct :ref:`nls_control_type<doxid-structnls__control__type>`* control, const Vararg{Cchar} specfile[])
+        function nls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNNLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/nls.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -84,33 +64,12 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_import(
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} J_type[],
-		Int32 J_ne,
-		const int J_row[],
-		const int J_col[],
-		const int J_ptr[],
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const Vararg{Cchar} P_type[],
-		Int32 P_ne,
-		const int P_row[],
-		const int P_col[],
-		const int P_ptr[],
-		const T w[]
-	)
+        function nls_import(control, data, status, n, m, 
+                            J_type, J_ne, J_row, J_col, J_ptr, 
+                            H_type, H_ne, H_row, H_col, H_ptr, 
+                            P_type, P_ne, P_row, P_col, P_ptr, w)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -237,15 +196,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_reset_control(
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function nls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -276,29 +229,13 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_solve_with_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		Int32 m,
-		T x[],
-		T c[],
-		T g[],
-		int(*)(int, Int32 const T[], T[], const void*) eval_c,
-		Int32 j_ne,
-		int(*)(int, Int32 Int32 const T[], T[], const void*) eval_j,
-		Int32 h_ne,
-		int(*)(int, Int32 Int32 const T[], const T[], T[], const void*) eval_h,
-		Int32 p_ne,
-		int(*)(int, Int32 Int32 const T[], const T[], T[], bool, const void*) eval_hprods
-	)
+        function nls_solve_with_mat(data, userdata, status, n, m, x, c, g, 
+                                    eval_c, j_ne, eval_j, h_ne, eval_h, 
+                                    p_ne, eval_hprods)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, and all function/derivative information is available by function calls.
-
-
 
 .. rubric:: Parameters:
 
@@ -449,21 +386,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_solve_without_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		Int32 m,
-		T x[],
-		T c[],
-		T g[],
-		int(*)(int, Int32 const T[], T[], const void*) eval_c,
-		int(*)(int, Int32 const T[], const bool, T[], const T[], bool, const void*) eval_jprod,
-		int(*)(int, Int32 const T[], const T[], T[], const T[], bool, const void*) eval_hprod,
-		Int32 p_ne,
-		int(*)(int, Int32 Int32 const T[], const T[], T[], bool, const void*) eval_hprods
-	)
+        function nls_solve_without_mat(data, userdata, status, n, m, x, c, g, 
+                                       eval_c, eval_jprod, eval_hprod, 
+                                       p_ne, eval_hprods)
 
 Find a local minimizer of a given function using a trust-region method.
 
@@ -612,30 +537,13 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_solve_reverse_with_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		Int32 m,
-		T x[],
-		T c[],
-		T g[],
-		Int32 j_ne,
-		T J_val[],
-		const T y[],
-		Int32 h_ne,
-		T H_val[],
-		T v[],
-		Int32 p_ne,
-		T P_val[]
-	)
+        function nls_solve_reverse_with_mat(data, status, eval_status, 
+                                            n, m, x, c, g, j_ne, J_val,
+                                            y, h_ne, H_val, v, p_ne, P_val)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, but function/derivative information is only available by returning to the calling procedure
-
-
 
 .. rubric:: Parameters:
 
@@ -771,28 +679,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_solve_reverse_without_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		Int32 m,
-		T x[],
-		T c[],
-		T g[],
-		bool* transpose,
-		T u[],
-		T v[],
-		T y[],
-		Int32 p_ne,
-		T P_val[]
-	)
-
+        function nls_solve_reverse_without_mat(data, status, eval_status, 
+                                               n, m, x, c, g, transpose,
+                                               u, v, y, p_ne, P_val)
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
-
-
 
 .. rubric:: Parameters:
 
@@ -924,11 +816,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_information(void** data, structure :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform, int* status)
+        function nls_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -959,15 +849,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void nls_terminate(
-		void** data,
-		struct :ref:`nls_control_type<doxid-structnls__control__type>`* control,
-		struct :ref:`nls_inform_type<doxid-structnls__inform__type>`* inform
-	)
+        function nls_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

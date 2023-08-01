@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_eqp_control_type.rst
-	struct_eqp_inform_type.rst
-	struct_eqp_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; eqp_initialize
 .. _doxid-galahad__eqp_8h_1a0d6a00469fba32b588f74c05a386626d:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_initialize(void** data, structure :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, int* status)
+        function eqp_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_read_specfile(struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, const Vararg{Cchar} specfile[])
+        function eqp_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
@@ -81,23 +71,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_import(
-		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function eqp_import(control, data, status, n, m, 
+                            H_type, H_ne, H_row, H_col, H_ptr, 
+                            A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -200,11 +176,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_reset_control(
-		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function eqp_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -239,21 +211,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_solve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		T c[],
-		T x[],
-		T y[]
-	)
+        function eqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
+                              a_ne, A_val, c, x, y)
 
 Solve the quadratic program when the Hessian :math:`H` is available.
 
@@ -366,25 +325,10 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_solve_sldqp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T w[],
-		const T x0[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		T c[],
-		T x[],
-		T y[]
-	)
+        function eqp_solve_sldqp(data, status, n, m, w, x0, g, f, 
+                                 a_ne, A_val, c, x, y)
 
 Solve the shifted least-distance quadratic program
-
-
 
 .. rubric:: Parameters:
 
@@ -493,17 +437,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_resolve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T g[],
-		const T f,
-		T c[],
-		T x[],
-		T y[]
-	)
+        function eqp_resolve_qp(data, status, n, m, g, f, c, x, y)
 
 Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data :math:`g`, :math:`f` and :math:`c` has changed
 
@@ -592,7 +526,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_information(void** data, structure :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform, int* status)
+        function eqp_information(data, inform, status)
 
 Provides output information
 
@@ -627,11 +561,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void eqp_terminate(
-		void** data,
-		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform
-	)
+        function eqp_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

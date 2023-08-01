@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lsrt_control_type.rst
-	struct_lsrt_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lsrt_initialize
 .. _doxid-galahad__lsrt_8h_1a9c5c14ddb34a5ea1becd133837da6544:
@@ -18,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_initialize(
-		void** data,
-		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
-		int* status
-	)
+        function lsrt_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -57,14 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_read_specfile(
-		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function lsrt_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSRT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lsrt.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -87,15 +67,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_import_control(
-		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function lsrt_import_control(control, data, status)
 
 Import control parameters prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -126,21 +100,9 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_solve_problem(
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const T power,
-		const T weight,
-		T x[],
-		T u[],
-		T v[]
-	)
+        function lsrt_solve_problem(data, status, m, n, power, weight, x, u, v)
 
 Solve the regularized least-squuares problem using reverse communication.
-
-
 
 .. rubric:: Parameters:
 
@@ -239,11 +201,9 @@ Solve the regularized least-squuares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_information(void** data, structure :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform, int* status)
+        function lsrt_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -274,15 +234,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsrt_terminate(
-		void** data,
-		struct :ref:`lsrt_control_type<doxid-structlsrt__control__type>`* control,
-		struct :ref:`lsrt_inform_type<doxid-structlsrt__inform__type>`* inform
-	)
+        function lsrt_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lpa_control_type.rst
-	struct_lpa_inform_type.rst
-	struct_lpa_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lpa_initialize
 .. _doxid-galahad__lpa_8h_1a28046b64b944ea19d21a0c983b980bac:
@@ -19,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_initialize(void** data, structure :ref:`lpa_control_type<doxid-structlpa__control__type>`* control, int* status)
+        function lpa_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -54,11 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_read_specfile(struct :ref:`lpa_control_type<doxid-structlpa__control__type>`* control, const Vararg{Cchar} specfile[])
-
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLPA.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lpa.pdf for a list of keywords that may be set.
-
-
+        function lpa_read_specfile(control, specfile)
 
 .. rubric:: Parameters:
 
@@ -81,22 +65,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_import(
-		struct :ref:`lpa_control_type<doxid-structlpa__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function lpa_import(control, data, status, n, m, 
+                            A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -168,15 +140,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_reset_control(
-		struct :ref:`lpa_control_type<doxid-structlpa__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function lpa_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -207,30 +173,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_solve_lp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function lpa_solve_lp(data, status, n, m, g, f, a_ne, A_val, 
+                              c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
 
 Solve the linear program.
-
-
 
 .. rubric:: Parameters:
 
@@ -364,11 +310,9 @@ Solve the linear program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_information(void** data, structure :ref:`lpa_inform_type<doxid-structlpa__inform__type>`* inform, int* status)
+        function lpa_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -399,15 +343,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lpa_terminate(
-		void** data,
-		struct :ref:`lpa_control_type<doxid-structlpa__control__type>`* control,
-		struct :ref:`lpa_inform_type<doxid-structlpa__inform__type>`* inform
-	)
+        function lpa_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

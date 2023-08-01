@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_cro_control_type.rst
-	struct_cro_inform_type.rst
-	struct_cro_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; cro_initialize
 .. _doxid-galahad__cro_8h_1aeb10643b5d27efef952b60d9ba0eb206:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void cro_initialize(void** data, structure :ref:`cro_control_type<doxid-structcro__control__type>`* control, int* status)
+        function cro_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void cro_read_specfile(struct :ref:`cro_control_type<doxid-structcro__control__type>`* control, const Vararg{Cchar} specfile[])
+        function cro_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNCRO.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/cro.pdf for a list of keywords that may be set.
 
@@ -81,33 +71,11 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void cro_crossover_solution(
-		void** data,
-		struct :ref:`cro_control_type<doxid-structcro__control__type>`* control,
-		struct :ref:`cro_inform_type<doxid-structcro__inform__type>`* inform,
-		Int32 n,
-		Int32 m,
-		Int32 m_equal,
-		Int32 h_ne,
-		const T H_val[],
-		const int H_col[],
-		const int H_ptr[],
-		Int32 a_ne,
-		const T A_val[],
-		const int A_col[],
-		const int A_ptr[],
-		const T g[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function cro_crossover_solution(data, control, inform, n, m, m_equal, 
+                                        h_ne, H_val, H_col, H_ptr, 
+                                        a_ne, A_val, A_col, A_ptr, 
+                                        g, c_l, c_u, x_l, x_u,
+                                        x, c, y, z, x_stat, c_stat)
 
 Crosover the solution from a primal-dual to a basic one.
 
@@ -274,11 +242,7 @@ Crosover the solution from a primal-dual to a basic one.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void cro_terminate(
-		void** data,
-		struct :ref:`cro_control_type<doxid-structcro__control__type>`* control,
-		struct :ref:`cro_inform_type<doxid-structcro__inform__type>`* inform
-	)
+        function cro_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

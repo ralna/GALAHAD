@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_glrt_control_type.rst
-	struct_glrt_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; glrt_initialize
 .. _doxid-galahad__glrt_8h_1a3a086b68a942ba1049f1d6a1b4724d32:
@@ -18,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_initialize(
-		void** data,
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		int* status
-	)
+        function glrt_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -57,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_read_specfile(
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function glrt_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLRT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/glrt.pdf for a list of keywords that may be set.
 
@@ -87,11 +71,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_import_control(
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function glrt_import_control(control, data, status)
 
 Import control parameters prior to solution.
 
@@ -126,16 +106,7 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_solve_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		const T power,
-		const T weight,
-		T x[],
-		T r[],
-		T vector[]
-	)
+        function glrt_solve_problem(data, status, n, power, weight, x, r, vector)
 
 Solve the regularized-quadratic problem using reverse communication.
 
@@ -221,7 +192,7 @@ Solve the regularized-quadratic problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_information(void** data, structure :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform, int* status)
+        function glrt_information(data, inform, status)
 
 Provides output information
 
@@ -256,11 +227,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void glrt_terminate(
-		void** data,
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>`* control,
-		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>`* inform
-	)
+        function glrt_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

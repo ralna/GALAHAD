@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_bsc_control_type.rst
-	struct_bsc_inform_type.rst
-
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; bsc_initialize
 .. _doxid-galahad__bsc_8h_1a32dd948f5ce268b0cdb340f435819c8e:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bsc_initialize(void** data, structure :ref:`bsc_control_type<doxid-structbsc__control__type>`* control, int* status)
+        function bsc_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bsc_information(void** data, structure :ref:`bsc_inform_type<doxid-structbsc__inform__type>`* inform, int* status)
+        function bsc_information(data, inform, status)
 
 Provides output information
 
@@ -89,11 +79,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bsc_terminate(
-		void** data,
-		struct :ref:`bsc_control_type<doxid-structbsc__control__type>`* control,
-		struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>`* inform
-	)
+        function bsc_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

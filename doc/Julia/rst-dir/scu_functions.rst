@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_scu_control_type.rst
-	struct_scu_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; scu_information
 .. _doxid-galahad__scu_8h_1ad52752848139c1772e7d5bb4aa2a3f6d:
@@ -18,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void scu_information(void** data, structure :ref:`scu_inform_type<doxid-structscu__inform__type>`* inform, int* status)
+        function scu_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -53,15 +42,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void scu_terminate(
-		void** data,
-		struct :ref:`scu_control_type<doxid-structscu__control__type>`* control,
-		struct :ref:`scu_inform_type<doxid-structscu__inform__type>`* inform
-	)
+        function scu_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_rpd_control_type.rst
-	struct_rpd_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; rpd_initialize
 .. _doxid-galahad__rpd_8h_1a6805ebb5cc097db7df39723c64cef793:
@@ -18,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_initialize(void** data, structure :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, int* status)
+        function rpd_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -53,23 +42,10 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_stats(
-		char qplib_file[],
-		Int32 qplib_file_len,
-		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
-		void** data,
-		int* status,
-		char p_type[4],
-		int* n,
-		int* m,
-		int* h_ne,
-		int* a_ne,
-		int* h_c_ne
-	)
+        function rpd_get_stats(qplib_file, qplib_file_len, control, data, 
+                               status, p_type, n, m, h_ne, a_ne, h_c_ne)
 
 Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions.
-
-
 
 .. rubric:: Parameters:
 
@@ -201,11 +177,9 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_g(void** data, int* status, int n, T g[])
+        function rpd_get_g(data, status, n, g)
 
 Recover the linear term :math:`g` from in objective function
-
-
 
 .. rubric:: Parameters:
 
@@ -243,11 +217,9 @@ Recover the linear term :math:`g` from in objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_f(void** data, int* status, T* f)
+        function rpd_get_f(data, status, f)
 
 Recover the constant term :math:`f` in the objective function.
-
-
 
 .. rubric:: Parameters:
 
@@ -280,17 +252,9 @@ Recover the constant term :math:`f` in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_xlu(
-		void** data,
-		int* status,
-		Int32 n,
-		T x_l[],
-		T x_u[]
-	)
+        function rpd_get_xlu(data, status, n, x_l, x_u)
 
 Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
-
-
 
 .. rubric:: Parameters:
 
@@ -333,17 +297,9 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_clu(
-		void** data,
-		int* status,
-		Int32 m,
-		T c_l[],
-		T c_u[]
-	)
+        function rpd_get_clu(data, status, m, c_l, c_u)
 
 Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
-
-
 
 .. rubric:: Parameters:
 
@@ -386,18 +342,9 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_h(
-		void** data,
-		int* status,
-		Int32 h_ne,
-		Int32 h_row[],
-		Int32 h_col[],
-		T h_val[]
-	)
+        function rpd_get_h(data, status, h_ne, h_row, h_col, h_val)
 
 Recover the Hessian term :math:`H` in the objective function.
-
-
 
 .. rubric:: Parameters:
 
@@ -445,18 +392,9 @@ Recover the Hessian term :math:`H` in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_a(
-		void** data,
-		int* status,
-		Int32 a_ne,
-		Int32 a_row[],
-		Int32 a_col[],
-		T a_val[]
-	)
+        function rpd_get_a(data, status, a_ne, a_row, a_col, a_val)
 
 Recover the Jacobian term :math:`A` in the constraints.
-
-
 
 .. rubric:: Parameters:
 
@@ -504,19 +442,10 @@ Recover the Jacobian term :math:`A` in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_h_c(
-		void** data,
-		int* status,
-		Int32 h_c_ne,
-		Int32 h_c_ptr[],
-		Int32 h_c_row[],
-		Int32 h_c_col[],
-		T h_c_val[]
-	)
+        function rpd_get_h_c(data, status, h_c_ne, 
+                             h_c_ptr, h_c_row, h_c_col, h_c_val)
 
 Recover the Hessian terms :math:`H_c` in the constraints.
-
-
 
 .. rubric:: Parameters:
 
@@ -569,11 +498,9 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_x_type(void** data, int* status, int n, int x_type[])
+        function rpd_get_x_type(data, status, n, x_type)
 
 Recover the types of the variables :math:`x`.
-
-
 
 .. rubric:: Parameters:
 
@@ -618,11 +545,9 @@ Recover the types of the variables :math:`x`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_x(void** data, int* status, int n, T x[])
+        function rpd_get_x(data, status, n,
 
 Recover the initial values of the variables :math:`x`.
-
-
 
 .. rubric:: Parameters:
 
@@ -660,11 +585,9 @@ Recover the initial values of the variables :math:`x`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_y(void** data, int* status, int m, T y[])
+        function rpd_get_y(data, status, m, y)
 
 Recover the initial values of the Lagrange multipliers :math:`y`.
-
-
 
 .. rubric:: Parameters:
 
@@ -702,11 +625,9 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_get_z(void** data, int* status, int n, T z[])
+        function rpd_get_z(data, status, n, z)
 
 Recover the initial values of the dual variables :math:`z`.
-
-
 
 .. rubric:: Parameters:
 
@@ -744,11 +665,9 @@ Recover the initial values of the dual variables :math:`z`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_information(void** data, structure :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, int* status)
+        function rpd_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -779,15 +698,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rpd_terminate(
-		void** data,
-		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
-		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform
-	)
+        function rpd_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

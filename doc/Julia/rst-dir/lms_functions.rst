@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lms_control_type.rst
-	struct_lms_time_type.rst
-	struct_lms_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lms_initialize
 .. _doxid-galahad__lms_8h_1a9abec0f0f82474e01c99ce43ab9252f5:
@@ -19,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lms_initialize(void** data, structure :ref:`lms_control_type<doxid-structlms__control__type>`* control, int* status)
-
-Set default control values and initialize private data
-
-
+        function lms_initialize(data, control, status)
 
 .. rubric:: Parameters:
 
@@ -54,11 +40,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lms_information(void** data, structure :ref:`lms_inform_type<doxid-structlms__inform__type>`* inform, int* status)
+        function lms_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -89,11 +73,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lms_terminate(
-		void** data,
-		struct :ref:`lms_control_type<doxid-structlms__control__type>`* control,
-		struct :ref:`lms_inform_type<doxid-structlms__inform__type>`* inform
-	)
+        function lms_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

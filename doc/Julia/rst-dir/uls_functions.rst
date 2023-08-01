@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_uls_control_type.rst
-	struct_uls_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; uls_initialize
 .. _doxid-galahad__uls_8h_1a7afb5f2dde112e60686a5527a8f37ca4:
@@ -18,12 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_initialize(
-		const char solver[],
-		void** data,
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		int* status
-	)
+        function uls_initialize(solver, data, control, status)
 
 Set default control values and initialize private data
 
@@ -39,7 +25,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -55,7 +41,7 @@ Select solver, set default control values and initialize private data
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -67,7 +53,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_read_specfile(struct :ref:`uls_control_type<doxid-structuls__control__type>`* control, const char specfile[])
+        function uls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNULS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/uls.pdf for a list of keywords that may be set.
 
@@ -94,19 +80,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_factorize_matrix(
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const char type[],
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		const int row[],
-		const int col[],
-		const int ptr[]
-	)
+        function uls_factorize_matrix(control, data, status, 
+                                      m, n, type, ne, val, row, col, ptr)
 
 Import matrix data into internal storage prior to solution, analyse the sparsity patern, and subsequently factorize the matrix
 
@@ -131,7 +106,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -156,42 +131,42 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows in the unsymmetric matrix :math:`A`.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of columns in the unsymmetric matrix :math:`A`.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T, that holds the values of the entries of the matrix :math:`A` in any of the supported storage schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the matrix :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the matrix :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the matrix :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the matrix :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of the matrix :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:
@@ -199,11 +174,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_reset_control(
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function uls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -228,7 +199,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful.
 
@@ -238,14 +209,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_solve_system(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[],
-		bool trans
-	)
+        function uls_solve_system(data, status, m, n, sol, trans)
 
 Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 
@@ -265,7 +229,7 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type Int32 that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -284,22 +248,22 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows in the unsymmetric matrix :math:`A`.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of columns in the unsymmetric matrix :math:`A`.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`.
+		- is a one-dimensional array of size n and type T. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`.
 
 	*
 		- trans
 
-		- is a scalar variable of type bool, that specifies whether to solve the equation :math:`A^Tx=b` (trans=true) or :math:`Ax=b` (trans=false).
+		- is a scalar variable of type Bool, that specifies whether to solve the equation :math:`A^Tx=b` (trans=true) or :math:`Ax=b` (trans=false).
 
 .. index:: pair: function; uls_information
 .. _doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf:
@@ -307,7 +271,7 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_information(void** data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, int* status)
+        function uls_information(data, inform, status)
 
 Provides output information
 
@@ -332,7 +296,7 @@ Provides output information
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -342,11 +306,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void uls_terminate(
-		void** data,
-		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform
-	)
+        function uls_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

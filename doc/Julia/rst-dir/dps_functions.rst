@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_dps_control_type.rst
-	struct_dps_time_type.rst
-	struct_dps_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; dps_initialize
 .. _doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_initialize(void** data, structure :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
+        function dps_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_read_specfile(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const Vararg{Cchar} specfile[])
+        function dps_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDPS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
 
@@ -81,17 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_import(
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} H_type[],
-		Int32 ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function dps_import(control, data, status, n, 
+                            H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -162,11 +143,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_reset_control(
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function dps_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -201,17 +178,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_solve_tr_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 ne,
-		T H_val[],
-		T c[],
-		T f,
-		T radius,
-		T x[]
-	)
+        function dps_solve_tr_problem(data, status, n, ne, H_val, c, f, 
+                                      radius, x)
 
 Find the global minimizer of the trust-region problem (1).
 
@@ -294,18 +262,8 @@ Find the global minimizer of the trust-region problem (1).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_solve_rq_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 ne,
-		T H_val[],
-		T c[],
-		T f,
-		T power,
-		T weight,
-		T x[]
-	)
+        function dps_solve_rq_problem(data, status, n, ne, H_val, c, f, 
+                                      power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2).
 
@@ -393,15 +351,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_resolve_tr_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		T c[],
-		T f,
-		T radius,
-		T x[]
-	)
+        function dps_resolve_tr_problem(data, status, n, c, f, radius, x)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
 
@@ -468,16 +418,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_resolve_rq_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		T c[],
-		T f,
-		T power,
-		T weight,
-		T x[]
-	)
+        function dps_resolve_rq_problem(data, status, n, c, f, power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
 
@@ -547,7 +488,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_information(void** data, structure :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
+        function dps_information(data, inform, status)
 
 Provides output information
 
@@ -582,11 +523,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void dps_terminate(
-		void** data,
-		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
-	)
+        function dps_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

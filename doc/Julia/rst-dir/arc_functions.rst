@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_arc_control_type.rst
-	struct_arc_inform_type.rst
-	struct_arc_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; arc_initialize
 .. _doxid-galahad__arc_8h_1a54564960edd1c926630be24245773633:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_initialize(void** data, structure :ref:`arc_control_type<doxid-structarc__control__type>`* control, int* status)
+        function arc_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_read_specfile(struct :ref:`arc_control_type<doxid-structarc__control__type>`* control, const Vararg{Cchar} specfile[])
+        function arc_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNARC.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/arc.pdf for a list of keywords that may be set.
 
@@ -81,17 +71,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_import(
-		struct :ref:`arc_control_type<doxid-structarc__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} H_type[],
-		Int32 ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function arc_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -162,11 +142,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_reset_control(
-		struct :ref:`arc_control_type<doxid-structarc__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function arc_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -201,19 +177,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_solve_with_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		T x[],
-		T g[],
-		Int32 ne,
-		int(*)(int, const T[], T*, const void*) eval_f,
-		int(*)(int, const T[], T[], const void*) eval_g,
-		int(*)(int, Int32 const T[], T[], const void*) eval_h,
-		int(*)(int, const T[], T[], const T[], const void*) eval_prec
-	)
+        function arc_solve_with_mat(data, userdata, status, n, x, g, ne, 
+                                    eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function using a regularization method.
 
@@ -348,18 +313,8 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_solve_without_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		T x[],
-		T g[],
-		int(*)(int, const T[], T*, const void*) eval_f,
-		int(*)(int, const T[], T[], const void*) eval_g,
-		int(*)(int, const T[], T[], const T[], bool, const void*) eval_hprod,
-		int(*)(int, const T[], T[], const T[], const void*) eval_prec
-	)
+        function arc_solve_without_mat(data, userdata, status, n, x, g, 
+                                       eval_f, eval_g, eval_hprod, eval_prec)
 
 Find a local minimizer of a given function using a regularization method.
 
@@ -487,19 +442,8 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_solve_reverse_with_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		T x[],
-		T f,
-		T g[],
-		Int32 ne,
-		T H_val[],
-		const T u[],
-		T v[]
-	)
+        function arc_solve_reverse_with_mat(data, status, eval_status, 
+                                            n, x, f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function using a regularization method.
 
@@ -610,17 +554,8 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_solve_reverse_without_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		T x[],
-		T f,
-		T g[],
-		T u[],
-		T v[]
-	)
+        function arc_solve_reverse_without_mat(data, status, eval_status, 
+                                               n, x, f, g, u, v)
 
 Find a local minimizer of a given function using a regularization method.
 
@@ -721,7 +656,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_information(void** data, structure :ref:`arc_inform_type<doxid-structarc__inform__type>`* inform, int* status)
+        function arc_information(data, inform, status)
 
 Provides output information
 
@@ -756,11 +691,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void arc_terminate(
-		void** data,
-		struct :ref:`arc_control_type<doxid-structarc__control__type>`* control,
-		struct :ref:`arc_inform_type<doxid-structarc__inform__type>`* inform
-	)
+        function arc_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

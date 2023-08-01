@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_fdc_control_type.rst
-	struct_fdc_time_type.rst
-	struct_fdc_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; fdc_initialize
 .. _doxid-galahad__fdc_8h_1a09ed47873fc4b54eac5b10958939459b:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_initialize(void** data, structure :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, int* status)
+        function fdc_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_read_specfile(struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, const Vararg{Cchar} specfile[])
+        function fdc_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
@@ -81,21 +71,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_find_dependent_rows(
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
-		void** data,
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform,
-		int* status,
-		Int32 m,
-		Int32 n,
-		Int32 A_ne,
-		const int A_col[],
-		const int A_ptr[],
-		const T A_val[],
-		const T b[],
-		int* n_depen,
-		Int32 depen[]
-	)
+        function fdc_find_dependent_rows(control, data, inform, status, 
+                                         m, n, A_ne, A_col, A_ptr, A_val, b, 
+                                         n_depen, depen)
 
 Find dependent rows and, if any, check if :math:`A x = b` is consistent
 
@@ -196,15 +174,9 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void fdc_terminate(
-		void** data,
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform
-	)
+        function fdc_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

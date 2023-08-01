@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lhs_control_type.rst
-	struct_lhs_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lhs_initialize
 .. _doxid-galahad__lhs_8h_1ae5e561917c238f90b8f6549a80c9d3d8:
@@ -18,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_initialize(
-		void** data,
-		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
-		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
-	)
+        function lhs_initialize(data, control, inform)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -54,7 +39,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_read_specfile(struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control, const Vararg{Cchar} specfile[])
+        function lhs_read_specfile(control, specfile)
 
 Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters.
 
@@ -83,15 +68,7 @@ By default, the spcification file will be named RUNLHS.SPC and lie in the curren
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_ihs(
-		Int32 n_dimen,
-		Int32 n_points,
-		int* seed,
-		int** X,
-		const structure :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
-		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
-		void** data
-	)
+        function lhs_ihs(n_dimen, n_points, seed, X, control, inform, data)
 
 The improved distributed hyper-cube sampling algorithm.
 
@@ -153,11 +130,9 @@ Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, Amer
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_get_seed(int* seed)
+        function lhs_get_seed(seed)
 
 Get a seed for the random number generator.
-
-
 
 .. rubric:: Parameters:
 
@@ -175,7 +150,7 @@ Get a seed for the random number generator.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_information(void** data, structure :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, int* status)
+        function lhs_information(data, inform, status)
 
 Provides output information
 
@@ -210,15 +185,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lhs_terminate(
-		void** data,
-		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
-		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
-	)
+        function lhs_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

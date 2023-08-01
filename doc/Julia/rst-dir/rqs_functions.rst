@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_rqs_control_type.rst
-	struct_rqs_time_type.rst
-	struct_rqs_history_type.rst
-	struct_rqs_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; rqs_initialize
 .. _doxid-galahad__rqs_8h_1aeb8c3e1a278c83094aaaf185e9833fac:
@@ -20,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_initialize(void** data, structure :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, int* status)
+        function rqs_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -55,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_read_specfile(struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control, const Vararg{Cchar} specfile[])
+        function rqs_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNRQS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/rqs.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -82,21 +67,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_import(
-		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function rqs_import(control, data, status, n, 
+                            H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -163,20 +137,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_import_m(
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} M_type[],
-		Int32 M_ne,
-		const int M_row[],
-		const int M_col[],
-		const int M_ptr[]
-	)
+        function rqs_import_m(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
 
 Import data for the scaling matrix M into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -238,20 +201,9 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_import_a(
-		void** data,
-		int* status,
-		Int32 m,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function rqs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import data for the constraint matrix A into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -313,15 +265,9 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_reset_control(
-		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function rqs_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -352,28 +298,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_solve_problem(
-		void** data,
-		int* status,
-		Int32 n,
-		const T power,
-		const T weight,
-		const T f,
-		const T c[],
-		Int32 H_ne,
-		const T H_val[],
-		T x[],
-		Int32 M_ne,
-		const T M_val[],
-		Int32 m,
-		Int32 A_ne,
-		const T A_val[],
-		T y[]
-	)
+        function rqs_solve_problem(data, status, n, power, weight, f, c, 
+                                  H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
 
 Solve the regularised quadratic problem.
-
-
 
 .. rubric:: Parameters:
 
@@ -491,11 +419,9 @@ Solve the regularised quadratic problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_information(void** data, structure :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform, int* status)
+        function rqs_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -526,15 +452,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void rqs_terminate(
-		void** data,
-		struct :ref:`rqs_control_type<doxid-structrqs__control__type>`* control,
-		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>`* inform
-	)
+        function rqs_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

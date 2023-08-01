@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_sha_control_type.rst
-	struct_sha_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; sha_initialize
 .. _doxid-galahad__sha_8h_1aa4f01a598c5cef45420937d4951519a9:
@@ -18,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sha_initialize(void** data, structure :ref:`sha_control_type<doxid-structsha__control__type>`* control, int* status)
+        function sha_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -53,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sha_information(void** data, structure :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, int* status)
+        function sha_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -88,15 +75,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sha_terminate(
-		void** data,
-		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
-		struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform
-	)
+        function sha_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

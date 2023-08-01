@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_sils_control_type.rst
-	struct_sils_ainfo_type.rst
-	struct_sils_finfo_type.rst
-	struct_sils_sinfo_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; sils_initialize
 .. _doxid-galahad__sils_8h_1adfa46fc519194d9acfbeccac4c5a1af3:
@@ -20,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_initialize(
-		void** data,
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		int* status
-	)
+        function sils_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -59,14 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_read_specfile(
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function sils_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSILS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sils.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -89,11 +67,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_import(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void** data, int* status)
+        function sils_import(control, data, status)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -130,15 +106,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_reset_control(
-		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function sils_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -169,17 +139,9 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_information(
-		void** data,
-		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>`* ainfo,
-		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>`* finfo,
-		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>`* sinfo,
-		int* status
-	)
+        function sils_information(data, ainfo, finfo, sinfo, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -220,11 +182,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sils_finalize(void** data, structure :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status)
+        function sils_finalize(data, control, status)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

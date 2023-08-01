@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_tru_control_type.rst
-	struct_tru_inform_type.rst
-	struct_tru_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; tru_initialize
 .. _doxid-galahad__tru_8h_1af7def0657e11fee556d3006fb64fe267:
@@ -19,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_initialize(void** data, struct :ref:`tru_control_type<doxid-structtru__control__type>`* control, int* status)
+        function tru_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -54,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_read_specfile(struct :ref:`tru_control_type<doxid-structtru__control__type>`* control, const char specfile[])
+        function tru_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNTRU.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/tru.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -81,21 +67,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_import(
-		struct :ref:`tru_control_type<doxid-structtru__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function tru_import(control, data, status, n, 
+                            H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -162,15 +137,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_reset_control(
-		struct :ref:`tru_control_type<doxid-structtru__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function tru_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -201,25 +170,12 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_solve_with_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_h,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
-	)
+        function tru_solve_with_mat(data, userdata, status, n, x, g, ne, 
+                                    eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, and all function/derivative information is available by function calls.
-
-
 
 .. rubric:: Parameters:
 
@@ -348,24 +304,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_solve_without_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
-	)
+        function tru_solve_without_mat(data, userdata, status, n, x, g, 
+                                       eval_f, eval_g, eval_hprod, eval_prec)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, and all function/derivative information is available by function calls.
-
-
 
 .. rubric:: Parameters:
 
@@ -489,25 +433,12 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_solve_reverse_with_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
-	)
+        function tru_solve_reverse_with_mat(data, status, eval_status, 
+                                            n, x, f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, but function/derivative information is only available by returning to the calling procedure
-
-
 
 .. rubric:: Parameters:
 
@@ -614,23 +545,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_solve_reverse_without_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
-	)
+        function tru_solve_reverse_without_mat(data, status, eval_status, 
+                                               n, x, f, g, u, v)
 
 Find a local minimizer of a given function using a trust-region method.
 
 This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
-
-
 
 .. rubric:: Parameters:
 
@@ -727,11 +647,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_information(void** data, struct :ref:`tru_inform_type<doxid-structtru__inform__type>`* inform, int* status)
+        function tru_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -762,15 +680,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void tru_terminate(
-		void** data,
-		struct :ref:`tru_control_type<doxid-structtru__control__type>`* control,
-		struct :ref:`tru_inform_type<doxid-structtru__inform__type>`* inform
-	)
+        function tru_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

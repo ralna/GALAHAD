@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_bqp_control_type.rst
-	struct_bqp_inform_type.rst
-	struct_bqp_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; bqp_initialize
 .. _doxid-galahad__bqp_8h_1a4466621895dd2314f1b3c21b4bc7f615:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_initialize(void** data, structure :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status)
+        function bqp_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_read_specfile(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const Vararg{Cchar} specfile[])
+        function bqp_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/bqp.pdf for a list of keywords that may be set.
 
@@ -81,17 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_import(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} H_type[],
-		Int32 ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function bqp_import(control, data, status, n, H_type, ne, 
+                            H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -162,12 +143,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_import_without_h(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n
-	)
+        function bqp_import_without_h(control, data, status, n)
 
 Import problem data into internal storage prior to solution.
 
@@ -213,11 +189,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_reset_control(
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function bqp_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -252,20 +224,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_solve_given_h(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		Int32 x_stat[]
-	)
+        function bqp_solve_given_h(data, status, n, h_ne, H_val, g, f, 
+                                   x_l, x_u, x, z, x_stat)
 
 Solve the bound-constrained quadratic program when the Hessian :math:`H` is available.
 
@@ -377,25 +337,11 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_solve_reverse_h_prod(
-		void** data,
-		int* status,
-		Int32 n,
-		const T g[],
-		const T f,
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		Int32 x_stat[],
-		T v[],
-		const T prod[],
-		Int32 nz_v[],
-		int* nz_v_start,
-		int* nz_v_end,
-		const int nz_prod[],
-		Int32 nz_prod_end
-	)
+        function bqp_solve_reverse_h_prod(data, status, n, g, f, 
+                                          x_l, x_u, x, z, x_stat, v,
+                                          prod, nz_v, nz_v_start, 
+                                          nz_v_end, nz_prod, nz_prod_end)
+
 
 Solve the bound-constrained quadratic program when the products of the Hessian :math:`H` with specified vectors may be computed by the calling program.
 
@@ -536,7 +482,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_information(void** data, structure :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status)
+        function bqp_information(data, inform, status)
 
 Provides output information
 
@@ -571,11 +517,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqp_terminate(
-		void** data,
-		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform
-	)
+        function bqp_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

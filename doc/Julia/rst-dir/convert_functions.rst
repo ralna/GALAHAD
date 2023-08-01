@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_convert_control_type.rst
-	struct_convert_time_type.rst
-	struct_convert_inform_type.rst
-
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; convert_initialize
 .. _doxid-galahad__convert_8h_1a6b9f4c72cb9c23cae9d4900816685ad6:
@@ -20,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void convert_initialize(
-		void** data,
-		struct :ref:`convert_control_type<doxid-structconvert__control__type>`* control,
-		int* status
-	)
+        function convert_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -59,11 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void convert_information(
-		void** data,
-		struct :ref:`convert_inform_type<doxid-structconvert__inform__type>`* inform,
-		int* status
-	)
+        function convert_information(data, inform, status)
 
 Provides output information
 
@@ -98,11 +79,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void convert_terminate(
-		void** data,
-		struct :ref:`convert_control_type<doxid-structconvert__control__type>`* control,
-		struct :ref:`convert_inform_type<doxid-structconvert__inform__type>`* inform
-	)
+        function convert_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

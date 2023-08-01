@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lstr_control_type.rst
-	struct_lstr_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lstr_initialize
 .. _doxid-galahad__lstr_8h_1ae423bf7ffc77c89f461448ca1f5c286c:
@@ -18,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_initialize(
-		void** data,
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		int* status
-	)
+        function lstr_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -57,14 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_read_specfile(
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function lstr_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lstr.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -87,15 +67,9 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_import_control(
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function lstr_import_control(control, data, status)
 
 Import control parameters prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -126,20 +100,9 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_solve_problem(
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const T radius,
-		T x[],
-		T u[],
-		T v[]
-	)
+        function lstr_solve_problem(data, status, m, n, radius, x, u, v)
 
 Solve the trust-region least-squares problem using reverse communication.
-
-
 
 .. rubric:: Parameters:
 
@@ -235,11 +198,9 @@ Solve the trust-region least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_information(void** data, structure :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status)
+        function lstr_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -270,15 +231,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lstr_terminate(
-		void** data,
-		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform
-	)
+        function lstr_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

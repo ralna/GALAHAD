@@ -396,17 +396,8 @@ Reset control parameters after import if required.
 	)
 
 Form and factorize the block matrix
-
-.. math::
-
-	K_{G} = \mat{cc}{ G & A^T \\ A & - C }
-
-\n
-  K_G = ( G  A^T )
-        ( A  - C )
-  \n for some appropriate matrix :math:`G`.
-
-
+$$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}$$
+for some appropriate matrix $G$.
 
 .. rubric:: Parameters:
 
@@ -509,17 +500,9 @@ Form and factorize the block matrix
 	void sbls_solve_system(void** data, int* status, int n, int m, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
 
 Solve the block linear system
-
-.. math::
-
-	\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b}.
-
-\n
-  ( G  A^T ) ( x ) = ( a ).
-  ( A  - C ) ( y )   ( b )
-\n
-
-
+$$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix} 
+\begin{pmatrix}x \\ y\end{pmatrix} = 
+\begin{pmatrix}a \\ b\end{pmatrix}.$$
 
 .. rubric:: Parameters:
 

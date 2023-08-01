@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_sls_control_type.rst
-	struct_sls_time_type.rst
-	struct_sls_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; sls_initialize
 .. _doxid-galahad__sls_8h_1a1d8a0c73587ca6d7f5333d41b3e2472a:
@@ -19,12 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_initialize(
-		const Vararg{Cchar} solver[],
-		void** data,
-		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
-		int* status
-	)
+        function sls_initialize(solver, data, control, status)
 
 Select solver, set default control values and initialize private data
 
@@ -66,7 +51,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_read_specfile(struct :ref:`sls_control_type<doxid-structsls__control__type>`* control, const Vararg{Cchar} specfile[])
+        function sls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sls.pdf for a list of keywords that may be set.
 
@@ -93,17 +78,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_analyse_matrix(
-		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} type[],
-		Int32 ne,
-		const int row[],
-		const int col[],
-		const int ptr[]
-	)
+        function sls_analyse_matrix(control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution
 
@@ -198,11 +173,7 @@ Import structural matrix data into internal storage prior to solution
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_reset_control(
-		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function sls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -237,12 +208,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_factorize_matrix(
-		void** data,
-		int* status,
-		Int32 ne,
-		const T val[]
-	)
+        function sls_factorize_matrix(data, status, ne, val)
 
 Form and factorize the symmetric matrix :math:`A`.
 
@@ -312,7 +278,7 @@ Form and factorize the symmetric matrix :math:`A`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_solve_system(void** data, int* status, int n, T sol[])
+        function sls_solve_system(data, status, n, sol)
 
 Solve the linear system :math:`Ax=b`.
 
@@ -364,13 +330,7 @@ Solve the linear system :math:`Ax=b`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_partial_solve_system(
-		const Vararg{Cchar} part[],
-		void** data,
-		int* status,
-		Int32 n,
-		T sol[]
-	)
+        function sls_partial_solve_system(part, data, status, n, sol)
 
 Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear system :math:`Mx=b`, where :math:`M` is one of :math:`L`, :math:`D`, :math:`U` or :math:`S = L \sqrt{D}`.
 
@@ -429,7 +389,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_information(void** data, structure :ref:`sls_inform_type<doxid-structsls__inform__type>`* inform, int* status)
+        function sls_information(data, inform, status)
 
 Provide output information
 
@@ -464,11 +424,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sls_terminate(
-		void** data,
-		struct :ref:`sls_control_type<doxid-structsls__control__type>`* control,
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>`* inform
-	)
+        function sls_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

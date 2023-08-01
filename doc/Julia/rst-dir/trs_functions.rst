@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_trs_control_type.rst
-	struct_trs_time_type.rst
-	struct_trs_history_type.rst
-	struct_trs_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; trs_initialize
 .. _doxid-galahad__trs_8h_1acb066d992c4ec394402bc7b7317e1163:
@@ -20,11 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_initialize(void** data, struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, int* status)
+        function trs_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -55,11 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_read_specfile(struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control, const char specfile[])
+        function trs_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNTRS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/trs.pdf for a list of keywords that may be set.
-
-
 
 .. rubric:: Parameters:
 
@@ -82,21 +67,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_import(
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function trs_import(control, data, status, n, 
+                            H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -163,20 +137,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_import_m(
-		void** data,
-		int* status,
-		int n,
-		const char M_type[],
-		int M_ne,
-		const int M_row[],
-		const int M_col[],
-		const int M_ptr[]
-	)
+        function trs_import_m(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
 
 Import data for the scaling matrix M into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -238,20 +201,9 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_import_a(
-		void** data,
-		int* status,
-		int m,
-		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function trs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import data for the constraint matrix A into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -313,15 +265,9 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_reset_control(
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function trs_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -352,27 +298,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_solve_problem(
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		int H_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		int M_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` M_val[],
-		int m,
-		int A_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
-	)
+        function trs_solve_problem(data, status, n, radius, f, c, H_ne, H_val, 
+                                   x, M_ne, M_val, m, A_ne, A_val, y)
 
 Solve the trust-region problem.
-
-
 
 .. rubric:: Parameters:
 
@@ -485,11 +414,9 @@ Solve the trust-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_information(void** data, struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform, int* status)
+        function trs_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -520,15 +447,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void trs_terminate(
-		void** data,
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>`* control,
-		struct :ref:`trs_inform_type<doxid-structtrs__inform__type>`* inform
-	)
+        function trs_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

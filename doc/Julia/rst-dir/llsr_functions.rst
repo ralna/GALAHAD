@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_llsr_control_type.rst
-	struct_llsr_time_type.rst
-	struct_llsr_history_type.rst
-	struct_llsr_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; llsr_initialize
 .. _doxid-galahad__llsr_8h_1a926f9824ab2e2bc71450a4d0b483879d:
@@ -20,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_initialize(
-		void** data,
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		int* status
-	)
+        function llsr_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -59,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_read_specfile(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function llsr_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
 
@@ -89,18 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_import(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function llsr_import(control, data, status, m, n, 
+                             A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -176,17 +148,8 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_import_scaling(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} S_type[],
-		Int32 S_ne,
-		const int S_row[],
-		const int S_col[],
-		const int S_ptr[]
-	)
+        function llsr_import_scaling(control, data, status, n, 
+                                     S_type, S_ne, S_row, S_col, S_ptr)
 
 Import the scaling matrix :math:`S` into internal storage prior to solution. Thus must have been preceeded by a call to llsr_import.
 
@@ -257,15 +220,9 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_reset_control(
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function llsr_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -296,24 +253,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_solve_problem(
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const T power,
-		const T weight,
-		Int32 A_ne,
-		const T A_val[],
-		const T b[],
-		T x[],
-		Int32 S_ne,
-		const T S_val[]
-	)
+        function llsr_solve_problem(data, status, m, n, power, weight, 
+                                    A_ne, A_val, b, x, S_ne, S_val)
 
 Solve the regularization-region problem.
-
-
 
 .. rubric:: Parameters:
 
@@ -411,11 +354,9 @@ Solve the regularization-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_information(void** data, structure :ref:`llsr_inform_type<doxid-structllsr__inform__type>`* inform, int* status)
+        function llsr_information(data, inform, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -446,15 +387,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llsr_terminate(
-		void** data,
-		struct :ref:`llsr_control_type<doxid-structllsr__control__type>`* control,
-		struct :ref:`llsr_inform_type<doxid-structllsr__inform__type>`* inform
-	)
+        function llsr_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

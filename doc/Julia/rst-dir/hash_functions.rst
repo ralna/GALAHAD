@@ -1,16 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_hash_control_type.rst
-	struct_hash_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; hash_initialize
 .. _doxid-galahad__hash_8h_1ac983b0236ce2f2ae9ed016846c5ad2a3:
@@ -18,13 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void hash_initialize(
-		Int32 nchar,
-		Int32 length,
-		void** data,
-		struct :ref:`hash_control_type<doxid-structhash__control__type>`* control,
-		struct :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform
-	)
+        function hash_initialize(nchar, length, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -66,7 +51,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void hash_information(void** data, structure :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform, int* status)
+        function hash_information(data, inform, status)
 
 Provides output information
 
@@ -101,11 +86,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void hash_terminate(
-		void** data,
-		struct :ref:`hash_control_type<doxid-structhash__control__type>`* control,
-		struct :ref:`hash_inform_type<doxid-structhash__inform__type>`* inform
-	)
+        function hash_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

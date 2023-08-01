@@ -1,18 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_llst_control_type.rst
-	struct_llst_time_type.rst
-	struct_llst_history_type.rst
-	struct_llst_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; llst_initialize
 .. _doxid-galahad__llst_8h_1a9da7a4daba2ceaf875fbd24fe42fbe1f:
@@ -20,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_initialize(
-		void** data,
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		int* status
-	)
+        function llst_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -59,14 +42,9 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_read_specfile(
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function llst_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
-
-
 
 .. rubric:: Parameters:
 
@@ -89,22 +67,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_import(
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function llst_import(control, data, status, m, n, 
+                             A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -176,17 +142,8 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_import_scaling(
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} S_type[],
-		Int32 S_ne,
-		const int S_row[],
-		const int S_col[],
-		const int S_ptr[]
-	)
+        function llst_import_scaling(control, data, status, n, 
+                                     S_type, S_ne, S_row, S_col, S_ptr)
 
 Import the scaling matrix :math:`S` into internal storage prior to solution. Thus must have been preceeded by a call to llst_import.
 
@@ -257,15 +214,9 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_reset_control(
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function llst_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -296,23 +247,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_solve_problem(
-		void** data,
-		int* status,
-		Int32 m,
-		Int32 n,
-		const T radius,
-		Int32 A_ne,
-		const T A_val[],
-		const T b[],
-		T x[],
-		Int32 S_ne,
-		const T S_val[]
-	)
+        function llst_solve_problem(data, status, m, n, radius, 
+                                    A_ne, A_val, b, x, S_ne, S_val)
 
 Solve the trust-region problem.
-
-
 
 .. rubric:: Parameters:
 
@@ -405,11 +343,7 @@ Solve the trust-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_information(void** data, structure :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform, int* status)
-
-Provides output information
-
-
+        function llst_information(data, inform, status)
 
 .. rubric:: Parameters:
 
@@ -440,15 +374,9 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void llst_terminate(
-		void** data,
-		struct :ref:`llst_control_type<doxid-structllst__control__type>`* control,
-		struct :ref:`llst_inform_type<doxid-structllst__inform__type>`* inform
-	)
+        function llst_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

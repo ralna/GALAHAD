@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_bqpb_control_type.rst
-	struct_bqpb_inform_type.rst
-	struct_bqpb_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; bqpb_initialize
 .. _doxid-galahad__bqpb_8h_1ad8fc12f75d4b6ca96fd0912785a04b6f:
@@ -19,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_initialize(
-		void** data,
-		struct :ref:`bqpb_control_type<doxid-structbqpb__control__type>`* control,
-		int* status
-	)
+        function bqpb_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -58,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_read_specfile(
-		struct :ref:`bqpb_control_type<doxid-structbqpb__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function bqpb_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBQPB.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/bqpb.pdf for a list of keywords that may be set.
 
@@ -88,17 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_import(
-		struct :ref:`bqpb_control_type<doxid-structbqpb__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function bqpb_import(control, data, status, n, 
+                             H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -176,11 +150,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_reset_control(
-		struct :ref:`bqpb_control_type<doxid-structbqpb__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function bqpb_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -215,20 +185,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_solve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 h_ne,
-		const T H_val[],
-		const T g[],
-		const T f,
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		Int32 x_stat[]
-	)
+        function bqpb_solve_qp(data, status, n, h_ne, H_val, g, f, 
+                                x_l, x_u, x, z, x_stat)
 
 Solve the bound-constrained quadratic program when the Hessian :math:`H` is available.
 
@@ -336,20 +294,8 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_solve_sldqp(
-		void** data,
-		int* status,
-		Int32 n,
-		const T w[],
-		const T x0[],
-		const T g[],
-		const T f,
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		Int32 x_stat[]
-	)
+        function bqpb_solve_sldqp(data, status, n, w, x0, g, f, x_l, x_u, 
+                                  x, z, x_stat)
 
 Solve the shifted least-distance quadratic program
 
@@ -457,7 +403,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_information(void** data, structure :ref:`bqpb_inform_type<doxid-structbqpb__inform__type>`* inform, int* status)
+        function bqpb_information(data, inform, status)
 
 Provides output information
 
@@ -492,11 +438,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bqpb_terminate(
-		void** data,
-		struct :ref:`bqpb_control_type<doxid-structbqpb__control__type>`* control,
-		struct :ref:`bqpb_inform_type<doxid-structbqpb__inform__type>`* inform
-	)
+        function bqpb_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

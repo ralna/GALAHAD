@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_sbls_control_type.rst
-	struct_sbls_time_type.rst
-	struct_sbls_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; sbls_initialize
 .. _doxid-galahad__sbls_8h_1a30b1a9463e4abd5cfa0150ffb30569a9:
@@ -19,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_initialize(
-		void** data,
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		int* status
-	)
+        function sbls_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -58,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_read_specfile(
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function sbls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSBLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sbls.pdf for a list of keywords that may be set.
 
@@ -88,28 +71,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_import(
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} H_type[],
-		Int32 H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[],
-		const Vararg{Cchar} C_type[],
-		Int32 C_ne,
-		const int C_row[],
-		const int C_col[],
-		const int C_ptr[]
-	)
+        function sbls_import(control, data, status, n, m, 
+                             H_type, H_ne, H_row, H_col, H_ptr, 
+                             A_type, A_ne, A_row, A_col, A_ptr, 
+                             C_type, C_ne, C_row, C_col, C_ptr)
 
 Import structural matrix data into internal storage prior to solution.
 
@@ -235,11 +200,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_reset_control(
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function sbls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -274,30 +235,12 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_factorize_matrix(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 h_ne,
-		const T H_val[],
-		Int32 a_ne,
-		const T A_val[],
-		Int32 c_ne,
-		const T C_val[],
-		const T D[]
-	)
+        function sbls_factorize_matrix(data, status, n, h_ne, H_val, 
+	                               a_ne, A_val, c_ne, C_val, D)
 
 Form and factorize the block matrix
-
-.. math::
-
-	K_{G} = \mat{cc}{ G & A^T \\ A & - C }
-
-\n
-  K_G = ( G  A^T )
-        ( A  - C )
-  \n for some appropriate matrix :math:`G`.
-
+$$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}$$
+for some appropriate matrix $G$.
 
 
 .. rubric:: Parameters:
@@ -398,20 +341,12 @@ Form and factorize the block matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_solve_system(void** data, int* status, int n, int m, T sol[])
+        function sbls_solve_system(data, status, n, m, sol)
 
 Solve the block linear system
-
-.. math::
-
-	\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b}.
-
-\n
-  ( G  A^T ) ( x ) = ( a ).
-  ( A  - C ) ( y )   ( b )
-\n
-
-
+$$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix} 
+\begin{pmatrix}x \\ y\end{pmatrix} = 
+\begin{pmatrix}a \\ b\end{pmatrix}.$$
 
 .. rubric:: Parameters:
 
@@ -460,7 +395,7 @@ Solve the block linear system
 	*
 		- sol
 
-		- is a one-dimensional array of size n + m and type double. on entry, its first n entries must hold the vector :math:`a`, and the following entries must hold the vector :math:`b`. On a successful exit, its first n entries contain the solution components :math:`x`, and the following entries contain the components :math:`y`.
+		- is a one-dimensional array of size n + m and type T. on entry, its first n entries must hold the vector :math:`a`, and the following entries must hold the vector :math:`b`. On a successful exit, its first n entries contain the solution components :math:`x`, and the following entries contain the components :math:`y`.
 
 .. index:: pair: function; sbls_information
 .. _doxid-galahad__sbls_8h_1a9f93f5c87ae0088ceb72c4f7e73c9418:
@@ -468,7 +403,7 @@ Solve the block linear system
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_information(void** data, structure :ref:`sbls_inform_type<doxid-structsbls__inform__type>`* inform, int* status)
+        function sbls_information(data, inform, status)
 
 Provides output information
 
@@ -503,11 +438,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void sbls_terminate(
-		void** data,
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>`* control,
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>`* inform
-	)
+        function sbls_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

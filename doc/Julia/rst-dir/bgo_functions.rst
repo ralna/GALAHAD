@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_bgo_control_type.rst
-	struct_bgo_inform_type.rst
-	struct_bgo_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; bgo_initialize
 .. _doxid-galahad__bgo_8h_1a5d2b6e10b7c04279d6037e9abd32e19f:
@@ -19,7 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_initialize(void** data, structure :ref:`bgo_control_type<doxid-structbgo__control__type>`* control, int* status)
+        function bgo_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -54,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_read_specfile(struct :ref:`bgo_control_type<doxid-structbgo__control__type>`* control, const Vararg{Cchar} specfile[])
+        function bgo_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBGO.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/bgo.pdf for a list of keywords that may be set.
 
@@ -81,19 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_import(
-		struct :ref:`bgo_control_type<doxid-structbgo__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const T x_l[],
-		const T x_u[],
-		const Vararg{Cchar} H_type[],
-		Int32 ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
-	)
+        function bgo_import(control, data, status, n, x_l, x_u, 
+                            H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -174,11 +153,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_reset_control(
-		struct :ref:`bgo_control_type<doxid-structbgo__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function bgo_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -213,20 +188,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_solve_with_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		T x[],
-		T g[],
-		Int32 ne,
-		int(*)(int, const T[], T*, const void*) eval_f,
-		int(*)(int, const T[], T[], const void*) eval_g,
-		int(*)(int, Int32 const T[], T[], const void*) eval_h,
-		int(*)(int, const T[], T[], const T[], bool, const void*) eval_hprod,
-		int(*)(int, const T[], T[], const T[], const void*) eval_prec
-	)
+        function bgo_solve_with_mat(data, userdata, status, n, x, g, ne, 
+                                    eval_f, eval_g, eval_h, eval_hprod, eval_prec)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a multistart trust-region method.
 
@@ -361,19 +324,8 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_solve_without_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		T x[],
-		T g[],
-		int(*)(int, const T[], T*, const void*) eval_f,
-		int(*)(int, const T[], T[], const void*) eval_g,
-		int(*)(int, const T[], T[], const T[], bool, const void*) eval_hprod,
-		int(*)(int, const T[], Int32 const int[], const T[], int*, int[], T[], bool, const void*) eval_shprod,
-		int(*)(int, const T[], T[], const T[], const void*) eval_prec
-	)
+        function bgo_solve_without_mat(data, userdata, status, n, x, g, 
+                                       eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a multistart trust-region method.
 
@@ -518,19 +470,8 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_solve_reverse_with_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		T x[],
-		T f,
-		T g[],
-		Int32 ne,
-		T H_val[],
-		const T u[],
-		T v[]
-	)
+        function bgo_solve_reverse_with_mat(data, status, eval_status, 
+                                            n, x, f, g, ne, H_val, u, v)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a multistart trust-region method.
 
@@ -653,21 +594,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_solve_reverse_without_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		T x[],
-		T f,
-		T g[],
-		T u[],
-		T v[],
-		Int32 index_nz_v[],
-		int* nnz_v,
-		const int index_nz_u[],
-		Int32 nnz_u
-	)
+        function bgo_solve_reverse_without_mat(data, status, eval_status, 
+                                                n, x, f, g, u, v, index_nz_v, 
+                                                nnz_v, index_nz_u, nnz_u)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a multistart trust-region method.
 
@@ -800,7 +729,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_information(void** data, structure :ref:`bgo_inform_type<doxid-structbgo__inform__type>`* inform, int* status)
+        function bgo_information(data, inform, status)
 
 Provides output information
 
@@ -835,11 +764,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void bgo_terminate(
-		void** data,
-		struct :ref:`bgo_control_type<doxid-structbgo__control__type>`* control,
-		struct :ref:`bgo_inform_type<doxid-structbgo__inform__type>`* inform
-	)
+        function bgo_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

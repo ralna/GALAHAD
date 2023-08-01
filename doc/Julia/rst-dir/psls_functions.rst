@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_psls_control_type.rst
-	struct_psls_time_type.rst
-	struct_psls_inform_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; psls_initialize
 .. _doxid-galahad__psls_8h_1af5cb66dbf5b9e4f094e2e0a29631fd1b:
@@ -19,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_initialize(
-		void** data,
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		int* status
-	)
+        function psls_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -58,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_read_specfile(
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function psls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNPSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/psls.pdf for a list of keywords that may be set.
 
@@ -88,17 +71,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_import(
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		const Vararg{Cchar} type[],
-		Int32 ne,
-		const int row[],
-		const int col[],
-		const int ptr[]
-	)
+        function psls_import(control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution.
 
@@ -169,11 +142,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_reset_control(
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function psls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -208,12 +177,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_form_preconditioner(
-		void** data,
-		int* status,
-		Int32 ne,
-		const T val[]
-	)
+        function psls_form_preconditioner(data, status, ne, val)
 
 Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 
@@ -265,14 +229,7 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_form_subset_preconditioner(
-		void** data,
-		int* status,
-		Int32 ne,
-		const T val[],
-		Int32 n_sub,
-		const int sub[]
-	)
+        function psls_form_subset_preconditioner(data, status, ne, val, n_sub, sub)
 
 Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the matrix :math:`A`.
 
@@ -334,14 +291,7 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_update_preconditioner(
-		void** data,
-		int* status,
-		Int32 ne,
-		const T val[],
-		Int32 n_del,
-		const int del[]
-	)
+        function psls_update_preconditioner(data, status, ne, val, n_del, del)
 
 Update the preconditioner :math:`P` when rows (amd columns) are removed.
 
@@ -403,7 +353,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_apply_preconditioner(void** data, int* status, int n, T sol[])
+        function psls_apply_preconditioner(data, status, n, sol)
 
 Solve the linear system :math:`Px=b`.
 
@@ -451,7 +401,7 @@ Solve the linear system :math:`Px=b`.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_information(void** data, structure :ref:`psls_inform_type<doxid-structpsls__inform__type>`* inform, int* status)
+        function psls_information(data, inform, status)
 
 Provide output information
 
@@ -486,11 +436,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void psls_terminate(
-		void** data,
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>`* control,
-		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>`* inform
-	)
+        function psls_terminate(data, control, inform)
 
 Deallocate all internal private storage
 

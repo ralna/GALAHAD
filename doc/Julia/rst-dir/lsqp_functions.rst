@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_lsqp_control_type.rst
-	struct_lsqp_inform_type.rst
-	struct_lsqp_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; lsqp_initialize
 .. _doxid-galahad__lsqp_8h_1aac395e385cae77c266ec108f21e9e8f9:
@@ -19,15 +9,9 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_initialize(
-		void** data,
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>`* control,
-		int* status
-	)
+        function lsqp_initialize(data, control, status)
 
 Set default control values and initialize private data
-
-
 
 .. rubric:: Parameters:
 
@@ -58,10 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_read_specfile(
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function lsqp_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lsqp.pdf for a list of keywords that may be set.
 
@@ -88,22 +69,10 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_import(
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function lsqp_import(control, data, status, n, m, 
+                             A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -175,15 +144,9 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_reset_control(
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function lsqp_reset_control(control, data, status)
 
 Reset control parameters after import if required.
-
-
 
 .. rubric:: Parameters:
 
@@ -214,32 +177,10 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_solve_qp(
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const T w[],
-		const T x0[],
-		const T g[],
-		const T f,
-		Int32 a_ne,
-		const T A_val[],
-		const T c_l[],
-		const T c_u[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T c[],
-		T y[],
-		T z[],
-		Int32 x_stat[],
-		Int32 c_stat[]
-	)
+        function lsqp_solve_qp(data, status, n, m, w, x0, g, f, a_ne, A_val, 
+                               c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
 
 Solve the separable convex quadratic program.
-
-
 
 .. rubric:: Parameters:
 
@@ -383,11 +324,9 @@ Solve the separable convex quadratic program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_information(void** data, structure :ref:`lsqp_inform_type<doxid-structlsqp__inform__type>`* inform, int* status)
+        function lsqp_information(data, inform, status)
 
 Provides output information.
-
-
 
 .. rubric:: Parameters:
 
@@ -418,15 +357,9 @@ Provides output information.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void lsqp_terminate(
-		void** data,
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>`* control,
-		struct :ref:`lsqp_inform_type<doxid-structlsqp__inform__type>`* inform
-	)
+        function lsqp_terminate(data, control, inform)
 
 Deallocate all internal private storage.
-
-
 
 .. rubric:: Parameters:
 

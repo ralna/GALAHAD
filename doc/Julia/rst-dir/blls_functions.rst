@@ -1,17 +1,7 @@
 .. _global:
 
-overview of functions provided
-------------------------------
-
-.. toctree::
-	:hidden:
-
-	struct_blls_control_type.rst
-	struct_blls_inform_type.rst
-	struct_blls_time_type.rst
-
-function calls
---------------
+callable functions
+------------------
 
 .. index:: pair: function; blls_initialize
 .. _doxid-galahad__blls_8h_1a12708c98f2473e03cd46f4dcfdb03409:
@@ -19,11 +9,7 @@ function calls
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_initialize(
-		void** data,
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		int* status
-	)
+        function blls_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -58,10 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_read_specfile(
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		const Vararg{Cchar} specfile[]
-	)
+        function blls_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBLLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/blls.pdf for a list of keywords that may be set.
 
@@ -88,18 +71,8 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_import(
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m,
-		const Vararg{Cchar} A_type[],
-		Int32 A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
-	)
+        function blls_import(control, data, status, n, m, 
+                             A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -175,13 +148,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_import_without_a(
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		void** data,
-		int* status,
-		Int32 n,
-		Int32 m
-	)
+        function blls_import_without_a(control, data, status, n, m)
 
 Import problem data into internal storage prior to solution.
 
@@ -232,11 +199,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_reset_control(
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		void** data,
-		int* status
-	)
+        function blls_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -271,25 +234,9 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_solve_given_a(
-		void** data,
-		void* userdata,
-		int* status,
-		Int32 n,
-		Int32 m,
-		Int32 A_ne,
-		const T A_val[],
-		const T b[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		T c[],
-		T g[],
-		Int32 x_stat[],
-		const T w[],
-		int(*)(int, const T[], T[], const void*) eval_prec
-	)
+        function blls_solve_given_a(data, userdata, status, n, m, 
+                                    A_ne, A_val, b, x_l, x_u, x, z, c, g, 
+                                    x_stat, w, eval_prec)
 
 Solve the bound-constrained linear least-squares problem when the Jacobian :math:`A` is available.
 
@@ -424,29 +371,10 @@ Solve the bound-constrained linear least-squares problem when the Jacobian :math
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_solve_reverse_a_prod(
-		void** data,
-		int* status,
-		int* eval_status,
-		Int32 n,
-		Int32 m,
-		const T b[],
-		const T x_l[],
-		const T x_u[],
-		T x[],
-		T z[],
-		T c[],
-		T g[],
-		Int32 x_stat[],
-		T v[],
-		const T p[],
-		Int32 nz_v[],
-		int* nz_v_start,
-		int* nz_v_end,
-		const int nz_p[],
-		Int32 nz_p_end,
-		const T w[]
-	)
+        function blls_solve_reverse_a_prod(data, status, eval_status, n, m, b,
+                                           x_l, x_u, x, z, c, g, x_stat, v, p,
+                                           nz_v, nz_v_start, nz_v_end, nz_p, 
+                                           nz_p_end, w)
 
 Solve the bound-constrained linear least-squares problem when the products of the Jacobian :math:`A` and its transpose with specified vectors may be computed by the calling program.
 
@@ -615,7 +543,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_information(void** data, structure :ref:`blls_inform_type<doxid-structblls__inform__type>`* inform, int* status)
+        function blls_information(data, inform, status)
 
 Provides output information
 
@@ -650,11 +578,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	void blls_terminate(
-		void** data,
-		struct :ref:`blls_control_type<doxid-structblls__control__type>`* control,
-		struct :ref:`blls_inform_type<doxid-structblls__inform__type>`* inform
-	)
+        function blls_terminate(data, control, inform)
 
 Deallocate all internal private storage
 
