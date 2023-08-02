@@ -7,22 +7,17 @@ bgo_time_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_bgo.h>
-	
-	struct bgo_time_type {
-		// components
-	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structbgo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`univariate_global<doxid-structbgo__time__type_1ae803cab9cf49e3b9f259415e254f7a8e>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`multivariate_local<doxid-structbgo__time__type_1ae3473e3e6e1f5482c642784f7e5b85e7>`;
-		T :ref:`clock_total<doxid-structbgo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_univariate_global<doxid-structbgo__time__type_1a35fea348c7aed26574dec4efbd9a7107>`;
-		T :ref:`clock_multivariate_local<doxid-structbgo__time__type_1a7e6ac9410dc0d6af0a020612ad4fceb0>`;
-	};
+        struct bgo_time_type{T}
+          total::Float32
+          univariate_global::Float32
+          multivariate_local::Float32
+          clock_total::T
+          clock_univariate_global::T
+          clock_multivariate_local::T
+
 .. _details-structbgo__time__type:
 
 detailed documentation
@@ -40,7 +35,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	Float32 total
 
 the total CPU time spent in the package
 
@@ -50,7 +45,7 @@ the total CPU time spent in the package
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` univariate_global
+	Float32 univariate_global
 
 the CPU time spent performing univariate global optimization
 
@@ -60,7 +55,7 @@ the CPU time spent performing univariate global optimization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` multivariate_local
+	Float32 multivariate_local
 
 the CPU time spent performing multivariate local optimization
 

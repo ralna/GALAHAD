@@ -104,37 +104,37 @@ Import problem data into internal storage prior to solution.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals, i.e., the number of rows of :math:`A`. m must be positive.
+		- is a scalar variable of type Int32 that holds the number of residuals, i.e., the number of rows of $A$. m must be positive.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of columns of :math:`A`. n must be positive.
+		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of columns of $A$. n must be positive.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A` if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$ if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A`, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; llst_import_scaling
 .. _doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f:
@@ -145,7 +145,7 @@ Import problem data into internal storage prior to solution.
         function llst_import_scaling(control, data, status, n, 
                                      S_type, S_ne, S_row, S_col, S_ptr)
 
-Import the scaling matrix :math:`S` into internal storage prior to solution. Thus must have been preceeded by a call to llst_import.
+Import the scaling matrix $S$ into internal storage prior to solution. Thus must have been preceeded by a call to llst_import.
 
 
 
@@ -181,32 +181,32 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of rows and columns of :math:`S`. n must be positive.
+		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of rows and columns of $S$. n must be positive.
 
 	*
 		- S_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid->` used for the matrix :math:`S`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid->` used for the matrix $S$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
 
 	*
 		- S_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- S_row
 
-		- is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of :math:`S` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- S_col
 
-		- is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of :math:`S` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of $S$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- S_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`S`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $S$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; llst_reset_control
 .. _doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41:
@@ -286,7 +286,7 @@ Solve the trust-region problem.
 
 		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
 
-		  * -15. The matrix :math:`S` does not appear to be strictly diagonally dominant.
+		  * -15. The matrix $S$ does not appear to be strictly diagonally dominant.
 
 		  * -16. The problem is so ill-conditioned that further progress is impossible.
 
@@ -305,37 +305,37 @@ Solve the trust-region problem.
 	*
 		- radius
 
-		- is a scalar of type T that holds the trust-region radius, :math:`\Delta`, used. radius must be strictly positive
+		- is a scalar of type T that holds the trust-region radius, $\Delta$, used. radius must be strictly positive
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the observation matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the observation matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the observation matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the observation matrix $A$ in any of the available storage schemes.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the values :math:`b` of observations. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the values $b$ of observations. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- S_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix :math:`S` if it not the identity matrix.
+		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix $S$ if it not the identity matrix.
 
 	*
 		- S_val
 
-		- is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix :math:`S` in any of the available storage schemes. If S_val is NULL, :math:`S` will be taken to be the identity matrix.
+		- is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix $S$ in any of the available storage schemes. If S_val is NULL, $S$ will be taken to be the identity matrix.
 
 .. index:: pair: function; llst_information
 .. _doxid-galahad__llst_8h_1a88854815d1c936131dcc762c64275d6f:

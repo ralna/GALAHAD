@@ -209,4 +209,4 @@ Deallocate all internal private storage
 
 		  * 0. The values were recorded succesfully
 
-		  * :math:`\neq` 0. The Fortran STAT value of an allocate or deallocate statement that has failed.
+		  * $\neq$ 0. The Fortran STAT value of an allocate or deallocate statement that has failed.

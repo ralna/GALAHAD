@@ -7,75 +7,70 @@ lpb_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lpb.h>
-	
-	struct lpb_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structlpb__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structlpb__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlpb__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlpb__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structlpb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structlpb__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`maxit<doxid-structlpb__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`infeas_max<doxid-structlpb__control__type_1af7d33b88b67b2366d7e2df31d42083a9>`;
-		Int32 :ref:`muzero_fixed<doxid-structlpb__control__type_1ab62ab11b934e2380467d5bafe2aaacfb>`;
-		Int32 :ref:`restore_problem<doxid-structlpb__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
-		Int32 :ref:`indicator_type<doxid-structlpb__control__type_1a5abba51271587463f528b0cbdb478141>`;
-		Int32 :ref:`arc<doxid-structlpb__control__type_1a30b5726116ac85ea64777e5d6e333894>`;
-		Int32 :ref:`series_order<doxid-structlpb__control__type_1a67cdd80087746b1190369ae6ed303b25>`;
-		Int32 :ref:`sif_file_device<doxid-structlpb__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		Int32 :ref:`qplib_file_device<doxid-structlpb__control__type_1a580c343e54a25a2d687782410c9b6917>`;
-		T :ref:`infinity<doxid-structlpb__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`stop_abs_p<doxid-structlpb__control__type_1a3749f9dcb2eeb60815a18c85a7d7d440>`;
-		T :ref:`stop_rel_p<doxid-structlpb__control__type_1a068065b9d50d5b222fbc8710d530bd9e>`;
-		T :ref:`stop_abs_d<doxid-structlpb__control__type_1a67b6a7be5dbfa34e9db4c960943fe31f>`;
-		T :ref:`stop_rel_d<doxid-structlpb__control__type_1ab479c27e2044c310e8d0c86869ea2307>`;
-		T :ref:`stop_abs_c<doxid-structlpb__control__type_1a1ed92b5ffb35957c5a8a0e657e312820>`;
-		T :ref:`stop_rel_c<doxid-structlpb__control__type_1a5c131e3b6061c09670e9c1959b6585a3>`;
-		T :ref:`prfeas<doxid-structlpb__control__type_1a09a0a5771a0300078ebe5f344ef4e492>`;
-		T :ref:`dufeas<doxid-structlpb__control__type_1a2ac34c5838499ed4992037655f52134a>`;
-		T :ref:`muzero<doxid-structlpb__control__type_1a8f4661dd5869e1555ba329b4bd535b4d>`;
-		T :ref:`tau<doxid-structlpb__control__type_1aa6fb9757f95c75d1a32c5132e939d238>`;
-		T :ref:`gamma_c<doxid-structlpb__control__type_1a80165efc96729e34ab1ae75223dac718>`;
-		T :ref:`gamma_f<doxid-structlpb__control__type_1a9ce8b2b646d97d4f0c1485bd8842f198>`;
-		T :ref:`reduce_infeas<doxid-structlpb__control__type_1aaac67273a340e9f96523583bfdce4c59>`;
-		T :ref:`obj_unbounded<doxid-structlpb__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`potential_unbounded<doxid-structlpb__control__type_1a0c5882a8efc33627a50dce09db1ba40a>`;
-		T :ref:`identical_bounds_tol<doxid-structlpb__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		T :ref:`mu_lunge<doxid-structlpb__control__type_1a32eb4d353d409b46521eb28008a74c36>`;
-		T :ref:`indicator_tol_p<doxid-structlpb__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd>`;
-		T :ref:`indicator_tol_pd<doxid-structlpb__control__type_1aa131ce5e639e5601d1b61fb540ac7187>`;
-		T :ref:`indicator_tol_tapia<doxid-structlpb__control__type_1abf4fb7dcdbaa9f729af1f063d357000a>`;
-		T :ref:`cpu_time_limit<doxid-structlpb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structlpb__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`remove_dependencies<doxid-structlpb__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		Bool :ref:`treat_zero_bounds_as_general<doxid-structlpb__control__type_1a59b23877e9c8cb49f1f6261e24660295>`;
-		Bool :ref:`just_feasible<doxid-structlpb__control__type_1a1337f1d22b070690c78f25f7ecaf1e96>`;
-		Bool :ref:`getdua<doxid-structlpb__control__type_1ae31443582be206db6b858b35e1fff00b>`;
-		Bool :ref:`puiseux<doxid-structlpb__control__type_1a444d111a9f28a15760d75b6ff7eb0131>`;
-		Bool :ref:`every_order<doxid-structlpb__control__type_1a64cb389e65df8d4add9bc97debd32c69>`;
-		Bool :ref:`feasol<doxid-structlpb__control__type_1a2d28372a45268cac881a4586c4e875d6>`;
-		Bool :ref:`balance_initial_complentarity<doxid-structlpb__control__type_1a88bfd9dc0be7872a0bc1ae611d4d1173>`;
-		Bool :ref:`crossover<doxid-structlpb__control__type_1a479e35eaf4aeb8b4d0c2d5fe2e4196c4>`;
-		Bool :ref:`space_critical<doxid-structlpb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlpb__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structlpb__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		Bool :ref:`generate_qplib_file<doxid-structlpb__control__type_1ad226b26090e539cf47228ba5ec7dc08d>`;
-		char :ref:`sif_file_name<doxid-structlpb__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`qplib_file_name<doxid-structlpb__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
-		char :ref:`prefix<doxid-structlpb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structlpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structlpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structlpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
-		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structlpb__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
-		struct :ref:`cro_control_type<doxid-structcro__control__type>` :ref:`cro_control<doxid-structlpb__control__type_1a7fbe482405119bceefb8480356d6bd43>`;
-	};
+        struct lpb_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          infeas_max::Int32
+          muzero_fixed::Int32
+          restore_problem::Int32
+          indicator_type::Int32
+          arc::Int32
+          series_order::Int32
+          sif_file_device::Int32
+          qplib_file_device::Int32
+          infinity::T
+          stop_abs_p::T
+          stop_rel_p::T
+          stop_abs_d::T
+          stop_rel_d::T
+          stop_abs_c::T
+          stop_rel_c::T
+          prfeas::T
+          dufeas::T
+          muzero::T
+          tau::T
+          gamma_c::T
+          gamma_f::T
+          reduce_infeas::T
+          obj_unbounded::T
+          potential_unbounded::T
+          identical_bounds_tol::T
+          mu_lunge::T
+          indicator_tol_p::T
+          indicator_tol_pd::T
+          indicator_tol_tapia::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          remove_dependencies::Bool
+          treat_zero_bounds_as_general::Bool
+          just_feasible::Bool
+          getdua::Bool
+          puiseux::Bool
+          every_order::Bool
+          feasol::Bool
+          balance_initial_complentarity::Bool
+          crossover::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          generate_qplib_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          qplib_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          fdc_control::fdc_control_type{T}
+          sbls_control::sbls_control_type{T}
+          fit_control::fit_control_type
+          roots_control::roots_control_type{T}
+          cro_control::cro_control_type{T}
+
 .. _details-structlpb__control__type:
 
 detailed documentation

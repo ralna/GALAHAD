@@ -11,46 +11,42 @@ lpa_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lpa.h>
+        struct lpa_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          max_iterative_refinements::Int32
+          min_real_factor_size::Int32
+          min_integer_factor_size::Int32
+          random_number_seed::Int32
+          sif_file_device::Int32
+          qplib_file_device::Int32
+          infinity::T
+          tol_data::T
+          feas_tol::T
+          relative_pivot_tolerance::T
+          growth_limit::T
+          zero_tolerance::T
+          change_tolerance::T
+          identical_bounds_tol::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          scale::Bool
+          dual::Bool
+          warm_start::Bool
+          steepest_edge::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          generate_qplib_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          qplib_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
 	
-	struct lpa_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structlpa__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structlpa__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlpa__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlpa__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structlpa__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structlpa__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`maxit<doxid-structlpa__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`max_iterative_refinements<doxid-structlpa__control__type_1ab044fd598767830ddc06560a91b80936>`;
-		Int32 :ref:`min_real_factor_size<doxid-structlpa__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
-		Int32 :ref:`min_integer_factor_size<doxid-structlpa__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
-		Int32 :ref:`random_number_seed<doxid-structlpa__control__type_1aaaf923bc58fa592eb0fc15779e087eeb>`;
-		Int32 :ref:`sif_file_device<doxid-structlpa__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		Int32 :ref:`qplib_file_device<doxid-structlpa__control__type_1a580c343e54a25a2d687782410c9b6917>`;
-		T :ref:`infinity<doxid-structlpa__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`tol_data<doxid-structlpa__control__type_1a4464f8bdf548161e0f111713567b93d7>`;
-		T :ref:`feas_tol<doxid-structlpa__control__type_1aa636051ebb14fdebe323a3843e7e24e3>`;
-		T :ref:`relative_pivot_tolerance<doxid-structlpa__control__type_1a65344e4192516e9b621cc7416f09045c>`;
-		T :ref:`growth_limit<doxid-structlpa__control__type_1a8652f551eab44da378ee44afde39bccb>`;
-		T :ref:`zero_tolerance<doxid-structlpa__control__type_1afb83ea8401da6498362914aa88ae823f>`;
-		T :ref:`change_tolerance<doxid-structlpa__control__type_1ad16b465967317e22e8290067805720f7>`;
-		T :ref:`identical_bounds_tol<doxid-structlpa__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		T :ref:`cpu_time_limit<doxid-structlpa__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structlpa__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`scale<doxid-structlpa__control__type_1aff7a60d3f21b50f4ad18e40d99d33a61>`;
-		Bool :ref:`dual<doxid-structlpa__control__type_1a7043f852111a1d50ac13fc7c35a6c4f3>`;
-		Bool :ref:`warm_start<doxid-structlpa__control__type_1a510fc17653a2903edbfeabf9148ff211>`;
-		Bool :ref:`steepest_edge<doxid-structlpa__control__type_1ac4f367280fb3162d00e79beba8cb7d91>`;
-		Bool :ref:`space_critical<doxid-structlpa__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlpa__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structlpa__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		Bool :ref:`generate_qplib_file<doxid-structlpa__control__type_1ad226b26090e539cf47228ba5ec7dc08d>`;
-		char :ref:`sif_file_name<doxid-structlpa__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`qplib_file_name<doxid-structlpa__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
-		char :ref:`prefix<doxid-structlpa__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
 .. _details-structlpa__control__type:
 
 detailed documentation

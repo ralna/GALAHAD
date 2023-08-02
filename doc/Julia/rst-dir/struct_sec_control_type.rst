@@ -10,19 +10,15 @@ sec_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sec.h>
-	
-	struct sec_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structsec__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structsec__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structsec__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structsec__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		T :ref:`h_initial<doxid-structsec__control__type_1a023bd6b7e060144782755238a1da549e>`;
-		T :ref:`update_skip_tol<doxid-structsec__control__type_1a8dfc46d0fb22a5d3b62f751e8c4a024b>`;
-		char :ref:`prefix<doxid-structsec__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct sec_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          h_initial::T
+          update_skip_tol::T
+          prefix::NTuple{31,Cchar}
+
 .. _details-structsec__control__type:
 
 detailed documentation
@@ -81,7 +77,7 @@ the level of output required. <= 0 gives no output, >= 1 warning message
 
 	T h_initial
 
-the initial Hessian approximation will be h_initial \* :math:`I`
+the initial Hessian approximation will be h_initial \* $I$
 
 .. index:: pair: variable; update_skip_tol
 .. _doxid-structsec__control__type_1a8dfc46d0fb22a5d3b62f751e8c4a024b:

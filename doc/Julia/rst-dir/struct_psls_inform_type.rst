@@ -10,38 +10,34 @@ psls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_psls.h>
-	
-	struct psls_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structpsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structpsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`analyse_status<doxid-structpsls__inform__type_1ae38019a70cc3dffa90bd881451c6cf1b>`;
-		Int32 :ref:`factorize_status<doxid-structpsls__inform__type_1a08c6a015b4a7616dffae6ab4972af1ab>`;
-		Int32 :ref:`solve_status<doxid-structpsls__inform__type_1aaab916515d75c0f3abbc4a250381708b>`;
-		Int64 :ref:`factorization_integer<doxid-structpsls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structpsls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`preconditioner<doxid-structpsls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`semi_bandwidth<doxid-structpsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`reordered_semi_bandwidth<doxid-structpsls__inform__type_1a626e2d4fb989dd770239efa3be051e0a>`;
-		Int32 :ref:`out_of_range<doxid-structpsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5>`;
-		Int32 :ref:`duplicates<doxid-structpsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
-		Int32 :ref:`upper<doxid-structpsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c>`;
-		Int32 :ref:`missing_diagonals<doxid-structpsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d>`;
-		Int32 :ref:`semi_bandwidth_used<doxid-structpsls__inform__type_1a981530ec3c99dba9d28c74cdacca6bbf>`;
-		Int32 :ref:`neg1<doxid-structpsls__inform__type_1ac7c6e49ad4048d11de36fcc4ce540aba>`;
-		Int32 :ref:`neg2<doxid-structpsls__inform__type_1a8fe93b02eb981bd3300337dee7835d86>`;
-		Bool :ref:`perturbed<doxid-structpsls__inform__type_1a6e04ee4d6dc38d2c5231d39d4f21be75>`;
-		T :ref:`fill_in_ratio<doxid-structpsls__inform__type_1a255e78721c3559caab816b9e6e72a6d4>`;
-		T :ref:`norm_residual<doxid-structpsls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
-		char :ref:`bad_alloc<doxid-structpsls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`mc61_info<doxid-structpsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
-		T :ref:`mc61_rinfo<doxid-structpsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
-		struct :ref:`psls_time_type<doxid-structpsls__time__type>` :ref:`time<doxid-structpsls__inform__type_1a4e85e8fc22799defca71ba5c448216ed>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structpsls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`mi28_info<doxid-structmi28__info>` :ref:`mi28_info<doxid-structpsls__inform__type_1aa5913427f989eb08152b78bf6390c0b9>`;
-	};
+        struct psls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          analyse_status::Int32
+          factorize_status::Int32
+          solve_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          preconditioner::Int32
+          semi_bandwidth::Int32
+          reordered_semi_bandwidth::Int32
+          out_of_range::Int32
+          duplicates::Int32
+          upper::Int32
+          missing_diagonals::Int32
+          semi_bandwidth_used::Int32
+          neg1::Int32
+          neg2::Int32
+          perturbed::Bool
+          fill_in_ratio::T
+          norm_residual::T
+          bad_alloc::NTuple{81,Cchar}
+          mc61_info::NTuple{10,Cint}
+          mc61_rinfo::NTuple{15,T}
+          time::psls_time_type{T}
+          sls_inform::sls_inform_type{T}
+          mi28_info::mi28_info{T}
+
 .. _details-structpsls__inform__type:
 
 detailed documentation

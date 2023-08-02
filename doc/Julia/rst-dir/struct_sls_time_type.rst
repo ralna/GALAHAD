@@ -10,28 +10,24 @@ sls_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sls.h>
-	
-	struct sls_time_type {
-		// fields
-	
-		T :ref:`total<doxid-structsls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		T :ref:`analyse<doxid-structsls__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		T :ref:`factorize<doxid-structsls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		T :ref:`solve<doxid-structsls__time__type_1a4c971b10c915041b89daa05a29125376>`;
-		T :ref:`order_external<doxid-structsls__time__type_1ac9e0db16df3b373e6192360c84f71aab>`;
-		T :ref:`analyse_external<doxid-structsls__time__type_1a9b4f1f33374092b099ab7baad8d1d6ac>`;
-		T :ref:`factorize_external<doxid-structsls__time__type_1a87f0b3565b139ff7baa76ce830a92964>`;
-		T :ref:`solve_external<doxid-structsls__time__type_1a8cbd0409a559f5e24c15591cf8d53eeb>`;
-		T :ref:`clock_total<doxid-structsls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_analyse<doxid-structsls__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		T :ref:`clock_factorize<doxid-structsls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_solve<doxid-structsls__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-		T :ref:`clock_order_external<doxid-structsls__time__type_1a7babcea658f1454261df6b8acc24be9b>`;
-		T :ref:`clock_analyse_external<doxid-structsls__time__type_1ac479ec45cbef59b5aff36cc55861dc63>`;
-		T :ref:`clock_factorize_external<doxid-structsls__time__type_1aab3765fc7d7de7a6148eb861ebd8fa31>`;
-		T :ref:`clock_solve_external<doxid-structsls__time__type_1abcd8605d13ed5379a535b305c69ee1cc>`;
-	};
+        struct sls_time_type{T}
+          total::T
+          analyse::T
+          factorize::T
+          solve::T
+          order_external::T
+          analyse_external::T
+          factorize_external::T
+          solve_external::T
+          clock_total::T
+          clock_analyse::T
+          clock_factorize::T
+          clock_solve::T
+          clock_order_external::T
+          clock_analyse_external::T
+          clock_factorize_external::T
+          clock_solve_external::T
+
 .. _details-structsls__time__type:
 
 detailed documentation

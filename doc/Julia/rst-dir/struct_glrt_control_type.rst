@@ -10,33 +10,29 @@ glrt_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_glrt.h>
+        struct glrt_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          itmax::Int32
+          stopping_rule::Int32
+          freq::Int32
+          extra_vectors::Int32
+          ritz_printout_device::Int32
+          stop_relative::T
+          stop_absolute::T
+          fraction_opt::T
+          rminvr_zero::T
+          f_0::T
+          unitm::Bool
+          impose_descent::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          print_ritz_values::Bool
+          ritz_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
 	
-	struct glrt_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structglrt__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structglrt__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structglrt__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structglrt__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`itmax<doxid-structglrt__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
-		Int32 :ref:`stopping_rule<doxid-structglrt__control__type_1a39dcb82333184b2fa9251a89c3e30e1a>`;
-		Int32 :ref:`freq<doxid-structglrt__control__type_1ae0d22272b68e75d19ac0b80c01f806b6>`;
-		Int32 :ref:`extra_vectors<doxid-structglrt__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
-		Int32 :ref:`ritz_printout_device<doxid-structglrt__control__type_1aa733751a194838432e841fce75b56682>`;
-		T :ref:`stop_relative<doxid-structglrt__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		T :ref:`stop_absolute<doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		T :ref:`fraction_opt<doxid-structglrt__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
-		T :ref:`rminvr_zero<doxid-structglrt__control__type_1a1326abe392007db57e814413298b152f>`;
-		T :ref:`f_0<doxid-structglrt__control__type_1a221da497cd332f1acdcdb2919f282fb4>`;
-		Bool :ref:`unitm<doxid-structglrt__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c>`;
-		Bool :ref:`impose_descent<doxid-structglrt__control__type_1a837f5d19d77de4475c6acc7974230bad>`;
-		Bool :ref:`space_critical<doxid-structglrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structglrt__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`print_ritz_values<doxid-structglrt__control__type_1aa12aeab97d40062126b39c7fa300d147>`;
-		char :ref:`ritz_file_name<doxid-structglrt__control__type_1afda2047534d65487e814d835cd819316>`[31];
-		char :ref:`prefix<doxid-structglrt__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
 .. _details-structglrt__control__type:
 
 detailed documentation
@@ -109,7 +105,7 @@ the stopping rule used (see below). Possible values are:
 
 * 1 stopping rule = norm of the step.
 
-* 2 stopping rule is norm of the step / :math:`\sigma`.
+* 2 stopping rule is norm of the step / $\sigma$.
 
 * other. stopping rule = 1.0.
 
@@ -151,7 +147,7 @@ the unit number for writing debug Ritz values
 
 	T stop_relative
 
-the iteration stops successfully when the gradient in the :math:`M^{-1}` norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
+the iteration stops successfully when the gradient in the $M^{-1}$ norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
 
 .. index:: pair: variable; stop_absolute
 .. _doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:
@@ -211,7 +207,7 @@ is M the identity matrix ?
 
 	Bool impose_descent
 
-is descent required i.e., should :math:`c^T x < 0`?
+is descent required i.e., should $c^T x < 0$?
 
 .. index:: pair: variable; space_critical
 .. _doxid-structglrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

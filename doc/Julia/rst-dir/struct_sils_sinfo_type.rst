@@ -10,19 +10,15 @@ sils_sinfo_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sils.h>
-	
-	struct sils_sinfo_type {
-		// fields
-	
-		Int32 :ref:`flag<doxid-structsils__sinfo__type_1adf916204820072417ed73a32de1cefcf>`;
-		Int32 :ref:`stat<doxid-structsils__sinfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		T :ref:`cond<doxid-structsils__sinfo__type_1a006d728493fbea61aabf1e6229e34185>`;
-		T :ref:`cond2<doxid-structsils__sinfo__type_1ae6b598341b9634df4e446be3de0ed839>`;
-		T :ref:`berr<doxid-structsils__sinfo__type_1ad2150d4466031c9e63281a146e5ccd03>`;
-		T :ref:`berr2<doxid-structsils__sinfo__type_1ade02e126e145400e9ead3c3f3bc06dab>`;
-		T :ref:`error<doxid-structsils__sinfo__type_1a2b7e3bae2c2111a08302ba1dc7f14cef>`;
-	};
+        struct sils_sinfo_type{T}
+          flag::Int32
+          stat::Int32
+          cond::T
+          cond2::T
+          berr::T
+          berr2::T
+          error::T
+
 .. _details-structsils__sinfo__type:
 
 detailed documentation

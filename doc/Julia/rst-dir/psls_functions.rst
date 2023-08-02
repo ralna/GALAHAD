@@ -109,32 +109,32 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $A$.
 
 	*
 		- type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; psls_reset_control
 .. _doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab:
@@ -179,7 +179,7 @@ Reset control parameters after import if required.
 
         function psls_form_preconditioner(data, status, ne, val)
 
-Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
+Form and factorize a preconditioner $P$ of the matrix $A$.
 
 
 
@@ -216,12 +216,12 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 .. index:: pair: function; psls_form_subset_preconditioner
 .. _doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65:
@@ -231,7 +231,7 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 
         function psls_form_subset_preconditioner(data, status, ne, val, n_sub, sub)
 
-Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the matrix :math:`A`.
+Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $A$.
 
 
 
@@ -268,17 +268,17 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 	*
 		- n_sub
 
-		- is a scalar variable of type Int32 that holds the number of rows (and columns) of the required submatrix of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows (and columns) of the required submatrix of $A$.
 
 	*
 		- sub
@@ -293,7 +293,7 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 
         function psls_update_preconditioner(data, status, ne, val, n_del, del)
 
-Update the preconditioner :math:`P` when rows (amd columns) are removed.
+Update the preconditioner $P$ when rows (amd columns) are removed.
 
 
 
@@ -330,12 +330,12 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 	*
 		- n_del
@@ -355,7 +355,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 
         function psls_apply_preconditioner(data, status, n, sol)
 
-Solve the linear system :math:`Px=b`.
+Solve the linear system $Px=b$.
 
 
 
@@ -388,12 +388,12 @@ Solve the linear system :math:`Px=b`.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered.
+		- is a one-dimensional array of size n and type double. On entry, it must hold the vector $b$. On a successful exit, its contains the solution $x$. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered.
 
 .. index:: pair: function; psls_information
 .. _doxid-galahad__psls_8h_1ace5f302a9ccb0c3f8c29b28b42da7793:

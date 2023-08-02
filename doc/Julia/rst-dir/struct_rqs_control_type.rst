@@ -10,41 +10,37 @@ rqs_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_rqs.h>
-	
-	struct rqs_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structrqs__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structrqs__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structrqs__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`problem<doxid-structrqs__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
-		Int32 :ref:`print_level<doxid-structrqs__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`dense_factorization<doxid-structrqs__control__type_1aab4d800411bc0d93a4025eb9e3b863d2>`;
-		Int32 :ref:`new_h<doxid-structrqs__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		Int32 :ref:`new_m<doxid-structrqs__control__type_1a5b8ebe6e4189c3a8d7a0c02acdb21166>`;
-		Int32 :ref:`new_a<doxid-structrqs__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		Int32 :ref:`max_factorizations<doxid-structrqs__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
-		Int32 :ref:`inverse_itmax<doxid-structrqs__control__type_1a2ae9a03c4071d26be0d495c9f91f3d45>`;
-		Int32 :ref:`taylor_max_degree<doxid-structrqs__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		T :ref:`initial_multiplier<doxid-structrqs__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
-		T :ref:`lower<doxid-structrqs__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		T :ref:`upper<doxid-structrqs__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		T :ref:`stop_normal<doxid-structrqs__control__type_1a3573530258a38cc836b106b9f7a54565>`;
-		T :ref:`stop_hard<doxid-structrqs__control__type_1a9508356d815ae3f8eea0f0770fddb6d7>`;
-		T :ref:`start_invit_tol<doxid-structrqs__control__type_1aec94d12f2b37930ecfdb129e5c4d432d>`;
-		T :ref:`start_invitmax_tol<doxid-structrqs__control__type_1a75ff746a88cecc883d73cec9c7193bbd>`;
-		Bool :ref:`use_initial_multiplier<doxid-structrqs__control__type_1a4d2667d00744ca0f4cc3a2e19bfaae17>`;
-		Bool :ref:`initialize_approx_eigenvector<doxid-structrqs__control__type_1a39433cce74413f6635c587d6c06b9110>`;
-		Bool :ref:`space_critical<doxid-structrqs__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structrqs__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`problem_file<doxid-structrqs__control__type_1afbe46916454c2158f31d64ad8dbeaf34>`[31];
-		char :ref:`symmetric_linear_solver<doxid-structrqs__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`definite_linear_solver<doxid-structrqs__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
-		char :ref:`prefix<doxid-structrqs__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structrqs__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structrqs__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
-	};
+        struct rqs_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          problem::Int32
+          print_level::Int32
+          dense_factorization::Int32
+          new_h::Int32
+          new_m::Int32
+          new_a::Int32
+          max_factorizations::Int32
+          inverse_itmax::Int32
+          taylor_max_degree::Int32
+          initial_multiplier::T
+          lower::T
+          upper::T
+          stop_normal::T
+          stop_hard::T
+          start_invit_tol::T
+          start_invitmax_tol::T
+          use_initial_multiplier::Bool
+          initialize_approx_eigenvector::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          problem_file::NTuple{31,Cchar}
+          symmetric_linear_solver::NTuple{31,Cchar}
+          definite_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
+          ir_control::ir_control_type{T}
+
 .. _details-structrqs__control__type:
 
 detailed documentation
@@ -129,7 +125,7 @@ should the problem be solved by dense factorization? Possible values are
 
 	Int32 new_h
 
-how much of :math:`H` has changed since the previous call. Possible values are
+how much of $H$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -145,7 +141,7 @@ how much of :math:`H` has changed since the previous call. Possible values are
 
 	Int32 new_m
 
-how much of :math:`M` has changed since the previous call. Possible values are
+how much of $M$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -161,7 +157,7 @@ how much of :math:`M` has changed since the previous call. Possible values are
 
 	Int32 new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
+how much of $A$ has changed since the previous call. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
 
 .. index:: pair: variable; max_factorizations
 .. _doxid-structrqs__control__type_1a49cdbb7627ab58da229da6ccb3034bb7:
@@ -231,7 +227,7 @@ see lower
 
 	T stop_normal
 
-stop when :math:`| \|x\| - (multiplier/\sigma)^(1/(p-2)) | \leq` stop_normal \* max :math:`( \|x\|, (multiplier/\sigma)^(1/(p-2)) )` REAL ( KIND = wp ) :: stop_normal = epsmch \*\* 0.75
+stop when $| \|x\| - (multiplier/\sigma)^(1/(p-2)) | \leq$ stop_normal \* max $( \|x\|, (multiplier/\sigma)^(1/(p-2)) )$ REAL ( KIND = wp ) :: stop_normal = epsmch \*\* 0.75
 
 .. index:: pair: variable; stop_hard
 .. _doxid-structrqs__control__type_1a9508356d815ae3f8eea0f0770fddb6d7:

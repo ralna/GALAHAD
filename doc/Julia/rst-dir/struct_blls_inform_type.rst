@@ -7,27 +7,22 @@ blls_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_blls.h>
+        struct blls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          factorization_status::Int32
+          iter::Int32
+          cg_iter::Int32
+          obj::T
+          norm_pg::T
+          bad_alloc::NTuple{81,Cchar}
+          time::blls_time_type{T}
+          sbls_inform::sbls_inform_type{T}
+          convert_inform::convert_inform_type{T}
 	
-	struct blls_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structblls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structblls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`factorization_status<doxid-structblls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int32 :ref:`iter<doxid-structblls__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structblls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		T :ref:`obj<doxid-structblls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_pg<doxid-structblls__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
-		char :ref:`bad_alloc<doxid-structblls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`blls_time_type<doxid-structblls__time__type>` :ref:`time<doxid-structblls__inform__type_1ac8d53b198a1597a4a9fe75d4c1191ec0>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structblls__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`convert_inform_type<doxid-structconvert__inform__type>` :ref:`convert_inform<doxid-structblls__inform__type_1a7006a98737e58bb90259d7705ef537ae>`;
-	};
 .. _details-structblls__inform__type:
 
 detailed documentation

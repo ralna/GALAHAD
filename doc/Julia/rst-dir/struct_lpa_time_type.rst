@@ -11,16 +11,12 @@ lpa_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lpa.h>
-	
-	struct lpa_time_type {
-		// components
-	
-		T :ref:`total<doxid-structlpa__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		T :ref:`preprocess<doxid-structlpa__time__type_1a811a9183909ac7697f36d0ea8987715c>`;
-		T :ref:`clock_total<doxid-structlpa__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_preprocess<doxid-structlpa__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
-	};
+        struct lpa_time_type{T}
+          total::T
+          preprocess::T
+          clock_total::T
+          clock_preprocess::T
+
 .. _details-structlpa__time__type:
 
 detailed documentation

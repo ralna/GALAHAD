@@ -11,34 +11,30 @@ bgo_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_bgo.h>
-	
-	struct bgo_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structbgo__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structbgo__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structbgo__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structbgo__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`attempts_max<doxid-structbgo__control__type_1adf3a400ef30c3d5d65bfc00c68fc291b>`;
-		Int32 :ref:`max_evals<doxid-structbgo__control__type_1a19d3bb811675792cbe138aef2d1c6603>`;
-		Int32 :ref:`sampling_strategy<doxid-structbgo__control__type_1a6c37622ea827ff9870202cd50878bda6>`;
-		Int32 :ref:`hypercube_discretization<doxid-structbgo__control__type_1a30db27deb26d273fdd69bf125bc86ecd>`;
-		Int32 :ref:`alive_unit<doxid-structbgo__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structbgo__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		T :ref:`infinity<doxid-structbgo__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`obj_unbounded<doxid-structbgo__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`cpu_time_limit<doxid-structbgo__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structbgo__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`random_multistart<doxid-structbgo__control__type_1a172f98defa4da75031c5f280b5cfbab6>`;
-		Bool :ref:`hessian_available<doxid-structbgo__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		Bool :ref:`space_critical<doxid-structbgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structbgo__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structbgo__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structbgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
-		struct :ref:`lhs_control_type<doxid-structlhs__control__type>` :ref:`lhs_control<doxid-structbgo__control__type_1a4938e30d02d3b452486980daef1f6f73>`;
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structbgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
-	};
+        struct bgo_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          attempts_max::Int32
+          max_evals::Int32
+          sampling_strategy::Int32
+          hypercube_discretization::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          infinity::T
+          obj_unbounded::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          random_multistart::Bool
+          hessian_available::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          ugo_control::ugo_control_type{T}
+          lhs_control::lhs_control_type
+          trb_control::trb_control_type{T}
+
 .. _details-structbgo__control__type:
 
 detailed documentation
@@ -89,13 +85,13 @@ general output occurs on stream out
 
 the level of output required. Possible values are:
 
-* :math:`\leq` 0 no output,
+* $\leq$ 0 no output,
 
 * 1 a one-line summary for every improvement
 
 * 2 a summary of each iteration
 
-* :math:`\geq` 3 increasingly verbose (debugging) output
+* $\geq$ 3 increasingly verbose (debugging) output
 
 .. index:: pair: variable; attempts_max
 .. _doxid-structbgo__control__type_1adf3a400ef30c3d5d65bfc00c68fc291b:

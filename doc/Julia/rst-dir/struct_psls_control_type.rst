@@ -10,34 +10,30 @@ psls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_psls.h>
-	
-	struct psls_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structpsls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structpsls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structpsls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structpsls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`preconditioner<doxid-structpsls__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`semi_bandwidth<doxid-structpsls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`scaling<doxid-structpsls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		Int32 :ref:`ordering<doxid-structpsls__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		Int32 :ref:`max_col<doxid-structpsls__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`icfs_vectors<doxid-structpsls__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		Int32 :ref:`mi28_lsize<doxid-structpsls__control__type_1a97a46af6187162b529821f79d1559827>`;
-		Int32 :ref:`mi28_rsize<doxid-structpsls__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		T :ref:`min_diagonal<doxid-structpsls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
-		Bool :ref:`new_structure<doxid-structpsls__control__type_1ada98b778d8b7622af0d49b064b56b8ba>`;
-		Bool :ref:`get_semi_bandwidth<doxid-structpsls__control__type_1a0e41e53b327ab70366ccb2f06a23a868>`;
-		Bool :ref:`get_norm_residual<doxid-structpsls__control__type_1acdcd8a05219b5c554c279137cb409a03>`;
-		Bool :ref:`space_critical<doxid-structpsls__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structpsls__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`definite_linear_solver<doxid-structpsls__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
-		char :ref:`prefix<doxid-structpsls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structpsls__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`mi28_control<doxid-structmi28__control>` :ref:`mi28_control<doxid-structpsls__control__type_1a0a72ba6769963a38f2428b875b1d295e>`;
-	};
+        struct psls_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          preconditioner::Int32
+          semi_bandwidth::Int32
+          scaling::Int32
+          ordering::Int32
+          max_col::Int32
+          icfs_vectors::Int32
+          mi28_lsize::Int32
+          mi28_rsize::Int32
+          min_diagonal::T
+          new_structure::Bool
+          get_semi_bandwidth::Bool
+          get_norm_residual::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          definite_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
+          mi28_control::mi28_control{T}
+
 .. _details-structpsls__control__type:
 
 detailed documentation
@@ -98,25 +94,25 @@ controls level of diagnostic output
 
 which preconditioner to use:
 
-* <0 no preconditioning occurs, :math:`P = I`
+* <0 no preconditioning occurs, $P = I$
 
 * 0 the preconditioner is chosen automatically (forthcoming, and currently defaults to 1).
 
-* 1 :math:`A` is replaced by the diagonal, :math:`P` = diag( max(:math:`A`, .min_diagonal ) ).
+* 1 $A$ is replaced by the diagonal, $P$ = diag( max($A$, .min_diagonal ) ).
 
-* 2 :math:`A` is replaced by the band :math:`P` = band(:math:`A`) with semi-bandwidth .semi_bandwidth.
+* 2 $A$ is replaced by the band $P$ = band($A$) with semi-bandwidth .semi_bandwidth.
 
-* 3 :math:`A` is replaced by the reordered band :math:`P` = band( order(:math:`A`) ) with semi-bandwidth .semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal.
+* 3 $A$ is replaced by the reordered band $P$ = band( order($A$) ) with semi-bandwidth .semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal.
 
-* 4 :math:`P` is a full factorization of :math:`A` using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization.
+* 4 $P$ is a full factorization of $A$ using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization.
 
-* 5 :math:`P` is a full factorization of :math:`A` due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one.
+* 5 $P$ is a full factorization of $A$ due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one.
 
-* 6 :math:`P` is an incomplete Cholesky factorization of :math:`A` using the package ICFS due to Lin and More'.
+* 6 $P$ is an incomplete Cholesky factorization of $A$ using the package ICFS due to Lin and More'.
 
-* 7 :math:`P` is an incomplete factorization of :math:`A` implemented as HSL_MI28 from HSL.
+* 7 $P$ is an incomplete factorization of $A$ implemented as HSL_MI28 from HSL.
 
-* 8 :math:`P` is an incomplete factorization of :math:`A` due to Munskgaard (forthcoming).
+* 8 $P$ is an incomplete factorization of $A$ due to Munskgaard (forthcoming).
 
 * >8 treated as 0.
 
@@ -160,7 +156,7 @@ see scaling
 
 	Int32 max_col
 
-maximum number of nonzeros in a column of :math:`A` for Schur-complement factorization to accommodate newly deleted rpws and columns
+maximum number of nonzeros in a column of $A$ for Schur-complement factorization to accommodate newly deleted rpws and columns
 
 .. index:: pair: variable; icfs_vectors
 .. _doxid-structpsls__control__type_1adb095f545799aab1d69fcdca912d4afd:
@@ -190,7 +186,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	Int32 mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
 
 .. index:: pair: variable; min_diagonal
 .. _doxid-structpsls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc:

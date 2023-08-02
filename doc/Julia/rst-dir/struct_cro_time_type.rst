@@ -11,20 +11,16 @@ cro_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_cro.h>
-	
-	struct cro_time_type {
-		// components
-	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structcro__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`analyse<doxid-structcro__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`factorize<doxid-structcro__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`solve<doxid-structcro__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
-		T :ref:`clock_total<doxid-structcro__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_analyse<doxid-structcro__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		T :ref:`clock_factorize<doxid-structcro__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_solve<doxid-structcro__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-	};
+        struct cro_time_type{T}
+          total::Float32
+          analyse::Float32
+          factorize::Float32
+          solve::Float32
+          clock_total::T
+          clock_analyse::T
+          clock_factorize::T
+          clock_solve::T
+
 .. _details-structcro__time__type:
 
 detailed documentation
@@ -41,7 +37,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	Float32 total
 
 the total CPU time spent in the package
 
@@ -51,7 +47,7 @@ the total CPU time spent in the package
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` analyse
+	Float32 analyse
 
 the CPU time spent reordering the matrix prior to factorization
 
@@ -61,7 +57,7 @@ the CPU time spent reordering the matrix prior to factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` factorize
+	Float32 factorize
 
 the CPU time spent factorizing the required matrices
 
@@ -71,7 +67,7 @@ the CPU time spent factorizing the required matrices
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` solve
+	Float32 solve
 
 the CPU time spent computing corrections
 

@@ -7,32 +7,27 @@ dgo_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_dgo.h>
-	
-	struct dgo_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structdgo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structdgo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structdgo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structdgo__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`f_eval<doxid-structdgo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		Int32 :ref:`g_eval<doxid-structdgo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		Int32 :ref:`h_eval<doxid-structdgo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		T :ref:`obj<doxid-structdgo__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_pg<doxid-structdgo__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
-		T :ref:`length_ratio<doxid-structdgo__inform__type_1a01b90624e26e5e6b678f932b4de7c6c0>`;
-		T :ref:`f_gap<doxid-structdgo__inform__type_1ae3a0ee7dd2eb9e07caf6f795a81ff5ff>`;
-		char :ref:`why_stop<doxid-structdgo__inform__type_1aa59a8565c1e8326a5e51ad319778042c>`[2];
-		struct :ref:`dgo_time_type<doxid-structdgo__time__type>` :ref:`time<doxid-structdgo__inform__type_1a46152da6b6a2aecc3da098819a6a81ac>`;
-		struct :ref:`hash_inform_type<doxid-structhash__inform__type>` :ref:`hash_inform<doxid-structdgo__inform__type_1a06ea21c222dde5731d218b41438f5c69>`;
-		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` :ref:`ugo_inform<doxid-structdgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
-		struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` :ref:`trb_inform<doxid-structdgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
-	};
+        struct dgo_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          f_eval::Int32
+          g_eval::Int32
+          h_eval::Int32
+          obj::T
+          norm_pg::T
+          length_ratio::T
+          f_gap::T
+          why_stop::NTuple{2,Cchar}
+          time::dgo_time_type{T}
+          hash_inform::hash_inform_type
+          ugo_inform::ugo_inform_type{T}
+          trb_inform::trb_inform_type{T}
+
 .. _details-structdgo__inform__type:
 
 detailed documentation

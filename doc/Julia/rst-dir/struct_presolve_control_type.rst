@@ -13,49 +13,45 @@ control derived type as a Julia structureure :ref:`More...<details-structpresolv
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_presolve.h>
-	
-	struct presolve_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structpresolve__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`termination<doxid-structpresolve__control__type_1a8812e14a78de75cb35920f1ca14f8fcb>`;
-		Int32 :ref:`max_nbr_transforms<doxid-structpresolve__control__type_1ad2cba4a8892265253e3821f2a8398783>`;
-		Int32 :ref:`max_nbr_passes<doxid-structpresolve__control__type_1ab9b9f9490ee04ad60a88c98bedeb69bf>`;
-		T :ref:`c_accuracy<doxid-structpresolve__control__type_1afb60a9e6d661aebf74d5da10af97233f>`;
-		T :ref:`z_accuracy<doxid-structpresolve__control__type_1af3699b1a6b62c80d06c848f9bf316708>`;
-		T :ref:`infinity<doxid-structpresolve__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		Int32 :ref:`out<doxid-structpresolve__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`errout<doxid-structpresolve__control__type_1a96f36bbf8aecb8c1df4e9479e0495341>`;
-		Int32 :ref:`print_level<doxid-structpresolve__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Bool :ref:`dual_transformations<doxid-structpresolve__control__type_1a622f854458f44802d65ea5c644488b05>`;
-		Bool :ref:`redundant_xc<doxid-structpresolve__control__type_1a7fff1fe9af8dc83ace001c1f01daca4e>`;
-		Int32 :ref:`primal_constraints_freq<doxid-structpresolve__control__type_1ac5198d5a57920d3cbbc44fc43e1f461d>`;
-		Int32 :ref:`dual_constraints_freq<doxid-structpresolve__control__type_1a5de3600b41511490861e5f5cc52c6c8d>`;
-		Int32 :ref:`singleton_columns_freq<doxid-structpresolve__control__type_1a79b5f7f8d67056004a9ec1347eaf0b2a>`;
-		Int32 :ref:`doubleton_columns_freq<doxid-structpresolve__control__type_1a3f84400443972b69eb439c8ddbccd6e4>`;
-		Int32 :ref:`unc_variables_freq<doxid-structpresolve__control__type_1a83a0db3aa9212dc0630226a80f23355e>`;
-		Int32 :ref:`dependent_variables_freq<doxid-structpresolve__control__type_1a916449dc4c15cc8c573f65d13a7b1837>`;
-		Int32 :ref:`sparsify_rows_freq<doxid-structpresolve__control__type_1aedb83124a2aeb24018ca314263ea194d>`;
-		Int32 :ref:`max_fill<doxid-structpresolve__control__type_1a62b85e62f2dd65b004b9561006447321>`;
-		Int32 :ref:`transf_file_nbr<doxid-structpresolve__control__type_1af309919911cc80fb67ce4309caff53ee>`;
-		Int32 :ref:`transf_buffer_size<doxid-structpresolve__control__type_1a8e55be8b47271c8bfe04e4eb7abe41d9>`;
-		Int32 :ref:`transf_file_status<doxid-structpresolve__control__type_1a3327bff5444eebb4a46aa1671123681f>`;
-		char :ref:`transf_file_name<doxid-structpresolve__control__type_1af7814ff832c4c4e7fab56d53c26b4bed>`[31];
-		Int32 :ref:`y_sign<doxid-structpresolve__control__type_1a15a549b266499b20a45e93ce9a91f083>`;
-		Int32 :ref:`inactive_y<doxid-structpresolve__control__type_1a0ddf7a757e8d25df82bbd45c4cc522f4>`;
-		Int32 :ref:`z_sign<doxid-structpresolve__control__type_1aa643ec4b5dfb05f11c4c932158d92a37>`;
-		Int32 :ref:`inactive_z<doxid-structpresolve__control__type_1a02a187d6425a995f970b86ab1ae6deaa>`;
-		Int32 :ref:`final_x_bounds<doxid-structpresolve__control__type_1a980e04d17981a03c6ce9142915baeec6>`;
-		Int32 :ref:`final_z_bounds<doxid-structpresolve__control__type_1a8b0b8e949abf9bb7eae7f6e258a9fadf>`;
-		Int32 :ref:`final_c_bounds<doxid-structpresolve__control__type_1a7797130742a276bfa34e28713c5f69fe>`;
-		Int32 :ref:`final_y_bounds<doxid-structpresolve__control__type_1a8d59a01fe70d5186b185454844aa5388>`;
-		Int32 :ref:`check_primal_feasibility<doxid-structpresolve__control__type_1a63d94a12589b2a15bedc5d4b172563d7>`;
-		Int32 :ref:`check_dual_feasibility<doxid-structpresolve__control__type_1a953e9d14756db97aaecceca97b78f334>`;
-		T :ref:`pivot_tol<doxid-structpresolve__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`min_rel_improve<doxid-structpresolve__control__type_1a6ff1d4c2c7c9a996e081de4beccebf86>`;
-		T :ref:`max_growth_factor<doxid-structpresolve__control__type_1ac768d36daebcdaaec3ad82313c45fa64>`;
-	};
+        struct presolve_control_type{T}
+          f_indexing::Bool
+          termination::Int32
+          max_nbr_transforms::Int32
+          max_nbr_passes::Int32
+          c_accuracy::T
+          z_accuracy::T
+          infinity::T
+          out::Int32
+          errout::Int32
+          print_level::Int32
+          dual_transformations::Bool
+          redundant_xc::Bool
+          primal_constraints_freq::Int32
+          dual_constraints_freq::Int32
+          singleton_columns_freq::Int32
+          doubleton_columns_freq::Int32
+          unc_variables_freq::Int32
+          dependent_variables_freq::Int32
+          sparsify_rows_freq::Int32
+          max_fill::Int32
+          transf_file_nbr::Int32
+          transf_buffer_size::Int32
+          transf_file_status::Int32
+          transf_file_name::NTuple{31,Cchar}
+          y_sign::Int32
+          inactive_y::Int32
+          z_sign::Int32
+          inactive_z::Int32
+          final_x_bounds::Int32
+          final_z_bounds::Int32
+          final_c_bounds::Int32
+          final_y_bounds::Int32
+          check_primal_feasibility::Int32
+          check_dual_feasibility::Int32
+          pivot_tol::T
+          min_rel_improve::T
+          max_growth_factor::T
+
 .. _details-structpresolve__control__type:
 
 detailed documentation

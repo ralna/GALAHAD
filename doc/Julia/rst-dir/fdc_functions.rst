@@ -75,7 +75,7 @@ Read the content of a specification file, and assign values associated with give
                                          m, n, A_ne, A_col, A_ptr, A_val, b, 
                                          n_depen, depen)
 
-Find dependent rows and, if any, check if :math:`A x = b` is consistent
+Find dependent rows and, if any, check if $A x = b$ is consistent
 
 
 
@@ -126,37 +126,37 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of rows of $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of columns of :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of columns of $A$.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of nonzero entries in :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of nonzero entries in $A$.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the :math:`A` ordered as in A_col and A_ptr.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the $A$ ordered as in A_col and A_ptr.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the linear term :math:`b` in the constraints. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the linear term $b$ in the constraints. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- n_depen

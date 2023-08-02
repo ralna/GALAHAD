@@ -10,38 +10,34 @@ sils_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sils.h>
-	
-	struct sils_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structsils__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`ICNTL<doxid-structsils__control__type_1a7d01102f1deac390a1e4e22a7bb59ea0>`[30];
-		Int32 :ref:`lp<doxid-structsils__control__type_1a3eec33a4e6d8295c25d117bb25dd1b9b>`;
-		Int32 :ref:`wp<doxid-structsils__control__type_1af203f5ddbac4a47afed1a07b97e7e477>`;
-		Int32 :ref:`mp<doxid-structsils__control__type_1a4b5efeeced2b749191f71afc3bc8bebd>`;
-		Int32 :ref:`sp<doxid-structsils__control__type_1a024603cda52d9847e8d8df3c2e884b8c>`;
-		Int32 :ref:`ldiag<doxid-structsils__control__type_1ad0e905fe282a7125424a53219afc0791>`;
-		Int32 :ref:`la<doxid-structsils__control__type_1a8e48dcc59e4b8bbe40fe5b58321e4e72>`;
-		Int32 :ref:`liw<doxid-structsils__control__type_1a534631c6f6077b8813cb930ea43f3bfc>`;
-		Int32 :ref:`maxla<doxid-structsils__control__type_1a6437ead17fd48daf197640949e8d4ff3>`;
-		Int32 :ref:`maxliw<doxid-structsils__control__type_1a6f46a87af5a04d87697736b7d789ea33>`;
-		Int32 :ref:`pivoting<doxid-structsils__control__type_1aa4d2d93f87da5df80b8aa2bce688c030>`;
-		Int32 :ref:`nemin<doxid-structsils__control__type_1a2683299c9b72fbc4bf7d0b3078cd75ca>`;
-		Int32 :ref:`factorblocking<doxid-structsils__control__type_1a32bd98cbf6436700c5a8848d77ce3917>`;
-		Int32 :ref:`solveblocking<doxid-structsils__control__type_1ae3a41a26d065502707d23c2936aaed6e>`;
-		Int32 :ref:`thresh<doxid-structsils__control__type_1a6cf8bf160a02413bc3d5d18b0294b581>`;
-		Int32 :ref:`ordering<doxid-structsils__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		Int32 :ref:`scaling<doxid-structsils__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		T :ref:`CNTL<doxid-structsils__control__type_1a9dd8bf3b6f412e66450dab7b2261846e>`[5];
-		T :ref:`multiplier<doxid-structsils__control__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`reduce<doxid-structsils__control__type_1a595df8d359282d27f49ac529283c509a>`;
-		T :ref:`u<doxid-structsils__control__type_1abb669b70ee8fb00689add7fad23ce00f>`;
-		T :ref:`static_tolerance<doxid-structsils__control__type_1a3ce9c9cc8dd0f7c4684ea0bd80cc5946>`;
-		T :ref:`static_level<doxid-structsils__control__type_1ae7faebd3367553993434f6a03e65502d>`;
-		T :ref:`tolerance<doxid-structsils__control__type_1ad0dcb73e98bad740852a54d6b7d1f6c2>`;
-		T :ref:`convergence<doxid-structsils__control__type_1ae7c621b1f1fcf3364b6c47d62406e82f>`;
-	};
+        struct sils_control_type{T}
+          f_indexing::Bool
+          ICNTL::NTuple{30,Cint}
+          lp::Int32
+          wp::Int32
+          mp::Int32
+          sp::Int32
+          ldiag::Int32
+          la::Int32
+          liw::Int32
+          maxla::Int32
+          maxliw::Int32
+          pivoting::Int32
+          nemin::Int32
+          factorblocking::Int32
+          solveblocking::Int32
+          thresh::Int32
+          ordering::Int32
+          scaling::Int32
+          CNTL::NTuple{5,T}
+          multiplier::T
+          reduce::T
+          u::T
+          static_tolerance::T
+          static_level::T
+          tolerance::T
+          convergence::T
+
 .. _details-structsils__control__type:
 
 detailed documentation

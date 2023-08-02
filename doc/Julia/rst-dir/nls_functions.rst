@@ -113,82 +113,82 @@ Import problem data into internal storage prior to solution.
 	*
 		- J_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian, :math:`J`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian, $J$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- J_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`J` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- J_row
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the row indices of :math:`J` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size J_ne and type Int32 that holds the row indices of $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- J_col
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the column indices of :math:`J` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size J_ne and type Int32 that holds the column indices of $J$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- J_ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of :math:`J`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of $J$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to :math:`H` is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to $H$ is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- P_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the residual-Hessians-vector product matrix, :math:`P`. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to :math:`P` is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the residual-Hessians-vector product matrix, $P$. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to $P$ is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- P_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`P` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- P_row
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of :math:`P` in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- P_col
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of :math:`P` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- P_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`P`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $P$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- w
 
-		- is a one-dimensional array of size m and type T that holds the values :math:`w` of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+		- is a one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
 
 .. index:: pair: function; nls_reset_control
 .. _doxid-galahad__nls_8h_1a07f0857c9923ad0f92d51ed00833afda:
@@ -235,7 +235,7 @@ Reset control parameters after import if required.
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, and all function/derivative information is available by function calls.
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, and all function/derivative information is available by function calls.
 
 .. rubric:: Parameters:
 
@@ -301,17 +301,17 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- eval_c
@@ -323,12 +323,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  	Int32 eval_c( int n, const double x[], double c[], const void *userdata )
 
-		  The componnts of the residual function :math:`c(x)` evaluated at x= :math:`x` must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
+		  The componnts of the residual function $c(x)$ evaluated at x= $x$ must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
 
 	*
 		- j_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix :math:`J`.
+		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix $J$.
 
 	*
 		- eval_j
@@ -341,12 +341,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  	Int32 eval_j( int n, int m, int jne, const double x[], double j[],
 		  	            const void *userdata )
 
-		  The components of the Jacobian :math:`J = \nabla_x c(x`) of the residuals must be assigned to j in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_j`` via the structure ``userdata``.
+		  The components of the Jacobian $J = \nabla_x c(x$) of the residuals must be assigned to j in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_j`` via the structure ``userdata``.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H` if it is used.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$ if it is used.
 
 	*
 		- eval_h
@@ -359,12 +359,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  	Int32 eval_h( int n, int m, int hne, const double x[], const double y[],
 		  	            double h[], const void *userdata )
 
-		  The nonzeros of the matrix :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` of the weighted residual Hessian evaluated at x= :math:`x` and y= :math:`y` must be assigned to h in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
+		  The nonzeros of the matrix $H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)$ of the weighted residual Hessian evaluated at x= $x$ and y= $y$ must be assigned to h in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
 
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix :math:`P` if it is used.
+		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
 
 	*
 		- eval_hprods
@@ -378,7 +378,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  	                    const double v[], double p[], bool got_h,
 		  	                    const void *userdata ) );
 
-		  The entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` must be returned in p and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
+		  The entries of the matrix $P$, whose i-th column is the product $\nabla_{xx}c_i(x) v$ between $\nabla_{xx}c_i(x)$, the Hessian of the i-th component of the residual $c(x)$ at x= $x$, and v= $v$ must be returned in p and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
 
 .. index:: pair: function; nls_solve_without_mat
 .. _doxid-galahad__nls_8h_1a692ecbfaa428584e60aa4c33d7278a64:
@@ -392,7 +392,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, and all function/derivative information is available by function calls.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, and all function/derivative information is available by function calls.
 
 
 
@@ -460,17 +460,17 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- eval_c
@@ -482,7 +482,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  	Int32 eval_c( int n, const double x[], double c[], const void *userdata )
 
-		  The componnts of the residual function :math:`c(x)` evaluated at x= :math:`x` must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
+		  The componnts of the residual function $c(x)$ evaluated at x= $x$ must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_c`` via the structure ``userdata``.
 
 	*
 		- eval_jprod
@@ -496,7 +496,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  	                double u[], const double v[], bool got_j,
 		  	                const void *userdata )
 
-		  The sum :math:`u + \nabla_{x}c_(x) v` (if tranpose is false) or The sum :math:`u + (\nabla_{x}c_(x))^T v` (if tranpose is true) bewteen the product of the Jacobian :math:`\nabla_{x}c_(x)` or its tranpose with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_jprod`` via the structure ``userdata``.
+		  The sum $u + \nabla_{x}c_(x) v$ (if tranpose is false) or The sum $u + (\nabla_{x}c_(x))^T v$ (if tranpose is true) bewteen the product of the Jacobian $\nabla_{x}c_(x)$ or its tranpose with the vector v= $v$ and the vector $ $u$ must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_jprod`` via the structure ``userdata``.
 
 	*
 		- eval_hprod
@@ -510,12 +510,12 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  	                double u[], const double v[], bool got_h,
 		  	                const void *userdata )
 
-		  The sum :math:`u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v` of the product of the weighted residual Hessian :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` evaluated at x= :math:`x` and y= :math:`y` with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessians have already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
+		  The sum $u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v$ of the product of the weighted residual Hessian $H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)$ evaluated at x= $x$ and y= $y$ with the vector v= $v$ and the vector $ $u$ must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessians have already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
 
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix :math:`P` if it is used.
+		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
 
 	*
 		- eval_hprods
@@ -529,7 +529,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  	                 const double v[], double pval[], bool got_h,
 		  	                 const void *userdata )
 
-		  The entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` must be returned in pval and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
+		  The entries of the matrix $P$, whose i-th column is the product $\nabla_{xx}c_i(x) v$ between $\nabla_{xx}c_i(x)$, the Hessian of the i-th component of the residual $c(x)$ at x= $x$, and v= $v$ must be returned in pval and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_hprods`` via the structure ``userdata``.
 
 .. index:: pair: function; nls_solve_reverse_with_mat
 .. _doxid-galahad__nls_8h_1a9ad89605640c53c33ddd5894b5e3edd1:
@@ -543,7 +543,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, but function/derivative information is only available by returning to the calling procedure
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, but function/derivative information is only available by returning to the calling procedure
 
 .. rubric:: Parameters:
 
@@ -593,15 +593,15 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 
 
-		  * 2. The user should compute the vector of residuals :math:`c(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate :math:`c(x)` for instance, if the function is undefined at :math:`x` the user need not set c, but should then set eval_status to a non-zero value.
+		  * 2. The user should compute the vector of residuals $c(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate $c(x)$ for instance, if the function is undefined at $x$ the user need not set c, but should then set eval_status to a non-zero value.
 
 
 
-		  * 3. The user should compute the Jacobian of the vector of residual functions, :math:`\nabla_x c(x)`, at the point :math:`x` indicated in x and then re-enter the function. The l-th component of the Jacobian stored according to the scheme specified for the remainder of :math:`J` in the earlier call to nls_import should be set in J_val[l], for l = 0, ..., J_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`J` for instance, if a component of the matrix is undefined at :math:`x` the user need not set J_val, but should then set eval_status to a non-zero value.
+		  * 3. The user should compute the Jacobian of the vector of residual functions, $\nabla_x c(x)$, at the point $x$ indicated in x and then re-enter the function. The l-th component of the Jacobian stored according to the scheme specified for the remainder of $J$ in the earlier call to nls_import should be set in J_val[l], for l = 0, ..., J_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $J$ for instance, if a component of the matrix is undefined at $x$ the user need not set J_val, but should then set eval_status to a non-zero value.
 
-		  * 4. The user should compute the matrix :math:`H = \sum_{i=1}^m v_i \nabla_{xx}c_i(x)` of weighted residual Hessian evaluated at x= :math:`x` and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`H` in the earlier call to nls_import should be set in H_val[l], for l = 0, ..., H_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`H` for instance, if a component of the matrix is undefined at :math:`x` the user need not set H_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if the Gauss-Newton model is selected.
+		  * 4. The user should compute the matrix $H = \sum_{i=1}^m v_i \nabla_{xx}c_i(x)$ of weighted residual Hessian evaluated at x= $x$ and v= $v$ and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of $H$ in the earlier call to nls_import should be set in H_val[l], for l = 0, ..., H_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $H$ for instance, if a component of the matrix is undefined at $x$ the user need not set H_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if the Gauss-Newton model is selected.
 
-		  * 7. The user should compute the entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`P` in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`P` for instance, if a component of the matrix is undefined at :math:`x` the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
+		  * 7. The user should compute the entries of the matrix $P$, whose i-th column is the product $\nabla_{xx}c_i(x) v$ between $\nabla_{xx}c_i(x)$, the Hessian of the i-th component of the residual $c(x)$ at x= $x$, and v= $v$ and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of $P$ in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $P$ for instance, if a component of the matrix is undefined at $x$ the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
 
 	*
 		- eval_status
@@ -621,27 +621,27 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`. See status = 2, above, for more details.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$. See status = 2, above, for more details.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- j_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix :math:`J`.
+		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix $J$.
 
 	*
 		- J_val
 
-		- is a one-dimensional array of size j_ne and type T that holds the values of the entries of the Jacobian matrix :math:`J` in any of the available storage schemes. See status = 3, above, for more details.
+		- is a one-dimensional array of size j_ne and type T that holds the values of the entries of the Jacobian matrix $J$ in any of the available storage schemes. See status = 3, above, for more details.
 
 	*
 		- y
@@ -651,12 +651,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes. See status = 4, above, for more details.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes. See status = 4, above, for more details.
 
 	*
 		- v
@@ -666,12 +666,12 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, :math:`P`.
+		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
 
 	*
 		- P_val
 
-		- is a one-dimensional array of size p_ne and type T that holds the values of the entries of the residual-Hessians-vector product matrix, :math:`P`. See status = 7, above, for more details.
+		- is a one-dimensional array of size p_ne and type T that holds the values of the entries of the residual-Hessians-vector product matrix, $P$. See status = 7, above, for more details.
 
 .. index:: pair: function; nls_solve_reverse_without_mat
 .. _doxid-galahad__nls_8h_1a6dddd928c19adec0abf76bdb2d75da17:
@@ -684,7 +684,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
                                                u, v, y, p_ne, P_val)
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
 
 .. rubric:: Parameters:
 
@@ -736,19 +736,19 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 
 
-		  * 2. The user should compute the vector of residuals :math:`c(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate :math:`c(x)` for instance, if the function is undefined at :math:`x` the user need not set c, but should then set eval_status to a non-zero value.
+		  * 2. The user should compute the vector of residuals $c(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in c, and eval_status should be set to 0. If the user is unable to evaluate $c(x)$ for instance, if the function is undefined at $x$ the user need not set c, but should then set eval_status to a non-zero value.
 
 
 
-		  * 5. The user should compute the sum :math:`u + \nabla_{x}c_(x) v` (if tranpose is false) or :math:`u + (\nabla_{x}c_(x))^T v` (if tranpose is true) between the product of the Jacobian :math:`\nabla_{x}c_(x)` or its tranpose with the vector v= :math:`v` and the vector u = $ :math:`u`, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the Jacobian is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
+		  * 5. The user should compute the sum $u + \nabla_{x}c_(x) v$ (if tranpose is false) or $u + (\nabla_{x}c_(x))^T v$ (if tranpose is true) between the product of the Jacobian $\nabla_{x}c_(x)$ or its tranpose with the vector v= $v$ and the vector u = $ $u$, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the Jacobian is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
 
 
 
-		  * 6. The user should compute the sum :math:`u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v` between the product of the weighted residual Hessian :math:`H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)` evaluated at x= :math:`x` and y= :math:`y` with the vector v= :math:`v` and the the vector u = $ :math:`u`, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the weifghted residual Hessian is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
+		  * 6. The user should compute the sum $u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v$ between the product of the weighted residual Hessian $H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)$ evaluated at x= $x$ and y= $y$ with the vector v= $v$ and the the vector u = $ $u$, and then re-enter the function. The result should be set in u, and eval_status should be set to 0. If the user is unable to evaluate the sum for instance, if the weifghted residual Hessian is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
 
 
 
-		  * 7. The user should compute the entries of the matrix :math:`P`, whose i-th column is the product :math:`\nabla_{xx}c_i(x) v` between :math:`\nabla_{xx}c_i(x)`, the Hessian of the i-th component of the residual :math:`c(x)` at x= :math:`x`, and v= :math:`v` and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of :math:`P` in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`P` for instance, if a component of the matrix is undefined at :math:`x` the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
+		  * 7. The user should compute the entries of the matrix $P$, whose i-th column is the product $\nabla_{xx}c_i(x) v$ between $\nabla_{xx}c_i(x)$, the Hessian of the i-th component of the residual $c(x)$ at x= $x$, and v= $v$ and then re-enter the function. The l-th component of the matrix stored according to the scheme specified for the remainder of $P$ in the earlier call to nls_import should be set in P_val[l], for l = 0, ..., P_ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $P$ for instance, if a component of the matrix is undefined at $x$ the user need not set P_val, but should then set eval_status to a non-zero value. **Note** that this return will not happen if either the Gauss-Newton or Newton models is selected.
 
 	*
 		- eval_status
@@ -768,17 +768,17 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, j = 0, ... , n-1, contains :math:`c_j(x)`. See status = 2, above, for more details.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$. See status = 2, above, for more details.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- transpose
@@ -803,12 +803,12 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, :math:`P`.
+		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
 
 	*
 		- P_val
 
-		- is a one-dimensional array of size P_ne and type T that holds the values of the entries of the residual-Hessians-vector product matrix, :math:`P`. See status = 7, above, for more details.
+		- is a one-dimensional array of size P_ne and type T that holds the values of the entries of the residual-Hessians-vector product matrix, $P$. See status = 7, above, for more details.
 
 .. index:: pair: function; nls_information
 .. _doxid-galahad__nls_8h_1a765da96b0a1f3d07dab53cc3400c22d8:

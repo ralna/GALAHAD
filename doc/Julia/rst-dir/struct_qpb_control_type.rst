@@ -11,78 +11,74 @@ qpb_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_qpb.h>
-	
-	struct qpb_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structqpb__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structqpb__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structqpb__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structqpb__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structqpb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structqpb__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`maxit<doxid-structqpb__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`itref_max<doxid-structqpb__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		Int32 :ref:`cg_maxit<doxid-structqpb__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		Int32 :ref:`indicator_type<doxid-structqpb__control__type_1a5abba51271587463f528b0cbdb478141>`;
-		Int32 :ref:`restore_problem<doxid-structqpb__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
-		Int32 :ref:`extrapolate<doxid-structqpb__control__type_1acc457bf98691a4c5b44abe6912aaa512>`;
-		Int32 :ref:`path_history<doxid-structqpb__control__type_1a48cfa8490ae2df9a90dd0e4d759c391f>`;
-		Int32 :ref:`factor<doxid-structqpb__control__type_1a42eac05293c31fef9b90c92698928d7d>`;
-		Int32 :ref:`max_col<doxid-structqpb__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`indmin<doxid-structqpb__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		Int32 :ref:`valmin<doxid-structqpb__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		Int32 :ref:`infeas_max<doxid-structqpb__control__type_1af7d33b88b67b2366d7e2df31d42083a9>`;
-		Int32 :ref:`precon<doxid-structqpb__control__type_1ab22aef71d1fbb41e515107086ef88b54>`;
-		Int32 :ref:`nsemib<doxid-structqpb__control__type_1a2215bbe54edcdc418de8b79a995c9b75>`;
-		Int32 :ref:`path_derivatives<doxid-structqpb__control__type_1a67f815d63085b187a059b9db28570911>`;
-		Int32 :ref:`fit_order<doxid-structqpb__control__type_1a1942b0688f86ca01852409be7791a8e9>`;
-		Int32 :ref:`sif_file_device<doxid-structqpb__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		T :ref:`infinity<doxid-structqpb__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`stop_p<doxid-structqpb__control__type_1a8933604acacc0fb4367caac730b6c79b>`;
-		T :ref:`stop_d<doxid-structqpb__control__type_1a12784541c48f57127781bc1c5937c616>`;
-		T :ref:`stop_c<doxid-structqpb__control__type_1aec5ea9177505eb7723a8e092535556cb>`;
-		T :ref:`theta_d<doxid-structqpb__control__type_1a23a7ff0b746b90fcc4bd365c09567413>`;
-		T :ref:`theta_c<doxid-structqpb__control__type_1a0c797a01f2ae4795af06695299e25f2f>`;
-		T :ref:`beta<doxid-structqpb__control__type_1a0043ca35bb17b8202336b8fea104a5be>`;
-		T :ref:`prfeas<doxid-structqpb__control__type_1a09a0a5771a0300078ebe5f344ef4e492>`;
-		T :ref:`dufeas<doxid-structqpb__control__type_1a2ac34c5838499ed4992037655f52134a>`;
-		T :ref:`muzero<doxid-structqpb__control__type_1a8f4661dd5869e1555ba329b4bd535b4d>`;
-		T :ref:`reduce_infeas<doxid-structqpb__control__type_1aaac67273a340e9f96523583bfdce4c59>`;
-		T :ref:`obj_unbounded<doxid-structqpb__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`pivot_tol<doxid-structqpb__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`pivot_tol_for_dependencies<doxid-structqpb__control__type_1a14e253b53c59b0850d7d3b5245d89df9>`;
-		T :ref:`zero_pivot<doxid-structqpb__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		T :ref:`identical_bounds_tol<doxid-structqpb__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		T :ref:`inner_stop_relative<doxid-structqpb__control__type_1a7aedce06c5903f675a7c1496f42ff834>`;
-		T :ref:`inner_stop_absolute<doxid-structqpb__control__type_1a80ae9dce0bca96a4691b0a222e3257b5>`;
-		T :ref:`initial_radius<doxid-structqpb__control__type_1aa1a65cb31a449551c7819e7e886ca028>`;
-		T :ref:`mu_min<doxid-structqpb__control__type_1afe0779ad5e2d665c9cbde8a45d1ef195>`;
-		T :ref:`inner_fraction_opt<doxid-structqpb__control__type_1a5840187311d612d0efdfecf7078a2b7e>`;
-		T :ref:`indicator_tol_p<doxid-structqpb__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd>`;
-		T :ref:`indicator_tol_pd<doxid-structqpb__control__type_1aa131ce5e639e5601d1b61fb540ac7187>`;
-		T :ref:`indicator_tol_tapia<doxid-structqpb__control__type_1abf4fb7dcdbaa9f729af1f063d357000a>`;
-		T :ref:`cpu_time_limit<doxid-structqpb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structqpb__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`remove_dependencies<doxid-structqpb__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		Bool :ref:`treat_zero_bounds_as_general<doxid-structqpb__control__type_1a59b23877e9c8cb49f1f6261e24660295>`;
-		Bool :ref:`center<doxid-structqpb__control__type_1acb46b59c24c126dd8de181aed3de0b3c>`;
-		Bool :ref:`primal<doxid-structqpb__control__type_1a539cfdddc36d2e16b0647e84a49a61a1>`;
-		Bool :ref:`puiseux<doxid-structqpb__control__type_1a444d111a9f28a15760d75b6ff7eb0131>`;
-		Bool :ref:`feasol<doxid-structqpb__control__type_1a2d28372a45268cac881a4586c4e875d6>`;
-		Bool :ref:`array_syntax_worse_than_do_loop<doxid-structqpb__control__type_1a67975e9960ae3d4d79bf18b240b9f614>`;
-		Bool :ref:`space_critical<doxid-structqpb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structqpb__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structqpb__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		char :ref:`sif_file_name<doxid-structqpb__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`prefix<doxid-structqpb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`lsqp_control_type<doxid-structlsqp__control__type>` :ref:`lsqp_control<doxid-structqpb__control__type_1a2cda9960f4e6a417f64b213147f802e0>`;
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structqpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structqpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structqpb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structqpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
-	};
+        struct qpb_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          itref_max::Int32
+          cg_maxit::Int32
+          indicator_type::Int32
+          restore_problem::Int32
+          extrapolate::Int32
+          path_history::Int32
+          factor::Int32
+          max_col::Int32
+          indmin::Int32
+          valmin::Int32
+          infeas_max::Int32
+          precon::Int32
+          nsemib::Int32
+          path_derivatives::Int32
+          fit_order::Int32
+          sif_file_device::Int32
+          infinity::T
+          stop_p::T
+          stop_d::T
+          stop_c::T
+          theta_d::T
+          theta_c::T
+          beta::T
+          prfeas::T
+          dufeas::T
+          muzero::T
+          reduce_infeas::T
+          obj_unbounded::T
+          pivot_tol::T
+          pivot_tol_for_dependencies::T
+          zero_pivot::T
+          identical_bounds_tol::T
+          inner_stop_relative::T
+          inner_stop_absolute::T
+          initial_radius::T
+          mu_min::T
+          inner_fraction_opt::T
+          indicator_tol_p::T
+          indicator_tol_pd::T
+          indicator_tol_tapia::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          remove_dependencies::Bool
+          treat_zero_bounds_as_general::Bool
+          center::Bool
+          primal::Bool
+          puiseux::Bool
+          feasol::Bool
+          array_syntax_worse_than_do_loop::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          lsqp_control::lsqp_control_type{T}
+          fdc_control::fdc_control_type{T}
+          sbls_control::sbls_control_type{T}
+          gltr_control::gltr_control_type{T}
+          fit_control::fit_control_type
+
 .. _details-structqpb__control__type:
 
 detailed documentation

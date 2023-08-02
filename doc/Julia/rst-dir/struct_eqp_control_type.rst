@@ -7,53 +7,48 @@ eqp_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_eqp.h>
+        struct eqp_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          factorization::Int32
+          max_col::Int32
+          indmin::Int32
+          valmin::Int32
+          len_ulsmin::Int32
+          itref_max::Int32
+          cg_maxit::Int32
+          preconditioner::Int32
+          semi_bandwidth::Int32
+          new_a::Int32
+          new_h::Int32
+          sif_file_device::Int32
+          pivot_tol::T
+          pivot_tol_for_basis::T
+          zero_pivot::T
+          inner_fraction_opt::T
+          radius::T
+          min_diagonal::T
+          max_infeasibility_relative::T
+          max_infeasibility_absolute::T
+          inner_stop_relative::T
+          inner_stop_absolute::T
+          inner_stop_inter::T
+          find_basis_by_transpose::Bool
+          remove_dependencies::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          fdc_control::fdc_control_type{T}
+          sbls_control::sbls_control_type{T}
+          gltr_control::gltr_control_type{T}
 	
-	struct eqp_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structeqp__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structeqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structeqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structeqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`factorization<doxid-structeqp__control__type_1a108359f1209601e6c6074c215e3abd8b>`;
-		Int32 :ref:`max_col<doxid-structeqp__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`indmin<doxid-structeqp__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		Int32 :ref:`valmin<doxid-structeqp__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		Int32 :ref:`len_ulsmin<doxid-structeqp__control__type_1a600c95211b782597cd1b2475bb2c54c6>`;
-		Int32 :ref:`itref_max<doxid-structeqp__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		Int32 :ref:`cg_maxit<doxid-structeqp__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		Int32 :ref:`preconditioner<doxid-structeqp__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`semi_bandwidth<doxid-structeqp__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`new_a<doxid-structeqp__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		Int32 :ref:`new_h<doxid-structeqp__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		Int32 :ref:`sif_file_device<doxid-structeqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		T :ref:`pivot_tol<doxid-structeqp__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`pivot_tol_for_basis<doxid-structeqp__control__type_1a1912d9ec51c4e88125762b7d03ef31a6>`;
-		T :ref:`zero_pivot<doxid-structeqp__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		T :ref:`inner_fraction_opt<doxid-structeqp__control__type_1a5840187311d612d0efdfecf7078a2b7e>`;
-		T :ref:`radius<doxid-structeqp__control__type_1a72757b6410f755f008e2fb6d711b61be>`;
-		T :ref:`min_diagonal<doxid-structeqp__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
-		T :ref:`max_infeasibility_relative<doxid-structeqp__control__type_1a975d28c18ad695cd215c57948fac11c0>`;
-		T :ref:`max_infeasibility_absolute<doxid-structeqp__control__type_1aebbb79536b216e3c116e5a9d21426840>`;
-		T :ref:`inner_stop_relative<doxid-structeqp__control__type_1a7aedce06c5903f675a7c1496f42ff834>`;
-		T :ref:`inner_stop_absolute<doxid-structeqp__control__type_1a80ae9dce0bca96a4691b0a222e3257b5>`;
-		T :ref:`inner_stop_inter<doxid-structeqp__control__type_1a5f1bee15068a0476f5dd4e65dc4468ce>`;
-		Bool :ref:`find_basis_by_transpose<doxid-structeqp__control__type_1aa88001d7f86370d329247cf28f8ff499>`;
-		Bool :ref:`remove_dependencies<doxid-structeqp__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		Bool :ref:`space_critical<doxid-structeqp__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structeqp__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structeqp__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		char :ref:`sif_file_name<doxid-structeqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`prefix<doxid-structeqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structeqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structeqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structeqp__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-	};
 .. _details-structeqp__control__type:
 
 detailed documentation

@@ -10,19 +10,15 @@ sha_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sha.h>
-	
-	struct sha_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structsha__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structsha__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`max_degree<doxid-structsha__inform__type_1a8eabc621540d71c2a7e3076d6c3826bc>`;
-		Int32 :ref:`differences_needed<doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6>`;
-		Int32 :ref:`max_reduced_degree<doxid-structsha__inform__type_1a389835dfe2e9309431892a98be9beb2c>`;
-		Int32 :ref:`bad_row<doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b>`;
-		char :ref:`bad_alloc<doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-	};
+        struct sha_inform_type
+          status::Int32
+          alloc_status::Int32
+          max_degree::Int32
+          differences_needed::Int32
+          max_reduced_degree::Int32
+          bad_row::Int32
+          bad_alloc::NTuple{81,Cchar}
+
 .. _details-structsha__inform__type:
 
 detailed documentation

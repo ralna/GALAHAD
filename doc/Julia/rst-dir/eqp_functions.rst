@@ -108,7 +108,7 @@ Import problem data into internal storage prior to solution.
 
 		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * -23. An entry from the strict upper triangle of $H$ has been specified.
 
 	*
 		- n
@@ -123,52 +123,52 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if $H=0$; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; eqp_reset_control
 .. _doxid-galahad__eqp_8h_1a1b8074313bdc2176203d0c0e9ea87c24:
@@ -214,7 +214,7 @@ Reset control parameters after import if required.
         function eqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
                               a_ne, A_val, c, x, y)
 
-Solve the quadratic program when the Hessian :math:`H` is available.
+Solve the quadratic program when the Hessian $H$ is available.
 
 
 
@@ -262,7 +262,7 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * -23. An entry from the strict upper triangle of $H$ has been specified.
 
 	*
 		- n
@@ -277,47 +277,47 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the linear term :math:`c` in the constraints. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i`.
+		- is a one-dimensional array of size m and type T that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y` of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains :math:`y_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_solve_sldqp
 .. _doxid-galahad__eqp_8h_1aaadb310c329e4857b3ad373bcee69e6f:
@@ -374,7 +374,7 @@ Solve the shifted least-distance quadratic program
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * -23. An entry from the strict upper triangle of $H$ has been specified.
 
 	*
 		- n
@@ -389,47 +389,47 @@ Solve the shifted least-distance quadratic program
 	*
 		- w
 
-		- is a one-dimensional array of size n and type T that holds the values of the weights :math:`w`.
+		- is a one-dimensional array of size n and type T that holds the values of the weights $w$.
 
 	*
 		- x0
 
-		- is a one-dimensional array of size n and type T that holds the values of the shifts :math:`x^0`.
+		- is a one-dimensional array of size n and type T that holds the values of the shifts $x^0$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the linear term :math:`c` in the constraints. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i`.
+		- is a one-dimensional array of size m and type T that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y` of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains :math:`y_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_resolve_qp
 .. _doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f:
@@ -439,7 +439,7 @@ Solve the shifted least-distance quadratic program
 
         function eqp_resolve_qp(data, status, n, m, g, f, c, x, y)
 
-Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data :math:`g`, :math:`f` and :math:`c` has changed
+Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data $g$, $f$ and $c$ has changed
 
 
 
@@ -483,7 +483,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * -23. An entry from the strict upper triangle of $H$ has been specified.
 
 	*
 		- n
@@ -498,27 +498,27 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the linear term :math:`c` in the constraints. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i`.
+		- is a one-dimensional array of size m and type T that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y` of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains :math:`y_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_information
 .. _doxid-galahad__eqp_8h_1aba10933446f1856fc435ecfbd98371d6:

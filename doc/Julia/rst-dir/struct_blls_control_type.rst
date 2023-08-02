@@ -7,53 +7,48 @@ blls_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_blls.h>
-	
-	struct blls_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structblls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structblls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structblls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structblls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structblls__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structblls__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structblls__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structblls__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`cold_start<doxid-structblls__control__type_1ad5e3138a19f7400e9d5c8105fa724831>`;
-		Int32 :ref:`preconditioner<doxid-structblls__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`ratio_cg_vs_sd<doxid-structblls__control__type_1ab589a429c71e34b9c07c4d79a1e02902>`;
-		Int32 :ref:`change_max<doxid-structblls__control__type_1a4a70200c62828c4d82e2e3efa5ebdac4>`;
-		Int32 :ref:`cg_maxit<doxid-structblls__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		Int32 :ref:`arcsearch_max_steps<doxid-structblls__control__type_1a7dceaf3624973df51f1baa0937420517>`;
-		Int32 :ref:`sif_file_device<doxid-structblls__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		T :ref:`weight<doxid-structblls__control__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
-		T :ref:`infinity<doxid-structblls__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`stop_d<doxid-structblls__control__type_1a12784541c48f57127781bc1c5937c616>`;
-		T :ref:`identical_bounds_tol<doxid-structblls__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		T :ref:`stop_cg_relative<doxid-structblls__control__type_1acd5b41623ff5db9a81dc5a8421fe5e2f>`;
-		T :target:`stop_cg_absolute<doxid-structblls__control__type_1ad8ba10f33e624074c203f079afed54f8>`;
-		T :ref:`alpha_max<doxid-structblls__control__type_1a283df1a15f52c266a119dc0b37262f93>`;
-		T :ref:`alpha_initial<doxid-structblls__control__type_1a9c84d5b6142e91ff0c56960bcdcf9eb5>`;
-		T :ref:`alpha_reduction<doxid-structblls__control__type_1a94762277f055ecfb1c48bd439066fb21>`;
-		T :ref:`arcsearch_acceptance_tol<doxid-structblls__control__type_1ac73142611027bffbf7cdb6552704152b>`;
-		T :ref:`stabilisation_weight<doxid-structblls__control__type_1a6024e0b85e16b28075c69743433267cd>`;
-		T :ref:`cpu_time_limit<doxid-structblls__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		Bool :ref:`direct_subproblem_solve<doxid-structblls__control__type_1ade9a921baa01ea4f50c39b7f640cd416>`;
-		Bool :ref:`exact_arc_search<doxid-structblls__control__type_1abd8ff06ab50d29e781cf407702346a4b>`;
-		Bool :ref:`advance<doxid-structblls__control__type_1adc86e2518dfd985256913c727dd2b84a>`;
-		Bool :ref:`space_critical<doxid-structblls__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structblls__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structblls__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		char :ref:`sif_file_name<doxid-structblls__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`prefix<doxid-structblls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structblls__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`convert_control_type<doxid-structconvert__control__type>` :ref:`convert_control<doxid-structblls__control__type_1ad5c7fdb1978f9943554af877e3e1e37b>`;
-	};
+        struct blls_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          cold_start::Int32
+          preconditioner::Int32
+          ratio_cg_vs_sd::Int32
+          change_max::Int32
+          cg_maxit::Int32
+          arcsearch_max_steps::Int32
+          sif_file_device::Int32
+          weight::T
+          infinity::T
+          stop_d::T
+          identical_bounds_tol::T
+          stop_cg_relative::T
+          stop_cg_absolute::T
+          alpha_max::T
+          alpha_initial::T
+          alpha_reduction::T
+          arcsearch_acceptance_tol::T
+          stabilisation_weight::T
+          cpu_time_limit::T
+          direct_subproblem_solve::Bool
+          exact_arc_search::Bool
+          advance::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sbls_control::sbls_control_type{T}
+          convert_control::convert_control_type
+
 .. _details-structblls__control__type:
 
 detailed documentation
@@ -162,7 +157,7 @@ cold_start should be set to 0 if a warm start is required (with variable assigne
 
 	Int32 preconditioner
 
-the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of :math:`A`. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.
+the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of $A$. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.
 
 .. index:: pair: variable; ratio_cg_vs_sd
 .. _doxid-structblls__control__type_1ab589a429c71e34b9c07c4d79a1e02902:

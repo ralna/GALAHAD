@@ -10,24 +10,20 @@ psls_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_psls.h>
+        struct psls_time_type{T}
+          total::Float32
+          assemble::Float32
+          analyse::Float32
+          factorize::Float32
+          solve::Float32
+          update::Float32
+          clock_total::T
+          clock_assemble::T
+          clock_analyse::T
+          clock_factorize::T
+          clock_solve::T
+          clock_update::T
 	
-	struct psls_time_type {
-		// fields
-	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structpsls__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`assemble<doxid-structpsls__time__type_1a10940eefc2f59c72a3ecc6cb4f44e233>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`analyse<doxid-structpsls__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`factorize<doxid-structpsls__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`solve<doxid-structpsls__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`update<doxid-structpsls__time__type_1abe9f0d8cfe95c5d6b3fb64a0c1e6e55f>`;
-		T :ref:`clock_total<doxid-structpsls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_assemble<doxid-structpsls__time__type_1a4df2b92cea9269b8f8cad7024b83a10d>`;
-		T :ref:`clock_analyse<doxid-structpsls__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		T :ref:`clock_factorize<doxid-structpsls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_solve<doxid-structpsls__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-		T :ref:`clock_update<doxid-structpsls__time__type_1acb90c4a0e3e2434c815d1428316c8ee9>`;
-	};
 .. _details-structpsls__time__type:
 
 detailed documentation
@@ -44,7 +40,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	Float32 total
 
 total time
 
@@ -54,7 +50,7 @@ total time
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` assemble
+	Float32 assemble
 
 time to assemble the preconditioner prior to factorization
 
@@ -64,7 +60,7 @@ time to assemble the preconditioner prior to factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` analyse
+	Float32 analyse
 
 time for the analysis phase
 
@@ -74,7 +70,7 @@ time for the analysis phase
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` factorize
+	Float32 factorize
 
 time for the factorization phase
 
@@ -84,7 +80,7 @@ time for the factorization phase
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` solve
+	Float32 solve
 
 time for the linear solution phase
 
@@ -94,7 +90,7 @@ time for the linear solution phase
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` update
+	Float32 update
 
 time to update the factorization
 

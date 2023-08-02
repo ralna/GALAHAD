@@ -130,19 +130,19 @@ Solve the regularized-quadratic problem using reverse communication.
 
 		  This must be set to
 
-		  * 1. on initial entry. Set r (below) to :math:`c` for this entry.
+		  * 1. on initial entry. Set r (below) to $c$ for this entry.
 
-		  * 6. the iteration is to be restarted with a larger weight but with all other data unchanged. Set r (below) to :math:`c` for this entry.
+		  * 6. the iteration is to be restarted with a larger weight but with all other data unchanged. Set r (below) to $c$ for this entry.
 
 		  Possible exit values are:
 
 		  * 0. the solution has been found
 
-		  * 2. the inverse of :math:`M` must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged. This will only happen if control.unitm is false
+		  * 2. the inverse of $M$ must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged. This will only happen if control.unitm is false
 
-		  * 3. the product :math:`H` \* vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
+		  * 3. the product $H$ \* vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
 
-		  * 4. The iteration must be restarted. Reset r (below) to :math:`c` and re-enter with all other data unchanged.
+		  * 4. The iteration must be restarted. Reset r (below) to $c$ and re-enter with all other data unchanged.
 
 		  * -1. an array allocation has failed
 
@@ -152,7 +152,7 @@ Solve the regularized-quadratic problem using reverse communication.
 
 		  * -7. the problem is unbounded from below. This can only happen if power = 2, and in this case the objective is unbounded along the arc x + t vector as t goes to infinity
 
-		  * -15. the matrix :math:`M` appears to be indefinite
+		  * -15. the matrix $M$ appears to be indefinite
 
 		  * -18. the iteration limit has been exceeded
 
@@ -164,22 +164,22 @@ Solve the regularized-quadratic problem using reverse communication.
 	*
 		- power
 
-		- is a scalar of type T that holds the egularization power, :math:`p \geq 2`
+		- is a scalar of type T that holds the egularization power, $p \geq 2$
 
 	*
 		- weight
 
-		- is a scalar of type T that holds the positive regularization weight, :math:`\sigma`
+		- is a scalar of type T that holds the positive regularization weight, $\sigma$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- r
 
-		- is a one-dimensional array of size n and type T that that must be set to :math:`c` on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
+		- is a one-dimensional array of size n and type T that that must be set to $c$ on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual $H x + c$.
 
 	*
 		- vector

@@ -10,23 +10,19 @@ sha_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sha.h>
-	
-	struct sha_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
-		Int32 :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
-		Int32 :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
-		Int32 :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
-		Bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct sha_control_type
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          approximation_algorithm::Int32
+          dense_linear_solver::Int32
+          max_sparse_degree::Int32
+          extra_differences::Int32
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structsha__control__type:
 
 detailed documentation

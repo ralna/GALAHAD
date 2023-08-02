@@ -10,15 +10,11 @@ scu_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_scu.h>
-	
-	struct scu_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structscu__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structscu__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`inertia<doxid-structscu__inform__type_1a4387aa0c0c3c91d72fb78c8925f05993>`[3];
-	};
+        struct scu_inform_type
+          status::Int32
+          alloc_status::Int32
+          inertia::NTuple{3,Cint}
+
 .. _details-structscu__inform__type:
 
 detailed documentation
@@ -57,5 +53,5 @@ the return status from the last attempted internal workspace array allocation or
 
 	Int32 inertia[3]
 
-the inertia of :math:`S` when the extended matrix is symmetric. Specifically, inertia(i), i=0,1,2 give the number of positive, negative and zero eigenvalues of :math:`S` respectively.
+the inertia of $S$ when the extended matrix is symmetric. Specifically, inertia(i), i=0,1,2 give the number of positive, negative and zero eigenvalues of $S$ respectively.
 

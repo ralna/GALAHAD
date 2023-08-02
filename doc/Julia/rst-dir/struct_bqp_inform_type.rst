@@ -7,26 +7,21 @@ bqp_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_bqp.h>
+        struct bqp_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          factorization_status::Int32
+          iter::Int32
+          cg_iter::Int32
+          obj::T
+          norm_pg::T
+          bad_alloc::NTuple{81,Cchar}
+          time::bqp_time_type
+          sbls_inform::sbls_inform_type{T}
 	
-	struct bqp_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structbqp__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structbqp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`factorization_status<doxid-structbqp__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int32 :ref:`iter<doxid-structbqp__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structbqp__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		T :ref:`obj<doxid-structbqp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_pg<doxid-structbqp__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
-		char :ref:`bad_alloc<doxid-structbqp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`bqp_time_type<doxid-structbqp__time__type>` :ref:`time<doxid-structbqp__inform__type_1a7f44be002389597b3f6c06e9a9b6eefa>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structbqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-	};
 .. _details-structbqp__inform__type:
 
 detailed documentation

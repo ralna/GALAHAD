@@ -7,26 +7,21 @@ trb_time_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_trb.h>
-	
-	struct trb_time_type {
-		// components
-	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structtrb__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`preprocess<doxid-structtrb__time__type_1adc5369028902776a12fe8d393be67174>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`analyse<doxid-structtrb__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`factorize<doxid-structtrb__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`solve<doxid-structtrb__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
-		T :ref:`clock_total<doxid-structtrb__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_preprocess<doxid-structtrb__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
-		T :ref:`clock_analyse<doxid-structtrb__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		T :ref:`clock_factorize<doxid-structtrb__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_solve<doxid-structtrb__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-	};
+        struct trb_time_type{T}
+          total::Float32
+          preprocess::Float32
+          analyse::Float32
+          factorize::Float32
+          solve::Float32
+          clock_total::T
+          clock_preprocess::T
+          clock_analyse::T
+          clock_factorize::T
+          clock_solve::T
+
 .. _details-structtrb__time__type:
 
 detailed documentation
@@ -43,7 +38,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	Float32 total
 
 the total CPU time spent in the package
 
@@ -53,7 +48,7 @@ the total CPU time spent in the package
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` preprocess
+	Float32 preprocess
 
 the CPU time spent preprocessing the problem
 
@@ -63,7 +58,7 @@ the CPU time spent preprocessing the problem
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` analyse
+	Float32 analyse
 
 the CPU time spent analysing the required matrices prior to factorization
 
@@ -73,7 +68,7 @@ the CPU time spent analysing the required matrices prior to factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` factorize
+	Float32 factorize
 
 the CPU time spent factorizing the required matrices
 
@@ -83,7 +78,7 @@ the CPU time spent factorizing the required matrices
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` solve
+	Float32 solve
 
 the CPU time spent computing the search direction
 

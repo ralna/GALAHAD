@@ -10,24 +10,20 @@ ir_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_ir.h>
-	
-	struct ir_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structir__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structir__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structir__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structir__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`itref_max<doxid-structir__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		T :ref:`acceptable_residual_relative<doxid-structir__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
-		T :ref:`acceptable_residual_absolute<doxid-structir__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
-		T :ref:`required_residual_relative<doxid-structir__control__type_1a9d3614debfe53f901305b68d9e460163>`;
-		Bool :ref:`record_residuals<doxid-structir__control__type_1aee80ae09cedfc446424c56719b30cfca>`;
-		Bool :ref:`space_critical<doxid-structir__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structir__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structir__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct ir_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          itref_max::Int32
+          acceptable_residual_relative::T
+          acceptable_residual_absolute::T
+          required_residual_relative::T
+          record_residuals::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structir__control__type:
 
 detailed documentation
@@ -96,7 +92,7 @@ maximum number of iterative refinements allowed
 
 	T acceptable_residual_relative
 
-refinement will cease as soon as the residual :math:`\|Ax-b\|` falls below max( acceptable_residual_relative \* :math:`\|b\|`, acceptable_residual_absolute )
+refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
 .. index:: pair: variable; acceptable_residual_absolute
 .. _doxid-structir__control__type_1a5ee0e70d90b1398019054b19b68057a0:
@@ -116,7 +112,7 @@ see acceptable_residual_relative
 
 	T required_residual_relative
 
-refinement will be judged to have failed if the residual :math:`\|Ax-b\| \geq` required_residual_relative \* :math:`\|b\|`. No checking if required_residual_relative < 0
+refinement will be judged to have failed if the residual $\|Ax-b\| \geq$ required_residual_relative \* $\|b\|$. No checking if required_residual_relative < 0
 
 .. index:: pair: variable; record_residuals
 .. _doxid-structir__control__type_1aee80ae09cedfc446424c56719b30cfca:

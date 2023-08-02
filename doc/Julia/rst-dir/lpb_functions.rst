@@ -114,27 +114,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; lpb_reset_control
 .. _doxid-galahad__lpb_8h_1aac79b2577895e28d4a92deb9f3bd24a6:
@@ -239,72 +239,72 @@ Solve the linear program.
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that holds the lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
+		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that holds the upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
+		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i(x)`.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, i = 0, ... , m-1, contains $c_i(x)$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y` of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , m-1, contains :math:`y_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , m-1, contains $y_i$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- c_stat
 
-		- is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value :math:`a_i^T x` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^T x$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; lpb_information
 .. _doxid-galahad__lpb_8h_1ad3b3173cbeb7a9b01995d678324cbe4e:

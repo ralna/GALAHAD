@@ -11,24 +11,20 @@ lpa_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lpa.h>
+        struct lpa_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          la04_job::Int32
+          la04_job_info::Int32
+          obj::T
+          primal_infeasibility::T
+          feasible::Bool
+          RINFO::NTuple{40,T}
+          time::lpa_time_type{T}
+          rpd_inform::rpd_inform_type
 	
-	struct lpa_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structlpa__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structlpa__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structlpa__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structlpa__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`la04_job<doxid-structlpa__inform__type_1a8ba753c55f7e33211718d8f58ccfdea3>`;
-		Int32 :ref:`la04_job_info<doxid-structlpa__inform__type_1acfd9252cb6fa18ef44baaeaab705d85f>`;
-		T :ref:`obj<doxid-structlpa__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`primal_infeasibility<doxid-structlpa__inform__type_1a2bce6cd733ae08834689fa66747f53b9>`;
-		Bool :ref:`feasible<doxid-structlpa__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		T :ref:`RINFO<doxid-structlpa__inform__type_1a1dcb2a53d683485290d30e0a16d7e2ee>`[40];
-		struct :ref:`lpa_time_type<doxid-structlpa__time__type>` :ref:`time<doxid-structlpa__inform__type_1a06efd7a01012eda3b046d741ef9584fa>`;
-		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` :ref:`rpd_inform<doxid-structlpa__inform__type_1a823701505feea7615e9f8995769d8b60>`;
-	};
 .. _details-structlpa__inform__type:
 
 detailed documentation

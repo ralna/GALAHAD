@@ -7,72 +7,67 @@ lsqp_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lsqp.h>
-	
-	struct lsqp_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structlsqp__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structlsqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlsqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlsqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structlsqp__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structlsqp__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`maxit<doxid-structlsqp__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`factor<doxid-structlsqp__control__type_1a42eac05293c31fef9b90c92698928d7d>`;
-		Int32 :ref:`max_col<doxid-structlsqp__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`indmin<doxid-structlsqp__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		Int32 :ref:`valmin<doxid-structlsqp__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		Int32 :ref:`itref_max<doxid-structlsqp__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		Int32 :ref:`infeas_max<doxid-structlsqp__control__type_1af7d33b88b67b2366d7e2df31d42083a9>`;
-		Int32 :ref:`muzero_fixed<doxid-structlsqp__control__type_1ab62ab11b934e2380467d5bafe2aaacfb>`;
-		Int32 :ref:`restore_problem<doxid-structlsqp__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
-		Int32 :ref:`indicator_type<doxid-structlsqp__control__type_1a5abba51271587463f528b0cbdb478141>`;
-		Int32 :ref:`extrapolate<doxid-structlsqp__control__type_1acc457bf98691a4c5b44abe6912aaa512>`;
-		Int32 :ref:`path_history<doxid-structlsqp__control__type_1a48cfa8490ae2df9a90dd0e4d759c391f>`;
-		Int32 :ref:`path_derivatives<doxid-structlsqp__control__type_1a67f815d63085b187a059b9db28570911>`;
-		Int32 :ref:`fit_order<doxid-structlsqp__control__type_1a1942b0688f86ca01852409be7791a8e9>`;
-		Int32 :ref:`sif_file_device<doxid-structlsqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		T :ref:`infinity<doxid-structlsqp__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`stop_p<doxid-structlsqp__control__type_1a8933604acacc0fb4367caac730b6c79b>`;
-		T :ref:`stop_d<doxid-structlsqp__control__type_1a12784541c48f57127781bc1c5937c616>`;
-		T :ref:`stop_c<doxid-structlsqp__control__type_1aec5ea9177505eb7723a8e092535556cb>`;
-		T :ref:`prfeas<doxid-structlsqp__control__type_1a09a0a5771a0300078ebe5f344ef4e492>`;
-		T :ref:`dufeas<doxid-structlsqp__control__type_1a2ac34c5838499ed4992037655f52134a>`;
-		T :ref:`muzero<doxid-structlsqp__control__type_1a8f4661dd5869e1555ba329b4bd535b4d>`;
-		T :ref:`reduce_infeas<doxid-structlsqp__control__type_1aaac67273a340e9f96523583bfdce4c59>`;
-		T :ref:`potential_unbounded<doxid-structlsqp__control__type_1a0c5882a8efc33627a50dce09db1ba40a>`;
-		T :ref:`pivot_tol<doxid-structlsqp__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`pivot_tol_for_dependencies<doxid-structlsqp__control__type_1a14e253b53c59b0850d7d3b5245d89df9>`;
-		T :ref:`zero_pivot<doxid-structlsqp__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		T :ref:`identical_bounds_tol<doxid-structlsqp__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		T :ref:`mu_min<doxid-structlsqp__control__type_1afe0779ad5e2d665c9cbde8a45d1ef195>`;
-		T :ref:`indicator_tol_p<doxid-structlsqp__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd>`;
-		T :ref:`indicator_tol_pd<doxid-structlsqp__control__type_1aa131ce5e639e5601d1b61fb540ac7187>`;
-		T :ref:`indicator_tol_tapia<doxid-structlsqp__control__type_1abf4fb7dcdbaa9f729af1f063d357000a>`;
-		T :ref:`cpu_time_limit<doxid-structlsqp__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structlsqp__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`remove_dependencies<doxid-structlsqp__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		Bool :ref:`treat_zero_bounds_as_general<doxid-structlsqp__control__type_1a59b23877e9c8cb49f1f6261e24660295>`;
-		Bool :ref:`just_feasible<doxid-structlsqp__control__type_1a1337f1d22b070690c78f25f7ecaf1e96>`;
-		Bool :ref:`getdua<doxid-structlsqp__control__type_1ae31443582be206db6b858b35e1fff00b>`;
-		Bool :ref:`puiseux<doxid-structlsqp__control__type_1a444d111a9f28a15760d75b6ff7eb0131>`;
-		Bool :ref:`feasol<doxid-structlsqp__control__type_1a2d28372a45268cac881a4586c4e875d6>`;
-		Bool :ref:`balance_initial_complentarity<doxid-structlsqp__control__type_1a88bfd9dc0be7872a0bc1ae611d4d1173>`;
-		Bool :ref:`use_corrector<doxid-structlsqp__control__type_1a92a646996c4c1099e32ddf75f7c7e976>`;
-		Bool :ref:`array_syntax_worse_than_do_loop<doxid-structlsqp__control__type_1a67975e9960ae3d4d79bf18b240b9f614>`;
-		Bool :ref:`space_critical<doxid-structlsqp__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlsqp__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`generate_sif_file<doxid-structlsqp__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		char :ref:`sif_file_name<doxid-structlsqp__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`prefix<doxid-structlsqp__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structlsqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structlsqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-	};
+        struct lsqp_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          maxit::Int32
+          factor::Int32
+          max_col::Int32
+          indmin::Int32
+          valmin::Int32
+          itref_max::Int32
+          infeas_max::Int32
+          muzero_fixed::Int32
+          restore_problem::Int32
+          indicator_type::Int32
+          extrapolate::Int32
+          path_history::Int32
+          path_derivatives::Int32
+          fit_order::Int32
+          sif_file_device::Int32
+          infinity::T
+          stop_p::T
+          stop_d::T
+          stop_c::T
+          prfeas::T
+          dufeas::T
+          muzero::T
+          reduce_infeas::T
+          potential_unbounded::T
+          pivot_tol::T
+          pivot_tol_for_dependencies::T
+          zero_pivot::T
+          identical_bounds_tol::T
+          mu_min::T
+          indicator_tol_p::T
+          indicator_tol_pd::T
+          indicator_tol_tapia::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          remove_dependencies::Bool
+          treat_zero_bounds_as_general::Bool
+          just_feasible::Bool
+          getdua::Bool
+          puiseux::Bool
+          feasol::Bool
+          balance_initial_complentarity::Bool
+          use_corrector::Bool
+          array_syntax_worse_than_do_loop::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          generate_sif_file::Bool
+          sif_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          fdc_control::fdc_control_type{T}
+          sbls_control::sbls_control_type{T}
+
 .. _details-structlsqp__control__type:
 
 detailed documentation
@@ -255,11 +250,11 @@ indicate whether and how much of the input problem should be restored on output.
 
 specifies the type of indicator function used. Possible values are
 
-* 1 primal indicator: constraint active if and only if the distance to nearest bound :math:`\leq`.indicator_p_tol
+* 1 primal indicator: constraint active if and only if the distance to nearest bound $\leq$.indicator_p_tol
 
-* 2 primal-dual indicator: constraint active if and only if the distance to nearest bound :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+* 2 primal-dual indicator: constraint active if and only if the distance to nearest bound $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
-* 3 primal-dual indicator: constraint active if and only if the distance to the nearest bound :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+* 3 primal-dual indicator: constraint active if and only if the distance to the nearest bound $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; extrapolate
 .. _doxid-structlsqp__control__type_1acc457bf98691a4c5b44abe6912aaa512:
@@ -471,7 +466,7 @@ start terminal extrapolation when mu reaches mu_min
 
 	T indicator_tol_p
 
-if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_p_tol
+if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_p_tol
 
 .. index:: pair: variable; indicator_tol_pd
 .. _doxid-structlsqp__control__type_1aa131ce5e639e5601d1b61fb540ac7187:
@@ -481,7 +476,7 @@ if .indicator_type = 1, a constraint/bound will be deemed to be active if and on
 
 	T indicator_tol_pd
 
-if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
 .. index:: pair: variable; indicator_tol_tapia
 .. _doxid-structlsqp__control__type_1abf4fb7dcdbaa9f729af1f063d357000a:
@@ -491,7 +486,7 @@ if .indicator_type = 2, a constraint/bound will be deemed to be active if and on
 
 	T indicator_tol_tapia
 
-if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; cpu_time_limit
 .. _doxid-structlsqp__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:

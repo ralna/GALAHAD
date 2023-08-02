@@ -10,13 +10,9 @@ scu_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_scu.h>
-	
-	struct scu_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structscu__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-	};
+        struct scu_control_type
+          f_indexing::Bool
+
 .. _details-structscu__control__type:
 
 detailed documentation

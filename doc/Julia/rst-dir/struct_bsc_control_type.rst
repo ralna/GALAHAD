@@ -10,23 +10,19 @@ bsc_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_bsc.h>
-	
-	struct bsc_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		Int32 :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
-		Bool :ref:`s_also_by_column<doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd>`;
-		Bool :ref:`space_critical<doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structbsc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct bsc_control_type
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          max_col::Int32
+          new_a::Int32
+          extra_space_s::Int32
+          s_also_by_column::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structbsc__control__type:
 
 detailed documentation
@@ -85,7 +81,7 @@ the level of output required is specified by print_level
 
 	Int32 max_col
 
-maximum permitted number of nonzeros in a column of :math:`A`; -ve means unlimit
+maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 
 .. index:: pair: variable; new_a
 .. _doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6:
@@ -95,7 +91,7 @@ maximum permitted number of nonzeros in a column of :math:`A`; -ve means unlimit
 
 	Int32 new_a
 
-how much has :math:`A` changed since it was last accessed:
+how much has $A$ changed since it was last accessed:
 
 * 0 = not changed,
 
@@ -113,7 +109,7 @@ how much has :math:`A` changed since it was last accessed:
 
 	Int32 extra_space_s
 
-how much extra space is to be allocated in :math:`S` above that needed to hold the Schur complement
+how much extra space is to be allocated in $S$ above that needed to hold the Schur complement
 
 .. index:: pair: variable; s_also_by_column
 .. _doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd:
@@ -123,7 +119,7 @@ how much extra space is to be allocated in :math:`S` above that needed to hold t
 
 	Bool s_also_by_column
 
-should s.ptr also be set to indicate the first entry in each column of :math:`S`
+should s.ptr also be set to indicate the first entry in each column of $S$
 
 .. index:: pair: variable; space_critical
 .. _doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

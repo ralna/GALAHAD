@@ -11,64 +11,60 @@ arc_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_arc.h>
-	
-	struct arc_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structarc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structarc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structarc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structarc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structarc__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structarc__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structarc__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structarc__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`alive_unit<doxid-structarc__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structarc__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		Int32 :ref:`non_monotone<doxid-structarc__control__type_1a856b2df558071805c217b6d72a1e215b>`;
-		Int32 :ref:`model<doxid-structarc__control__type_1a027a1f1731d22465c926ce57be2364c3>`;
-		Int32 :ref:`norm<doxid-structarc__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498>`;
-		Int32 :ref:`semi_bandwidth<doxid-structarc__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`lbfgs_vectors<doxid-structarc__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30>`;
-		Int32 :ref:`max_dxg<doxid-structarc__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f>`;
-		Int32 :ref:`icfs_vectors<doxid-structarc__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		Int32 :ref:`mi28_lsize<doxid-structarc__control__type_1a97a46af6187162b529821f79d1559827>`;
-		Int32 :ref:`mi28_rsize<doxid-structarc__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		Int32 :ref:`advanced_start<doxid-structarc__control__type_1a7565611061db14e471a4f68e6dabbc17>`;
-		T :ref:`stop_g_absolute<doxid-structarc__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8>`;
-		T :ref:`stop_g_relative<doxid-structarc__control__type_1aeb89f1dc942cea0814ee1e8d645467d3>`;
-		T :ref:`stop_s<doxid-structarc__control__type_1a56612668b00bf042745379f43166cd27>`;
-		T :ref:`initial_weight<doxid-structarc__control__type_1aa8b73dcc65ae7dc7b3331980f77c5fb4>`;
-		T :ref:`minimum_weight<doxid-structarc__control__type_1a044b125f7d2b5409dde4253030798367>`;
-		T :ref:`reduce_gap<doxid-structarc__control__type_1a462c383f8c4b96b23d585f292bd5e0e2>`;
-		T :ref:`tiny_gap<doxid-structarc__control__type_1a28c746bfd481575683553dc28abe3e30>`;
-		T :ref:`large_root<doxid-structarc__control__type_1a7abb4c844c9fddec04f47c856f4a2383>`;
-		T :ref:`eta_successful<doxid-structarc__control__type_1ac0774abb09bb59381960d771cb38b8ef>`;
-		T :ref:`eta_very_successful<doxid-structarc__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e>`;
-		T :ref:`eta_too_successful<doxid-structarc__control__type_1a6af4c9666b9342fa75b665bfb8cef524>`;
-		T :ref:`weight_decrease_min<doxid-structarc__control__type_1a481b6aeef2f3d9a0078665db1e512c85>`;
-		T :ref:`weight_decrease<doxid-structarc__control__type_1a46e8590e1c6ebb8c2a673d854762424d>`;
-		T :ref:`weight_increase<doxid-structarc__control__type_1a92d59bc5d9b2899fbb318ea033e85540>`;
-		T :ref:`weight_increase_max<doxid-structarc__control__type_1a43230e4cfd494bbdcb897074b0b9768b>`;
-		T :ref:`obj_unbounded<doxid-structarc__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`cpu_time_limit<doxid-structarc__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structarc__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`hessian_available<doxid-structarc__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		Bool :ref:`subproblem_direct<doxid-structarc__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de>`;
-		Bool :ref:`renormalize_weight<doxid-structarc__control__type_1aa451859552980839fa9fe17df018c042>`;
-		Bool :ref:`quadratic_ratio_test<doxid-structarc__control__type_1a9e67af1ad36a37036832168539ef2bc8>`;
-		Bool :ref:`space_critical<doxid-structarc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structarc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structarc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`rqs_control_type<doxid-structrqs__control__type>` :ref:`rqs_control<doxid-structarc__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>` :ref:`glrt_control<doxid-structarc__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
-		struct :ref:`dps_control_type<doxid-structdps__control__type>` :ref:`dps_control<doxid-structarc__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1>`;
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structarc__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structarc__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :target:`lms_control_prec<doxid-structarc__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structarc__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
-	};
+        struct arc_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          non_monotone::Int32
+          model::Int32
+          norm::Int32
+          semi_bandwidth::Int32
+          lbfgs_vectors::Int32
+          max_dxg::Int32
+          icfs_vectors::Int32
+          mi28_lsize::Int32
+          mi28_rsize::Int32
+          advanced_start::Int32
+          stop_g_absolute::T
+          stop_g_relative::T
+          stop_s::T
+          initial_weight::T
+          minimum_weight::T
+          reduce_gap::T
+          tiny_gap::T
+          large_root::T
+          eta_successful::T
+          eta_very_successful::T
+          eta_too_successful::T
+          weight_decrease_min::T
+          weight_decrease::T
+          weight_increase::T
+          weight_increase_max::T
+          obj_unbounded::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          hessian_available::Bool
+          subproblem_direct::Bool
+          renormalize_weight::Bool
+          quadratic_ratio_test::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          rqs_control::rqs_control_type{T}
+          glrt_control::glrt_control_type{T}
+          dps_control::dps_control_type{T}
+          psls_control::psls_control_type{T}
+          lms_control::lms_control_type{T}
+          lms_control_prec::lms_control_type{T}
+          sha_control::sha_control_type
+
 .. _details-structarc__control__type:
 
 detailed documentation
@@ -119,13 +115,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structarc__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -237,25 +233,25 @@ Possible values are
 
 the regularization norm used.
 
-The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the preconditioner used for iterative methods. Possible values for :math:`P` are
+The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are
 
 * -3 users own preconditioner
 
-* -2 :math:`P =` limited-memory BFGS matrix (with .lbfgs_vectors history)
+* -2 $P =$ limited-memory BFGS matrix (with .lbfgs_vectors history)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`P =` diag( max( Hessian, .min_diagonal ) )
+* 1 diagonal, $P =$ diag( max( Hessian, .min_diagonal ) )
 
-* 2 banded, :math:`P =` band( Hessian ) with semi-bandwidth .semi_bandwidth
+* 2 banded, $P =$ band( Hessian ) with semi-bandwidth .semi_bandwidth
 
 * 3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth
 
-* 4 full factorization, :math:`P =` Hessian, Schnabel-Eskow modification
+* 4 full factorization, $P =$ Hessian, Schnabel-Eskow modification
 
-* 5 full factorization, :math:`P =` Hessian, GMPS modification (*not yet implemented*)
+* 5 full factorization, $P =$ Hessian, GMPS modification (*not yet implemented*)
 
 * 6 incomplete factorization of Hessian, Lin-More'
 
@@ -325,7 +321,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	Int32 mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; advanced_start
 .. _doxid-structarc__control__type_1a7565611061db14e471a4f68e6dabbc17:

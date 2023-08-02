@@ -11,23 +11,19 @@ cro_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_cro.h>
-	
-	struct cro_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structcro__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structcro__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structcro__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`dependent<doxid-structcro__inform__type_1a3678dbffc0e2f3521f7ef27194b21ab6>`;
-		struct :ref:`cro_time_type<doxid-structcro__time__type>` :ref:`time<doxid-structcro__inform__type_1a0d99b2a30c1bf487fddf2643b03a3120>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structcro__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structcro__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`uls_inform_type<doxid-structuls__inform__type>` :ref:`uls_inform<doxid-structcro__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
-		Int32 :ref:`scu_status<doxid-structcro__inform__type_1a25bf1e7f86c2b4f4836aa4de40019815>`;
-		struct :ref:`scu_inform_type<doxid-structscu__inform__type>` :ref:`scu_inform<doxid-structcro__inform__type_1a0b702af94f05b9d4bb2bb6416f2498ee>`;
-		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structcro__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
-	};
+        struct cro_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          dependent::Int32
+          time::cro_time_type{T}
+          sls_inform::sls_inform_type{T}
+          sbls_inform::sbls_inform_type{T}
+          uls_inform::uls_inform_type{T}
+          scu_status::Int32
+          scu_inform::scu_inform_type
+          ir_inform::ir_inform_type{T}
+
 .. _details-structcro__inform__type:
 
 detailed documentation

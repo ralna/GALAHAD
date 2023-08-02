@@ -159,17 +159,17 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` stored in the sparse symmetric co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ stored in the sparse symmetric co-ordinate storage scheme.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` stored in the sparse co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ stored in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H_c` stored in the joint sparse co-ordinate storage scheme.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H_c$ stored in the joint sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_g
 .. _doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a:
@@ -179,7 +179,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 
         function rpd_get_g(data, status, n, g)
 
-Recover the linear term :math:`g` from in objective function
+Recover the linear term $g$ from in objective function
 
 .. rubric:: Parameters:
 
@@ -209,7 +209,7 @@ Recover the linear term :math:`g` from in objective function
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that gives the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that gives the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 .. index:: pair: function; rpd_get_f
 .. _doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c:
@@ -219,7 +219,7 @@ Recover the linear term :math:`g` from in objective function
 
         function rpd_get_f(data, status, f)
 
-Recover the constant term :math:`f` in the objective function.
+Recover the constant term $f$ in the objective function.
 
 .. rubric:: Parameters:
 
@@ -244,7 +244,7 @@ Recover the constant term :math:`f` in the objective function.
 	*
 		- f
 
-		- is a scalar of type T that gives the constant term :math:`f` from the objective function.
+		- is a scalar of type T that gives the constant term $f$ from the objective function.
 
 .. index:: pair: function; rpd_get_xlu
 .. _doxid-galahad__rpd_8h_1a6a5cbf68b561cc6db0ba08304d28787c:
@@ -254,7 +254,7 @@ Recover the constant term :math:`f` in the objective function.
 
         function rpd_get_xlu(data, status, n, x_l, x_u)
 
-Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
+Recover the variable lower and upper bounds $x_l$ and $x_u$.
 
 .. rubric:: Parameters:
 
@@ -284,12 +284,12 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that gives the lower bounds :math:`x_l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`(x_l)_j`.
+		- is a one-dimensional array of size n and type T that gives the lower bounds $x_l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $(x_l)_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that gives the upper bounds :math:`x_u` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`(x_u)_j`.
+		- is a one-dimensional array of size n and type T that gives the upper bounds $x_u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $(x_u)_j$.
 
 .. index:: pair: function; rpd_get_clu
 .. _doxid-galahad__rpd_8h_1aa3b44968b109ed194ed2bb04009f35ac:
@@ -299,7 +299,7 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 
         function rpd_get_clu(data, status, m, c_l, c_u)
 
-Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
+Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 
 .. rubric:: Parameters:
 
@@ -329,12 +329,12 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that gives the lower bounds :math:`c_l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`(c_l)_i`.
+		- is a one-dimensional array of size m and type T that gives the lower bounds $c_l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $(c_l)_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that gives the upper bounds :math:`c_u` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`(c_u)_i`.
+		- is a one-dimensional array of size m and type T that gives the upper bounds $c_u$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $(c_u)_i$.
 
 .. index:: pair: function; rpd_get_h
 .. _doxid-galahad__rpd_8h_1a02021324df6f485160d327f2f5fca0d3:
@@ -344,7 +344,7 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 
         function rpd_get_h(data, status, h_ne, h_row, h_col, h_val)
 
-Recover the Hessian term :math:`H` in the objective function.
+Recover the Hessian term $H$ in the objective function.
 
 .. rubric:: Parameters:
 
@@ -369,22 +369,22 @@ Recover the Hessian term :math:`H` in the objective function.
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_row
 
-		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of :math:`H` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
 
 	*
 		- h_col
 
-		- is a one-dimensional array of size h_ne and type Int32 that gives the column indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type Int32 that gives the column indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_a
 .. _doxid-galahad__rpd_8h_1a8b0c3c507b12512b09ee4ec92596148e:
@@ -394,7 +394,7 @@ Recover the Hessian term :math:`H` in the objective function.
 
         function rpd_get_a(data, status, a_ne, a_row, a_col, a_val)
 
-Recover the Jacobian term :math:`A` in the constraints.
+Recover the Jacobian term $A$ in the constraints.
 
 .. rubric:: Parameters:
 
@@ -419,22 +419,22 @@ Recover the Jacobian term :math:`A` in the constraints.
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- a_row
 
-		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of :math:`A` in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
 
 	*
 		- a_col
 
-		- is a one-dimensional array of size a_ne and type Int32 that gives the column indices of :math:`A` in the sparse co-ordinate, storage scheme.
+		- is a one-dimensional array of size a_ne and type Int32 that gives the column indices of $A$ in the sparse co-ordinate, storage scheme.
 
 	*
 		- a_val
 
-		- is a one-dimensional array of size a_ne and type T that gives the values of the entries of the constraint Jacobian matrix :math:`A` in the sparse co-ordinate scheme.
+		- is a one-dimensional array of size a_ne and type T that gives the values of the entries of the constraint Jacobian matrix $A$ in the sparse co-ordinate scheme.
 
 .. index:: pair: function; rpd_get_h_c
 .. _doxid-galahad__rpd_8h_1a55ae091188ad0d88920565549bd47451:
@@ -445,7 +445,7 @@ Recover the Jacobian term :math:`A` in the constraints.
         function rpd_get_h_c(data, status, h_c_ne, 
                              h_c_ptr, h_c_row, h_c_col, h_c_val)
 
-Recover the Hessian terms :math:`H_c` in the constraints.
+Recover the Hessian terms $H_c$ in the constraints.
 
 .. rubric:: Parameters:
 
@@ -470,27 +470,27 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 	*
 		- h_c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_c_ptr
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of :math:`H_c` in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
 
 	*
 		- h_c_row
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the row indices of the lower triangular part of :math:`H_c` in the joint sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the row indices of the lower triangular part of $H_c$ in the joint sparse co-ordinate storage scheme.
 
 	*
 		- h_c_col
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the column indices of the lower triangular part of :math:`H_c` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the column indices of the lower triangular part of $H_c$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_val
 
-		- is a one-dimensional array of size h_c_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H_c` in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H_c$ in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_x_type
 .. _doxid-galahad__rpd_8h_1af784ecc65c925575788a494bd8118f4d:
@@ -500,7 +500,7 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 
         function rpd_get_x_type(data, status, n, x_type)
 
-Recover the types of the variables :math:`x`.
+Recover the types of the variables $x$.
 
 .. rubric:: Parameters:
 
@@ -531,13 +531,13 @@ Recover the types of the variables :math:`x`.
 		- x_type
 
 		-
-		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable :math:`x`. Specifically, for j = 0, ... , n-1, x(j) =
+		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable $x$. Specifically, for j = 0, ... , n-1, x(j) =
 
-		  * 0 variable :math:`x_j` is continuous,
+		  * 0 variable $x_j$ is continuous,
 
-		  * 1 variable :math:`x_j` is integer, and
+		  * 1 variable $x_j$ is integer, and
 
-		  * 2 variable :math:`x_j` is binary (0,1)
+		  * 2 variable $x_j$ is binary (0,1)
 
 .. index:: pair: function; rpd_get_x
 .. _doxid-galahad__rpd_8h_1afbc831595295e9153e4740d852a35c27:
@@ -547,7 +547,7 @@ Recover the types of the variables :math:`x`.
 
         function rpd_get_x(data, status, n,
 
-Recover the initial values of the variables :math:`x`.
+Recover the initial values of the variables $x$.
 
 .. rubric:: Parameters:
 
@@ -577,7 +577,7 @@ Recover the initial values of the variables :math:`x`.
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that gives the initial values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; rpd_get_y
 .. _doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5:
@@ -587,7 +587,7 @@ Recover the initial values of the variables :math:`x`.
 
         function rpd_get_y(data, status, m, y)
 
-Recover the initial values of the Lagrange multipliers :math:`y`.
+Recover the initial values of the Lagrange multipliers $y$.
 
 .. rubric:: Parameters:
 
@@ -617,7 +617,7 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that gives the initial values :math:`y` of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains :math:`y_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values $y$ of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
 
 .. index:: pair: function; rpd_get_z
 .. _doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3:
@@ -627,7 +627,7 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 
         function rpd_get_z(data, status, n, z)
 
-Recover the initial values of the dual variables :math:`z`.
+Recover the initial values of the dual variables $z$.
 
 .. rubric:: Parameters:
 
@@ -657,7 +657,7 @@ Recover the initial values of the dual variables :math:`z`.
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that gives the initial values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that gives the initial values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 .. index:: pair: function; rpd_information
 .. _doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3:

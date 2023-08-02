@@ -7,42 +7,37 @@ tru_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_tru.h>
-	
-	struct tru_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structtru__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structtru__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structtru__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structtru__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structtru__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`f_eval<doxid-structtru__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		Int32 :ref:`g_eval<doxid-structtru__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		Int32 :ref:`h_eval<doxid-structtru__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		Int32 :ref:`factorization_max<doxid-structtru__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
-		Int32 :ref:`factorization_status<doxid-structtru__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`max_entries_factors<doxid-structtru__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		Int64 :ref:`factorization_integer<doxid-structtru__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structtru__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		T :ref:`factorization_average<doxid-structtru__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
-		T :ref:`obj<doxid-structtru__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_g<doxid-structtru__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
-		T :ref:`radius<doxid-structtru__inform__type_1a72757b6410f755f008e2fb6d711b61be>`;
-		struct :ref:`tru_time_type<doxid-structtru__time__type>` :ref:`time<doxid-structtru__inform__type_1a5df9a5b97fb9ee0f6e9c620ffa1719e7>`;
-		struct trs_inform_type :ref:`trs_inform<doxid-structtru__inform__type_1aa7996c925462c655f2b3dd5a5da22c21>`;
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structtru__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-		struct :ref:`dps_inform_type<doxid-structdps__inform__type>` :ref:`dps_inform<doxid-structtru__inform__type_1aec61ddb290b679c265693de171a6394f>`;
-		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structtru__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
-		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :ref:`lms_inform<doxid-structtru__inform__type_1a6428cf213f8c899aa1bfb1fc3d24f37d>`;
-		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :target:`lms_inform_prec<doxid-structtru__inform__type_1a2040147e726e4ad18ef6d81d8339644e>`;
-		struct :ref:`sec_inform_type<doxid-structsec__inform__type>` :ref:`sec_inform<doxid-structtru__inform__type_1a1f95673cb76837c5eb47d773aedefb94>`;
-		struct :ref:`sha_inform_type<doxid-structsha__inform__type>` :ref:`sha_inform<doxid-structtru__inform__type_1a196d9da91c7ed4a67aa6e009e336e101>`;
-	};
+        struct tru_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          cg_iter::Int32
+          f_eval::Int32
+          g_eval::Int32
+          h_eval::Int32
+          factorization_max::Int32
+          factorization_status::Int32
+          max_entries_factors::Int64
+          factorization_integer::Int64
+          factorization_real::Int64
+          factorization_average::T
+          obj::T
+          norm_g::T
+          radius::T
+          time::tru_time_type{T}
+          trs_inform::trs_inform_type{T}
+          gltr_inform::gltr_inform_type{T}
+          dps_inform::dps_inform_type{T}
+          psls_inform::psls_inform_type{T}
+          lms_inform::lms_inform_type{T}
+          lms_inform_prec::lms_inform_type{T}
+          sec_inform::sec_inform_type
+          sha_inform::sha_inform_type
+
 .. _details-structtru__inform__type:
 
 detailed documentation

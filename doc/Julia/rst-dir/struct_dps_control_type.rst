@@ -10,31 +10,27 @@ dps_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_dps.h>
+        struct dps_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          problem::Int32
+          print_level::Int32
+          new_h::Int32
+          taylor_max_degree::Int32
+          eigen_min::T
+          lower::T
+          upper::T
+          stop_normal::T
+          stop_absolute_normal::T
+          goldfarb::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          problem_file::NTuple{31,Cchar}
+          symmetric_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
 	
-	struct dps_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structdps__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structdps__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structdps__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`problem<doxid-structdps__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
-		Int32 :ref:`print_level<doxid-structdps__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`new_h<doxid-structdps__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		Int32 :ref:`taylor_max_degree<doxid-structdps__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		T :ref:`eigen_min<doxid-structdps__control__type_1a133028d7b94139b129034f5b820ffdef>`;
-		T :ref:`lower<doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		T :ref:`upper<doxid-structdps__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		T :ref:`stop_normal<doxid-structdps__control__type_1a3573530258a38cc836b106b9f7a54565>`;
-		T :ref:`stop_absolute_normal<doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c>`;
-		Bool :ref:`goldfarb<doxid-structdps__control__type_1a732b25a17a3b8c219c0a3a948520278c>`;
-		Bool :ref:`space_critical<doxid-structdps__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structdps__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`problem_file<doxid-structdps__control__type_1afbe46916454c2158f31d64ad8dbeaf34>`[31];
-		char :ref:`symmetric_linear_solver<doxid-structdps__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`prefix<doxid-structdps__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structdps__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-	};
 .. _details-structdps__control__type:
 
 detailed documentation
@@ -103,7 +99,7 @@ controls level of diagnostic output
 
 	Int32 new_h
 
-how much of :math:`H` has changed since the previous call. Possible values are
+how much of $H$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -129,7 +125,7 @@ maximum degree of Taylor approximant allowed
 
 	T eigen_min
 
-smallest allowable value of an eigenvalue of the block diagonal factor of :math:`H`
+smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 
 .. index:: pair: variable; lower
 .. _doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed:
@@ -159,7 +155,7 @@ see lower
 
 	T stop_normal
 
-stop trust-region solution when :math:`| ||x||_M - \delta | \leq` max( .stop_normal \* delta, .stop_absolute_normal )
+stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \* delta, .stop_absolute_normal )
 
 .. index:: pair: variable; stop_absolute_normal
 .. _doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c:

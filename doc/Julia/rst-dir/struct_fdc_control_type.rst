@@ -10,30 +10,26 @@ fdc_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_fdc.h>
+        struct fdc_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          indmin::Int32
+          valmin::Int32
+          pivot_tol::T
+          zero_pivot::T
+          max_infeas::T
+          use_sls::Bool
+          scale::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          symmetric_linear_solver::NTuple{31,Cchar}
+          unsymmetric_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
+          uls_control::uls_control_type{T}
 	
-	struct fdc_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structfdc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structfdc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structfdc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structfdc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`indmin<doxid-structfdc__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		Int32 :ref:`valmin<doxid-structfdc__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		T :ref:`pivot_tol<doxid-structfdc__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`zero_pivot<doxid-structfdc__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		T :ref:`max_infeas<doxid-structfdc__control__type_1af32ec1d3b9134c1d7187455c7039dbb1>`;
-		Bool :ref:`use_sls<doxid-structfdc__control__type_1af0bcd3e9e1917e2e44bb139c9df57e30>`;
-		Bool :ref:`scale<doxid-structfdc__control__type_1aff7a60d3f21b50f4ad18e40d99d33a61>`;
-		Bool :ref:`space_critical<doxid-structfdc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structfdc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`symmetric_linear_solver<doxid-structfdc__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`unsymmetric_linear_solver<doxid-structfdc__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
-		char :ref:`prefix<doxid-structfdc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structfdc__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structfdc__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
-	};
 .. _details-structfdc__control__type:
 
 detailed documentation

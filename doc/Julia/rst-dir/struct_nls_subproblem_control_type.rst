@@ -11,61 +11,57 @@ nls_subproblem_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_nls.h>
-	
-	struct nls_subproblem_control_type {
-		// components
-	
-		Int32 :ref:`error<doxid-structnls__subproblem__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structnls__subproblem__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structnls__subproblem__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structnls__subproblem__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structnls__subproblem__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structnls__subproblem__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structnls__subproblem__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`alive_unit<doxid-structnls__subproblem__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structnls__subproblem__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		Int32 :ref:`jacobian_available<doxid-structnls__subproblem__control__type_1a331884a4968f11decfca0a687fc59dde>`;
-		Int32 :ref:`hessian_available<doxid-structnls__subproblem__control__type_1ae665ac50d8c985bf502ba2b90363826a>`;
-		Int32 :ref:`model<doxid-structnls__subproblem__control__type_1a027a1f1731d22465c926ce57be2364c3>`;
-		Int32 :ref:`norm<doxid-structnls__subproblem__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498>`;
-		Int32 :ref:`non_monotone<doxid-structnls__subproblem__control__type_1a856b2df558071805c217b6d72a1e215b>`;
-		Int32 :ref:`weight_update_strategy<doxid-structnls__subproblem__control__type_1a91395480b85edaac83529fc7f1605289>`;
-		T :ref:`stop_c_absolute<doxid-structnls__subproblem__control__type_1add1b86a6f37634dcbf1e5f55807eac2b>`;
-		T :ref:`stop_c_relative<doxid-structnls__subproblem__control__type_1a8e60a718c9c3b3bf9daf2e2be3c7dd68>`;
-		T :ref:`stop_g_absolute<doxid-structnls__subproblem__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8>`;
-		T :ref:`stop_g_relative<doxid-structnls__subproblem__control__type_1aeb89f1dc942cea0814ee1e8d645467d3>`;
-		T :ref:`stop_s<doxid-structnls__subproblem__control__type_1a56612668b00bf042745379f43166cd27>`;
-		T :ref:`power<doxid-structnls__subproblem__control__type_1aa8611d2e53cef87afe803f0e486f3c98>`;
-		T :ref:`initial_weight<doxid-structnls__subproblem__control__type_1aa8b73dcc65ae7dc7b3331980f77c5fb4>`;
-		T :ref:`minimum_weight<doxid-structnls__subproblem__control__type_1a044b125f7d2b5409dde4253030798367>`;
-		T :ref:`initial_inner_weight<doxid-structnls__subproblem__control__type_1ab32efd2263e7fbebfe87846bc977f1ab>`;
-		T :ref:`eta_successful<doxid-structnls__subproblem__control__type_1ac0774abb09bb59381960d771cb38b8ef>`;
-		T :ref:`eta_very_successful<doxid-structnls__subproblem__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e>`;
-		T :ref:`eta_too_successful<doxid-structnls__subproblem__control__type_1a6af4c9666b9342fa75b665bfb8cef524>`;
-		T :ref:`weight_decrease_min<doxid-structnls__subproblem__control__type_1a481b6aeef2f3d9a0078665db1e512c85>`;
-		T :ref:`weight_decrease<doxid-structnls__subproblem__control__type_1a46e8590e1c6ebb8c2a673d854762424d>`;
-		T :ref:`weight_increase<doxid-structnls__subproblem__control__type_1a92d59bc5d9b2899fbb318ea033e85540>`;
-		T :ref:`weight_increase_max<doxid-structnls__subproblem__control__type_1a43230e4cfd494bbdcb897074b0b9768b>`;
-		T :ref:`reduce_gap<doxid-structnls__subproblem__control__type_1a462c383f8c4b96b23d585f292bd5e0e2>`;
-		T :ref:`tiny_gap<doxid-structnls__subproblem__control__type_1a28c746bfd481575683553dc28abe3e30>`;
-		T :ref:`large_root<doxid-structnls__subproblem__control__type_1a7abb4c844c9fddec04f47c856f4a2383>`;
-		T :ref:`switch_to_newton<doxid-structnls__subproblem__control__type_1a3e388718674f5243006272b3911fae22>`;
-		T :ref:`cpu_time_limit<doxid-structnls__subproblem__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structnls__subproblem__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`subproblem_direct<doxid-structnls__subproblem__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de>`;
-		Bool :ref:`renormalize_weight<doxid-structnls__subproblem__control__type_1aa451859552980839fa9fe17df018c042>`;
-		Bool :ref:`magic_step<doxid-structnls__subproblem__control__type_1adb993f5277ee10213227e86ba94fd934>`;
-		Bool :ref:`print_obj<doxid-structnls__subproblem__control__type_1a95ba685ae01db06b2e9a16412097612a>`;
-		Bool :ref:`space_critical<doxid-structnls__subproblem__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structnls__subproblem__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structnls__subproblem__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`rqs_control_type<doxid-structrqs__control__type>` :ref:`rqs_control<doxid-structnls__subproblem__control__type_1a7339f172b9757ed89a7595a29c4bca2b>`;
-		struct :ref:`glrt_control_type<doxid-structglrt__control__type>` :ref:`glrt_control<doxid-structnls__subproblem__control__type_1ac872f3f7f159cedfac4d6898d51842a3>`;
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structnls__subproblem__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct :ref:`bsc_control_type<doxid-structbsc__control__type>` :ref:`bsc_control<doxid-structnls__subproblem__control__type_1a899f35f15eea56c23fe8fb22857e01f7>`;
-		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structnls__subproblem__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
-	};
+        struct nls_subproblem_control_type{T}
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          jacobian_available::Int32
+          hessian_available::Int32
+          model::Int32
+          norm::Int32
+          non_monotone::Int32
+          weight_update_strategy::Int32
+          stop_c_absolute::T
+          stop_c_relative::T
+          stop_g_absolute::T
+          stop_g_relative::T
+          stop_s::T
+          power::T
+          initial_weight::T
+          minimum_weight::T
+          initial_inner_weight::T
+          eta_successful::T
+          eta_very_successful::T
+          eta_too_successful::T
+          weight_decrease_min::T
+          weight_decrease::T
+          weight_increase::T
+          weight_increase_max::T
+          reduce_gap::T
+          tiny_gap::T
+          large_root::T
+          switch_to_newton::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          subproblem_direct::Bool
+          renormalize_weight::Bool
+          magic_step::Bool
+          print_obj::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          rqs_control::rqs_control_type{T}
+          glrt_control::glrt_control_type{T}
+          psls_control::psls_control_type{T}
+          bsc_control::bsc_control_type
+          roots_control::roots_control_type{T}
+
 .. _details-structnls__subproblem__control__type:
 
 detailed documentation
@@ -106,13 +102,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structnls__subproblem__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -182,7 +178,7 @@ see alive_unit
 
 	Int32 jacobian_available
 
-is the Jacobian matrix of first derivatives available (:math:`\geq` 2), is access only via matrix-vector products (=1) or is it not available (:math:`\leq` 0) ?
+is the Jacobian matrix of first derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
 .. index:: pair: variable; hessian_available
 .. _doxid-structnls__subproblem__control__type_1ae665ac50d8c985bf502ba2b90363826a:
@@ -192,7 +188,7 @@ is the Jacobian matrix of first derivatives available (:math:`\geq` 2), is acces
 
 	Int32 hessian_available
 
-is the Hessian matrix of second derivatives available (:math:`\geq` 2), is access only via matrix-vector products (=1) or is it not available (:math:`\leq` 0) ?
+is the Hessian matrix of second derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
 .. index:: pair: variable; model
 .. _doxid-structnls__subproblem__control__type_1a027a1f1731d22465c926ce57be2364c3:
@@ -212,7 +208,7 @@ Possible values are
 
 * 2 barely second-order (identity Hessian)
 
-* 3 Gauss-Newton (:math:`J^T J` Hessian)
+* 3 Gauss-Newton ($J^T J$ Hessian)
 
 * 4 second-order (exact Hessian)
 
@@ -234,27 +230,27 @@ Possible values are
 
 the regularization norm used.
 
-The norm is defined via :math:`\|v\|^2 = v^T S v`, and will define the preconditioner used for iterative methods. Possible values for :math:`S` are
+The norm is defined via $\|v\|^2 = v^T S v$, and will define the preconditioner used for iterative methods. Possible values for $S$ are
 
 * -3 user's own regularization norm
 
-* -2 :math:`S` = limited-memory BFGS matrix (with .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
+* -2 $S$ = limited-memory BFGS matrix (with .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`S` = diag( max(:math:`J^TJ` Hessian, .PSLS_control.min_diagonal ) )
+* 1 diagonal, $S$ = diag( max($J^TJ$ Hessian, .PSLS_control.min_diagonal ) )
 
-* 2 diagonal, :math:`S` = diag( max( Hessian, .PSLS_control.min_diagonal ) )
+* 2 diagonal, $S$ = diag( max( Hessian, .PSLS_control.min_diagonal ) )
 
-* 3 banded, :math:`S` = band( Hessian ) with semi-bandwidth .PSLS_control.semi_bandwidth
+* 3 banded, $S$ = band( Hessian ) with semi-bandwidth .PSLS_control.semi_bandwidth
 
 * 4 re-ordered band, P=band(order(A)) with semi-bandwidth .PSLS_control.semi_bandwidth
 
-* 5 full factorization, :math:`S` = Hessian, Schnabel-Eskow modification
+* 5 full factorization, $S$ = Hessian, Schnabel-Eskow modification
 
-* 6 full factorization, :math:`S` = Hessian, GMPS modification (*not yet implemented*)
+* 6 full factorization, $S$ = Hessian, GMPS modification (*not yet implemented*)
 
 * 7 incomplete factorization of Hessian, Lin-More'
 
@@ -272,7 +268,7 @@ The norm is defined via :math:`\|v\|^2 = v^T S v`, and will define the precondit
 
 	Int32 non_monotone
 
-non-monotone :math:`\leq` 0 monotone strategy used, anything else non-monotone strategy with this history length used
+non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strategy with this history length used
 
 .. index:: pair: variable; weight_update_strategy
 .. _doxid-structnls__subproblem__control__type_1a91395480b85edaac83529fc7f1605289:
@@ -292,7 +288,7 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 
 	T stop_c_absolute
 
-overall convergence tolerances. The iteration will terminate when :math:`||c(x)||_2 \leq` MAX( .stop_c_absolute, .stop_c_relative :math:`* \|c(x_{\mbox{initial}})\|_2`, or when the norm of the gradient, :math:`g = J^T(x) c(x) / \|c(x)\|_2`, of \|\|c\|\|_2, satisfies :math:`\|g\|_2 \leq` MAX( .stop_g_absolute, .stop_g_relative :math:`* \|g_{\mbox{initial}}\|_2`, or if the step is less than .stop_s
+overall convergence tolerances. The iteration will terminate when $||c(x)||_2 \leq$ MAX( .stop_c_absolute, .stop_c_relative :math:`* \|c(x_{\mbox{initial}})\|_2`, or when the norm of the gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of \|\|c\|\|_2, satisfies $\|g\|_2 \leq$ MAX( .stop_g_absolute, .stop_g_relative :math:`* \|g_{\mbox{initial}}\|_2`, or if the step is less than .stop_s
 
 .. index:: pair: variable; stop_c_relative
 .. _doxid-structnls__subproblem__control__type_1a8e60a718c9c3b3bf9daf2e2be3c7dd68:
@@ -352,7 +348,7 @@ the regularization power (<2 => chosen according to the model)
 
 	T initial_weight
 
-initial value for the regularization weight (-ve => :math:`1/\|g_0\|)`)
+initial value for the regularization weight (-ve => $1/\|g_0\|)$)
 
 .. index:: pair: variable; minimum_weight
 .. _doxid-structnls__subproblem__control__type_1a044b125f7d2b5409dde4253030798367:

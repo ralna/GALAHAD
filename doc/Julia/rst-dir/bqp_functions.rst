@@ -227,7 +227,7 @@ Reset control parameters after import if required.
         function bqp_solve_given_h(data, status, n, h_ne, H_val, g, f, 
                                    x_l, x_u, x, z, x_stat)
 
-Solve the bound-constrained quadratic program when the Hessian :math:`H` is available.
+Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 
 
 
@@ -277,9 +277,9 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
+		  * -20. The Hessian matrix $H$ appears to be indefinite. specified.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been
+		  * -23. An entry from the strict upper triangle of $H$ has been
 
 	*
 		- n
@@ -289,47 +289,47 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; bqp_solve_reverse_h_prod
 .. _doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755:
@@ -343,7 +343,7 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
                                           nz_v_end, nz_prod, nz_prod_end)
 
 
-Solve the bound-constrained quadratic program when the products of the Hessian :math:`H` with specified vectors may be computed by the calling program.
+Solve the bound-constrained quadratic program when the products of the Hessian $H$ with specified vectors may be computed by the calling program.
 
 
 
@@ -391,15 +391,15 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
+		  * -20. The Hessian matrix $H$ appears to be indefinite. specified.
 
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * -23. An entry from the strict upper triangle of $H$ has been specified.
 
-		  * 2. The product :math:`Hv` of the Hessian :math:`H` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`Hv` must be returned in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
+		  * 2. The product $Hv$ of the Hessian $H$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $Hv$ must be returned in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
 
-		  * 3. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting product :math:`Hv` must be placed in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
+		  * 3. The product $Hv$ of the Hessian H with a given output vector $v$ is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector $v$ stored in v are nonzero. The resulting product $Hv$ must be placed in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
 
-		  * 4. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting **nonzeros** in the product :math:`Hv` must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeros placed in nz_prod[0 : nz_prod_end-1]. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged. Typically v will be very sparse (i.e., nz_p_end-nz_p_start will be small).
+		  * 4. The product $Hv$ of the Hessian H with a given output vector $v$ is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector $v$ stored in v are nonzero. The resulting **nonzeros** in the product $Hv$ must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeros placed in nz_prod[0 : nz_prod_end-1]. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged. Typically v will be very sparse (i.e., nz_p_end-nz_p_start will be small).
 
 	*
 		- n
@@ -409,37 +409,37 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v

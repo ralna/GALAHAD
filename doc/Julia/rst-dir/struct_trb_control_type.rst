@@ -11,65 +11,61 @@ trb_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_trb.h>
-	
-	struct trb_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structtrb__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structtrb__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structtrb__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structtrb__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structtrb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structtrb__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structtrb__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structtrb__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`alive_unit<doxid-structtrb__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structtrb__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		Int32 :ref:`more_toraldo<doxid-structtrb__control__type_1ad8f949bd9ff13ead3970fc52ed44bb7a>`;
-		Int32 :ref:`non_monotone<doxid-structtrb__control__type_1a856b2df558071805c217b6d72a1e215b>`;
-		Int32 :ref:`model<doxid-structtrb__control__type_1a027a1f1731d22465c926ce57be2364c3>`;
-		Int32 :ref:`norm<doxid-structtrb__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498>`;
-		Int32 :ref:`semi_bandwidth<doxid-structtrb__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`lbfgs_vectors<doxid-structtrb__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30>`;
-		Int32 :ref:`max_dxg<doxid-structtrb__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f>`;
-		Int32 :ref:`icfs_vectors<doxid-structtrb__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		Int32 :ref:`mi28_lsize<doxid-structtrb__control__type_1a97a46af6187162b529821f79d1559827>`;
-		Int32 :ref:`mi28_rsize<doxid-structtrb__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		Int32 :ref:`advanced_start<doxid-structtrb__control__type_1a7565611061db14e471a4f68e6dabbc17>`;
-		T :ref:`infinity<doxid-structtrb__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`stop_pg_absolute<doxid-structtrb__control__type_1aed4a4de60fddff880a1ef290ab230bde>`;
-		T :ref:`stop_pg_relative<doxid-structtrb__control__type_1a8d441f68e5b4af51d1824e0df1ac4bc8>`;
-		T :ref:`stop_s<doxid-structtrb__control__type_1a56612668b00bf042745379f43166cd27>`;
-		T :ref:`initial_radius<doxid-structtrb__control__type_1aa1a65cb31a449551c7819e7e886ca028>`;
-		T :ref:`maximum_radius<doxid-structtrb__control__type_1ad67b5e31569fee1255347e8d1782ce9d>`;
-		T :ref:`stop_rel_cg<doxid-structtrb__control__type_1a1360e9ccd514178810a976ac1d072692>`;
-		T :ref:`eta_successful<doxid-structtrb__control__type_1ac0774abb09bb59381960d771cb38b8ef>`;
-		T :ref:`eta_very_successful<doxid-structtrb__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e>`;
-		T :ref:`eta_too_successful<doxid-structtrb__control__type_1a6af4c9666b9342fa75b665bfb8cef524>`;
-		T :ref:`radius_increase<doxid-structtrb__control__type_1a5fdd7428d08e428c376420582cbff66e>`;
-		T :ref:`radius_reduce<doxid-structtrb__control__type_1a5c424056838394ef7a658c5376614567>`;
-		T :ref:`radius_reduce_max<doxid-structtrb__control__type_1ab47548da92f2f23bae395a0b960d7fba>`;
-		T :ref:`obj_unbounded<doxid-structtrb__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`cpu_time_limit<doxid-structtrb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structtrb__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`hessian_available<doxid-structtrb__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		Bool :ref:`subproblem_direct<doxid-structtrb__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de>`;
-		Bool :ref:`retrospective_trust_region<doxid-structtrb__control__type_1a7a834a2cc8deb90becaf0245edb7eea9>`;
-		Bool :ref:`renormalize_radius<doxid-structtrb__control__type_1a761e5ba3ea38a06456f35a1690e77a2e>`;
-		Bool :ref:`two_norm_tr<doxid-structtrb__control__type_1a5e920badd523b39eb5e854aef7c07b30>`;
-		Bool :ref:`exact_gcp<doxid-structtrb__control__type_1ad095bacb69fb3fc3ac3de46b9fad96f0>`;
-		Bool :ref:`accurate_bqp<doxid-structtrb__control__type_1ac97f9f336fb2e903b69c0bbb59ccd240>`;
-		Bool :ref:`space_critical<doxid-structtrb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structtrb__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structtrb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>` :ref:`trs_control<doxid-structtrb__control__type_1a0fb493acc030672e71f68fa1ef1727e8>`;
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structtrb__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structtrb__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structtrb__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control_prec<doxid-structtrb__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structtrb__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
-	};
+        struct trb_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          more_toraldo::Int32
+          non_monotone::Int32
+          model::Int32
+          norm::Int32
+          semi_bandwidth::Int32
+          lbfgs_vectors::Int32
+          max_dxg::Int32
+          icfs_vectors::Int32
+          mi28_lsize::Int32
+          mi28_rsize::Int32
+          advanced_start::Int32
+          infinity::T
+          stop_pg_absolute::T
+          stop_pg_relative::T
+          stop_s::T
+          initial_radius::T
+          maximum_radius::T
+          stop_rel_cg::T
+          eta_successful::T
+          eta_very_successful::T
+          eta_too_successful::T
+          radius_increase::T
+          radius_reduce::T
+          radius_reduce_max::T
+          obj_unbounded::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          hessian_available::Bool
+          subproblem_direct::Bool
+          retrospective_trust_region::Bool
+          renormalize_radius::Bool
+          two_norm_tr::Bool
+          exact_gcp::Bool
+          accurate_bqp::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          trs_control::trs_control_type{T}
+          gltr_control::gltr_control_type{T}
+          psls_control::psls_control_type{T}
+          lms_control::lms_control_type{T}
+          lms_control_prec::lms_control_type{T}
+          sha_control::sha_control_type
+
 .. _details-structtrb__control__type:
 
 detailed documentation
@@ -120,13 +116,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structtrb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -242,25 +238,25 @@ Possible values are
 
 	Int32 norm
 
-The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the preconditioner used for iterative methods. Possible values for :math:`P` are.
+The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are.
 
 * -3 users own preconditioner
 
-* -2 :math:`P =` limited-memory BFGS matrix (with .lbfgs_vectors history)
+* -2 $P =$ limited-memory BFGS matrix (with .lbfgs_vectors history)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`P =` diag( max( Hessian, .min_diagonal ) )
+* 1 diagonal, $P =$ diag( max( Hessian, .min_diagonal ) )
 
-* 2 banded, :math:`P =` band( Hessian ) with semi-bandwidth .semi_bandwidth
+* 2 banded, $P =$ band( Hessian ) with semi-bandwidth .semi_bandwidth
 
 * 3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth
 
-* 4 full factorization, :math:`P =` Hessian, Schnabel-Eskow modification
+* 4 full factorization, $P =$ Hessian, Schnabel-Eskow modification
 
-* 5 full factorization, :math:`P =` Hessian, GMPS modification (*not yet implemented*)
+* 5 full factorization, $P =$ Hessian, GMPS modification (*not yet implemented*)
 
 * 6 incomplete factorization of Hessian, Lin-More'
 
@@ -328,7 +324,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	Int32 mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; advanced_start
 .. _doxid-structtrb__control__type_1a7565611061db14e471a4f68e6dabbc17:

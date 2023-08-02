@@ -7,38 +7,36 @@ uls_inform_type structure
 .. toctree::
 	:hidden:
 
+        struct_hsl_types.rst
+
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_uls.h>
-	
-	struct uls_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structuls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structuls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structuls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`more_info<doxid-structuls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7>`;
-		Int64 :ref:`out_of_range<doxid-structuls__inform__type_1ae595bb33a1e4f5e95da1927ac4673bbf>`;
-		Int64 :ref:`duplicates<doxid-structuls__inform__type_1aba4e8149b1ecbb5c21f4534ef36d75b8>`;
-		Int64 :ref:`entries_dropped<doxid-structuls__inform__type_1a2092110f6de97b4607da184213cd7492>`;
-		Int64 :ref:`workspace_factors<doxid-structuls__inform__type_1a4e43e0824a84867596aac783665f8057>`;
-		Int32 :ref:`compresses<doxid-structuls__inform__type_1a06332c9a99b61a82393d2cf74a47428e>`;
-		Int64 :ref:`entries_in_factors<doxid-structuls__inform__type_1ab741fb84b79d2b013a84d71932452681>`;
-		Int32 :ref:`rank<doxid-structuls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		Int32 :ref:`structural_rank<doxid-structuls__inform__type_1a870efaeda81975bbbd9e247fe17baed1>`;
-		Int32 :ref:`pivot_control<doxid-structuls__inform__type_1a7489428a42ce1420b4891f638153c99f>`;
-		Int32 :ref:`iterative_refinements<doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
-		Bool :ref:`alternative<doxid-structuls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
-		char :ref:`solver<doxid-structuls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
-		struct gls_ainfo :ref:`gls_ainfo<doxid-structuls__inform__type_1a8fb46433ac34c44f07902189c1c9d028>`;
-		struct gls_finfo :ref:`gls_finfo<doxid-structuls__inform__type_1a8da479a8d3bd8e6b4070e73dc8a3d52a>`;
-		struct gls_sinfo :ref:`gls_sinfo<doxid-structuls__inform__type_1acbf9c9748ab5d9c111befc05c395059a>`;
-		struct ma48_ainfo :ref:`ma48_ainfo<doxid-structuls__inform__type_1a9487553043c4ec110826e99e071ce9bc>`;
-		struct ma48_finfo :ref:`ma48_finfo<doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348>`;
-		struct ma48_sinfo :ref:`ma48_sinfo<doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3>`;
-		Int32 :ref:`lapack_error<doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4>`;
-	};
+        struct uls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          more_info::Int32
+          out_of_range::Int64
+          duplicates::Int64
+          entries_dropped::Int64
+          workspace_factors::Int64
+          compresses::Int32
+          entries_in_factors::Int64
+          rank::Int32
+          structural_rank::Int32
+          pivot_control::Int32
+          iterative_refinements::Int32
+          alternative::Bool
+          solver::NTuple{21,Cchar}
+          gls_ainfo_type::gls_ainfo_type{T}
+          gls_finfo_type::gls_finfo_type{T}
+          gls_sinfo_type::gls_sinfo_type
+          ma48_ainfo::ma48_ainfo{T}
+          ma48_finfo::ma48_finfo{T}
+          ma48_sinfo::ma48_sinfo
+          lapack_error::Int32
+
 .. _details-structuls__inform__type:
 
 detailed documentation
@@ -277,7 +275,7 @@ see gls_ainfo
 
 	struct :ref:`ma48_ainfo<doxid-structma48__ainfo>` ma48_ainfo
 
-the output arrays from HSL's MA48
+an output array from ma48 (see :ref:`ma48_ainfo <details-structma48__ainfo>`)
 
 .. index:: pair: variable; ma48_finfo
 .. _doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348:
@@ -287,7 +285,7 @@ the output arrays from HSL's MA48
 
 	struct :ref:`ma48_finfo<doxid-structma48__finfo>` ma48_finfo
 
-see ma48_ainfo
+the factorize output structure from ma48 (see :ref:`ma48_finfo <details-structma48__finfo>`)
 
 .. index:: pair: variable; ma48_sinfo
 .. _doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3:
@@ -297,7 +295,7 @@ see ma48_ainfo
 
 	struct :ref:`ma48_sinfo<doxid-structma48__sinfo>` ma48_sinfo
 
-see ma48_ainfo
+the solve output structure from ma48 (see :ref:`ma48_sinfo <details-structma48__sinfo>`)
 
 .. index:: pair: variable; lapack_error
 .. _doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4:

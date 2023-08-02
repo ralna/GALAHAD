@@ -10,35 +10,31 @@ gltr_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_gltr.h>
+        struct gltr_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          itmax::Int32
+          Lanczos_itmax::Int32
+          extra_vectors::Int32
+          ritz_printout_device::Int32
+          stop_relative::T
+          stop_absolute::T
+          fraction_opt::T
+          f_min::T
+          rminvr_zero::T
+          f_0::T
+          unitm::Bool
+          steihaug_toint::Bool
+          boundary::Bool
+          equality_problem::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          print_ritz_values::Bool
+          ritz_file_name::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
 	
-	struct gltr_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structgltr__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structgltr__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structgltr__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structgltr__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`itmax<doxid-structgltr__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
-		Int32 :ref:`Lanczos_itmax<doxid-structgltr__control__type_1a414b6b8e330ed0c54599623db9ccb0ba>`;
-		Int32 :ref:`extra_vectors<doxid-structgltr__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
-		Int32 :ref:`ritz_printout_device<doxid-structgltr__control__type_1aa733751a194838432e841fce75b56682>`;
-		T :ref:`stop_relative<doxid-structgltr__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		T :ref:`stop_absolute<doxid-structgltr__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		T :ref:`fraction_opt<doxid-structgltr__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
-		T :ref:`f_min<doxid-structgltr__control__type_1a740cc91342488fc47e0668f1d4ddbbd2>`;
-		T :ref:`rminvr_zero<doxid-structgltr__control__type_1a1326abe392007db57e814413298b152f>`;
-		T :ref:`f_0<doxid-structgltr__control__type_1a221da497cd332f1acdcdb2919f282fb4>`;
-		Bool :ref:`unitm<doxid-structgltr__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c>`;
-		Bool :ref:`steihaug_toint<doxid-structgltr__control__type_1a33316102c81d1b21da04eb70850aae95>`;
-		Bool :ref:`boundary<doxid-structgltr__control__type_1a68f61635b8b4afe606ebf818e5b4b6d6>`;
-		Bool :ref:`equality_problem<doxid-structgltr__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb>`;
-		Bool :ref:`space_critical<doxid-structgltr__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structgltr__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		Bool :ref:`print_ritz_values<doxid-structgltr__control__type_1aa12aeab97d40062126b39c7fa300d147>`;
-		char :ref:`ritz_file_name<doxid-structgltr__control__type_1afda2047534d65487e814d835cd819316>`[31];
-		char :ref:`prefix<doxid-structgltr__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
 .. _details-structgltr__control__type:
 
 detailed documentation
@@ -187,7 +183,7 @@ the smallest value that the square of the M norm of the gradient of the the obje
 
 	T f_0
 
-the constant term, :math:`f_0`, in the objective function
+the constant term, $f_0$, in the objective function
 
 .. index:: pair: variable; unitm
 .. _doxid-structgltr__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c:
@@ -197,7 +193,7 @@ the constant term, :math:`f_0`, in the objective function
 
 	Bool unitm
 
-is :math:`M` the identity matrix ?
+is $M$ the identity matrix ?
 
 .. index:: pair: variable; steihaug_toint
 .. _doxid-structgltr__control__type_1a33316102c81d1b21da04eb70850aae95:

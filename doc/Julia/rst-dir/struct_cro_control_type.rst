@@ -7,34 +7,29 @@ cro_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_cro.h>
-	
-	struct cro_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structcro__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`max_schur_complement<doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d>`;
-		T :ref:`infinity<doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`feasibility_tolerance<doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30>`;
-		Bool :ref:`check_io<doxid-structcro__control__type_1a26ffe1bc01e525bfbc88f91b08e2295d>`;
-		Bool :ref:`refine_solution<doxid-structcro__control__type_1a31c847b86043424b65e29784b7196b78>`;
-		Bool :ref:`space_critical<doxid-structcro__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structcro__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`symmetric_linear_solver<doxid-structcro__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`unsymmetric_linear_solver<doxid-structcro__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
-		char :ref:`prefix<doxid-structcro__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
-		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
-	};
+        struct cro_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          max_schur_complement::Int32
+          infinity::T
+          feasibility_tolerance::T
+          check_io::Bool
+          refine_solution::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          symmetric_linear_solver::NTuple{31,Cchar}
+          unsymmetric_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
+          sbls_control::sbls_control_type{T}
+          uls_control::uls_control_type{T}
+          ir_control::ir_control_type{T}
+
 .. _details-structcro__control__type:
 
 detailed documentation

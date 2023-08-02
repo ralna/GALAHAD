@@ -9,25 +9,21 @@ glrt_inform_type structure
 
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
+	
+        struct glrt_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          iter_pass2::Int32
+          obj::T
+          obj_regularized::T
+          multiplier::T
+          xpo_norm::T
+          leftmost::T
+          negative_curvature::Bool
+          hard_case::Bool
 
-	#include <galahad_glrt.h>
-	
-	struct glrt_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structglrt__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structglrt__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structglrt__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structglrt__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`iter_pass2<doxid-structglrt__inform__type_1aa69f8ea5f07782fd8ad0318f87202ac4>`;
-		T :ref:`obj<doxid-structglrt__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`obj_regularized<doxid-structglrt__inform__type_1a1631e243108715d623e2ddb83310fa33>`;
-		T :ref:`multiplier<doxid-structglrt__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`xpo_norm<doxid-structglrt__inform__type_1a145ebf82ab029a86c0bd00aec2ee4ae0>`;
-		T :ref:`leftmost<doxid-structglrt__inform__type_1ab90b7ed1b1bfb32aeba7ad89a9a706d0>`;
-		Bool :ref:`negative_curvature<doxid-structglrt__inform__type_1aee928a2d12ccd5c99a5f3e65e9926021>`;
-		Bool :ref:`hard_case<doxid-structglrt__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
-	};
 .. _details-structglrt__inform__type:
 
 detailed documentation
@@ -116,7 +112,7 @@ the value of the regularized quadratic function
 
 	T multiplier
 
-the multiplier, :math:`\sigma \|x\|^{p-2}`
+the multiplier, $\sigma \|x\|^{p-2}$
 
 .. index:: pair: variable; xpo_norm
 .. _doxid-structglrt__inform__type_1a145ebf82ab029a86c0bd00aec2ee4ae0:
@@ -126,7 +122,7 @@ the multiplier, :math:`\sigma \|x\|^{p-2}`
 
 	T xpo_norm
 
-the value of the norm :math:`\|x\|_M`
+the value of the norm $\|x\|_M$
 
 .. index:: pair: variable; leftmost
 .. _doxid-structglrt__inform__type_1ab90b7ed1b1bfb32aeba7ad89a9a706d0:
@@ -136,7 +132,7 @@ the value of the norm :math:`\|x\|_M`
 
 	T leftmost
 
-an estimate of the leftmost generalized eigenvalue of the pencil :math:`(H,M)`
+an estimate of the leftmost generalized eigenvalue of the pencil $(H,M)$
 
 .. index:: pair: variable; negative_curvature
 .. _doxid-structglrt__inform__type_1aee928a2d12ccd5c99a5f3e65e9926021:

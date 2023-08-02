@@ -10,13 +10,9 @@ sec_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sec.h>
-	
-	struct sec_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-	};
+        struct sec_inform_type
+          status::Int32
+
 .. _details-structsec__inform__type:
 
 detailed documentation

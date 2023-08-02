@@ -7,46 +7,41 @@ dgo_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_dgo.h>
-	
-	struct dgo_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structdgo__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structdgo__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structdgo__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structdgo__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structdgo__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structdgo__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structdgo__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structdgo__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`max_evals<doxid-structdgo__control__type_1a19d3bb811675792cbe138aef2d1c6603>`;
-		Int32 :ref:`dictionary_size<doxid-structdgo__control__type_1addc1a8bfd11b88c80efa2f03acd833bf>`;
-		Int32 :ref:`alive_unit<doxid-structdgo__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structdgo__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		T :ref:`infinity<doxid-structdgo__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		T :ref:`lipschitz_lower_bound<doxid-structdgo__control__type_1aa114fdc06a2a81b1274d165448caa99e>`;
-		T :ref:`lipschitz_reliability<doxid-structdgo__control__type_1aee0339adad58f1f7a108671e553742bb>`;
-		T :ref:`lipschitz_control<doxid-structdgo__control__type_1af8b5bae9f2fc3bca8e3e3b34ef5377c5>`;
-		T :ref:`stop_length<doxid-structdgo__control__type_1a6bf05a14c29051133abf2e66de24e460>`;
-		T :ref:`stop_f<doxid-structdgo__control__type_1a290c574d860ac7daf904d20377d7fed5>`;
-		T :ref:`obj_unbounded<doxid-structdgo__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`cpu_time_limit<doxid-structdgo__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structdgo__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`hessian_available<doxid-structdgo__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		Bool :ref:`prune<doxid-structdgo__control__type_1a76df432e30c57f273f192c6f468be1fc>`;
-		Bool :ref:`perform_local_optimization<doxid-structdgo__control__type_1a938e28fa08b887c78926b4c69174d50d>`;
-		Bool :ref:`space_critical<doxid-structdgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structdgo__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structdgo__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`hash_control_type<doxid-structhash__control__type>` :ref:`hash_control<doxid-structdgo__control__type_1a00007ea491013c422add9f9a1a336860>`;
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structdgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structdgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
-	};
+        struct dgo_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          max_evals::Int32
+          dictionary_size::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          infinity::T
+          lipschitz_lower_bound::T
+          lipschitz_reliability::T
+          lipschitz_control::T
+          stop_length::T
+          stop_f::T
+          obj_unbounded::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          hessian_available::Bool
+          prune::Bool
+          perform_local_optimization::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          hash_control::hash_control_type
+          ugo_control::ugo_control_type{T}
+          trb_control::trb_control_type{T}
+
 .. _details-structdgo__control__type:
 
 detailed documentation
@@ -97,13 +92,13 @@ general output occurs on stream out
 
 the level of output required. Possible values are:
 
-* :math:`\leq` 0 no output,
+* $\leq$ 0 no output,
 
 * 1 a one-line summary for every improvement
 
 * 2 a summary of each iteration
 
-* :math:`\geq` 3 increasingly verbose (debugging) output
+* $\geq$ 3 increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structdgo__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:

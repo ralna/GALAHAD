@@ -26,15 +26,15 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The import was succesful.
+		  * 0. The initialization was succesful.
 
 .. index:: pair: function; tru_read_specfile
 .. _doxid-galahad__tru_8h_1a870a28132f2747e12d7c93c9ce6ffd01:
@@ -54,7 +54,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
 
 	*
 		- specfile
@@ -80,7 +80,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
 
 	*
 		- data
@@ -91,7 +91,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was succesful
 
@@ -104,32 +104,32 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; tru_reset_control
 .. _doxid-galahad__tru_8h_1a97ce8d0956fdb4165504433a93714495:
@@ -149,7 +149,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
 
 	*
 		- data
@@ -160,7 +160,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was succesful, and the package is ready for the solve phase
 
@@ -175,7 +175,7 @@ Reset control parameters after import if required.
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, and all function/derivative information is available by function calls.
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, and all function/derivative information is available by function calls.
 
 .. rubric:: Parameters:
 
@@ -196,15 +196,13 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
 		  Possible exit are:
 
 		  * 0. The run was succesful
-
-
 
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 
@@ -231,22 +229,22 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- eval_f
@@ -256,9 +254,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  .. ref-code-block:: julia
 
-		  	int eval_f( int n, const double x[], double *f, const void *userdata )
+		  	Int32 eval_f( int n, const double x[], double *f, const void *userdata )
 
-		  The value of the objective function :math:`f(x)` evaluated at x= :math:`x` must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
+		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
 	*
 		- eval_g
@@ -268,9 +266,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  .. ref-code-block:: julia
 
-		  	int eval_g( int n, const double x[], double g[], const void *userdata )
+		  	Int32 eval_g( int n, const double x[], double g[], const void *userdata )
 
-		  The components of the gradient :math:`g = \nabla_x f(x`) of the objective function evaluated at x= :math:`x` must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
+		  The components of the gradient $g = \nabla_x f(x)$ of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
 
 	*
 		- eval_h
@@ -280,10 +278,10 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  .. ref-code-block:: julia
 
-		  	int eval_h( int n, int ne, const double x[], double h[],
+		  	Int32 eval_h( int n, int ne, const double x[], double h[],
 		  	            const void *userdata )
 
-		  The nonzeros of the Hessian :math:`H = \nabla_{xx}f(x)` of the objective function evaluated at x= :math:`x` must be assigned to h in the same order as presented to tru_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
+		  The nonzeros of the Hessian $H = \nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ must be assigned to h in the same order as presented to tru_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
 
 	*
 		- eval_prec
@@ -293,10 +291,10 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  .. ref-code-block:: julia
 
-		  	int eval_prec( int n, const double x[], double u[], const double v[],
+		  	Int32 eval_prec( int n, const double x[], double u[], const double v[],
 		  	               const void *userdata )
 
-		  The product :math:`u = P(x) v` of the user's preconditioner :math:`P(x)` evaluated at :math:`x` with the vector v = :math:`v`, the result :math:`u` must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 .. index:: pair: function; tru_solve_without_mat
 .. _doxid-galahad__tru_8h_1aaa508227d17d8da723bb0401023acd96:
@@ -309,7 +307,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, and all function/derivative information is available by function calls.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, and all function/derivative information is available by function calls.
 
 .. rubric:: Parameters:
 
@@ -330,7 +328,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -365,17 +363,17 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- eval_f
@@ -385,9 +383,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  .. ref-code-block:: julia
 
-		  	int eval_f( int n, const double x[], double *f, const void *userdata )
+		  	Int32 eval_f( int n, const double x[], double *f, const void *userdata )
 
-		  The value of the objective function :math:`f(x)` evaluated at x= :math:`x` must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
+		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
 	*
 		- eval_g
@@ -397,9 +395,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  .. ref-code-block:: julia
 
-		  	int eval_g( int n, const double x[], double g[], const void *userdata )
+		  	Int32 eval_g( int n, const double x[], double g[], const void *userdata )
 
-		  The components of the gradient :math:`g = \nabla_x f(x)` of the objective function evaluated at x= :math:`x` must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
+		  The components of the gradient $g = \nabla_x f(x)$ of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
 
 	*
 		- eval_hprod
@@ -409,10 +407,10 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  .. ref-code-block:: julia
 
-		  	int eval_hprod( int n, const double x[], double u[], const double v[],
+		  	Int32 eval_hprod( int n, const double x[], double u[], const double v[],
 		  	                bool got_h, const void *userdata )
 
-		  The sum :math:`u + \nabla_{xx}f(x) v` of the product of the Hessian :math:`\nabla_{xx}f(x)` of the objective function evaluated at x= :math:`x` with the vector v= :math:`v` and the vector $ :math:`u` must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
+		  The sum $u + \nabla_{xx}f(x) v$ of the product of the Hessian $\nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ with the vector v= $v$ and the vector $ $u$ must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
 
 	*
 		- eval_prec
@@ -422,10 +420,10 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  .. ref-code-block:: julia
 
-		  	int eval_prec( int n, const double x[], double u[], const double v[],
+		  	Int32 eval_prec( int n, const double x[], double u[], const double v[],
 		  	               const void *userdata )
 
-		  The product :math:`u = P(x) v` of the user's preconditioner :math:`P(x)` evaluated at :math:`x` with the vector v = :math:`v`, the result :math:`u` must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 .. index:: pair: function; tru_solve_reverse_with_mat
 .. _doxid-galahad__tru_8h_1a804863856294e362b724fca8953300d5:
@@ -438,7 +436,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specifically, but function/derivative information is only available by returning to the calling procedure
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, but function/derivative information is only available by returning to the calling procedure
 
 .. rubric:: Parameters:
 
@@ -454,15 +452,13 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
 		  Possible exit are:
 
 		  * 0. The run was succesful
-
-
 
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 
@@ -486,58 +482,58 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
-		  * 2. The user should compute the objective function value :math:`f(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate :math:`f(x)` for instance, if the function is undefined at :math:`x` the user need not set f, but should then set eval_status to a non-zero value.
+		  * 2. The user should compute the objective function value $f(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate $f(x)$ for instance, if the function is undefined at $x$ the user need not set f, but should then set eval_status to a non-zero value.
 
-		  * 3. The user should compute the gradient of the objective function :math:`\nabla_x f(x)` at the point :math:`x` indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_x f(x)` for instance if a component of the gradient is undefined at :math:`x` -the user need not set g, but should then set eval_status to a non-zero value.
+		  * 3. The user should compute the gradient of the objective function $\nabla_x f(x)$ at the point $x$ indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_x f(x)$ for instance if a component of the gradient is undefined at $x$ -the user need not set g, but should then set eval_status to a non-zero value.
 
-		  * 4. The user should compute the Hessian of the objective function :math:`\nabla_{xx}f(x)` at the point x indicated in :math:`x` and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of :math:`H` should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_{xx}f(x)` for instance, if a component of the Hessian is undefined at :math:`x` the user need not set H_val, but should then set eval_status to a non-zero value.
+		  * 4. The user should compute the Hessian of the objective function $\nabla_{xx}f(x)$ at the point x indicated in $x$ and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of $H$ should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_{xx}f(x)$ for instance, if a component of the Hessian is undefined at $x$ the user need not set H_val, but should then set eval_status to a non-zero value.
 
-		  * 6. The user should compute the product :math:`u = P(x)v` of their preconditioner :math:`P(x)` at the point x indicated in :math:`x` with the vector :math:`v` and then re-enter the function. The vector :math:`v` is given in v, the resulting vector :math:`u = P(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
+		  * 6. The user should compute the product $u = P(x)v$ of their preconditioner $P(x)$ at the point x indicated in $x$ with the vector $v$ and then re-enter the function. The vector $v$ is given in v, the resulting vector $u = P(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
 
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the objective function.
+		- is a scalar variable pointer of type T that holds the value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
 
 .. index:: pair: function; tru_solve_reverse_without_mat
 .. _doxid-galahad__tru_8h_1a97252b83eaab0b4d5d3ac53e6b317206:
@@ -550,7 +546,7 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
 
 .. rubric:: Parameters:
 
@@ -566,7 +562,7 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -598,48 +594,48 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 
 		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
 
-		  * 2. The user should compute the objective function value :math:`f(x)` at the point :math:`x` indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate :math:`f(x)` for instance, if the function is undefined at :math:`x` the user need not set f, but should then set eval_status to a non-zero value.
+		  * 2. The user should compute the objective function value $f(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate $f(x)$ for instance, if the function is undefined at $x$ the user need not set f, but should then set eval_status to a non-zero value.
 
-		  * 3. The user should compute the gradient of the objective function :math:`\nabla_x f(x)` at the point :math:`x` indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of :math:`\nabla_x f(x)` for instance if a component of the gradient is undefined at :math:`x` -the user need not set g, but should then set eval_status to a non-zero value.
+		  * 3. The user should compute the gradient of the objective function $\nabla_x f(x)$ at the point $x$ indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_x f(x)$ for instance if a component of the gradient is undefined at $x$ -the user need not set g, but should then set eval_status to a non-zero value.
 
-		  * 5. The user should compute the product :math:`\nabla_{xx}f(x)v` of the Hessian of the objective function :math:`\nabla_{xx}f(x)` at the point :math:`x` indicated in x with the vector :math:`v`, add the result to the vector :math:`u` and then re-enter the function. The vectors :math:`u` and :math:`v` are given in u and v respectively, the resulting vector :math:`u + \nabla_{xx}f(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the Hessian is undefined at :math:`x` the user need not alter u, but should then set eval_status to a non-zero value.
+		  * 5. The user should compute the product $\nabla_{xx}f(x)v$ of the Hessian of the objective function $\nabla_{xx}f(x)$ at the point $x$ indicated in x with the vector $v$, add the result to the vector $u$ and then re-enter the function. The vectors $u$ and $v$ are given in u and v respectively, the resulting vector $u + \nabla_{xx}f(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the Hessian is undefined at $x$ the user need not alter u, but should then set eval_status to a non-zero value.
 
-		  * 6. The user should compute the product :math:`u = P(x)v` of their preconditioner :math:`P(x)` at the point x indicated in :math:`x` with the vector :math:`v` and then re-enter the function. The vector :math:`v` is given in v, the resulting vector :math:`u = P(x)v` should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at :math:`x` the user need not set u, but should then set eval_status to a non-zero value.
+		  * 6. The user should compute the product $u = P(x)v$ of their preconditioner $P(x)$ at the point x indicated in $x$ with the vector $v$ and then re-enter the function. The vector $v$ is given in v, the resulting vector $u = P(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
 
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type Int32 that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the objective function.
+		- is a scalar variable pointer of type T that holds the value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient :math:`g = \nabla_xf(x)` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
 
 .. index:: pair: function; tru_information
 .. _doxid-galahad__tru_8h_1a7c756ce759b44ddbd1ffac77bf497e5a:
@@ -664,13 +660,13 @@ Provides output information
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)
+		- is a structure containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)
 
 	*
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
 		  * 0. The values were recorded succesfully
 
@@ -697,9 +693,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)
+		- is a structure containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)

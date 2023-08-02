@@ -10,19 +10,15 @@ rpd_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_rpd.h>
-	
-	struct rpd_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structrpd__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`qplib<doxid-structrpd__control__type_1ae6020f0898b39b85c5f656161513a1d0>`;
-		Int32 :ref:`error<doxid-structrpd__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structrpd__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structrpd__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Bool :ref:`space_critical<doxid-structrpd__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structrpd__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-	};
+        struct rpd_control_type
+          f_indexing::Bool
+          qplib::Int32
+          error::Int32
+          out::Int32
+          print_level::Int32
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+
 .. _details-structrpd__control__type:
 
 detailed documentation
@@ -83,9 +79,9 @@ general output occurs on stream out
 
 the level of output required is specified by print_level
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
-* :math:`\geq` 1 gives increasingly verbose (debugging) output
+* $\geq$ 1 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; space_critical
 .. _doxid-structrpd__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

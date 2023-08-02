@@ -28,7 +28,7 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
+		- is a structure containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
 
 	*
 		- status
@@ -58,7 +58,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
+		- is a structure containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
 
 	*
 		- specfile
@@ -85,7 +85,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
 
 	*
 		- data
@@ -119,27 +119,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; wcp_reset_control
 .. _doxid-galahad__wcp_8h_1a4b6ac93a46f87e3e986286c415155dd3:
@@ -159,7 +159,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
 
 	*
 		- data
@@ -246,77 +246,77 @@ Find a well-centered point in the feasible region
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the target vector :math:`g`. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the target vector $g$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that holds the lower bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_l, i = 0, ... , m-1, contains :math:`c^l_i`.
+		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that holds the upper bounds :math:`c^l` on the constraints :math:`A x`. The i-th component of c_u, i = 0, ... , m-1, contains :math:`c^u_i`.
+		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual :math:`c(x)`. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i(x)`.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of c, i = 0, ... , m-1, contains $c_i(x)$.
 
 	*
 		- y_l
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y^l` of the Lagrange multipliers for the lower bounds on the general linear constraints. The j-th component of y_l, i = 0, ... , m-1, contains :math:`y^l_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y^l$ of the Lagrange multipliers for the lower bounds on the general linear constraints. The j-th component of y_l, i = 0, ... , m-1, contains $y^l_i$.
 
 	*
 		- y_u
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`y^u` of the Lagrange multipliers for the upper bounds on the general linear constraints. The j-th component of y_u, i = 0, ... , m-1, contains :math:`y^u_i`.
+		- is a one-dimensional array of size n and type T that holds the values $y^u$ of the Lagrange multipliers for the upper bounds on the general linear constraints. The j-th component of y_u, i = 0, ... , m-1, contains $y^u_i$.
 
 	*
 		- z_l
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z^l` of the dual variables for the lower bounds on the variables. The j-th component of z_l, j = 0, ... , n-1, contains :math:`z^l_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z^l$ of the dual variables for the lower bounds on the variables. The j-th component of z_l, j = 0, ... , n-1, contains $z^l_j$.
 
 	*
 		- z_u
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z^u` of the dual variables for the upper bounds on the variables. The j-th component of z_u, j = 0, ... , n-1, contains :math:`z^u_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z^u$ of the dual variables for the upper bounds on the variables. The j-th component of z_u, j = 0, ... , n-1, contains $z^u_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- c_stat
 
-		- is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value :math:`a_i^T x` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^T x$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; wcp_information
 .. _doxid-galahad__wcp_8h_1aa3f76e788325ffff83f98dffa7ab8eb2:
@@ -343,7 +343,7 @@ Provides output information.
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`wcp_inform_type <doxid-structwcp__inform__type>`)
+		- is a structure containing output information (see :ref:`wcp_inform_type <doxid-structwcp__inform__type>`)
 
 	*
 		- status
@@ -378,9 +378,9 @@ Deallocate all internal private storage.
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
+		- is a structure containing control information (see :ref:`wcp_control_type <doxid-structwcp__control__type>`)
 
 	*
 		- inform
 
-		- is a struct containing output information (see :ref:`wcp_inform_type <doxid-structwcp__inform__type>`)
+		- is a structure containing output information (see :ref:`wcp_inform_type <doxid-structwcp__inform__type>`)

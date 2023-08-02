@@ -7,20 +7,15 @@ bqp_time_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_bqp.h>
-	
-	struct bqp_time_type {
-		// components
-	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structbqp__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`analyse<doxid-structbqp__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`factorize<doxid-structbqp__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`solve<doxid-structbqp__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
-	};
+        struct bqp_time_type
+          total::Float32
+          analyse::Float32
+          factorize::Float32
+          solve::Float32
+
 .. _details-structbqp__time__type:
 
 detailed documentation
@@ -37,7 +32,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	Float32 total
 
 total time
 
@@ -47,7 +42,7 @@ total time
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` analyse
+	Float32 analyse
 
 time for the analysis phase
 
@@ -57,7 +52,7 @@ time for the analysis phase
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` factorize
+	Float32 factorize
 
 time for the factorization phase
 
@@ -67,7 +62,7 @@ time for the factorization phase
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` solve
+	Float32 solve
 
 time for the linear solution phase
 

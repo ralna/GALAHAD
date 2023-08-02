@@ -7,32 +7,27 @@ lsqp_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lsqp.h>
-	
-	struct lsqp_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structlsqp__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structlsqp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structlsqp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structlsqp__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`factorization_status<doxid-structlsqp__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`factorization_integer<doxid-structlsqp__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structlsqp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`nfacts<doxid-structlsqp__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		Int32 :ref:`nbacts<doxid-structlsqp__inform__type_1a4b9a11ae940f04846c342978808696d6>`;
-		T :ref:`obj<doxid-structlsqp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`potential<doxid-structlsqp__inform__type_1a85f37aa42c9e051ea61ae035ff63059e>`;
-		T :ref:`non_negligible_pivot<doxid-structlsqp__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
-		Bool :ref:`feasible<doxid-structlsqp__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		struct :ref:`lsqp_time_type<doxid-structlsqp__time__type>` :ref:`time<doxid-structlsqp__inform__type_1aee156075a3b7db49b39ffc8b0c254d7a>`;
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structlsqp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structlsqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-	};
+        struct lsqp_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          factorization_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          nfacts::Int32
+          nbacts::Int32
+          obj::T
+          potential::T
+          non_negligible_pivot::T
+          feasible::Bool
+          time::lsqp_time_type{T}
+          fdc_inform::fdc_inform_type{T}
+          sbls_inform::sbls_inform_type{T}
+
 .. _details-structlsqp__inform__type:
 
 detailed documentation

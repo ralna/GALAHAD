@@ -10,63 +10,59 @@ sls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sls.h>
-	
-	struct sls_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structsls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structsls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`warning<doxid-structsls__control__type_1af44472f3bdd4c3af6ed5465266b25312>`;
-		Int32 :ref:`out<doxid-structsls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`statistics<doxid-structsls__control__type_1ac1dde3b0d96e2c1bc0c226bc3da59846>`;
-		Int32 :ref:`print_level<doxid-structsls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`print_level_solver<doxid-structsls__control__type_1afc17ef86601030a3cb1c7edb7a79a39f>`;
-		Int32 :ref:`bits<doxid-structsls__control__type_1ad1e28a1a66a25529b0b61b9ca4e66d44>`;
-		Int32 :ref:`block_size_kernel<doxid-structsls__control__type_1a6074142046e83fb79960ed41f26750a1>`;
-		Int32 :ref:`block_size_elimination<doxid-structsls__control__type_1a8f2a7a17307a57f735f5d954d59e2eb8>`;
-		Int32 :ref:`blas_block_size_factorize<doxid-structsls__control__type_1aa2177c655d92533f17fcff58482e52c1>`;
-		Int32 :ref:`blas_block_size_solve<doxid-structsls__control__type_1a1af3c20cdeaaee431f309395f9f09564>`;
-		Int32 :ref:`node_amalgamation<doxid-structsls__control__type_1ac3c6c4a0c684c675b397c1d07b4eb170>`;
-		Int32 :ref:`initial_pool_size<doxid-structsls__control__type_1ad5ba76433cbea285e63bf2bb54b4654c>`;
-		Int32 :ref:`min_real_factor_size<doxid-structsls__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
-		Int32 :ref:`min_integer_factor_size<doxid-structsls__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
-		Int64 :ref:`max_real_factor_size<doxid-structsls__control__type_1aba2b38ee264ef80678efeff94ef0d44b>`;
-		Int64 :ref:`max_integer_factor_size<doxid-structsls__control__type_1aa53de4fa276629aa7eef29736c72f980>`;
-		Int64 :ref:`max_in_core_store<doxid-structsls__control__type_1a5eccee707d29802453ebc44a238211d9>`;
-		T :ref:`array_increase_factor<doxid-structsls__control__type_1a6189cbfe4360772c9fa6b554e93a9b2b>`;
-		T :ref:`array_decrease_factor<doxid-structsls__control__type_1abee09e4efae03be7d0d1a8503b338ce7>`;
-		Int32 :ref:`pivot_control<doxid-structsls__control__type_1a7489428a42ce1420b4891f638153c99f>`;
-		Int32 :ref:`ordering<doxid-structsls__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		Int32 :ref:`full_row_threshold<doxid-structsls__control__type_1a3b64788f24cdaf2e3675ec0d030dc1b2>`;
-		Int32 :ref:`row_search_indefinite<doxid-structsls__control__type_1aae15c41cfdc178c1daa93e5d6cdee74a>`;
-		Int32 :ref:`scaling<doxid-structsls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		Int32 :ref:`scale_maxit<doxid-structsls__control__type_1af5fd3fa336214d064c0573c95000440e>`;
-		T :ref:`scale_thresh<doxid-structsls__control__type_1a6e985cab4e94c7266dd26ed49264814b>`;
-		T :ref:`relative_pivot_tolerance<doxid-structsls__control__type_1a65344e4192516e9b621cc7416f09045c>`;
-		T :ref:`minimum_pivot_tolerance<doxid-structsls__control__type_1ab01168ba8df4956450d31f529999b8c6>`;
-		T :ref:`absolute_pivot_tolerance<doxid-structsls__control__type_1aa5e25bdcf567fac1fb496199a7c06d5a>`;
-		T :ref:`zero_tolerance<doxid-structsls__control__type_1afb83ea8401da6498362914aa88ae823f>`;
-		T :ref:`zero_pivot_tolerance<doxid-structsls__control__type_1aedcd7d4cdfcc81885bdcbf2c7135db7b>`;
-		T :ref:`negative_pivot_tolerance<doxid-structsls__control__type_1a05f2424e16a89a52908bb9035300c45d>`;
-		T :ref:`static_pivot_tolerance<doxid-structsls__control__type_1aa0dbb782fd6585b488abb9e62954cc0b>`;
-		T :ref:`static_level_switch<doxid-structsls__control__type_1ab6b34ef1c7cd56ca2906c4dc0ba7ec9b>`;
-		T :ref:`consistency_tolerance<doxid-structsls__control__type_1a7582103f0c0f9eac3b325bfff86236d1>`;
-		Int32 :ref:`max_iterative_refinements<doxid-structsls__control__type_1ab044fd598767830ddc06560a91b80936>`;
-		T :ref:`acceptable_residual_relative<doxid-structsls__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
-		T :ref:`acceptable_residual_absolute<doxid-structsls__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
-		Bool :ref:`multiple_rhs<doxid-structsls__control__type_1a0e2ee73a2ee1899ac7aa07a56c9115d5>`;
-		Bool :ref:`generate_matrix_file<doxid-structsls__control__type_1ac6d360fda05100d7c8a5580a78e44c59>`;
-		Int32 :ref:`matrix_file_device<doxid-structsls__control__type_1a184e374e7f9b631289f30f2cbfd4f8a8>`;
-		char :ref:`matrix_file_name<doxid-structsls__control__type_1a0861a0a49e00bd6642d2103f0d5fb7a3>`[31];
-		char :ref:`out_of_core_directory<doxid-structsls__control__type_1af13c49b84e4bde8d45c258a969592a1d>`[401];
-		char :ref:`out_of_core_integer_factor_file<doxid-structsls__control__type_1af99536361792bb2eb73942011fa1c5e9>`[401];
-		char :ref:`out_of_core_real_factor_file<doxid-structsls__control__type_1a42bdeec279b8e8856ddc5fc64254b93d>`[401];
-		char :ref:`out_of_core_real_work_file<doxid-structsls__control__type_1ac677c7831bafaddfc5bf60069fdc3171>`[401];
-		char :ref:`out_of_core_indefinite_file<doxid-structsls__control__type_1a6e9acddbc56a33e87fb4532349da129b>`[401];
-		char :ref:`out_of_core_restart_file<doxid-structsls__control__type_1a24a37f3b4cc3a36dfa2954f906a45e11>`[501];
-		char :ref:`prefix<doxid-structsls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct sls_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          warning::Int32
+          out::Int32
+          statistics::Int32
+          print_level::Int32
+          print_level_solver::Int32
+          bits::Int32
+          block_size_kernel::Int32
+          block_size_elimination::Int32
+          blas_block_size_factorize::Int32
+          blas_block_size_solve::Int32
+          node_amalgamation::Int32
+          initial_pool_size::Int32
+          min_real_factor_size::Int32
+          min_integer_factor_size::Int32
+          max_real_factor_size::Int64
+          max_integer_factor_size::Int64
+          max_in_core_store::Int64
+          array_increase_factor::T
+          array_decrease_factor::T
+          pivot_control::Int32
+          ordering::Int32
+          full_row_threshold::Int32
+          row_search_indefinite::Int32
+          scaling::Int32
+          scale_maxit::Int32
+          scale_thresh::T
+          relative_pivot_tolerance::T
+          minimum_pivot_tolerance::T
+          absolute_pivot_tolerance::T
+          zero_tolerance::T
+          zero_pivot_tolerance::T
+          negative_pivot_tolerance::T
+          static_pivot_tolerance::T
+          static_level_switch::T
+          consistency_tolerance::T
+          max_iterative_refinements::Int32
+          acceptable_residual_relative::T
+          acceptable_residual_absolute::T
+          multiple_rhs::Bool
+          generate_matrix_file::Bool
+          matrix_file_device::Int32
+          matrix_file_name::NTuple{31,Cchar}
+          out_of_core_directory::NTuple{401,Cchar}
+          out_of_core_integer_factor_file::NTuple{401,Cchar}
+          out_of_core_real_factor_file::NTuple{401,Cchar}
+          out_of_core_real_work_file::NTuple{401,Cchar}
+          out_of_core_indefinite_file::NTuple{401,Cchar}
+          out_of_core_restart_file::NTuple{501,Cchar}
+          prefix::NTuple{31,Cchar}
+
 .. _details-structsls__control__type:
 
 detailed documentation

@@ -7,92 +7,91 @@ sls_inform_type structure
 .. toctree::
 	:hidden:
 
+        struct_hsl_types.rst
+        struct_ssids_types.rst
+
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sls.h>
-	
-	struct sls_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structsls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`more_info<doxid-structsls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7>`;
-		Int32 :ref:`entries<doxid-structsls__inform__type_1a05de9d2e9fdfcc8bf932ca13b95ede29>`;
-		Int32 :ref:`out_of_range<doxid-structsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5>`;
-		Int32 :ref:`duplicates<doxid-structsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
-		Int32 :ref:`upper<doxid-structsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c>`;
-		Int32 :ref:`missing_diagonals<doxid-structsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d>`;
-		Int32 :ref:`max_depth_assembly_tree<doxid-structsls__inform__type_1a6d6dc5b49ec465fb45c83d1a0de40e02>`;
-		Int32 :ref:`nodes_assembly_tree<doxid-structsls__inform__type_1ac0b9b02071c45a104c814d8664d56a0c>`;
-		Int64 :ref:`real_size_desirable<doxid-structsls__inform__type_1a578f47757db464cbf8ed9b83bc0fe19b>`;
-		Int64 :ref:`integer_size_desirable<doxid-structsls__inform__type_1a8dd3cb87057fef593aa3a13a5b537e03>`;
-		Int64 :ref:`real_size_necessary<doxid-structsls__inform__type_1a81e92687a9d89d7449fe0c7e108c99e5>`;
-		Int64 :ref:`integer_size_necessary<doxid-structsls__inform__type_1a8ac7a09dd6adc2d2a535e7a14a43c8d3>`;
-		Int64 :ref:`real_size_factors<doxid-structsls__inform__type_1a2fb34bb982d673eade451dd5044b5ed0>`;
-		Int64 :ref:`integer_size_factors<doxid-structsls__inform__type_1aa0143d6a3ae9a2a606b8631ad3da7610>`;
-		Int64 :ref:`entries_in_factors<doxid-structsls__inform__type_1ab741fb84b79d2b013a84d71932452681>`;
-		Int32 :ref:`max_task_pool_size<doxid-structsls__inform__type_1adbfc63b37c8305f76154af9ab21a73e1>`;
-		Int32 :ref:`max_front_size<doxid-structsls__inform__type_1a854d688fc9f75d1011046b68798c3ec3>`;
-		Int32 :ref:`compresses_real<doxid-structsls__inform__type_1a08f180b15976fad5be1793aeadd89d1d>`;
-		Int32 :ref:`compresses_integer<doxid-structsls__inform__type_1ae278663a9e98a86e0947f89a75549d51>`;
-		Int32 :ref:`two_by_two_pivots<doxid-structsls__inform__type_1af922a8827cb6bb34ae8b7ea113eb88d9>`;
-		Int32 :ref:`semi_bandwidth<doxid-structsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`delayed_pivots<doxid-structsls__inform__type_1aceacc7f8144f94b9ff16506b1bc581e3>`;
-		Int32 :ref:`pivot_sign_changes<doxid-structsls__inform__type_1ac41ffa6bf566e674ac90de4178c81477>`;
-		Int32 :ref:`static_pivots<doxid-structsls__inform__type_1ab7569a21ad5852708f0a43b7c269ac0d>`;
-		Int32 :ref:`first_modified_pivot<doxid-structsls__inform__type_1a735be3d14946330c6c7b451743b86ae9>`;
-		Int32 :ref:`rank<doxid-structsls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		Int32 :ref:`negative_eigenvalues<doxid-structsls__inform__type_1ad9bf58dadb2657173be0588308d100b3>`;
-		Int32 :ref:`num_zero<doxid-structsls__inform__type_1a9e21341bbd4963be2eaae5a0f8851648>`;
-		Int32 :ref:`iterative_refinements<doxid-structsls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
-		Int64 :ref:`flops_assembly<doxid-structsls__inform__type_1a24b90be205ee95fe42ce3dc31d77ccfa>`;
-		Int64 :ref:`flops_elimination<doxid-structsls__inform__type_1a9dde906a7f13e691e9a885e827179c8d>`;
-		Int64 :ref:`flops_blas<doxid-structsls__inform__type_1a34f890f9248fc1f05ba5fae571990d6d>`;
-		T :ref:`largest_modified_pivot<doxid-structsls__inform__type_1a62d158ab4a7acedf5d7a06841765ec49>`;
-		T :ref:`minimum_scaling_factor<doxid-structsls__inform__type_1a250fb521c37638fcca8c2867ff43b576>`;
-		T :ref:`maximum_scaling_factor<doxid-structsls__inform__type_1ad8f20093907b8b8d244b4e37a13143cc>`;
-		T :ref:`condition_number_1<doxid-structsls__inform__type_1a198ba7b98aa903f1ab5b65745c5289ea>`;
-		T :ref:`condition_number_2<doxid-structsls__inform__type_1a9ffbf5df4bb4e49067cf2813ad6a016e>`;
-		T :ref:`backward_error_1<doxid-structsls__inform__type_1a83c0d093c0b2b8636f686ab30acfb5a3>`;
-		T :ref:`backward_error_2<doxid-structsls__inform__type_1a6fab94020d1a5e4b25a5006103a231cf>`;
-		T :ref:`forward_error<doxid-structsls__inform__type_1ab63fd70aff6616a414f16af190bd4105>`;
-		Bool :ref:`alternative<doxid-structsls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
-		char :ref:`solver<doxid-structsls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
-		struct :ref:`sls_time_type<doxid-structsls__time__type>` :ref:`time<doxid-structsls__inform__type_1aeb306e2c697a3b16156c7bbf95933d04>`;
-		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` :ref:`sils_ainfo<doxid-structsls__inform__type_1a6490df077bf8d853c6ce6242ef95ef3f>`;
-		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` :ref:`sils_finfo<doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a>`;
-		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` :ref:`sils_sinfo<doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01>`;
-		struct ma57_ainfo :ref:`ma57_ainfo<doxid-structsls__inform__type_1aa7061ae61ef272126c2d93c0bb7c3e92>`;
-		struct ma57_finfo :ref:`ma57_finfo<doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f>`;
-		struct ma57_sinfo :ref:`ma57_sinfo<doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8>`;
-		struct ma77_info :ref:`ma77_info<doxid-structsls__inform__type_1a296c08f6844db0dd56124633c5bead05>`;
-		struct ma86_info :ref:`ma86_info<doxid-structsls__inform__type_1a0e8dbbed5f52f17a0c85cc24c1d4133a>`;
-		struct ma87_info :ref:`ma87_info<doxid-structsls__inform__type_1a5a0d5c7fc9b533354415c7f26c5ca0fa>`;
-		struct ma97_info :ref:`ma97_info<doxid-structsls__inform__type_1a97187c145bd03b5812c1b08cfd0c1fdd>`;
-		struct spral_ssids_inform :ref:`ssids_inform<doxid-structsls__inform__type_1a1460057cd78a3850b14e78583b051054>`;
-		Int32 :ref:`mc61_info<doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
-		T :ref:`mc61_rinfo<doxid-structsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
-		struct mc64_info :ref:`mc64_info<doxid-structsls__inform__type_1a4b3b5b1c3585cea6e9006dcb9f34182c>`;
-		struct mc68_info :ref:`mc68_info<doxid-structsls__inform__type_1a47a1ee8b0f64c664c47bbd23bacb4af6>`;
-		Int32 :ref:`mc77_info<doxid-structsls__inform__type_1ac143b7dbde27738930a06678d7a84135>`[10];
-		T :ref:`mc77_rinfo<doxid-structsls__inform__type_1a02ac14c9a03a409b25bf374862f17166>`[10];
-		Int32 :ref:`mumps_error<doxid-structsls__inform__type_1aabe7dce2361151a723670484e385d4e2>`;
-		Int32 :ref:`mumps_info<doxid-structsls__inform__type_1a1e9b1230547090c9405ed025acddf937>`[80];
-		T :ref:`mumps_rinfo<doxid-structsls__inform__type_1a0e35523297d295b968ff61aff25c6279>`[40];
-		Int32 :ref:`pardiso_error<doxid-structsls__inform__type_1af4edf991dc128b2aa6bb7c5909bce7bb>`;
-		Int32 :ref:`pardiso_IPARM<doxid-structsls__inform__type_1a94bd760acd69f7e452771c96f9a6d83b>`[64];
-		T :ref:`pardiso_DPARM<doxid-structsls__inform__type_1ad94ecfb58762fd0f79d1dcc51c1a6c13>`[64];
-		Int32 :ref:`mkl_pardiso_error<doxid-structsls__inform__type_1a0af76cb45fcf59f7749bf196c1f848f1>`;
-		Int32 :ref:`mkl_pardiso_IPARM<doxid-structsls__inform__type_1aeaa2b4360e0796404f57ede659a0dc5f>`[64];
-		Int32 :ref:`pastix_info<doxid-structsls__inform__type_1a8317c10c22116e0cf019d281a7f07595>`;
-		Int32 :ref:`wsmp_error<doxid-structsls__inform__type_1a12ce464e4b92fb3ce21377773cf801ef>`;
-		Int32 :ref:`wsmp_iparm<doxid-structsls__inform__type_1a9dafb01a424625a16f75ba37f96e6067>`[64];
-		T :ref:`wsmp_dparm<doxid-structsls__inform__type_1acec90b9af7496ccc0a7fc9fc0dbfb49c>`[64];
-		Int32 :ref:`mpi_ierr<doxid-structsls__inform__type_1ab885ec4629b2033ab17e5ca273739488>`;
-		Int32 :ref:`lapack_error<doxid-structsls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4>`;
-	};
+        struct sls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          more_info::Int32
+          entries::Int32
+          out_of_range::Int32
+          duplicates::Int32
+          upper::Int32
+          missing_diagonals::Int32
+          max_depth_assembly_tree::Int32
+          nodes_assembly_tree::Int32
+          real_size_desirable::Int64
+          integer_size_desirable::Int64
+          real_size_necessary::Int64
+          integer_size_necessary::Int64
+          real_size_factors::Int64
+          integer_size_factors::Int64
+          entries_in_factors::Int64
+          max_task_pool_size::Int32
+          max_front_size::Int32
+          compresses_real::Int32
+          compresses_integer::Int32
+          two_by_two_pivots::Int32
+          semi_bandwidth::Int32
+          delayed_pivots::Int32
+          pivot_sign_changes::Int32
+          static_pivots::Int32
+          first_modified_pivot::Int32
+          rank::Int32
+          negative_eigenvalues::Int32
+          num_zero::Int32
+          iterative_refinements::Int32
+          flops_assembly::Int64
+          flops_elimination::Int64
+          flops_blas::Int64
+          largest_modified_pivot::T
+          minimum_scaling_factor::T
+          maximum_scaling_factor::T
+          condition_number_1::T
+          condition_number_2::T
+          backward_error_1::T
+          backward_error_2::T
+          forward_error::T
+          alternative::Bool
+          solver::NTuple{21,Cchar}
+          time::sls_time_type{T}
+          sils_ainfo::sils_ainfo_type{T}
+          sils_finfo::sils_finfo_type{T}
+          sils_sinfo::sils_sinfo_type{T}
+          ma57_ainfo::ma57_ainfo{T}
+          ma57_finfo::ma57_finfo{T}
+          ma57_sinfo::ma57_sinfo{T}
+          ma77_info::ma77_info{T}
+          ma86_info::ma86_info{T}
+          ma87_info::ma87_info{T}
+          ma97_info::ma97_info{T}
+          ssids_inform::spral_ssids_inform
+          mc61_info::NTuple{10,Cint}
+          mc61_rinfo::NTuple{15,T}
+          mc64_info::mc64_info
+          mc68_info::mc68_info
+          mc77_info::NTuple{10,Cint}
+          mc77_rinfo::NTuple{10,T}
+          mumps_error::Int32
+          mumps_info::NTuple{80,Cint}
+          mumps_rinfo::NTuple{40,T}
+          pardiso_error::Int32
+          pardiso_IPARM::NTuple{64,Cint}
+          pardiso_DPARM::NTuple{64,T}
+          mkl_pardiso_error::Int32
+          mkl_pardiso_IPARM::NTuple{64,Cint}
+          pastix_info::Int32
+          wsmp_error::Int32
+          wsmp_iparm::NTuple{64,Cint}
+          wsmp_dparm::NTuple{64,T}
+          mpi_ierr::Int32
+          lapack_error::Int32
+
 .. _details-structsls__inform__type:
 
 detailed documentation
@@ -601,7 +600,7 @@ see sils_ainfo
 
 	struct ma57_ainfo ma57_ainfo
 
-the output structure from ma57
+the analyse output structure from ma57 (see :ref:`ma57_ainfo <details-structma57__ainfo>`)
 
 .. index:: pair: variable; ma57_finfo
 .. _doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f:
@@ -609,9 +608,7 @@ the output structure from ma57
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma57_finfo ma57_finfo
-
-see ma57_ainfo
+the factorize output structure from ma57 (see :ref:`ma57_finfo <details-structma57__finfo>`)
 
 .. index:: pair: variable; ma57_sinfo
 .. _doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8:
@@ -619,9 +616,7 @@ see ma57_ainfo
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma57_sinfo ma57_sinfo
-
-see ma57_ainfo
+the solve output structure from ma57 (see :ref:`ma57_sinfo <details-structma57__sinfo>`)
 
 .. index:: pair: variable; ma77_info
 .. _doxid-structsls__inform__type_1a296c08f6844db0dd56124633c5bead05:
@@ -631,7 +626,7 @@ see ma57_ainfo
 
 	struct ma77_info ma77_info
 
-the output structure from ma77
+the output structure from ma77 (see :ref:`ma77_info <details-structma77__info>`)
 
 .. index:: pair: variable; ma86_info
 .. _doxid-structsls__inform__type_1a0e8dbbed5f52f17a0c85cc24c1d4133a:
@@ -641,7 +636,7 @@ the output structure from ma77
 
 	struct ma86_info ma86_info
 
-the output structure from ma86
+the output structure from ma86 (see :ref:`ma86_info <details-structma86__info>`)
 
 .. index:: pair: variable; ma87_info
 .. _doxid-structsls__inform__type_1a5a0d5c7fc9b533354415c7f26c5ca0fa:
@@ -651,7 +646,7 @@ the output structure from ma86
 
 	struct ma87_info ma87_info
 
-the output structure from ma87
+the output structure from ma87 (see :ref:`ma87_info <details-structma87__info>`)
 
 .. index:: pair: variable; ma97_info
 .. _doxid-structsls__inform__type_1a97187c145bd03b5812c1b08cfd0c1fdd:
@@ -661,7 +656,7 @@ the output structure from ma87
 
 	struct ma97_info ma97_info
 
-the output structure from ma97
+the output structure from ma97 (see :ref:`ma97_info <details-structma97__info>`)
 
 .. index:: pair: variable; ssids_inform
 .. _doxid-structsls__inform__type_1a1460057cd78a3850b14e78583b051054:
@@ -671,7 +666,7 @@ the output structure from ma97
 
 	struct spral_ssids_inform ssids_inform
 
-the output structure from ssids
+the output structure from ssids (see :ref:`spral_ssids_inform <details-structspral__ssids__inform>`)
 
 .. index:: pair: variable; mc61_info
 .. _doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8:
@@ -701,7 +696,7 @@ see mc61_info
 
 	struct mc64_info mc64_info
 
-the output structure from mc64
+the output structure from mc64 (see :ref:`mc64_info <details-structmc64__info>`)
 
 .. index:: pair: variable; mc68_info
 .. _doxid-structsls__inform__type_1a47a1ee8b0f64c664c47bbd23bacb4af6:
@@ -711,7 +706,7 @@ the output structure from mc64
 
 	struct mc68_info mc68_info
 
-the output structure from mc68
+the output structure from mc68 (see :ref:`mc68_info <details-structmc68__info>`)
 
 .. index:: pair: variable; mc77_info
 .. _doxid-structsls__inform__type_1ac143b7dbde27738930a06678d7a84135:

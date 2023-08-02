@@ -13,22 +13,20 @@ bgo_inform_type structure
 
 	#include <galahad_bgo.h>
 	
-	struct bgo_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structbgo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structbgo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structbgo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`f_eval<doxid-structbgo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		Int32 :ref:`g_eval<doxid-structbgo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		Int32 :ref:`h_eval<doxid-structbgo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		T :ref:`obj<doxid-structbgo__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_pg<doxid-structbgo__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
-		struct :ref:`bgo_time_type<doxid-structbgo__time__type>` :ref:`time<doxid-structbgo__inform__type_1a323c159d2e08628b6db82791b80a2f30>`;
-		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` :ref:`ugo_inform<doxid-structbgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
-		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>` :ref:`lhs_inform<doxid-structbgo__inform__type_1aa1305fc54f2639b2f4c39c629b39cd48>`;
-		struct :ref:`trb_inform_type<doxid-structtrb__inform__type>` :ref:`trb_inform<doxid-structbgo__inform__type_1a60ab8c5ff5dacc22bcaa60f4d6e8b321>`;
-	};
+        struct bgo_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          f_eval::Int32
+          g_eval::Int32
+          h_eval::Int32
+          obj::T
+          norm_pg::T
+          time::bgo_time_type{T}
+          ugo_inform::ugo_inform_type{T}
+          lhs_inform::lhs_inform_type
+          trb_inform::trb_inform_type{T}
+
 .. _details-structbgo__inform__type:
 
 detailed documentation

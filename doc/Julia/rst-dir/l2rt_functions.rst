@@ -127,7 +127,7 @@ Solve the regularized-least-squares problem using reverse communication.
 
 		  This must be set to
 
-		  * 1. on initial entry. Set u (below) to :math:`b` for this entry.
+		  * 1. on initial entry. Set u (below) to $b$ for this entry.
 
 		  Possible exit values are:
 
@@ -141,7 +141,7 @@ Solve the regularized-least-squares problem using reverse communication.
 
 		    \n
 		                   u := u + A v,
-		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`u` must overwrite the content of u. No argument except u should be altered before recalling the function
+		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $u$ must overwrite the content of u. No argument except u should be altered before recalling the function
 
 		  * 3. The user must perform the operation
 
@@ -151,9 +151,9 @@ Solve the regularized-least-squares problem using reverse communication.
 
 		    \n
 		                   v := v + A^T u,
-		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`v` must overwrite the content of v. No argument except v should be altered before recalling the function
+		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $v$ must overwrite the content of v. No argument except v should be altered before recalling the function
 
-		  * 4. The user must reset u (below) to :math:`b` are recall the function. No argument except u should be altered before recalling the function
+		  * 4. The user must reset u (below) to $b$ are recall the function. No argument except u should be altered before recalling the function
 
 		  * -1. an array allocation has failed
 
@@ -168,32 +168,32 @@ Solve the regularized-least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
+		- is a scalar variable of type Int32 that holds the number of equations (i.e., rows of $A$), $m > 0$
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
+		- is a scalar variable of type Int32 that holds the number of variables (i.e., columns of $A$), $n > 0$
 
 	*
 		- power
 
-		- is a scalar of type T that holds the regularization power, :math:`p \geq 2`
+		- is a scalar of type T that holds the regularization power, $p \geq 2$
 
 	*
 		- weight
 
-		- is a scalar of type T that holds the regularization weight, :math:`\sigma > 0`
+		- is a scalar of type T that holds the regularization weight, $\sigma > 0$
 
 	*
 		- shift
 
-		- is a scalar of type T that holds the shift, :math:`\mu`
+		- is a scalar of type T that holds the shift, $\mu$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- u

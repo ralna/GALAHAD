@@ -10,20 +10,16 @@ sbls_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sbls.h>
+        struct sbls_time_type{T}
+          total::T
+          form::T
+          factorize::T
+          apply::T
+          clock_total::T
+          clock_form::T
+          clock_factorize::T
+          clock_apply::T
 	
-	struct sbls_time_type {
-		// fields
-	
-		T :ref:`total<doxid-structsbls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		T :ref:`form<doxid-structsbls__time__type_1a8ac63de5e103d8e01b0e0f88bb7d230d>`;
-		T :ref:`factorize<doxid-structsbls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		T :ref:`apply<doxid-structsbls__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274>`;
-		T :ref:`clock_total<doxid-structsbls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_form<doxid-structsbls__time__type_1ab275f3b71b8e019aa35acf43c3fd7473>`;
-		T :ref:`clock_factorize<doxid-structsbls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_apply<doxid-structsbls__time__type_1afbbb1dd5fc63c640620fbd32a0481493>`;
-	};
 .. _details-structsbls__time__type:
 
 detailed documentation
@@ -52,7 +48,7 @@ total cpu time spent in the package
 
 	T form
 
-cpu time spent forming the preconditioner :math:`K_G`
+cpu time spent forming the preconditioner $K_G$
 
 .. index:: pair: variable; factorize
 .. _doxid-structsbls__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
@@ -62,7 +58,7 @@ cpu time spent forming the preconditioner :math:`K_G`
 
 	T factorize
 
-cpu time spent factorizing :math:`K_G`
+cpu time spent factorizing $K_G$
 
 .. index:: pair: variable; apply
 .. _doxid-structsbls__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274:
@@ -72,7 +68,7 @@ cpu time spent factorizing :math:`K_G`
 
 	T apply
 
-cpu time spent solving linear systems inolving :math:`K_G`
+cpu time spent solving linear systems inolving $K_G$
 
 .. index:: pair: variable; clock_total
 .. _doxid-structsbls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
@@ -92,7 +88,7 @@ total clock time spent in the package
 
 	T clock_form
 
-clock time spent forming the preconditioner :math:`K_G`
+clock time spent forming the preconditioner $K_G$
 
 .. index:: pair: variable; clock_factorize
 .. _doxid-structsbls__time__type_1ad3f0f50628260b90d6cf974e02f86192:
@@ -102,7 +98,7 @@ clock time spent forming the preconditioner :math:`K_G`
 
 	T clock_factorize
 
-clock time spent factorizing :math:`K_G`
+clock time spent factorizing $K_G$
 
 .. index:: pair: variable; clock_apply
 .. _doxid-structsbls__time__type_1afbbb1dd5fc63c640620fbd32a0481493:
@@ -112,5 +108,5 @@ clock time spent factorizing :math:`K_G`
 
 	T clock_apply
 
-clock time spent solving linear systems inolving :math:`K_G`
+clock time spent solving linear systems inolving $K_G$
 

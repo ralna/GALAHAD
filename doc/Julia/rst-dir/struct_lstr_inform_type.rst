@@ -10,25 +10,21 @@ lstr_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lstr.h>
-	
-	struct lstr_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structlstr__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structlstr__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structlstr__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structlstr__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`iter_pass2<doxid-structlstr__inform__type_1aa69f8ea5f07782fd8ad0318f87202ac4>`;
-		Int32 :ref:`biters<doxid-structlstr__inform__type_1a0c5347be8391fbb23d728cebe0f3a5a8>`;
-		Int32 :ref:`biter_min<doxid-structlstr__inform__type_1a6fe473492218a28f33e53f014c741e81>`;
-		Int32 :ref:`biter_max<doxid-structlstr__inform__type_1aaa032644e73bb5bbc6092733db7f013b>`;
-		T :ref:`multiplier<doxid-structlstr__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`x_norm<doxid-structlstr__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		T :ref:`r_norm<doxid-structlstr__inform__type_1ae908410fabf891cfd89626c3605c38ca>`;
-		T :ref:`Atr_norm<doxid-structlstr__inform__type_1a0dc3a69b13123a76ec6ee7dd031eadff>`;
-		T :ref:`biter_mean<doxid-structlstr__inform__type_1a0c9f077f6c3bc52c519c2045c0578b22>`;
-	};
+        struct lstr_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          iter_pass2::Int32
+          biters::Int32
+          biter_min::Int32
+          biter_max::Int32
+          multiplier::T
+          x_norm::T
+          r_norm::T
+          Atr_norm::T
+          biter_mean::T
+
 .. _details-structlstr__inform__type:
 
 detailed documentation
@@ -127,7 +123,7 @@ the largestt number of inner iterations performed during an outer iteration
 
 	T multiplier
 
-the Lagrange multiplier, :math:`\lambda`, corresponding to the trust-region constraint
+the Lagrange multiplier, $\lambda$, corresponding to the trust-region constraint
 
 .. index:: pair: variable; x_norm
 .. _doxid-structlstr__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -137,7 +133,7 @@ the Lagrange multiplier, :math:`\lambda`, corresponding to the trust-region cons
 
 	T x_norm
 
-the Euclidean norm of :math:`x`
+the Euclidean norm of $x$
 
 .. index:: pair: variable; r_norm
 .. _doxid-structlstr__inform__type_1ae908410fabf891cfd89626c3605c38ca:
@@ -147,7 +143,7 @@ the Euclidean norm of :math:`x`
 
 	T r_norm
 
-the Euclidean norm of :math:`Ax-b`
+the Euclidean norm of $Ax-b$
 
 .. index:: pair: variable; Atr_norm
 .. _doxid-structlstr__inform__type_1a0dc3a69b13123a76ec6ee7dd031eadff:
@@ -157,7 +153,7 @@ the Euclidean norm of :math:`Ax-b`
 
 	T Atr_norm
 
-the Euclidean norm of :math:`A^T (Ax-b) + \lambda x`
+the Euclidean norm of $A^T (Ax-b) + \lambda x$
 
 .. index:: pair: variable; biter_mean
 .. _doxid-structlstr__inform__type_1a0c9f077f6c3bc52c519c2045c0578b22:

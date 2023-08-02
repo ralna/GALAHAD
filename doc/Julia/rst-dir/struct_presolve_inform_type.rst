@@ -10,17 +10,13 @@ presolve_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_presolve.h>
-	
-	struct presolve_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`status_continue<doxid-structpresolve__inform__type_1ab9d0ea9275be048bd854d13bd68b06d1>`;
-		Int32 :ref:`status_continued<doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d>`;
-		Int32 :ref:`nbr_transforms<doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a>`;
-		char :ref:`message<doxid-structpresolve__inform__type_1ad3ed7aeb962cfe24345625354d733206>`[3][81];
-	};
+        struct presolve_inform_type
+          status::Int32
+          status_continue::Int32
+          status_continued::Int32
+          nbr_transforms::Int32
+          message::NTuple{3,NTuple{81,Cchar}}
+
 .. _details-structpresolve__inform__type:
 
 detailed documentation
@@ -125,7 +121,7 @@ continuation of status (name in previous column should be status, doxygen issue)
 
 * -56 (X_NOT_FEASIBLE) the value of a constraint that is obtained by recomputing its value on input of ``presolve_restore_solution`` from the current x is incompatible with its declared value or its bounds. This may caused the restored problem to be infeasible.
 
-* -57 (Z_NOT_FEASIBLE) the value of a dual variable that is obtained by recomputing its value on input to ``presolve_restore_solution`` (assuming dual feasibility) from the current values of :math:`(x, y, z)` is incompatible with its declared value. This may caused the restored problem to be infeasible or suboptimal.
+* -57 (Z_NOT_FEASIBLE) the value of a dual variable that is obtained by recomputing its value on input to ``presolve_restore_solution`` (assuming dual feasibility) from the current values of $(x, y, z)$ is incompatible with its declared value. This may caused the restored problem to be infeasible or suboptimal.
 
 .. index:: pair: variable; status_continued
 .. _doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d:
@@ -137,7 +133,7 @@ continuation of status (name in previous column should be status, doxygen issue)
 
 continuation of status (name in previous column should be status, doxygen issue):
 
-* -58 (Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because the corresponding primal is at an artificial bound cannot be zeroed while maintaining dual feasibility (on restoration). This can happen when :math:`( x, y, z)` on input of RESTORE are not (sufficiently) optimal.
+* -58 (Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because the corresponding primal is at an artificial bound cannot be zeroed while maintaining dual feasibility (on restoration). This can happen when $( x, y, z)$ on input of RESTORE are not (sufficiently) optimal.
 
 * -1 (MEMORY_FULL) memory allocation failed
 

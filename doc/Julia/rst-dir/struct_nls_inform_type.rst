@@ -11,38 +11,34 @@ nls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_nls.h>
-	
-	struct nls_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structnls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structnls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structnls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		char :ref:`bad_eval<doxid-structnls__inform__type_1a184c27298dc565470437c213a2bd2f3e>`[13];
-		Int32 :ref:`iter<doxid-structnls__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structnls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`c_eval<doxid-structnls__inform__type_1ab8312e1defeefffdcc0b5956bcb31ad4>`;
-		Int32 :ref:`j_eval<doxid-structnls__inform__type_1a47a079918ad01b32fd15ed6a0b8bd581>`;
-		Int32 :ref:`h_eval<doxid-structnls__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		Int32 :ref:`factorization_max<doxid-structnls__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
-		Int32 :ref:`factorization_status<doxid-structnls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`max_entries_factors<doxid-structnls__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		Int64 :ref:`factorization_integer<doxid-structnls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structnls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		T :ref:`factorization_average<doxid-structnls__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
-		T :ref:`obj<doxid-structnls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_c<doxid-structnls__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340>`;
-		T :ref:`norm_g<doxid-structnls__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
-		T :ref:`weight<doxid-structnls__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
-		struct :ref:`nls_time_type<doxid-structnls__time__type>` :ref:`time<doxid-structnls__inform__type_1a44dc03b1a33bf900f668c713cbac9498>`;
-		struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` :ref:`subproblem_inform<doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a>`;
-		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
-		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structnls__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
-		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structnls__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
-		struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>` :ref:`bsc_inform<doxid-structnls__inform__type_1ab95c5e6786b9d93eb147f64fbf14da17>`;
-		struct :ref:`roots_inform_type<doxid-structroots__inform__type>` :ref:`roots_inform<doxid-structnls__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
-	};
+        struct nls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          bad_eval::NTuple{13,Cchar}
+          iter::Int32
+          cg_iter::Int32
+          c_eval::Int32
+          j_eval::Int32
+          h_eval::Int32
+          factorization_max::Int32
+          factorization_status::Int32
+          max_entries_factors::Int64
+          factorization_integer::Int64
+          factorization_real::Int64
+          factorization_average::T
+          obj::T
+          norm_c::T
+          norm_g::T
+          weight::T
+          time::nls_time_type{T}
+          subproblem_inform::nls_subproblem_inform_type{T}
+          rqs_inform::rqs_inform_type{T}
+          glrt_inform::glrt_inform_type{T}
+          psls_inform::psls_inform_type{T}
+          bsc_inform::bsc_inform_type{T}
+          roots_inform::roots_inform_type
+
 .. _details-structnls__inform__type:
 
 detailed documentation
@@ -211,7 +207,7 @@ the average number of factorizations per sub-problem solve
 
 	T obj
 
-the value of the objective function :math:`\frac{1}{2}\|c(x)\|^2_W` at the best estimate the solution, x, determined by NLS_solve
+the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estimate the solution, x, determined by NLS_solve
 
 .. index:: pair: variable; norm_c
 .. _doxid-structnls__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340:
@@ -221,7 +217,7 @@ the value of the objective function :math:`\frac{1}{2}\|c(x)\|^2_W` at the best 
 
 	T norm_c
 
-the norm of the residual :math:`\|c(x)\|_W` at the best estimate of the solution x, determined by NLS_solve
+the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, determined by NLS_solve
 
 .. index:: pair: variable; norm_g
 .. _doxid-structnls__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe:
@@ -231,7 +227,7 @@ the norm of the residual :math:`\|c(x)\|_W` at the best estimate of the solution
 
 	T norm_g
 
-the norm of the gradient of :math:`\|c(x)\|_W` of the objective function at the best estimate, x, of the solution determined by NLS_solve
+the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best estimate, x, of the solution determined by NLS_solve
 
 .. index:: pair: variable; weight
 .. _doxid-structnls__inform__type_1adcd20aeaf7042e972ddab56f3867ce70:

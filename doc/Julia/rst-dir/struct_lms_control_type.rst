@@ -10,22 +10,18 @@ lms_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lms.h>
-	
-	struct lms_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structlms__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structlms__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlms__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlms__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`memory_length<doxid-structlms__control__type_1a43017042f3cf20a8e9b364b4f7be0104>`;
-		Int32 :ref:`method<doxid-structlms__control__type_1adcc9a19ad3119f823a658f6a49a24e64>`;
-		Bool :ref:`any_method<doxid-structlms__control__type_1a1314157047f4fc989c8d680141a32d6b>`;
-		Bool :ref:`space_critical<doxid-structlms__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlms__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structlms__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct lms_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          memory_length::Int32
+          method::Int32
+          any_method::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structlms__control__type:
 
 detailed documentation

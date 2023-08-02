@@ -10,35 +10,31 @@ struct gls_control
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_gls.h>
-	
-	struct gls_control {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structgls__control_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`lp<doxid-structgls__control_1a3eec33a4e6d8295c25d117bb25dd1b9b>`;
-		Int32 :ref:`wp<doxid-structgls__control_1af203f5ddbac4a47afed1a07b97e7e477>`;
-		Int32 :ref:`mp<doxid-structgls__control_1a4b5efeeced2b749191f71afc3bc8bebd>`;
-		Int32 :ref:`ldiag<doxid-structgls__control_1ad0e905fe282a7125424a53219afc0791>`;
-		Int32 :ref:`btf<doxid-structgls__control_1a48e951043b7ec1aab5e2e1b62f1d4021>`;
-		Int32 :ref:`maxit<doxid-structgls__control_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`factor_blocking<doxid-structgls__control_1abca1e309e7d2d73481534b8fdad872e7>`;
-		Int32 :ref:`solve_blas<doxid-structgls__control_1ab2cc1341183896b96cacc4c6a39acdde>`;
-		Int32 :ref:`la<doxid-structgls__control_1a8e48dcc59e4b8bbe40fe5b58321e4e72>`;
-		Int32 :ref:`la_int<doxid-structgls__control_1a7d8b6a8163160b2aa8f730ead5dd3727>`;
-		Int32 :ref:`maxla<doxid-structgls__control_1a6437ead17fd48daf197640949e8d4ff3>`;
-		Int32 :ref:`pivoting<doxid-structgls__control_1aa4d2d93f87da5df80b8aa2bce688c030>`;
-		Int32 :ref:`fill_in<doxid-structgls__control_1afdaf7f9c41586b488e08ac26dd5d93b8>`;
-		T :ref:`multiplier<doxid-structgls__control_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`reduce<doxid-structgls__control_1a595df8d359282d27f49ac529283c509a>`;
-		T :ref:`u<doxid-structgls__control_1abb669b70ee8fb00689add7fad23ce00f>`;
-		T :ref:`switch_full<doxid-structgls__control_1a425fe61f3ab00924d3f1e05e93985df5>`;
-		T :ref:`drop<doxid-structgls__control_1aa340d2fee9ccb7c4a2f38ac086482506>`;
-		T :ref:`tolerance<doxid-structgls__control_1ad0dcb73e98bad740852a54d6b7d1f6c2>`;
-		T :ref:`cgce<doxid-structgls__control_1ada0fc18d7059672071369decb96f6178>`;
-		Bool :ref:`diagonal_pivoting<doxid-structgls__control_1aae1a90daac2378be15e6d9d644d19281>`;
-		Bool :ref:`struct_abort<doxid-structgls__control_1a9b775b57e2c00f53ca8d8a33e5589533>`;
-	};
+        struct gls_control_type{T}
+          f_indexing::Bool
+          lp::Int32
+          wp::Int32
+          mp::Int32
+          ldiag::Int32
+          btf::Int32
+          maxit::Int32
+          factor_blocking::Int32
+          solve_blas::Int32
+          la::Int32
+          la_int::Int32
+          maxla::Int32
+          pivoting::Int32
+          fill_in::Int32
+          multiplier::T
+          reduce::T
+          u::T
+          switch_full::T
+          drop::T
+          tolerance::T
+          cgce::T
+          diagonal_pivoting::Bool
+          struct_abort::Bool
+
 .. _details-structgls__control:
 
 detailed documentation
@@ -107,7 +103,7 @@ Controls level of diagnostic output.
 
 	Int32 btf
 
-Minimum block size for block-triangular form (BTF). Set to :math:`n` to avoid.
+Minimum block size for block-triangular form (BTF). Set to $n$ to avoid.
 
 .. index:: pair: variable; maxit
 .. _doxid-structgls__control_1ab717630b215f0362699acac11fb3652c:

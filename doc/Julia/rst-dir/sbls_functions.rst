@@ -112,87 +112,87 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $H$.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`C`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $C$.
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`H=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if $H=0$; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- C_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`C`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if :math:`C=0`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix $C$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if $C=0$; lower or upper case variants are allowed.
 
 	*
 		- C_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- C_row
 
-		- is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of :math:`C` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- C_col
 
-		- is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of :math:`C` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of $C$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- C_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`C`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $C$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; sbls_reset_control
 .. _doxid-galahad__sbls_8h_1afdfe80ab659c2936d23802b6a6103eb8:
@@ -285,11 +285,11 @@ for some appropriate matrix $G$.
 
 
 
-		  * -15. The computed preconditioner :math:`K_G` is singular and is thus unsuitable.
+		  * -15. The computed preconditioner $K_G$ is singular and is thus unsuitable.
 
 
 
-		  * -20. The computed preconditioner :math:`K_G` has the wrong inertia and is thus unsuitable.
+		  * -20. The computed preconditioner $K_G$ has the wrong inertia and is thus unsuitable.
 
 
 
@@ -298,42 +298,42 @@ for some appropriate matrix $G$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $H$.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`H` in any of the available storage schemes
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix $H$ in any of the available storage schemes
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type Int32 that holds the number of entries in the unsymmetric matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the unsymmetric matrix :math:`A` in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type T that holds the values of the entries of the unsymmetric matrix $A$ in any of the available storage schemes.
 
 	*
 		- c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix :math:`C`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $C$.
 
 	*
 		- C_val
 
-		- is a one-dimensional array of size c_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`C` in any of the available storage schemes
+		- is a one-dimensional array of size c_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix $C$ in any of the available storage schemes
 
 	*
 		- D
 
-		- is a one-dimensional array of size n and type T that holds the values of the entries of the diagonal matrix :math:`D` that is required if the user has specified control.preconditioner = 5. It need not be set otherwise.
+		- is a one-dimensional array of size n and type T that holds the values of the entries of the diagonal matrix $D$ that is required if the user has specified control.preconditioner = 5. It need not be set otherwise.
 
 .. index:: pair: function; sbls_solve_system
 .. _doxid-galahad__sbls_8h_1a2c3ae7b15fc1c43771d395540c37b9fa:
@@ -385,17 +385,17 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vector :math:`a`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vector $a$.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vector :math:`b`.
+		- is a scalar variable of type Int32 that holds the number of entries in the vector $b$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n + m and type T. on entry, its first n entries must hold the vector :math:`a`, and the following entries must hold the vector :math:`b`. On a successful exit, its first n entries contain the solution components :math:`x`, and the following entries contain the components :math:`y`.
+		- is a one-dimensional array of size n + m and type T. on entry, its first n entries must hold the vector $a$, and the following entries must hold the vector $b$. On a successful exit, its first n entries contain the solution components $x$, and the following entries contain the components $y$.
 
 .. index:: pair: function; sbls_information
 .. _doxid-galahad__sbls_8h_1a9f93f5c87ae0088ceb72c4f7e73c9418:

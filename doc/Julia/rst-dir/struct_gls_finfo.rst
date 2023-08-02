@@ -10,20 +10,16 @@ gls_finfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_gls.h>
+        struct gls_finfo_type{T}
+          flag::Int32
+          more::Int32
+          size_factor::Int32
+          len_factorize::Int32
+          drop::Int32
+          rank::Int32
+          stat::Int32
+          ops::T
 	
-	struct gls_finfo {
-		// fields
-	
-		Int32 :ref:`flag<doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf>`;
-		Int32 :ref:`more<doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		Int32 :ref:`size_factor<doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49>`;
-		Int32 :ref:`len_factorize<doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
-		Int32 :ref:`drop<doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd>`;
-		Int32 :ref:`rank<doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		Int32 :ref:`stat<doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		T :ref:`ops<doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7>`;
-	};
 .. _details-structgls__finfo:
 
 detailed documentation

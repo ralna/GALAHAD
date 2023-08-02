@@ -7,65 +7,60 @@ tru_control_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_tru.h>
-	
-	struct tru_control_type {
-		// components
-	
-		Bool :ref:`f_indexing<doxid-structtru__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structtru__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structtru__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structtru__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structtru__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structtru__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structtru__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`maxit<doxid-structtru__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		Int32 :ref:`alive_unit<doxid-structtru__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structtru__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		Int32 :ref:`non_monotone<doxid-structtru__control__type_1a856b2df558071805c217b6d72a1e215b>`;
-		Int32 :ref:`model<doxid-structtru__control__type_1a027a1f1731d22465c926ce57be2364c3>`;
-		Int32 :ref:`norm<doxid-structtru__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498>`;
-		Int32 :ref:`semi_bandwidth<doxid-structtru__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`lbfgs_vectors<doxid-structtru__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30>`;
-		Int32 :ref:`max_dxg<doxid-structtru__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f>`;
-		Int32 :ref:`icfs_vectors<doxid-structtru__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		Int32 :ref:`mi28_lsize<doxid-structtru__control__type_1a97a46af6187162b529821f79d1559827>`;
-		Int32 :ref:`mi28_rsize<doxid-structtru__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		T :ref:`stop_g_absolute<doxid-structtru__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8>`;
-		T :ref:`stop_g_relative<doxid-structtru__control__type_1aeb89f1dc942cea0814ee1e8d645467d3>`;
-		T :ref:`stop_s<doxid-structtru__control__type_1a56612668b00bf042745379f43166cd27>`;
-		Int32 :ref:`advanced_start<doxid-structtru__control__type_1a7565611061db14e471a4f68e6dabbc17>`;
-		T :ref:`initial_radius<doxid-structtru__control__type_1aa1a65cb31a449551c7819e7e886ca028>`;
-		T :ref:`maximum_radius<doxid-structtru__control__type_1ad67b5e31569fee1255347e8d1782ce9d>`;
-		T :ref:`eta_successful<doxid-structtru__control__type_1ac0774abb09bb59381960d771cb38b8ef>`;
-		T :ref:`eta_very_successful<doxid-structtru__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e>`;
-		T :ref:`eta_too_successful<doxid-structtru__control__type_1a6af4c9666b9342fa75b665bfb8cef524>`;
-		T :ref:`radius_increase<doxid-structtru__control__type_1a5fdd7428d08e428c376420582cbff66e>`;
-		T :ref:`radius_reduce<doxid-structtru__control__type_1a5c424056838394ef7a658c5376614567>`;
-		T :ref:`radius_reduce_max<doxid-structtru__control__type_1ab47548da92f2f23bae395a0b960d7fba>`;
-		T :ref:`obj_unbounded<doxid-structtru__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		T :ref:`cpu_time_limit<doxid-structtru__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		T :ref:`clock_time_limit<doxid-structtru__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		Bool :ref:`hessian_available<doxid-structtru__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		Bool :ref:`subproblem_direct<doxid-structtru__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de>`;
-		Bool :ref:`retrospective_trust_region<doxid-structtru__control__type_1a7a834a2cc8deb90becaf0245edb7eea9>`;
-		Bool :ref:`renormalize_radius<doxid-structtru__control__type_1a761e5ba3ea38a06456f35a1690e77a2e>`;
-		Bool :ref:`space_critical<doxid-structtru__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structtru__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structtru__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>` :ref:`trs_control<doxid-structtru__control__type_1a0fb493acc030672e71f68fa1ef1727e8>`;
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structtru__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct :ref:`dps_control_type<doxid-structdps__control__type>` :ref:`dps_control<doxid-structtru__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1>`;
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structtru__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structtru__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :target:`lms_control_prec<doxid-structtru__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct :ref:`sec_control_type<doxid-structsec__control__type>` :ref:`sec_control<doxid-structtru__control__type_1a3b18636f4c3c9a62ddcaf9dfb5b56da6>`;
-		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structtru__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
-	};
+        struct tru_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          maxit::Int32
+          alive_unit::Int32
+          alive_file::NTuple{31,Cchar}
+          non_monotone::Int32
+          model::Int32
+          norm::Int32
+          semi_bandwidth::Int32
+          lbfgs_vectors::Int32
+          max_dxg::Int32
+          icfs_vectors::Int32
+          mi28_lsize::Int32
+          mi28_rsize::Int32
+          stop_g_absolute::T
+          stop_g_relative::T
+          stop_s::T
+          advanced_start::Int32
+          initial_radius::T
+          maximum_radius::T
+          eta_successful::T
+          eta_very_successful::T
+          eta_too_successful::T
+          radius_increase::T
+          radius_reduce::T
+          radius_reduce_max::T
+          obj_unbounded::T
+          cpu_time_limit::T
+          clock_time_limit::T
+          hessian_available::Bool
+          subproblem_direct::Bool
+          retrospective_trust_region::Bool
+          renormalize_radius::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+          trs_control::trs_control_type{T}
+          gltr_control::gltr_control_type{T}
+          dps_control::dps_control_type{T}
+          psls_control::psls_control_type{T}
+          lms_control::lms_control_type{T}
+          lms_control_prec::lms_control_type{T}
+          sec_control::sec_control_type{T}
+          sha_control::sha_control_type
+
 .. _details-structtru__control__type:
 
 detailed documentation
@@ -116,13 +111,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structtru__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -236,25 +231,25 @@ Possible values are
 
 the trust-region norm used.
 
-The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the preconditioner used for iterative methods. Possible values for :math:`P` are
+The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are
 
 * -3 users own preconditioner
 
-* -2 :math:`P =` limited-memory BFGS matrix (with .lbfgs_vectors history)
+* -2 $P =$ limited-memory BFGS matrix (with .lbfgs_vectors history)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`P =` diag( max( Hessian, .min_diagonal ) )
+* 1 diagonal, $P =$ diag( max( Hessian, .min_diagonal ) )
 
-* 2 banded, :math:`P =` band( Hessian ) with semi-bandwidth .semi_bandwidth
+* 2 banded, $P =$ band( Hessian ) with semi-bandwidth .semi_bandwidth
 
 * 3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth
 
-* 4 full factorization, :math:`P =` Hessian, Schnabel-Eskow modification
+* 4 full factorization, $P =$ Hessian, Schnabel-Eskow modification
 
-* 5 full factorization, :math:`P =` Hessian, GMPS modification (*not yet implemented*)
+* 5 full factorization, $P =$ Hessian, GMPS modification (*not yet implemented*)
 
 * 6 incomplete factorization of Hessian, Lin-More'
 
@@ -274,7 +269,7 @@ The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the precondit
 
 	Int32 semi_bandwidth
 
-specify the semi-bandwidth of the band matrix :math:`P` if required
+specify the semi-bandwidth of the band matrix $P$ if required
 
 .. index:: pair: variable; lbfgs_vectors
 .. _doxid-structtru__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30:
@@ -284,7 +279,7 @@ specify the semi-bandwidth of the band matrix :math:`P` if required
 
 	Int32 lbfgs_vectors
 
-number of vectors used by the L-BFGS matrix :math:`P` if required
+number of vectors used by the L-BFGS matrix $P$ if required
 
 .. index:: pair: variable; max_dxg
 .. _doxid-structtru__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f:
@@ -304,7 +299,7 @@ number of vectors used by the sparsity-based secant Hessian if required
 
 	Int32 icfs_vectors
 
-number of vectors used by the Lin-More' incomplete factorization matrix :math:`P` if required
+number of vectors used by the Lin-More' incomplete factorization matrix $P$ if required
 
 .. index:: pair: variable; mi28_lsize
 .. _doxid-structtru__control__type_1a97a46af6187162b529821f79d1559827:
@@ -324,7 +319,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	Int32 mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; stop_g_absolute
 .. _doxid-structtru__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8:
@@ -394,7 +389,7 @@ maximum permitted trust-region radius
 
 	T eta_successful
 
-a potential iterate will only be accepted if the actual decrease :math:`f - f(x_{new})` is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful
+a potential iterate will only be accepted if the actual decrease $f - f(x_{new})$ is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful
 
 .. index:: pair: variable; eta_very_successful
 .. _doxid-structtru__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e:

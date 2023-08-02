@@ -10,29 +10,25 @@ rqs_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_rqs.h>
-	
-	struct rqs_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structrqs__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structrqs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`factorizations<doxid-structrqs__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
-		Int64 :ref:`max_entries_factors<doxid-structrqs__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		Int32 :ref:`len_history<doxid-structrqs__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
-		T :ref:`obj<doxid-structrqs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`obj_regularized<doxid-structrqs__inform__type_1a1631e243108715d623e2ddb83310fa33>`;
-		T :ref:`x_norm<doxid-structrqs__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		T :ref:`multiplier<doxid-structrqs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`pole<doxid-structrqs__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d>`;
-		Bool :ref:`dense_factorization<doxid-structrqs__inform__type_1a107cef1ccaad53efc9d7a578d400f324>`;
-		Bool :ref:`hard_case<doxid-structrqs__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
-		char :ref:`bad_alloc<doxid-structrqs__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`rqs_time_type<doxid-structrqs__time__type>` :ref:`time<doxid-structrqs__inform__type_1a7ea9c3c8923491cb7b82bc1e2eaa865e>`;
-		struct :ref:`rqs_history_type<doxid-structrqs__history__type>` :ref:`history<doxid-structrqs__inform__type_1a8a8041f7210288f13c6fa994dfc73aab>`[100];
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structrqs__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structrqs__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
-	};
+        struct rqs_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          factorizations::Int32
+          max_entries_factors::Int64
+          len_history::Int32
+          obj::T
+          obj_regularized::T
+          x_norm::T
+          multiplier::T
+          pole::T
+          dense_factorization::Bool
+          hard_case::Bool
+          bad_alloc::NTuple{81,Cchar}
+          time::rqs_time_type{T}
+          history::NTuple{100,rqs_history_type{T}}
+          sls_inform::sls_inform_type{T}
+          ir_inform::ir_inform_type{T}
+
 .. _details-structrqs__inform__type:
 
 detailed documentation
@@ -61,11 +57,11 @@ reported return status:
 
 * -3 n and/or sigma is not positive and/or p <= 2
 
-* -9 the analysis phase of the factorization of :math:`H + \lambda M` failed
+* -9 the analysis phase of the factorization of $H + \lambda M$ failed
 
-* -10 the factorization of :math:`H + \lambda M` failed
+* -10 the factorization of $H + \lambda M$ failed
 
-* -15 :math:`M` does not appear to be strictly diagonally dominant
+* -15 $M$ does not appear to be strictly diagonally dominant
 
 * -16 ill-conditioning has prevented furthr progress
 
@@ -107,7 +103,7 @@ the maximum number of entries in the factors
 
 	Int32 len_history
 
-the number of :math:`(\|x\|_M,\lambda)` pairs in the history
+the number of $(\|x\|_M,\lambda)$ pairs in the history
 
 .. index:: pair: variable; obj
 .. _doxid-structrqs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
@@ -137,7 +133,7 @@ the value of the regularized quadratic function
 
 	T x_norm
 
-the :math:`M` -norm of :math:`x`, :math:`\|x\|_M`
+the $M$ -norm of $x$, $\|x\|_M$
 
 .. index:: pair: variable; multiplier
 .. _doxid-structrqs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
@@ -157,7 +153,7 @@ the Lagrange multiplier corresponding to the regularization
 
 	T pole
 
-a lower bound max :math:`(0,-\lambda_1)`, where :math:`\lambda_1` is the left-most eigenvalue of :math:`(H,M)`
+a lower bound max $(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalue of $(H,M)$
 
 .. index:: pair: variable; dense_factorization
 .. _doxid-structrqs__inform__type_1a107cef1ccaad53efc9d7a578d400f324:

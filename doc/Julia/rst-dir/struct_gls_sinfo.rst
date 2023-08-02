@@ -10,15 +10,11 @@ gls_sinfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_gls.h>
-	
-	struct gls_sinfo {
-		// fields
-	
-		Int32 :ref:`flag<doxid-structgls__sinfo_1adf916204820072417ed73a32de1cefcf>`;
-		Int32 :ref:`more<doxid-structgls__sinfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		Int32 :ref:`stat<doxid-structgls__sinfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-	};
+        struct gls_sinfo_type
+          flag::Int32
+          more::Int32
+          stat::Int32
+
 .. _details-structgls__sinfo:
 
 detailed documentation

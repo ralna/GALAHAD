@@ -11,37 +11,33 @@ trb_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_trb.h>
-	
-	struct trb_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structtrb__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structtrb__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structtrb__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structtrb__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structtrb__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`cg_maxit<doxid-structtrb__inform__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		Int32 :ref:`f_eval<doxid-structtrb__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		Int32 :ref:`g_eval<doxid-structtrb__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		Int32 :ref:`h_eval<doxid-structtrb__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		Int32 :ref:`n_free<doxid-structtrb__inform__type_1a1d6107630beebe9a594b0588ac88016f>`;
-		Int32 :ref:`factorization_max<doxid-structtrb__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
-		Int32 :ref:`factorization_status<doxid-structtrb__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`max_entries_factors<doxid-structtrb__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		Int64 :ref:`factorization_integer<doxid-structtrb__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structtrb__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		T :ref:`obj<doxid-structtrb__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`norm_pg<doxid-structtrb__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
-		T :ref:`radius<doxid-structtrb__inform__type_1a72757b6410f755f008e2fb6d711b61be>`;
-		struct :ref:`trb_time_type<doxid-structtrb__time__type>` :ref:`time<doxid-structtrb__inform__type_1ad1c7da271c9b5bab69d9e9cc52d2cf5b>`;
-		struct :ref:`trs_inform_type<doxid-structtrs__inform__type>` :ref:`trs_inform<doxid-structtrb__inform__type_1aa7996c925462c655f2b3dd5a5da22c21>`;
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structtrb__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structtrb__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
-		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :ref:`lms_inform<doxid-structtrb__inform__type_1a6428cf213f8c899aa1bfb1fc3d24f37d>`;
-		struct :ref:`lms_inform_type<doxid-structlms__inform__type>` :ref:`lms_inform_prec<doxid-structtrb__inform__type_1a2040147e726e4ad18ef6d81d8339644e>`;
-		struct :ref:`sha_inform_type<doxid-structsha__inform__type>` :ref:`sha_inform<doxid-structtrb__inform__type_1a196d9da91c7ed4a67aa6e009e336e101>`;
-	};
+        struct trb_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          cg_iter::Int32
+          cg_maxit::Int32
+          f_eval::Int32
+          g_eval::Int32
+          h_eval::Int32
+          n_free::Int32
+          factorization_max::Int32
+          factorization_status::Int32
+          max_entries_factors::Int64
+          factorization_integer::Int64
+          factorization_real::Int64
+          obj::T
+          norm_pg::T
+          radius::T
+          time::trb_time_type{T}
+          trs_inform::trs_inform_type{T}
+          gltr_inform::gltr_inform_type{T}
+          psls_inform::psls_inform_type{T}
+          lms_inform::lms_inform_type{T}
+          lms_inform_prec::lms_inform_type{T}
+          sha_inform::sha_inform_type
+
 .. _details-structtrb__inform__type:
 
 detailed documentation

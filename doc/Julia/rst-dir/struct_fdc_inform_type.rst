@@ -10,22 +10,18 @@ fdc_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_fdc.h>
+        struct fdc_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          factorization_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          non_negligible_pivot::T
+          time::fdc_time_type{T}
+          sls_inform::sls_inform_type{T}
+          uls_inform::uls_inform_type{T}
 	
-	struct fdc_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structfdc__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structfdc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structfdc__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`factorization_status<doxid-structfdc__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`factorization_integer<doxid-structfdc__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structfdc__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		T :ref:`non_negligible_pivot<doxid-structfdc__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
-		struct :ref:`fdc_time_type<doxid-structfdc__time__type>` :ref:`time<doxid-structfdc__inform__type_1af77e8a375712c74c7ec4cb4d6ee89826>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structfdc__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`uls_inform_type<doxid-structuls__inform__type>` :ref:`uls_inform<doxid-structfdc__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
-	};
 .. _details-structfdc__inform__type:
 
 detailed documentation

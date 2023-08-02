@@ -7,36 +7,31 @@ qpb_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_qpb.h>
-	
-	struct qpb_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structqpb__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structqpb__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structqpb__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structqpb__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structqpb__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`factorization_status<doxid-structqpb__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`factorization_integer<doxid-structqpb__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structqpb__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`nfacts<doxid-structqpb__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		Int32 :ref:`nbacts<doxid-structqpb__inform__type_1a4b9a11ae940f04846c342978808696d6>`;
-		Int32 :ref:`nmods<doxid-structqpb__inform__type_1aedcbf93d59a135329f358f366e37cc94>`;
-		T :ref:`obj<doxid-structqpb__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`non_negligible_pivot<doxid-structqpb__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
-		Bool :ref:`feasible<doxid-structqpb__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		struct :ref:`qpb_time_type<doxid-structqpb__time__type>` :ref:`time<doxid-structqpb__inform__type_1ae4e944df2baf87107a291094002befb2>`;
-		struct :ref:`lsqp_inform_type<doxid-structlsqp__inform__type>` :ref:`lsqp_inform<doxid-structqpb__inform__type_1acc149a8b0411baab4ddd0d9e4ccf28ff>`;
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structqpb__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-		struct :ref:`fit_inform_type<doxid-structfit__inform__type>` :ref:`fit_inform<doxid-structqpb__inform__type_1ac6efa45e989564727014956bf3e00deb>`;
-	};
+        struct qpb_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          cg_iter::Int32
+          factorization_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          nfacts::Int32
+          nbacts::Int32
+          nmods::Int32
+          obj::T
+          non_negligible_pivot::T
+          feasible::Bool
+          time::qpb_time_type{T}
+          lsqp_inform::lsqp_inform_type{T}
+          fdc_inform::fdc_inform_type{T}
+          sbls_inform::sbls_inform_type{T}
+          gltr_inform::gltr_inform_type{T}
+          fit_inform::fit_inform_type
+
 .. _details-structqpb__inform__type:
 
 detailed documentation

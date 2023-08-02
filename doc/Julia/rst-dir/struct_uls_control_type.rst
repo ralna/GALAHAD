@@ -10,38 +10,34 @@ uls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_uls.h>
-	
-	struct uls_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structuls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structuls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`warning<doxid-structuls__control__type_1af44472f3bdd4c3af6ed5465266b25312>`;
-		Int32 :ref:`out<doxid-structuls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structuls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`print_level_solver<doxid-structuls__control__type_1afc17ef86601030a3cb1c7edb7a79a39f>`;
-		Int32 :ref:`initial_fill_in_factor<doxid-structuls__control__type_1a9a5f5bbcbc09508812a16fee01fc812d>`;
-		Int32 :ref:`min_real_factor_size<doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
-		Int32 :ref:`min_integer_factor_size<doxid-structuls__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
-		Int64 :ref:`max_factor_size<doxid-structuls__control__type_1ae7e9983ad0ee9b1e837f3e1cacc9f4e9>`;
-		Int32 :ref:`blas_block_size_factorize<doxid-structuls__control__type_1aa2177c655d92533f17fcff58482e52c1>`;
-		Int32 :ref:`blas_block_size_solve<doxid-structuls__control__type_1a1af3c20cdeaaee431f309395f9f09564>`;
-		Int32 :ref:`pivot_control<doxid-structuls__control__type_1a7489428a42ce1420b4891f638153c99f>`;
-		Int32 :ref:`pivot_search_limit<doxid-structuls__control__type_1a9a4b5f33dbbc1f6e9aa81dee63af5d2e>`;
-		Int32 :ref:`minimum_size_for_btf<doxid-structuls__control__type_1ac1bd945b4d891a5f407f98afccb2c357>`;
-		Int32 :ref:`max_iterative_refinements<doxid-structuls__control__type_1ab044fd598767830ddc06560a91b80936>`;
-		Bool :ref:`stop_if_singular<doxid-structuls__control__type_1a5d1b79218a7bf1f16c3195835a311195>`;
-		T :ref:`array_increase_factor<doxid-structuls__control__type_1a6189cbfe4360772c9fa6b554e93a9b2b>`;
-		T :ref:`switch_to_full_code_density<doxid-structuls__control__type_1a95f87bc195563b7a846fd33107fbe09c>`;
-		T :ref:`array_decrease_factor<doxid-structuls__control__type_1abee09e4efae03be7d0d1a8503b338ce7>`;
-		T :ref:`relative_pivot_tolerance<doxid-structuls__control__type_1a65344e4192516e9b621cc7416f09045c>`;
-		T :ref:`absolute_pivot_tolerance<doxid-structuls__control__type_1aa5e25bdcf567fac1fb496199a7c06d5a>`;
-		T :ref:`zero_tolerance<doxid-structuls__control__type_1afb83ea8401da6498362914aa88ae823f>`;
-		T :ref:`acceptable_residual_relative<doxid-structuls__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
-		T :ref:`acceptable_residual_absolute<doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
-		char :ref:`prefix<doxid-structuls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct uls_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          warning::Int32
+          out::Int32
+          print_level::Int32
+          print_level_solver::Int32
+          initial_fill_in_factor::Int32
+          min_real_factor_size::Int32
+          min_integer_factor_size::Int32
+          max_factor_size::Int64
+          blas_block_size_factorize::Int32
+          blas_block_size_solve::Int32
+          pivot_control::Int32
+          pivot_search_limit::Int32
+          minimum_size_for_btf::Int32
+          max_iterative_refinements::Int32
+          stop_if_singular::Bool
+          array_increase_factor::T
+          switch_to_full_code_density::T
+          array_decrease_factor::T
+          relative_pivot_tolerance::T
+          absolute_pivot_tolerance::T
+          zero_tolerance::T
+          acceptable_residual_relative::T
+          acceptable_residual_absolute::T
+          prefix::NTuple{31,Cchar}
+
 .. _details-structuls__control__type:
 
 detailed documentation
@@ -120,7 +116,7 @@ controls level of diagnostic output from external solver
 
 	Int32 initial_fill_in_factor
 
-prediction of factor by which the fill-in will exceed the initial number of nonzeros in :math:`A`
+prediction of factor by which the fill-in will exceed the initial number of nonzeros in $A$
 
 .. index:: pair: variable; min_real_factor_size
 .. _doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562:
@@ -300,7 +296,7 @@ any entry smaller than this in modulus is reset to zero
 
 	T acceptable_residual_relative
 
-refinement will cease as soon as the residual :math:`\|Ax-b\|` falls below max( acceptable_residual_relative \* :math:`\|b\|`, acceptable_residual_absolute )
+refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
 .. index:: pair: variable; acceptable_residual_absolute
 .. _doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0:

@@ -109,27 +109,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, :math:`H`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of :math:`H` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of :math:`H` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`H`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; rqs_import_m
 .. _doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b:
@@ -173,27 +173,27 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- M_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the scaling matrix, :math:`M`. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the scaling matrix, $M$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed.
 
 	*
 		- M_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of :math:`M` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- M_row
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the row indices of the lower triangular part of :math:`M` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size M_ne and type Int32 that holds the row indices of the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- M_col
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the column indices of the lower triangular part of :math:`M` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size M_ne and type Int32 that holds the column indices of the lower triangular part of $M$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- M_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of :math:`M`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $M$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; rqs_import_a
 .. _doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5:
@@ -237,27 +237,27 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, :math:`A` if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$ if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A`, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; rqs_reset_control
 .. _doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f:
@@ -351,47 +351,47 @@ Solve the regularised quadratic problem.
 	*
 		- power
 
-		- is a scalar of type T that holds the order of regularisation, :math:`p`, used. power must be no smaller than 2.
+		- is a scalar of type T that holds the order of regularisation, $p$, used. power must be no smaller than 2.
 
 	*
 		- weight
 
-		- is a scalar of type T that holds the regularisation weight, :math:`\sigma`, used. weight must be strictly positive.
+		- is a scalar of type T that holds the regularisation weight, $\sigma$, used. weight must be strictly positive.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` of the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ of the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar of type T that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type T that holds the constant term $f$ of the objective function.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- M_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix :math:`M` if it not the identity matrix.
+		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix $M$ if it not the identity matrix.
 
 	*
 		- M_val
 
-		- is a one-dimensional array of size M_ne and type T that holds the values of the entries of the scaling matrix :math:`M`, if it is not the identity matrix, in any of the available storage schemes. If M_val is NULL, M will be taken to be the identity matrix.
+		- is a one-dimensional array of size M_ne and type T that holds the values of the entries of the scaling matrix $M$, if it is not the identity matrix, in any of the available storage schemes. If M_val is NULL, M will be taken to be the identity matrix.
 
 	*
 		- m
@@ -401,17 +401,17 @@ Solve the regularised quadratic problem.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix :math:`A` if used. A_ne must be non-negative.
+		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$ if used. A_ne must be non-negative.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the constraint Jacobian matrix :math:`A`, if used, in any of the available storage schemes. If A_val is NULL, no constraints will be enforced.
+		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$, if used, in any of the available storage schemes. If A_val is NULL, no constraints will be enforced.
 
 	*
 		- y
 
-		- is a one-dimensional array of size m and type T that holds the values :math:`y` of the Lagrange multipliers for the equality constraints :math:`A x = 0` if used. The i-th component of y, i = 0, ... , m-1, contains :math:`y_i`.
+		- is a one-dimensional array of size m and type T that holds the values $y$ of the Lagrange multipliers for the equality constraints $A x = 0$ if used. The i-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; rqs_information
 .. _doxid-galahad__rqs_8h_1a586e85ec11c4647346916f49805fcb83:

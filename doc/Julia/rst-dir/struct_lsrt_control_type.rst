@@ -10,32 +10,28 @@ lsrt_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lsrt.h>
-	
-	struct lsrt_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structlsrt__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structlsrt__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlsrt__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlsrt__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`start_print<doxid-structlsrt__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		Int32 :ref:`stop_print<doxid-structlsrt__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		Int32 :ref:`print_gap<doxid-structlsrt__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		Int32 :ref:`itmin<doxid-structlsrt__control__type_1aa385135920896920e910796e164637eb>`;
-		Int32 :ref:`itmax<doxid-structlsrt__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
-		Int32 :ref:`bitmax<doxid-structlsrt__control__type_1a3a99fb44bd37e908c09195de8dc8e455>`;
-		Int32 :ref:`extra_vectors<doxid-structlsrt__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
-		Int32 :ref:`stopping_rule<doxid-structlsrt__control__type_1a39dcb82333184b2fa9251a89c3e30e1a>`;
-		Int32 :ref:`freq<doxid-structlsrt__control__type_1ae0d22272b68e75d19ac0b80c01f806b6>`;
-		T :ref:`stop_relative<doxid-structlsrt__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		T :ref:`stop_absolute<doxid-structlsrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		T :ref:`fraction_opt<doxid-structlsrt__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
-		T :ref:`time_limit<doxid-structlsrt__control__type_1a935b207da67876f712cee43d1e055d75>`;
-		Bool :ref:`space_critical<doxid-structlsrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlsrt__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structlsrt__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct lsrt_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          start_print::Int32
+          stop_print::Int32
+          print_gap::Int32
+          itmin::Int32
+          itmax::Int32
+          bitmax::Int32
+          extra_vectors::Int32
+          stopping_rule::Int32
+          freq::Int32
+          stop_relative::T
+          stop_absolute::T
+          fraction_opt::T
+          time_limit::T
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structlsrt__control__type:
 
 detailed documentation

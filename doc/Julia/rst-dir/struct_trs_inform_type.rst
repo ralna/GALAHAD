@@ -10,28 +10,24 @@ trs_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_trs.h>
-	
-	struct trs_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structtrs__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structtrs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`factorizations<doxid-structtrs__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
-		Int64 :ref:`max_entries_factors<doxid-structtrs__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		Int32 :ref:`len_history<doxid-structtrs__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
-		T :ref:`obj<doxid-structtrs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`x_norm<doxid-structtrs__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		T :ref:`multiplier<doxid-structtrs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		T :ref:`pole<doxid-structtrs__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d>`;
-		Bool :ref:`dense_factorization<doxid-structtrs__inform__type_1a107cef1ccaad53efc9d7a578d400f324>`;
-		Bool :ref:`hard_case<doxid-structtrs__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
-		char :ref:`bad_alloc<doxid-structtrs__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`trs_time_type<doxid-structtrs__time__type>` :ref:`time<doxid-structtrs__inform__type_1a137801ab863218dd25dd377da6a6cbfb>`;
-		struct :ref:`trs_history_type<doxid-structtrs__history__type>` :ref:`history<doxid-structtrs__inform__type_1adbea75a6746b7545b3c4dfcfc8780664>`[100];
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structtrs__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structtrs__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
-	};
+        struct trs_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          factorizations::Int32
+          max_entries_factors::Int64
+          len_history::Int32
+          obj::T
+          x_norm::T
+          multiplier::T
+          pole::T
+          dense_factorization::Bool
+          hard_case::Bool
+          bad_alloc::NTuple{81,Cchar}
+          time::trs_time_type{T}
+          history::NTuple{100,trs_history_type{T}}
+          sls_inform::sls_inform_type{T}
+          ir_inform::ir_inform_type{T}
+
 .. _details-structtrs__inform__type:
 
 detailed documentation
@@ -60,11 +56,11 @@ reported return status:
 
 * -3 n and/or Delta is not positive
 
-* -9 the analysis phase of the factorization of :math:`H + \lambda M` failed
+* -9 the analysis phase of the factorization of $H + \lambda M$ failed
 
-* -10 the factorization of :math:`H + \lambda M` failed
+* -10 the factorization of $H + \lambda M$ failed
 
-* -15 :math:`M` does not appear to be strictly diagonally dominant
+* -15 $M$ does not appear to be strictly diagonally dominant
 
 * -16 ill-conditioning has prevented further progress
 
@@ -106,7 +102,7 @@ the maximum number of entries in the factors
 
 	Int32 len_history
 
-the number of :math:`(||x||_M,\lambda)` pairs in the history
+the number of $(||x||_M,\lambda)$ pairs in the history
 
 .. index:: pair: variable; obj
 .. _doxid-structtrs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
@@ -126,7 +122,7 @@ the value of the quadratic function
 
 	T x_norm
 
-the :math:`M` -norm of :math:`x`, :math:`||x||_M`
+the $M$ -norm of $x$, $||x||_M$
 
 .. index:: pair: variable; multiplier
 .. _doxid-structtrs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
@@ -146,7 +142,7 @@ the Lagrange multiplier corresponding to the trust-region constraint
 
 	T pole
 
-a lower bound max :math:`(0,-\lambda_1)`, where :math:`\lambda_1` is the left-most eigenvalue of :math:`(H,M)`
+a lower bound max $(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalue of $(H,M)$
 
 .. index:: pair: variable; dense_factorization
 .. _doxid-structtrs__inform__type_1a107cef1ccaad53efc9d7a578d400f324:

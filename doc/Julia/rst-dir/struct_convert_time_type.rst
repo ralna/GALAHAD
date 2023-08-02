@@ -10,14 +10,10 @@ convert_time_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_convert.h>
-	
-	struct convert_time_type {
-		// fields
-	
-		T :ref:`total<doxid-structconvert__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		T :ref:`clock_total<doxid-structconvert__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-	};
+        struct convert_time_type{T}
+          total::T
+          clock_total::T
+
 .. _details-structconvert__time__type:
 
 detailed documentation

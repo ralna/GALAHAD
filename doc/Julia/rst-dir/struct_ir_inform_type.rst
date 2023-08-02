@@ -10,17 +10,13 @@ ir_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_ir.h>
-	
-	struct ir_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structir__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structir__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structir__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		T :ref:`norm_initial_residual<doxid-structir__inform__type_1a5d35136316d3841bb7f2d87495b619a9>`;
-		T :ref:`norm_final_residual<doxid-structir__inform__type_1a95ba287dc64f4d10546b9ca9ea407fc2>`;
-	};
+        struct ir_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          norm_initial_residual::T
+          norm_final_residual::T
+
 .. _details-structir__inform__type:
 
 detailed documentation

@@ -7,42 +7,37 @@ dqp_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_dqp.h>
+        struct dqp_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          iter::Int32
+          cg_iter::Int32
+          factorization_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          nfacts::Int32
+          threads::Int32
+          obj::T
+          primal_infeasibility::T
+          dual_infeasibility::T
+          complementary_slackness::T
+          non_negligible_pivot::T
+          feasible::Bool
+          checkpointsIter::NTuple{16,Cint}
+          checkpointsTime::NTuple{16,T}
+          time::dqp_time_type{T}
+          fdc_inform::fdc_inform_type{T}
+          sls_inform::sls_inform_type{T}
+          sbls_inform::sbls_inform_type{T}
+          gltr_inform::gltr_inform_type{T}
+          scu_status::Int32
+          scu_inform::scu_inform_type
+          rpd_inform::rpd_inform_type
 	
-	struct dqp_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structdqp__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structdqp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structdqp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`iter<doxid-structdqp__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structdqp__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`factorization_status<doxid-structdqp__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`factorization_integer<doxid-structdqp__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structdqp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`nfacts<doxid-structdqp__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		Int32 :ref:`threads<doxid-structdqp__inform__type_1a4f987a98d3e1221916748962e45399fe>`;
-		T :ref:`obj<doxid-structdqp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`primal_infeasibility<doxid-structdqp__inform__type_1a2bce6cd733ae08834689fa66747f53b9>`;
-		T :ref:`dual_infeasibility<doxid-structdqp__inform__type_1a979cebdf2e5f1e043f48a615a46b0299>`;
-		T :ref:`complementary_slackness<doxid-structdqp__inform__type_1aa9bb6bfb5903021b1942fe5a02f23f06>`;
-		T :ref:`non_negligible_pivot<doxid-structdqp__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
-		Bool :ref:`feasible<doxid-structdqp__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		Int32 :ref:`checkpointsIter<doxid-structdqp__inform__type_1acb0789a29239327ab8a4e929e0fbc65b>`[16];
-		T :ref:`checkpointsTime<doxid-structdqp__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9>`[16];
-		struct :ref:`dqp_time_type<doxid-structdqp__time__type>` :ref:`time<doxid-structdqp__inform__type_1ab2d91973c7fda1aa150ef72bb22842f6>`;
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structdqp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structdqp__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structdqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structdqp__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-		Int32 :ref:`scu_status<doxid-structdqp__inform__type_1a25bf1e7f86c2b4f4836aa4de40019815>`;
-		struct :ref:`scu_inform_type<doxid-structscu__inform__type>` :ref:`scu_inform<doxid-structdqp__inform__type_1a0b702af94f05b9d4bb2bb6416f2498ee>`;
-		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>` :ref:`rpd_inform<doxid-structdqp__inform__type_1a823701505feea7615e9f8995769d8b60>`;
-	};
 .. _details-structdqp__inform__type:
 
 detailed documentation
@@ -221,7 +216,7 @@ is the returned "solution" feasible?
 
 	Int32 checkpointsIter[16]
 
-checkpoints(i) records the iteration at which the criticality measures first fall below :math:`10^{-i-1}`, i = 0, ..., 15 (-1 means not achieved)
+checkpoints(i) records the iteration at which the criticality measures first fall below $10^{-i-1}$, i = 0, ..., 15 (-1 means not achieved)
 
 .. index:: pair: variable; checkpointsTime
 .. _doxid-structdqp__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9:

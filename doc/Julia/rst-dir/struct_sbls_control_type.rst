@@ -10,53 +10,49 @@ sbls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sbls.h>
+        struct sbls_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          indmin::Int32
+          valmin::Int32
+          len_ulsmin::Int32
+          itref_max::Int32
+          maxit_pcg::Int32
+          new_a::Int32
+          new_h::Int32
+          new_c::Int32
+          preconditioner::Int32
+          semi_bandwidth::Int32
+          factorization::Int32
+          max_col::Int32
+          scaling::Int32
+          ordering::Int32
+          pivot_tol::T
+          pivot_tol_for_basis::T
+          zero_pivot::T
+          static_tolerance::T
+          static_level::T
+          min_diagonal::T
+          stop_absolute::T
+          stop_relative::T
+          remove_dependencies::Bool
+          find_basis_by_transpose::Bool
+          affine::Bool
+          allow_singular::Bool
+          perturb_to_make_definite::Bool
+          get_norm_residual::Bool
+          check_basis::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          symmetric_linear_solver::NTuple{31,Cchar}
+          definite_linear_solver::NTuple{31,Cchar}
+          unsymmetric_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sls_control::sls_control_type{T}
+          uls_control::uls_control_type{T}
 	
-	struct sbls_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structsbls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structsbls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structsbls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structsbls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`indmin<doxid-structsbls__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		Int32 :ref:`valmin<doxid-structsbls__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		Int32 :ref:`len_ulsmin<doxid-structsbls__control__type_1a600c95211b782597cd1b2475bb2c54c6>`;
-		Int32 :ref:`itref_max<doxid-structsbls__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		Int32 :ref:`maxit_pcg<doxid-structsbls__control__type_1aac98c23514fe50d29412bb0ecfacc8f2>`;
-		Int32 :ref:`new_a<doxid-structsbls__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		Int32 :ref:`new_h<doxid-structsbls__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		Int32 :ref:`new_c<doxid-structsbls__control__type_1a9eed9b4ef920c669df5ff1a7c67e3047>`;
-		Int32 :ref:`preconditioner<doxid-structsbls__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`semi_bandwidth<doxid-structsbls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		Int32 :ref:`factorization<doxid-structsbls__control__type_1a108359f1209601e6c6074c215e3abd8b>`;
-		Int32 :ref:`max_col<doxid-structsbls__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		Int32 :ref:`scaling<doxid-structsbls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		Int32 :ref:`ordering<doxid-structsbls__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		T :ref:`pivot_tol<doxid-structsbls__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		T :ref:`pivot_tol_for_basis<doxid-structsbls__control__type_1a1912d9ec51c4e88125762b7d03ef31a6>`;
-		T :ref:`zero_pivot<doxid-structsbls__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		T :ref:`static_tolerance<doxid-structsbls__control__type_1a3ce9c9cc8dd0f7c4684ea0bd80cc5946>`;
-		T :ref:`static_level<doxid-structsbls__control__type_1ae7faebd3367553993434f6a03e65502d>`;
-		T :ref:`min_diagonal<doxid-structsbls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
-		T :ref:`stop_absolute<doxid-structsbls__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		T :ref:`stop_relative<doxid-structsbls__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		Bool :ref:`remove_dependencies<doxid-structsbls__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		Bool :ref:`find_basis_by_transpose<doxid-structsbls__control__type_1aa88001d7f86370d329247cf28f8ff499>`;
-		Bool :ref:`affine<doxid-structsbls__control__type_1ad036b5eb236ab3725436ece9cbf93e57>`;
-		Bool :ref:`allow_singular<doxid-structsbls__control__type_1a2ea4ee3b5051d51642fae65d6ba75e7d>`;
-		Bool :ref:`perturb_to_make_definite<doxid-structsbls__control__type_1aa811deca1c703ca2ab1c43fefffa6fbd>`;
-		Bool :ref:`get_norm_residual<doxid-structsbls__control__type_1acdcd8a05219b5c554c279137cb409a03>`;
-		Bool :ref:`check_basis<doxid-structsbls__control__type_1afc637bcbceea5647ce8f349e109cb979>`;
-		Bool :ref:`space_critical<doxid-structsbls__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structsbls__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`symmetric_linear_solver<doxid-structsbls__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`definite_linear_solver<doxid-structsbls__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
-		char :ref:`unsymmetric_linear_solver<doxid-structsbls__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
-		char :ref:`prefix<doxid-structsbls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structsbls__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structsbls__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
-	};
 .. _details-structsbls__control__type:
 
 detailed documentation
@@ -165,7 +161,7 @@ maximum number of projected CG iterations allowed
 
 	Int32 new_a
 
-how much has :math:`A` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $A$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; new_h
 .. _doxid-structsbls__control__type_1ae60c5b5b987dd62f25253ba4164813f5:
@@ -175,7 +171,7 @@ how much has :math:`A` changed since last factorization: 0 = not changed, 1 = va
 
 	Int32 new_h
 
-how much has :math:`H` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $H$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; new_c
 .. _doxid-structsbls__control__type_1a9eed9b4ef920c669df5ff1a7c67e3047:
@@ -185,7 +181,7 @@ how much has :math:`H` changed since last factorization: 0 = not changed, 1 = va
 
 	Int32 new_c
 
-how much has :math:`C` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $C$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; preconditioner
 .. _doxid-structsbls__control__type_1adf7719f1a4491459e361e80a00c55656:
@@ -199,23 +195,23 @@ which preconditioner to use:
 
 * 0 selected automatically
 
-* 1 explicit with :math:`G = I`
+* 1 explicit with $G = I$
 
-* 2 explicit with :math:`G = H`
+* 2 explicit with $G = H$
 
-* 3 explicit with :math:`G =` diag(max(:math:`H`,min_diag))
+* 3 explicit with $G =$ diag(max($H$,min_diag))
 
-* 4 explicit with :math:`G =` band :math:`(H)`
+* 4 explicit with $G =$ band $(H)$
 
-* 5 explicit with :math:`G =` (optional, diagonal) :math:`D`
+* 5 explicit with $G =$ (optional, diagonal) $D$
 
-* 11 explicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = H_{22}`
+* 11 explicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = H_{22}$
 
-* 12 explicit with :math:`G_{11} = 0`, :math:`G_{21} = H_{21}`, :math:`G_{22} = H_{22}`
+* 12 explicit with $G_{11} = 0$, $G_{21} = H_{21}$, $G_{22} = H_{22}$
 
-* -1 implicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = I`
+* -1 implicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = I$
 
-* -2 implicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = H_{22}`
+* -2 implicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = H_{22}$
 
 .. index:: pair: variable; semi_bandwidth
 .. _doxid-structsbls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb:
@@ -239,15 +235,15 @@ the explicit factorization used:
 
 * 0 selected automatically
 
-* 1 Schur-complement if :math:`G` is diagonal and successful otherwise augmented system
+* 1 Schur-complement if $G$ is diagonal and successful otherwise augmented system
 
 * 2 augmented system
 
 * 3 null-space
 
-* 4 Schur-complement if :math:`G` is diagonal and successful otherwise failure
+* 4 Schur-complement if $G$ is diagonal and successful otherwise failure
 
-* 5 Schur-complement with pivoting if :math:`G` is diagonal and successful otherwise failure
+* 5 Schur-complement with pivoting if $G$ is diagonal and successful otherwise failure
 
 .. index:: pair: variable; max_col
 .. _doxid-structsbls__control__type_1abca2db33b9520095e98790d45a1be93f:
@@ -257,7 +253,7 @@ the explicit factorization used:
 
 	Int32 max_col
 
-maximum number of nonzeros in a column of :math:`A` for Schur-complement factorization
+maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 
 .. index:: pair: variable; scaling
 .. _doxid-structsbls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d:
@@ -337,7 +333,7 @@ see static_tolerance
 
 	T min_diagonal
 
-the minimum permitted diagonal in diag(max(:math:`H`,min_diag))
+the minimum permitted diagonal in diag(max($H$,min_diag))
 
 .. index:: pair: variable; stop_absolute
 .. _doxid-structsbls__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:
@@ -387,7 +383,7 @@ determine implicit factorization preconditioners using a basis of A found by exa
 
 	Bool affine
 
-can the right-hand side :math:`c` be assumed to be zero?
+can the right-hand side $c$ be assumed to be zero?
 
 .. index:: pair: variable; allow_singular
 .. _doxid-structsbls__control__type_1a2ea4ee3b5051d51642fae65d6ba75e7d:

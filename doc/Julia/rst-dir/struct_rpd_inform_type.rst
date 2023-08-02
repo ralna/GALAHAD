@@ -10,18 +10,14 @@ rpd_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_rpd.h>
-	
-	struct rpd_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
-		Int32 :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
-		char :ref:`p_type<doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397>`[4];
-	};
+        struct rpd_inform_type
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          io_status::Int32
+          line::Int32
+          p_type::NTuple{4,Cchar}
+
 .. _details-structrpd__inform__type:
 
 detailed documentation

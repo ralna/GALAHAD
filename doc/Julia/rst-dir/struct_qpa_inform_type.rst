@@ -11,31 +11,27 @@ qpa_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_qpa.h>
-	
-	struct qpa_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structqpa__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structqpa__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structqpa__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`major_iter<doxid-structqpa__inform__type_1a17745a543d52bf415bce3e518de5c244>`;
-		Int32 :ref:`iter<doxid-structqpa__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		Int32 :ref:`cg_iter<doxid-structqpa__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`factorization_status<doxid-structqpa__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		Int64 :ref:`factorization_integer<doxid-structqpa__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structqpa__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`nfacts<doxid-structqpa__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		Int32 :ref:`nmods<doxid-structqpa__inform__type_1aedcbf93d59a135329f358f366e37cc94>`;
-		Int32 :ref:`num_g_infeas<doxid-structqpa__inform__type_1ad05d7e095223165473fa80bd34520fb4>`;
-		Int32 :ref:`num_b_infeas<doxid-structqpa__inform__type_1a9ac73703449a79c042833709b93cbba5>`;
-		T :ref:`obj<doxid-structqpa__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		T :ref:`infeas_g<doxid-structqpa__inform__type_1a3e76c2cdb1a38096c0ab34782ac6497b>`;
-		T :ref:`infeas_b<doxid-structqpa__inform__type_1a3001ce44f7449e075ae83fde8439c8df>`;
-		T :ref:`merit<doxid-structqpa__inform__type_1a231e0f500c3a8e0e9acfa786b03381d9>`;
-		struct :ref:`qpa_time_type<doxid-structqpa__time__type>` :ref:`time<doxid-structqpa__inform__type_1af9a10dd74244e6c12e136ae0828ae3a7>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structqpa__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-	};
+        struct qpa_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          major_iter::Int32
+          iter::Int32
+          cg_iter::Int32
+          factorization_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          nfacts::Int32
+          nmods::Int32
+          num_g_infeas::Int32
+          num_b_infeas::Int32
+          obj::T
+          infeas_g::T
+          infeas_b::T
+          merit::T
+          time::qpa_time_type{T}
+          sls_inform::sls_inform_type{T}
+
 .. _details-structqpa__inform__type:
 
 detailed documentation

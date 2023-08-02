@@ -229,32 +229,32 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type T that holds the value of the trust-region radius, :math:`\Delta > 0`.
+		- is a scalar variable pointer of type T that holds the value of the trust-region radius, $\Delta > 0$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
@@ -313,37 +313,37 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type T that holds the value of the regularization weight, :math:`\sigma > 0`.
+		- is a scalar variable pointer of type T that holds the value of the regularization weight, $\sigma > 0$.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type T that holds the value of the regularization power, :math:`p \geq 2`.
+		- is a scalar variable pointer of type T that holds the value of the regularization power, $p \geq 2$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
@@ -395,22 +395,22 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the constant term $f$ in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type T that holds the value of the trust-region radius, :math:`\Delta > 0`.
+		- is a scalar variable pointer of type T that holds the value of the trust-region radius, $\Delta > 0$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
@@ -460,27 +460,27 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term :math:`c` in the objective function. The j-th component of c, j = 0, ... , n-1, contains :math:`c_j`.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the holds the constant term :math:`f` in the objective function.
+		- is a scalar variable pointer of type T that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type T that holds the value of the regularization weight, :math:`\sigma > 0`.
+		- is a scalar variable pointer of type T that holds the value of the regularization weight, $\sigma > 0$.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type T that holds the value of the regularization power, :math:`p \geq 2`.
+		- is a scalar variable pointer of type T that holds the value of the regularization power, $p \geq 2$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:

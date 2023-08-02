@@ -10,19 +10,15 @@ fit_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_fit.h>
+        struct fit_control_type
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
 	
-	struct fit_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structfit__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structfit__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structfit__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structfit__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Bool :ref:`space_critical<doxid-structfit__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structfit__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structfit__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
 .. _details-structfit__control__type:
 
 detailed documentation

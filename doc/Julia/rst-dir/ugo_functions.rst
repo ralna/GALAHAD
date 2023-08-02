@@ -106,12 +106,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- x_l
 
-		- is a scalar variable of type T, that holds the value :math:`x^l` of the lower bound on the optimization variable :math:`x`.
+		- is a scalar variable of type T, that holds the value $x^l$ of the lower bound on the optimization variable $x$.
 
 	*
 		- x_u
 
-		- is a scalar variable of type T, that holds the value :math:`x^u` of the upper bound on the optimization variable :math:`x`.
+		- is a scalar variable of type T, that holds the value $x^u$ of the upper bound on the optimization variable $x$.
 
 .. index:: pair: function; ugo_reset_control
 .. _doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40:
@@ -206,22 +206,22 @@ This version is for the case where all function/derivative information is availa
 	*
 		- x
 
-		- is a scalar variable of type T, that holds the value of the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the value of the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- f
 
-		- is a scalar variable of type T, that holds the the value of the objective function :math:`f(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the objective function $f(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- g
 
-		- is a scalar variable of type T, that holds the the value of the gradient of the objective function :math:`f^{\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the gradient of the objective function $f^{\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- h
 
-		- is a scalar variable of type T, that holds the the value of the second derivative of the objective function :math:`f^{\prime\prime}(x)` at the approximate global minimizer :math:`x` after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the second derivative of the objective function $f^{\prime\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- eval_fgh
@@ -233,7 +233,7 @@ This version is for the case where all function/derivative information is availa
 
 		  	eval_fgh(x, f, g, h, userdata)
 
-		  The value of the objective function :math:`f(x)` and its first derivative :math:`f^{\prime}(x)` evaluated at x= :math:`x` must be assigned to f and g respectively, and the function return value set to 0. In addition, if control.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative :math:`f^{\prime\prime}(x)` in h; it need not be assigned otherwise. If the evaluation is impossible at x, return should be set to a nonzero value.
+		  The value of the objective function $f(x)$ and its first derivative $f^{\prime}(x)$ evaluated at x= $x$ must be assigned to f and g respectively, and the function return value set to 0. In addition, if control.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative $f^{\prime\prime}(x)$ in h; it need not be assigned otherwise. If the evaluation is impossible at x, return should be set to a nonzero value.
 
 .. index:: pair: function; ugo_solve_reverse
 .. _doxid-galahad__ugo_8h_1a0b8f123f8e67bb0cb8a27c5ce87c824c:
@@ -287,11 +287,11 @@ This version is for the case where function/derivative information is only avail
 
 
 
-		  * 3. The user should compute the objective function value :math:`f(x)` and its first derivative :math:`f^{\prime}(x)`, and then re-enter the function. The required values should be set in f and g respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate :math:`f(x)` or :math:`f^{\prime}(x)` - for instance, if the function or its first derivative are undefined at x - the user need not set f or g, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = false.
+		  * 3. The user should compute the objective function value $f(x)$ and its first derivative $f^{\prime}(x)$, and then re-enter the function. The required values should be set in f and g respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate $f(x)$ or $f^{\prime}(x)$ - for instance, if the function or its first derivative are undefined at x - the user need not set f or g, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = false.
 
 
 
-		  * 4. The user should compute the objective function value :math:`f(x)` and its first two derivatives :math:`f^{\prime}(x)` and :math:`f^{\prime\prime}(x)` at x= :math:`x`, and then re-enter the function. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate :math:`f(x)`, :math:`f^{\prime}(x)` or :math:`f^{\prime\prime}(x)` - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = true.
+		  * 4. The user should compute the objective function value $f(x)$ and its first two derivatives $f^{\prime}(x)$ and $f^{\prime\prime}(x)$ at x= $x$, and then re-enter the function. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0. If the user is unable to evaluate $f(x)$, $f^{\prime}(x)$ or $f^{\prime\prime}(x)$ - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value. This value can only occur when control.second_derivatives_available = true.
 
 	*
 		- eval_status
@@ -301,22 +301,22 @@ This version is for the case where function/derivative information is only avail
 	*
 		- x
 
-		- is a scalar variable of type T, that holds the next value of :math:`x` at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that holds the next value of $x$ at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
 
 	*
 		- f
 
-		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f(x)` if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f(x)$ if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
 
 	*
 		- g
 
-		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f^{\prime}(x)` if required by status > 0 (see above), and will return the value of the first derivative of :math:`f` at the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f^{\prime}(x)$ if required by status > 0 (see above), and will return the value of the first derivative of $f$ at the approximate global minimizer when status = 0
 
 	*
 		- h
 
-		- is a scalar variable of type T, that must be set by the user to hold the value of :math:`f^{\prime\prime}(x)` if required by status > 0 (see above), and will return the value of the second derivative of :math:`f` at the approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f^{\prime\prime}(x)$ if required by status > 0 (see above), and will return the value of the second derivative of $f$ at the approximate global minimizer when status = 0
 
 .. index:: pair: function; ugo_information
 .. _doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee:

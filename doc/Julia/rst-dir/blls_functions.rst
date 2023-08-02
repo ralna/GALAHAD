@@ -120,27 +120,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian :math:`A`. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian $A$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of :math:`A` in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 or m+1 and type Int32 that holds the starting position of each row of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of :math:`A`, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 or m+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of $A$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; blls_import_without_a
 .. _doxid-galahad__blls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c:
@@ -238,7 +238,7 @@ Reset control parameters after import if required.
                                     A_ne, A_val, b, x_l, x_u, x, z, c, g, 
                                     x_stat, w, eval_prec)
 
-Solve the bound-constrained linear least-squares problem when the Jacobian :math:`A` is available.
+Solve the bound-constrained linear least-squares problem when the Jacobian $A$ is available.
 
 
 
@@ -300,57 +300,57 @@ Solve the bound-constrained linear least-squares problem when the Jacobian :math
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the constant term :math:`b` in the residuals. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the values of the residuals :math:`c = A x - b`. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i`.
+		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the values of the gradient :math:`g = A^T c`. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- w
 
-		- is an optional one-dimensional array of size m and type T that holds the values :math:`w` of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+		- is an optional one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
 
 	*
 		- eval_prec
@@ -363,7 +363,7 @@ Solve the bound-constrained linear least-squares problem when the Jacobian :math
 		  	Int32 eval_prec( int n, const double v[], double p[],
 		  	               const void *userdata )
 
-		  The product :math:`p = P^{-1} v` involving the user's preconditioner :math:`P` with the vector v = :math:`v`, the result :math:`p` must be retured in p, and the function return value set to 0. If the evaluation is impossible, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $p = P^{-1} v$ involving the user's preconditioner $P$ with the vector v = $v$, the result $p$ must be retured in p, and the function return value set to 0. If the evaluation is impossible, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
 
 .. index:: pair: function; blls_solve_reverse_a_prod
 .. _doxid-galahad__blls_8h_1ac139bc1c65cf12cb532c4ab09f3af9d0:
@@ -376,7 +376,7 @@ Solve the bound-constrained linear least-squares problem when the Jacobian :math
                                            nz_v, nz_v_start, nz_v_end, nz_p, 
                                            nz_p_end, w)
 
-Solve the bound-constrained linear least-squares problem when the products of the Jacobian :math:`A` and its transpose with specified vectors may be computed by the calling program.
+Solve the bound-constrained linear least-squares problem when the products of the Jacobian $A$ and its transpose with specified vectors may be computed by the calling program.
 
 
 
@@ -420,27 +420,27 @@ Solve the bound-constrained linear least-squares problem when the products of th
 
 		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
 
-		  * 2. The product :math:`Av` of the residual Jacobian :math:`A` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`Av` must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
+		  * 2. The product $Av$ of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $Av$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
 
 
 
-		  * 3. The product :math:`A^Tv` of the transpose of the residual Jacobian :math:`A` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`A^Tv` must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
+		  * 3. The product $A^Tv$ of the transpose of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $A^Tv$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
 
 
 
-		  * 4. The product :math:`Av` of the residual Jacobian :math:`A` with a given sparse output vector :math:`v` is required from the user. The nonzero components of the vector :math:`v` will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v and the product :math:`Av` must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged; The remaining components of v should be ignored. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
+		  * 4. The product $Av$ of the residual Jacobian $A$ with a given sparse output vector $v$ is required from the user. The nonzero components of the vector $v$ will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v and the product $Av$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged; The remaining components of v should be ignored. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
 
 
 
-		  * 5. The nonzero components of the product :math:`Av` of the residual Jacobian :math:`A` with a given sparse output vector :math:`v` is required from the user. The nonzero components of the vector :math:`v` will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining components of v should be ignored. The resulting **nonzeros** in the product :math:`Av` must be placed in their appropriate comnponents of p, while a list of indices of the nonzeros placed in nz_out[0 : nz_out_end-1] and the number of nonzeros recorded in nz_out_end. Additionally, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v, nz_out_end and nz_out need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
+		  * 5. The nonzero components of the product $Av$ of the residual Jacobian $A$ with a given sparse output vector $v$ is required from the user. The nonzero components of the vector $v$ will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining components of v should be ignored. The resulting **nonzeros** in the product $Av$ must be placed in their appropriate comnponents of p, while a list of indices of the nonzeros placed in nz_out[0 : nz_out_end-1] and the number of nonzeros recorded in nz_out_end. Additionally, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v, nz_out_end and nz_out need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
 
 
 
-		  * 6. A subset of the product :math:`A^Tv` of the transpose of the residual Jacobian :math:`A` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and components nz_in[nz_in_start-1:nz_in_end-1] of the product :math:`A^Tv` must be returned in the relevant components of p (the remaining components should not be set), status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
+		  * 6. A subset of the product $A^Tv$ of the transpose of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and components nz_in[nz_in_start-1:nz_in_end-1] of the product $A^Tv$ must be returned in the relevant components of p (the remaining components should not be set), status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
 
 
 
-		  * 7. The product :math:`P^{-1}v` of the inverse of the preconditioner :math:`P` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`P^{-1} v` must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value. This value of status can only occur if the user has set control.preconditioner = 2.
+		  * 7. The product $P^{-1}v$ of the inverse of the preconditioner $P$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $P^{-1} v$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value. This value of status can only occur if the user has set control.preconditioner = 2.
 
 	*
 		- eval_status
@@ -460,42 +460,42 @@ Solve the bound-constrained linear least-squares problem when the products of th
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the constant term :math:`b` in the residuals. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the values of the residuals :math:`c = A x - b`. The i-th component of c, i = 0, ... , m-1, contains :math:`c_i`.
+		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the values of the gradient :math:`g = A^T c`. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v
@@ -535,7 +535,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
 	*
 		- w
 
-		- is an optional one-dimensional array of size m and type T that holds the values :math:`w` of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+		- is an optional one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
 
 .. index:: pair: function; blls_information
 .. _doxid-galahad__blls_8h_1a457b8ee7c630715bcb43427f254b555f:

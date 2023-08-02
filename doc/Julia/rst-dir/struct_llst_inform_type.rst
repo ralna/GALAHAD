@@ -10,25 +10,21 @@ llst_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_llst.h>
-	
-	struct llst_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structllst__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structllst__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`factorizations<doxid-structllst__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
-		Int32 :ref:`len_history<doxid-structllst__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
-		T :ref:`r_norm<doxid-structllst__inform__type_1ae908410fabf891cfd89626c3605c38ca>`;
-		T :ref:`x_norm<doxid-structllst__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		T :ref:`multiplier<doxid-structllst__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		char :ref:`bad_alloc<doxid-structllst__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`llst_time_type<doxid-structllst__time__type>` :ref:`time<doxid-structllst__inform__type_1a10b8942e28c4ade61bd53f705e70b05f>`;
-		struct :ref:`llst_history_type<doxid-structllst__history__type>` :ref:`history<doxid-structllst__inform__type_1a486763b587db55dd7984ae315c4a6513>`[100];
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structllst__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structllst__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`ir_inform_type<doxid-structir__inform__type>` :ref:`ir_inform<doxid-structllst__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5>`;
-	};
+        struct llst_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          factorizations::Int32
+          len_history::Int32
+          r_norm::T
+          x_norm::T
+          multiplier::T
+          bad_alloc::NTuple{81,Cchar}
+          time::llst_time_type{T}
+          history::NTuple{100,llst_history_type{T}}
+          sbls_inform::sbls_inform_type{T}
+          sls_inform::sls_inform_type{T}
+          ir_inform::ir_inform_type{T}
+
 .. _details-structllst__inform__type:
 
 detailed documentation
@@ -57,9 +53,9 @@ reported return status:
 
 * -3 n and/or Delta is not positive
 
-* -10 the factorization of :math:`K(\lambda)` failed
+* -10 the factorization of $K(\lambda)$ failed
 
-* -15 :math:`S` does not appear to be strictly diagonally dominant
+* -15 $S$ does not appear to be strictly diagonally dominant
 
 * -16 ill-conditioning has prevented furthr progress
 
@@ -91,7 +87,7 @@ the number of factorizations performed
 
 	Int32 len_history
 
-the number of (:math:`\|x\|_S`, :math:`\lambda`) pairs in the history
+the number of ($\|x\|_S$, $\lambda$) pairs in the history
 
 .. index:: pair: variable; r_norm
 .. _doxid-structllst__inform__type_1ae908410fabf891cfd89626c3605c38ca:
@@ -101,7 +97,7 @@ the number of (:math:`\|x\|_S`, :math:`\lambda`) pairs in the history
 
 	T r_norm
 
-corresponding value of the two-norm of the residual, :math:`\|A x(\lambda) - b\|`
+corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structllst__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -111,7 +107,7 @@ corresponding value of the two-norm of the residual, :math:`\|A x(\lambda) - b\|
 
 	T x_norm
 
-the S-norm of x, :math:`\|x\|_S`
+the S-norm of x, $\|x\|_S$
 
 .. index:: pair: variable; multiplier
 .. _doxid-structllst__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:

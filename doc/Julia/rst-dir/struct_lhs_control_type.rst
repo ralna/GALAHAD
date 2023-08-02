@@ -10,19 +10,15 @@ lhs_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lhs.h>
-	
-	struct lhs_control_type {
-		// fields
-	
-		Int32 :ref:`error<doxid-structlhs__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structlhs__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structlhs__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`duplication<doxid-structlhs__control__type_1a2c395022ac7da3f286b91b8f79a8edd6>`;
-		Bool :ref:`space_critical<doxid-structlhs__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structlhs__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structlhs__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct lhs_control_type
+          error::Int32
+          out::Int32
+          print_level::Int32
+          duplication::Int32
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structlhs__control__type:
 
 detailed documentation

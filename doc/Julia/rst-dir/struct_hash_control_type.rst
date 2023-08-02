@@ -10,18 +10,14 @@ hash_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_hash.h>
-	
-	struct hash_control_type {
-		// fields
-	
-		Int32 :ref:`error<doxid-structhash__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structhash__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structhash__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Bool :ref:`space_critical<doxid-structhash__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structhash__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structhash__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-	};
+        struct hash_control_type
+          error::Int32
+          out::Int32
+          print_level::Int32
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          prefix::NTuple{31,Cchar}
+
 .. _details-structhash__control__type:
 
 detailed documentation
@@ -62,9 +58,9 @@ general output occurs on stream out
 
 the level of output required. Possible values are:
 
-* :math:`\leq` 0 no output,
+* $\leq$ 0 no output,
 
-* :math:`\geq` 1 debugging
+* $\geq$ 1 debugging
 
 .. index:: pair: variable; space_critical
 .. _doxid-structhash__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

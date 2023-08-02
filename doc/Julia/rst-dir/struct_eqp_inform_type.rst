@@ -7,28 +7,23 @@ eqp_inform_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_eqp.h>
-	
-	struct eqp_inform_type {
-		// components
-	
-		Int32 :ref:`status<doxid-structeqp__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structeqp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structeqp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`cg_iter<doxid-structeqp__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		Int32 :ref:`cg_iter_inter<doxid-structeqp__inform__type_1af9cff1fabd7b996847d1c93490c8db15>`;
-		Int64 :ref:`factorization_integer<doxid-structeqp__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structeqp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		T :ref:`obj<doxid-structeqp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		struct :ref:`eqp_time_type<doxid-structeqp__time__type>` :ref:`time<doxid-structeqp__inform__type_1ab4ea6394e359e4f2ba2543eda324643a>`;
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structeqp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structeqp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
-		struct :ref:`gltr_inform_type<doxid-structgltr__inform__type>` :ref:`gltr_inform<doxid-structeqp__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46>`;
-	};
+        struct eqp_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          cg_iter::Int32
+          cg_iter_inter::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          obj::T
+          time::eqp_time_type{T}
+          fdc_inform::fdc_inform_type{T}
+          sbls_inform::sbls_inform_type{T}
+          gltr_inform::gltr_inform_type{T}
+
 .. _details-structeqp__inform__type:
 
 detailed documentation

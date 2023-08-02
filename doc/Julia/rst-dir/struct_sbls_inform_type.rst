@@ -10,30 +10,26 @@ sbls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_sbls.h>
-	
-	struct sbls_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structsbls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structsbls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structsbls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		Int32 :ref:`sort_status<doxid-structsbls__inform__type_1acb9e43ddb17591d930fc31faa3e6f69f>`;
-		Int64 :ref:`factorization_integer<doxid-structsbls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		Int64 :ref:`factorization_real<doxid-structsbls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		Int32 :ref:`preconditioner<doxid-structsbls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
-		Int32 :ref:`factorization<doxid-structsbls__inform__type_1a108359f1209601e6c6074c215e3abd8b>`;
-		Int32 :ref:`d_plus<doxid-structsbls__inform__type_1a9e94a7e5692a82e8c239c857be5b80ea>`;
-		Int32 :ref:`rank<doxid-structsbls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		Bool :ref:`rank_def<doxid-structsbls__inform__type_1aad74061a53e6daf7ca65b2e82290871b>`;
-		Bool :ref:`perturbed<doxid-structsbls__inform__type_1a6e04ee4d6dc38d2c5231d39d4f21be75>`;
-		Int32 :ref:`iter_pcg<doxid-structsbls__inform__type_1a1694e6d072d1a8d796f85f4da8a054af>`;
-		T :ref:`norm_residual<doxid-structsbls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
-		Bool :ref:`alternative<doxid-structsbls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
-		struct :ref:`sbls_time_type<doxid-structsbls__time__type>` :ref:`time<doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structsbls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
-		struct :ref:`uls_inform_type<doxid-structuls__inform__type>` :ref:`uls_inform<doxid-structsbls__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c>`;
-	};
+        struct sbls_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+          sort_status::Int32
+          factorization_integer::Int64
+          factorization_real::Int64
+          preconditioner::Int32
+          factorization::Int32
+          d_plus::Int32
+          rank::Int32
+          rank_def::Bool
+          perturbed::Bool
+          iter_pcg::Int32
+          norm_residual::T
+          alternative::Bool
+          time::sbls_time_type{T}
+          sls_inform::sls_inform_type{T}
+          uls_inform::uls_inform_type{T}
+
 .. _details-structsbls__inform__type:
 
 detailed documentation
@@ -142,7 +138,7 @@ how many of the diagonals in the factorization are positive
 
 	Int32 rank
 
-the computed rank of :math:`A`
+the computed rank of $A$
 
 .. index:: pair: variable; rank_def
 .. _doxid-structsbls__inform__type_1aad74061a53e6daf7ca65b2e82290871b:
@@ -192,7 +188,7 @@ the norm of the residual
 
 	Bool alternative
 
-has an "alternative" :math:`y` : :math:`K y = 0` and :math:`y^T c > 0` been found when trying to solve :math:`K y = c` for generic :math:`K`?
+has an "alternative" $y$ : $K y = 0$ and $y^T c > 0$ been found when trying to solve $K y = c$ for generic $K$?
 
 .. index:: pair: variable; time
 .. _doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639:

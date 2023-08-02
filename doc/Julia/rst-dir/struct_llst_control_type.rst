@@ -10,33 +10,29 @@ llst_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_llst.h>
-	
-	struct llst_control_type {
-		// fields
-	
-		Bool :ref:`f_indexing<doxid-structllst__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		Int32 :ref:`error<doxid-structllst__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		Int32 :ref:`out<doxid-structllst__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		Int32 :ref:`print_level<doxid-structllst__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		Int32 :ref:`new_a<doxid-structllst__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		Int32 :ref:`new_s<doxid-structllst__control__type_1a2b6594b40a418a477a825143c48da0e9>`;
-		Int32 :ref:`max_factorizations<doxid-structllst__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
-		Int32 :ref:`taylor_max_degree<doxid-structllst__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		T :ref:`initial_multiplier<doxid-structllst__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
-		T :ref:`lower<doxid-structllst__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		T :ref:`upper<doxid-structllst__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		T :ref:`stop_normal<doxid-structllst__control__type_1a3573530258a38cc836b106b9f7a54565>`;
-		Bool :ref:`equality_problem<doxid-structllst__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb>`;
-		Bool :ref:`use_initial_multiplier<doxid-structllst__control__type_1a4d2667d00744ca0f4cc3a2e19bfaae17>`;
-		Bool :ref:`space_critical<doxid-structllst__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		Bool :ref:`deallocate_error_fatal<doxid-structllst__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`definite_linear_solver<doxid-structllst__control__type_1a9b46b7a8e0af020499e645bef711f634>`[31];
-		char :ref:`prefix<doxid-structllst__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structllst__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structllst__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structllst__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
-	};
+        struct llst_control_type{T}
+          f_indexing::Bool
+          error::Int32
+          out::Int32
+          print_level::Int32
+          new_a::Int32
+          new_s::Int32
+          max_factorizations::Int32
+          taylor_max_degree::Int32
+          initial_multiplier::T
+          lower::T
+          upper::T
+          stop_normal::T
+          equality_problem::Bool
+          use_initial_multiplier::Bool
+          space_critical::Bool
+          deallocate_error_fatal::Bool
+          definite_linear_solver::NTuple{31,Cchar}
+          prefix::NTuple{31,Cchar}
+          sbls_control::sbls_control_type{T}
+          sls_control::sls_control_type{T}
+          ir_control::ir_control_type{T}
+
 .. _details-structllst__control__type:
 
 detailed documentation
@@ -95,7 +91,7 @@ controls level of diagnostic output
 
 	Int32 new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are
+how much of $A$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -111,7 +107,7 @@ how much of :math:`A` has changed since the previous call. Possible values are
 
 	Int32 new_s
 
-how much of :math:`S` has changed since the previous call. Possible values are
+how much of $S$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -177,7 +173,7 @@ see lower
 
 	T stop_normal
 
-stop when :math:`| \|x\| -` radius :math:`| \leq` max( stop_normal \* max( 1, radius )
+stop when $| \|x\| -$ radius $| \leq$ max( stop_normal \* max( 1, radius )
 
 .. index:: pair: variable; equality_problem
 .. _doxid-structllst__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb:

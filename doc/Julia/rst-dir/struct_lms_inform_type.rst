@@ -10,18 +10,14 @@ lms_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_lms.h>
-	
-	struct lms_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		Int32 :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
-		Bool :ref:`updates_skipped<doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8>`;
-		char :ref:`bad_alloc<doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`lms_time_type<doxid-structlms__time__type>` :ref:`time<doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05>`;
-	};
+        struct lms_inform_type{T}
+          status::Int32
+          alloc_status::Int32
+          length::Int32
+          updates_skipped::Bool
+          bad_alloc::NTuple{81,Cchar}
+          time::lms_time_type{T}
+
 .. _details-structlms__inform__type:
 
 detailed documentation

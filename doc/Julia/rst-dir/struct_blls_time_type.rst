@@ -7,24 +7,18 @@ blls_time_type structure
 .. toctree::
 	:hidden:
 
-
 .. ref-code-block:: julia
-	:class: doxyrest-overview-code-block
 
-	#include <galahad_blls.h>
-	
-	struct blls_time_type {
-		// components
-	
-		T :ref:`total<doxid-structblls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		T :ref:`analyse<doxid-structblls__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		T :ref:`factorize<doxid-structblls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		T :ref:`solve<doxid-structblls__time__type_1a4c971b10c915041b89daa05a29125376>`;
-		T :ref:`clock_total<doxid-structblls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		T :ref:`clock_analyse<doxid-structblls__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		T :ref:`clock_factorize<doxid-structblls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		T :ref:`clock_solve<doxid-structblls__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-	};
+        struct blls_time_type{T}
+          total::T
+          analyse::T
+          factorize::T
+          solve::T
+          clock_total::T
+          clock_analyse::T
+          clock_factorize::T
+          clock_solve::T
+
 .. _details-structblls__time__type:
 
 detailed documentation

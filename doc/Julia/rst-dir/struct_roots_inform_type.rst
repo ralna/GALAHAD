@@ -10,15 +10,11 @@ roots_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-	#include <galahad_roots.h>
-	
-	struct roots_inform_type {
-		// fields
-	
-		Int32 :ref:`status<doxid-structroots__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		Int32 :ref:`alloc_status<doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structroots__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-	};
+        struct roots_inform_type
+          status::Int32
+          alloc_status::Int32
+          bad_alloc::NTuple{81,Cchar}
+
 .. _details-structroots__inform__type:
 
 detailed documentation
