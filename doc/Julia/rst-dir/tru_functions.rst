@@ -26,15 +26,20 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see
+                  :ref:`tru_control_type
+                  <doxid-structtru__control__type>`)
 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The initialization was succesful.
+		  * **0**
+
+                    The initialization was successful.
 
 .. index:: pair: function; tru_read_specfile
 .. _doxid-galahad__tru_8h_1a870a28132f2747e12d7c93c9ce6ffd01:
@@ -44,7 +49,11 @@ Set default control values and initialize private data
 
         function tru_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNTRU.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/tru.pdf for a list of keywords that may be set.
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNTRU.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/tru.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -54,12 +63,15 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- control
 
-		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see
+                  :ref:`tru_control_type
+                  <doxid-structtru__control__type>`)
 
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a character string containing the name of the
+                  specification file
 
 .. index:: pair: function; tru_import
 .. _doxid-galahad__tru_8h_1a8175a402569a69faa351e2dcd3c48b94:
@@ -67,7 +79,7 @@ Read the content of a specification file, and assign values associated with give
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function tru_import(control, data, status, n, 
+        function tru_import(control, data, status, n,
                             H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -80,7 +92,10 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure whose members provide control paramters
+                  for the remaining prcedures (see
+                  :ref:`tru_control_type
+                  <doxid-structtru__control__type>`)
 
 	*
 		- data
@@ -90,46 +105,91 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+                    The import was successful
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
+
+		  * **-2**
+
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
+
+		  * **-3**
+
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type Int32 that holds the
+                  number of variables
 
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed
+		- is a one-dimensional array of type Vararg{Cchar} that
+                  specifies the :ref:`symmetric storage scheme
+                  <doxid-index_1main_symmetric_matrices>` used for the
+                  Hessian. It should be one of 'coordinate',
+                  'sparse_by_rows', 'dense', 'diagonal' or 'absent', the
+                  latter if access to the Hessian is via matrix-vector
+                  products; lower or upper case variants are allowed
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type Int32 that holds the
+                  number of entries in the lower triangular part of H in
+                  the sparse co-ordinate storage scheme. It need not be
+                  set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32
+                  that holds the row indices of the lower triangular
+                  part of H in the sparse co-ordinate storage scheme. It
+                  need not be set for any of the other three schemes,
+                  and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32
+                  that holds the column indices of the lower triangular
+                  part of H in either the sparse co-ordinate, or the
+                  sparse row-wise storage scheme. It need not be set
+                  when the dense or diagonal storage schemes are used,
+                  and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type Int32
+                  that holds the starting position of each row of the
+                  lower triangular part of H, as well as the total
+                  number of entries, in the sparse row-wise storage
+                  scheme. It need not be set when the other schemes are
+                  used, and in this case can be NULL
 
 .. index:: pair: function; tru_reset_control
 .. _doxid-galahad__tru_8h_1a97ce8d0956fdb4165504433a93714495:
@@ -149,7 +209,10 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure whose members provide control paramters
+                  for the remaining prcedures (see
+                  :ref:`tru_control_type
+                  <doxid-structtru__control__type>`)
 
 	*
 		- data
@@ -159,10 +222,11 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is
+                    ready for the solve phase
 
 .. index:: pair: function; tru_solve_with_mat
 .. _doxid-galahad__tru_8h_1a638a31d7027eaf1ae39aa7278e7c5c5a:
@@ -170,12 +234,14 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function tru_solve_with_mat(data, userdata, status, n, x, g, ne, 
+        function tru_solve_with_mat(data, userdata, status, n, x, g, ne,
                                     eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, and all function/derivative information is available by function calls.
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided
+specifically, and all function/derivative information is available by
+function calls.
 
 .. rubric:: Parameters:
 
@@ -190,111 +256,194 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	*
 		- userdata
 
-		- is a structure that allows data to be passed into the function and derivative evaluation programs.
+		- is a structure that allows data to be passed into the
+                  function and derivative evaluation programs.
 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful
+		  * **0**
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+                    The run was successful
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -7. The objective function appears to be unbounded from below
+		  * **-2**
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-3**
 
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-7**
 
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+                    The objective function appears to be unbounded from
+                    below
 
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-9**
 
-		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
+
+		  * **-10**
+
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
+
+		  * **-11**
+
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
+
+		  * **-16**
+
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
+
+		  * **-18**
+
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-19**
+
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-82**
+
+                    The user has forced termination of solver by
+                    removing the file named control.alive_file from unit
+                    unit control.alive_unit.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type Int32 that holds the
+                  number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the values $x$ of the optimization
+                  variables. The j-th component of x, j = 0, ... , n-1,
+                  contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the gradient $g = \nabla_xf(x)$ of the objective
+                  function. The j-th component of g, j = 0, ... , n-1,
+                  contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type Int32 that holds the
+                  number of entries in the lower triangular part of the
+                  Hessian matrix $H$.
 
 	*
 		- eval_f
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_f( int n, const double x[], double *f, const void *userdata )
+		  	eval_f(n, x, f, userdata)
 
-		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
+		  The value of the objective function $f(x)$ evaluated
+		  at x= $x$ must be assigned to f, and the function
+		  return value set to 0. If the evaluation is impossible
+		  at x, return should be set to a nonzero value. Data
+		  may be passed into ``eval_f`` via the structure
+		  ``userdata``.
 
 	*
 		- eval_g
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_g( int n, const double x[], double g[], const void *userdata )
+		  	eval_g(n, x, g, userdata)
 
-		  The components of the gradient $g = \nabla_x f(x)$ of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
+		  The components of the gradient $g = \nabla_x f(x)$ of
+		  the objective function evaluated at x= $x$ must be
+		  assigned to g, and the function return value set
+		  to 0. If the evaluation is impossible at x, return
+		  should be set to a nonzero value. Data may be passed
+		  into ``eval_g`` via the structure ``userdata``.
 
 	*
 		- eval_h
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_h( int n, int ne, const double x[], double h[],
-		  	            const void *userdata )
+		  	eval_h(n, ne, x, h, userdata)
 
-		  The nonzeros of the Hessian $H = \nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ must be assigned to h in the same order as presented to tru_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
+		  The nonzeros of the Hessian $H = \nabla_{xx}f(x)$ of
+		  the objective function evaluated at x= $x$ must be
+		  assigned to h in the same order as presented to
+		  tru_import, and the function return value set to 0. If
+		  the evaluation is impossible at x, return should be
+		  set to a nonzero value. Data may be passed into
+		  ``eval_h`` via the structure ``userdata``.
 
 	*
 		- eval_prec
 
-		-
-		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
+		- is an optional user-supplied function that may be
+		  NULL. If non-NULL, it must have the following
+		  signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_prec( int n, const double x[], double u[], const double v[],
-		  	               const void *userdata )
+		  	eval_prec(n, x, u, v, userdata)
 
-		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $u = P(x) v$ of the user's preconditioner
+		  $P(x)$ evaluated at $x$ with the vector v = $v$, the
+		  result $u$ must be retured in u, and the function
+		  return value set to 0. If the evaluation is impossible
+		  at x, return should be set to a nonzero value. Data
+		  may be passed into ``eval_prec`` via the structure
+		  ``userdata``.
 
 .. index:: pair: function; tru_solve_without_mat
 .. _doxid-galahad__tru_8h_1aaa508227d17d8da723bb0401023acd96:
@@ -302,12 +451,14 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function tru_solve_without_mat(data, userdata, status, n, x, g, 
+        function tru_solve_without_mat(data, userdata, status, n, x, g,
                                        eval_f, eval_g, eval_hprod, eval_prec)
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, and all function/derivative information is available by function calls.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is
+provided by Hessian-vector products, and all function/derivative
+information is available by function calls.
 
 .. rubric:: Parameters:
 
@@ -322,108 +473,189 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 	*
 		- userdata
 
-		- is a structure that allows data to be passed into the function and derivative evaluation programs.
+		- is a structure that allows data to be passed into the
+                  function and derivative evaluation programs.
 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful
+		  * **0**
 
+                    The run was successful
 
+		  * **-1**
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -7. The objective function appears to be unbounded from below
+		  * **-3**
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-7**
 
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+                    The objective function appears to be unbounded from
+                    below
 
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-9**
 
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-10**
 
-		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
+
+		  * **-11**
+
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
+
+		  * **-16**
+
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
+
+		  * **-18**
+
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-19**
+
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-82**
+
+                    The user has forced termination of solver by
+                    removing the file named control.alive_file from unit
+                    unit control.alive_unit.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type Int32 that holds the
+                  number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the values $x$ of the optimization
+                  variables. The j-th component of x, j = 0, ... , n-1,
+                  contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the gradient $g = \nabla_xf(x)$ of the objective
+                  function. The j-th component of g, j = 0, ... , n-1,
+                  contains $g_j$.
 
 	*
 		- eval_f
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_f( int n, const double x[], double *f, const void *userdata )
+		  	eval_f(n, x, f, userdata)
 
-		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
+		  The value of the objective function $f(x)$ evaluated
+		  at x= $x$ must be assigned to f, and the function
+		  return value set to 0. If the evaluation is impossible
+		  at x, return should be set to a nonzero value. Data
+		  may be passed into ``eval_f`` via the structure
+		  ``userdata``.
 
 	*
 		- eval_g
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_g( int n, const double x[], double g[], const void *userdata )
+		  	eval_g(n, x, g, userdata)
 
-		  The components of the gradient $g = \nabla_x f(x)$ of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
+		  The components of the gradient $g = \nabla_x f(x)$ of
+		  the objective function evaluated at x= $x$ must be
+		  assigned to g, and the function return value set
+		  to 0. If the evaluation is impossible at x, return
+		  should be set to a nonzero value. Data may be passed
+		  into ``eval_g`` via the structure ``userdata``.
 
 	*
 		- eval_hprod
 
-		-
-		  is a user-supplied function that must have the following signature:
+		- is a user-supplied function that must have the
+		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_hprod( int n, const double x[], double u[], const double v[],
-		  	                bool got_h, const void *userdata )
+		  	eval_hprod(n, x, u, v, got_h, userdata)
 
-		  The sum $u + \nabla_{xx}f(x) v$ of the product of the Hessian $\nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ with the vector v= $v$ and the vector $ $u$ must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
+		  The sum $u + \nabla_{xx}f(x) v$ of the product of the
+		  Hessian $\nabla_{xx}f(x)$ of the objective function
+		  evaluated at x= $x$ with the vector v= $v$ and the
+		  vector $ $u$ must be returned in u, and the function
+		  return value set to 0. If the evaluation is impossible
+		  at x, return should be set to a nonzero value. The
+		  Hessian has already been evaluated or used at x if
+		  got_h is true. Data may be passed into ``eval_hprod``
+		  via the structure ``userdata``.
 
 	*
 		- eval_prec
 
-		-
-		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
+		- is an optional user-supplied function that may be
+		  NULL. If non-NULL, it must have the following
+		  signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_prec( int n, const double x[], double u[], const double v[],
-		  	               const void *userdata )
+		  	eval_prec(n, x, u, v, userdata)
 
-		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $u = P(x) v$ of the user's preconditioner
+		  $P(x)$ evaluated at $x$ with the vector v = $v$, the
+		  result $u$ must be retured in u, and the function
+		  return value set to 0. If the evaluation is impossible
+		  at x, return should be set to a nonzero value. Data
+		  may be passed into ``eval_prec`` via the structure
+		  ``userdata``.
 
 .. index:: pair: function; tru_solve_reverse_with_mat
 .. _doxid-galahad__tru_8h_1a804863856294e362b724fca8953300d5:
@@ -431,12 +663,14 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function tru_solve_reverse_with_mat(data, status, eval_status, 
+        function tru_solve_reverse_with_mat(data, status, eval_status,
                                             n, x, f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, but function/derivative information is only available by returning to the calling procedure
+This call is for the case where $H = \nabla_{xx}f(x)$ is provided
+specifically, but function/derivative information is only available by
+returning to the calling procedure
 
 .. rubric:: Parameters:
 
@@ -451,89 +685,203 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful
+		  * **0**
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+                    The run was successful
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -7. The objective function appears to be unbounded from below
+		  * **-2**
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-3**
 
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-7**
 
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+                    The objective function appears to be unbounded from
+                    below
 
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-9**
 
-		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * 2. The user should compute the objective function value $f(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate $f(x)$ for instance, if the function is undefined at $x$ the user need not set f, but should then set eval_status to a non-zero value.
+		  * **-10**
 
-		  * 3. The user should compute the gradient of the objective function $\nabla_x f(x)$ at the point $x$ indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_x f(x)$ for instance if a component of the gradient is undefined at $x$ -the user need not set g, but should then set eval_status to a non-zero value.
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * 4. The user should compute the Hessian of the objective function $\nabla_{xx}f(x)$ at the point x indicated in $x$ and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of $H$ should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_{xx}f(x)$ for instance, if a component of the Hessian is undefined at $x$ the user need not set H_val, but should then set eval_status to a non-zero value.
+		  * **-11**
 
-		  * 6. The user should compute the product $u = P(x)v$ of their preconditioner $P(x)$ at the point x indicated in $x$ with the vector $v$ and then re-enter the function. The vector $v$ is given in v, the resulting vector $u = P(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
+
+		  * **-16**
+
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
+
+		  * **-18**
+
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-19**
+
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-82**
+
+                    The user has forced termination of solver by
+                    removing the file named control.alive_file from unit
+                    unit control.alive_unit.
+
+		  * **2**
+
+                    The user should compute the objective function value
+                    $f(x)$ at the point $x$ indicated in x and then
+                    re-enter the function. The required value should be
+                    set in f, and eval_status should be set to 0. If the
+                    user is unable to evaluate $f(x)$ for instance, if
+                    the function is undefined at $x$ the user need not
+                    set f, but should then set eval_status to a non-zero
+                    value.
+
+		  * **3**
+
+                    The user should compute the gradient of the
+                    objective function $\nabla_x f(x)$ at the point $x$
+                    indicated in x and then re-enter the function. The
+                    value of the i-th component of the g radient should
+                    be set in g[i], for i = 0, ..., n-1 and eval_status
+                    should be set to 0. If the user is unable to
+                    evaluate a component of $\nabla_x f(x)$ for instance
+                    if a component of the gradient is undefined at
+                    $x$ -the user need not set g, but should then set
+                    eval_status to a non-zero value.
+
+		  * **4**
+
+                    The user should compute the Hessian of the objective
+                    function $\nabla_{xx}f(x)$ at the point x indicated
+                    in $x$ and then re-enter the function. The value
+                    l-th component of the Hessian stored according to
+                    the scheme input in the remainder of $H$ should be
+                    set in H_val[l], for l = 0, ..., ne-1 and
+                    eval_status should be set to 0. If the user is
+                    unable to evaluate a component of $\nabla_{xx}f(x)$
+                    for instance, if a component of the Hessian is
+                    undefined at $x$ the user need not set H_val, but
+                    should then set eval_status to a non-zero value.
+
+		  * **6**
+
+                    The user should compute the product $u = P(x)v$ of
+                    their preconditioner $P(x)$ at the point x indicated
+                    in $x$ with the vector $v$ and then re-enter the
+                    function. The vector $v$ is given in v, the
+                    resulting vector $u = P(x)v$ should be set in u and
+                    eval_status should be set to 0. If the user is
+                    unable to evaluate the product for instance, if a
+                    component of the preconditioner is undefined at $x$
+                    the user need not set u, but should then set
+                    eval_status to a non-zero value.
 
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type Int32 that is used to
+                  indicate if objective function/gradient/Hessian values
+                  can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type Int32 that holds the
+                  number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the values $x$ of the optimization
+                  variables. The j-th component of x, j = 0, ... , n-1,
+                  contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the objective function.
+		- is a scalar variable pointer of type T that holds the
+                  value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the gradient $g = \nabla_xf(x)$ of the objective
+                  function. The j-th component of g, j = 0, ... , n-1,
+                  contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type Int32 that holds the
+                  number of entries in the lower triangular part of the
+                  Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type T that
+                  holds the values of the entries of the lower
+                  triangular part of the Hessian matrix $H$ in any of
+                  the available storage schemes.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that
+                  is used for reverse communication (see above for
+                  details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that
+                  is used for reverse communication (see above for
+                  details)
 
 .. index:: pair: function; tru_solve_reverse_without_mat
 .. _doxid-galahad__tru_8h_1a97252b83eaab0b4d5d3ac53e6b317206:
@@ -541,12 +889,14 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function tru_solve_reverse_without_mat(data, status, eval_status, 
+        function tru_solve_reverse_without_mat(data, status, eval_status,
                                                n, x, f, g, u, v)
 
 Find a local minimizer of a given function using a trust-region method.
 
-This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.
+This call is for the case where access to $H = \nabla_{xx}f(x)$ is
+provided by Hessian-vector products, but function/derivative information
+is only available by returning to the calling procedure.
 
 .. rubric:: Parameters:
 
@@ -561,81 +911,190 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful
+		  * **0**
 
+                    The run was successful
 
+		  * **-1**
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -7. The objective function appears to be unbounded from below
+		  * **-3**
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-7**
 
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+                    The objective function appears to be unbounded from
+                    below
 
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-9**
 
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-10**
 
-		  * -82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * 2. The user should compute the objective function value $f(x)$ at the point $x$ indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate $f(x)$ for instance, if the function is undefined at $x$ the user need not set f, but should then set eval_status to a non-zero value.
+		  * **-11**
 
-		  * 3. The user should compute the gradient of the objective function $\nabla_x f(x)$ at the point $x$ indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of $\nabla_x f(x)$ for instance if a component of the gradient is undefined at $x$ -the user need not set g, but should then set eval_status to a non-zero value.
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
 
-		  * 5. The user should compute the product $\nabla_{xx}f(x)v$ of the Hessian of the objective function $\nabla_{xx}f(x)$ at the point $x$ indicated in x with the vector $v$, add the result to the vector $u$ and then re-enter the function. The vectors $u$ and $v$ are given in u and v respectively, the resulting vector $u + \nabla_{xx}f(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the Hessian is undefined at $x$ the user need not alter u, but should then set eval_status to a non-zero value.
+		  * **-16**
 
-		  * 6. The user should compute the product $u = P(x)v$ of their preconditioner $P(x)$ at the point x indicated in $x$ with the vector $v$ and then re-enter the function. The vector $v$ is given in v, the resulting vector $u = P(x)v$ should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product for instance, if a component of the preconditioner is undefined at $x$ the user need not set u, but should then set eval_status to a non-zero value.
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
+
+		  * **-18**
+
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-19**
+
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-82**
+
+                    The user has forced termination of solver by
+                    removing the file named control.alive_file from unit
+                    unit control.alive_unit.
+
+		  * **2**
+
+                    The user should compute the objective function value
+                    $f(x)$ at the point $x$ indicated in x and then
+                    re-enter the function. The required value should be
+                    set in f, and eval_status should be set to 0. If the
+                    user is unable to evaluate $f(x)$ for instance, if
+                    the function is undefined at $x$ the user need not
+                    set f, but should then set eval_status to a non-zero
+                    value.
+
+		  * **3**
+
+                    The user should compute the gradient of the
+                    objective function $\nabla_x f(x)$ at the point $x$
+                    indicated in x and then re-enter the function. The
+                    value of the i-th component of the g radient should
+                    be set in g[i], for i = 0, ..., n-1 and eval_status
+                    should be set to 0. If the user is unable to
+                    evaluate a component of $\nabla_x f(x)$ for instance
+                    if a component of the gradient is undefined at
+                    $x$ -the user need not set g, but should then set
+                    eval_status to a non-zero value.
+
+		  * **5**
+
+                    The user should compute the product
+                    $\nabla_{xx}f(x)v$ of the Hessian of the objective
+                    function $\nabla_{xx}f(x)$ at the point $x$
+                    indicated in x with the vector $v$, add the result
+                    to the vector $u$ and then re-enter the
+                    function. The vectors $u$ and $v$ are given in u and
+                    v respectively, the resulting vector $u +
+                    \nabla_{xx}f(x)v$ should be set in u and eval_status
+                    should be set to 0. If the user is unable to
+                    evaluate the product for instance, if a component of
+                    the Hessian is undefined at $x$ the user need not
+                    alter u, but should then set eval_status to a
+                    non-zero value.
+
+		  * **6**
+
+                    The user should compute the product $u = P(x)v$ of
+                    their preconditioner $P(x)$ at the point x indicated
+                    in $x$ with the vector $v$ and then re-enter the
+                    function. The vector $v$ is given in v, the
+                    resulting vector $u = P(x)v$ should be set in u and
+                    eval_status should be set to 0. If the user is
+                    unable to evaluate the product for instance, if a
+                    component of the preconditioner is undefined at $x$
+                    the user need not set u, but should then set
+                    eval_status to a non-zero value.
 
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type Int32 that is used to
+                  indicate if objective function/gradient/Hessian values
+                  can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type Int32 that holds the
+                  number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the values $x$ of the optimization
+                  variables. The j-th component of x, j = 0, ... , n-1,
+                  contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type T that holds the value of the objective function.
+		- is a scalar variable pointer of type T that holds the
+                  value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that
+                  holds the gradient $g = \nabla_xf(x)$ of the objective
+                  function. The j-th component of g, j = 0, ... , n-1,
+                  contains $g_j$.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that
+                  is used for reverse communication (see above for
+                  details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type T that
+                  is used for reverse communication (see above for
+                  details)
 
 .. index:: pair: function; tru_information
 .. _doxid-galahad__tru_8h_1a7c756ce759b44ddbd1ffac77bf497e5a:
@@ -660,15 +1119,20 @@ Provides output information
 	*
 		- inform
 
-		- is a structure containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)
+		- is a structure containing output information (see
+                  :ref:`tru_inform_type
+                  <doxid-structtru__inform__type>`)
 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+
+                    The values were recorded successfully
 
 .. index:: pair: function; tru_terminate
 .. _doxid-galahad__tru_8h_1aa38f8880b4f63e610ae1f269353ac46e:
@@ -693,9 +1157,13 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a structure containing control information (see :ref:`tru_control_type <doxid-structtru__control__type>`)
+		- is a structure containing control information (see
+                  :ref:`tru_control_type
+                  <doxid-structtru__control__type>`)
 
 	*
 		- inform
 
-		- is a structure containing output information (see :ref:`tru_inform_type <doxid-structtru__inform__type>`)
+		- is a structure containing output information (see
+                  :ref:`tru_inform_type
+                  <doxid-structtru__inform__type>`)
