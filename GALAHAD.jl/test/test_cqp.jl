@@ -82,8 +82,8 @@ for d = 1:7
   if d == 3
     global st = 'D'
 
-    H_dense_ne =  6 # number of elements of H
-    A_dense_ne =  6 # number of elements of A
+    H_dense_ne = 6  # number of elements of H
+    A_dense_ne = 6  # number of elements of A
     H_dense = Float64[1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
@@ -159,10 +159,12 @@ for d = 1:7
   # @printf("x: ")
   # for i = 1:n
   #   @printf("%f ", x[i])
+  # end
   # @printf("\n")
   # @printf("gradient: ")
   # for i = 1:n
   #   @printf("%f ", g[i])
+  # end
   # @printf("\n")
 
   # Delete internal workspace
@@ -207,10 +209,12 @@ end
 # @printf("x: ")
 # for i = 1:n
 #   @printf("%f ", x[i])
+# end
 # @printf("\n")
 # @printf("gradient: ")
 # for i = 1:n
 #   @printf("%f ", g[i])
+# end
 # @printf("\n")
 
 # Delete internal workspace
