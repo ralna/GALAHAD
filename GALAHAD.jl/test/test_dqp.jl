@@ -144,10 +144,12 @@ for d = 1:6
   # @printf("x: ")
   # for i = 1:n
   #   @printf("%f ", x[i])
+  # end
   # @printf("\n")
   # @printf("gradient: ")
   # for i = 1:n
   #   @printf("%f ", g[i])
+  # end
   # @printf("\n")
 
   # Delete internal workspace
@@ -195,10 +197,12 @@ for d = 1:1
   # @printf("x: ")
   # for i = 1:n
   #   @printf("%f ", x[i])
+  # end
   # @printf("\n")
   # @printf("gradient: ")
   # for i = 1:n
   #   @printf("%f ", g[i])
+  # end
   # @printf("\n")
 
   # Delete internal workspace
