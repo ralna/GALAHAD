@@ -97,10 +97,12 @@ for d = 1:3
   # @printf("x: ")
   # for i = 1:n
   #   @printf("%f ", x[i])
+  # end
   # @printf("\n")
   # @printf("gradient: ")
   # for i = 1:n
   #   @printf("%f ", g[i])
+  # end
   # @printf("\n")
 
   # Delete internal workspace
