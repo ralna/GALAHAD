@@ -29,12 +29,12 @@ A_ptr = Cint[1,12,21,31]
 c_l = Float64[10.0,9.0,-Inf]
 c_u = Float64[10.0,Inf,10.0]
 x_l = Float64[0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
-x_u = [Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf]
+x_u = Float64[Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf,Inf]
 
 # provide optimal variables, Lagrange multipliers and dual variables
 x = Float64[0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0, 1.0,1.0,1.0]
 c = Float64[10.0,9.0,10.0]
-y = Float64[ -1.0,1.5,-2.0]
+y = Float64[-1.0,1.5,-2.0]
 z = Float64[2.0,4.0,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5]
 
 # provide interior-point constraint and variable status
