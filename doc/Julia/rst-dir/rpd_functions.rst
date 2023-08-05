@@ -31,10 +31,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; rpd_get_stats
 .. _doxid-galahad__rpd_8h_1ad0148374adcd7bf5f34f378ba0995a21:
@@ -75,14 +77,27 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
 	*
 		- p_type
@@ -194,12 +209,14 @@ Recover the linear term $g$ from in objective function
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- n
@@ -209,7 +226,7 @@ Recover the linear term $g$ from in objective function
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that gives the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that gives the linear term $g$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 .. index:: pair: function; rpd_get_f
 .. _doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c:
@@ -234,12 +251,14 @@ Recover the constant term $f$ in the objective function.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- f
@@ -269,12 +288,14 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- n
@@ -284,12 +305,12 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that gives the lower bounds $x_l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $(x_l)_j$.
+		- is a one-dimensional array of size n and type T that gives the lower bounds $x_l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $(x_l)_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that gives the upper bounds $x_u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $(x_u)_j$.
+		- is a one-dimensional array of size n and type T that gives the upper bounds $x_u$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $(x_u)_j$.
 
 .. index:: pair: function; rpd_get_clu
 .. _doxid-galahad__rpd_8h_1aa3b44968b109ed194ed2bb04009f35ac:
@@ -314,12 +335,14 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- m
@@ -329,12 +352,12 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that gives the lower bounds $c_l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $(c_l)_i$.
+		- is a one-dimensional array of size m and type T that gives the lower bounds $c_l$ on the constraints $A x$. The i-th component of ``c_l``, i = 1, ... , m, contains $(c_l)_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that gives the upper bounds $c_u$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $(c_u)_i$.
+		- is a one-dimensional array of size m and type T that gives the upper bounds $c_u$ on the constraints $A x$. The i-th component of ``c_u``, i = 1, ... , m, contains $(c_u)_i$.
 
 .. index:: pair: function; rpd_get_h
 .. _doxid-galahad__rpd_8h_1a02021324df6f485160d327f2f5fca0d3:
@@ -359,12 +382,14 @@ Recover the Hessian term $H$ in the objective function.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- h_ne
@@ -409,12 +434,14 @@ Recover the Jacobian term $A$ in the constraints.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- a_ne
@@ -460,12 +487,14 @@ Recover the Hessian terms $H_c$ in the constraints.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- h_c_ne
@@ -515,12 +544,14 @@ Recover the types of the variables $x$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- n
@@ -531,13 +562,13 @@ Recover the types of the variables $x$.
 		- x_type
 
 		-
-		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable $x$. Specifically, for j = 0, ... , n-1, x(j) =
+		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable $x$. Specifically, for j = 1, ... , n, x(j) =
 
-		  * 0 variable $x_j$ is continuous,
+		  * 0 if variable $x_j$ is continuous,
 
-		  * 1 variable $x_j$ is integer, and
+		  * 1 if variable $x_j$ is integer, and
 
-		  * 2 variable $x_j$ is binary (0,1)
+		  * 2 if variable $x_j$ is binary (0,1)
 
 .. index:: pair: function; rpd_get_x
 .. _doxid-galahad__rpd_8h_1afbc831595295e9153e4740d852a35c27:
@@ -562,12 +593,14 @@ Recover the initial values of the variables $x$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- n
@@ -577,7 +610,7 @@ Recover the initial values of the variables $x$.
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that gives the initial values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that gives the initial values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 .. index:: pair: function; rpd_get_y
 .. _doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5:
@@ -602,12 +635,14 @@ Recover the initial values of the Lagrange multipliers $y$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- m
@@ -617,7 +652,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that gives the initial values $y$ of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n and type T that gives the initial values $y$ of the Lagrange multipliers for the general constraints. The j-th component of ``y``, j = 1, ... , m, contains $y_j$.
 
 .. index:: pair: function; rpd_get_z
 .. _doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3:
@@ -642,12 +677,14 @@ Recover the initial values of the dual variables $z$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The statistics have been recovered succesfully.
+		  * **0**
+                    The statistics have been recovered successfully.
 
-		  * -93. The QPLIB file did not contain the required data.
+		  * **-93**
+                    The QPLIB file did not contain the required data.
 
 	*
 		- n
@@ -657,7 +694,7 @@ Recover the initial values of the dual variables $z$.
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that gives the initial values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type T that gives the initial values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 .. index:: pair: function; rpd_information
 .. _doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3:
@@ -687,10 +724,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; rpd_terminate
 .. _doxid-galahad__rpd_8h_1af49fc46839c605dd71d2666189d0d8a9:

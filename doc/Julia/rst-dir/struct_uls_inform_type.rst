@@ -245,7 +245,7 @@ name of external solver used to factorize and solve
 
 	struct :ref:`gls_ainfo<doxid-structgls__ainfo>` gls_ainfo
 
-the output arrays from GLS
+the analyse output structure from gls
 
 .. index:: pair: variable; gls_finfo
 .. _doxid-structuls__inform__type_1a8da479a8d3bd8e6b4070e73dc8a3d52a:
@@ -255,7 +255,7 @@ the output arrays from GLS
 
 	struct :ref:`gls_finfo<doxid-structgls__finfo>` gls_finfo
 
-see gls_ainfo
+the factorize output structure from gls
 
 .. index:: pair: variable; gls_sinfo
 .. _doxid-structuls__inform__type_1acbf9c9748ab5d9c111befc05c395059a:
@@ -265,7 +265,7 @@ see gls_ainfo
 
 	struct :ref:`gls_sinfo<doxid-structgls__sinfo>` gls_sinfo
 
-see gls_ainfo
+the solve output structure from gls
 
 .. index:: pair: variable; ma48_ainfo
 .. _doxid-structuls__inform__type_1a9487553043c4ec110826e99e071ce9bc:
@@ -273,9 +273,9 @@ see gls_ainfo
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct :ref:`ma48_ainfo<doxid-structma48__ainfo>` ma48_ainfo
+	struct :ref:`ma48_ainfo<details-structma48__ainfo>` ma48_ainfo
 
-an output array from ma48 (see :ref:`ma48_ainfo <details-structma48__ainfo>`)
+the analyse output structure from hsl_ma48
 
 .. index:: pair: variable; ma48_finfo
 .. _doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348:
@@ -283,9 +283,9 @@ an output array from ma48 (see :ref:`ma48_ainfo <details-structma48__ainfo>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct :ref:`ma48_finfo<doxid-structma48__finfo>` ma48_finfo
+	struct :ref:`ma48_finfo<details-structma48__finfo>` ma48_finfo
 
-the factorize output structure from ma48 (see :ref:`ma48_finfo <details-structma48__finfo>`)
+the factorize output structure from hsl_ma48
 
 .. index:: pair: variable; ma48_sinfo
 .. _doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3:
@@ -293,9 +293,9 @@ the factorize output structure from ma48 (see :ref:`ma48_finfo <details-structma
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct :ref:`ma48_sinfo<doxid-structma48__sinfo>` ma48_sinfo
+	struct :ref:`ma48_sinfo<details-structma48__sinfo>` ma48_sinfo
 
-the solve output structure from ma48 (see :ref:`ma48_sinfo <details-structma48__sinfo>`)
+the solve output structure from hsl_ma48
 
 .. index:: pair: variable; lapack_error
 .. _doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4:

@@ -753,14 +753,27 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">int</span> <span class="n">status</span></pre>
 <p>the return status from the package. Possible values are:</p>
-<ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The call was succesful</p></li>
-</ol>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was succcesful</p>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restrictions n &gt; 0 or m &gt; 0 or requirement that a type contains its relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows’ has been violated.</p></li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
+array is written on unit control.error and the returned allocation
+status and a string containing the name of the offending array are
+held in inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restrictions n &gt; 0 or m &gt; 0 or requirement that a type contains
+its relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows’ has been
+violated.</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">int</span> <span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation/deallocation</p>

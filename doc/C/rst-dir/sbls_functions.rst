@@ -158,7 +158,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; sbls_read_specfile
 .. _doxid-galahad__sbls_8h_1abde2e76567a4c8721fe9c2386106e972:
@@ -244,7 +244,7 @@ Import structural matrix data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -374,7 +374,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; sbls_factorize_matrix
 .. _doxid-galahad__sbls_8h_1a77799da1282c3567b56ae8db42b75f65:
@@ -417,7 +417,7 @@ for some appropriate matrix $G$.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated succesfully.
+		  * 0. The factors were generated successfully.
 		  
 		  
 		  
@@ -586,7 +586,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; sbls_terminate
 .. _doxid-galahad__sbls_8h_1a73d7d29d113a62c48cc176146539bca5:

@@ -13,8 +13,6 @@ callable functions
 
 Select solver, set default control values and initialize private data
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -38,12 +36,14 @@ Select solver, set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
-		  * -26. The requested solver is not available.
+		  * **-26**
+                    The requested solver is not available.
 
 .. index:: pair: function; sls_read_specfile
 .. _doxid-galahad__sls_8h_1ada1e7b9ed799335702f85a551b64bf88:
@@ -53,9 +53,11 @@ Select solver, set default control values and initialize private data
 
         function sls_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNSLS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/sls.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -82,8 +84,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import structural matrix data into internal storage prior to solution
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -102,40 +102,84 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The import and analysis were conducted succesfully.
+		  * **0**
+                    The import and analysis were conducted successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 or requirement that the
+                    matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-20**
+                    The matrix is not positive definite while the solver
+                    used expected it to be.
 
-		  * -3. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -20. The matrix is not positive definite while the solver used expected it to be.
+		  * **-29**
+                    This option is not available with this solver.
 
-		  * -26. The requested solver is not available.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 
-		  * -29. This option is not available with this solver.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
+		  * **-36**
+                    The scaling package HSL MC64 failed; check the
+                    solver-specific information component
+                    inform.mc64_info along with HSL MC64’s documentation
+                    for more details.
 
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-37**
+                    The scaling package MC77 failed; check the
+                    solver-specific information components inform.mc77
+                    info and inform.mc77_rinfo along with MC77’s
+                    documentation for more details.
 
-		  * -36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.
+		  * **-43**
+                    A direct-access file error occurred. See the value
+                    of inform.ma77_info.flag for more details.
 
-		  * -37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.
-
-		  * -43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.
-
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- n
@@ -177,8 +221,6 @@ Import structural matrix data into internal storage prior to solution
 
 Reset control parameters after import if required.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -200,7 +242,7 @@ Reset control parameters after import if required.
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; sls_factorize_matrix
 .. _doxid-galahad__sls_8h_1ab6666f5eb7b0bdbbc9c9b52b7a2e2c41:
@@ -211,8 +253,6 @@ Reset control parameters after import if required.
         function sls_factorize_matrix(data, status, ne, val)
 
 Form and factorize the symmetric matrix $A$.
-
-
 
 .. rubric:: Parameters:
 
@@ -227,40 +267,84 @@ Form and factorize the symmetric matrix $A$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The factors were generated succesfully.
+		  * **0**
+                    The factors were generated successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 or requirement that the
+                    matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-20**
+                    The matrix is not positive definite while the solver
+                    used expected it to be.
 
-		  * -3. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -20. The matrix is not positive definite while the solver used expected it to be.
+		  * **-29**
+                    This option is not available with this solver.
 
-		  * -26. The requested solver is not available.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 
-		  * -29. This option is not available with this solver.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
+		  * **-36**
+                    The scaling package HSL MC64 failed; check the
+                    solver-specific information component
+                    inform.mc64_info along with HSL MC64’s documentation
+                    for more details.
 
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-37**
+                    The scaling package MC77 failed; check the
+                    solver-specific information components inform.mc77
+                    info and inform.mc77_rinfo along with MC77’s
+                    documentation for more details.
 
-		  * -36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.
+		  * **-43**
+                    A direct-access file error occurred. See the value
+                    of inform.ma77_info.flag for more details.
 
-		  * -37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.
-
-		  * -43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.
-
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- ne
@@ -282,8 +366,6 @@ Form and factorize the symmetric matrix $A$.
 
 Solve the linear system $Ax=b$.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -297,22 +379,41 @@ Solve the linear system $Ax=b$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- n
@@ -332,9 +433,8 @@ Solve the linear system $Ax=b$.
 
         function sls_partial_solve_system(part, data, status, n, sol)
 
-Given the factorization $A = L D U$ with $U = L^T$, solve the linear system $Mx=b$, where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
-
-
+Given the factorization $A = L D U$ with $U = L^T$, solve the linear
+system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 
 .. rubric:: Parameters:
 
@@ -354,24 +454,43 @@ Given the factorization $A = L D U$ with $U = L^T$, solve the linear system $Mx=
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- n
@@ -413,10 +532,12 @@ Provide output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sls_terminate
 .. _doxid-galahad__sls_8h_1aa5aafa378e3500ce31783e13c3395d30:

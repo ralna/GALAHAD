@@ -180,7 +180,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; trb_read_specfile
 .. _doxid-galahad__trb_8h_1a4eaafdaf5187c8b91c119ce9395469e9:
@@ -254,7 +254,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -339,7 +339,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; trb_solve_with_mat
 .. _doxid-galahad__trb_8h_1a5a58e6c0c022eb451f14c82d653967f7:
@@ -390,9 +390,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -543,9 +543,9 @@ The components of the gradient :math:`g = \nabla_x f(x`) of the objective functi
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -688,9 +688,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -815,9 +815,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -941,7 +941,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; trb_terminate
 .. _doxid-galahad__trb_8h_1a739c7a44ddd0ce7b350cfa6da54948d0:

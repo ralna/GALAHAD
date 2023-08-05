@@ -189,7 +189,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; presolve_read_specfile
 .. _doxid-galahad__presolve_8h_1a78f57f6dd2885f41e9b79cc784ff673f:
@@ -282,7 +282,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -463,7 +463,7 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -614,7 +614,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -719,7 +719,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; presolve_terminate
 .. _doxid-galahad__presolve_8h_1abe2d3138390135885716064c3befb36b:

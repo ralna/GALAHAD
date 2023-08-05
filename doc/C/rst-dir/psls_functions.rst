@@ -159,7 +159,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; psls_read_specfile
 .. _doxid-galahad__psls_8h_1a34b978446b6aa5636f9e6efc18860366:
@@ -234,7 +234,7 @@ Import structural matrix data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -309,7 +309,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; psls_form_preconditioner
 .. _doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1:
@@ -346,7 +346,7 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated succesfully.
+		  * 0. The factors were generated successfully.
 		  
 		  
 		  
@@ -405,7 +405,7 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated succesfully.
+		  * 0. The factors were generated successfully.
 		  
 		  
 		  
@@ -474,7 +474,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated succesfully.
+		  * 0. The factors were generated successfully.
 		  
 		  
 		  
@@ -587,7 +587,7 @@ Provide output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; psls_terminate
 .. _doxid-galahad__psls_8h_1ab62a2e262e7466fac3a2dc8cd300720d:

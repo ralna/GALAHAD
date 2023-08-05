@@ -170,7 +170,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; eqp_read_specfile
 .. _doxid-galahad__eqp_8h_1a24889f7ee5c51b3c76daab94687faed9:
@@ -248,7 +248,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -355,7 +355,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; eqp_solve_qp
 .. _doxid-galahad__eqp_8h_1abf97ed5ee46d2b3fd9a6f75023a95c3d:
@@ -399,9 +399,9 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -526,9 +526,9 @@ Solve the shifted least-distance quadratic program
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -649,9 +649,9 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -743,7 +743,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; eqp_terminate
 .. _doxid-galahad__eqp_8h_1a237e3d3e43c6819205b3f303418324e0:

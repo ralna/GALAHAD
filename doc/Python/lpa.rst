@@ -258,7 +258,7 @@ functions
 
             * **0**
 
-              The run was succesful.
+              The run was successful.
 
             * **-1**
 
@@ -340,7 +340,7 @@ functions
           la04_job : int
              the final value of LA04's job argument.
           la04_job_info : int
-             any extra information from an unsuccesfull call to LA04
+             any extra information from an unsuccessfull call to LA04
              (LA04's RINFO(35).
           obj : float
              the value of the objective function at the best estimate

@@ -38,17 +38,32 @@ components
 
 the return status. Possible values are:
 
-* 0 the update was successful.
+* **0**
+   the update was successful.
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1** 
+   An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-2** 
+   A deallocation error occurred. A message indicating the offending
+   array is written on unit control.error and the returned allocation
+   status and a string containing the name of the offending array are
+   held in inform.alloc_status and inform.bad_alloc respectively.
 
-* -3. One of the restrictions n > 0, delta > 0, lambda > 0 or s^T y > 0 has been violated and the update has been skipped.
+* **-3** 
+   One of the restrictions $n > 0$, $\delta_k > 0$, $\lambda_k > 0$ or 
+   $s_k^T y_k > 0$ has been violated and the update has been skipped.
 
-* -10. The matrix cannot be built from the current vectors {s_k} and {y_k} and values delta_k and lambda_k and the update has been skipped.
+* **-10** 
+   The matrix cannot be built from the current vectors $\{s_k\}$ and $\{y_k\}$
+   and values $\delta_k$ and $\lambda_k$ and the update has been skipped.
 
-* -31. A call to the function lhs_apply has been made without a prior call to lhs_form_shift or lhs_form with lambda specified when control.method = 4, or lhs_form_shift has been called when control.method = 3, or lhs_change_method has been called after control.any_method = false was specified when calling lhs_setup.
+* **-31** 
+   A call to the function lhs_apply has been made without a prior call
+   to lhs_form_shift or lhs_form with lambda specified when
+   control.method = 4, or lhs_form_shift has been called when
+   control.method = 3, or lhs_change_method has been called after
+   control.any_method = false was specified when calling lhs_setup.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
@@ -68,7 +83,7 @@ the status of the last attempted allocation/deallocation
 
 	Int32 length
 
-the number of pairs (s,y) currently used to represent the limited-memory matrix.
+the number of pairs $(s_k,y_k)$ currently used to represent the limited-memory matrix.
 
 .. index:: pair: variable; updates_skipped
 .. _doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8:
@@ -78,7 +93,7 @@ the number of pairs (s,y) currently used to represent the limited-memory matrix.
 
 	Bool updates_skipped
 
-have (s,y) pairs been skipped when forming the limited-memory matrix?
+have $(s_k,y_k)$ pairs been skipped when forming the limited-memory matrix?
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:

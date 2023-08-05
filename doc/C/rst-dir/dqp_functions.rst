@@ -172,7 +172,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; dqp_read_specfile
 .. _doxid-galahad__dqp_8h_1a1db755c043c56f0afdc8e61c8ebfc517:
@@ -250,7 +250,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -357,7 +357,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; dqp_solve_qp
 .. _doxid-galahad__dqp_8h_1a2b72dcb3fe12c15b79be741304583bd4:
@@ -408,9 +408,9 @@ Solve the quadratic program when the Hessian :math:`H` is available.
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -579,9 +579,9 @@ Solve the shifted least-distance quadratic program
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -734,7 +734,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; dqp_terminate
 .. _doxid-galahad__dqp_8h_1ac2f0f150bf38c9cc0ea33f91df913d1a:

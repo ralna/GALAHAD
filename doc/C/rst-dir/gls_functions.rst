@@ -158,7 +158,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -199,7 +199,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; gls_information
 .. _doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47:
@@ -250,7 +250,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; gls_finalize
 .. _doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390:
@@ -285,5 +285,5 @@ Deallocate all internal private storage
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 

@@ -33,10 +33,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; fdc_read_specfile
 .. _doxid-galahad__fdc_8h_1aa5e20e6a3ed015cdd927c1bfc7f00a2a:
@@ -46,9 +48,11 @@ Set default control values and initialize private data
 
         function fdc_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNEQP.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -77,8 +81,6 @@ Read the content of a specification file, and assign values associated with give
 
 Find dependent rows and, if any, check if $A x = b$ is consistent
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -102,26 +104,49 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful.
+		  * **0**
+                    The run was successful.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', 'diagonal',
+                    'scaled_identity', 'identity', 'zero' or 'none' has
+                    been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-5**
+                    The constraints appear to be inconsistent.
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -5. The constraints appear to be inconsistent.
-
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
 	*
 		- m
@@ -156,7 +181,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the linear term $b$ in the constraints. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size m and type T that holds the linear term $b$ in the constraints. The i-th component of ``b``, i = 1, ... , m, contains $b_i$.
 
 	*
 		- n_depen

@@ -162,7 +162,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; bqpb_read_specfile
 .. _doxid-galahad__bqpb_8h_1a4702d5710e0b6dd9e4fd05e30cc1915b:
@@ -237,7 +237,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -319,7 +319,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; bqpb_solve_qp
 .. _doxid-galahad__bqpb_8h_1afdd78a23df912116a044a3cd87b082c1:
@@ -362,9 +362,9 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -483,9 +483,9 @@ Solve the shifted least-distance quadratic program
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -596,7 +596,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; bqpb_terminate
 .. _doxid-galahad__bqpb_8h_1a6a2b870d2c3d4907b4551e7abc700893:

@@ -128,7 +128,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The initialization was succesful.
+		  * 0. The initialization was successful.
 
 .. index:: pair: function; cro_read_specfile
 .. _doxid-galahad__cro_8h_1a55c7770ae26847b5c17055c290a54c2a:
@@ -216,7 +216,7 @@ Crosover the solution from a primal-dual to a basic one.
 		- 
 		  is a struct containing output information (see :ref:`cro_inform_type <doxid-structcro__inform__type>`). The component .status gives the exit status from the package. Possible values are:
 		  
-		  * 0. The crossover was succesful.
+		  * 0. The crossover was successful.
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  

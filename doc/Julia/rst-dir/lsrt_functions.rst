@@ -31,10 +31,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; lsrt_read_specfile
 .. _doxid-galahad__lsrt_8h_1a07c4c60e1ab6ae67a4da710e2ed01ff0:
@@ -89,10 +91,13 @@ Import control parameters prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; lsrt_solve_problem
 .. _doxid-galahad__lsrt_8h_1aa1b3479d5f21fe373ef8948d55763992:
@@ -117,48 +122,56 @@ Solve the regularized least-squuares problem using reverse communication.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
 		  This must be set to
 
-		  * 1. on initial entry. Set u (below) to $b$ for this entry.
+		  * **1**
+                    on initial entry. Set the argument ``u`` (below) to
+                    $b$ for this entry.
 
 		  Possible exit values are:
 
-		  * 0. the solution has been found
+		  * **0**
+                    the solution has been found
 
-		  * 2. The user must perform the operation
+		  * **2**
+                    The user must perform the operation $$u := u + Av,$$
+		    and recall the function. The vectors $u$ and
+		    $v$ are available in the arrays ``u`` and ``v``
+		    (below) respectively, and the result $u$ must overwrite
+		    the content of ``u``. No argument except ``u`` should be
+		    altered before recalling the function
 
-		    .. math::
+		  * **3**
+                    The user must perform the operation $$v := v + A^Tu,$$
+		    and recall the function. The vectors $u$ and
+		    $v$ are available in the arrays ``u`` and ``v``
+		    respectively, and the result $v$ must overwrite the
+		    content of ``v``. No argument except ``v`` should be
+		    altered before recalling the function
 
-		    	u := u + A v,
+		  * **4**
+                    The user must reset ``u`` to $b$ are recall the
+                    function. No argument except ``u`` should be altered
+                    before recalling the function
 
-		    \n
-		                   u := u + A v,
-		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $u$ must overwrite the content of u. No argument except u should be altered before recalling the function
+		  * **-1**
+                    an array allocation has failed
 
-		  * 3. The user must perform the operation
+		  * **-2**
+                    an array deallocation has failed
 
-		    .. math::
+		  * **-3**
+                    one or more of n, m, power or weight violates
+                    allowed bounds
 
-		    	v := v + A^T u,
+		  * **-18**
+                    the iteration limit has been exceeded
 
-		    \n
-		                   v := v + A^T u,
-		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $v$ must overwrite the content of v. No argument except v should be altered before recalling the function
-
-		  * 4. The user must reset u (below) to $b$ are recall the function. No argument except u should be altered before recalling the function
-
-		  * -1. an array allocation has failed
-
-		  * -2. an array deallocation has failed
-
-		  * -3. one or more of n, m, power or weight violates allowed bounds
-
-		  * -18. the iteration limit has been exceeded
-
-		  * -25. status is negative on entry
+		  * **-25**
+                    status is negative on entry
 
 	*
 		- m
@@ -183,7 +196,7 @@ Solve the regularized least-squuares problem using reverse communication.
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the solution $x$. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- u
@@ -223,10 +236,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; lsrt_terminate
 .. _doxid-galahad__lsrt_8h_1ac3a3d73e2686538802563c795a1afff4:

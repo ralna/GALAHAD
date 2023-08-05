@@ -40,12 +40,14 @@ Select solver, set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
-		  * -26. The requested solver is not available.
+		  * **-26**
+                    The requested solver is not available.
 
 .. index:: pair: function; uls_read_specfile
 .. _doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef:
@@ -55,9 +57,11 @@ Select solver, set default control values and initialize private data
 
         function uls_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNULS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/uls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNULS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/uls.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -83,7 +87,8 @@ Read the content of a specification file, and assign values associated with give
         function uls_factorize_matrix(control, data, status, 
                                       m, n, type, ne, val, row, col, ptr)
 
-Import matrix data into internal storage prior to solution, analyse the sparsity patern, and subsequently factorize the matrix
+Import matrix data into internal storage prior to solution, analyse the
+sparsity patern, and subsequently factorize the matrix
 
 
 
@@ -105,28 +110,53 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The import, analysis and factorization were conducted succesfully.
+		  * **0**
+                    The import, analysis and factorization were
+                    conducted successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 and m> 0 or requirement that
+                    the matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -3. The restrictions n > 0 and m> 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-29**
+                    This option is not available with this solver.
 
-		  * -26. The requested solver is not available.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 
-		  * -29. This option is not available with this solver.
-
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
-
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- m
@@ -198,10 +228,11 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; uls_solve_system
 .. _doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518:
@@ -212,8 +243,6 @@ Reset control parameters after import if required.
         function uls_solve_system(data, status, m, n, sol, trans)
 
 Solve the linear system $Ax=b$ or $A^Tx=b$.
-
-
 
 .. rubric:: Parameters:
 
@@ -233,17 +262,36 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 
 		  Possible values are:
 
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- m
@@ -275,8 +323,6 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 
 Provides output information
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -298,7 +344,8 @@ Provides output information
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; uls_terminate
 .. _doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435:

@@ -747,7 +747,7 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The import was succesful.</p></li>
+<li><p>The import was successful.</p></li>
 </ol>
 </li>
 </ul>
@@ -815,7 +815,7 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The import was succesful.</p></li>
+<li><p>The import was successful.</p></li>
 </ol>
 </li>
 <li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
@@ -900,7 +900,7 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The import was succesful.</p></li>
+<li><p>The import was successful.</p></li>
 </ol>
 </li>
 </ul>
@@ -920,17 +920,11 @@
     <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">C_val</span><span class="p">[],</span>
     <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">D</span><span class="p">[]</span>
 <span class="p">)</span></pre>
-<p>Form and factorize the block matrix</p>
+<p>Form and factorize the block matrix
 <div class="math notranslate nohighlight">
-\[\begin{split}K_{G} = \mat{cc}{ G &amp; A^T \\ A &amp; - C }\end{split}\]</div>
-<dl>
-<dt>n</dt><dd><dl class="simple">
-<dt>K_G = ( G  A^T )</dt><dd><p>( A  - C )</p>
-</dd>
-</dl>
-<p>n for some appropriate matrix <span class="math notranslate nohighlight">\(G\)</span>.</p>
-</dd>
-</dl>
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}\end{split}\]</div>
+
+for some appropriate matrix <span class="math notranslate nohighlight">\(G\)</span>.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -946,7 +940,7 @@
 <p>Possible values are:</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The factors were generated succesfully.</p></li>
+<li><p>The factors were generated successfully.</p></li>
 </ol>
 </li>
 <li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
@@ -988,15 +982,12 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a2c3ae7b15fc1c43771d395540c37b9fa"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sbls_solve_system</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[])</span></pre>
-<p>Solve the block linear system</p>
+<p>Solve the block linear system
 <div class="math notranslate nohighlight">
-\[\begin{split}\mat{cc}{ G &amp; A^T \\ A &amp; - C } \vect{ x \\ y } = \vect{a \\ b}.\end{split}\]</div>
-<dl class="simple">
-<dt>n</dt><dd><p>( G  A^T ) ( x ) = ( a ).
-( A  - C ) ( y )   ( b )</p>
-</dd>
-</dl>
-<p>n</p>
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix} =
+\begin{pmatrix}a \\ b\end{pmatrix}.\end{split}\]</div>
+</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -1052,7 +1043,7 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The values were recorded succesfully</p></li>
+<li><p>The values were recorded successfully</p></li>
 </ol>
 </li>
 </ul>

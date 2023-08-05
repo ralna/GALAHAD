@@ -31,9 +31,11 @@ components
 
 	Int32 status
 
-return status. Possible valuesa are:
+return status. Possible values are:
 
-* 0 successful return
+* **0** 
+   A successful return
 
-* -85 an update is inappropriate and has been skipped
+* **-85**
+   An update is inappropriate and has been skipped
 

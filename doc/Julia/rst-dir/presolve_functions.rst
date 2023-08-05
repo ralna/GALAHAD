@@ -33,10 +33,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; presolve_read_specfile
 .. _doxid-galahad__presolve_8h_1a78f57f6dd2885f41e9b79cc784ff673f:
@@ -46,7 +48,8 @@ Set default control values and initialize private data
 
         function presolve_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters
 
 .. rubric:: Parameters:
 
@@ -76,7 +79,8 @@ Read the content of a specification file, and assign values associated with give
                                          x_l, x_u, n_out, m_out, H_ne_out,
                                          A_ne_out)
 
-Import the initial data, and apply the presolve algorithm to report crucial characteristics of the transformed variant
+Import the initial data, and apply the presolve algorithm to report
+crucial characteristics of the transformed variant
 
 .. rubric:: Parameters:
 
@@ -96,18 +100,37 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-3**
+                    The restrictions n > 0 or m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows' or 'diagonal' has
+                    been violated.
 
-		  * -23. An entry from the strict upper triangle of $H$ has been specified.
+		  * **-23**
+                    An entry from the strict upper triangle of $H$ has
+                    been specified.
 
 	*
 		- n
@@ -152,7 +175,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
 		- f
@@ -192,22 +215,22 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
+		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of ``c_l``, i = 1, ... , m, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
+		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of ``c_u``, i = 1, ... , m, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- n_out
@@ -240,7 +263,8 @@ Import the initial data, and apply the presolve algorithm to report crucial char
                                             A_ptr, A_val, c_l, c_u, x_l, x_u,
                                             y_l, y_u, z_l, z_u)
 
-Apply the presolve algorithm to simplify the input problem, and output the transformed variant
+Apply the presolve algorithm to simplify the input problem, and output
+the transformed variant
 
 .. rubric:: Parameters:
 
@@ -255,16 +279,32 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The input values n, m, A_ne or H_ne do not agree with those output as necessary from presolve_import_problem.
+		  * **-3**
+                    The input values n, m, A_ne or H_ne do not agree
+                    with those output as necessary from
+                    presolve_import_problem.
 
 	*
 		- n
@@ -299,7 +339,7 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the the transformed linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the the transformed linear term $g$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
 		- f
@@ -329,42 +369,42 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that holds the transformed lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
+		- is a one-dimensional array of size m and type T that holds the transformed lower bounds $c^l$ on the constraints $A x$. The i-th component of ``c_l``, i = 1, ... , m, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that holds the transformed upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
+		- is a one-dimensional array of size m and type T that holds the transformed upper bounds $c^l$ on the constraints $A x$. The i-th component of ``c_u``, i = 1, ... , m, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the transformed lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the transformed lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the transformed upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the transformed upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- y_l
 
-		- is a one-dimensional array of size m and type T that holds the implied lower bounds $y^l$ on the transformed Lagrange multipliers $y$. The i-th component of y_l, i = 0, ... , m-1, contains $y^l_i$.
+		- is a one-dimensional array of size m and type T that holds the implied lower bounds $y^l$ on the transformed Lagrange multipliers $y$. The i-th component of ``y_l``, i = 1, ... , m, contains $y^l_i$.
 
 	*
 		- y_u
 
-		- is a one-dimensional array of size m and type T that holds the implied upper bounds $y^u$ on the transformed Lagrange multipliers $y$. The i-th component of y_u, i = 0, ... , m-1, contains $y^u_i$.
+		- is a one-dimensional array of size m and type T that holds the implied upper bounds $y^u$ on the transformed Lagrange multipliers $y$. The i-th component of ``y_u``, i = 1, ... , m, contains $y^u_i$.
 
 	*
 		- z_l
 
-		- is a one-dimensional array of size m and type T that holds the implied lower bounds $y^l$ on the transformed dual variables $z$. The j-th component of z_l, j = 0, ... , n-1, contains $z^l_i$.
+		- is a one-dimensional array of size m and type T that holds the implied lower bounds $y^l$ on the transformed dual variables $z$. The j-th component of ``z_l``, j = 1, ... , n, contains $z^l_i$.
 
 	*
 		- z_u
 
-		- is a one-dimensional array of size m and type T that holds the implied upper bounds $y^u$ on the transformed dual variables $z$. The j-th component of z_u, j = 0, ... , n-1, contains $z^u_i$.
+		- is a one-dimensional array of size m and type T that holds the implied upper bounds $y^u$ on the transformed dual variables $z$. The j-th component of ``z_u``, j = 1, ... , n, contains $z^u_i$.
 
 .. index:: pair: function; presolve_restore_solution
 .. _doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495:
@@ -390,16 +430,32 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The input values n, m, n_in and m_in do not agree with those input to and output as necessary from presolve_import_problem.
+		  * **-3**
+                    The input values n, m, n_in and m_in do not agree
+                    with those input to and output as necessary from
+                    presolve_import_problem.
 
 	*
 		- n_in
@@ -414,22 +470,22 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- x_in
 
-		- is a one-dimensional array of size n_in and type T that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n_in and type T that holds the transformed values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- c_in
 
-		- is a one-dimensional array of size m and type T that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
+		- is a one-dimensional array of size m and type T that holds the transformed residual $c(x)$. The i-th component of ``c``, j = 1, ... , m, contains $c_j(x)$.
 
 	*
 		- y_in
 
-		- is a one-dimensional array of size n_in and type T that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n_in and type T that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of ``y``, j = 1, ... , m, contains $y_j$.
 
 	*
 		- z_in
 
-		- is a one-dimensional array of size n_in and type T that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n_in and type T that holds the values $z$ of the transformed dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- n
@@ -444,22 +500,22 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the transformed values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
+		- is a one-dimensional array of size m and type T that holds the transformed residual $c(x)$. The i-th component of ``c``, j = 1, ... , m, contains $c_j(x)$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of ``y``, j = 1, ... , m, contains $y_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the transformed dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 .. index:: pair: function; presolve_information
 .. _doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b:
@@ -489,10 +545,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; presolve_terminate
 .. _doxid-galahad__presolve_8h_1abe2d3138390135885716064c3befb36b:

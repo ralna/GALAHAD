@@ -43,13 +43,29 @@ components
 
 the return status from the package. Possible values are:
 
-* 0. The call was succesful
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  The call was succcesful
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
+
+* **-2** 
+
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
+
+* **-3**
+
+  The restrictions n > 0 or m > 0 or requirement that a type contains
+  its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been
+  violated.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structbsc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

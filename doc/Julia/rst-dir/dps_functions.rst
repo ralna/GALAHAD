@@ -14,7 +14,6 @@ callable functions
 Set default control values and initialize private data
 
 
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -36,7 +35,8 @@ Set default control values and initialize private data
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; dps_read_specfile
 .. _doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf:
@@ -46,9 +46,11 @@ Set default control values and initialize private data
 
         function dps_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDPS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNDPS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/dps.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -96,16 +98,33 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate'
+                    or 'sparse_by_rows' has been violated.
 
 	*
 		- n
@@ -167,10 +186,12 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; dps_solve_tr_problem
 .. _doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5:
@@ -198,28 +219,52 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The run was succesful
+		  * **0**
+                    The run was successful
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate'
+                    or 'sparse_by_rows' has been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
-
-		  * -40. An error has occured when building the preconditioner.
+		  * **-40**
+                    An error has occured when building the
+                    preconditioner.
 
 	*
 		- n
@@ -239,7 +284,7 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of ``c``, j = 1, ... , m, contains $c_j$.
 
 	*
 		- f
@@ -254,7 +299,7 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
@@ -282,28 +327,52 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The run was succesful
+		  * **0**
+                    The run was successful
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate'
+                    or 'sparse_by_rows' has been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
-
-		  * -40. An error has occured when building the preconditioner.
+		  * **-40**
+                    An error has occured when building the
+                    preconditioner.
 
 	*
 		- n
@@ -323,7 +392,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of ``c``, j = 1, ... , m, contains $c_j$.
 
 	*
 		- f
@@ -343,7 +412,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
@@ -370,22 +439,38 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The run was succesful
+		  * **0**
+                    The run was successful
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate'
+                    or 'sparse_by_rows' has been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
 	*
 		- n
@@ -395,7 +480,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of ``c``, j = 1, ... , m, contains $c_j$.
 
 	*
 		- f
@@ -410,7 +495,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
@@ -437,20 +522,33 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The run was succesful
+		  * **0**
+                    The run was successful
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
 	*
 		- n
@@ -460,7 +558,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ in the objective function. The j-th component of ``c``, j = 1, ... , m, contains $c_j$.
 
 	*
 		- f
@@ -480,7 +578,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
@@ -512,10 +610,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; dps_terminate
 .. _doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e:

@@ -48,7 +48,7 @@ functions
 
              * **0**
 
-               The fit was succesful.
+               The fit was successful.
 
              * **-1**
 

@@ -9,7 +9,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_initialize(data, control, status)
+        function ugo_initialize(data, control, status)
 
 Set default control values and initialize private data
 
@@ -27,9 +27,7 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a structure containing control information (see
-                  :ref:`ugo_control_type
-                  <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- status
@@ -39,7 +37,6 @@ Set default control values and initialize private data
 		  (currently):
 
 		  * **0**
-
                     The initialization was successful.
 
 .. index:: pair: function; ugo_read_specfile
@@ -48,14 +45,13 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_read_specfile(control, specfile)
+        function ugo_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters. By default,
 the spcification file will be named RUNUGO.SPC and lie in the current
 directory. Refer to Table 2.1 in the fortran documentation provided in
 $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
-
 
 
 .. rubric:: Parameters:
@@ -66,15 +62,12 @@ $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
 	*
 		- control
 
-		- is a structure containing control information (see
-                  :ref:`ugo_control_type
-                  <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- specfile
 
-		- is a character string containing the name of the
-                  specification file
+		- is a character string containing the name of the specification file
 
 .. index:: pair: function; ugo_import
 .. _doxid-galahad__ugo_8h_1a8bcbdf9ef1229535b77d9991eb543dcb:
@@ -82,11 +75,9 @@ $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_import(control, data, status, x_l, x_u)
+        function ugo_import(control, data, status, x_l, x_u)
 
 Import problem data into internal storage prior to solution.
-
-
 
 .. rubric:: Parameters:
 
@@ -113,12 +104,10 @@ Import problem data into internal storage prior to solution.
 		  exit status from the package. Possible values are:
 
 		  * **1**
-
                     The import was successful, and the package is ready
                     for the solve phase
 
 		  * **-1**
-
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
                     control.error, and the returned allocation status
@@ -127,7 +116,6 @@ Import problem data into internal storage prior to solution.
                     inform.bad_alloc respectively.
 
 		  * **-2**
-
                     A deallocation error occurred. A message indicating
                     the offending array is written on unit control.error
                     and the returned allocation status and a string
@@ -138,16 +126,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- x_l
 
-		- is a scalar variable of type T, that holds the value
-                  $x^l$ of the lower bound on the optimization variable
-                  $x$.
+		- is a scalar variable of type T, that holds the value $x^l$ of the lower bound on the optimization variable $x$.
 
 	*
 		- x_u
 
-		- is a scalar variable of type T, that holds the value
-                  $x^u$ of the upper bound on the optimization variable
-                  $x$.
+		- is a scalar variable of type T, that holds the value $x^u$ of the upper bound on the optimization variable $x$.
 
 .. index:: pair: function; ugo_reset_control
 .. _doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40:
@@ -155,7 +139,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_reset_control(control, data, status)
+        function ugo_reset_control(control, data, status)
 
 Reset control parameters after import if required.
 
@@ -167,10 +151,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters
-                  for the remaining prcedures (see
-                  :ref:`ugo_control_type
-                  <doxid-structugo__control__type>`)
+		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- data
@@ -184,7 +165,6 @@ Reset control parameters after import if required.
 		  exit status from the package. Possible values are:
 
 		  * **1**
-
                     The import was successful, and the package is ready
                     for the solve phase
 
@@ -194,7 +174,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
+        function ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
 
 Find an approximation to the global minimizer of a given univariate
 function with a Lipschitz gradient in an interval.
@@ -217,9 +197,7 @@ is available by function calls.
 	*
 		- userdata
 
-		- is a structure that allows data to be passed into the
-                  function and derivative evaluation programs (see
-                  below).
+		- is a structure that allows data to be passed into the function and derivative evaluation programs (see below).
 
 	*
 		- status
@@ -232,11 +210,9 @@ is available by function calls.
 		  Possible exit values are:
 
 		  * **0**
-
                     The run was successful
 
 		  * **-1**
-
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
                     control.error, and the returned allocation status
@@ -245,7 +221,6 @@ is available by function calls.
                     inform.bad_alloc respectively.
 
 		  * **-2**
-
                     A deallocation error occurred. A message indicating
                     the offending array is written on unit control.error
                     and the returned allocation status and a string
@@ -254,24 +229,20 @@ is available by function calls.
                     respectively.
 
 		  * **-7**
-
                     The objective function appears to be unbounded from
                     below
 
 		  * **-18**
-
                     Too many iterations have been performed. This may
                     happen if control.maxit is too small, but may also
                     be symptomatic of a badly scaled problem.
 
 		  * **-19**
-
                     The CPU time limit has been reached. This may happen
                     if control.cpu_time_limit is too small, but may also
                     be symptomatic of a badly scaled problem.
 
 		  * **-40**
-
                     The user has forced termination of solver by
                     removing the file named control.alive_file from unit
                     unit control.alive_unit.
@@ -279,34 +250,22 @@ is available by function calls.
 	*
 		- x
 
-		- is a scalar variable of type T, that holds the value
-                  of the approximate global minimizer $x$ after a
-                  successful (status = 0) call.
+		- is a scalar variable of type T, that holds the value of the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- f
 
-		- is a scalar variable of type T, that holds the the
-                  value of the objective function $f(x)$ at the
-                  approximate global minimizer $x$ after a successful
-                  (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the objective function $f(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- g
 
-		- is a scalar variable of type T, that holds the the
-                  value of the gradient of the objective function
-                  $f^{\prime}(x)$ at the approximate global minimizer
-                  $x$ after a successful (status = 0) call.
+		- is a scalar variable of type T, that holds the the value of the gradient of the objective function $f^{\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- h
 
-		- is a scalar variable of type T, that holds the the
-                  value of the second derivative of the objective
-                  function $f^{\prime\prime}(x)$ at the approximate
-                  global minimizer $x$ after a successful (status = 0)
-                  call.
+		- is a scalar variable of type T, that holds the the value of the second derivative of the objective function $f^{\prime\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- eval_fgh
@@ -316,7 +275,7 @@ is available by function calls.
 
 		  .. ref-code-block:: julia
 
-		  	eval_fgh(x, f, g, h, userdata)
+		  	function eval_fgh(x, f, g, h, userdata)
 
 		  The value of the objective function $f(x)$ and its
 		  first derivative $f^{\prime}(x)$ evaluated at x= $x$
@@ -335,7 +294,7 @@ is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_solve_reverse(data, status, eval_status, x, f, g, h)
+        function ugo_solve_reverse(data, status, eval_status, x, f, g, h)
 
 Find an approximation to the global minimizer of a given univariate
 function with a Lipschitz gradient in an interval.
@@ -366,11 +325,9 @@ only available by returning to the calling procedure.
 		  Possible exit values are:
 
 		  * **0**
-
                     The run was successful
 
 		  * **-1**
-
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
                     control.error, and the returned allocation status
@@ -379,7 +336,6 @@ only available by returning to the calling procedure.
                     inform.bad_alloc respectively.
 
 		  * **-2**
-
                     A deallocation error occurred. A message indicating
                     the offending array is written on unit control.error
                     and the returned allocation status and a string
@@ -388,32 +344,25 @@ only available by returning to the calling procedure.
                     respectively.
 
 		  * **-7**
-
                     The objective function appears to be unbounded from
                     below
 
 		  * **-18**
-
                     Too many iterations have been performed. This may
                     happen if control.maxit is too small, but may also
                     be symptomatic of a badly scaled problem.
 
 		  * **-19**
-
                     The CPU time limit has been reached. This may happen
                     if control.cpu_time_limit is too small, but may also
                     be symptomatic of a badly scaled problem.
 
 		  * **-40**
-
                     The user has forced termination of solver by
                     removing the file named control.alive_file from unit
                     unit control.alive_unit.
 
-
-
 		  * **3**
-
                     The user should compute the objective function value
                     $f(x)$ and its first derivative $f^{\prime}(x)$, and
                     then re-enter the function. The required values
@@ -426,10 +375,7 @@ only available by returning to the calling procedure.
                     non-zero value. This value can only occur when
                     control.second_derivatives_available = false.
 
-
-
 		  * **4**
-
                     The user should compute the objective function value
                     $f(x)$ and its first two derivatives $f^{\prime}(x)$
                     and $f^{\prime\prime}(x)$ at x= $x$, and then
@@ -447,44 +393,27 @@ only available by returning to the calling procedure.
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32, that is used to
-                  indicate if objective function and its derivatives can
-                  be provided (see above).
+		- is a scalar variable of type Int32, that is used to indicate if objective function and its derivatives can be provided (see above).
 
 	*
 		- x
 
-		- is a scalar variable of type T, that holds the next
-                  value of $x$ at which the user is required to evaluate
-                  the objective (and its derivatives) when status > 0,
-                  or the value of the approximate global minimizer when
-                  status = 0
+		- is a scalar variable of type T, that holds the next value of $x$ at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
 
 	*
 		- f
 
-		- is a scalar variable of type T, that must be set by
-                  the user to hold the value of $f(x)$ if required by
-                  status > 0 (see above), and will return the value of
-                  the approximate global minimum when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f(x)$ if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
 
 	*
 		- g
 
-		- is a scalar variable of type T, that must be set by
-                  the user to hold the value of $f^{\prime}(x)$ if
-                  required by status > 0 (see above), and will return
-                  the value of the first derivative of $f$ at the
-                  approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f^{\prime}(x)$ if required by status > 0 (see above), and will return the value of the first derivative of $f$ at the approximate global minimizer when status = 0
 
 	*
 		- h
 
-		- is a scalar variable of type T, that must be set by
-                  the user to hold the value of $f^{\prime\prime}(x)$ if
-                  required by status > 0 (see above), and will return
-                  the value of the second derivative of $f$ at the
-                  approximate global minimizer when status = 0
+		- is a scalar variable of type T, that must be set by the user to hold the value of $f^{\prime\prime}(x)$ if required by status > 0 (see above), and will return the value of the second derivative of $f$ at the approximate global minimizer when status = 0
 
 .. index:: pair: function; ugo_information
 .. _doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee:
@@ -492,7 +421,7 @@ only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_information(data, inform, status)
+        function ugo_information(data, inform, status)
 
 Provides output information
 
@@ -511,9 +440,7 @@ Provides output information
 	*
 		- inform
 
-		- is a structure containing output information (see
-                  :ref:`ugo_inform_type
-                  <doxid-structugo__inform__type>`)
+		- is a structure containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)
 
 	*
 		- status
@@ -523,7 +450,6 @@ Provides output information
 		  (currently):
 
 		  * **0**
-
                     The values were recorded successfully
 
 .. index:: pair: function; ugo_terminate
@@ -532,7 +458,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        ugo_terminate(data, control, inform)
+        function ugo_terminate(data, control, inform)
 
 Deallocate all internal private storage
 
@@ -549,13 +475,9 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a structure containing control information (see
-                  :ref:`ugo_control_type
-                  <doxid-structugo__control__type>`)
+		- is a structure containing control information (see :ref:`ugo_control_type <doxid-structugo__control__type>`)
 
 	*
 		- inform
 
-		- is a structure containing output information (see
-                  :ref:`ugo_inform_type
-                  <doxid-structugo__inform__type>`)
+		- is a structure containing output information (see :ref:`ugo_inform_type <doxid-structugo__inform__type>`)

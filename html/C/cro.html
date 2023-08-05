@@ -939,7 +939,7 @@ illustrations of use.</p>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The initialization was succesful.</p></li>
+<li><p>The initialization was successful.</p></li>
 </ol>
 </li>
 </ul>
@@ -1009,7 +1009,7 @@ illustrations of use.</p>
 <td><p>is a struct containing output information (see <a class="reference internal" href="struct_cro_inform_type.html#doxid-structcro-inform-type"><span class="std std-ref">cro_inform_type</span></a>). The component .status gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
 <li><ol class="arabic simple" start="0">
-<li><p>The crossover was succesful.</p></li>
+<li><p>The crossover was successful.</p></li>
 </ol>
 </li>
 <li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
@@ -1343,8 +1343,8 @@ if the preproccesor variable <code class="docutils literal notranslate"><span cl
     <span class="n">real_wp_</span> <span class="n">c_l</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">9.0</span><span class="p">,</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">};</span>
     <span class="n">real_wp_</span> <span class="n">c_u</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.0</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="mf">10.0</span><span class="p">};</span>
     <span class="n">real_wp_</span> <span class="n">x_l</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">};</span>
-    <span class="n">real_wp_</span> <span class="n">x_u</span><span class="p">[]</span>  <span class="o">=</span> <span class="p">{</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span>
-                       <span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">};</span>
+    <span class="n">real_wp_</span> <span class="n">x_u</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span>
+                      <span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">};</span>
 
     <span class="o">//</span> <span class="n">provide</span> <span class="n">optimal</span> <span class="n">variables</span><span class="p">,</span> <span class="n">Lagrange</span> <span class="n">multipliers</span> <span class="ow">and</span> <span class="n">dual</span> <span class="n">variables</span>
     <span class="n">real_wp_</span> <span class="n">x</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">};</span>
@@ -1357,7 +1357,6 @@ if the preproccesor variable <code class="docutils literal notranslate"><span cl
 
     <span class="o">//</span> <span class="n">Set</span> <span class="n">output</span> <span class="n">storage</span>
 
-    <span class="n">char</span> <span class="n">st</span><span class="p">;</span>
     <span class="nb">int</span> <span class="n">status</span><span class="p">;</span>
 
     <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; C sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
@@ -1428,8 +1427,8 @@ the code is available in $GALAHAD/src/cro/C/crotf.c .</p>
     <span class="n">real_wp_</span> <span class="n">c_l</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">9.0</span><span class="p">,</span><span class="o">-</span><span class="n">INFINITY</span><span class="p">};</span>
     <span class="n">real_wp_</span> <span class="n">c_u</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.0</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="mf">10.0</span><span class="p">};</span>
     <span class="n">real_wp_</span> <span class="n">x_l</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">};</span>
-    <span class="n">real_wp_</span> <span class="n">x_u</span><span class="p">[]</span>  <span class="o">=</span> <span class="p">{</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span>
-                       <span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">};</span>
+    <span class="n">real_wp_</span> <span class="n">x_u</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span>
+                      <span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">,</span><span class="n">INFINITY</span><span class="p">};</span>
 
     <span class="o">//</span> <span class="n">provide</span> <span class="n">optimal</span> <span class="n">variables</span><span class="p">,</span> <span class="n">Lagrange</span> <span class="n">multipliers</span> <span class="ow">and</span> <span class="n">dual</span> <span class="n">variables</span>
     <span class="n">real_wp_</span> <span class="n">x</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">};</span>
@@ -1442,7 +1441,6 @@ the code is available in $GALAHAD/src/cro/C/crotf.c .</p>
 
     <span class="o">//</span> <span class="n">Set</span> <span class="n">output</span> <span class="n">storage</span>
 
-    <span class="n">char</span> <span class="n">st</span><span class="p">;</span>
     <span class="nb">int</span> <span class="n">status</span><span class="p">;</span>
 
     <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; Fortran sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>

@@ -33,10 +33,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The initialization was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; bsc_information
 .. _doxid-galahad__bsc_8h_1a4c0ae2150d39c240539e1d3be836b0af:
@@ -68,10 +70,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; bsc_terminate
 .. _doxid-galahad__bsc_8h_1a3a8a2f875e681225b4851d060e310271:

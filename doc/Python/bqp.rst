@@ -215,7 +215,7 @@ functions
 
             * **0**
 
-              The run was succesful.
+              The run was successful.
 
             * **-1**
 

@@ -128,7 +128,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; l2rt_read_specfile
 .. _doxid-galahad__l2rt_8h_1a1b63f8b501208629cceb662b03f35684:
@@ -197,7 +197,7 @@ Import control parameters prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; l2rt_solve_problem
 .. _doxid-galahad__l2rt_8h_1a53042b19cef3a62c34631b00111ce754:
@@ -351,7 +351,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; l2rt_terminate
 .. _doxid-galahad__l2rt_8h_1aa9b62de33c3d6c129cca1e90a3d548b7:

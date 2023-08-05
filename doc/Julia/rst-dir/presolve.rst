@@ -5,7 +5,7 @@ GALAHAD PRESOLVE package
 
 .. module:: galahad.presolve
 
-.. include:: ../../Python/presolve_intro.rst
+.. include:: presolve_intro.rst
 
 .. toctree::
 	:hidden:

@@ -56,7 +56,7 @@ functions
 
              * **0**
 
-               The insertion or deletion was succesful.
+               The insertion or deletion was successful.
 
              * **-1**
 

@@ -158,7 +158,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; llsr_read_specfile
 .. _doxid-galahad__llsr_8h_1a01bf988188420284ac4c125fef947efb:
@@ -234,7 +234,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -320,7 +320,7 @@ Import the scaling matrix :math:`S` into internal storage prior to solution. Thu
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -395,7 +395,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; llsr_solve_problem
 .. _doxid-galahad__llsr_8h_1aa702f5ffcde083da921921c4e1131d89:
@@ -438,9 +438,9 @@ Solve the regularization-region problem.
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -545,7 +545,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; llsr_terminate
 .. _doxid-galahad__llsr_8h_1af05d27e76348279a8c9c16298a819609:

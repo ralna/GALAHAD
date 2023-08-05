@@ -33,10 +33,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; llsr_read_specfile
 .. _doxid-galahad__llsr_8h_1a01bf988188420284ac4c125fef947efb:
@@ -96,16 +98,34 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
 	*
 		- m
@@ -173,16 +193,33 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
 		- n
@@ -245,7 +282,7 @@ Reset control parameters after import if required.
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; llsr_solve_problem
 .. _doxid-galahad__llsr_8h_1aa702f5ffcde083da921921c4e1131d89:
@@ -271,32 +308,62 @@ Solve the regularization-region problem.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful.
+		  * **0**
+                    The run was successful.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    A_type or A_type contains its relevant string
+                    'dense', 'coordinate', 'sparse_by_rows' or
+                    'diagonal' has been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that A_type or A_type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-11**
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-15**
+                    The matrix $S$ does not appear to be strictly
+                    diagonally dominant.
 
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
-		  * -15. The matrix $S$ does not appear to be strictly diagonally dominant.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
-
-		  * -17. The step is too small to make further impact.
+		  * **-17**
+                    The step is too small to make further impact.
 
 	*
 		- m
@@ -331,12 +398,12 @@ Solve the regularization-region problem.
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the values $b$ of observations. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size m and type T that holds the values $b$ of observations. The i-th component of ``b``, i = 1, ... , m, contains $b_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- S_ne
@@ -379,7 +446,8 @@ Provides output information
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; llsr_terminate
 .. _doxid-galahad__llsr_8h_1af05d27e76348279a8c9c16298a819609:

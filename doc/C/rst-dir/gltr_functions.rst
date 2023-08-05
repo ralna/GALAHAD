@@ -124,7 +124,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; gltr_read_specfile
 .. _doxid-galahad__gltr_8h_1a68a3273a88b27601e72b61f10a23de31:
@@ -193,7 +193,7 @@ Import control parameters prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; gltr_solve_problem
 .. _doxid-galahad__gltr_8h_1ad77040d245e6bc307d13ea0cec355f18:
@@ -319,7 +319,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; gltr_terminate
 .. _doxid-galahad__gltr_8h_1ac3e0cbd0ecc79b37251fad7fd6f47631:

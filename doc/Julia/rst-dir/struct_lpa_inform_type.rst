@@ -93,7 +93,7 @@ the final value of la04's job argument
 
 	Int32 la04_job_info
 
-any extra information from an unsuccesfull call to LA04 (LA04's RINFO(35)
+any extra information from an unsuccessfull call to LA04 (LA04's RINFO(35)
 
 .. index:: pair: variable; obj
 .. _doxid-structlpa__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:

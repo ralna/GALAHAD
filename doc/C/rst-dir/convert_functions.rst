@@ -114,7 +114,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The initialization was succesful.
+		  * 0. The initialization was successful.
 
 .. index:: pair: function; convert_information
 .. _doxid-galahad__convert_8h_1aba73d8119f28983efa000812bd970be6:
@@ -153,7 +153,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; convert_terminate
 .. _doxid-galahad__convert_8h_1a98d7b586061edf44052ae76b80cd2697:

@@ -296,7 +296,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -431,7 +431,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; nls_solve_with_mat
 .. _doxid-galahad__nls_8h_1ae923c2e6afabb3563fe0998d45b715c4:
@@ -486,9 +486,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -657,9 +657,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -818,9 +818,9 @@ This call is for the case where :math:`H = \nabla_{xx}f(x)` is provided specific
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -975,9 +975,9 @@ This call is for the case where access to :math:`H = \nabla_{xx}f(x)` is provide
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -1114,7 +1114,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; nls_terminate
 .. _doxid-galahad__nls_8h_1a7babe9112dfad1eb7b57b70135704ab0:

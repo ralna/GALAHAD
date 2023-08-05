@@ -26,12 +26,12 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a structure containing control information (see fit_control_type)
+		- is a structure containing control information (see :ref:`lhs_control_type <doxid-structlhs__control__type>`)
 
 	*
 		- inform
 
-		- is a structure containing output information (see fit_inform_type)
+		- is a structure containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)
 
 .. index:: pair: function; lhs_read_specfile
 .. _doxid-galahad__lhs_8h_1a38254f580fde3732f4f4e83e08180e63:
@@ -41,11 +41,13 @@ Set default control values and initialize private data
 
         function lhs_read_specfile(control, specfile)
 
-Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters.
+Read the content of a specification file, and perform the assignment of
+values associated with given keywords to the corresponding control
+parameters.
 
-By default, the spcification file will be named RUNLHS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
-
-
+By default, the spcification file will be named RUNLHS.SPC and lie in
+the current directory. Refer to Table 2.1 in the fortran documentation
+provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -55,7 +57,7 @@ By default, the spcification file will be named RUNLHS.SPC and lie in the curren
 	*
 		- control
 
-		- a structure containing control information (see above)
+		- is a structure containing control information (see :ref:`lhs_control_type <doxid-structlhs__control__type>`)
 
 	*
 		- specfile
@@ -74,9 +76,17 @@ The improved distributed hyper-cube sampling algorithm.
 
 Discussion:
 
-n_points points in an n_dimen dimensional Latin hyper-cube are to be selected. Each of the coordinate dimensions is discretized to the values 1 through n. The points are to be chosen in such a way that no two points have any coordinate value in common. This is a standard Latin hypercube requirement, and there are many solutions.
+n_points points in an n_dimen dimensional Latin hyper-cube are to be
+selected. Each of the coordinate dimensions is discretized to the values
+1 through n. The points are to be chosen in such a way that no two
+points have any coordinate value in common. This is a standard Latin
+hypercube requirement, and there are many solutions.
 
-This algorithm differs in that it tries to pick a solution which has the property that the points are "spread out" as evenly as possible. It does this by determining an optimal even spacing, and using the DUPLICATION factor to allow it to choose the best of the various options available to it.
+This algorithm differs in that it tries to pick a solution which has the
+property that the points are "spread out" as evenly as possible. It does
+this by determining an optimal even spacing, and using the DUPLICATION
+factor to allow it to choose the best of the various options available
+to it.
 
 Reference:
 
@@ -109,20 +119,22 @@ Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, Amer
 
 		- is an array variable of type int with dimensions [n_dimen][n_points] that gives the hyper-cube points
 
+
 	*
 		- control
 
-		-
+		- is a structure containing control information (see :ref:`lhs_control_type <doxid-structlhs__control__type>`)
 
 	*
 		- inform
 
-		-
+		- is a structure containing output information (see :ref:`lhs_inform_type <doxid-structlhs__inform__type>`)
+
 
 	*
 		- data
 
-		- - see lhs_initialize
+		- - holds private internal data
 
 .. index:: pair: function; lhs_get_seed
 .. _doxid-galahad__lhs_8h_1add3dc91a7fe9b311898e516798d81e14:
@@ -174,10 +186,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; lhs_terminate
 .. _doxid-galahad__lhs_8h_1a24f8433561128e5c05e588d053b22f29:

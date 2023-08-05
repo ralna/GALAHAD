@@ -31,10 +31,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; rqs_read_specfile
 .. _doxid-galahad__rqs_8h_1a1f6f3841ad5f7952dbc04a7cb19dd0e7:
@@ -44,7 +46,11 @@ Set default control values and initialize private data
 
         function rqs_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNRQS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/rqs.pdf for a list of keywords that may be set.
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNRQS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/rqs.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -90,16 +96,33 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', diagonal' or
+                    'identity' has been violated.
 
 	*
 		- n
@@ -154,16 +177,33 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', diagonal' or
+                    'identity' has been violated.
 
 	*
 		- n
@@ -218,16 +258,32 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful
+		  * **0**
+                    The import was successful
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate' or 'sparse_by_rows' has been violated.
 
 	*
 		- m
@@ -287,10 +343,11 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; rqs_solve_problem
 .. _doxid-galahad__rqs_8h_1a162e2301c9d4bde7d57f5f1e820e2b84:
@@ -316,32 +373,57 @@ Solve the regularised quadratic problem.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
-		  On initial entry, status must be set to 1.
+		  On initial entry, status **must** be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful.
+		  * **0**
+                    The run was successful.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0, power > 2, weight > 0 and m
+                    > 0 or requirement that a type contains its relevant
+                    string 'dense', 'coordinate', 'sparse_by_rows',
+                    'diagonal' or 'identity' has been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-9**
+                    The analysis phase of the factorization of the
+                    matrix (1) failed.
 
-		  * -3. The restrictions n > 0, power > 2, weight > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has been violated.
+		  * **-10**
+                    The factorization of the matrix (1) failed.
 
-		  * -9. The analysis phase of the factorization of the matrix (1) failed.
+		  * **-15**
+                    The matrix M appears not to be diagonally dominant.
 
-		  * -10. The factorization of the matrix (1) failed.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 
-		  * -15. The matrix M appears not to be diagonally dominant.
-
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
-
-		  * -18. Too many factorizations have been required. This may happen if control.max factorizations is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-18**
+                    Too many factorizations have been required. This may
+                    happen if control.max factorizations is too small,
+                    but may also be symptomatic of a badly scaled
+                    problem.
 
 	*
 		- n
@@ -361,7 +443,7 @@ Solve the regularised quadratic problem.
 	*
 		- c
 
-		- is a one-dimensional array of size n and type T that holds the linear term $c$ of the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $c$ of the objective function. The j-th component of ``c``, j = 1, ... , m, contains $c_j$.
 
 	*
 		- f
@@ -381,7 +463,7 @@ Solve the regularised quadratic problem.
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- M_ne
@@ -411,7 +493,7 @@ Solve the regularised quadratic problem.
 	*
 		- y
 
-		- is a one-dimensional array of size m and type T that holds the values $y$ of the Lagrange multipliers for the equality constraints $A x = 0$ if used. The i-th component of y, i = 0, ... , m-1, contains $y_i$.
+		- is a one-dimensional array of size m and type T that holds the values $y$ of the Lagrange multipliers for the equality constraints $A x = 0$ if used. The i-th component of ``y``, i = 1, ... , m, contains $y_i$.
 
 .. index:: pair: function; rqs_information
 .. _doxid-galahad__rqs_8h_1a586e85ec11c4647346916f49805fcb83:
@@ -441,10 +523,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; rqs_terminate
 .. _doxid-galahad__rqs_8h_1ae1f727eadfaada300dc6a5e268ac2b74:

@@ -13,8 +13,6 @@ callable functions
 
 Set default control values and initialize private data
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -33,10 +31,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; sbls_read_specfile
 .. _doxid-galahad__sbls_8h_1abde2e76567a4c8721fe9c2386106e972:
@@ -98,16 +98,34 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
+		  * **-3**
+                    The restrictions n > 0 or m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', 'diagonal',
+                    'scaled_identity', 'identity', 'zero' or 'none' has
+                    been violated.
 
 	*
 		- n
@@ -204,8 +222,6 @@ Import structural matrix data into internal storage prior to solution.
 
 Reset control parameters after import if required.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -224,10 +240,11 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; sbls_factorize_matrix
 .. _doxid-galahad__sbls_8h_1a77799da1282c3567b56ae8db42b75f65:
@@ -242,7 +259,6 @@ Form and factorize the block matrix
 $$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}$$
 for some appropriate matrix $G$.
 
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -256,44 +272,69 @@ for some appropriate matrix $G$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The factors were generated succesfully.
+		  * **0**
+                    The factors were generated successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', 'diagonal',
+                    'scaled_identity', 'identity', 'zero' or 'none' has
+                    been violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-9**
+                    An error was reported by SLS analyse. The return
+                    status from SLS analyse is given in
+                    inform.sls_inform.status. See the documentation for
+                    the GALAHAD package SLS for further details.
 
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
+		  * **-10**
+                    An error was reported by SLS_factorize. The return
+                    status from SLS factorize is given in
+                    inform.sls_inform.status. See the documentation for
+                    the GALAHAD package SLS for further details.
 
+		  * **-13**
+                    An error was reported by ULS_factorize. The return
+                    status from ULS_factorize is given in
+                    inform.uls_factorize_status. See the documentation
+                    for the GALAHAD package ULS for further details.
 
+		  * **-15**
+                    The computed preconditioner $K_G$ is singular and is
+                    thus unsuitable.
 
-		  * -9. An error was reported by SLS analyse. The return status from SLS analyse is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.
+		  * **-20**
+                    The computed preconditioner $K_G$ has the wrong
+                    inertia and is thus unsuitable.
 
-
-
-		  * -10. An error was reported by SLS_factorize. The return status from SLS factorize is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.
-
-
-
-		  * -13. An error was reported by ULS_factorize. The return status from ULS_factorize is given in inform.uls_factorize_status. See the documentation for the GALAHAD package ULS for further details.
-
-
-
-		  * -15. The computed preconditioner $K_G$ is singular and is thus unsuitable.
-
-
-
-		  * -20. The computed preconditioner $K_G$ has the wrong inertia and is thus unsuitable.
-
-
-
-		  * -24. An error was reported by the GALAHAD package SORT_reorder_by_rows. The return status from SORT_reorder_by_rows is given in inform.sort_status. See the documentation for the GALAHAD package SORT for further details.
+		  * **-24**
+                    An error was reported by the GALAHAD package
+                    SORT_reorder_by_rows. The return status from
+                    SORT_reorder_by_rows is given in
+                    inform.sort_status. See the documentation for the
+                    GALAHAD package SORT for further details.
 
 	*
 		- n
@@ -361,26 +402,41 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-11**
+                    An error was reported by SLS_solve. The return
+                    status from SLS solve is given in
+                    inform.sls_inform.status. See the documentation for
+                    the GALAHAD package SLS for further details.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-
-
-		  * -11. An error was reported by SLS_solve. The return status from SLS solve is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.
-
-
-
-		  * -14. An error was reported by ULS_solve. The return status from ULS_solve is given in inform.uls_solve_status. See the documentation for the GALAHAD package ULS for further details.
+		  * **-14**
+                    An error was reported by ULS_solve. The return
+                    status from ULS_solve is given in
+                    inform.uls_solve_status. See the documentation for
+                    the GALAHAD package ULS for further details.
 
 	*
 		- n
@@ -427,10 +483,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sbls_terminate
 .. _doxid-galahad__sbls_8h_1a73d7d29d113a62c48cc176146539bca5:

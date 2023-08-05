@@ -74,7 +74,7 @@ functions
 
              * **0**
 
-               The call was succesful.
+               The call was successful.
 
              * **-1**
 

@@ -36,7 +36,8 @@ Set default control values and initialize private data
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The initialization was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; cro_read_specfile
 .. _doxid-galahad__cro_8h_1a55c7770ae26847b5c17055c290a54c2a:
@@ -46,8 +47,11 @@ Set default control values and initialize private data
 
         function cro_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNCRO.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/cro.pdf for a list of keywords that may be set.
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNCRO.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/cro.pdf for a list of keywords that may be set.
 
 
 .. rubric:: Parameters:
@@ -79,8 +83,6 @@ Read the content of a specification file, and assign values associated with give
 
 Crosover the solution from a primal-dual to a basic one.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -102,29 +104,53 @@ Crosover the solution from a primal-dual to a basic one.
 		-
 		  is a structure containing output information (see :ref:`cro_inform_type <doxid-structcro__inform__type>`). The component .status gives the exit status from the package. Possible values are:
 
-		  * 0. The crossover was succesful.
+		  * **0**
+                    The crossover was successful.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0 or m >= m_equal >= 0 has been violated.
+		  * **-3**
+                    The restrictions n > 0 or m >= m_equal >= 0 has been
+                    violated.
 
-		  * -4 the bound constraints are inconsistent.
+		  * **-4**
+                    the bound constraints are inconsistent.
 
-		  * -5 the general constraints are likely inconsistent.
+		  * **-5**
+                    the general constraints are likely inconsistent.
 
-		  * -9 an error has occured in SLS_analyse.
+		  * **-9**
+                    an error has occured in SLS_analyse.
 
-		  * -10 an error has occured in SLS_factorize.
+		  * **-10**
+                    an error has occured in SLS_factorize.
 
-		  * -11 an error has occured in SLS_solve.
+		  * **-11**
+                    an error has occured in SLS_solve.
 
-		  * -12 an error has occured in ULS_factorize.
+		  * **-12**
+                    an error has occured in ULS_factorize.
 
-		  * -14 an error has occured in ULS_solve.
+		  * **-14**
+                    an error has occured in ULS_solve.
 
-		  * -16 the residuals are large; the factorization may be unsatisfactory.
+		  * **-16**
+                    the residuals are large; the factorization may be
+                    unsatisfactory.
 
 	*
 		- n
@@ -184,47 +210,47 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the linear term $g$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
+		- is a one-dimensional array of size m and type T that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of ``c_l``, i = 1, ... , m, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
+		- is a one-dimensional array of size m and type T that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of ``c_u``, i = 1, ... , m, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the residual $c(x) = A x$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
+		- is a one-dimensional array of size m and type T that holds the residual $c(x) = A x$. The i-th component of ``c``, j = 1, ... , m, contains $c_j(x)$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The j-th component of ``y``, j = 1, ... , m, contains $y_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- x_stat

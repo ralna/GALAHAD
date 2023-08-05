@@ -8,7 +8,7 @@ $$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}.$$
 Here, the leading-block matrix $G$ is a suitably-chosen
 approximation to $H$; it may either be prescribed **explicitly**, in
 which case a symmetric indefinite factorization of $K_{G}$
-will be formed using the \galahad\ package {\tt SLS},
+will be formed using the GALAHAD package ``SLS``,
 or **implicitly**, by requiring certain sub-blocks of $G$
 be zero. In the latter case, a factorization of $K_{G}$ will be
 obtained implicitly (and more efficiently) without recourse to ``sls``.

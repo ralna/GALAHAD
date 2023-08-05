@@ -156,7 +156,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; lsqp_read_specfile
 .. _doxid-galahad__lsqp_8h_1a830242147779223fa2dbed69c2c0c200:
@@ -232,7 +232,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -312,7 +312,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; lsqp_solve_qp
 .. _doxid-galahad__lsqp_8h_1a44019540a174679eda6d46b1ddae89f8:
@@ -363,9 +363,9 @@ Solve the separable convex quadratic program.
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -516,7 +516,7 @@ Provides output information.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; lsqp_terminate
 .. _doxid-galahad__lsqp_8h_1a7a9c9d7589c1acb11f0e2a579b1d8053:

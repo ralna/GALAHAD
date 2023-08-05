@@ -110,7 +110,67 @@ components
 
 	Int32 status
 
-reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (.n < 1, .ne < 0) -20 alegedly +ve definite matrix is not -29 unavailable option -31 input order is not a permutation or is faulty in some other way -32 > control.max_integer_factor_size integer space required for factor -33 > control.max_real_factor_size real space required for factors -40 not possible to alter the diagonals -41 no access to permutation or pivot sequence used -42 no access to diagonal perturbations -43 direct-access file error -50 solver-specific error; see the solver's info parameter -101 unknown solver
+reported return status. Possible values are:
+
+* **0**
+
+  success 
+
+* **-1**
+
+  allocation error 
+
+* **-2** 
+
+  deallocation error 
+
+* **-3**
+
+  matrix data faulty (n < 1, ne < 0) 
+
+* **-20**
+
+  alegedly postive definite definite matrix is indefinite
+
+* **-29**
+
+  unavailable option 
+
+* **-31**
+
+  input order is not a permutation or is faulty in some other way 
+
+* **-32**
+
+  > control.max_integer_factor_size integer space required for factor 
+
+* **-33**
+
+  > control.max_real_factor_size real space required for factors 
+
+* **-40**
+
+  not possible to alter the diagonals 
+
+* **-41**
+
+  no access to permutation or pivot sequence used 
+
+* **-42**
+
+  no access to diagonal perturbations 
+
+* **-43**
+
+  direct-access file error 
+
+* **-50**
+
+  solver-specific error; see the solver's info parameter 
+
+* **-101**
+
+  unknown solver
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
@@ -540,7 +600,8 @@ estimate of forward error
 
 	Bool alternative
 
-has an "alternative" y: A y = 0 and yT b > 0 been found when trying to solve A x = b ?
+has an "alternative" $y$: $A y = 0$ and $y^T b > 0$ been found when trying 
+to solve $A x = b$ ?
 
 .. index:: pair: variable; solver
 .. _doxid-structsls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d:
@@ -570,7 +631,7 @@ timings (see above)
 
 	struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` sils_ainfo
 
-the output structure from sils
+the analyse output structure from sils
 
 .. index:: pair: variable; sils_finfo
 .. _doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a:
@@ -580,7 +641,7 @@ the output structure from sils
 
 	struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` sils_finfo
 
-see sils_ainfo
+the factorize output structure from sils
 
 .. index:: pair: variable; sils_sinfo
 .. _doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01:
@@ -590,7 +651,7 @@ see sils_ainfo
 
 	struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` sils_sinfo
 
-see sils_ainfo
+the solve output structure from sils
 
 .. index:: pair: variable; ma57_ainfo
 .. _doxid-structsls__inform__type_1aa7061ae61ef272126c2d93c0bb7c3e92:
@@ -598,9 +659,9 @@ see sils_ainfo
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma57_ainfo ma57_ainfo
+	struct :ref:`ma57_ainfo <details-structma57__ainfo>` ma57_ainfo
 
-the analyse output structure from ma57 (see :ref:`ma57_ainfo <details-structma57__ainfo>`)
+the analyse output structure from hsl_ma57
 
 .. index:: pair: variable; ma57_finfo
 .. _doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f:
@@ -608,7 +669,9 @@ the analyse output structure from ma57 (see :ref:`ma57_ainfo <details-structma57
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-the factorize output structure from ma57 (see :ref:`ma57_finfo <details-structma57__finfo>`)
+	struct :ref:`ma57_finfo <details-structma57__finfo>` ma57_finfo
+
+the factorize output structure from hsl_ma57
 
 .. index:: pair: variable; ma57_sinfo
 .. _doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8:
@@ -616,7 +679,9 @@ the factorize output structure from ma57 (see :ref:`ma57_finfo <details-structma
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-the solve output structure from ma57 (see :ref:`ma57_sinfo <details-structma57__sinfo>`)
+	struct :ref:`ma57_sinfo <details-structma57__sinfo>` ma57_sinfo
+
+the solve output structure from hsl_ma57
 
 .. index:: pair: variable; ma77_info
 .. _doxid-structsls__inform__type_1a296c08f6844db0dd56124633c5bead05:
@@ -624,9 +689,9 @@ the solve output structure from ma57 (see :ref:`ma57_sinfo <details-structma57__
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma77_info ma77_info
+	struct :ref:`ma77_info <details-structma77__info>` ma77_info
 
-the output structure from ma77 (see :ref:`ma77_info <details-structma77__info>`)
+the output structure from hsl_ma77
 
 .. index:: pair: variable; ma86_info
 .. _doxid-structsls__inform__type_1a0e8dbbed5f52f17a0c85cc24c1d4133a:
@@ -634,9 +699,9 @@ the output structure from ma77 (see :ref:`ma77_info <details-structma77__info>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma86_info ma86_info
+	struct :ref:`ma86_info <details-structma86__info>` ma86_info
 
-the output structure from ma86 (see :ref:`ma86_info <details-structma86__info>`)
+the output structure from hsl_ma86
 
 .. index:: pair: variable; ma87_info
 .. _doxid-structsls__inform__type_1a5a0d5c7fc9b533354415c7f26c5ca0fa:
@@ -644,9 +709,9 @@ the output structure from ma86 (see :ref:`ma86_info <details-structma86__info>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma87_info ma87_info
+	struct :ref:`ma87_info <details-structma87__info>` ma87_info
 
-the output structure from ma87 (see :ref:`ma87_info <details-structma87__info>`)
+the output structure from hsl_ma87
 
 .. index:: pair: variable; ma97_info
 .. _doxid-structsls__inform__type_1a97187c145bd03b5812c1b08cfd0c1fdd:
@@ -654,9 +719,9 @@ the output structure from ma87 (see :ref:`ma87_info <details-structma87__info>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct ma97_info ma97_info
+	struct :ref:`ma97_info <details-structma97__info>` ma97_info
 
-the output structure from ma97 (see :ref:`ma97_info <details-structma97__info>`)
+the output structure from hsl_ma97
 
 .. index:: pair: variable; ssids_inform
 .. _doxid-structsls__inform__type_1a1460057cd78a3850b14e78583b051054:
@@ -664,9 +729,9 @@ the output structure from ma97 (see :ref:`ma97_info <details-structma97__info>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct spral_ssids_inform ssids_inform
+	struct :ref:`spral_ssids_inform <details-structspral__ssids__inform>` ssids_inform
 
-the output structure from ssids (see :ref:`spral_ssids_inform <details-structspral__ssids__inform>`)
+the output structure from ssids
 
 .. index:: pair: variable; mc61_info
 .. _doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8:
@@ -676,7 +741,7 @@ the output structure from ssids (see :ref:`spral_ssids_inform <details-structspr
 
 	Int32 mc61_info[10]
 
-the integer and real output arrays from mc61
+the real output array from mc61 from HSL
 
 .. index:: pair: variable; mc61_rinfo
 .. _doxid-structsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f:
@@ -686,7 +751,7 @@ the integer and real output arrays from mc61
 
 	T mc61_rinfo[15]
 
-see mc61_info
+the integer output array from mc61 from HSL
 
 .. index:: pair: variable; mc64_info
 .. _doxid-structsls__inform__type_1a4b3b5b1c3585cea6e9006dcb9f34182c:
@@ -694,9 +759,9 @@ see mc61_info
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct mc64_info mc64_info
+	struct  :ref:`mc64_info <details-structmc64__info>` mc64_info
 
-the output structure from mc64 (see :ref:`mc64_info <details-structmc64__info>`)
+the output structure from hsl_mc64
 
 .. index:: pair: variable; mc68_info
 .. _doxid-structsls__inform__type_1a47a1ee8b0f64c664c47bbd23bacb4af6:
@@ -704,9 +769,9 @@ the output structure from mc64 (see :ref:`mc64_info <details-structmc64__info>`)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct mc68_info mc68_info
+	struct :ref:`mc68_info <details-structmc68__info>` mc68_info
 
-the output structure from mc68 (see :ref:`mc68_info <details-structmc68__info>`)
+the output structure from hsl_mc68
 
 .. index:: pair: variable; mc77_info
 .. _doxid-structsls__inform__type_1ac143b7dbde27738930a06678d7a84135:
@@ -726,7 +791,7 @@ the integer output array from mc77
 
 	T mc77_rinfo[10]
 
-the real output status from mc77
+the real output array from mc77 from HSL
 
 .. index:: pair: variable; mumps_error
 .. _doxid-structsls__inform__type_1aabe7dce2361151a723670484e385d4e2:

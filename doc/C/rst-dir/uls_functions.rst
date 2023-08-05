@@ -143,7 +143,7 @@ Select solver, set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 		  
 		  * -26. The requested solver is not available.
 
@@ -221,7 +221,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 		  
 		  Possible values are:
 		  
-		  * 0. The import, analysis and factorization were conducted succesfully.
+		  * 0. The import, analysis and factorization were conducted successfully.
 		  
 		  
 		  
@@ -316,7 +316,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; uls_solve_system
 .. _doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518:
@@ -420,7 +420,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; uls_terminate
 .. _doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435:

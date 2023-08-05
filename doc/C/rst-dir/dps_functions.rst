@@ -162,7 +162,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; dps_read_specfile
 .. _doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf:
@@ -234,7 +234,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -309,7 +309,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * 1. The import was successful, and the package is ready for the solve phase
 
 .. index:: pair: function; dps_solve_tr_problem
 .. _doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5:
@@ -351,7 +351,7 @@ Find the global minimizer of the trust-region problem (1).
 		  
 		  Possible values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -445,7 +445,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 		  
 		  Possible values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -541,7 +541,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 		  
 		  Possible values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -617,7 +617,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 		  
 		  Possible values are:
 		  
-		  * 0. The run was succesful
+		  * 0. The run was successful
 		  
 		  
 		  
@@ -690,7 +690,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; dps_terminate
 .. _doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e:

@@ -33,10 +33,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; psls_read_specfile
 .. _doxid-galahad__psls_8h_1a34b978446b6aa5636f9e6efc18860366:
@@ -46,9 +48,11 @@ Set default control values and initialize private data
 
         function psls_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNPSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/psls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNPSLS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/psls.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -95,16 +99,33 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
 		- n
@@ -166,10 +187,12 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; psls_form_preconditioner
 .. _doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1:
@@ -196,22 +219,35 @@ Form and factorize a preconditioner $P$ of the matrix $A$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The factors were generated succesfully.
+		  * **0**
+                    The factors were generated successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -26. The requested solver is not available.
-
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
@@ -248,22 +284,35 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The factors were generated succesfully.
+		  * **0**
+                    The factors were generated successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -26. The requested solver is not available.
-
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
@@ -310,22 +359,35 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The factors were generated succesfully.
+		  * **0**
+                    The factors were generated successfully.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -26. The requested solver is not available.
-
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
@@ -357,8 +419,6 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 
 Solve the linear system $Px=b$.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -372,18 +432,29 @@ Solve the linear system $Px=b$.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package.
 
 		  Possible values are:
 
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
 	*
 		- n
@@ -405,8 +476,6 @@ Solve the linear system $Px=b$.
 
 Provide output information
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -425,10 +494,12 @@ Provide output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; psls_terminate
 .. _doxid-galahad__psls_8h_1ab62a2e262e7466fac3a2dc8cd300720d:
@@ -439,8 +510,6 @@ Provide output information
         function psls_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

@@ -149,7 +149,7 @@ Select solver, set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 		  
 		  * -26. The requested solver is not available.
 
@@ -225,7 +225,7 @@ Import structural matrix data into internal storage prior to solution
 		  
 		  Possible values are:
 		  
-		  * 0. The import and analysis were conducted succesfully.
+		  * 0. The import and analysis were conducted successfully.
 		  
 		  
 		  
@@ -322,7 +322,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; sls_factorize_matrix
 .. _doxid-galahad__sls_8h_1ab6666f5eb7b0bdbbc9c9b52b7a2e2c41:
@@ -359,7 +359,7 @@ Form and factorize the symmetric matrix :math:`A`.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated succesfully.
+		  * 0. The factors were generated successfully.
 		  
 		  
 		  
@@ -492,7 +492,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 		  
 		  On initial entry, status must be set to 1.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
 		  * 0. The required solution was obtained.
 		  
@@ -549,7 +549,7 @@ Provide output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; sls_terminate
 .. _doxid-galahad__sls_8h_1aa5aafa378e3500ce31783e13c3395d30:

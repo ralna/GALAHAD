@@ -165,7 +165,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; rpd_get_stats
 .. _doxid-galahad__rpd_8h_1ad0148374adcd7bf5f34f378ba0995a21:
@@ -222,7 +222,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -343,7 +343,7 @@ Recover the linear term :math:`g` from in objective function
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -385,7 +385,7 @@ Recover the constant term :math:`f` in the objective function.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -428,7 +428,7 @@ Recover the variable lower and upper bounds :math:`x_l` and :math:`x_u`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -481,7 +481,7 @@ Recover the constraint lower and upper bounds :math:`c_l` and :math:`c_u`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -535,7 +535,7 @@ Recover the Hessian term :math:`H` in the objective function.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -594,7 +594,7 @@ Recover the Jacobian term :math:`A` in the constraints.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -654,7 +654,7 @@ Recover the Hessian terms :math:`H_c` in the constraints.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -711,7 +711,7 @@ Recover the types of the variables :math:`x`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -760,7 +760,7 @@ Recover the initial values of the variables :math:`x`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -802,7 +802,7 @@ Recover the initial values of the Lagrange multipliers :math:`y`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -844,7 +844,7 @@ Recover the initial values of the dual variables :math:`z`.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The statistics have been recovered succesfully.
+		  * 0. The statistics have been recovered successfully.
 		  
 		  * -93. The QPLIB file did not contain the required data.
 
@@ -891,7 +891,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; rpd_terminate
 .. _doxid-galahad__rpd_8h_1af49fc46839c605dd71d2666189d0d8a9:

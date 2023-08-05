@@ -35,13 +35,27 @@ components
 
 return status. Possible values are:
 
-* 0 The initialization, insertion or deletion was succesful.
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  The initialization, insertion or deletion was successful.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -99. The current dictionary is full and should be rebuilt with more space.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
+
+* **-2** 
+
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
+
+* **-99**
+
+  The current dictionary is full and should be rebuilt with more space.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structhash__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

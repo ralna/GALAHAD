@@ -21,7 +21,7 @@ method
 The required solution $x$ necessarily satisfies the optimality condition
 $A^T ( A x - b ) + \lambda x = 0$, where
 $\lambda = \mu + \sigma \|x\|_2^{p-2}
-\sqrt{\| A x - b \|_2^2 + \mu \|x\|_2^2}.$$
+\sqrt{\| A x - b \|_2^2 + \mu \|x\|_2^2}.$
 
 The method is iterative. Starting  with the vector $u_1 = b$, a
 bi-diagonalisation process is used to generate the vectors $v_k$ and

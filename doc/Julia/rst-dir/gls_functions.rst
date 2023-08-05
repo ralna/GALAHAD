@@ -13,8 +13,6 @@ callable functions
 
 Set default control values and initialize private data
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -38,9 +36,11 @@ Set default control values and initialize private data
 
         function gls_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNGLS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/gls.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -67,8 +67,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import problem data into internal storage prior to solution.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -87,16 +85,34 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
 .. index:: pair: function; gls_reset_control
 .. _doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07:
@@ -108,8 +124,6 @@ Import problem data into internal storage prior to solution.
 
 Reset control parameters after import if required.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -128,10 +142,12 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; gls_information
 .. _doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47:
@@ -142,8 +158,6 @@ Reset control parameters after import if required.
         function gls_information(data, ainfo, finfo, sinfo, status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -173,10 +187,12 @@ Provides output information
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; gls_finalize
 .. _doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390:
@@ -187,8 +203,6 @@ Provides output information
         function gls_finalize(data, control, status)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 
@@ -208,7 +222,9 @@ Deallocate all internal private storage
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully

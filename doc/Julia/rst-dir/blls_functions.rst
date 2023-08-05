@@ -13,8 +13,6 @@ callable functions
 
 Set default control values and initialize private data
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -33,10 +31,12 @@ Set default control values and initialize private data
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are
+		  (currently):
 
-		  * 0. The import was succesful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; blls_read_specfile
 .. _doxid-galahad__blls_8h_1aa24c9c2fdaaaac84df5b98abbf84c859:
@@ -46,9 +46,11 @@ Set default control values and initialize private data
 
         function blls_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBLLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/blls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNBLLS.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/blls.pdf for a list of keywords that may be set.
 
 .. rubric:: Parameters:
 
@@ -76,8 +78,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import problem data into internal storage prior to solution.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -99,13 +99,32 @@ Import problem data into internal storage prior to solution.
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restrictions n > 0, m > 0 or requirement that type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; has been violated.
+		  * **-3**
+                    The restrictions n > 0, m > 0 or requirement that
+                    type contains its relevant string 'coordinate',
+                    'sparse_by_rows', 'sparse_by_columns',
+                    'dense_by_rows', or 'dense_by_columns'; has been
+                    violated.
 
 	*
 		- n
@@ -152,8 +171,6 @@ Import problem data into internal storage prior to solution.
 
 Import problem data into internal storage prior to solution.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -172,16 +189,31 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type Int32 that gives the exit
+		  status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -3. The restriction n > 0 or m > 0 has been violated.
+		  * **-3**
+                    The restriction n > 0 or m > 0 has been violated.
 
 	*
 		- n
@@ -203,8 +235,6 @@ Import problem data into internal storage prior to solution.
 
 Reset control parameters after import if required.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -226,7 +256,9 @@ Reset control parameters after import if required.
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
 
-		  * 1. The import was succesful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; blls_solve_given_a
 .. _doxid-galahad__blls_8h_1acf6d292989a5ac09f7f3e507283fb5bf:
@@ -238,8 +270,8 @@ Reset control parameters after import if required.
                                     A_ne, A_val, b, x_l, x_u, x, z, c, g, 
                                     x_stat, w, eval_prec)
 
-Solve the bound-constrained linear least-squares problem when the Jacobian $A$ is available.
-
+Solve the bound-constrained linear least-squares problem when the
+Jacobian $A$ is available.
 
 
 .. rubric:: Parameters:
@@ -265,27 +297,56 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 
 		  On initial entry, status must be set to 1.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful.
+		  * **0**
+                    The run was successful.
 
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0, m > 0 or requirement that a
+                    type contains its relevant string 'coordinate',
+                    'sparse_by_rows', 'sparse_by_columns',
+                    'dense_by_rows' or 'dense_by_columns' has been
+                    violated.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-4**
+                    The simple-bound constraints are inconsistent.
 
-		  * -3. The restrictions n > 0, m > 0 or requirement that a type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' has been violated.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 
-		  * -4. The simple-bound constraints are inconsistent.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-18**
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-19**
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 
 	*
 		- n
@@ -310,37 +371,37 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , m, contains $b_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of ``c``, i = 1, ... , m, contains $c_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
 		- x_stat
@@ -355,15 +416,21 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 	*
 		- eval_prec
 
-		-
-		  is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature:
+		- is an optional user-supplied function that may be
+		  NULL. If non-NULL, it must have the following
+		  signature:
 
 		  .. ref-code-block:: julia
 
-		  	Int32 eval_prec( int n, const double v[], double p[],
-		  	               const void *userdata )
+		  	eval_prec(n, v, p, userdata)
 
-		  The product $p = P^{-1} v$ involving the user's preconditioner $P$ with the vector v = $v$, the result $p$ must be retured in p, and the function return value set to 0. If the evaluation is impossible, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
+		  The product $p = P^{-1} v$ involving the user's
+		  preconditioner $P$ with the vector v=$v$, the result
+		  $p$ must be retured in p, and the function return
+		  value set to 0. If the evaluation is impossible,
+		  return should be set to a nonzero value. Data may be
+		  passed into ``eval_prec`` via the structure
+		  ``userdata``.
 
 .. index:: pair: function; blls_solve_reverse_a_prod
 .. _doxid-galahad__blls_8h_1ac139bc1c65cf12cb532c4ab09f3af9d0:
@@ -376,9 +443,9 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
                                            nz_v, nz_v_start, nz_v_end, nz_p, 
                                            nz_p_end, w)
 
-Solve the bound-constrained linear least-squares problem when the products of the Jacobian $A$ and its transpose with specified vectors may be computed by the calling program.
-
-
+Solve the bound-constrained linear least-squares problem when the
+products of the Jacobian $A$ and its transpose with specified vectors
+may be computed by the calling program.
 
 .. rubric:: Parameters:
 
@@ -393,54 +460,151 @@ Solve the bound-constrained linear least-squares problem when the products of th
 	*
 		- status
 
-		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type Int32 that gives the
+		  entry and exit status from the package.
 
-		  Possible exit are:
+		  Possible exit values are:
 
-		  * 0. The run was succesful.
+		  * **0**
+                    The run was successful.
+
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
+
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
+
+		  * **-3**
+                    The restriction n > 0 or requirement that a type
+                    contains its relevant string 'coordinate',
+                    'sparse_by_rows', 'sparse_by_columns',
+                    'dense_by_rows' or 'dense_by_columns' has been
+                    violated.
+
+		  * **-4**
+                    The simple-bound constraints are inconsistent.
+
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
+
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
+
+		  * **-11**
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
+
+		  * **-18**
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **-19**
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
+
+		  * **2**
+                    The product $Av$ of the residual Jacobian $A$ with a
+                    given output vector $v$ is required from the
+                    user. The vector $v$ will be stored in v and the
+                    product $Av$ must be returned in p, status_eval
+                    should be set to 0, and blls_solve_reverse_a_prod
+                    re-entered with all other arguments unchanged. If
+                    the product cannot be formed, v need not be set, but
+                    blls_solve_reverse_a_prod should be re-entered with
+                    eval_status set to a nonzero value.
 
 
 
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **3**
+                    The product $A^Tv$ of the transpose of the residual
+                    Jacobian $A$ with a given output vector $v$ is
+                    required from the user. The vector $v$ will be
+                    stored in v and the product $A^Tv$ must be returned
+                    in p, status_eval should be set to 0, and
+                    blls_solve_reverse_a_prod re-entered with all other
+                    arguments unchanged. If the product cannot be
+                    formed, v need not be set, but
+                    blls_solve_reverse_a_prod should be re-entered with
+                    eval_status set to a nonzero value.
 
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **4**
+                    The product $Av$ of the residual Jacobian $A$ with a
+                    given sparse output vector $v$ is required from the
+                    user. The nonzero components of the vector $v$ will
+                    be stored as entries
+                    nz_in[nz_in_start-1:nz_in_end-1] of v and the
+                    product $Av$ must be returned in p, status_eval
+                    should be set to 0, and blls_solve_reverse_a_prod
+                    re-entered with all other arguments unchanged; The
+                    remaining components of v should be ignored. If the
+                    product cannot be formed, v need not be set, but
+                    blls_solve_reverse_a_prod should be re-entered with
+                    eval_status set to a nonzero value.
 
-		  * -3. The restriction n > 0 or requirement that a type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' has been violated.
+		  * **5**
+                    The nonzero components of the product $Av$ of the
+                    residual Jacobian $A$ with a given sparse output
+                    vector $v$ is required from the user. The nonzero
+                    components of the vector $v$ will be stored as
+                    entries nz_in[nz_in_start-1:nz_in_end-1] of v; the
+                    remaining components of v should be ignored. The
+                    resulting **nonzeros** in the product $Av$ must be
+                    placed in their appropriate comnponents of p, while
+                    a list of indices of the nonzeros placed in nz_out[0
+                    : nz_out_end-1] and the number of nonzeros recorded
+                    in nz_out_end. Additionally, status_eval should be
+                    set to 0, and blls_solve_reverse_a_prod re-entered
+                    with all other arguments unchanged. If the product
+                    cannot be formed, v, nz_out_end and nz_out need not
+                    be set, but blls_solve_reverse_a_prod should be
+                    re-entered with eval_status set to a nonzero value.
 
-		  * -4. The simple-bound constraints are inconsistent.
+		  * **6**
+                    A subset of the product $A^Tv$ of the transpose of
+                    the residual Jacobian $A$ with a given output vector
+                    $v$ is required from the user. The vector $v$ will
+                    be stored in v and components
+                    nz_in[nz_in_start-1:nz_in_end-1] of the product
+                    $A^Tv$ must be returned in the relevant components
+                    of p (the remaining components should not be set),
+                    status_eval should be set to 0, and
+                    blls_solve_reverse_a_prod re-entered with all other
+                    arguments unchanged. If the product cannot be
+                    formed, v need not be set, but
+                    blls_solve_reverse_a_prod should be re-entered with
+                    eval_status set to a nonzero value.
 
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
-
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
-
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
-
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-
-		  * 2. The product $Av$ of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $Av$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
-
-
-
-		  * 3. The product $A^Tv$ of the transpose of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $A^Tv$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
-
-
-
-		  * 4. The product $Av$ of the residual Jacobian $A$ with a given sparse output vector $v$ is required from the user. The nonzero components of the vector $v$ will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v and the product $Av$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged; The remaining components of v should be ignored. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
-
-
-
-		  * 5. The nonzero components of the product $Av$ of the residual Jacobian $A$ with a given sparse output vector $v$ is required from the user. The nonzero components of the vector $v$ will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining components of v should be ignored. The resulting **nonzeros** in the product $Av$ must be placed in their appropriate comnponents of p, while a list of indices of the nonzeros placed in nz_out[0 : nz_out_end-1] and the number of nonzeros recorded in nz_out_end. Additionally, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v, nz_out_end and nz_out need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
-
-
-
-		  * 6. A subset of the product $A^Tv$ of the transpose of the residual Jacobian $A$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and components nz_in[nz_in_start-1:nz_in_end-1] of the product $A^Tv$ must be returned in the relevant components of p (the remaining components should not be set), status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value.
-
-
-
-		  * 7. The product $P^{-1}v$ of the inverse of the preconditioner $P$ with a given output vector $v$ is required from the user. The vector $v$ will be stored in v and the product $P^{-1} v$ must be returned in p, status_eval should be set to 0, and blls_solve_reverse_a_prod re-entered with all other arguments unchanged. If the product cannot be formed, v need not be set, but blls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value. This value of status can only occur if the user has set control.preconditioner = 2.
+		  * **7**
+                    The product $P^{-1}v$ of the inverse of the
+                    preconditioner $P$ with a given output vector $v$ is
+                    required from the user. The vector $v$ will be
+                    stored in v and the product $P^{-1} v$ must be
+                    returned in p, status_eval should be set to 0, and
+                    blls_solve_reverse_a_prod re-entered with all other
+                    arguments unchanged. If the product cannot be
+                    formed, v need not be set, but
+                    blls_solve_reverse_a_prod should be re-entered with
+                    eval_status set to a nonzero value. This value of
+                    status can only occur if the user has set
+                    control.preconditioner = 2.
 
 	*
 		- eval_status
@@ -460,37 +624,37 @@ Solve the bound-constrained linear least-squares problem when the products of th
 	*
 		- b
 
-		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , m, contains $b_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type T that holds the values of the residuals $c = A x - b$. The i-th component of ``c``, i = 1, ... , m, contains $c_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A^T c$. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- x_stat
@@ -547,8 +711,6 @@ Solve the bound-constrained linear least-squares problem when the products of th
 
 Provides output information
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -570,7 +732,8 @@ Provides output information
 		-
 		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
 
-		  * 0. The values were recorded succesfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; blls_terminate
 .. _doxid-galahad__blls_8h_1ade863ffb6b142bfce669729f56911ac1:
@@ -581,8 +744,6 @@ Provides output information
         function blls_terminate(data, control, inform)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

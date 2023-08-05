@@ -198,7 +198,7 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; qpa_read_specfile
 .. _doxid-galahad__qpa_8h_1a41a3965eddf14d030a6fa30795149369:
@@ -276,7 +276,7 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful
+		  * 0. The import was successful
 		  
 		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
 		  
@@ -383,7 +383,7 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was succesful.
+		  * 0. The import was successful.
 
 .. index:: pair: function; qpa_solve_qp
 .. _doxid-galahad__qpa_8h_1af9c60939ef803461d90631dd48cb55d7:
@@ -434,9 +434,9 @@ Solve the quadratic program (2)-(4).
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -605,9 +605,9 @@ Solve the l_1 quadratic program (1).
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -785,9 +785,9 @@ Solve the bound-constrained l_1 quadratic program (4)-(5)
 		- 
 		  is a scalar variable of type int, that gives the entry and exit status from the package.
 		  
-		  Possible exit are:
+		  Possible exit values are:
 		  
-		  * 0. The run was succesful.
+		  * 0. The run was successful.
 		  
 		  
 		  
@@ -943,7 +943,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; qpa_terminate
 .. _doxid-galahad__qpa_8h_1a18b73b54796470edc039e3ac85bd30d5:

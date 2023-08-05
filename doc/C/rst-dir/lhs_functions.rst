@@ -274,7 +274,7 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded succesfully
+		  * 0. The values were recorded successfully
 
 .. index:: pair: function; lhs_terminate
 .. _doxid-galahad__lhs_8h_1a24f8433561128e5c05e588d053b22f29:
