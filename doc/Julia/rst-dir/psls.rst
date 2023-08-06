@@ -7,7 +7,7 @@ GALAHAD PSLS package
 
 .. include:: ../../Python/psls_intro.rst
 
-.. include:: psls_storage.rst
+.. include:: s_storage.rst
 
 .. toctree::
 	:hidden:

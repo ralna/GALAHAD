@@ -7,7 +7,7 @@ GALAHAD RQS package
 
 .. include:: ../../Python/rqs_intro.rst
 
-.. include:: rqs_storage.rst
+.. include:: ahm_storage.rst
 
 .. toctree::
 	:hidden:

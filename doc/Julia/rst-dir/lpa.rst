@@ -7,7 +7,7 @@ GALAHAD LPA package
 
 .. include:: ../../Python/lpa_intro.rst
 
-.. include:: lpa_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

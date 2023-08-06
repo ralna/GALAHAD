@@ -7,7 +7,7 @@ GALAHAD WCP package
 
 .. include:: ../../Python/wcp_intro.rst
 
-.. include:: wcp_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

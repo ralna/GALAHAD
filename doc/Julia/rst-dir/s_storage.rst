@@ -1,3 +1,7 @@
+.. _details-s_storage:
+
+.. _details-s_storage__sym:
+
 matrix storage
 --------------
 

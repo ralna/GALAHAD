@@ -39,6 +39,8 @@ $$A + E = P L D L^T P^T,$$
 where $P$ is a permutation matrix and $E$ is any diagonal
 perturbation introduced.
 
+.. _details-sls__solvers:
+
 supported solvers
 -----------------
 

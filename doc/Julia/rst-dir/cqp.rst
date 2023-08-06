@@ -7,7 +7,7 @@ GALAHAD CQP package
 
 .. include:: ../../Python/cqp_intro.rst
 
-.. include:: cqp_storage.rst
+.. include:: ah_storage.rst
 
 .. toctree::
 	:hidden:

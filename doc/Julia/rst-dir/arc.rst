@@ -7,7 +7,7 @@ GALAHAD ARC package
 
 .. include:: ../../Python/arc_intro.rst
 
-.. include:: arc_storage.rst
+.. include:: hx_storage.rst
 
 .. toctree::
 	:hidden:

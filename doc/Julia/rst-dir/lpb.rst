@@ -7,7 +7,7 @@ GALAHAD LPB package
 
 .. include:: ../../Python/lpb_intro.rst
 
-.. include:: lpb_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

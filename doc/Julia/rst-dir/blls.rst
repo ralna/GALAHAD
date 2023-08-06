@@ -7,7 +7,7 @@ GALAHAD BLLS package
 
 .. include:: ../../Python/blls_intro.rst
 
-.. include:: blls_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

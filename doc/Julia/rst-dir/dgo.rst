@@ -7,7 +7,7 @@ GALAHAD DGO package
 
 .. include:: ../../Python/dgo_intro.rst
 
-.. include:: dgo_storage.rst
+.. include:: hx_storage.rst
 
 .. toctree::
 	:hidden:

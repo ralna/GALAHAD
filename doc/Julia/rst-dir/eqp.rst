@@ -7,7 +7,7 @@ GALAHAD EQP package
 
 .. include:: ../../Python/eqp_intro.rst
 
-.. include:: eqp_storage.rst
+.. include:: ah_storage.rst
 
 .. toctree::
 	:hidden:

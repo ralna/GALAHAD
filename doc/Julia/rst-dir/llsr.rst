@@ -7,7 +7,7 @@ GALAHAD LLSR package
 
 .. include:: ../../Python/llsr_intro.rst
 
-.. include:: llsr_storage.rst
+.. include:: as_storage.rst
 
 .. toctree::
 	:hidden:

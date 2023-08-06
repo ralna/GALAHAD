@@ -15,8 +15,6 @@ Set default control values and initialize private data
 
 Select solver, set default control values and initialize private data
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -25,7 +23,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`solver package <details-uls__solvers>` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -171,7 +169,7 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme<details-a_storage__unsym>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne

@@ -31,6 +31,8 @@ It is convenient to write this factorization in the form
 $$A = P_R L U P_C,$$
 where $P_R$ and $P_C$ are row and column permutation matrices, respectively.
 
+.. _details-uls__solvers:
+
 supported solvers
 -----------------
 

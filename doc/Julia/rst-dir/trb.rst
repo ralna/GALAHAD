@@ -7,7 +7,7 @@ GALAHAD TRB package
 
 .. include:: ../../Python/trb_intro.rst
 
-.. include:: trb_storage.rst
+.. include:: hx_storage.rst
 
 .. toctree::
 	:hidden:

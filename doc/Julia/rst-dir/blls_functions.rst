@@ -139,7 +139,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian $A$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <details-a_storage__unsym>` used for the Jacobian $A$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
 		- A_ne

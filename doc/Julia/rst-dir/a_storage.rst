@@ -1,3 +1,7 @@
+.. _details-a_storage:
+
+.. _details-a_storage__unsym:
+
 matrix storage
 --------------
 

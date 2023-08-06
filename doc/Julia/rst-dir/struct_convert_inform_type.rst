@@ -7,6 +7,10 @@ convert_inform_type structure
 .. toctree::
 	:hidden:
 
+
+.. ref-code-block:: julia
+	:class: doxyrest-overview-code-block
+
         struct convert_inform_type{T}
           status::Int32
           alloc_status::Int32

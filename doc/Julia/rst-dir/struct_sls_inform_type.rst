@@ -7,8 +7,8 @@ sls_inform_type structure
 .. toctree::
 	:hidden:
 
-        struct_hsl_types.rst
-        struct_ssids_types.rst
+	struct_hsl_types.rst
+	struct_ssids_types.rst
 
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block

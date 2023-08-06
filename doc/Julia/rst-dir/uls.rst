@@ -7,7 +7,7 @@ GALAHAD ULS package
 
 .. include:: ../../Python/uls_intro.rst
 
-.. include:: uls_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

@@ -7,7 +7,7 @@ GALAHAD TRS package
 
 .. include:: ../../Python/trs_intro.rst
 
-.. include:: trs_storage.rst
+.. include:: ahm_storage.rst
 
 .. toctree::
 	:hidden:

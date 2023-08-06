@@ -7,7 +7,7 @@ GALAHAD SLS package
 
 .. include:: ../../Python/sls_intro.rst
 
-.. include:: sls_storage.rst
+.. include:: s_storage.rst
 
 .. toctree::
 	:hidden:

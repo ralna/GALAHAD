@@ -7,7 +7,7 @@ GALAHAD QPB package
 
 .. include:: ../../Python/qpb_intro.rst
 
-.. include:: qpb_storage.rst
+.. include:: ah_storage.rst
 
 .. toctree::
 	:hidden:

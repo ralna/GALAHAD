@@ -7,7 +7,7 @@ GALAHAD BQPB package
 
 .. include:: ../../Python/bqpb_intro.rst
 
-.. include:: bqpb_storage.rst
+.. include:: h_storage.rst
 
 .. toctree::
 	:hidden:

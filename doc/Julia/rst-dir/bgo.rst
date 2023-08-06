@@ -7,7 +7,7 @@ GALAHAD BGO package
 
 .. include:: ../../Python/bgo_intro.rst
 
-.. include:: bgo_storage.rst
+.. include:: hx_storage.rst
 
 .. toctree::
 	:hidden:

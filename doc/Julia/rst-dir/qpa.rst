@@ -7,7 +7,7 @@ GALAHAD QPA package
 
 .. include:: ../../Python/qpa_intro.rst
 
-.. include:: qpa_storage.rst
+.. include:: ah_storage.rst
 
 .. toctree::
 	:hidden:

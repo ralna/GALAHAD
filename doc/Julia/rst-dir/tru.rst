@@ -7,7 +7,7 @@ GALAHAD TRU package
 
 .. include:: ../../Python/tru_intro.rst
 
-.. include:: tru_storage.rst
+.. include:: hx_storage.rst
 
 .. toctree::
 	:hidden:

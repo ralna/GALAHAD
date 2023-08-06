@@ -5,7 +5,7 @@ GALAHAD DQP package
 
 .. include:: ../../Python/dqp_intro.rst
 
-.. include:: dqp_storage.rst
+.. include:: ah_storage.rst
 
 .. toctree::
 	:hidden:

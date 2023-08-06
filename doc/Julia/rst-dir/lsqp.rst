@@ -7,7 +7,7 @@ GALAHAD LSQP package
 
 .. include:: ../../Python/lsqp_intro.rst
 
-.. include:: lsqp_storage.rst
+.. include:: a_storage.rst
 
 .. toctree::
 	:hidden:

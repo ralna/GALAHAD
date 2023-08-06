@@ -254,9 +254,9 @@ exit if any deallocation fails
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	char definite_linear_solver[31]
+	NTuple{31,Cchar} definite_linear_solver
 
-the definite linear equation solver used when .preconditioner = 3,4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.
+the definite linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 3,4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.
 
 .. index:: pair: variable; prefix
 .. _doxid-structpsls__control__type_1a1dc05936393ba705f516a0c275df4ffc:
