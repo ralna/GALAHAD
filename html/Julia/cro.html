@@ -624,7 +624,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cro_control_type.html#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -641,10 +641,13 @@ are available with T as Float32.</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-cro-8h-1a55c7770ae26847b5c17055c290a54c2a"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">cro_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNCRO.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/cro.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/cro/CRO.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/cro.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -653,10 +656,10 @@ $GALAHAD/doc/cro.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cro_control_type.html#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -674,13 +677,13 @@ $GALAHAD/doc/cro.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_cro_control_type.html#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>). The parameter .status is as follows:</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>). The parameter .status is as follows:</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data.</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_cro_inform_type.html#doxid-structcro-inform-type"><span class="std std-ref">cro_inform_type</span></a>). The component .status gives the exit status from the package. Possible values are:</p>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structcro-inform-type"><span class="std std-ref">cro_inform_type</span></a>). The component .status gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
 <li><dl class="simple">
 <dt><strong>0</strong></dt><dd><p>The crossover was successful.</p>
@@ -838,10 +841,10 @@ unsatisfactory.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cro_control_type.html#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structcro-control-type"><span class="std std-ref">cro_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_cro_inform_type.html#doxid-structcro-inform-type"><span class="std std-ref">cro_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structcro-inform-type"><span class="std std-ref">cro_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -906,13 +909,13 @@ unsatisfactory.</p>
 <p>unsymmetric linear equation solver</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-18"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-19"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-19"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for SLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-20"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-20"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
 <p>control parameters for SBLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1ac6782df4602dd9c04417e2554d72bb00"><span id="index-21"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="w"> </span><span class="n">uls_control</span></pre>
 <p>control parameters for ULS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-22"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_control_type.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span><span class="w"> </span><span class="n">ir_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-22"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="ir.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span><span class="w"> </span><span class="n">ir_control</span></pre>
 <p>control parameters for iterative refinement</p>
 </section>
 </section>
@@ -983,19 +986,19 @@ unsatisfactory.</p>
 <p>the name of the array for which an allocation/deallocation error occurred</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a3678dbffc0e2f3521f7ef27194b21ab6"><span id="index-36"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dependent</span></pre>
 <p>the number of dependent active constraints</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0d99b2a30c1bf487fddf2643b03a3120"><span id="index-37"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_cro_time_type.html#doxid-structcro-time-type"><span class="std std-ref">cro_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0d99b2a30c1bf487fddf2643b03a3120"><span id="index-37"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structcro-time-type"><span class="std std-ref">cro_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-38"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-38"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>information from SLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-39"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-39"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>information from SBLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1aa39eb0d7b50d4a858849f8ef652ae84c"><span id="index-40"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="w"> </span><span class="n">uls_inform</span></pre>
 <p>information from ULS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a25bf1e7f86c2b4f4836aa4de40019815"><span id="index-41"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">scu_status</span></pre>
 <p>information from SCU</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0b702af94f05b9d4bb2bb6416f2498ee"><span id="index-42"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_scu_inform_type.html#doxid-structscu-inform-type"><span class="std std-ref">scu_inform_type</span></a><span></span><span class="w"> </span><span class="n">scu_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1a0b702af94f05b9d4bb2bb6416f2498ee"><span id="index-42"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="scu.html#doxid-structscu-inform-type"><span class="std std-ref">scu_inform_type</span></a><span></span><span class="w"> </span><span class="n">scu_inform</span></pre>
 <p>see scu_status</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-43"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcro-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-43"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="ir.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
 <p>information from IR</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

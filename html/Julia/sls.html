@@ -858,7 +858,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -881,10 +881,13 @@ status from the package. Possible values are:</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1ada1e7b9ed799335702f85a551b64bf88"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sls_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNSLS.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/sls.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/sls/SLS.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/sls.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -893,10 +896,10 @@ $GALAHAD/doc/sls.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -910,7 +913,7 @@ $GALAHAD/doc/sls.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1055,7 +1058,7 @@ details.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1360,7 +1363,7 @@ for more details.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1390,10 +1393,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1878,13 +1881,13 @@ status from the package. Possible values are
 to solve <span class="math notranslate nohighlight">\(A x = b\)</span> ?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1af335c33211ea78f2d5b7314d7b1c210d"><span id="index-123"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">solver</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span></pre>
 <p>name of external solver used to factorize and solve</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1aeb306e2c697a3b16156c7bbf95933d04"><span id="index-124"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_time_type.html#doxid-structsls-time-type"><span class="std std-ref">sls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1aeb306e2c697a3b16156c7bbf95933d04"><span id="index-124"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structsls-time-type"><span class="std std-ref">sls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1a6490df077bf8d853c6ce6242ef95ef3f"><span id="index-125"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_ainfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1a6490df077bf8d853c6ce6242ef95ef3f"><span id="index-125"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sils.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_ainfo</span></pre>
 <p>the analyse output structure from sils</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1aaca9130b6f951c48e420ef2d880e2e6a"><span id="index-126"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_finfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1aaca9130b6f951c48e420ef2d880e2e6a"><span id="index-126"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sils.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_finfo</span></pre>
 <p>the factorize output structure from sils</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1a02b2db43c1e7bc2d42a9f584433dbe01"><span id="index-127"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_sinfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1a02b2db43c1e7bc2d42a9f584433dbe01"><span id="index-127"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sils.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="w"> </span><span class="n">sils_sinfo</span></pre>
 <p>the solve output structure from sils</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsls-inform-type-1aa7061ae61ef272126c2d93c0bb7c3e92"><span id="index-128"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_hsl_types.html#details-structma57-ainfo"><span class="std std-ref">ma57_ainfo</span></a><span></span><span class="w"> </span><span class="n">ma57_ainfo</span></pre>
 <p>the analyse output structure from hsl_ma57</p>

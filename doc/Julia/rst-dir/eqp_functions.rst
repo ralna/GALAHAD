@@ -46,9 +46,14 @@ Set default control values and initialize private data
 
         function eqp_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/eqp/EQP.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/eqp.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -63,7 +68,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; eqp_import
 .. _doxid-galahad__eqp_8h_1adbadbd11a40aedbbb705334023406de1:
@@ -87,7 +92,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`eqp_control_type <doxid-structeqp__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`eqp_control_type <doxid-structeqp__control__type>`)
 
 	*
 		- data
@@ -210,7 +215,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`eqp_control_type <doxid-structeqp__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`eqp_control_type <doxid-structeqp__control__type>`)
 
 	*
 		- data

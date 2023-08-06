@@ -683,7 +683,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -701,7 +701,14 @@ status from the package. Possible values are
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-eqp-8h-1a24889f7ee5c51b3c76daab94687faed9"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">eqp_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.</p>
+<p>Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/eqp/EQP.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/eqp.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -710,10 +717,10 @@ status from the package. Possible values are
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -729,7 +736,7 @@ status from the package. Possible values are
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -829,7 +836,7 @@ been specified.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1277,7 +1284,7 @@ been specified.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1307,10 +1314,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_eqp_control_type.html#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structeqp-control-type"><span class="std std-ref">eqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_eqp_inform_type.html#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structeqp-inform-type"><span class="std std-ref">eqp_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1442,11 +1449,11 @@ status from the package. Possible values are
 <p>name of generated SIF file containing input problem</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-43"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1a7bef6e4f678e16a4dcdc40677efddd80"><span id="index-44"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_control_type.html#doxid-structfdc-control-type"><span class="std std-ref">fdc_control_type</span></a><span></span><span class="w"> </span><span class="n">fdc_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1a7bef6e4f678e16a4dcdc40677efddd80"><span id="index-44"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="fdc.html#doxid-structfdc-control-type"><span class="std std-ref">fdc_control_type</span></a><span></span><span class="w"> </span><span class="n">fdc_control</span></pre>
 <p>control parameters for FDC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-45"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-45"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
 <p>control parameters for SBLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-46"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-46"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
 <p>control parameters for GLTR</p>
 </section>
 </section>
@@ -1529,13 +1536,13 @@ status from the package. Possible values are
 <p>the total real workspace required for the factorization</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span id="index-65"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">obj</span></pre>
 <p>the value of the objective function at the best estimate of the solution determined by QPB_solve</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1ab4ea6394e359e4f2ba2543eda324643a"><span id="index-66"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_eqp_time_type.html#doxid-structeqp-time-type"><span class="std std-ref">eqp_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1ab4ea6394e359e4f2ba2543eda324643a"><span id="index-66"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structeqp-time-type"><span class="std std-ref">eqp_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a966b6933e7b53fb2d71f55f267ad00f4"><span id="index-67"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_inform_type.html#doxid-structfdc-inform-type"><span class="std std-ref">fdc_inform_type</span></a><span></span><span class="w"> </span><span class="n">fdc_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a966b6933e7b53fb2d71f55f267ad00f4"><span id="index-67"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="fdc.html#doxid-structfdc-inform-type"><span class="std std-ref">fdc_inform_type</span></a><span></span><span class="w"> </span><span class="n">fdc_inform</span></pre>
 <p>inform parameters for FDC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-68"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-68"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>inform parameters for SBLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a27a98844f05f18669d3dd60d3e6a8e46"><span id="index-69"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="w"> </span><span class="n">gltr_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structeqp-inform-type-1a27a98844f05f18669d3dd60d3e6a8e46"><span id="index-69"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="w"> </span><span class="n">gltr_inform</span></pre>
 <p>return information from GLTR</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

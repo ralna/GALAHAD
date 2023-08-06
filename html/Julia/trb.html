@@ -601,10 +601,13 @@ status from the package. Possible values are
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a4eaafdaf5187c8b91c119ce9395469e9"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNTRB.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/trb.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/trb/TRB.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/trb.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -616,7 +619,7 @@ $GALAHAD/doc/trb.pdf for a list of keywords that may be set.</p>
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -631,7 +634,7 @@ $GALAHAD/doc/trb.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -713,7 +716,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1782,15 +1785,15 @@ should then set eval_status to a non-zero value.</p>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a0fb493acc030672e71f68fa1ef1727e8"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="trs.html#doxid-structtrs-control-type"><span class="std std-ref">trs_control_type</span></a><span></span><span class="w"> </span><span class="n">trs_control</span></pre>
 <p>control parameters for TRS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-59"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-59"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
 <p>control parameters for GLTR</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a6fe2b1a82e177fbd1a39d9de9652a2c5"><span id="index-60"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a><span></span><span class="w"> </span><span class="n">psls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a6fe2b1a82e177fbd1a39d9de9652a2c5"><span id="index-60"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a><span></span><span class="w"> </span><span class="n">psls_control</span></pre>
 <p>control parameters for PSLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a7149e4807d93e93adf2eb1e3e42c6fb6"><span id="index-61"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a7149e4807d93e93adf2eb1e3e42c6fb6"><span id="index-61"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control</span></pre>
 <p>control parameters for LMS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1aaad01db9888c4f77c450ff45fac4dfec"><span id="index-62"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control_prec</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1aaad01db9888c4f77c450ff45fac4dfec"><span id="index-62"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control_prec</span></pre>
 <p>control parameters for LMS used for preconditioning</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a0e0b1319a0f3da41507bfb343a26ab96"><span id="index-63"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="w"> </span><span class="n">sha_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-control-type-1a0e0b1319a0f3da41507bfb343a26ab96"><span id="index-63"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sha.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="w"> </span><span class="n">sha_control</span></pre>
 <p>control parameters for SHA</p>
 </section>
 </section>
@@ -1913,15 +1916,15 @@ should then set eval_status to a non-zero value.</p>
 <p>timings (see above)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1aa7996c925462c655f2b3dd5a5da22c21"><span id="index-95"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="trs.html#doxid-structtrs-inform-type"><span class="std std-ref">trs_inform_type</span></a><span></span><span class="w"> </span><span class="n">trs_inform</span></pre>
 <p>inform parameters for TRS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a27a98844f05f18669d3dd60d3e6a8e46"><span id="index-96"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="w"> </span><span class="n">gltr_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a27a98844f05f18669d3dd60d3e6a8e46"><span id="index-96"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="w"> </span><span class="n">gltr_inform</span></pre>
 <p>inform parameters for GLTR</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-97"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_inform_type.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-97"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
 <p>inform parameters for PSLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a6428cf213f8c899aa1bfb1fc3d24f37d"><span id="index-98"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a6428cf213f8c899aa1bfb1fc3d24f37d"><span id="index-98"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform</span></pre>
 <p>inform parameters for LMS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a2040147e726e4ad18ef6d81d8339644e"><span id="index-99"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform_prec</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a2040147e726e4ad18ef6d81d8339644e"><span id="index-99"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform_prec</span></pre>
 <p>inform parameters for LMS used for preconditioning</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a196d9da91c7ed4a67aa6e009e336e101"><span id="index-100"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="w"> </span><span class="n">sha_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrb-inform-type-1a196d9da91c7ed4a67aa6e009e336e101"><span id="index-100"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sha.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="w"> </span><span class="n">sha_inform</span></pre>
 <p>inform parameters for SHA</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

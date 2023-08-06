@@ -1,13 +1,16 @@
+.. _global:
+
 .. _details-spec_file:
 
 control specification files
 ---------------------------
 
-It is possible to set components of the structure ``control``, of type
-|package| _control_type, by reading an appropriate data specification
-file using the |package| _read_specfile function; here |package| refers
-to the name of the package in use. This facility is
-useful as it allows a user to change |package| control parameters
+It is possible to set components of the structure ``control``, of 
+type |package| _control_type, by reading an appropriate 
+**data specification file** 
+using the |package| _read_specfile function; here |package| refers
+to the name of the package under consideration. This facility is
+useful as it allows one to change |package| control parameters
 without editing and recompiling programs that call |package| .
 
 A specification file, or specfile, is a data file containing a number of

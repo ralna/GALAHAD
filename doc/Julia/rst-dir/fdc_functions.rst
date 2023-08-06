@@ -1,5 +1,3 @@
-.. _global:
-
 callable functions
 ------------------
 
@@ -49,10 +47,13 @@ Set default control values and initialize private data
         function fdc_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNEQP.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/fdc/FDC.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/fdc.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -67,7 +68,7 @@ $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; fdc_find_dependent_rows
 .. _doxid-galahad__fdc_8h_1a37ea723b9a1b8799e7971344858d020a:

@@ -46,9 +46,14 @@ Set default control values and initialize private data
 
         function dqp_read_specfile(control, specfile)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNDQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/dqp.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/dqp/DQP.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/dqp.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -63,7 +68,7 @@ Read the content of a specification file, and assign values associated with give
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; dqp_import
 .. _doxid-galahad__dqp_8h_1a126153a2c845e1840b01cbd28a5b187d:
@@ -77,8 +82,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import problem data into internal storage prior to solution.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -87,7 +90,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dqp_control_type <doxid-structdqp__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`dqp_control_type <doxid-structdqp__control__type>`)
 
 	*
 		- data
@@ -209,7 +212,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dqp_control_type <doxid-structdqp__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`dqp_control_type <doxid-structdqp__control__type>`)
 
 	*
 		- data
@@ -236,8 +239,6 @@ Reset control parameters after import if required.
                               x, c, y, z, x_stat, c_stat)
 
 Solve the quadratic program when the Hessian $H$ is available.
-
-
 
 .. rubric:: Parameters:
 
@@ -427,8 +428,6 @@ Solve the quadratic program when the Hessian $H$ is available.
                                  x, c, y, z, x_stat, c_stat)
 
 Solve the shifted least-distance quadratic program
-
-
 
 .. rubric:: Parameters:
 

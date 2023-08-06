@@ -45,10 +45,13 @@ Set default control values and initialize private data
         function dps_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNDPS.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/dps.pdf for a list of keywords that may be set.
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/dps/DPS.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/dps.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -63,7 +66,7 @@ $GALAHAD/doc/dps.pdf for a list of keywords that may be set.
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; dps_import
 .. _doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee:
@@ -86,7 +89,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- data
@@ -174,7 +177,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`dps_control_type <doxid-structdps__control__type>`)
 
 	*
 		- data

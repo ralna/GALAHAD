@@ -422,19 +422,22 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="nls.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_nls_inform_type.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="nls.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-nls-8h-1adf9db7eff2fce137ae2abd2e013c47b3"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">nls_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNNLS.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/nls.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/nls/NLS.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/nls.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -443,10 +446,10 @@ $GALAHAD/doc/nls.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="nls.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -463,7 +466,7 @@ $GALAHAD/doc/nls.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="nls.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -517,7 +520,7 @@ violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
 <tr class="row-even"><td><p>J_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls_storage.html#details-nls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian, <span class="math notranslate nohighlight">\(J\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls.html#details-nls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian, <span class="math notranslate nohighlight">\(J\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>J_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(J\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -532,7 +535,7 @@ violated.</p>
 <td><p>is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(J\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls_storage.html#details-nls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian, <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to <span class="math notranslate nohighlight">\(H\)</span> is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls.html#details-nls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian, <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to <span class="math notranslate nohighlight">\(H\)</span> is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
@@ -547,7 +550,7 @@ violated.</p>
 <td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>P_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls_storage.html#details-nls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the residual-Hessians-vector product matrix, <span class="math notranslate nohighlight">\(P\)</span>. It should be one of ‘coordinate’, ‘sparse_by_columns’, ‘dense_by_columns’ or ‘absent’, the latter if access to <span class="math notranslate nohighlight">\(P\)</span> is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="nls.html#details-nls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the residual-Hessians-vector product matrix, <span class="math notranslate nohighlight">\(P\)</span>. It should be one of ‘coordinate’, ‘sparse_by_columns’, ‘dense_by_columns’ or ‘absent’, the latter if access to <span class="math notranslate nohighlight">\(P\)</span> is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>P_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(P\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -576,7 +579,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="nls.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1434,7 +1437,7 @@ Newton models is selected.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_nls_inform_type.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="nls.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1464,10 +1467,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="nls.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_nls_inform_type.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="nls.html#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

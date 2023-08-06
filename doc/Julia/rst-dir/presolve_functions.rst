@@ -47,7 +47,13 @@ Set default control values and initialize private data
         function presolve_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/presolve/PRESOLVE.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/presolve.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -62,7 +68,7 @@ with given keywords to the corresponding control parameters
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; presolve_import_problem
 .. _doxid-galahad__presolve_8h_1aca96df1bce848a32af9f599a11c4c991:
@@ -88,7 +94,7 @@ crucial characteristics of the transformed variant
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`presolve_control_type <doxid-structpresolve__control__type>`)
 
 	*
 		- data

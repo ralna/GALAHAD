@@ -574,7 +574,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_arc_control_type.html#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -591,10 +591,13 @@ are available with T as Float32.</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-arc-8h-1ad1eb586a01b707b822210edec1495481"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">arc_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNARC.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/arc.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/arc/ARC.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/arc.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -603,10 +606,10 @@ $GALAHAD/doc/arc.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_arc_control_type.html#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -620,7 +623,7 @@ $GALAHAD/doc/arc.pdf for a list of keywords that may be set.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_arc_control_type.html#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -695,7 +698,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_arc_control_type.html#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1480,7 +1483,7 @@ eval_status to a non-zero value.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_arc_inform_type.html#doxid-structarc-inform-type"><span class="std std-ref">arc_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structarc-inform-type"><span class="std std-ref">arc_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -1508,10 +1511,10 @@ eval_status to a non-zero value.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_arc_control_type.html#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structarc-control-type"><span class="std std-ref">arc_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_arc_inform_type.html#doxid-structarc-inform-type"><span class="std std-ref">arc_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structarc-inform-type"><span class="std std-ref">arc_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1710,19 +1713,19 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <p>if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-55"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7339f172b9757ed89a7595a29c4bca2b"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_rqs_control_type.html#doxid-structrqs-control-type"><span class="std std-ref">rqs_control_type</span></a><span></span><span class="w"> </span><span class="n">rqs_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7339f172b9757ed89a7595a29c4bca2b"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="rqs.html#doxid-structrqs-control-type"><span class="std std-ref">rqs_control_type</span></a><span></span><span class="w"> </span><span class="n">rqs_control</span></pre>
 <p>control parameters for RQS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ac872f3f7f159cedfac4d6898d51842a3"><span id="index-57"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_glrt_control_type.html#doxid-structglrt-control-type"><span class="std std-ref">glrt_control_type</span></a><span></span><span class="w"> </span><span class="n">glrt_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ac872f3f7f159cedfac4d6898d51842a3"><span id="index-57"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="glrt.html#doxid-structglrt-control-type"><span class="std std-ref">glrt_control_type</span></a><span></span><span class="w"> </span><span class="n">glrt_control</span></pre>
 <p>control parameters for GLRT</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a400a915be09fbe2f8114fc9f7f9dddf1"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="w"> </span><span class="n">dps_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a400a915be09fbe2f8114fc9f7f9dddf1"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="w"> </span><span class="n">dps_control</span></pre>
 <p>control parameters for DPS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6fe2b1a82e177fbd1a39d9de9652a2c5"><span id="index-59"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a><span></span><span class="w"> </span><span class="n">psls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6fe2b1a82e177fbd1a39d9de9652a2c5"><span id="index-59"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a><span></span><span class="w"> </span><span class="n">psls_control</span></pre>
 <p>control parameters for PSLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7149e4807d93e93adf2eb1e3e42c6fb6"><span id="index-60"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7149e4807d93e93adf2eb1e3e42c6fb6"><span id="index-60"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control</span></pre>
 <p>control parameters for LMS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aaad01db9888c4f77c450ff45fac4dfec"><span id="index-61"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control_prec</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aaad01db9888c4f77c450ff45fac4dfec"><span id="index-61"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control_prec</span></pre>
 <p>control parameters for LMS used for preconditioning</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a0e0b1319a0f3da41507bfb343a26ab96"><span id="index-62"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="w"> </span><span class="n">sha_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a0e0b1319a0f3da41507bfb343a26ab96"><span id="index-62"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sha.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="w"> </span><span class="n">sha_control</span></pre>
 <p>control parameters for SHA</p>
 </section>
 </section>
@@ -1839,21 +1842,21 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <p>the norm of the gradient of the objective function at the best estimate of the solution determined by the package.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1adcd20aeaf7042e972ddab56f3867ce70"><span id="index-91"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">weight</span></pre>
 <p>the current value of the regularization weight</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a4288efaa60a28f967b947ef1b07cf445"><span id="index-92"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_arc_time_type.html#doxid-structarc-time-type"><span class="std std-ref">arc_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a4288efaa60a28f967b947ef1b07cf445"><span id="index-92"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structarc-time-type"><span class="std std-ref">arc_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-93"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_rqs_inform_type.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-93"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="rqs.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
 <p>inform parameters for RQS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1aa5a47a840c1f9680ac8b9e4db3eb9e88"><span id="index-94"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_glrt_inform_type.html#doxid-structglrt-inform-type"><span class="std std-ref">glrt_inform_type</span></a><span></span><span class="w"> </span><span class="n">glrt_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1aa5a47a840c1f9680ac8b9e4db3eb9e88"><span id="index-94"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="glrt.html#doxid-structglrt-inform-type"><span class="std std-ref">glrt_inform_type</span></a><span></span><span class="w"> </span><span class="n">glrt_inform</span></pre>
 <p>inform parameters for GLRT</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1aec61ddb290b679c265693de171a6394f"><span id="index-95"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="w"> </span><span class="n">dps_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1aec61ddb290b679c265693de171a6394f"><span id="index-95"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="w"> </span><span class="n">dps_inform</span></pre>
 <p>inform parameters for DPS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-96"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_inform_type.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-96"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
 <p>inform parameters for PSLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a6428cf213f8c899aa1bfb1fc3d24f37d"><span id="index-97"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a6428cf213f8c899aa1bfb1fc3d24f37d"><span id="index-97"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform</span></pre>
 <p>inform parameters for LMS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a2040147e726e4ad18ef6d81d8339644e"><span id="index-98"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform_prec</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a2040147e726e4ad18ef6d81d8339644e"><span id="index-98"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="lms.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a><span></span><span class="w"> </span><span class="n">lms_inform_prec</span></pre>
 <p>inform parameters for LMS used for preconditioning</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a196d9da91c7ed4a67aa6e009e336e101"><span id="index-99"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="w"> </span><span class="n">sha_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-inform-type-1a196d9da91c7ed4a67aa6e009e336e101"><span id="index-99"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sha.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="w"> </span><span class="n">sha_inform</span></pre>
 <p>inform parameters for SHA</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

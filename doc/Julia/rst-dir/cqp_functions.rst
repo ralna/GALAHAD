@@ -88,7 +88,7 @@ Import problem data into internal storage prior to solution.
         *
                 - control
 
-                - is a structure whose members provide control paramters for the remaining prcedures (see :ref:`cqp_control_type <doxid-structcqp__control__type>`)
+                - is a structure whose members provide control parameters for the remaining procedures (see :ref:`cqp_control_type <doxid-structcqp__control__type>`)
 
         *
                 - data

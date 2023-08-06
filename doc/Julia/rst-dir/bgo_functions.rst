@@ -43,13 +43,13 @@ Set default control values and initialize private data
         function bgo_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNBGO.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/bgo.pdf for a list of keywords that may be set.
-
-
-
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/bgo/BGO.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/bgo.pdf for a list of how these
+keywords relate to the components of the control structure.
 .. rubric:: Parameters:
 
 .. list-table::
@@ -63,7 +63,7 @@ $GALAHAD/doc/bgo.pdf for a list of keywords that may be set.
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; bgo_import
 .. _doxid-galahad__bgo_8h_1a5902cb8c7c213954de6b963a507f3a4b:
@@ -84,7 +84,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`bgo_control_type <doxid-structbgo__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`bgo_control_type <doxid-structbgo__control__type>`)
 
 	*
 		- data
@@ -183,7 +183,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`bgo_control_type <doxid-structbgo__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`bgo_control_type <doxid-structbgo__control__type>`)
 
 	*
 		- data

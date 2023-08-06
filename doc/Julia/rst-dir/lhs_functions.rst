@@ -1,5 +1,3 @@
-.. _global:
-
 callable functions
 ------------------
 
@@ -41,13 +39,14 @@ Set default control values and initialize private data
 
         function lhs_read_specfile(control, specfile)
 
-Read the content of a specification file, and perform the assignment of
-values associated with given keywords to the corresponding control
-parameters.
-
-By default, the spcification file will be named RUNLHS.SPC and lie in
-the current directory. Refer to Table 2.1 in the fortran documentation
-provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/lhs/LHS.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/lhs.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -62,7 +61,7 @@ provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
 	*
 		- specfile
 
-		- a character string containing the name of the specfile
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; lhs_ihs
 .. _doxid-galahad__lhs_8h_1a2a2e504e820685237f3ec3f8c97722ad:

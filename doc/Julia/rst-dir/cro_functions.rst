@@ -46,11 +46,13 @@ Set default control values and initialize private data
         function cro_read_specfile(control, specfile)
 
 Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNCRO.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/cro.pdf for a list of keywords that may be set.
-
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list of keywords
+with associated default values is provided in
+\$GALAHAD/src/cro/CRO.template.  See also Table 2.1 in the Fortran
+documentation provided in \$GALAHAD/doc/cro.pdf for a list of how these
+keywords relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -65,7 +67,7 @@ $GALAHAD/doc/cro.pdf for a list of keywords that may be set.
 	*
 		- specfile
 
-		- is a character string containing the name of the specification file
+		- is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file
 
 .. index:: pair: function; cro_crossover_solution
 .. _doxid-galahad__cro_8h_1a1ab8bdd6e394fe4d89c1c2acba8a5a7b:
@@ -89,7 +91,7 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`cro_control_type <doxid-structcro__control__type>`). The parameter .status is as follows:
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`cro_control_type <doxid-structcro__control__type>`). The parameter .status is as follows:
 
 	*
 		- data

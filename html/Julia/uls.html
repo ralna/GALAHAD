@@ -706,10 +706,13 @@ status from the package. Possible values are:</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">uls_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values associated
-with given keywords to the corresponding control parameters. By default,
-the spcification file will be named RUNULS.SPC and lie in the current
-directory. Refer to Table 2.1 in the fortran documentation provided in
-$GALAHAD/doc/uls.pdf for a list of keywords that may be set.</p>
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/uls/ULS.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/uls.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -721,7 +724,7 @@ $GALAHAD/doc/uls.pdf for a list of keywords that may be set.</p>
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
-<td><p>is a character string containing the name of the specification file</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
@@ -737,7 +740,7 @@ sparsity patern, and subsequently factorize the matrix</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -845,7 +848,7 @@ details.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1173,11 +1176,11 @@ for more details.</p>
 <p>has an “alternative” y: A^T y = 0 and yT b &gt; 0 been found when trying to solve A x = b ?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1af335c33211ea78f2d5b7314d7b1c210d"><span id="index-50"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">solver</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span></pre>
 <p>name of external solver used to factorize and solve</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span id="index-51"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="w"> </span><span class="n">gls_ainfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span id="index-51"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="w"> </span><span class="n">gls_ainfo</span></pre>
 <p>the analyse output structure from gls</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span id="index-52"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="w"> </span><span class="n">gls_finfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span id="index-52"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="w"> </span><span class="n">gls_finfo</span></pre>
 <p>the factorize output structure from gls</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="w"> </span><span class="n">gls_sinfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="w"> </span><span class="n">gls_sinfo</span></pre>
 <p>the solve output structure from gls</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a9487553043c4ec110826e99e071ce9bc"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_hsl_types.html#details-structma48-ainfo"><span class="std std-ref">ma48_ainfo</span></a><span></span><span class="w"> </span><span class="n">ma48_ainfo</span></pre>
 <p>the analyse output structure from hsl_ma48</p>

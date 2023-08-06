@@ -1,5 +1,3 @@
-.. _global:
-
 callable functions
 ------------------
 
@@ -67,7 +65,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- control
 
-		- is a structure whose members provide control paramters for the remaining prcedures (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
+		- is a structure whose members provide control parameters for the remaining procedures (see :ref:`rpd_control_type <doxid-structrpd__control__type>`)
 
 	*
 		- data
