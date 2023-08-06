@@ -1,0 +1,699 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>presolve_control_type structure &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_presolve_control_type';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="presolve-control-type-structure">
+<span id="doxid-structpresolve-control-type"></span><span id="index-0"></span><h1>presolve_control_type structure<a class="headerlink" href="#presolve-control-type-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>control derived type as a Julia structureure <a class="reference internal" href="#details-structpresolve-control-type"><span class="std std-ref">More…</span></a></p>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">presolve_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">termination</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_nbr_transforms</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_nbr_passes</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">c_accuracy</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">z_accuracy</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">infinity</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">errout</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dual_transformations</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">redundant_xc</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">primal_constraints_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dual_constraints_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">singleton_columns_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">doubleton_columns_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unc_variables_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dependent_variables_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sparsify_rows_freq</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_fill</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">transf_file_nbr</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">transf_buffer_size</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">transf_file_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">transf_file_name</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">y_sign</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">inactive_y</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">z_sign</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">inactive_z</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">final_x_bounds</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">final_z_bounds</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">final_c_bounds</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">final_y_bounds</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">check_primal_feasibility</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">check_dual_feasibility</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivot_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">min_rel_improve</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_growth_factor</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structpresolve-control-type"></span><h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-1"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a8812e14a78de75cb35920f1ca14f8fcb"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">termination</span></pre>
+<p>Determines the strategy for terminating the presolve analysis. Possible values are:</p>
+<ul class="simple">
+<li><p>1 presolving is continued as long as one of the sizes of the problem (n, m, a_ne, or h_ne) is being reduced;</p></li>
+<li><p>2 presolving is continued as long as problem transformations remain possible. NOTE: the maximum number of analysis passes (control.max_nbr_passes) and the maximum number of problem transformations (control.max_nbr_transforms) set an upper limit on the presolving effort irrespective of the choice of control.termination. The only effect of this latter parameter is to allow for early termination.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1ad2cba4a8892265253e3821f2a8398783"><span id="index-3"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_nbr_transforms</span></pre>
+<p>The maximum number of problem transformations, cumulated over all calls to <code class="docutils literal notranslate"><span class="pre">presolve</span></code>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1ab9b9f9490ee04ad60a88c98bedeb69bf"><span id="index-4"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_nbr_passes</span></pre>
+<p>The maximum number of analysis passes for problem analysis during a single call of <code class="docutils literal notranslate"><span class="pre">presolve_transform_problem</span></code>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1afb60a9e6d661aebf74d5da10af97233f"><span id="index-5"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">c_accuracy</span></pre>
+<p>The relative accuracy at which the general linear constraints are satisfied at the exit of the solver. Note that this value is not used before the restoration of the problem.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1af3699b1a6b62c80d06c848f9bf316708"><span id="index-6"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">z_accuracy</span></pre>
+<p>The relative accuracy at which the dual feasibility constraints are satisfied at the exit of the solver. Note that this value is not used before the restoration of the problem.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a11a46bd456ea63bac8bdffb056fe98c9"><span id="index-7"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">infinity</span></pre>
+<p>The value beyond which a number is deemed equal to plus infinity (minus infinity being defined as its opposite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>The unit number associated with the device used for printout.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a96f36bbf8aecb8c1df4e9479e0495341"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">errout</span></pre>
+<p>The unit number associated with the device used for error ouput.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>The level of printout requested by the user. Can take the values:</p>
+<ul class="simple">
+<li><p>0 no printout is produced</p></li>
+<li><p>1 only reports the major steps in the analysis</p></li>
+<li><p>2 reports the identity of each problem transformation</p></li>
+<li><p>3 reports more details</p></li>
+<li><p>4 reports lots of information.</p></li>
+<li><p>5 reports a completely silly amount of information</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a622f854458f44802d65ea5c644488b05"><span id="index-11"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">dual_transformations</span></pre>
+<p>true if dual transformations of the problem are allowed. Note that this implies that the reduced problem is solved accurately (for the dual feasibility condition to hold) as to be able to restore the problem to the original constraints and variables. false prevents dual transformations to be applied, thus allowing for inexact solution of the reduced problem. The setting of this control parameter overides that of get_z, get_z_bounds, get_y, get_y_bounds, dual_constraints_freq, singleton_columns_freq, doubleton_columns_freq, z_accuracy, check_dual_feasibility.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a7fff1fe9af8dc83ace001c1f01daca4e"><span id="index-12"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">redundant_xc</span></pre>
+<p>true if the redundant variables and constraints (i.e. variables that do not appear in the objective function and appear with a consistent sign in the constraints) are to be removed with their associated constraints before other transformations are attempted.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1ac5198d5a57920d3cbbc44fc43e1f461d"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">primal_constraints_freq</span></pre>
+<p>The frequency of primal constraints analysis in terms of presolving passes. A value of j = 2 indicates that primal constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a5de3600b41511490861e5f5cc52c6c8d"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dual_constraints_freq</span></pre>
+<p>The frequency of dual constraints analysis in terms of presolving passes. A value of j = 2 indicates that dual constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a79b5f7f8d67056004a9ec1347eaf0b2a"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">singleton_columns_freq</span></pre>
+<p>The frequency of singleton column analysis in terms of presolving passes. A value of j = 2 indicates that singleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a3f84400443972b69eb439c8ddbccd6e4"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">doubleton_columns_freq</span></pre>
+<p>The frequency of doubleton column analysis in terms of presolving passes. A value of j indicates that doubleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a83a0db3aa9212dc0630226a80f23355e"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">unc_variables_freq</span></pre>
+<p>The frequency of the attempts to fix linearly unconstrained variables, expressed in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a916449dc4c15cc8c573f65d13a7b1837"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dependent_variables_freq</span></pre>
+<p>The frequency of search for dependent variables in terms of presolving passes. A value of j = 2 indicates that dependent variables are searched for every 2 presolving passes. A zero value indicates that they are never searched for.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1aedb83124a2aeb24018ca314263ea194d"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sparsify_rows_freq</span></pre>
+<p>The frequency of the attempts to make A sparser in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a62b85e62f2dd65b004b9561006447321"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_fill</span></pre>
+<p>The maximum percentage of fill in each row of A. Note that this is a row-wise measure: globally fill never exceeds the storage initially used for A, no matter how large control.max_fill is chosen. If max_fill is negative, no limit is put on row fill.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1af309919911cc80fb67ce4309caff53ee"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">transf_file_nbr</span></pre>
+<p>The unit number to be associated with the file(s) used for saving problem transformations on a disk file.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a8e55be8b47271c8bfe04e4eb7abe41d9"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">transf_buffer_size</span></pre>
+<p>The number of transformations that can be kept in memory at once (that is without being saved on a disk file).</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a3327bff5444eebb4a46aa1671123681f"><span id="index-23"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">transf_file_status</span></pre>
+<p>The exit status of the file where problem transformations are saved:</p>
+<ul class="simple">
+<li><p>0 the file is not deleted after program termination</p></li>
+<li><p>1 the file is not deleted after program termination</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1af7814ff832c4c4e7fab56d53c26b4bed"><span id="index-24"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">transf_file_name</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>The name of the file (to be) used for storing problem transformation on disk. NOTE: this parameter must be identical for all calls to <code class="docutils literal notranslate"><span class="pre">presolve</span></code> following <code class="docutils literal notranslate"><span class="pre">presolve_read_specfile</span></code>. It can then only be changed after calling presolve_terminate.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a15a549b266499b20a45e93ce9a91f083"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">y_sign</span></pre>
+<p>Determines the convention of sign used for the multipliers associated with the general linear constraints.</p>
+<ul class="simple">
+<li><p>1 All multipliers corresponding to active inequality constraints are non-negative for lower bound constraints and non-positive for upper bounds constraints.</p></li>
+<li><p>-1 All multipliers corresponding to active inequality constraints are non-positive for lower bound constraints and non-negative for upper bounds constraints.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a0ddf7a757e8d25df82bbd45c4cc522f4"><span id="index-26"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">inactive_y</span></pre>
+<p>Determines whether or not the multipliers corresponding to constraints that are inactive at the unreduced point corresponding to the reduced point on input to <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> must be set to zero. Possible values are: associated with the general linear constraints.</p>
+<ul class="simple">
+<li><p>0 All multipliers corresponding to inactive inequality constraints are forced to zero, possibly at the expense of deteriorating the dual feasibility condition.</p></li>
+<li><p>1 Multipliers corresponding to inactive inequality constraints are left unaltered.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1aa643ec4b5dfb05f11c4c932158d92a37"><span id="index-27"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">z_sign</span></pre>
+<p>Determines the convention of sign used for the dual variables associated with the bound constraints.</p>
+<ul class="simple">
+<li><p>1 All dual variables corresponding to active lower bounds are non-negative, and non-positive for active upper bounds.</p></li>
+<li><p>-1 All dual variables corresponding to active lower bounds are non-positive, and non-negative for active upper bounds.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a02a187d6425a995f970b86ab1ae6deaa"><span id="index-28"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">inactive_z</span></pre>
+<p>Determines whether or not the dual variables corresponding to bounds that are inactive at the unreduced point corresponding to the reduced point on input to <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> must be set to zero. Possible values are: associated with the general linear constraints.</p>
+<ul class="simple">
+<li><p>0: All dual variables corresponding to inactive bounds are forced to zero, possibly at the expense of deteriorating the dual feasibility condition.</p></li>
+<li><p>1 Dual variables corresponding to inactive bounds are left unaltered.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a980e04d17981a03c6ce9142915baeec6"><span id="index-29"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">final_x_bounds</span></pre>
+<p>The type of final bounds on the variables returned by the package. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 the final bounds are the tightest bounds known on the variables (at the risk of being redundant with other constraints, which may cause degeneracy);</p></li>
+<li><p>1 the best known bounds that are known to be non-degenerate. This option implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+<li><p>2 the loosest bounds that are known to keep the problem equivalent to the original problem. This option also implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+</ul>
+<p>NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize).</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a8b0b8e949abf9bb7eae7f6e258a9fadf"><span id="index-30"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">final_z_bounds</span></pre>
+<p>The type of final bounds on the dual variables returned by the package. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 the final bounds are the tightest bounds known on the dual variables (at the risk of being redundant with other constraints, which may cause degeneracy);</p></li>
+<li><p>1 the best known bounds that are known to be non-degenerate. This option implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+<li><p>2 the loosest bounds that are known to keep the problem equivalent to the original problem. This option also implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+</ul>
+<p>NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize).</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a7797130742a276bfa34e28713c5f69fe"><span id="index-31"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">final_c_bounds</span></pre>
+<p>The type of final bounds on the constraints returned by the package. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 the final bounds are the tightest bounds known on the constraints (at the risk of being redundant with other constraints, which may cause degeneracy);</p></li>
+<li><p>1 the best known bounds that are known to be non-degenerate. This option implies that an additional real workspace of size 2 * m must be allocated.</p></li>
+<li><p>2 the loosest bounds that are known to keep the problem equivalent to the original problem. This option also implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+</ul>
+<p>NOTES: 1) This parameter must be identical for all calls to presolve (except presolve_initialize). 2) If different from 0, its value must be identical to that of control.final_x_bounds.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a8d59a01fe70d5186b185454844aa5388"><span id="index-32"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">final_y_bounds</span></pre>
+<p>The type of final bounds on the multipliers returned by the package. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 the final bounds are the tightest bounds known on the multipliers (at the risk of being redundant with other constraints, which may cause degeneracy);</p></li>
+<li><p>1 the best known bounds that are known to be non-degenerate. This option implies that an additional real workspace of size 2 * m must be allocated.</p></li>
+<li><p>2 the loosest bounds that are known to keep the problem equivalent to the original problem. This option also implies that an additional real workspace of size 2 * n must be allocated.</p></li>
+</ul>
+<p>NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize).</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a63d94a12589b2a15bedc5d4b172563d7"><span id="index-33"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">check_primal_feasibility</span></pre>
+<p>The level of feasibility check (on the values of x) at the start of the restoration phase. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 no check at all;</p></li>
+<li><p>1 the primal constraints are recomputed at x and a message issued if the computed value does not match the input value, or if it is out of bounds (if control.print_level &gt;= 2);</p></li>
+<li><p>2 the same as for 1, but presolve is terminated if an incompatibilty is detected.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a953e9d14756db97aaecceca97b78f334"><span id="index-34"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">check_dual_feasibility</span></pre>
+<p>The level of dual feasibility check (on the values of x, y and z) at the start of the restoration phase. This parameter can take the values:</p>
+<ul class="simple">
+<li><p>0 no check at all;</p></li>
+<li><p>1 the dual feasibility condition is recomputed at ( x, y, z ) and a message issued if the computed value does not match the input value (if control.print_level &gt;= 2);</p></li>
+<li><p>2 the same as for 1, but presolve is terminated if an incompatibilty is detected. The last two values imply the allocation of an additional real workspace vector of size equal to the number of variables in the reduced problem.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a133347eb5f45a24a77b63b4afd4212e8"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">pivot_tol</span></pre>
+<p>The relative pivot tolerance above which pivoting is considered as numerically stable in transforming the coefficient matrix A. A zero value corresponds to a totally unsafeguarded pivoting strategy (potentially unstable).</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1a6ff1d4c2c7c9a996e081de4beccebf86"><span id="index-36"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">min_rel_improve</span></pre>
+<p>The minimum relative improvement in the bounds on x, y and z for a tighter bound on these quantities to be accepted in the course of the analysis. More formally, if lower is the current value of the lower bound on one of the x, y or z, and if new_lower is a tentative tighter lower bound on the same quantity, it is only accepted if.</p>
+<p>new_lower &gt;= lower + tol * MAX( 1, ABS( lower ) ),</p>
+<p>where</p>
+<p>tol = control.min_rel_improve.</p>
+<p>Similarly, a tentative tighter upper bound new_upper only replaces the current upper bound upper if</p>
+<p>new_upper &lt;= upper - tol * MAX( 1, ABS( upper ) ).</p>
+<p>Note that this parameter must exceed the machine precision significantly.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-control-type-1ac768d36daebcdaaec3ad82313c45fa64"><span id="index-37"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">max_growth_factor</span></pre>
+<p>The maximum growth factor (in absolute value) that is accepted between the maximum data item in the original problem and any data item in the reduced problem. If a transformation results in this bound being exceeded, the transformation is skipped.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   presolve_control_type structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_presolve_control_type.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -7,6 +7,8 @@ GALAHAD PRESOLVE package
 
 .. include:: presolve_intro.rst
 
+.. include:: ah_storage.rst
+
 .. toctree::
 	:hidden:
 

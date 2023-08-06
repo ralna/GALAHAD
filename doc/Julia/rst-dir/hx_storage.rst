@@ -1,3 +1,7 @@
+.. _details-hx_storage:
+
+.. _details-hx_storage__sym:
+
 matrix storage
 --------------
 

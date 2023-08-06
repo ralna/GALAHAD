@@ -1,3 +1,5 @@
+.. _details-cro_storage:
+
 matrix storage
 --------------
 

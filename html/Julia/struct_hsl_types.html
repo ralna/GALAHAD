@@ -1,0 +1,1277 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>ma48_control structure &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_hsl_types';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="spral_ssids_options structure" href="struct_ssids_types.html" />
+    <link rel="prev" title="callable functions" href="sls_functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sls_functions.html">callable functions</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">ma48_control structure</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_ssids_types.html">spral_ssids_options structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="uls.html">ULS - solve unsymmetric systems of linear equations (übersolver)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="uls_functions.html">callable functions</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">ma48_control structure</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sbls.html">SBLS - precondition and solve block symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sbls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="psls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sils.html">SILS - solve symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sils_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gls.html">GLS - solve unsymmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fdc.html">FDC - find an equivalent linearly independent subset of a system of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fdc_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <span class="target" id="index-0"></span><section id="ma48-control-structure">
+<span id="details-structma48-control"></span><span id="doxid-structhsl-controlinfo"></span><span id="index-1"></span><h1>ma48_control structure<a class="headerlink" href="#ma48-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma48_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">switch_</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">drop</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cgce</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">lp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">wp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ldiag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">btf</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">struct_</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factor_blocking</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve_blas</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivoting</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">diagonal_pivoting</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">fill_in</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">switch_mode</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="ma48-ainfo-structure">
+<span id="details-structma48-ainfo"></span><h1>ma48_ainfo structure<a class="headerlink" href="#ma48-ainfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma48_ainfo</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">ops</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lena_analyse</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">lenj_analyse</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">lena_factorize</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">leni_factorize</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpa</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">drop</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">struc_rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">oor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">dup</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lblock</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sblock</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">tblock</span><span class="o">::</span><span class="kt">Clong</span></pre>
+</section>
+<section id="ma48-finfo-structure">
+<span id="details-structma48-finfo"></span><h1>ma48_finfo structure<a class="headerlink" href="#ma48-finfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma48_finfo</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">ops</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">size_factor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">lena_factorize</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">leni_factorize</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">drop</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="ma48-sinfo-structure">
+<span id="details-structma48-sinfo"></span><h1>ma48_sinfo structure<a class="headerlink" href="#ma48-sinfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma48_sinfo</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="ma57-control-structure">
+<span id="details-structma57-control"></span><h1>ma57_control structure<a class="headerlink" href="#ma57-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma57_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">reduce</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_level</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">convergence</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">consist</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">lp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">wp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ldiag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorblocking</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">solveblocking</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">la</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">liw</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxla</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxliw</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivoting</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">thresh</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">scaling</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank_deficient</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma57-ainfo-structure">
+<span id="details-structma57-ainfo"></span><h1>ma57_ainfo structure<a class="headerlink" href="#ma57-ainfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma57_ainfo</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsa</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nsteps</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrltot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirtot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrladu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">niradu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpa</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">oor</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfrt</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma57-finfo-structure">
+<span id="details-structma57-finfo"></span><h1>ma57_finfo structure<a class="headerlink" href="#ma57-finfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma57_finfo</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsa</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsb</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxchange</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">smin</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">smax</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfrt</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nebdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlbdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirbdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrltot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirtot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpbr</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpbi</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ntwo</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">neig</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">delay</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">signc</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">modstep</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma57-sinfo-structure">
+<span id="details-structma57-sinfo"></span><h1>ma57_sinfo structure<a class="headerlink" href="#ma57-sinfo-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma57_sinfo</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">cond</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cond2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">berr</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">berr2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma77-control-structure">
+<span id="details-structma77-control"></span><h1>ma77_control structure<a class="headerlink" href="#ma77-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma77_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_diagnostics</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_warning</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">bits</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">buffer_lpage</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">buffer_npage</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">file_size</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxstore</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">storage</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">infnorm</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">thresh</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">nb54</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">action</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">nb64</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nbi</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">small</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">storage_indef</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">umin</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">consist_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma77-info-structure">
+<span id="details-structma77-info"></span><h1>ma77_info structure<a class="headerlink" href="#ma77-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma77_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">detlog</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">detsign</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">iostat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_dup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_outrange</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxdepth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfront</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">minstore</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">ndelay</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nfactor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">nflops</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">niter</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nsup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_neg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_nothresh</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_perturbed</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ntwo</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">index</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">nio_read</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">nio_write</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">nwd_read</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">nwd_write</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_file</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">storage</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">tree_nodes</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_restart</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unused</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">usmall</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Clong</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma86-control-structure">
+<span id="details-structma86-control"></span><h1>ma86_control structure<a class="headerlink" href="#ma86-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma86_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">diagnostics_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_diagnostics</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_warning</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nb</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">action</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nbi</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pool_size</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">small_</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">umin</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">scaling</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="ma86-info-structure">
+<span id="details-structma86-info"></span><h1>ma86_info structure<a class="headerlink" href="#ma86-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma86_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">detlog</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">detsign</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxdepth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_delay</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_factor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_flops</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_neg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_nodes</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_nothresh</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_perturbed</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_two</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pool_size</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">usmall</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="ma87-control-structure">
+<span id="details-structma87-control"></span><h1>ma87_control structure<a class="headerlink" href="#ma87-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma87_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">diagnostics_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_diagnostics</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_warning</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nb</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pool_size</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">diag_zero_minus</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">diag_zero_plus</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">unused</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">40</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span></pre>
+</section>
+<section id="ma87-info-structure">
+<span id="details-structma87-info"></span><h1>ma87_info structure<a class="headerlink" href="#ma87-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma87_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">detlog</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxdepth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_factor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_flops</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_nodes</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pool_size</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_zero</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unused</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">40</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span></pre>
+</section>
+<section id="ma97-control-structure">
+<span id="details-structma97-control"></span><h1>ma97_control structure<a class="headerlink" href="#ma97-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma97_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">action</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">scaling</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">small</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_diagnostics</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_warning</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factor_min</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve_blas3</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve_min</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve_mf</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">consist_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="ma97-info-structure">
+<span id="details-structma97-info"></span><h1>ma97_info structure<a class="headerlink" href="#ma97-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">ma97_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag68</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag77</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_dup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_outrange</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">matrix_missing_diag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxdepth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfront</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_delay</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_factor</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_flops</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_neg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_sup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">num_two</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ispare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rspare</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="mc64-control-structure">
+<span id="details-structmc64-control"></span><h1>mc64_control structure<a class="headerlink" href="#mc64-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mc64_control</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">wp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ldiag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">checking</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mc64-info-structure">
+<span id="details-structmc64-info"></span><h1>mc64_info structure<a class="headerlink" href="#mc64-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mc64_info</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">strucrank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mc68-control-structure">
+<span id="details-structmc68-control"></span><h1>mc68_control structure<a class="headerlink" href="#mc68-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mc68_control</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_array_in</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_array_out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">min_l_workspace</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">wp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">row_full_thresh</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">row_search</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mc68-info-structure">
+<span id="details-structmc68-info"></span><h1>mc68_info structure<a class="headerlink" href="#mc68-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mc68_info</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">iostat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out_range</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">duplicate</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">n_compressions</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">n_zero_eigs</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">l_workspace</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">zb01_info</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">n_dense_rows</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mi20-control-structure">
+<span id="details-structmi20-control"></span><h1>mi20_control structure<a class="headerlink" href="#mi20-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mi20_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">aggressive</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">c_fail</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_levels</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_points</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">reduction</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">st_method</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">st_parameter</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">testing</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">trunc_parameter</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">coarse_solver</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">coarse_solver_its</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">damping</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">err_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">levels</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pre_smoothing</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">smoother</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">post_smoothing</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">v_iterations</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">one_pass_coarsen</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mi20-solve-control-structure">
+<span id="details-structmi20-solve-control"></span><h1>mi20_solve__control structure<a class="headerlink" href="#mi20-solve-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mi20_solve_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">abs_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">breakdown_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">gmres_restart</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">init_guess</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">krylov_solver</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_its</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">preconditioner_side</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rel_tol</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="mi20-info-structure">
+<span id="details-structmi20-info"></span><h1>mi20_info structure<a class="headerlink" href="#mi20-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mi20_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">clevels</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cpoints</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cnnz</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">getrf_info</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">iterations</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">residual</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="mi28-control-structure">
+<span id="details-structmi28-control"></span><h1>mi28_control structure<a class="headerlink" href="#mi28-control-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mi28_control</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_arrays</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alpha</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">check</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">iorder</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">iscale</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lowalpha</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxshift</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rrt</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">shift_factor</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">shift_factor2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">small</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tau1</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tau2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">unit_warning</span><span class="o">::</span><span class="kt">Int32</span></pre>
+</section>
+<section id="mi28-info-structure">
+<span id="details-structmi28-info"></span><h1>mi28_info structure<a class="headerlink" href="#mi28-info-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">mi28_info</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">band_after</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">band_before</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag61</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag64</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag68</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag77</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrestart</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nshift</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">oor</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">profile_before</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">profile_after</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">size_r</span><span class="o">::</span><span class="kt">Clong</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alpha</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="detailed-documentation">
+<h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>HSL package control and info derived types as Julia structures.
+See <a class="reference external" href="https://www.hsl.rl.ac.uk/catalogue/">HSL</a>
+documentation for further details.</p>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="sls_functions.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">callable functions</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="struct_ssids_types.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">spral_ssids_options structure</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   ma48_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma48-ainfo-structure">
+   ma48_ainfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma48-finfo-structure">
+   ma48_finfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma48-sinfo-structure">
+   ma48_sinfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma57-control-structure">
+   ma57_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma57-ainfo-structure">
+   ma57_ainfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma57-finfo-structure">
+   ma57_finfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma57-sinfo-structure">
+   ma57_sinfo structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma77-control-structure">
+   ma77_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma77-info-structure">
+   ma77_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma86-control-structure">
+   ma86_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma86-info-structure">
+   ma86_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma87-control-structure">
+   ma87_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma87-info-structure">
+   ma87_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma97-control-structure">
+   ma97_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ma97-info-structure">
+   ma97_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mc64-control-structure">
+   mc64_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mc64-info-structure">
+   mc64_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mc68-control-structure">
+   mc68_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mc68-info-structure">
+   mc68_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mi20-control-structure">
+   mi20_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mi20-solve-control-structure">
+   mi20_solve__control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mi20-info-structure">
+   mi20_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mi28-control-structure">
+   mi28_control structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mi28-info-structure">
+   mi28_info structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_hsl_types.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

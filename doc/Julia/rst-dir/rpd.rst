@@ -7,6 +7,8 @@ GALAHAD RPD package
 
 .. include:: ../../Python/rpd_intro.rst
 
+.. include:: rpd_storage.rst
+
 .. toctree::
 	:hidden:
 

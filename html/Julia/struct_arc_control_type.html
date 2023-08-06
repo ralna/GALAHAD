@@ -1,0 +1,711 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>arc_control_type structure &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_arc_control_type';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="arc-control-type-structure">
+<span id="doxid-structarc-control-type"></span><span id="index-0"></span><h1>arc_control_type structure<a class="headerlink" href="#arc-control-type-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">arc_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">start_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_gap</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alive_unit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alive_file</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">non_monotone</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">model</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">norm</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">semi_bandwidth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">lbfgs_vectors</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_dxg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">icfs_vectors</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mi28_lsize</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mi28_rsize</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">advanced_start</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_g_absolute</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_g_relative</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_s</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">initial_weight</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">minimum_weight</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">reduce_gap</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tiny_gap</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">large_root</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">eta_successful</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">eta_very_successful</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">eta_too_successful</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">weight_decrease_min</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">weight_decrease</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">weight_increase</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">weight_increase_max</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">obj_unbounded</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cpu_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">hessian_available</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">subproblem_direct</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">renormalize_weight</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">quadratic_ratio_test</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">rqs_control</span><span class="o">::</span><span class="kt">rqs_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">glrt_control</span><span class="o">::</span><span class="kt">glrt_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">dps_control</span><span class="o">::</span><span class="kt">dps_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">psls_control</span><span class="o">::</span><span class="kt">psls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lms_control</span><span class="o">::</span><span class="kt">lms_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lms_control_prec</span><span class="o">::</span><span class="kt">lms_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sha_control</span><span class="o">::</span><span class="kt">sha_control_type</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structarc-control-type"></span><h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-1"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>error and warning diagnostics occur on stream error</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-3"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>general output occurs on stream out</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-4"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>the level of output required.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\leq\)</span> 0 gives no output,</p></li>
+<li><p>= 1 gives a one-line summary for every iteration,</p></li>
+<li><p>= 2 gives a summary of the inner iteration for each iteration,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\geq\)</span> 3 gives increasingly verbose (debugging) output</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span id="index-5"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">start_print</span></pre>
+<p>any printing will start on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span id="index-6"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stop_print</span></pre>
+<p>any printing will stop on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a31edaef6b722ef2721633484405a649b"><span id="index-7"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_gap</span></pre>
+<p>the number of iterations between printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ab717630b215f0362699acac11fb3652c"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxit</span></pre>
+<p>the maximum number of iterations performed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a3fc6359d77a53a63d57ea600b51eac13"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alive_unit</span></pre>
+<p>removal of the file alive_file from unit alive_unit terminates execution</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ac631699a26f321b14dbed37115f3c006"><span id="index-10"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">alive_file</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>see alive_unit</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a856b2df558071805c217b6d72a1e215b"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">non_monotone</span></pre>
+<p>the descent strategy used.</p>
+<p>Possible values are</p>
+<ul class="simple">
+<li><p>&lt;= 0 a monotone strategy is used.</p></li>
+<li><p>anything else, a non-monotone strategy with history length .non_monotine is used.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a027a1f1731d22465c926ce57be2364c3"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">model</span></pre>
+<p>the model used.</p>
+<p>Possible values are</p>
+<ul class="simple">
+<li><p>0 dynamic (<em>not yet implemented</em>)</p></li>
+<li><p>1 first-order (no Hessian)</p></li>
+<li><p>2 second-order (exact Hessian)</p></li>
+<li><p>3 barely second-order (identity Hessian)</p></li>
+<li><p>4 secant second-order (limited-memory BFGS, with .lbfgs_vectors history) (<em>not yet implemented</em>)</p></li>
+<li><p>5 secant second-order (limited-memory SR1, with .lbfgs_vectors history) (<em>not yet implemented</em>)</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a5b6da5fd1d9c6f86967fa0b4197e3498"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">norm</span></pre>
+<p>the regularization norm used.</p>
+<p>The norm is defined via <span class="math notranslate nohighlight">\(\|v\|^2 = v^T P v\)</span>, and will define the preconditioner used for iterative methods. Possible values for <span class="math notranslate nohighlight">\(P\)</span> are</p>
+<ul class="simple">
+<li><p>-3 users own preconditioner</p></li>
+<li><p>-2 <span class="math notranslate nohighlight">\(P =\)</span> limited-memory BFGS matrix (with .lbfgs_vectors history)</p></li>
+<li><p>-1 identity (= Euclidan two-norm)</p></li>
+<li><p>0 automatic (<em>not yet implemented</em>)</p></li>
+<li><p>1 diagonal, <span class="math notranslate nohighlight">\(P =\)</span> diag( max( Hessian, .min_diagonal ) )</p></li>
+<li><p>2 banded, <span class="math notranslate nohighlight">\(P =\)</span> band( Hessian ) with semi-bandwidth .semi_bandwidth</p></li>
+<li><p>3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth</p></li>
+<li><p>4 full factorization, <span class="math notranslate nohighlight">\(P =\)</span> Hessian, Schnabel-Eskow modification</p></li>
+<li><p>5 full factorization, <span class="math notranslate nohighlight">\(P =\)</span> Hessian, GMPS modification (<em>not yet implemented</em>)</p></li>
+<li><p>6 incomplete factorization of Hessian, Lin-More’</p></li>
+<li><p>7 incomplete factorization of Hessian, HSL_MI28</p></li>
+<li><p>8 incomplete factorization of Hessian, Munskgaard (<em>not yet implemented</em>)</p></li>
+<li><p>9 expanding band of Hessian (<em>not yet implemented</em>)</p></li>
+<li><p>10 diagonalizing norm from GALAHAD_DPS (<em>subproblem_direct only</em>)</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1abf884043df0f9c0d95bcff6fae1bf9bb"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">semi_bandwidth</span></pre>
+<p>specify the semi-bandwidth of the band matrix P if required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a90eb3c326cdd5cd8f81f084c4ec5bf30"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">lbfgs_vectors</span></pre>
+<p>number of vectors used by the L-BFGS matrix P if required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a0d14c8b2992107c3e0f8099cf7f3d04f"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_dxg</span></pre>
+<p>number of vectors used by the sparsity-based secant Hessian if required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1adb095f545799aab1d69fcdca912d4afd"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">icfs_vectors</span></pre>
+<p>number of vectors used by the Lin-More’ incomplete factorization matrix P if required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a97a46af6187162b529821f79d1559827"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">mi28_lsize</span></pre>
+<p>the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28. In general, increasing .mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a8cd04d404e41a2a09c29eeb2de78cd85"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">mi28_rsize</span></pre>
+<p>the maximum number of entries within each column of the strictly lower triangular matrix <span class="math notranslate nohighlight">\(R\)</span> used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold <span class="math notranslate nohighlight">\(R\)</span>. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize &gt; 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize &gt;= .mi28_lsize is generally recommended</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7565611061db14e471a4f68e6dabbc17"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">advanced_start</span></pre>
+<p>try to pick a good initial regularization weight using .advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6182fed3e6c11b9aa39e1460c1def7f8"><span id="index-21"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_g_absolute</span></pre>
+<p>overall convergence tolerances. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient ) or if the step is less than .stop_s</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aeb89f1dc942cea0814ee1e8d645467d3"><span id="index-22"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_g_relative</span></pre>
+<p>see stop_g_absolute</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a56612668b00bf042745379f43166cd27"><span id="index-23"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_s</span></pre>
+<p>see stop_g_absolute</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aa8b73dcc65ae7dc7b3331980f77c5fb4"><span id="index-24"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">initial_weight</span></pre>
+<p>Initial value for the regularisation weight (-ve =&gt; 1/||g_0||)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a044b125f7d2b5409dde4253030798367"><span id="index-25"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">minimum_weight</span></pre>
+<p>minimum permitted regularisation weight</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a462c383f8c4b96b23d585f292bd5e0e2"><span id="index-26"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">reduce_gap</span></pre>
+<p>expert parameters as suggested in Gould, Porcelli &amp; Toint, “Updating the
+regularization parameter in the adaptive cubic regularization algorithm” RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), <a class="reference external" href="http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf">http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf</a> (these are denoted beta, epsilon_chi and alpha_max in the paper)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a28c746bfd481575683553dc28abe3e30"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">tiny_gap</span></pre>
+<p>see reduce_gap</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7abb4c844c9fddec04f47c856f4a2383"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">large_root</span></pre>
+<p>see reduce_gap</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ac0774abb09bb59381960d771cb38b8ef"><span id="index-29"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">eta_successful</span></pre>
+<p>a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The regularization weight will be decreased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful (the first is eta in Gould, Porcell and Toint, 2011)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a5e55cf3fe7846b0f9b23919b0f95469e"><span id="index-30"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">eta_very_successful</span></pre>
+<p>see eta_successful</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6af4c9666b9342fa75b665bfb8cef524"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">eta_too_successful</span></pre>
+<p>see eta_successful</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a481b6aeef2f3d9a0078665db1e512c85"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">weight_decrease_min</span></pre>
+<p>on very successful iterations, the regularization weight will be reduced by the factor .weight_decrease but no more than .weight_decrease_min while if the iteration is unsuccessful, the weight will be increased by a factor .weight_increase but no more than .weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a46e8590e1c6ebb8c2a673d854762424d"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">weight_decrease</span></pre>
+<p>see weight_decrease_min</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a92d59bc5d9b2899fbb318ea033e85540"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">weight_increase</span></pre>
+<p>see weight_decrease_min</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a43230e4cfd494bbdcb897074b0b9768b"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">weight_increase_max</span></pre>
+<p>see weight_decrease_min</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7eed67e26bc4e17ca334031b7fd608a6"><span id="index-36"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">obj_unbounded</span></pre>
+<p>the smallest value the onjective function may take before the problem is marked as unbounded</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span id="index-37"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cpu_time_limit</span></pre>
+<p>the maximum CPU time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ab05d7c2b06d3a9fb085fa3739501d1c8"><span id="index-38"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_time_limit</span></pre>
+<p>the maximum elapsed clock time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a0fa05e3076ccb30e3b859c1e4be08981"><span id="index-39"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">hessian_available</span></pre>
+<p>is the Hessian matrix of second derivatives available or is access only via matrix-vector products?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a8c10db7cf72a4e3e52c9601007f7b1de"><span id="index-40"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">subproblem_direct</span></pre>
+<p>use a direct (factorization) or (preconditioned) iterative method to find the search direction</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aa451859552980839fa9fe17df018c042"><span id="index-41"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">renormalize_weight</span></pre>
+<p>should the weight be renormalized to account for a change in preconditioner?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a9e67af1ad36a37036832168539ef2bc8"><span id="index-42"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">quadratic_ratio_test</span></pre>
+<p>should the test for acceptance involve the quadratic model or the cubic?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-43"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-44"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-45"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7339f172b9757ed89a7595a29c4bca2b"><span id="index-46"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_rqs_control_type.html#doxid-structrqs-control-type"><span class="std std-ref">rqs_control_type</span></a><span></span><span class="w"> </span><span class="n">rqs_control</span></pre>
+<p>control parameters for RQS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1ac872f3f7f159cedfac4d6898d51842a3"><span id="index-47"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_glrt_control_type.html#doxid-structglrt-control-type"><span class="std std-ref">glrt_control_type</span></a><span></span><span class="w"> </span><span class="n">glrt_control</span></pre>
+<p>control parameters for GLRT</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a400a915be09fbe2f8114fc9f7f9dddf1"><span id="index-48"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="w"> </span><span class="n">dps_control</span></pre>
+<p>control parameters for DPS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a6fe2b1a82e177fbd1a39d9de9652a2c5"><span id="index-49"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a><span></span><span class="w"> </span><span class="n">psls_control</span></pre>
+<p>control parameters for PSLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a7149e4807d93e93adf2eb1e3e42c6fb6"><span id="index-50"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control</span></pre>
+<p>control parameters for LMS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1aaad01db9888c4f77c450ff45fac4dfec"><span id="index-51"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lms_control_type.html#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a><span></span><span class="w"> </span><span class="n">lms_control_prec</span></pre>
+<p>control parameters for LMS used for preconditioning</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structarc-control-type-1a0e0b1319a0f3da41507bfb343a26ab96"><span id="index-52"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="w"> </span><span class="n">sha_control</span></pre>
+<p>control parameters for SHA</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   arc_control_type structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_arc_control_type.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

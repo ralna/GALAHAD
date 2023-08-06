@@ -1,0 +1,1535 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>callable functions &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'trb_functions';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Least-Squares" href="ls.html" />
+    <link rel="prev" title="GALAHAD TRB package" href="trb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="trb.html">TRB - bound-constrained local optimization of a smooth function</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="callable-functions">
+<h1>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h1>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a9bffc46178a3e0b7eb2927d1c50440a1"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><dl class="simple">
+<dt>is a structure containing control information (see</dt><dd><p><a class="reference internal" href="trb.html#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a4eaafdaf5187c8b91c119ce9395469e9"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNTRB.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/trb.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="trb.html#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a13bc38fb28201adb78af7acf910ff0d8"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="n">H_type</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_row</span><span class="p">,</span><span class="w"> </span><span class="n">H_col</span><span class="p">,</span><span class="w"> </span><span class="n">H_ptr</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="trb.html#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x^l\)</span> of the lower bounds on the optimization variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, <span class="math notranslate nohighlight">\(j = 1, \ldots, n\)</span>, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x^u\)</span> of the upper bounds on the optimization variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_u</span></code>, <span class="math notranslate nohighlight">\(j = 1, \ldots, n\)</span>, contains <span class="math notranslate nohighlight">\(x^u_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="tru.html#details-hx-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_row</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL</p></td>
+</tr>
+<tr class="row-even"><td><p>H_col</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a550c3ca1966ea0fa9de84423b8658cd7"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="trb.html#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a5a58e6c0c022eb451f14c82d653967f7"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_solve_with_mat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">eval_f</span><span class="p">,</span><span class="w"> </span><span class="n">eval_g</span><span class="p">,</span><span class="w"> </span><span class="n">eval_h</span><span class="p">,</span><span class="w"> </span><span class="n">eval_prec</span><span class="p">)</span></pre>
+<p>Find a local minimizer of a given function subject to simple bounds on
+the variables using a trust-region method.</p>
+<p>This call is for the case where <span class="math notranslate nohighlight">\(H = \nabla_{xx}f(x)\)</span> is provided
+specifically, and all function/derivative information is available by
+function calls.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>userdata</p></td>
+<td><p>is a structure that allows data to be passed into the function and derivative evaluation programs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>On initial entry, status must be set to 1.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The objective function appears to be unbounded from
+below</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-82</strong></dt><dd><p>The user has forced termination of solver by
+removing the file named control.alive_file from unit
+unit control.alive_unit.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the gradient <span class="math notranslate nohighlight">\(g = \nabla_xf(x)\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>eval_f</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_f</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The value of the objective function <span class="math notranslate nohighlight">\(f(x)\)</span> evaluated
+at x=<span class="math notranslate nohighlight">\(x\)</span> must be assigned to f, and the function
+return value set to 0. If the evaluation is impossible
+at x, return should be set to a nonzero value. Data
+may be passed into <code class="docutils literal notranslate"><span class="pre">eval_f</span></code> via the structure
+<code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_g</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_g</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The components of the gradient <span class="math notranslate nohighlight">\(g = \nabla_x f(x\)</span>) of
+the objective function evaluated at x=<span class="math notranslate nohighlight">\(x\)</span> must be
+assigned to g, and the function return value set
+to 0. If the evaluation is impossible at x, return
+should be set to a nonzero value. Data may be passed
+into <code class="docutils literal notranslate"><span class="pre">eval_g</span></code> via the structure <code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-even"><td><p>eval_h</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_h</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The nonzeros of the Hessian <span class="math notranslate nohighlight">\(H = \nabla_{xx}f(x)\)</span> of
+the objective function evaluated at x=<span class="math notranslate nohighlight">\(x\)</span> must be
+assigned to h in the same order as presented to
+trb_import, and the function return value set to 0. If
+the evaluation is impossible at x, return should be
+set to a nonzero value. Data may be passed into
+<code class="docutils literal notranslate"><span class="pre">eval_h</span></code> via the structure <code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_prec</p></td>
+<td><p>is an optional user-supplied function that may be
+NULL. If non-NULL, it must have the following
+signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_prec</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The product <span class="math notranslate nohighlight">\(u = P(x) v\)</span> of the user’s preconditioner
+<span class="math notranslate nohighlight">\(P(x)\)</span> evaluated at <span class="math notranslate nohighlight">\(x\)</span> with the vector v=<span class="math notranslate nohighlight">\(v\)</span>, the
+result <span class="math notranslate nohighlight">\(u\)</span> must be retured in u, and the function
+return value set to 0. If the evaluation is impossible
+at x, return should be set to a nonzero value. Data
+may be passed into <code class="docutils literal notranslate"><span class="pre">eval_prec</span></code> via the structure
+<code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a376b81748cec0bf992542d80b8d38f49"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_solve_without_mat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">eval_f</span><span class="p">,</span><span class="w"> </span><span class="n">eval_g</span><span class="p">,</span><span class="w"> </span><span class="n">eval_hprod</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">eval_shprod</span><span class="p">,</span><span class="w"> </span><span class="n">eval_prec</span><span class="p">)</span></pre>
+<p>Find a local minimizer of a given function subject to simple bounds on
+the variables using a trust-region method.</p>
+<p>This call is for the case where access to <span class="math notranslate nohighlight">\(H = \nabla_{xx}f(x)\)</span> is
+provided by Hessian-vector products, and all function/derivative
+information is available by function calls.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>userdata</p></td>
+<td><p>is a structure that allows data to be passed into the function and derivative evaluation programs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>On initial entry, status must be set to 1.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The objective function appears to be unbounded from
+below</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-82</strong></dt><dd><p>The user has forced termination of solver by
+removing the file named control.alive_file from unit
+unit control.alive_unit.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the gradient <span class="math notranslate nohighlight">\(g = \nabla_xf(x)\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>eval_f</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_f</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The value of the objective function <span class="math notranslate nohighlight">\(f(x)\)</span> evaluated
+at x=<span class="math notranslate nohighlight">\(x\)</span> must be assigned to f, and the function
+return value set to 0. If the evaluation is impossible
+at x, return should be set to a nonzero value. Data
+may be passed into <code class="docutils literal notranslate"><span class="pre">eval_f</span></code> via the structure
+<code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-even"><td><p>eval_g</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_g</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The components of the gradient <span class="math notranslate nohighlight">\(g = \nabla_x f(x\)</span>) of
+the objective function evaluated at x=<span class="math notranslate nohighlight">\(x\)</span> must be
+assigned to g, and the function return value set
+to 0. If the evaluation is impossible at x, return
+should be set to a nonzero value. Data may be passed
+into <code class="docutils literal notranslate"><span class="pre">eval_g</span></code> via the structure <code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_hprod</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_hprod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">got_h</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The sum <span class="math notranslate nohighlight">\(u + \nabla_{xx}f(x) v\)</span> of the product of the
+Hessian <span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span> of the objective function
+evaluated at x=<span class="math notranslate nohighlight">\(x\)</span> with the vector v=<span class="math notranslate nohighlight">\(v\)</span> and the
+vector $ <span class="math notranslate nohighlight">\(u\)</span> must be returned in u, and the function
+return value set to 0. If the evaluation is impossible
+at x, return should be set to a nonzero value. The
+Hessian has already been evaluated or used at x if
+got_h is true. Data may be passed into <code class="docutils literal notranslate"><span class="pre">eval_hprod</span></code>
+via the structure <code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-even"><td><p>eval_shprod</p></td>
+<td><p>is a user-supplied function that must have the
+following signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_shprod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_v</span><span class="p">,</span><span class="w"> </span><span class="n">index_nz_v</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_u</span><span class="p">,</span><span class="w"></span>
+<span class="w">                     </span><span class="n">index_nz_u</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">got_h</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The product <span class="math notranslate nohighlight">\(u = \nabla_{xx}f(x) v\)</span> of the Hessian
+<span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span> of the objective function evaluated
+at <span class="math notranslate nohighlight">\(x\)</span> with the sparse vector v=<span class="math notranslate nohighlight">\(v\)</span> must be returned
+in u, and the function return value set to 0. Only the
+components index_nz_v[0:nnz_v-1] of v are nonzero, and
+the remaining components may not have been be set. On
+exit, the user must indicate the nnz_u indices of u
+that are nonzero in index_nz_u[0:nnz_u-1], and only
+these components of u need be set. If the evaluation
+is impossible at x, return should be set to a nonzero
+value. The Hessian has already been evaluated or used
+at x if got_h is true. Data may be passed into
+<code class="docutils literal notranslate"><span class="pre">eval_prec</span></code> via the structure <code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_prec</p></td>
+<td><p>is an optional user-supplied function that may be
+NULL. If non-NULL, it must have the following
+signature:</p>
+<pre class="highlight literal-block"><span></span><span class="k">function</span><span class="w"> </span><span class="n">eval_prec</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
+<p>The product <span class="math notranslate nohighlight">\(u = P(x) v\)</span> of the user’s preconditioner
+<span class="math notranslate nohighlight">\(P(x)\)</span> evaluated at <span class="math notranslate nohighlight">\(x\)</span> with the vector v=<span class="math notranslate nohighlight">\(v\)</span>, the
+result <span class="math notranslate nohighlight">\(u\)</span> must be retured in u, and the function
+return value set to 0. If the evaluation is impossible
+at x, return should be set to a nonzero value. Data
+may be passed into <code class="docutils literal notranslate"><span class="pre">eval_prec</span></code> via the structure
+<code class="docutils literal notranslate"><span class="pre">userdata</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a7bb520e36666386824b216a84be08837"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_solve_reverse_with_mat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">eval_status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                        </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_val</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span></pre>
+<p>Find a local minimizer of a given function subject to simple bounds on
+the variables using a trust-region method.</p>
+<p>This call is for the case where <span class="math notranslate nohighlight">\(H = \nabla_{xx}f(x)\)</span> is provided
+specifically, but function/derivative information is only available by
+returning to the calling procedure</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>On initial entry, status must be set to 1.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The objective function appears to be unbounded from
+below</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-82</strong></dt><dd><p>The user has forced termination of solver by
+removing the file named control.alive_file from unit
+unit control.alive_unit.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>2</strong></dt><dd><p>The user should compute the objective function value
+<span class="math notranslate nohighlight">\(f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span> indicated in x and then
+re-enter the function. The required value should be
+set in f, and eval_status should be set to 0. If the
+user is unable to evaluate <span class="math notranslate nohighlight">\(f(x)\)</span> for instance, if
+the function is undefined at <span class="math notranslate nohighlight">\(x\)</span> the user need not
+set f, but should then set eval_status to a non-zero
+value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>3</strong></dt><dd><p>The user should compute the gradient of the
+objective function <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span>
+indicated in x and then re-enter the function. The
+value of the i-th component of the gradient should
+be set in g[i], for i = 1, …, n and eval_status
+should be set to 0. If the user is unable to
+evaluate a component of <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span> for instance
+if a component of the gradient is undefined at
+<span class="math notranslate nohighlight">\(x\)</span> -the user need not set g, but should then set
+eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>4</strong></dt><dd><p>The user should compute the Hessian of the objective
+function <span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span> at the point x indicated
+in <span class="math notranslate nohighlight">\(x\)</span> and then re-enter the function. The value
+l-th component of the Hessian stored according to
+the scheme input in the remainder of <span class="math notranslate nohighlight">\(H\)</span> should be
+set in H_val[l], for l = 0, …, ne-1 and
+eval_status should be set to 0. If the user is
+unable to evaluate a component of <span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span>
+for instance, if a component of the Hessian is
+undefined at <span class="math notranslate nohighlight">\(x\)</span> the user need not set H_val, but
+should then set eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>6</strong></dt><dd><p>The user should compute the product <span class="math notranslate nohighlight">\(u = P(x)v\)</span> of
+their preconditioner <span class="math notranslate nohighlight">\(P(x)\)</span> at the point x indicated
+in <span class="math notranslate nohighlight">\(x\)</span> with the vector <span class="math notranslate nohighlight">\(v\)</span> and then re-enter the
+function. The vector <span class="math notranslate nohighlight">\(v\)</span> is given in v, the
+resulting vector <span class="math notranslate nohighlight">\(u = P(x)v\)</span> should be set in u and
+eval_status should be set to 0. If the user is
+unable to evaluate the product for instance, if a
+component of the preconditioner is undefined at <span class="math notranslate nohighlight">\(x\)</span>
+the user need not set u, but should then set
+eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_status</p></td>
+<td><p>is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>f</p></td>
+<td><p>is a scalar variable pointer of type T that holds the value of the objective function.</p></td>
+</tr>
+<tr class="row-odd"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the gradient <span class="math notranslate nohighlight">\(g = \nabla_xf(x)\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_val</p></td>
+<td><p>is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>u</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>v</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see above for details)</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a95eac11acf02fe0d6eb4bc39ace5a100"><span id="index-7"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_solve_reverse_without_mat</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">eval_status</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">index_nz_v</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">nnz_v</span><span class="p">,</span><span class="w"> </span><span class="n">index_nz_u</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_u</span><span class="p">)</span></pre>
+<p>Find a local minimizer of a given function subject to simple bounds on
+the variables using a trust-region method.</p>
+<p>This call is for the case where access to <span class="math notranslate nohighlight">\(H = \nabla_{xx}f(x)\)</span> is
+provided by Hessian-vector products, but function/derivative information
+is only available by returning to the calling procedure.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>On initial entry, status must be set to 1.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The objective function appears to be unbounded from
+below</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-82</strong></dt><dd><p>The user has forced termination of solver by
+removing the file named control.alive_file from unit
+unit control.alive_unit.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>2</strong></dt><dd><p>The user should compute the objective function value
+<span class="math notranslate nohighlight">\(f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span> indicated in x and then
+re-enter the function. The required value should be
+set in f, and eval_status should be set to 0. If the
+user is unable to evaluate <span class="math notranslate nohighlight">\(f(x)\)</span> for instance, if
+the function is undefined at <span class="math notranslate nohighlight">\(x\)</span> the user need not
+set f, but should then set eval_status to a non-zero
+value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>3</strong></dt><dd><p>The user should compute the gradient of the
+objective function <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span>
+indicated in x and then re-enter the function. The
+value of the i-th component of the gradient should
+be set in g[i], for i = 1, …, n and eval_status
+should be set to 0. If the user is unable to
+evaluate a component of <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span> for instance
+if a component of the gradient is undefined at
+<span class="math notranslate nohighlight">\(x\)</span> -the user need not set g, but should then set
+eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>5</strong></dt><dd><p>The user should compute the product
+<span class="math notranslate nohighlight">\(\nabla_{xx}f(x)v\)</span> of the Hessian of the objective
+function <span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span>
+indicated in x with the vector <span class="math notranslate nohighlight">\(v\)</span>, add the result
+to the vector <span class="math notranslate nohighlight">\(u\)</span> and then re-enter the
+function. The vectors <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> are given in u and
+v respectively, the resulting vector <span class="math notranslate nohighlight">\(u +
+\nabla_{xx}f(x)v\)</span> should be set in u and eval_status
+should be set to 0. If the user is unable to
+evaluate the product for instance, if a component of
+the Hessian is undefined at <span class="math notranslate nohighlight">\(x\)</span> the user need not
+alter u, but should then set eval_status to a
+non-zero value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>6</strong></dt><dd><p>The user should compute the product <span class="math notranslate nohighlight">\(u = P(x)v\)</span> of
+their preconditioner <span class="math notranslate nohighlight">\(P(x)\)</span> at the point x indicated
+in <span class="math notranslate nohighlight">\(x\)</span> with the vector <span class="math notranslate nohighlight">\(v\)</span> and then re-enter the
+function. The vector <span class="math notranslate nohighlight">\(v\)</span> is given in v, the
+resulting vector <span class="math notranslate nohighlight">\(u = P(x)v\)</span> should be set in u and
+eval_status should be set to 0. If the user is
+unable to evaluate the product for instance, if a
+component of the preconditioner is undefined at <span class="math notranslate nohighlight">\(x\)</span>
+the user need not set u, but should then set
+eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>7</strong></dt><dd><p>The user should compute the product <span class="math notranslate nohighlight">\(u =
+\nabla_{xx}f(x)v\)</span> of the Hessian of the objective
+function <span class="math notranslate nohighlight">\(\nabla_{xx}f(x)\)</span> at the point <span class="math notranslate nohighlight">\(x\)</span>
+indicated in x with the <strong>sparse</strong> vector v=<span class="math notranslate nohighlight">\(v\)</span> and
+then re-enter the function. The nonzeros of <span class="math notranslate nohighlight">\(v\)</span> are
+stored in v[index_nz_v[0:nnz_v-1]] while the
+nonzeros of <span class="math notranslate nohighlight">\(u\)</span> should be returned in
+u[index_nz_u[0:nnz_u-1]]; the user must set nnz_u
+and index_nz_u accordingly, and set eval_status
+to 0. If the user is unable to evaluate the product
+for instance, if a component of the Hessian is
+undefined at <span class="math notranslate nohighlight">\(x\)</span> the user need not alter u, but
+should then set eval_status to a non-zero value.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_status</p></td>
+<td><p>is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>f</p></td>
+<td><p>is a scalar variable pointer of type T that holds the value of the objective function.</p></td>
+</tr>
+<tr class="row-odd"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the gradient <span class="math notranslate nohighlight">\(g = \nabla_xf(x)\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>u</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see status=5,6,7 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>v</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see status=5,6,7 above for details)</p></td>
+</tr>
+<tr class="row-even"><td><p>index_nz_v</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=7 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>nnz_v</p></td>
+<td><p>is a scalar variable of type Int32 that is used for reverse communication (see status=7 above for details)</p></td>
+</tr>
+<tr class="row-even"><td><p>index_nz_u</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=7 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>nnz_u</p></td>
+<td><p>is a scalar variable of type Int32 that is used for reverse communication (see status=7 above for details). On initial (status=1) entry, nnz_u should be set to an (arbitrary) nonzero value, and nnz_u=0 is recommended</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a105f41a31d49c59885c3372090bec776"><span id="index-8"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="trb.html#doxid-structtrb-inform-type"><span class="std std-ref">trb_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-trb-8h-1a739c7a44ddd0ce7b350cfa6da54948d0"><span id="index-9"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">trb_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="trb.html#doxid-structtrb-control-type"><span class="std std-ref">trb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="trb.html#doxid-structtrb-inform-type"><span class="std std-ref">trb_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="trb.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">GALAHAD TRB package</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="ls.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Least-Squares</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/trb_functions.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

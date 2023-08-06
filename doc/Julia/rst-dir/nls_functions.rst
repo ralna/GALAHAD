@@ -136,7 +136,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- J_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian, $J$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme<details-nls_storage__unsym>` used for the Jacobian, $J$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- J_ne
@@ -161,7 +161,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian, $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to $H$ is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`symmetric storage scheme <details-nls_storage__sym>` used for the Hessian, $H$. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to $H$ is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- H_ne
@@ -186,7 +186,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- P_type
 
-		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the residual-Hessians-vector product matrix, $P$. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to $P$ is via matrix-vector products; lower or upper case variants are allowed.
+		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme <details-nls_storage__unsym>` used for the residual-Hessians-vector product matrix, $P$. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to $P$ is via matrix-vector products; lower or upper case variants are allowed.
 
 	*
 		- P_ne
@@ -839,9 +839,7 @@ returning to the calling procedure
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to
-                  indicate if objective function/gradient/Hessian values
-                  can be provided (see above)
+		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n

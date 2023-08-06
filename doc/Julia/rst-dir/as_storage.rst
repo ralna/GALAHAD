@@ -1,5 +1,12 @@
+.. _details-as_storage:
+
 matrix storage
 --------------
+
+.. _details-as_storage__unsym:
+
+unsymmetric storage
+~~~~~~~~~~~~~~~~~~~
 
 The **unsymmetric** $m$ by $n$ model matrix $A$ may be presented
 and stored in a variety of convenient input formats.
@@ -56,6 +63,11 @@ of the integer array A_row, and real array A_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
 The string A_type = 'sparse_by_columns' should be specified.
+
+.. _details-as_storage__sym:
+
+symmetric storage
+~~~~~~~~~~~~~~~~~
 
 The **symmetric** $n$ by $n$ scaing matrix $S$ may also
 be presented and stored in a variety of formats. But crucially symmetry

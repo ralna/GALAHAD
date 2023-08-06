@@ -1,3 +1,7 @@
+.. _details-h_storage:
+
+.. _details-h_storage__sym:
+
 matrix storage
 --------------
 

@@ -10,4 +10,7 @@ html/Python/_sources
 html/C/.doctrees
 html/C/.buildinfo
 html/C/_sources
+html/Julia/.doctrees
+html/Julia/.buildinfo
+html/Julia/_sources
 src/makedefs/packages

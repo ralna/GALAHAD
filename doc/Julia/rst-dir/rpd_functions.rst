@@ -399,7 +399,7 @@ Recover the Hessian term $H$ in the objective function.
 	*
 		- h_row
 
-		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
 
 	*
 		- h_col
@@ -451,7 +451,7 @@ Recover the Jacobian term $A$ in the constraints.
 	*
 		- a_row
 
-		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
 
 	*
 		- a_col
@@ -504,7 +504,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 	*
 		- h_c_ptr
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <details-rpd_storage>`.
 
 	*
 		- h_c_row

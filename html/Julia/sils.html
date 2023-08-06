@@ -1,0 +1,1253 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD SILS package &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'sils';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="callable functions" href="sils_functions.html" />
+    <link rel="prev" title="callable functions" href="psls_functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sls_functions.html">callable functions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hsl_types.html">ma48_control structure</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_ssids_types.html">spral_ssids_options structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="uls.html">ULS - solve unsymmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="uls_functions.html">callable functions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hsl_types.html">ma48_control structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sbls.html">SBLS - precondition and solve block symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sbls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="psls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">SILS - solve symmetric systems of linear equations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sils_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gls.html">GLS - solve unsymmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fdc.html">FDC - find an equivalent linearly independent subset of a system of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fdc_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.sils">
+<span id="galahad-sils-package"></span><span id="doxid-index-sils"></span><h1>GALAHAD SILS package<a class="headerlink" href="#module-galahad.sils" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">sils</span></code> package <strong>solves sparse symmetric systems of linear equations</strong>
+using a multifrontal variant of Gaussian elimination.
+Given a sparse symmetric matrix <span class="math notranslate nohighlight">\(A = \{ a_{ij} \}_{n \times n}\)</span>, and an
+<span class="math notranslate nohighlight">\(n\)</span>-vector <span class="math notranslate nohighlight">\(b\)</span>, this function solves the system <span class="math notranslate nohighlight">\(A x = b\)</span>.
+The matrix <span class="math notranslate nohighlight">\(A\)</span> need not be definite. <code class="docutils literal notranslate"><span class="pre">sils</span></code> is based upon a modern fortran
+interface to the HSL Archive fortran 77 package <code class="docutils literal notranslate"><span class="pre">MA27</span></code>.
+To obtain HSL Archive packages, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://hsl.rl.ac.uk/archive/">http://hsl.rl.ac.uk/archive/</a> .</p></li>
+</ul>
+<p><strong>Currently only the options and info dictionaries are exposed</strong>; these are
+provided and used by other GALAHAD packages with Python interfaces.
+Extended functionality is available with the <code class="docutils literal notranslate"><span class="pre">sls</span></code> function.</p>
+<p>See Section 4 of $GALAHAD/doc/sils.pdf for a brief description of the
+method employed and other details.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="parametric-real-type-t">
+<h2>parametric real type T<a class="headerlink" href="#parametric-real-type-t" title="Permalink to this heading">#</a></h2>
+<p>Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+Calable functions as described are with T as Float64, but variants
+(with the additional suffix <code class="docutils literal notranslate"><span class="pre">_s</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">sils_initialize_s</span></code>)
+are available with T as Float32.</p>
+</section>
+<section id="callable-functions">
+<span id="global"></span><h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1adfa46fc519194d9acfbeccac4c5a1af3"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a12447d25d91610c87b4c8ce7744aefd7"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSILS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sils.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a78d5647031a8a4522541064853b021ba"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a34e5304b29c89525543cd512f426ac4f"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a27320b6d18c7508283cfb19dc8fecf37"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">ainfo</span><span class="p">,</span><span class="w"> </span><span class="n">finfo</span><span class="p">,</span><span class="w"> </span><span class="n">sinfo</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>ainfo</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>finfo</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>sinfo</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1aa862612cd37fce35b1d35bd6ad295d82"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sils_finalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="math notranslate nohighlight">\(\neq\)</span> <strong>0</strong></dt><dd><p>The Fortran STAT value of a deallocate statement that has failed</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="sils-control-type-structure">
+<span id="doxid-structsils-control-type"></span><span id="index-6"></span><h2>sils_control_type structure<a class="headerlink" href="#sils-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sils_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">ICNTL</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">30</span><span class="p">,</span><span class="kt">Cint</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">wp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">mp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sp</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ldiag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">la</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">liw</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxla</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxliw</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivoting</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nemin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorblocking</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">solveblocking</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">thresh</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">scaling</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">CNTL</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">reduce</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">u</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_level</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">convergence</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structsils-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-7"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a7d01102f1deac390a1e4e22a7bb59ea0"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ICNTL</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span></pre>
+<p>MA27 internal integer controls.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a3eec33a4e6d8295c25d117bb25dd1b9b"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">lp</span></pre>
+<p>Unit for error messages.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1af203f5ddbac4a47afed1a07b97e7e477"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">wp</span></pre>
+<p>Unit for warning messages.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a4b5efeeced2b749191f71afc3bc8bebd"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">mp</span></pre>
+<p>Unit for monitor output.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a024603cda52d9847e8d8df3c2e884b8c"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sp</span></pre>
+<p>Unit for statistical output.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ad0e905fe282a7125424a53219afc0791"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ldiag</span></pre>
+<p>Controls level of diagnostic output.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a8e48dcc59e4b8bbe40fe5b58321e4e72"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">la</span></pre>
+<p>Initial size for real array for the factors. If less than nrlnec, default size used.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a534631c6f6077b8813cb930ea43f3bfc"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">liw</span></pre>
+<p>Initial size for integer array for the factors. If less than nirnec, default size used.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a6437ead17fd48daf197640949e8d4ff3"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxla</span></pre>
+<p>Max. size for real array for the factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a6f46a87af5a04d87697736b7d789ea33"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxliw</span></pre>
+<p>Max. size for integer array for the factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1aa4d2d93f87da5df80b8aa2bce688c030"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">pivoting</span></pre>
+<p>Controls pivoting. Possible values are:</p>
+<ul class="simple">
+<li><p>1 Numerical pivoting will be performed.</p></li>
+<li><p>2 No pivoting will be performed and an error exit will occur immediately a pivot sign change is detected.</p></li>
+<li><p>3 No pivoting will be performed and an error exit will occur if a zero pivot is detected.</p></li>
+<li><p>4 No pivoting is performed but pivots are changed to all be positive.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a2683299c9b72fbc4bf7d0b3078cd75ca"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nemin</span></pre>
+<p>Minimum number of eliminations in a step (unused)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a32bd98cbf6436700c5a8848d77ce3917"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorblocking</span></pre>
+<p>Level 3 blocking in factorize (unused)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ae3a41a26d065502707d23c2936aaed6e"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">solveblocking</span></pre>
+<p>Level 2 and 3 blocking in solve.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a6cf8bf160a02413bc3d5d18b0294b581"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">thresh</span></pre>
+<p>Controls threshold for detecting full rows in analyse, registered as percentage of N, 100 Only fully dense rows detected (default)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a4175ebe476addcfc3433fc97c19e0708"><span id="index-23"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ordering</span></pre>
+<p>Controls ordering: Possible values are:</p>
+<ul class="simple">
+<li><p>0 AMD using HSL’s MC47</p></li>
+<li><p>1 User defined</p></li>
+<li><p>2 AMD using HSL’s MC50</p></li>
+<li><p>3 Min deg as in HSL’s MA57</p></li>
+<li><p>4 Metis_nodend ordering</p></li>
+<li><p>5 Ordering chosen depending on matrix characteristics. At the moment choices are HSL’s MC50 or Metis_nodend</p></li>
+<li><p>&gt;5 Presently equivalent to 5 but may chnage</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a26f0572eeeaa419eabb09dc89c00b89d"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">scaling</span></pre>
+<p>Controls scaling: Possible values are:</p>
+<ul class="simple">
+<li><p>0 No scaling</p></li>
+<li><p>&gt;0 Scaling using HSL’s MC64 but may change for &gt; 1</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a9dd8bf3b6f412e66450dab7b2261846e"><span id="index-25"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">CNTL</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span></pre>
+<p>MA27 internal real controls.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-26"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">multiplier</span></pre>
+<p>Factor by which arrays sizes are to be increased if they are too small.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a595df8d359282d27f49ac529283c509a"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">reduce</span></pre>
+<p>If previously allocated internal workspace arrays are greater than reduce times the currently required sizes, they are reset to current requirment.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1abb669b70ee8fb00689add7fad23ce00f"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">u</span></pre>
+<p>Pivot threshold.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1a3ce9c9cc8dd0f7c4684ea0bd80cc5946"><span id="index-29"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">static_tolerance</span></pre>
+<p>used for setting static pivot level</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ae7faebd3367553993434f6a03e65502d"><span id="index-30"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">static_level</span></pre>
+<p>used for switch to static</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ad0dcb73e98bad740852a54d6b7d1f6c2"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">tolerance</span></pre>
+<p>Anything less than this is considered zero.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-control-type-1ae7c621b1f1fcf3364b6c47d62406e82f"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">convergence</span></pre>
+<p>used to monitor convergence in iterative refinement</p>
+</section>
+</section>
+<section id="sils-ainfo-type-structure">
+<span id="doxid-structsils-ainfo-type"></span><span id="index-33"></span><h2>sils_ainfo_type structure<a class="headerlink" href="#sils-ainfo-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sils_ainfo_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nsteps</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrltot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirtot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrladu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">niradu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpa</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">oor</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dup</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfrt</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">faulty</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsa</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opse</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structsils-ainfo-type">
+<span id="id1"></span><h2>detailed documentation<a class="headerlink" href="#details-structsils-ainfo-type" title="Permalink to this heading">#</a></h2>
+<p>ainfo derived type as a Julia structure</p>
+<section id="id2">
+<h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1adf916204820072417ed73a32de1cefcf"><span id="index-34"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a4628f2fb17af64608416810cc4e5a9d0"><span id="index-35"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">more</span></pre>
+<p>More information on failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1aa2414080b021dbb9b56eeaeedec0ffa2"><span id="index-36"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nsteps</span></pre>
+<p>Number of elimination steps.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a87d1fb870bb3dc94213c3adf550a7a3a"><span id="index-37"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrltot</span></pre>
+<p>Size for a without compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1af19131d647173a929ed0594f33c46999"><span id="index-38"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nirtot</span></pre>
+<p>Size for iw without compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a812f6ee1b4bd452745b3876b084cd4af"><span id="index-39"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrlnec</span></pre>
+<p>Size for a with compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a2db255a81b52a84b3fec32d8c1a4ec17"><span id="index-40"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nirnec</span></pre>
+<p>Size for iw with compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a881410b19c211fe38617f51dcb6709d7"><span id="index-41"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrladu</span></pre>
+<p>Number of reals to hold factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a900738bbb8814829eb8e674c53a68ae3"><span id="index-42"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">niradu</span></pre>
+<p>Number of integers to hold factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a5e8b1d7aba05cfece368396811da24a3"><span id="index-43"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ncmpa</span></pre>
+<p>Number of compresses.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1afa0283d540a2a393c746b5eb05c3431c"><span id="index-44"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">oor</span></pre>
+<p>Number of indices out-of-range.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1adc4cf3f551bb367858644559d69cfdf5"><span id="index-45"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dup</span></pre>
+<p>Number of duplicates.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a1a03f6fb5030d0b1d6bf3703d8c24cc4"><span id="index-46"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxfrt</span></pre>
+<p>Forecast maximum front size.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-47"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stat</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a6dfcf1d95eca288e459a114d6418d6f1"><span id="index-48"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">faulty</span></pre>
+<p>legacy component, now not used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1a5514c74cf880eb762c480fe9c94b45dd"><span id="index-49"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">opsa</span></pre>
+<p>Anticipated number of operations in assembly.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-ainfo-type-1ae4d20d784bebe9b7f04a435f016e20d6"><span id="index-50"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">opse</span></pre>
+<p>Anticipated number of operations in elimination.</p>
+</section>
+</section>
+<section id="sils-finfo-type-structure">
+<span id="doxid-structsils-finfo-type"></span><span id="index-51"></span><h2>sils_finfo_type structure<a class="headerlink" href="#sils-finfo-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sils_finfo_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">more</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxfrt</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nebdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlbdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirbdu</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrltot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirtot</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nrlnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nirnec</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpbr</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ncmpbi</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ntwo</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">neig</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">delay</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">signc</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nstatic</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">modstep</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">faulty</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">step</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsa</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">opsb</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxchange</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">smin</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">smax</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structsils-finfo-type">
+<span id="id3"></span><h2>detailed documentation<a class="headerlink" href="#details-structsils-finfo-type" title="Permalink to this heading">#</a></h2>
+<p>finfo derived type as a Julia structure</p>
+<section id="id4">
+<h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1adf916204820072417ed73a32de1cefcf"><span id="index-52"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a4628f2fb17af64608416810cc4e5a9d0"><span id="index-53"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">more</span></pre>
+<p>More information on failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a1a03f6fb5030d0b1d6bf3703d8c24cc4"><span id="index-54"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxfrt</span></pre>
+<p>Largest front size.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1ad711b100f86e360e8a840d058d96671a"><span id="index-55"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nebdu</span></pre>
+<p>Number of entries in factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1af2c296d8547ed8e4278a63772f775e50"><span id="index-56"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrlbdu</span></pre>
+<p>Number of reals that hold factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a8fbe1e93500e9552d69c42a20dbeb7ba"><span id="index-57"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nirbdu</span></pre>
+<p>Number of integers that hold factors.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a87d1fb870bb3dc94213c3adf550a7a3a"><span id="index-58"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrltot</span></pre>
+<p>Size for a without compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1af19131d647173a929ed0594f33c46999"><span id="index-59"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nirtot</span></pre>
+<p>Size for iw without compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a812f6ee1b4bd452745b3876b084cd4af"><span id="index-60"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nrlnec</span></pre>
+<p>Size for a with compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a2db255a81b52a84b3fec32d8c1a4ec17"><span id="index-61"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nirnec</span></pre>
+<p>Size for iw with compression.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a1f120d69b5f9dad9acb22de7946169ac"><span id="index-62"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ncmpbr</span></pre>
+<p>Number of compresses of real data.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a56e6baa407d862416316a7ef3edc345c"><span id="index-63"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ncmpbi</span></pre>
+<p>Number of compresses of integer data.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1aa8a36bb6a93ac6d099aef27c76ccc1f8"><span id="index-64"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ntwo</span></pre>
+<p>Number of 2x2 pivots.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a5a9c67ca97b64a81e04f18d037242075"><span id="index-65"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">neig</span></pre>
+<p>Number of negative eigenvalues.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a6f1be1f780ff54ec75b41451cd4d90bd"><span id="index-66"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">delay</span></pre>
+<p>Number of delayed pivots (total)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a3321ebac07d2b23b0fcc04ac6f0129bf"><span id="index-67"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">signc</span></pre>
+<p>Number of pivot sign changes when control.pivoting=3.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a4f8d909bc8fbafc899cd820077eb802b"><span id="index-68"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nstatic</span></pre>
+<p>Number of static pivots chosen.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a7fdac7d8f75bd2eff8fac17e9a36da64"><span id="index-69"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">modstep</span></pre>
+<p>First pivot modification when control.pivoting=4.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a6cfd95afd0afebd625b889fb6e58371c"><span id="index-70"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">rank</span></pre>
+<p>Rank of original factorization.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-71"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stat</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a6dfcf1d95eca288e459a114d6418d6f1"><span id="index-72"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">faulty</span></pre>
+<p>legacy component, now not used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1abc16e65f240ed0c8f3e876e8732c0a33"><span id="index-73"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">step</span></pre>
+<p>legacy component, now not used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a5514c74cf880eb762c480fe9c94b45dd"><span id="index-74"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">opsa</span></pre>
+</section>
+<section id="operations-in-assembly">
+<span id="doxid-galahad-sils-8h-1autotoc-md0"></span><h3>operations in assembly<a class="headerlink" href="#operations-in-assembly" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1ae4d20d784bebe9b7f04a435f016e20d6"><span id="index-75"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">opse</span></pre>
+<p>number of operations in elimination</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a13983da267912e6dd3d3aa630542bba7"><span id="index-76"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">opsb</span></pre>
+<p>Additional number of operations for BLAS.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a1082a3beb83c2223482de252ca6f12cb"><span id="index-77"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">maxchange</span></pre>
+<p>Largest control.pivoting=4 modification.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a36400de40b86ef41ccf65900ae74e219"><span id="index-78"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">smin</span></pre>
+<p>Minimum scaling factor.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-finfo-type-1a47957579e4f203ac77f60ea3eace2467"><span id="index-79"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">smax</span></pre>
+<p>Maximum scaling factor.</p>
+</section>
+</section>
+<section id="sils-sinfo-type-structure">
+<span id="doxid-structsils-sinfo-type"></span><span id="index-80"></span><h2>sils_sinfo_type structure<a class="headerlink" href="#sils-sinfo-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sils_sinfo_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">flag</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stat</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cond</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cond2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">berr</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">berr2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structsils-sinfo-type">
+<span id="id5"></span><h2>detailed documentation<a class="headerlink" href="#details-structsils-sinfo-type" title="Permalink to this heading">#</a></h2>
+<p>sinfo derived type as a Julia structure</p>
+<section id="id6">
+<h3>components<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1adf916204820072417ed73a32de1cefcf"><span id="index-81"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">flag</span></pre>
+<p>Flags success or failure case.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1a7d6f8a25e94209bd3ba29b2051ca4f08"><span id="index-82"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stat</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1a006d728493fbea61aabf1e6229e34185"><span id="index-83"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cond</span></pre>
+<p>Condition number of matrix (category 1 eqs)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1ae6b598341b9634df4e446be3de0ed839"><span id="index-84"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cond2</span></pre>
+<p>Condition number of matrix (category 2 eqs)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1ad2150d4466031c9e63281a146e5ccd03"><span id="index-85"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">berr</span></pre>
+<p>Backward error for the system (category 1 eqs)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1ade02e126e145400e9ead3c3f3bc06dab"><span id="index-86"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">berr2</span></pre>
+<p>Backward error for the system (category 2 eqs)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsils-sinfo-type-1a2b7e3bae2c2111a08302ba1dc7f14cef"><span id="index-87"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">error</span></pre>
+<p>Estimate of forward error.</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="psls_functions.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">callable functions</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="sils_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">callable functions</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parametric-real-type-t">
+   parametric real type T
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sils-control-type-structure">
+   sils_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sils-ainfo-type-structure">
+   sils_ainfo_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structsils-ainfo-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sils-finfo-type-structure">
+   sils_finfo_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structsils-finfo-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     components
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#operations-in-assembly">
+     operations in assembly
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sils-sinfo-type-structure">
+   sils_sinfo_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structsils-sinfo-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/sils.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

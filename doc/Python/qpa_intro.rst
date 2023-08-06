@@ -3,7 +3,7 @@ purpose
 
 The ``qpa`` package uses a **working-set method** to solve
 **non-convex quadratic programs** in various guises.
-The first is the **$\mathbf{\ell_1}$ quadratic programming problem** 
+The first is the **l${}_1$ quadratic programming problem** 
 that aims to minimize
 $$f(x;\rho_g,\rho_b) = q(x) + \rho_g v_g(x) + \rho_b v_b(x)$$
 involving the quadratic objective
@@ -31,7 +31,7 @@ by automatically adjusting the parameters $\rho_g$ and $\rho_b$ in
 $f(x;\rho_g,\rho_b)$.
 
 Similarly, the package is capable of solving the 
-**bound-constrained $\mathbf{\ell_1}$ quadratic programming problem**
+**bound-constrained l${}_1$ quadratic programming problem**
 whose intention is to minimize $q(x) + \rho_g v_g(x),$
 subject to the above simple bound constraints
 by automatically adjusting $\rho_b$ in $f(x;\rho_g,\rho_b)$.

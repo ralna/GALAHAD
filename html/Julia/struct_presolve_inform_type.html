@@ -1,0 +1,595 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>presolve_inform_type structure &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_presolve_inform_type';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="presolve-inform-type-structure">
+<span id="doxid-structpresolve-inform-type"></span><span id="index-0"></span><h1>presolve_inform_type structure<a class="headerlink" href="#presolve-inform-type-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">presolve_inform_type</span><span class="w"></span>
+<span class="w">      </span><span class="n">status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">status_continue</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">status_continued</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nbr_transforms</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">message</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}}</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structpresolve-inform-type"></span><h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>inform derived type as a Julia structure</p>
+<section id="components">
+<h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<p>The presolve exit condition. It can take the following values (symbol in parentheses is the related Fortran code):</p>
+<ul class="simple">
+<li><p>(OK) successful exit;</p></li>
+<li><p>1 (MAX_NBR_TRANSF) the maximum number of problem transformation has been reached NOTE: this exit is not really an error, since the problem can nevertheless be permuted and solved. It merely signals that further problem reduction could possibly be obtained with a larger value of the parameter <code class="docutils literal notranslate"><span class="pre">control.max_nbr_transforms</span></code></p></li>
+<li><p>-21 (PRIMAL_INFEASIBLE) the problem is primal infeasible;</p></li>
+<li><p>-22 (DUAL_INFEASIBLE) the problem is dual infeasible;</p></li>
+<li><p>-23 (WRONG_G_DIMENSION) the dimension of the gradient is incompatible with the problem dimension;</p></li>
+<li><p>-24 (WRONG_HVAL_DIMENSION) the dimension of the vector containing the entries of the Hessian is erroneously specified;</p></li>
+<li><p>-25 (WRONG_HPTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Hessian row is erroneously specified;</p></li>
+<li><p>-26 (WRONG_HCOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Hessian entries is erroneously specified;</p></li>
+<li><p>-27 (WRONG_HROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Hessian entries is erroneously specified;</p></li>
+<li><p>-28 (WRONG_AVAL_DIMENSION) the dimension of the vector containing the entries of the Jacobian is erroneously specified;</p></li>
+<li><p>-29 (WRONG_APTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Jacobian row is erroneously specified;</p></li>
+<li><p>-30 (WRONG_ACOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Jacobian entries is erroneously specified;</p></li>
+<li><p>-31 (WRONG_AROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Jacobian entries is erroneously specified;</p></li>
+<li><p>-32 (WRONG_X_DIMENSION) the dimension of the vector of variables is incompatible with the problem dimension;</p></li>
+<li><p>-33 (WRONG_XL_DIMENSION) the dimension of the vector of lower bounds on the variables is incompatible with the problem dimension;</p></li>
+<li><p>-34 (WRONG_XU_DIMENSION) the dimension of the vector of upper bounds on the variables is incompatible with the problem dimension;</p></li>
+<li><p>-35 (WRONG_Z_DIMENSION) the dimension of the vector of dual variables is incompatible with the problem dimension;</p></li>
+<li><p>-36 (WRONG_ZL_DIMENSION) the dimension of the vector of lower bounds on the dual variables is incompatible with the problem dimension;</p></li>
+<li><p>-37 (WRONG_ZU_DIMENSION) the dimension of the vector of upper bounds on the dual variables is incompatible with the problem dimension;</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ab9d0ea9275be048bd854d13bd68b06d1"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status_continue</span></pre>
+<p>continuation of status (name in previous column should be status, doxygen issue):</p>
+<ul class="simple">
+<li><p>-38 (WRONG_C_DIMENSION) the dimension of the vector of constraints values is incompatible with the problem dimension;</p></li>
+<li><p>-39 (WRONG_CL_DIMENSION) the dimension of the vector of lower bounds on the constraints is incompatible with the problem dimension;</p></li>
+<li><p>-40 (WRONG_CU_DIMENSION) the dimension of the vector of upper bounds on the constraints is incompatible with the problem dimension;</p></li>
+<li><p>-41 (WRONG_Y_DIMENSION) the dimension of the vector of multipliers values is incompatible with the problem dimension;</p></li>
+<li><p>-42 (WRONG_YL_DIMENSION) the dimension of the vector of lower bounds on the multipliers is incompatible with the problem dimension;</p></li>
+<li><p>-43 (WRONG_YU_DIMENSION) the dimension of the vector of upper bounds on the multipliers is incompatible with the problem dimension;</p></li>
+<li><p>-44 (STRUCTURE_NOT_SET) the problem structure has not been set or has been cleaned up before an attempt to analyze;</p></li>
+<li><p>-45 (PROBLEM_NOT_ANALYZED) the problem has not been analyzed before an attempt to permute it;</p></li>
+<li><p>-46 (PROBLEM_NOT_PERMUTED) the problem has not been permuted or fully reduced before an attempt to restore it</p></li>
+<li><p>-47 (H_MISSPECIFIED) the column indices of a row of the sparse Hessian are not in increasing order, in that they specify an entry above the diagonal;</p></li>
+<li><p>-48 (CORRUPTED_SAVE_FILE) one of the files containing saved problem transformations has been corrupted between writing and reading;</p></li>
+<li><p>-49 (WRONG_XS_DIMENSION) the dimension of the vector of variables’ status is incompatible with the problem dimension;</p></li>
+<li><p>-50 (WRONG_CS_DIMENSION) the dimension of the vector of constraints’ status is incompatible with the problem dimension;</p></li>
+<li><p>-52 (WRONG_N) the problem does not contain any (active) variable;</p></li>
+<li><p>-53 (WRONG_M) the problem contains a negative number of constraints;</p></li>
+<li><p>-54 (SORT_TOO_LONG) the vectors are too long for the sorting routine;</p></li>
+<li><p>-55 (X_OUT_OF_BOUNDS) the value of a variable that is obtained by substitution from a constraint is incoherent with the variable’s bounds. This may be due to a relatively loose accuracy on the linear constraints. Try to increase control.c_accuracy.</p></li>
+<li><p>-56 (X_NOT_FEASIBLE) the value of a constraint that is obtained by recomputing its value on input of <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> from the current x is incompatible with its declared value or its bounds. This may caused the restored problem to be infeasible.</p></li>
+<li><p>-57 (Z_NOT_FEASIBLE) the value of a dual variable that is obtained by recomputing its value on input to <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> (assuming dual feasibility) from the current values of <span class="math notranslate nohighlight">\((x, y, z)\)</span> is incompatible with its declared value. This may caused the restored problem to be infeasible or suboptimal.</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ae9021be7a578e777cc20e3cd5f0ab51d"><span id="index-3"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status_continued</span></pre>
+<p>continuation of status (name in previous column should be status, doxygen issue):</p>
+<ul class="simple">
+<li><p>-58 (Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because the corresponding primal is at an artificial bound cannot be zeroed while maintaining dual feasibility (on restoration). This can happen when <span class="math notranslate nohighlight">\(( x, y, z)\)</span> on input of RESTORE are not (sufficiently) optimal.</p></li>
+<li><p>-1 (MEMORY_FULL) memory allocation failed</p></li>
+<li><p>-2 (FILE_NOT_OPENED) a file intended for saving problem transformations could not be opened;</p></li>
+<li><p>-3 (COULD_NOT_WRITE) an IO error occurred while saving transformations on the relevant disk file;</p></li>
+<li><p>-4 (TOO_FEW_BITS_PER_BYTE) an integer contains less than NBRH + 1 bits.</p></li>
+<li><p>-60 (UNRECOGNIZED_KEYWORD) a keyword was not recognized in the analysis of the specification file</p></li>
+<li><p>-61 (UNRECOGNIZED_VALUE) a value was not recognized in the analysis of the specification file</p></li>
+<li><p>-63 (G_NOT_ALLOCATED) the vector G has not been allocated although it has general values</p></li>
+<li><p>-64 (C_NOT_ALLOCATED) the vector C has not been allocated although m &gt; 0</p></li>
+<li><p>-65 (AVAL_NOT_ALLOCATED) the vector A.val has not been allocated although m &gt; 0</p></li>
+<li><p>-66 (APTR_NOT_ALLOCATED) the vector A.ptr has not been allocated although m &gt; 0 and A is stored in row-wise sparse format</p></li>
+<li><p>-67 (ACOL_NOT_ALLOCATED) the vector A.col has not been allocated although m &gt; 0 and A is stored in row-wise sparse format or sparse coordinate format</p></li>
+<li><p>-68 (AROW_NOT_ALLOCATED) the vector A.row has not been allocated although m &gt; 0 and A is stored in sparse coordinate format</p></li>
+<li><p>-69 (HVAL_NOT_ALLOCATED) the vector H.val has not been allocated although H.ne &gt; 0</p></li>
+<li><p>-70 (HPTR_NOT_ALLOCATED) the vector H.ptr has not been allocated although H.ne &gt; 0 and H is stored in row-wise sparse format</p></li>
+<li><p>-71 (HCOL_NOT_ALLOCATED) the vector H.col has not been allocated although H.ne &gt; 0 and H is stored in row-wise sparse format or sparse coordinate format</p></li>
+<li><p>-72 (HROW_NOT_ALLOCATED) the vector H.row has not been allocated although H.ne &gt; 0 and A is stored in sparse coordinate format</p></li>
+<li><p>-73 (WRONG_ANE) incompatible value of A_ne</p></li>
+<li><p>-74 (WRONG_HNE) incompatible value of H_ne</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ac678d67797411ebadaab2a5e07f62e8a"><span id="index-4"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nbr_transforms</span></pre>
+<p>The final number of problem transformations, as reported to the user at exit.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ad3ed7aeb962cfe24345625354d733206"><span id="index-5"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">message</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">81</span><span class="p">]</span></pre>
+<p>A few lines containing a description of the exit condition on exit of PRESOLVE, typically including more information than indicated in the description of control.status above. It is printed out on device errout at the end of execution if control.print_level &gt;= 1.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   presolve_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_presolve_inform_type.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

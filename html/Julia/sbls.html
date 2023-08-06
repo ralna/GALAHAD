@@ -1,0 +1,1855 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD SBLS package &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'sbls';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="callable functions" href="sbls_functions.html" />
+    <link rel="prev" title="callable functions" href="uls_functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="sls.html">SLS - solve symmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sls_functions.html">callable functions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hsl_types.html">ma48_control structure</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_ssids_types.html">spral_ssids_options structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="uls.html">ULS - solve unsymmetric systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="uls_functions.html">callable functions</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_hsl_types.html">ma48_control structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">SBLS - precondition and solve block symmetric systems of linear equations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sbls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="psls.html">PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="psls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="sils.html">SILS - solve symmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="sils_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gls.html">GLS - solve unsymmetric systems of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="fdc.html">FDC - find an equivalent linearly independent subset of a system of linear equations</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="fdc_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.sbls">
+<span id="galahad-sbls-package"></span><span id="doxid-index-sbls"></span><h1>GALAHAD SBLS package<a class="headerlink" href="#module-galahad.sbls" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>Given a <strong>block, symmetric matrix</strong>
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{H} = \begin{pmatrix}H &amp; A^T \\ A  &amp; - C\end{pmatrix},\end{split}\]</div>
+
+the <code class="docutils literal notranslate"><span class="pre">sbls</span></code> package constructs a variety of <strong>preconditioners</strong> of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}.\end{split}\]</div>
+
+Here, the leading-block matrix <span class="math notranslate nohighlight">\(G\)</span> is a suitably-chosen
+approximation to <span class="math notranslate nohighlight">\(H\)</span>; it may either be prescribed <strong>explicitly</strong>, in
+which case a symmetric indefinite factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span>
+will be formed using the GALAHAD package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>,
+or <strong>implicitly</strong>, by requiring certain sub-blocks of <span class="math notranslate nohighlight">\(G\)</span>
+be zero. In the latter case, a factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span> will be
+obtained implicitly (and more efficiently) without recourse to <code class="docutils literal notranslate"><span class="pre">sls</span></code>.
+In particular, for implicit preconditioners, a reordering
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_1^T \\
+G_{21}^{} &amp; G_{22}^{} &amp; A_2^T \\ A_{1}^{} &amp; A_{2}^{} &amp; - C
+\end{pmatrix} P^T\end{split}\]</div>
+
+involving a suitable permutation <span class="math notranslate nohighlight">\(P\)</span> will be found, for some
+invertible sub-block (“basis”) <span class="math notranslate nohighlight">\(A_1\)</span> of the columns of <span class="math notranslate nohighlight">\(A\)</span>;
+the selection and factorization of <span class="math notranslate nohighlight">\(A_1\)</span> uses the package <code class="docutils literal notranslate"><span class="pre">uls</span></code>.
+Once the preconditioner has been constructed,
+solutions to the preconditioning system
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix} =
+\begin{pmatrix}a \\ b\end{pmatrix}\end{split}\]</div>
+
+may be obtained by the package. Full advantage is taken of any zero
+coefficients in the matrices <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(C\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/sbls.pdf for additional details.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The method used depends on whether an explicit or implicit
+factorization is required. In the explicit case, the
+package is really little more than a wrapper for the
+symmetric, indefinite linear solver <code class="docutils literal notranslate"><span class="pre">SLS</span></code> in
+which the system matrix <span class="math notranslate nohighlight">\(K_G\)</span> is assembled from its constituents
+<span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(C\)</span> and whichever <span class="math notranslate nohighlight">\(G\)</span> is requested by the user.
+Implicit-factorization preconditioners are more involved,
+and there is a large variety of different possibilities. The
+essential ideas are described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and A. J. Wathen.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>On implicit-factorization constraint preconditioners’’.
+In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
+Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
+Springer Verlag (2006) 61–82</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
+<a href="#id3"><span class="problematic" id="id4">``</span></a>On iterative methods and implicit-factorization preconditioners for
+regularized saddle-point systems’’.
+<em>SIAM Journal on Matrix Analysis and Applications</em> <strong>28(1)</strong> (2006) 170–189.</p>
+</div></blockquote>
+<p>The range-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_G = \begin{pmatrix}G &amp; 0 \\ A &amp; I\end{pmatrix}
+\begin{pmatrix}G^{-1} &amp; 0 \\ 0 &amp; - S\end{pmatrix}
+\begin{pmatrix}G &amp; A^T \\ 0 &amp; I\end{pmatrix},\end{split}\]</div>
+
+where the <a href="#id5"><span class="problematic" id="id6">``</span></a>Schur complement’’ <span class="math notranslate nohighlight">\(S = C + A G^{-1} A^T\)</span>.
+Such a method requires that <span class="math notranslate nohighlight">\(S\)</span> is easily invertible. This is often the
+case when <span class="math notranslate nohighlight">\(G\)</span> is a diagonal matrix, in which case <span class="math notranslate nohighlight">\(S\)</span> is frequently
+sparse, or when <span class="math notranslate nohighlight">\(m \ll n\)</span> in which case <span class="math notranslate nohighlight">\(S\)</span>
+is small and a dense Cholesky factorization may be used.</p>
+<p>When <span class="math notranslate nohighlight">\(C = 0\)</span>, the null-space factorization is based upon the decomposition
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = P \begin{pmatrix}
+G_{11}^{} &amp; 0 &amp; I \\ G_{21}^{} &amp; I &amp; A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} &amp; 0 &amp; 0
+\end{pmatrix} \begin{pmatrix}
+0 &amp; 0 &amp; I \\ \;\;\; 0 \;\; &amp; \;\; R \;\; &amp; 0 \\ I &amp; 0 &amp; - G_{11}^{}
+\end{pmatrix} \begin{pmatrix}
+G_{11}^{} &amp; G_{21}^T &amp; A_{1}^T \\ 0 &amp; I &amp; 0 \\ I &amp; A_{1}^{-1} A_{2}^{} &amp; 0
+\end{pmatrix} P^T,\end{split}\]</div>
+
+where the <a href="#id7"><span class="problematic" id="id8">``</span></a>reduced Hessian’’
+<div class="math notranslate nohighlight">
+\[\begin{split}R = ( - A_{2}^{T} A_1^{-T} \;\; I )
+\begin{pmatrix}G_{11}^{} &amp; G_{21}^{T} \\ G_{21}^{} &amp; G_{22}^{}\end{pmatrix}
+\begin{pmatrix}- A_1^{-1} A_2^{} \\ I\end{pmatrix}\end{split}\]</div>
+
+and <span class="math notranslate nohighlight">\(P\)</span> is a suitably-chosen permutation for which <span class="math notranslate nohighlight">\(A_1\)</span> is invertible.
+The method is most useful when <span class="math notranslate nohighlight">\(m \approx n\)</span> as then the dimension
+of <span class="math notranslate nohighlight">\(R\)</span> is small and a dense Cholesky factorization may be used.</p>
+</section>
+<section id="matrix-storage">
+<h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<section id="unsymmetric-storage">
+<span id="details-sbls-storage-unsym"></span><h3>unsymmetric storage<a class="headerlink" href="#unsymmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
+and stored in a variety of convenient input formats.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,  <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n+1) holds the total number of entries plus one.
+The row indices i, <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+</section>
+<section id="symmetric-storage">
+<span id="details-sbls-storage-sym"></span><h3>symmetric storage<a class="headerlink" href="#symmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span>, as well as the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(m\)</span> matrix <span class="math notranslate nohighlight">\(C\)</span>,
+may also be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the <em>lower triangular</em> part
+(i.e, those entries that lie on or below the leading diagonal). We focus on
+<span class="math notranslate nohighlight">\(H\)</span>, but everything we say applied equally to <span class="math notranslate nohighlight">\(C\)</span>.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(H\)</span> is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since <span class="math notranslate nohighlight">\(H\)</span> is
+symmetric, only the lower triangular part (that is the part
+<span class="math notranslate nohighlight">\(H_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>) need be held.
+In this case the lower triangle should be stored by rows, that is
+component <span class="math notranslate nohighlight">\((i-1) * i / 2 + j\)</span>  of the storage array H_val
+will hold the value <span class="math notranslate nohighlight">\(H_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(H_{ji}\)</span>)
+for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>.
+The string H_type = ‘dense’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(H\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(H_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays H_row and H_col and real array H_val,
+respectively, while the number of nonzeros is recorded as H_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+Note that only the entries in the lower triangle should be stored.
+The string H_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise</em> storage format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(H\)</span> the i-th component of the
+integer array H_ptr holds the position of the first entry in this row,
+while H_ptr(n+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq i\)</span>, and values <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the entries
+in the i-th row are stored in components l = H_ptr(i), …, H_ptr(i+1)-1 of the
+integer array H_col, and real array H_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string H_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Diagonal</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(H_{ij} = 0\)</span> for all
+<span class="math notranslate nohighlight">\(1 \leq i \neq j \leq n\)</span>) only the diagonals entries
+<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq n\)</span> need be stored,
+and the first n components of the array H_val may be used for the purpose.
+The string H_type = ‘diagonal’ should be specified.</p>
+<p><em>Multiples of the identity</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
+where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.
+The string H_type = ‘scaled_identity’ should be specified.</p>
+<p>The <em>identity matrix</em> format:
+If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.
+The string H_type = ‘identity’ should be specified.</p>
+<p>The <em>zero matrix</em> format:
+The same is true if <span class="math notranslate nohighlight">\(H\)</span> is the zero matrix, but now
+the string H_type = ‘zero’ or ‘none’ should be specified.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+<section id="introduction-to-function-calls">
+<h2>introduction to function calls<a class="headerlink" href="#introduction-to-function-calls" title="Permalink to this heading">#</a></h2>
+<p>To solve a given problem, functions from the sbls package must be
+called in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1a30b1a9463e4abd5cfa0150ffb30569a9"><span class="std std-ref">sbls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1abde2e76567a4c8721fe9c2386106e972"><span class="std std-ref">sbls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1ab7cbabccf52f8be7ae417e089eba4b82"><span class="std std-ref">sbls_import</span></a> - set up matrix data structures</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1afdfe80ab659c2936d23802b6a6103eb8"><span class="std std-ref">sbls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1a77799da1282c3567b56ae8db42b75f65"><span class="std std-ref">sbls_factorize_matrix</span></a> - form and factorize the block matrix from its components</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1a2c3ae7b15fc1c43771d395540c37b9fa"><span class="std std-ref">sbls_solve_system</span></a> - solve the block linear system of equations</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1a9f93f5c87ae0088ceb72c4f7e73c9418"><span class="std std-ref">sbls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="sbls_functions.html#doxid-galahad-sbls-8h-1a73d7d29d113a62c48cc176146539bca5"><span class="std std-ref">sbls_terminate</span></a> - deallocate data structures</p></li>
+</ul>
+<p>See the <a class="reference internal" href="#doxid-index-sbls-examples"><span class="std std-ref">examples</span></a> section for
+illustrations of use.</p>
+</section>
+<section id="parametric-real-type-t">
+<h2>parametric real type T<a class="headerlink" href="#parametric-real-type-t" title="Permalink to this heading">#</a></h2>
+<p>Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+Calable functions as described are with T as Float64, but variants
+(with the additional suffix <code class="docutils literal notranslate"><span class="pre">_s</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">sbls_initialize_s</span></code>)
+are available with T as Float32.</p>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a30b1a9463e4abd5cfa0150ffb30569a9"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1abde2e76567a4c8721fe9c2386106e972"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSBLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sbls.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1ab7cbabccf52f8be7ae417e089eba4b82"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">H_type</span><span class="p">,</span><span class="w"> </span><span class="n">H_ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_row</span><span class="p">,</span><span class="w"> </span><span class="n">H_col</span><span class="p">,</span><span class="w"> </span><span class="n">H_ptr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">A_type</span><span class="p">,</span><span class="w"> </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_row</span><span class="p">,</span><span class="w"> </span><span class="n">A_col</span><span class="p">,</span><span class="w"> </span><span class="n">A_ptr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">C_type</span><span class="p">,</span><span class="w"> </span><span class="n">C_ne</span><span class="p">,</span><span class="w"> </span><span class="n">C_row</span><span class="p">,</span><span class="w"> </span><span class="n">C_col</span><span class="p">,</span><span class="w"> </span><span class="n">C_ptr</span><span class="p">)</span></pre>
+<p>Import structural matrix data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 or m &gt; 0 or requirement that
+a type contains its relevant string ‘dense’,
+‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
+‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
+been violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix <span class="math notranslate nohighlight">\(C\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_row</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_col</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_row</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_col</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>C_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(C\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(C=0\)</span>; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>C_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>C_row</p></td>
+<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>C_col</p></td>
+<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>C_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1afdfe80ab659c2936d23802b6a6103eb8"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a77799da1282c3567b56ae8db42b75f65"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_factorize_matrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">h_ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_val</span><span class="p">,</span><span class="w"></span>
+<span class="w">                               </span><span class="n">a_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"> </span><span class="n">c_ne</span><span class="p">,</span><span class="w"> </span><span class="n">C_val</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">)</span></pre>
+<p>Form and factorize the block matrix
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{G} = \begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}\end{split}\]</div>
+
+for some appropriate matrix <span class="math notranslate nohighlight">\(G\)</span>.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The factors were generated successfully.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 and m &gt; 0 or requirement that
+a type contains its relevant string ‘dense’,
+‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
+‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
+been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>An error was reported by SLS analyse. The return
+status from SLS analyse is given in
+inform.sls_inform.status. See the documentation for
+the GALAHAD package SLS for further details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>An error was reported by SLS_factorize. The return
+status from SLS factorize is given in
+inform.sls_inform.status. See the documentation for
+the GALAHAD package SLS for further details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-13</strong></dt><dd><p>An error was reported by ULS_factorize. The return
+status from ULS_factorize is given in
+inform.uls_factorize_status. See the documentation
+for the GALAHAD package ULS for further details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-15</strong></dt><dd><p>The computed preconditioner <span class="math notranslate nohighlight">\(K_G\)</span> is singular and is
+thus unsuitable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-20</strong></dt><dd><p>The computed preconditioner <span class="math notranslate nohighlight">\(K_G\)</span> has the wrong
+inertia and is thus unsuitable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-24</strong></dt><dd><p>An error was reported by the GALAHAD package
+SORT_reorder_by_rows. The return status from
+SORT_reorder_by_rows is given in
+inform.sort_status. See the documentation for the
+GALAHAD package SORT for further details.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>h_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_val</p></td>
+<td><p>is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes</p></td>
+</tr>
+<tr class="row-even"><td><p>a_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_val</p></td>
+<td><p>is a one-dimensional array of size a_ne and type T that holds the values of the entries of the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>c_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(C\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>C_val</p></td>
+<td><p>is a one-dimensional array of size c_ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(C\)</span> in any of the available storage schemes</p></td>
+</tr>
+<tr class="row-even"><td><p>D</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values of the entries of the diagonal matrix <span class="math notranslate nohighlight">\(D\)</span> that is required if the user has specified control.preconditioner = 5. It need not be set otherwise.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a2c3ae7b15fc1c43771d395540c37b9fa"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_solve_system</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">sol</span><span class="p">)</span></pre>
+<p>Solve the block linear system
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix}G &amp; A^T \\ A  &amp; - C\end{pmatrix}
+\begin{pmatrix}x \\ y\end{pmatrix} =
+\begin{pmatrix}a \\ b\end{pmatrix}.\end{split}\]</div>
+</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The required solution was obtained.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>An error was reported by SLS_solve. The return
+status from SLS solve is given in
+inform.sls_inform.status. See the documentation for
+the GALAHAD package SLS for further details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-14</strong></dt><dd><p>An error was reported by ULS_solve. The return
+status from ULS_solve is given in
+inform.uls_solve_status. See the documentation for
+the GALAHAD package ULS for further details.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the vector <span class="math notranslate nohighlight">\(a\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the vector <span class="math notranslate nohighlight">\(b\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>sol</p></td>
+<td><p>is a one-dimensional array of size n + m and type T. on entry, its first n entries must hold the vector <span class="math notranslate nohighlight">\(a\)</span>, and the following entries must hold the vector <span class="math notranslate nohighlight">\(b\)</span>. On a successful exit, its first n entries contain the solution components <span class="math notranslate nohighlight">\(x\)</span>, and the following entries contain the components <span class="math notranslate nohighlight">\(y\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a9f93f5c87ae0088ceb72c4f7e73c9418"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sbls-8h-1a73d7d29d113a62c48cc176146539bca5"><span id="index-7"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sbls_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="sbls-control-type-structure">
+<span id="doxid-structsbls-control-type"></span><span id="index-8"></span><h2>sbls_control_type structure<a class="headerlink" href="#sbls-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sbls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">indmin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">valmin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">len_ulsmin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">itref_max</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit_pcg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">new_a</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">new_h</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">new_c</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">preconditioner</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">semi_bandwidth</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_col</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">scaling</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ordering</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivot_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivot_tol_for_basis</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">zero_pivot</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_tolerance</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">static_level</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">min_diagonal</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_absolute</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_relative</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">remove_dependencies</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">find_basis_by_transpose</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">affine</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">allow_singular</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">perturb_to_make_definite</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">get_norm_residual</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">check_basis</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">symmetric_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">definite_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">unsymmetric_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sls_control</span><span class="o">::</span><span class="kt">sls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">uls_control</span><span class="o">::</span><span class="kt">uls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structsbls-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-9"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>unit for error messages</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>unit for monitor output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>controls level of diagnostic output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a5031bbc31f94e4cba6a540a3182b6d80"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">indmin</span></pre>
+<p>initial estimate of integer workspace for SLS (obsolete)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a0e142fa8dc9c363c3c2993b6129b0955"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">valmin</span></pre>
+<p>initial estimate of real workspace for SLS (obsolete)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a600c95211b782597cd1b2475bb2c54c6"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">len_ulsmin</span></pre>
+<p>initial estimate of workspace for ULS (obsolete)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a903ba4ef0869186a65d4c32459a6a0ed"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">itref_max</span></pre>
+<p>maximum number of iterative refinements with preconditioner allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aac98c23514fe50d29412bb0ecfacc8f2"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxit_pcg</span></pre>
+<p>maximum number of projected CG iterations allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a7bea45d51fd9384037bbbf82f7750ce6"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">new_a</span></pre>
+<p>how much has <span class="math notranslate nohighlight">\(A\)</span> changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ae60c5b5b987dd62f25253ba4164813f5"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">new_h</span></pre>
+<p>how much has <span class="math notranslate nohighlight">\(H\)</span> changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a9eed9b4ef920c669df5ff1a7c67e3047"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">new_c</span></pre>
+<p>how much has <span class="math notranslate nohighlight">\(C\)</span> changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1adf7719f1a4491459e361e80a00c55656"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">preconditioner</span></pre>
+<p>which preconditioner to use:</p>
+<ul class="simple">
+<li><p>0 selected automatically</p></li>
+<li><p>1 explicit with <span class="math notranslate nohighlight">\(G = I\)</span></p></li>
+<li><p>2 explicit with <span class="math notranslate nohighlight">\(G = H\)</span></p></li>
+<li><p>3 explicit with <span class="math notranslate nohighlight">\(G =\)</span> diag(max(<span class="math notranslate nohighlight">\(H\)</span>,min_diag))</p></li>
+<li><p>4 explicit with <span class="math notranslate nohighlight">\(G =\)</span> band <span class="math notranslate nohighlight">\((H)\)</span></p></li>
+<li><p>5 explicit with <span class="math notranslate nohighlight">\(G =\)</span> (optional, diagonal) <span class="math notranslate nohighlight">\(D\)</span></p></li>
+<li><p>11 explicit with <span class="math notranslate nohighlight">\(G_{11} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{21} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{22} = H_{22}\)</span></p></li>
+<li><p>12 explicit with <span class="math notranslate nohighlight">\(G_{11} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{21} = H_{21}\)</span>, <span class="math notranslate nohighlight">\(G_{22} = H_{22}\)</span></p></li>
+<li><p>-1 implicit with <span class="math notranslate nohighlight">\(G_{11} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{21} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{22} = I\)</span></p></li>
+<li><p>-2 implicit with <span class="math notranslate nohighlight">\(G_{11} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{21} = 0\)</span>, <span class="math notranslate nohighlight">\(G_{22} = H_{22}\)</span></p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1abf884043df0f9c0d95bcff6fae1bf9bb"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">semi_bandwidth</span></pre>
+<p>the semi-bandwidth for band(H)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a108359f1209601e6c6074c215e3abd8b"><span id="index-23"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorization</span></pre>
+<p>the explicit factorization used:</p>
+<ul class="simple">
+<li><p>0 selected automatically</p></li>
+<li><p>1 Schur-complement if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise augmented system</p></li>
+<li><p>2 augmented system</p></li>
+<li><p>3 null-space</p></li>
+<li><p>4 Schur-complement if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise failure</p></li>
+<li><p>5 Schur-complement with pivoting if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise failure</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1abca2db33b9520095e98790d45a1be93f"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_col</span></pre>
+<p>maximum number of nonzeros in a column of <span class="math notranslate nohighlight">\(A\)</span> for Schur-complement factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a26f0572eeeaa419eabb09dc89c00b89d"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">scaling</span></pre>
+<p>not used at present</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a4175ebe476addcfc3433fc97c19e0708"><span id="index-26"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ordering</span></pre>
+<p>see scaling</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a133347eb5f45a24a77b63b4afd4212e8"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">pivot_tol</span></pre>
+<p>the relative pivot tolerance used by ULS (obsolete)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a1912d9ec51c4e88125762b7d03ef31a6"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">pivot_tol_for_basis</span></pre>
+<p>the relative pivot tolerance used by ULS when determining the basis matrix</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aed8525bc028ed7ae0a9dd1bb3154cda2"><span id="index-29"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">zero_pivot</span></pre>
+<p>the absolute pivot tolerance used by ULS (obsolete)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a3ce9c9cc8dd0f7c4684ea0bd80cc5946"><span id="index-30"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">static_tolerance</span></pre>
+<p>not used at present</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ae7faebd3367553993434f6a03e65502d"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">static_level</span></pre>
+<p>see static_tolerance</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a984528c49e15a61a1d30fc8fa2d166cc"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">min_diagonal</span></pre>
+<p>the minimum permitted diagonal in diag(max(<span class="math notranslate nohighlight">\(H\)</span>,min_diag))</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_absolute</span></pre>
+<p>the required absolute and relative accuracies</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ae3103abf29cabc33010d53428da2f2fc"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_relative</span></pre>
+<p>see stop_absolute</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ae17a6b550239434c639239ddf45bc1ad"><span id="index-35"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">remove_dependencies</span></pre>
+<p>preprocess equality constraints to remove linear dependencies</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aa88001d7f86370d329247cf28f8ff499"><span id="index-36"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">find_basis_by_transpose</span></pre>
+<p>determine implicit factorization preconditioners using a basis of A found by examining A’s transpose</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ad036b5eb236ab3725436ece9cbf93e57"><span id="index-37"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">affine</span></pre>
+<p>can the right-hand side <span class="math notranslate nohighlight">\(c\)</span> be assumed to be zero?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a2ea4ee3b5051d51642fae65d6ba75e7d"><span id="index-38"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">allow_singular</span></pre>
+<p>do we tolerate “singular” preconditioners?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aa811deca1c703ca2ab1c43fefffa6fbd"><span id="index-39"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">perturb_to_make_definite</span></pre>
+<p>if the initial attempt at finding a preconditioner is unsuccessful, should the diagonal be perturbed so that a second attempt succeeds?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1acdcd8a05219b5c554c279137cb409a03"><span id="index-40"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">get_norm_residual</span></pre>
+<p>compute the residual when applying the preconditioner?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1afc637bcbceea5647ce8f349e109cb979"><span id="index-41"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">check_basis</span></pre>
+<p>if an implicit or null-space preconditioner is used, assess and correct for ill conditioned basis matrices</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-42"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if space is critical, ensure allocated arrays are no bigger than needed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-43"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>exit if any deallocation fails</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1af297ace351b9307640715643cde57384"><span id="index-44"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">symmetric_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>indefinite linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a9b46b7a8e0af020499e645bef711f634"><span id="index-45"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">definite_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>definite linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1aef6da6b715a0f41983c2a62397104eec"><span id="index-46"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">unsymmetric_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>unsymmetric linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-47"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-48"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<p>control parameters for SLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ac6782df4602dd9c04417e2554d72bb00"><span id="index-49"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="w"> </span><span class="n">uls_control</span></pre>
+<p>control parameters for ULS</p>
+</section>
+</section>
+<section id="sbls-time-type-structure">
+<span id="doxid-structsbls-time-type"></span><span id="index-50"></span><h2>sbls_time_type structure<a class="headerlink" href="#sbls-time-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sbls_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">form</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">apply</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_form</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_apply</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structsbls-time-type">
+<span id="id9"></span><h2>detailed documentation<a class="headerlink" href="#details-structsbls-time-type" title="Permalink to this heading">#</a></h2>
+<p>time derived type as a Julia structure</p>
+<section id="id10">
+<h3>components<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span id="index-51"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">total</span></pre>
+<p>total cpu time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1a8ac63de5e103d8e01b0e0f88bb7d230d"><span id="index-52"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">form</span></pre>
+<p>cpu time spent forming the preconditioner <span class="math notranslate nohighlight">\(K_G\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span id="index-53"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">factorize</span></pre>
+<p>cpu time spent factorizing <span class="math notranslate nohighlight">\(K_G\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1a9d8129bf5b1a9f21dfcc24dc5c706274"><span id="index-54"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">apply</span></pre>
+<p>cpu time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K_G\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span id="index-55"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_total</span></pre>
+<p>total clock time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1ab275f3b71b8e019aa35acf43c3fd7473"><span id="index-56"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_form</span></pre>
+<p>clock time spent forming the preconditioner <span class="math notranslate nohighlight">\(K_G\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span id="index-57"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_factorize</span></pre>
+<p>clock time spent factorizing <span class="math notranslate nohighlight">\(K_G\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-time-type-1afbbb1dd5fc63c640620fbd32a0481493"><span id="index-58"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_apply</span></pre>
+<p>clock time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K_G\)</span></p>
+</section>
+</section>
+<section id="sbls-inform-type-structure">
+<span id="doxid-structsbls-inform-type"></span><span id="index-59"></span><h2>sbls_inform_type structure<a class="headerlink" href="#sbls-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sbls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alloc_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">bad_alloc</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sort_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_integer</span><span class="o">::</span><span class="kt">Int64</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_real</span><span class="o">::</span><span class="kt">Int64</span><span class="w"></span>
+<span class="w">      </span><span class="n">preconditioner</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">d_plus</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rank_def</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">perturbed</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">iter_pcg</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">norm_residual</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">alternative</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">time</span><span class="o">::</span><span class="kt">sbls_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sls_inform</span><span class="o">::</span><span class="kt">sls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">uls_inform</span><span class="o">::</span><span class="kt">uls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="details-structsbls-inform-type">
+<span id="id11"></span><h2>detailed documentation<a class="headerlink" href="#details-structsbls-inform-type" title="Permalink to this heading">#</a></h2>
+<p>inform derived type as a Julia structure</p>
+<section id="id12">
+<h3>components<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-60"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<p>return status. See SBLS_form_and_factorize for details</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-61"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
+<p>the status of the last attempted allocation/deallocation</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-62"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
+<p>the name of the array for which an allocation/deallocation error occurred</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1acb9e43ddb17591d930fc31faa3e6f69f"><span id="index-63"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sort_status</span></pre>
+<p>the return status from the sorting routines</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a29cd3a5b0f30227170f825116d9ade9e"><span id="index-64"></span><span></span><span class="kt">Int64</span><span class="w"> </span><span class="n">factorization_integer</span></pre>
+<p>the total integer workspace required for the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1ad73643c24d3cd34c356c3ccd2ebfb1cc"><span id="index-65"></span><span></span><span class="kt">Int64</span><span class="w"> </span><span class="n">factorization_real</span></pre>
+<p>the total real workspace required for the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1adf7719f1a4491459e361e80a00c55656"><span id="index-66"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">preconditioner</span></pre>
+<p>the preconditioner used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a108359f1209601e6c6074c215e3abd8b"><span id="index-67"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorization</span></pre>
+<p>the factorization used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a9e94a7e5692a82e8c239c857be5b80ea"><span id="index-68"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">d_plus</span></pre>
+<p>how many of the diagonals in the factorization are positive</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a6cfd95afd0afebd625b889fb6e58371c"><span id="index-69"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">rank</span></pre>
+<p>the computed rank of <span class="math notranslate nohighlight">\(A\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aad74061a53e6daf7ca65b2e82290871b"><span id="index-70"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">rank_def</span></pre>
+<p>is the matrix A rank defficient?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a6e04ee4d6dc38d2c5231d39d4f21be75"><span id="index-71"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">perturbed</span></pre>
+<p>has the used preconditioner been perturbed to guarantee correct inertia?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a1694e6d072d1a8d796f85f4da8a054af"><span id="index-72"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">iter_pcg</span></pre>
+<p>the total number of projected CG iterations required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a1f77ff3a30a89cc31d4de01c54343e86"><span id="index-73"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">norm_residual</span></pre>
+<p>the norm of the residual</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a48c07c7da1803ed8af25ca949f4854b5"><span id="index-74"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">alternative</span></pre>
+<p>has an “alternative” <span class="math notranslate nohighlight">\(y\)</span> : <span class="math notranslate nohighlight">\(K y = 0\)</span> and <span class="math notranslate nohighlight">\(y^T c &gt; 0\)</span> been found when trying to solve <span class="math notranslate nohighlight">\(K y = c\)</span> for generic <span class="math notranslate nohighlight">\(K\)</span>?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aaa565e03cbc8470593f946cf00beb639"><span id="index-75"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_time_type.html#doxid-structsbls-time-type"><span class="std std-ref">sbls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<p>timings (see above)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-76"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<p>inform parameters from the GALAHAD package SLS used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aa39eb0d7b50d4a858849f8ef652ae84c"><span id="index-77"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="w"> </span><span class="n">uls_inform</span></pre>
+<p>inform parameters from the GALAHAD package ULS used</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+<section id="example-calls">
+<span id="doxid-index-sbls-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
+<p>This is an example of how to use the package to solve a block system of
+linear equations; the code is available in
+$GALAHAD/src/sbls/Julia/test_sbls.jl .
+A variety of supported matrix storage formats are shown.</p>
+<div class="code julia highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_sbls.jl</span>
+<span class="c1"># Simple code to test the Julia interface to SBLS</span>
+
+<span class="n">using</span> <span class="n">GALAHAD</span>
+<span class="n">using</span> <span class="n">Printf</span>
+
+<span class="c1"># Derived types</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Cvoid</span><span class="p">}}()]</span>
+<span class="n">control</span> <span class="o">=</span> <span class="n">sbls_control_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+<span class="n">inform</span> <span class="o">=</span> <span class="n">sbls_inform_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+
+<span class="c1"># Set problem data</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># dimension of H</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># dimension of C</span>
+<span class="n">H_ne</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># number of elements of H</span>
+<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># number of elements of A</span>
+<span class="n">C_ne</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># number of elements of C</span>
+<span class="n">H_dense_ne</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of elements of H</span>
+<span class="n">A_dense_ne</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of elements of A</span>
+<span class="n">C_dense_ne</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># number of elements of C</span>
+<span class="n">H_row</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># row indices, NB lower triangle</span>
+<span class="n">H_col</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">H_ptr</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">A_row</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">A_col</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">A_ptr</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">C_row</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># row indices, NB lower triangle</span>
+<span class="n">C_col</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">C_ptr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="n">H_val</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">A_val</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">C_val</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">H_dense</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]</span>
+<span class="n">A_dense</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">C_dense</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">H_diag</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">C_diag</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">H_scid</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">]</span>
+<span class="n">C_scid</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">]</span>
+
+<span class="n">st</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">Ref</span><span class="p">{</span><span class="n">Cint</span><span class="p">}()</span>
+
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; Fortran sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; basic tests of storage formats</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">7</span>
+  <span class="c1"># Initialize SBLS</span>
+  <span class="n">sbls_initialize</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">preconditioner</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">factorization</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">get_norm_residual</span> <span class="o">=</span> <span class="n">true</span>
+
+  <span class="c1"># Set user-defined control options</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">true</span>  <span class="c1"># fortran sparse matrix indexing</span>
+
+  <span class="c1"># sparse co-ordinate storage</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_row</span><span class="p">,</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">C_row</span><span class="p">,</span> <span class="n">C_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span>
+                           <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span>
+                           <span class="n">C_ne</span><span class="p">,</span> <span class="n">C_val</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># sparse by rows</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">H_ptr</span><span class="p">,</span>
+                 <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span><span class="p">,</span>
+                 <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">C_col</span><span class="p">,</span> <span class="n">C_ptr</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span>
+                           <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span>
+                           <span class="n">C_ne</span><span class="p">,</span> <span class="n">C_val</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># dense</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="n">H_dense_ne</span><span class="p">,</span> <span class="n">H_dense</span><span class="p">,</span>
+                           <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span>
+                           <span class="n">C_dense_ne</span><span class="p">,</span> <span class="n">C_dense</span><span class="p">,</span>
+                           <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># diagonal</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">4</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;L&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="n">n</span><span class="p">,</span> <span class="n">H_diag</span><span class="p">,</span>
+                           <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span>
+                           <span class="n">m</span><span class="p">,</span> <span class="n">C_diag</span><span class="p">,</span>
+                           <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># scaled identity</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">5</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;S&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;scaled_identity&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;scaled_identity&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="mi">1</span><span class="p">,</span> <span class="n">H_scid</span><span class="p">,</span>
+                           <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span>
+                           <span class="mi">1</span><span class="p">,</span> <span class="n">C_scid</span><span class="p">,</span>
+                           <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># identity</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">6</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;identity&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;identity&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="mi">0</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span>
+                           <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span>
+                           <span class="mi">0</span><span class="p">,</span> <span class="n">C_val</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># zero</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">7</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;Z&#39;</span>
+
+    <span class="n">sbls_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                 <span class="s2">&quot;identity&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                 <span class="s2">&quot;zero&quot;</span><span class="p">,</span> <span class="n">C_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">sbls_factorize_matrix</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                           <span class="mi">0</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span>
+                           <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span>
+                           <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># Set right-hand side ( a, b )</span>
+  <span class="n">sol</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>  <span class="c1"># values</span>
+
+  <span class="n">sbls_solve_system</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">sol</span> <span class="p">)</span>
+
+  <span class="n">sbls_information</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">inform</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">: residual = </span><span class="si">%9.1e</span><span class="s2"> status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">norm_residual</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">: SBLS_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># @printf(&quot;sol: &quot;)</span>
+  <span class="c1"># for i = 1:n+m</span>
+  <span class="c1">#   @printf(&quot;%f &quot;, x[i])</span>
+  <span class="c1"># end</span>
+
+  <span class="c1"># Delete internal workspace</span>
+  <span class="n">sbls_terminate</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">inform</span> <span class="p">)</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="uls_functions.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">callable functions</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="sbls_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">callable functions</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#unsymmetric-storage">
+     unsymmetric storage
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#symmetric-storage">
+     symmetric storage
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction-to-function-calls">
+   introduction to function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parametric-real-type-t">
+   parametric real type T
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sbls-control-type-structure">
+   sbls_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sbls-time-type-structure">
+   sbls_time_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structsbls-time-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id10">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#sbls-inform-type-structure">
+   sbls_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structsbls-inform-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id12">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-calls">
+   example calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/sbls.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

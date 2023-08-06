@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>dqp_control_type structure &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_dqp_control_type';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="dqp-control-type-structure">
+<span id="doxid-structdqp-control-type"></span><span id="index-0"></span><h1>dqp_control_type structure<a class="headerlink" href="#dqp-control-type-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">dqp_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">start_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_gap</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">dual_starting_point</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_sc</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cauchy_only</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">arc_search_maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">explore_optimal_subspace</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">restore_problem</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_device</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">qplib_file_device</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">rho</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">infinity</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_abs_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_rel_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_abs_d</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_rel_d</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_abs_c</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_rel_c</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_cg_relative</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_cg_absolute</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_zero_curvature</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_growth</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">identical_bounds_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cpu_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">initial_perturbation</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">perturbation_reduction</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">final_perturbation</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">factor_optimal_matrix</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">remove_dependencies</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">treat_zero_bounds_as_general</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">exact_arc_search</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">subspace_direct</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">subspace_alternate</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">subspace_arc_search</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">generate_sif_file</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">generate_qplib_file</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">symmetric_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">definite_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">unsymmetric_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_name</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">qplib_file_name</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">fdc_control</span><span class="o">::</span><span class="kt">fdc_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sls_control</span><span class="o">::</span><span class="kt">sls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_control</span><span class="o">::</span><span class="kt">sbls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">gltr_control</span><span class="o">::</span><span class="kt">gltr_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structdqp-control-type"></span><h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-1"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>error and warning diagnostics occur on stream error</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-3"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>general output occurs on stream out</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-4"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>the level of output required is specified by print_level</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span id="index-5"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">start_print</span></pre>
+<p>any printing will start on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span id="index-6"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stop_print</span></pre>
+<p>any printing will stop on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a31edaef6b722ef2721633484405a649b"><span id="index-7"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_gap</span></pre>
+<p>printing will only occur every print_gap iterations</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a416b1d999e77575f6f0cb5f150829ee4"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dual_starting_point</span></pre>
+<p>which starting point should be used for the dual problem</p>
+<ul class="simple">
+<li><p>-1 user supplied comparing primal vs dual variables</p></li>
+<li><p>0 user supplied</p></li>
+<li><p>1 minimize linearized dual</p></li>
+<li><p>2 minimize simplified quadratic dual</p></li>
+<li><p>3 all free (= all active primal costraints)</p></li>
+<li><p>4 all fixed on bounds (= no active primal costraints)</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ab717630b215f0362699acac11fb3652c"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxit</span></pre>
+<p>at most maxit inner iterations are allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a58895c9f8fe04a04578073223b30af2a"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_sc</span></pre>
+<p>the maximum permitted size of the Schur complement before a refactorization is performed (used in the case where there is no Fredholm Alternative, 0 = refactor every iteration)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1afba2adad4ad503320066449f07aba83b"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cauchy_only</span></pre>
+<p>a subspace step will only be taken when the current Cauchy step has changed no more than than cauchy_only active constraints; the subspace step will always be taken if cauchy_only &lt; 0</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1af633cdb2051e99e783dfe792a50a4149"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">arc_search_maxit</span></pre>
+<p>how many iterations are allowed per arc search (-ve = as many as require</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a7a1029142a22f3e2a1963c3428276849"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cg_maxit</span></pre>
+<p>how many CG iterations to perform per DQP iteration (-ve reverts to n+1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a166a5815eb8a029edd1b46dfc2854679"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">explore_optimal_subspace</span></pre>
+<p>once a potentially optimal subspace has been found, investigate it</p>
+<ul class="simple">
+<li><p>0 as per an ordinary subspace</p></li>
+<li><p>1 by increasing the maximum number of allowed CG iterations</p></li>
+<li><p>2 by switching to a direct method</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a19f10912888ac7ebd153fb21baaeaefa"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">restore_problem</span></pre>
+<p>indicate whether and how much of the input problem should be restored on output. Possible values are</p>
+<ul class="simple">
+<li><p>0 nothing restored</p></li>
+<li><p>1 scalar and vector parameters</p></li>
+<li><p>2 all parameters</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a65c6f8382f1e75cd0b8abd5d148188d0"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sif_file_device</span></pre>
+<p>specifies the unit number to write generated SIF file describing the current problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a580c343e54a25a2d687782410c9b6917"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">qplib_file_device</span></pre>
+<p>specifies the unit number to write generated QPLIB file describing the current problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a7a571cc854bea7cc6488175668c15b3d"><span id="index-18"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">rho</span></pre>
+<p>the penalty weight, rho. The general constraints are not enforced explicitly, but instead included in the objective as a penalty term weighted by rho when rho &gt; 0. If rho &lt;= 0, the general constraints are explicit (that is, there is no penalty term in the objective function)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a11a46bd456ea63bac8bdffb056fe98c9"><span id="index-19"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">infinity</span></pre>
+<p>any bound larger than infinity in modulus will be regarded as infinite</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a3749f9dcb2eeb60815a18c85a7d7d440"><span id="index-20"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_abs_p</span></pre>
+<p>the required absolute and relative accuracies for the primal infeasibilies</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a068065b9d50d5b222fbc8710d530bd9e"><span id="index-21"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_rel_p</span></pre>
+<p>see stop_abs_p</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a67b6a7be5dbfa34e9db4c960943fe31f"><span id="index-22"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_abs_d</span></pre>
+<p>the required absolute and relative accuracies for the dual infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ab479c27e2044c310e8d0c86869ea2307"><span id="index-23"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_rel_d</span></pre>
+<p>see stop_abs_d</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a1ed92b5ffb35957c5a8a0e657e312820"><span id="index-24"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_abs_c</span></pre>
+<p>the required absolute and relative accuracies for the complementarity</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a5c131e3b6061c09670e9c1959b6585a3"><span id="index-25"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_rel_c</span></pre>
+<p>see stop_abs_c</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1acd5b41623ff5db9a81dc5a8421fe5e2f"><span id="index-26"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_cg_relative</span></pre>
+<p>the CG iteration will be stopped as soon as the current norm of the preconditioned gradient is smaller than max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ad8ba10f33e624074c203f079afed54f8"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_cg_absolute</span></pre>
+<p>see stop_cg_relative</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aa72b520b0841cce9015e03522f58103b"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cg_zero_curvature</span></pre>
+<p>threshold below which curvature is regarded as zero if CG is used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a2c39ca5cec2100192d5b451678e61864"><span id="index-29"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">max_growth</span></pre>
+<p>maximum growth factor allowed without a refactorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1abc74ac9bbf6375075f8943aac6ee09e4"><span id="index-30"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">identical_bounds_tol</span></pre>
+<p>any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cpu_time_limit</span></pre>
+<p>the maximum CPU time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ab05d7c2b06d3a9fb085fa3739501d1c8"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_time_limit</span></pre>
+<p>the maximum elapsed clock time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a6ef6c7936fe36bc165ba087eca79d9e8"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">initial_perturbation</span></pre>
+<p>the initial penalty weight (for DLP only)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a12423a6a8d2151baede20265bee496ad"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">perturbation_reduction</span></pre>
+<p>the penalty weight reduction factor (for DLP only)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a2c77f53cca5940c027611b0c5c9531c7"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">final_perturbation</span></pre>
+<p>the final penalty weight (for DLP only)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a64ad50a4e86e202661afcd04f340a2c8"><span id="index-36"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">factor_optimal_matrix</span></pre>
+<p>are the factors of the optimal augmented matrix required? (for DLP only)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ae17a6b550239434c639239ddf45bc1ad"><span id="index-37"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">remove_dependencies</span></pre>
+<p>the equality constraints will be preprocessed to remove any linear dependencies if true</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a59b23877e9c8cb49f1f6261e24660295"><span id="index-38"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">treat_zero_bounds_as_general</span></pre>
+<p>any problem bound with the value zero will be treated as if it were a general value if true</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1abd8ff06ab50d29e781cf407702346a4b"><span id="index-39"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">exact_arc_search</span></pre>
+<p>if .exact_arc_search is true, an exact piecewise arc search will be performed. Otherwise an ineaxt search using a backtracing Armijo strategy will be employed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aa2b787b6188444e3c8f06fd4af4981a9"><span id="index-40"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">subspace_direct</span></pre>
+<p>if .subspace_direct is true, the subspace step will be calculated using a direct (factorization) method, while if it is false, an iterative (conjugate-gradient) method will be used.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ac45bab9097874bdfb86ce77bc19a0003"><span id="index-41"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">subspace_alternate</span></pre>
+<p>if .subspace_alternate is true, the subspace step will alternate between a direct (factorization) method and an iterative (GLTR conjugate-gradient) method. This will override .subspace_direct</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a166d14e55068610829e14b1616fa179a"><span id="index-42"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">subspace_arc_search</span></pre>
+<p>if .subspace_arc_search is true, a piecewise arc search will be performed along the subspace step. Otherwise the search will stop at the firstconstraint encountered</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-43"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-44"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aa75b3a16d146c0d7ad57bf9817033843"><span id="index-45"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">generate_sif_file</span></pre>
+<p>if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1ad226b26090e539cf47228ba5ec7dc08d"><span id="index-46"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">generate_qplib_file</span></pre>
+<p>if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1af297ace351b9307640715643cde57384"><span id="index-47"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">symmetric_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>indefinite linear equation solver set in symmetric_linear_solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a9b46b7a8e0af020499e645bef711f634"><span id="index-48"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">definite_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>definite linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aef6da6b715a0f41983c2a62397104eec"><span id="index-49"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">unsymmetric_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>unsymmetric linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aaa95e830b709da79d9790471bab54193"><span id="index-50"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">sif_file_name</span></pre>
+<p>name of generated SIF file containing input problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a3d36354e9f30d642f8b081ba85d777d3"><span id="index-51"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">qplib_file_name</span></pre>
+<p>name of generated QPLIB file containing input problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-52"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a7bef6e4f678e16a4dcdc40677efddd80"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_control_type.html#doxid-structfdc-control-type"><span class="std std-ref">fdc_control_type</span></a><span></span><span class="w"> </span><span class="n">fdc_control</span></pre>
+<p>control parameters for FDC</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<p>control parameters for SLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-55"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<p>control parameters for SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdqp-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
+<p>control parameters for GLTR</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   dqp_control_type structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_dqp_control_type.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

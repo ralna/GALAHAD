@@ -1,0 +1,799 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>purpose &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'presolve_intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="purpose">
+<h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">presolve</span></code> package <strong>transforms</strong> linear and quadratic programming data
+so that the resulting problem is easier to solve.
+This reduced problem may then be passed to an
+appropriate solver.  Once the reduced problem has been solved, it is
+then a restored to recover the solution for the original formulation.</p>
+<p>The package applies presolving techniques to <strong>linear programs</strong>, whose
+aim is to minimize the linear objective function
+<div class="math notranslate nohighlight">
+\[\ell(x) = f + g^T x,\]</div>
+
+or <strong>quadratic programs</strong>, which target the quadratic objective function
+<div class="math notranslate nohighlight">
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
+
+subject to the general linear constraints
+<div class="math notranslate nohighlight">
+\[c_i^l  \leq  a_i^{T}x  \leq  c_i^u, \;\;\; i = 1, \ldots , m,\]</div>
+
+and simple bounds
+<div class="math notranslate nohighlight">
+\[x_j^l  \leq  x_j^{ } \leq  x_j^u , \;\;\; j = 1, \ldots , n,\]</div>
+
+where the scalar <span class="math notranslate nohighlight">\(f\)</span>, the <span class="math notranslate nohighlight">\(n\)</span>-dimensional vectors <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(x^l\)</span> and
+<span class="math notranslate nohighlight">\(x^u\)</span>, the <span class="math notranslate nohighlight">\(m\)</span>-dimensional vectors <span class="math notranslate nohighlight">\(c^l\)</span> and <span class="math notranslate nohighlight">\(c^u\)</span>,
+the <span class="math notranslate nohighlight">\(n \times n\)</span> symmetric matrix <span class="math notranslate nohighlight">\(H\)</span> and the <span class="math notranslate nohighlight">\(m \times n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>
+(whose rows are the vectors <span class="math notranslate nohighlight">\(a_i^T\)</span>) are given.
+Furthermore, bounds on the Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span> associated with
+the general linear constraints and on the dual variables <span class="math notranslate nohighlight">\(z\)</span> associated
+with the simple bound constraints
+<div class="math notranslate nohighlight">
+\[y_i^l  \leq  y_i  \leq  y_i^u, \;\;\;  i = 1, \ldots , m,\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[z_i^l  \leq  z_i  \leq  z_i^u, \;\;\;  i = 1, \ldots , n,\]</div>
+
+are also provided, where the <span class="math notranslate nohighlight">\(m\)</span>-dimensional vectors <span class="math notranslate nohighlight">\(y^l\)</span> and
+<span class="math notranslate nohighlight">\(y^u\)</span>, as well as the <span class="math notranslate nohighlight">\(n\)</span>-dimensional vectors <span class="math notranslate nohighlight">\(x^l\)</span> and <span class="math notranslate nohighlight">\(x^u\)</span>
+are given.  Any component of <span class="math notranslate nohighlight">\(c^l\)</span>, <span class="math notranslate nohighlight">\(c^u\)</span>, <span class="math notranslate nohighlight">\(x^l\)</span>, <span class="math notranslate nohighlight">\(x^u\)</span>,
+<span class="math notranslate nohighlight">\(y^l\)</span>, <span class="math notranslate nohighlight">\(y^u\)</span>, <span class="math notranslate nohighlight">\(z^l\)</span> or <span class="math notranslate nohighlight">\(z^u\)</span> may be infinite.</p>
+<p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
+provided and used by other GALAHAD packages with Python interfaces.
+Please contact us if you would like full functionality!</p>
+<p>See Section 4 of $GALAHAD/doc/presolve.pdf for additional details.</p>
+</section>
+<section id="method">
+<h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
+<p>The required solution <span class="math notranslate nohighlight">\(x\)</span> of the problem necessarily satisfies
+the <strong>primal optimality</strong> conditions
+<div class="math notranslate nohighlight">
+\[A x = c\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u,\]</div>
+
+the <strong>dual optimality</strong> conditions
+<div class="math notranslate nohighlight">
+\[H x + g =  A^{T} y + z, \;\;
+y = y^l + y^u \;\; \mbox{and} \;\; z = z^l + z^u,\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[y^l \geq 0 , \;\; y^u \leq 0 , \;\;
+z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\]</div>
+
+and the <strong>complementary slackness</strong> conditions
+<div class="math notranslate nohighlight">
+\[
+( A x - c^l )^{T} y^l = 0, \;\; ( A x - c^u )^{T} y^u = 0, \;\;
+(x -x^l )^{T} z^l = 0 \;\;\mbox{and}\;\; (x -x^u )^{T} z^u = 0,
+\]</div>
+
+where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints, and the <strong>dual variables</strong> for the bounds,
+respectively, and where the vector inequalities hold componentwise.</p>
+<p>The purpose of presolving is to exploit these equations in order to reduce the
+problem to the standard form defined as follows:</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> The variables are ordered so that their bounds appear in the order</p>
+<table class="table" id="id3">
+<caption><span class="caption-text">variable bound order</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.6%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>free</p></td>
+<td></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>non-negativity</p></td>
+<td><p>0</p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>lower</p></td>
+<td><p><span class="math notranslate nohighlight">\(x^l\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>range</p></td>
+<td><p><span class="math notranslate nohighlight">\(x^l\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(x^u\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>upper</p></td>
+<td></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(x^u\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>non-positivity</p></td>
+<td></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Fixed variables are removed. Within each category, the variables
+are further ordered so that those with non-zero diagonal Hessian
+entries occur before the remainder.</p>
+</li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> The constraints are ordered so that their bounds appear in the order</p>
+<table class="table" id="id4">
+<caption><span class="caption-text">constraint bound order</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.6%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+<col style="width: 14.3%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>non-negativity</p></td>
+<td><p>0</p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>equality</p></td>
+<td><p><span class="math notranslate nohighlight">\(c^l\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(=\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>lower</p></td>
+<td><p><span class="math notranslate nohighlight">\(c^l\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>range</p></td>
+<td><p><span class="math notranslate nohighlight">\(c^l\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(c^u\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>upper</p></td>
+<td></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(c^u\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>non-positivity</p></td>
+<td></td>
+<td></td>
+<td><p><span class="math notranslate nohighlight">\(A x\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\leq\)</span></p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Free constraints are removed.</p>
+</li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> In addition, constraints may be removed or bounds tightened, to reduce the
+size of the feasible region or simplify the problem if this is possible, and
+bounds may be tightened on the dual variables and the multipliers
+associated  with the problem.</p></li>
+</ul>
+<p>The presolving algorithm proceeds by applying a (potentially long) series of
+simple transformations to the problem, each transformation introducing a
+further simplification of the problem. These involve the removal of empty and
+singleton rows, the removal of redundant and forcing primal constraints, the
+tightening of primal and dual bounds, the exploitation of linear singleton,
+linear doubleton and linearly unconstrained columns, the merging dependent
+variables, row sparsification and split equalities. Transformations are
+applied in successive passes, each pass involving the following actions:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(*\)</span> remove empty and singletons rows,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> try to eliminate variables that are linearly unconstrained,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> attempt to exploit the presence of linear singleton columns,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> attempt to exploit the presence of linear doubleton columns,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> complete the analysis of the dual constraints,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> remove empty and singletons rows,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> possibly remove dependent variables,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> analyze the primal constraints,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> try to make <span class="math notranslate nohighlight">\(A\)</span> sparser by combining its rows,</p></li>
+<li><p><span class="math notranslate nohighlight">\(*\)</span> check the current status of the variables, dual variables
+and multipliers.</p></li>
+</ul>
+<p>All these transformations are applied to the structure of the original
+problem, which is only permuted to standard form after all transformations are
+completed. <strong>Note that the Hessian and Jacobian of the resulting reduced
+problem are always stored in sparse row-wise format.</strong> The reduced problem is
+then solved by a quadratic or linear programming solver, thus ensuring
+sufficiently small primal-dual feasibility and complementarity. Finally, the
+solution of the simplified problem is re-translated in the
+variables/constraints/format of the original problem formulation by a
+<em>restoration</em> phase.</p>
+<p>If the number of problem transformations exceeds
+<code class="docutils literal notranslate"><span class="pre">control.transf_buffer_size</span></code>,  the transformation buffer size,
+then they are saved in a “history” file, whose
+name may be chosen by specifying the <code class="docutils literal notranslate"><span class="pre">control.transf_file_name</span></code>
+parameter.  When this is the case, this file
+is subsequently reread by <code class="docutils literal notranslate"><span class="pre">presolve_restore</span></code>. It must not be altered
+by the user.</p>
+<p>At the overall level, the presolving process follows one of the two
+sequences:</p>
+<p><span class="math notranslate nohighlight">\(\boxed{\mbox{initialize}}\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\bigg[\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{apply transformations}}\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> (solve problem)
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{restore}}\)</span>  <span class="math notranslate nohighlight">\(\bigg]\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{terminate}}\)</span></p>
+<p>or</p>
+<p><span class="math notranslate nohighlight">\(\boxed{\mbox{initialize}}\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\bigg[\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{read specfile}}\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{apply transformations}}\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> (solve problem)
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{restore}}\)</span>  <span class="math notranslate nohighlight">\(\bigg]\)</span>
+<span class="math notranslate nohighlight">\(\rightarrow\)</span> <span class="math notranslate nohighlight">\(\boxed{\mbox{terminate}}\)</span></p>
+<p>where the procedure’s control parameter may be modified by reading the
+specfile, and where (solve problem) indicates
+that the reduced problem is solved. Each of the “boxed” steps in these
+sequences corresponds to calling a specific function in the package.
+In the above diagrams, brackated subsequence of
+steps means that they can be repeated with problem having the same
+structure. The value of the <code class="docutils literal notranslate"><span class="pre">new_problem_structure</span></code> argument must be true
+on entry to <code class="docutils literal notranslate"><span class="pre">presolve_apply</span></code> on the
+first time it is used in this repeated subsequence. Such a subsequence must be
+terminated by a call to <code class="docutils literal notranslate"><span class="pre">presolve_terminate</span></code> before presolving is
+applied to a problem with a different structure.</p>
+<p>Note that the values of the multipliers and dual variables (and thus of
+their respective bounds) depend on the functional form assumed for the
+Lagrangian function associated with the problem.  This form is given by
+<div class="math notranslate nohighlight">
+\[L( x, y, z ) = q( x ) - {\tt y_{sign}} * y^T ( A x - c )
+- {\tt z_{sign}} * z,\]</div>
+
+(considering only active constraints <span class="math notranslate nohighlight">\(A x = c\)</span>), where the parameters
+<span class="math notranslate nohighlight">\({\tt y_{sign}}\)</span> and <span class="math notranslate nohighlight">\({\tt z_{sign}}\)</span> are +1 or -1 and can be chosen
+by the user using <code class="docutils literal notranslate"><span class="pre">control.y_sign</span></code> and <code class="docutils literal notranslate"><span class="pre">control.z_sign</span></code>.
+Thus, if <span class="math notranslate nohighlight">\({\tt y_{sign} = +1}\)</span>, the multipliers associated to active constraints
+originally posed as inequalities are non-negative if the inequality is a lower
+bound and non-positive if it is an upper bound. Obvioulsy they are not
+constrained in sign for constraints originally posed as equalities. These
+sign conventions are reversed if <span class="math notranslate nohighlight">\({\tt y_{sign} = -1}\)</span>.
+Similarly, if <span class="math notranslate nohighlight">\({\tt z_{sign} = +1}\)</span>, the dual variables associated to active
+bounds are non-negative if the original bound is an lower bound, non-positive
+if it is an upper bound, or unconstrained in sign if the variables is fixed;
+and this convention is reversed in <span class="math notranslate nohighlight">\({\tt z_{sign} = -1}\)</span>. The values of
+<span class="math notranslate nohighlight">\({\tt z_{sign}}\)</span> and <span class="math notranslate nohighlight">\({\tt y_{sign}}\)</span> may be chosen by setting the corresponding
+components of <code class="docutils literal notranslate"><span class="pre">control</span></code> to 1 or -1.</p>
+</section>
+<section id="references">
+<h1>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
+<p>The algorithm is described in more detail in</p>
+<blockquote>
+<div><p>N. I. M. Gould and Ph. L. Toint,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>Presolving for quadratic programming’’.
+<em>Mathematical Programming</em> <strong>100(1)</strong> (2004) 95–132.</p>
+</div></blockquote>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/presolve_intro.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

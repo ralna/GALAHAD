@@ -1,0 +1,1871 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD BQP package &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'bqp';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="callable functions" href="bqp_functions.html" />
+    <link rel="prev" title="Quadratic Programming" href="qp.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">BQP - bound-constrained quadratic programming using a preconditioned, projected-gradient method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="bqpb.html">BQPB - bound-constrained quadratic programming using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bqpb_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cqp.html">CQP - convex quadratic programming using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="cqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cro.html">CRO - crossover from an interior-point to basic solution for convex quadratic programming</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="cro_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dqp.html">DQP - convex quadratic programming using a dual active-set method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="eqp.html">EQP - equality-constrained quadratic programming using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="eqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lsqp.html">LSQP - linear or separable convex quadratic programming using an interior-point trust-region method</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="lsqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="qpa.html">QPA - non-convex quadratic programming using an active-set method</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="qpa_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="qpb.html">QPB - non-convex quadratic programming using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="qpb_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.bqp">
+<span id="galahad-bqp-package"></span><span id="doxid-index-bqp"></span><h1>GALAHAD BQP package<a class="headerlink" href="#module-galahad.bqp" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">bqp</span></code> package uses a <strong>preconditioned, projected-gradient method</strong> to
+solve a given <strong>bound-constrained convex quadratic program</strong>.
+The aim is to minimize the quadratic objective function
+<div class="math notranslate nohighlight">
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
+
+subject to the simple bounds
+<div class="math notranslate nohighlight">
+\[x_l \leq x \leq x_u,\]</div>
+
+where <span class="math notranslate nohighlight">\(H\)</span> is a given <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric postive-semi-definite matrix,
+<span class="math notranslate nohighlight">\(g\)</span> is a vector, <span class="math notranslate nohighlight">\(f\)</span> is a scalar, and any of the components
+of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+The method offers the choice of direct and iterative solution of the key
+regularization subproblems, and is most suitable for problems
+involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/bqp.pdf for a brief description of the
+method employed and other details.</p>
+</section>
+<section id="terminology">
+<h2>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h2>
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
+the <strong>primal optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[x_l \leq x \leq x_u,\]</div>
+
+the <strong>dual optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[H x + g = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+
+and the <strong>complementary slackness conditions</strong>
+<div class="math notranslate nohighlight">
+\[(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\]</div>
+
+where the vector <span class="math notranslate nohighlight">\(z\)</span> is known as the <strong>dual variables</strong> for the bounds,
+and where the vector inequalities hold component-wise.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Projected-gradient methods iterate towards a point
+that satisfies these conditions by ultimately aiming to satisfy
+<span class="math notranslate nohighlight">\(H x + g = z\)</span> and <span class="math notranslate nohighlight">\(z = z_l + z_u\)</span>, while satifying the remaining
+optimality conditions at each stage. Appropriate norms of the amounts by
+which the optimality conditions fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively.</p>
+<p>The method is iterative. Each iteration proceeds in two stages.
+Firstly, the so-called generalized Cauchy point for the quadratic
+objective is found.  (The purpose of this point is to ensure that the
+algorithm converges and that the set of bounds which are satisfied as
+equations at the solution is rapidly identified.)  Thereafter an
+improvement to the objective is sought using either a
+direct-matrix or truncated conjugate-gradient algorithm.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>This is a specialised version of the method presented in</p>
+<blockquote>
+<div><p>A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+Global convergence of a class of trust region algorithms
+for optimization with simple bounds.
+<em>SIAM Journal on Numerical Analysis</em> <strong>25</strong> (1988) 433-460.</p>
+</div></blockquote>
+</section>
+<section id="matrix-storage">
+<span id="details-h-storage-sym"></span><span id="details-h-storage"></span><h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span> may
+be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the <em>lower triangular</em> part
+(i.e, those entries that lie on or below the leading diagonal).</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(H\)</span> is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since <span class="math notranslate nohighlight">\(H\)</span> is
+symmetric, only the lower triangular part (that is the part
+<span class="math notranslate nohighlight">\(H_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>) need be held.
+In this case the lower triangle should be stored by rows, that is
+component <span class="math notranslate nohighlight">\((i-1) * i / 2 + j\)</span>  of the storage array H_val
+will hold the value <span class="math notranslate nohighlight">\(H_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(H_{ji}\)</span>)
+for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>.
+The string H_type = ‘dense’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(H\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(H_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays H_row and H_col and real array H_val,
+respectively, while the number of nonzeros is recorded as H_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+Note that only the entries in the lower triangle should be stored.
+The string H_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise</em> storage format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(H\)</span> the i-th component of the
+integer array H_ptr holds the position of the first entry in this row,
+while H_ptr(n+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq i\)</span>, and values <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the entries
+in the i-th row are stored in components l = H_ptr(i), …, H_ptr(i+1)-1 of the
+integer array H_col, and real array H_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string H_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Diagonal</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(H_{ij} = 0\)</span> for all
+<span class="math notranslate nohighlight">\(1 \leq i \neq j \leq n\)</span>) only the diagonals entries
+<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq n\)</span> need be stored,
+and the first n components of the array H_val may be used for the purpose.
+The string H_type = ‘diagonal’ should be specified.</p>
+<p><em>Multiples of the identity</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
+where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.
+The string H_type = ‘scaled_identity’ should be specified.</p>
+<p>The <em>identity matrix</em> format:
+If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.
+The string H_type = ‘identity’ should be specified.</p>
+<p>The <em>zero matrix</em> format:
+The same is true if <span class="math notranslate nohighlight">\(H\)</span> is the zero matrix, but now
+the string H_type = ‘zero’ or ‘none’ should be specified.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="introduction-to-function-calls">
+<h2>introduction to function calls<a class="headerlink" href="#introduction-to-function-calls" title="Permalink to this heading">#</a></h2>
+<p>To solve a given problem, functions from the bqp package must be
+called in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span class="std std-ref">bqp_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span class="std std-ref">bqp_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p>set up problem data structures and fixed values by caling one of</p>
+<ul>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span class="std std-ref">bqp_import</span></a> - in the case that <span class="math notranslate nohighlight">\(H\)</span> is explicitly available</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span class="std std-ref">bqp_import_without_h</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(H\)</span> to a vector is possible</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span class="std std-ref">bqp_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p>solve the problem by calling one of</p>
+<ul>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span class="std std-ref">bqp_solve_given_h</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(H\)</span></p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span class="std std-ref">bqp_solve_reverse_h_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(H\)</span> with specified vectors</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span class="std std-ref">bqp_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span class="std std-ref">bqp_terminate</span></a> - deallocate data structures</p></li>
+</ul>
+<p>See the <a class="reference internal" href="#doxid-index-bqp-examples"><span class="std std-ref">examples</span></a> section for
+illustrations of use.</p>
+</section>
+<section id="parametric-real-type-t">
+<h2>parametric real type T<a class="headerlink" href="#parametric-real-type-t" title="Permalink to this heading">#</a></h2>
+<p>Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+Calable functions as described are with T as Float64, but variants
+(with the additional suffix <code class="docutils literal notranslate"><span class="pre">_s</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">bqp_initialize_s</span></code>)
+are available with T as Float32.</p>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters. By default,
+the spcification file will be named RUNBQP.SPC and lie in the current
+directory. Refer to Table 2.1 in the fortran documentation provided in
+$GALAHAD/doc/bqp.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">H_type</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="n">H_row</span><span class="p">,</span><span class="w"> </span><span class="n">H_col</span><span class="p">,</span><span class="w"> </span><span class="n">H_ptr</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’ or ‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="h_storage.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_row</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL</p></td>
+</tr>
+<tr class="row-even"><td><p>H_col</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_import_without_h</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><p>-3. The restriction n &gt; 0 has been violated.</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_solve_given_h</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">h_ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_val</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"></span>
+<span class="w">                               </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x_stat</span><span class="p">)</span></pre>
+<p>Solve the bound-constrained quadratic program when the Hessian <span class="math notranslate nohighlight">\(H\)</span> is available.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>On initial entry, status must be set to 1.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that a type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’ or ‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-4</strong></dt><dd><p>The simple-bound constraints are inconsistent.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-20</strong></dt><dd><p>The Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> appears to be
+indefinite. specified.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-23</strong></dt><dd><p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
+been</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-even"><td><p>h_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_val</p></td>
+<td><p>is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the linear term <span class="math notranslate nohighlight">\(g\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>f</p></td>
+<td><p>is a scalar of type T that holds the constant term <span class="math notranslate nohighlight">\(f\)</span> of the objective function.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the upper bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_u</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>z</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_stat</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_solve_reverse_h_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                      </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                      </span><span class="n">prod</span><span class="p">,</span><span class="w"> </span><span class="n">nz_v</span><span class="p">,</span><span class="w"> </span><span class="n">nz_v_start</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                      </span><span class="n">nz_v_end</span><span class="p">,</span><span class="w"> </span><span class="n">nz_prod</span><span class="p">,</span><span class="w"> </span><span class="n">nz_prod_end</span><span class="p">)</span></pre>
+<p>Solve the bound-constrained quadratic program when the products of the
+Hessian <span class="math notranslate nohighlight">\(H\)</span> with specified vectors may be computed by the calling
+program.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that a type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’ or ‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-4</strong></dt><dd><p>The simple-bound constraints are inconsistent.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-20</strong></dt><dd><p>The Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> appears to be
+indefinite. specified.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-23</strong></dt><dd><p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
+been specified.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>2</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(Hv\)</span> of the Hessian <span class="math notranslate nohighlight">\(H\)</span> with a given
+output vector <span class="math notranslate nohighlight">\(v\)</span> is required from the user. The
+vector <span class="math notranslate nohighlight">\(v\)</span> will be stored in v and the product <span class="math notranslate nohighlight">\(Hv\)</span>
+must be returned in prod, and
+bqp_solve_reverse_h_prod re-entered with all other
+arguments unchanged.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>3</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(Hv\)</span> of the Hessian H with a given
+output vector <span class="math notranslate nohighlight">\(v\)</span> is required from the user. Only
+components nz_v[nz_v_start-1:nz_v_end-1] of the
+vector <span class="math notranslate nohighlight">\(v\)</span> stored in v are nonzero. The resulting
+product <span class="math notranslate nohighlight">\(Hv\)</span> must be placed in prod, and
+bqp_solve_reverse_h_prod re-entered with all other
+arguments unchanged.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>4</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(Hv\)</span> of the Hessian H with a given
+output vector <span class="math notranslate nohighlight">\(v\)</span> is required from the user. Only
+components nz_v[nz_v_start-1:nz_v_end-1] of the
+vector <span class="math notranslate nohighlight">\(v\)</span> stored in v are nonzero. The resulting
+<strong>nonzeros</strong> in the product <span class="math notranslate nohighlight">\(Hv\)</span> must be placed in
+their appropriate comnponents of prod, while a list
+of indices of the nonzeros placed in nz_prod[0 :
+nz_prod_end-1]. bqp_solve_reverse_h_prod should then
+be re-entered with all other arguments
+unchanged. Typically v will be very sparse (i.e.,
+nz_p_end-nz_p_start will be small).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-even"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the linear term <span class="math notranslate nohighlight">\(g\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>f</p></td>
+<td><p>is a scalar of type T that holds the constant term <span class="math notranslate nohighlight">\(f\)</span> of the objective function.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the upper bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_u</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>z</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_stat</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
+</tr>
+<tr class="row-odd"><td><p>v</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details)</p></td>
+</tr>
+<tr class="row-even"><td><p>prod</p></td>
+<td><p>is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>nz_v</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=3-4 above for details)</p></td>
+</tr>
+<tr class="row-even"><td><p>nz_v_start</p></td>
+<td><p>is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>nz_v_end</p></td>
+<td><p>is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details)</p></td>
+</tr>
+<tr class="row-even"><td><p>nz_prod</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=4 above for details)</p></td>
+</tr>
+<tr class="row-odd"><td><p>nz_prod_end</p></td>
+<td><p>is a scalar of type Int32 that is used for reverse communication (see status=4 above for details)</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span id="index-7"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span id="index-8"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">bqp_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="bqp-control-type-structure">
+<span id="doxid-structbqp-control-type"></span><span id="index-9"></span><h2>bqp_control_type structure<a class="headerlink" href="#bqp-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">bqp_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">start_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_gap</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cold_start</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">ratio_cg_vs_sd</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">change_max</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_device</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">infinity</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_d</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_c</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">identical_bounds_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_cg_relative</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_cg_absolute</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">zero_curvature</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cpu_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">exact_arcsearch</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">generate_sif_file</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_name</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_control</span><span class="o">::</span><span class="kt">sbls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structbqp-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-10"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>unit number for error and warning diagnostics</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>general output unit number</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>the level of output required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">start_print</span></pre>
+<p>on which iteration to start printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stop_print</span></pre>
+<p>on which iteration to stop printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a31edaef6b722ef2721633484405a649b"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_gap</span></pre>
+<p>how many iterations between printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1ab717630b215f0362699acac11fb3652c"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxit</span></pre>
+<p>how many iterations to perform (-ve reverts to HUGE(1)-1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1ad5e3138a19f7400e9d5c8105fa724831"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cold_start</span></pre>
+<p>cold_start should be set to 0 if a warm start is required (with variable assigned according to B_stat, see below), and to any other value if the values given in prob.X suffice</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1ab589a429c71e34b9c07c4d79a1e02902"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">ratio_cg_vs_sd</span></pre>
+<p>the ratio of how many iterations use CG rather steepest descent</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a4a70200c62828c4d82e2e3efa5ebdac4"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">change_max</span></pre>
+<p>the maximum number of per-iteration changes in the working set permitted when allowing CG rather than steepest descent</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a7a1029142a22f3e2a1963c3428276849"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cg_maxit</span></pre>
+<p>how many CG iterations to perform per BQP iteration (-ve reverts to n+1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a65c6f8382f1e75cd0b8abd5d148188d0"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sif_file_device</span></pre>
+<p>the unit number to write generated SIF file describing the current problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a11a46bd456ea63bac8bdffb056fe98c9"><span id="index-23"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">infinity</span></pre>
+<p>any bound larger than infinity in modulus will be regarded as infinite</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a8933604acacc0fb4367caac730b6c79b"><span id="index-24"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_p</span></pre>
+<p>the required accuracy for the primal infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a12784541c48f57127781bc1c5937c616"><span id="index-25"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_d</span></pre>
+<p>the required accuracy for the dual infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1aec5ea9177505eb7723a8e092535556cb"><span id="index-26"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c</span></pre>
+<p>the required accuracy for the complementary slackness</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1abc74ac9bbf6375075f8943aac6ee09e4"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">identical_bounds_tol</span></pre>
+<p>any pair of constraint bounds (x_l,x_u) that are closer than i dentical_bounds_tol will be reset to the average of their values</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1acd5b41623ff5db9a81dc5a8421fe5e2f"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_cg_relative</span></pre>
+<p>the CG iteration will be stopped as soon as the current norm of the preconditioned gradient is smaller than max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1ad8ba10f33e624074c203f079afed54f8"><span id="index-29"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_cg_absolute</span></pre>
+<p>see stop_cg_relative</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a148d5812162498605583e801b85da570"><span id="index-30"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">zero_curvature</span></pre>
+<p>threshold below which curvature is regarded as zero</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cpu_time_limit</span></pre>
+<p>the maximum CPU time allowed (-ve = no limit)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1af81c1d274ed80b254924cd5c594203e6"><span id="index-32"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">exact_arcsearch</span></pre>
+<p>exact_arcsearch is true if an exact arcsearch is required, and false if approximation suffices</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-33"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation times</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-34"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1aa75b3a16d146c0d7ad57bf9817033843"><span id="index-35"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">generate_sif_file</span></pre>
+<p>if generate_sif_file is true, a SIF file describing the current problem will be generated</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1aaa95e830b709da79d9790471bab54193"><span id="index-36"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">sif_file_name</span></pre>
+<p>name (max 30 characters) of generated SIF file containing input problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-37"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-38"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<p>control parameters for SBLS</p>
+</section>
+</section>
+<section id="bqp-time-type-structure">
+<span id="doxid-structbqp-time-type"></span><span id="index-39"></span><h2>bqp_time_type structure<a class="headerlink" href="#bqp-time-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">bqp_time_type</span><span class="w"></span>
+<span class="w">      </span><span class="n">total</span><span class="o">::</span><span class="kt">Float32</span><span class="w"></span>
+<span class="w">      </span><span class="n">analyse</span><span class="o">::</span><span class="kt">Float32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorize</span><span class="o">::</span><span class="kt">Float32</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve</span><span class="o">::</span><span class="kt">Float32</span></pre>
+</section>
+<section id="details-structbqp-time-type">
+<span id="id1"></span><h2>detailed documentation<a class="headerlink" href="#details-structbqp-time-type" title="Permalink to this heading">#</a></h2>
+<p>time derived type as a Julia structure</p>
+<section id="id2">
+<h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-time-type-1aa7b2ccce10ffc8ef240d5be56ec1fbbc"><span id="index-40"></span><span></span><span class="kt">Float32</span><span class="w"> </span><span class="n">total</span></pre>
+<p>total time</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-time-type-1a0ca2b20748c7749a77d684124011c531"><span id="index-41"></span><span></span><span class="kt">Float32</span><span class="w"> </span><span class="n">analyse</span></pre>
+<p>time for the analysis phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-time-type-1ab7eecce4b013c87e490b8984c74c59c3"><span id="index-42"></span><span></span><span class="kt">Float32</span><span class="w"> </span><span class="n">factorize</span></pre>
+<p>time for the factorization phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-time-type-1a6356532c25755a6e5fedee1a7d703949"><span id="index-43"></span><span></span><span class="kt">Float32</span><span class="w"> </span><span class="n">solve</span></pre>
+<p>time for the linear solution phase</p>
+</section>
+</section>
+<section id="bqp-inform-type-structure">
+<span id="doxid-structbqp-inform-type"></span><span id="index-44"></span><h2>bqp_inform_type structure<a class="headerlink" href="#bqp-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">bqp_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alloc_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">iter</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_iter</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">obj</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">norm_pg</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">bad_alloc</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">time</span><span class="o">::</span><span class="kt">bqp_time_type</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_inform</span><span class="o">::</span><span class="kt">sbls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="details-structbqp-inform-type">
+<span id="id3"></span><h2>detailed documentation<a class="headerlink" href="#details-structbqp-inform-type" title="Permalink to this heading">#</a></h2>
+<p>inform derived type as a Julia structure</p>
+<section id="id4">
+<h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-45"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<p>reported return status:</p>
+<ul class="simple">
+<li><p>0 success</p></li>
+<li><p>-1 allocation error</p></li>
+<li><p>-2 deallocation error</p></li>
+<li><p>-3 matrix data faulty (.n &lt; 1, .ne &lt; 0)</p></li>
+<li><p>-20 alegedly +ve definite matrix is not</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-46"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
+<p>Fortran STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1aa448fed9eb03e70d5a03300b4fbbf210"><span id="index-47"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorization_status</span></pre>
+<p>status return from factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1aab6f168571c2073e01e240524b8a3da0"><span id="index-48"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">iter</span></pre>
+<p>number of iterations required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1ad37cf7ad93af3413bc01b6515aad692a"><span id="index-49"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cg_iter</span></pre>
+<p>number of CG iterations required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span id="index-50"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">obj</span></pre>
+<p>current value of the objective function</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1acb02a4d1ae275a55874bb9897262b1fe"><span id="index-51"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">norm_pg</span></pre>
+<p>current value of the projected gradient</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-52"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
+<p>name of array which provoked an allocate failure</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7f44be002389597b3f6c06e9a9b6eefa"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_bqp_time_type.html#doxid-structbqp-time-type"><span class="std std-ref">bqp_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<p>times for various stages</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<p>inform values from SBLS</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+<section id="example-calls">
+<span id="doxid-index-bqp-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
+<p>This is an example of how to use the package to solve a bound-constrained QP;
+the code is available in $GALAHAD/src/bqp/C/bqpt.c .
+A variety of supported Hessian and constraint matrix storage formats are shown.</p>
+<div class="code julia highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/*</span> <span class="n">bqpt</span><span class="o">.</span><span class="n">c</span> <span class="o">*/</span>
+<span class="o">/*</span> <span class="n">Full</span> <span class="n">test</span> <span class="k">for</span> <span class="n">the</span> <span class="n">BQP</span> <span class="n">C</span> <span class="n">interface</span> <span class="n">using</span> <span class="n">C</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">indexing</span> <span class="o">*/</span>
+
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;math.h&gt;</span>
+<span class="c1">#include &quot;galahad_precision.h&quot;</span>
+<span class="c1">#include &quot;galahad_cfunctions.h&quot;</span>
+<span class="c1">#include &quot;galahad_bqp.h&quot;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="o">//</span> <span class="n">Derived</span> <span class="n">types</span>
+    <span class="n">void</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="n">struct</span> <span class="n">bqp_control_type</span> <span class="n">control</span><span class="p">;</span>
+    <span class="n">struct</span> <span class="n">bqp_inform_type</span> <span class="n">inform</span><span class="p">;</span>
+
+    <span class="o">//</span> <span class="n">Set</span> <span class="n">problem</span> <span class="n">data</span>
+    <span class="nb">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="o">//</span> <span class="n">dimension</span>
+    <span class="nb">int</span> <span class="n">H_ne</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="o">//</span> <span class="n">Hesssian</span> <span class="n">elements</span><span class="p">,</span> <span class="n">NB</span> <span class="n">lower</span> <span class="n">triangle</span>
+    <span class="nb">int</span> <span class="n">H_dense_ne</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="o">//</span> <span class="n">dense</span> <span class="n">Hessian</span> <span class="n">elements</span>
+    <span class="nb">int</span> <span class="n">H_row</span><span class="p">[</span><span class="n">H_ne</span><span class="p">];</span> <span class="o">//</span> <span class="n">row</span> <span class="n">indices</span><span class="p">,</span>
+    <span class="nb">int</span> <span class="n">H_col</span><span class="p">[</span><span class="n">H_ne</span><span class="p">];</span> <span class="o">//</span> <span class="n">column</span> <span class="n">indices</span>
+    <span class="nb">int</span> <span class="n">H_ptr</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>  <span class="o">//</span> <span class="n">row</span> <span class="n">pointers</span>
+    <span class="n">real_wp_</span> <span class="n">H_val</span><span class="p">[</span><span class="n">H_ne</span><span class="p">];</span> <span class="o">//</span> <span class="n">values</span>
+    <span class="n">real_wp_</span> <span class="n">H_dense</span><span class="p">[</span><span class="n">H_dense_ne</span><span class="p">];</span> <span class="o">//</span> <span class="n">dense</span> <span class="n">values</span>
+    <span class="n">real_wp_</span> <span class="n">H_diag</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>   <span class="o">//</span> <span class="n">diagonal</span> <span class="n">values</span>
+    <span class="n">real_wp_</span> <span class="n">g</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>  <span class="o">//</span> <span class="n">linear</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span>
+    <span class="n">real_wp_</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>  <span class="o">//</span> <span class="n">constant</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span>
+    <span class="n">real_wp_</span> <span class="n">x_l</span><span class="p">[</span><span class="n">n</span><span class="p">];</span> <span class="o">//</span> <span class="n">variable</span> <span class="n">lower</span> <span class="n">bound</span>
+    <span class="n">real_wp_</span> <span class="n">x_u</span><span class="p">[</span><span class="n">n</span><span class="p">];</span> <span class="o">//</span> <span class="n">variable</span> <span class="n">upper</span> <span class="n">bound</span>
+    <span class="n">real_wp_</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span> <span class="o">//</span> <span class="n">variables</span>
+    <span class="n">real_wp_</span> <span class="n">z</span><span class="p">[</span><span class="n">n</span><span class="p">];</span> <span class="o">//</span> <span class="n">dual</span> <span class="n">variables</span>
+
+    <span class="o">//</span> <span class="n">Set</span> <span class="n">output</span> <span class="n">storage</span>
+    <span class="nb">int</span> <span class="n">x_stat</span><span class="p">[</span><span class="n">n</span><span class="p">];</span> <span class="o">//</span> <span class="n">variable</span> <span class="n">status</span>
+    <span class="n">char</span> <span class="n">st</span><span class="p">;</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">status</span><span class="p">;</span>
+
+    <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="n">x_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">INFINITY</span><span class="p">;</span>
+    <span class="n">x_u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+    <span class="n">x_u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">INFINITY</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x_u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+
+    <span class="o">//</span> <span class="n">H</span> <span class="o">=</span> <span class="n">tridiag</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">H_dense</span> <span class="o">=</span> <span class="n">diag</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">H_ptr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+    <span class="n">H_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">H_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">H_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">l</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">H_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span>
+      <span class="n">H_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="n">H_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">H_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+      <span class="n">l</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">H_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="n">H_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="n">H_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">H_ptr</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">H_diag</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+      <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+      <span class="p">{</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+          <span class="n">H_dense</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">j</span> <span class="o">==</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+          <span class="n">H_dense</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+          <span class="n">H_dense</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; C sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; basic tests of bqp storage formats</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">d</span><span class="o">++</span><span class="p">){</span>
+
+        <span class="o">//</span> <span class="n">Initialize</span> <span class="n">BQP</span>
+        <span class="n">bqp_initialize</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="o">//</span> <span class="n">Set</span> <span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="n">control</span> <span class="n">options</span>
+        <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span> <span class="o">//</span> <span class="n">C</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">indexing</span>
+
+        <span class="o">//</span> <span class="n">Start</span> <span class="kn">from</span> <span class="mi">0</span>
+        <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+        <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+
+        <span class="n">switch</span><span class="p">(</span><span class="n">d</span><span class="p">){</span>
+            <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="o">//</span> <span class="n">sparse</span> <span class="n">co</span><span class="o">-</span><span class="n">ordinate</span> <span class="n">storage</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span><span class="p">;</span>
+                <span class="n">bqp_import</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                            <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_row</span><span class="p">,</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">NULL</span> <span class="p">);</span>
+                <span class="n">bqp_solve_given_h</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                                   <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; case </span><span class="si">%1i</span><span class="s2"> break</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+            <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="o">//</span> <span class="n">sparse</span> <span class="n">by</span> <span class="n">rows</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span><span class="p">;</span>
+                <span class="n">bqp_import</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                             <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">H_ptr</span> <span class="p">);</span>
+                <span class="n">bqp_solve_given_h</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                                   <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="o">//</span> <span class="n">dense</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span><span class="p">;</span>
+                <span class="n">bqp_import</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                             <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">H_dense_ne</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span> <span class="p">);</span>
+                <span class="n">bqp_solve_given_h</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">H_dense_ne</span><span class="p">,</span> <span class="n">H_dense</span><span class="p">,</span>
+                                   <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="mi">4</span><span class="p">:</span> <span class="o">//</span> <span class="n">diagonal</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;L&#39;</span><span class="p">;</span>
+                <span class="n">bqp_import</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                             <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span> <span class="p">);</span>
+                <span class="n">bqp_solve_given_h</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">H_diag</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                                   <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span> <span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="n">bqp_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">:</span><span class="si">%6i</span><span class="s2"> iterations. Optimal objective value = </span><span class="si">%5.2f</span><span class="s2"> status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                   <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">iter</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">: BQP_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;x: &quot;</span><span class="p">);</span>
+        <span class="o">//</span><span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+        <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;gradient: &quot;</span><span class="p">);</span>
+        <span class="o">//</span><span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+        <span class="o">//</span> <span class="n">Delete</span> <span class="n">internal</span> <span class="n">workspace</span>
+        <span class="n">bqp_terminate</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> tests reverse-communication options</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="o">//</span> <span class="n">reverse</span><span class="o">-</span><span class="n">communication</span> <span class="nb">input</span><span class="o">/</span><span class="n">output</span>
+    <span class="nb">int</span> <span class="n">nz_v_start</span><span class="p">,</span> <span class="n">nz_v_end</span><span class="p">,</span> <span class="n">nz_prod_end</span><span class="p">;</span>
+    <span class="nb">int</span> <span class="n">nz_v</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">nz_prod</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">mask</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+    <span class="n">real_wp_</span> <span class="n">v</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">prod</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+
+    <span class="n">nz_prod_end</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="o">//</span> <span class="n">Initialize</span> <span class="n">BQP</span>
+    <span class="n">bqp_initialize</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+   <span class="o">//</span> <span class="n">control</span><span class="o">.</span><span class="n">print_level</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+   <span class="o">//</span> <span class="n">Set</span> <span class="n">user</span><span class="o">-</span><span class="n">defined</span> <span class="n">control</span> <span class="n">options</span>
+    <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span> <span class="o">//</span> <span class="n">C</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">indexing</span>
+
+    <span class="o">//</span> <span class="n">Start</span> <span class="kn">from</span> <span class="mi">0</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+
+    <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">bqp_import_without_h</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">true</span><span class="p">){</span> <span class="o">//</span> <span class="n">reverse</span><span class="o">-</span><span class="n">communication</span> <span class="n">loop</span>
+        <span class="n">bqp_solve_reverse_h_prod</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span>
+                                  <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">prod</span><span class="p">,</span>
+                                  <span class="n">nz_v</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nz_v_start</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nz_v_end</span><span class="p">,</span>
+                                  <span class="n">nz_prod</span><span class="p">,</span> <span class="n">nz_prod_end</span> <span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span> <span class="o">//</span> <span class="n">successful</span> <span class="n">termination</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> <span class="o">//</span> <span class="n">error</span> <span class="n">exit</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="mi">2</span><span class="p">){</span> <span class="o">//</span> <span class="n">evaluate</span> <span class="n">Hv</span>
+          <span class="n">prod</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+          <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+          <span class="n">prod</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">];</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="mi">3</span><span class="p">){</span> <span class="o">//</span> <span class="n">evaluate</span> <span class="n">Hv</span> <span class="k">for</span> <span class="n">sparse</span> <span class="n">v</span>
+          <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+          <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">nz_v_start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">nz_v_end</span><span class="p">;</span> <span class="n">l</span><span class="o">++</span><span class="p">){</span>
+             <span class="n">i</span> <span class="o">=</span> <span class="n">nz_v</span><span class="p">[</span><span class="n">l</span><span class="p">];</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+             <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+           <span class="p">}</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="mi">4</span><span class="p">){</span> <span class="o">//</span> <span class="n">evaluate</span> <span class="n">sarse</span> <span class="n">Hv</span> <span class="k">for</span> <span class="n">sparse</span> <span class="n">v</span>
+          <span class="n">nz_prod_end</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+          <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">nz_v_start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">nz_v_end</span><span class="p">;</span> <span class="n">l</span><span class="o">++</span><span class="p">){</span>
+             <span class="n">i</span> <span class="o">=</span> <span class="n">nz_v</span><span class="p">[</span><span class="n">l</span><span class="p">];</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+               <span class="k">if</span> <span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+                 <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">nz_prod</span><span class="p">[</span><span class="n">nz_prod_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">nz_prod_end</span> <span class="o">=</span> <span class="n">nz_prod_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+               <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                 <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+               <span class="p">}</span>
+             <span class="p">}</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+               <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+               <span class="n">nz_prod</span><span class="p">[</span><span class="n">nz_prod_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+               <span class="n">nz_prod_end</span> <span class="o">=</span> <span class="n">nz_prod_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+               <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+             <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+               <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+             <span class="p">}</span>
+             <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">){</span>
+               <span class="k">if</span> <span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+                 <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">nz_prod</span><span class="p">[</span><span class="n">nz_prod_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">nz_prod_end</span> <span class="o">=</span> <span class="n">nz_prod_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                 <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+               <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                 <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">prod</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+               <span class="p">}</span>
+             <span class="p">}</span>
+          <span class="p">}</span>
+          <span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">nz_prod_end</span><span class="p">;</span> <span class="n">l</span><span class="o">++</span><span class="p">)</span> <span class="n">mask</span><span class="p">[</span><span class="n">nz_prod</span><span class="p">[</span><span class="n">l</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; the value </span><span class="si">%1i</span><span class="s2"> of status should not occur</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="o">//</span> <span class="n">Record</span> <span class="n">solution</span> <span class="n">information</span>
+    <span class="n">bqp_information</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">status</span> <span class="p">);</span>
+
+    <span class="o">//</span> <span class="n">Print</span> <span class="n">solution</span> <span class="n">details</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">:</span><span class="si">%6i</span><span class="s2"> iterations. Optimal objective value = </span><span class="si">%5.2f</span><span class="s2"> status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+               <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">iter</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">: BQP_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;x: &quot;</span><span class="p">);</span>
+    <span class="o">//</span><span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+    <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;gradient: &quot;</span><span class="p">);</span>
+    <span class="o">//</span><span class="k">for</span><span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="o">//</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="o">//</span> <span class="n">Delete</span> <span class="n">internal</span> <span class="n">workspace</span>
+    <span class="n">bqp_terminate</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">control</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">inform</span> <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="qp.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Quadratic Programming</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="bqp_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">callable functions</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminology">
+   terminology
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction-to-function-calls">
+   introduction to function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parametric-real-type-t">
+   parametric real type T
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bqp-control-type-structure">
+   bqp_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bqp-time-type-structure">
+   bqp_time_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structbqp-time-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bqp-inform-type-structure">
+   bqp_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structbqp-inform-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-calls">
+   example calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/bqp.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

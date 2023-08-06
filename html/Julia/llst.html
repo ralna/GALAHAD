@@ -1,0 +1,1717 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD LLST package &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'llst';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="callable functions" href="llst_functions.html" />
+    <link rel="prev" title="callable functions" href="llsr_functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="trs.html">TRS - global minization of a quadratic function within an ellipsoid using matrix factorization</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="trs_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="rqs.html">RQS - global minization of a regularized quadratic function using matrix factorization</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="rqs_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dps.html">DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dps_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gltr.html">GLTR - global minization of a quadratic function within an ellipsoid using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gltr_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="glrt.html">GLRT - global minization of a regularized quadratic function</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="glrt_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="llsr.html">LLSR - global minization of a regularized linear least-squares objective using matrix factorizations</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="llsr_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">LLST - global minization of a linear least-squares objective within an ellipsoid using matrix factorizations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="llst_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lstr.html">LSTR - global minization of a linear least-squares objective within a sphere using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="lstr_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lsrt.html">LSRT - global minization of a regularized linear least-squares objective using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="lsrt_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="l2rt.html">L2RT - global minization of a regularized linear least-Euclidean-norm objective using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="l2rt_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.llst">
+<span id="galahad-llst-package"></span><span id="doxid-index-llst"></span><h1>GALAHAD LLST package<a class="headerlink" href="#module-galahad.llst" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>Given a real <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> model matrix <span class="math notranslate nohighlight">\(A\)</span>, a real <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric
+diagonally-dominant matrix <span class="math notranslate nohighlight">\(S\)</span>, a real <span class="math notranslate nohighlight">\(m\)</span> vector of observations <span class="math notranslate nohighlight">\(b\)</span>
+and a scalar <span class="math notranslate nohighlight">\(\Delta&gt;0\)</span>, the <code class="docutils literal notranslate"><span class="pre">llst</span></code> package finds a <strong>minimizer of the linear
+least-squares objective function <span class="math notranslate nohighlight">\(|A x - b|_2\)</span>, where the vector <span class="math notranslate nohighlight">\(x\)</span> is
+required to satisfy the constraint <span class="math notranslate nohighlight">\(|x|_S leq  Delta\)</span></strong>,
+and where the <span class="math notranslate nohighlight">\(S\)</span>-norm of <span class="math notranslate nohighlight">\(x\)</span> is <span class="math notranslate nohighlight">\(\|x\|_S = \sqrt{x^T S x}\)</span>.
+This problem commonly occurs as a trust-region subproblem in nonlinear
+least-squares calculations.
+The package may also be used to solve the related problem in which <span class="math notranslate nohighlight">\(x\)</span> is
+instead required to satisfy the
+<strong>equality constraint <span class="math notranslate nohighlight">\(|x|_S = Delta\)</span></strong>.
+The matrix <span class="math notranslate nohighlight">\(S\)</span> need not be provided in the commonly-occurring
+<span class="math notranslate nohighlight">\(\ell_2\)</span>-trust-region case for which <span class="math notranslate nohighlight">\(S = I\)</span>, the <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
+identity matrix.</p>
+<p>Factorization of matrices of the form
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix}\lambda S &amp; A^T \\ A &amp; - I\end{pmatrix}\mspace{5em}\mbox{(1)}\end{split}\]</div>
+
+for a succession of scalars <span class="math notranslate nohighlight">\(\lambda\)</span> will be required, so this package is
+most suited for the case where such a factorization may be found efficiently.
+If this is not the case, the package <code class="docutils literal notranslate"><span class="pre">lstr</span></code> may be preferred.</p>
+<p>See Section 4 of $GALAHAD/doc/llst.pdf for additional details.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The required solution <span class="math notranslate nohighlight">\(x_*\)</span> necessarily satisfies the optimality condition
+<span class="math notranslate nohighlight">\(A^T A x_* + \lambda_* S x_* = A^T b\)</span>, where <span class="math notranslate nohighlight">\(\lambda_* \geq 0\)</span> is a Lagrange
+multiplier corresponding to the constraint <span class="math notranslate nohighlight">\(\|x\|_S  \leq  \Delta\)</span>;
+for the equality-constrained problem <span class="math notranslate nohighlight">\(\|x\|_S = \Delta\)</span> and
+the multiplier is unconstrained.</p>
+<p>The method is iterative, and proceeds in two phases.
+Firstly, lower and upper bounds, <span class="math notranslate nohighlight">\(\lambda_L\)</span> and
+<span class="math notranslate nohighlight">\(\lambda_U\)</span>, on <span class="math notranslate nohighlight">\(\lambda_*\)</span> are computed
+using Gershgorin’s theorems and other eigenvalue bounds,
+including those that may involve the Cholesky factorization of <span class="math notranslate nohighlight">\(S\)</span>  The
+first phase of the computation proceeds by progressively shrinking  the bound
+interval <span class="math notranslate nohighlight">\([\lambda_L,\lambda_U]\)</span>
+until a value <span class="math notranslate nohighlight">\(\lambda\)</span> for which
+<span class="math notranslate nohighlight">\(\|x(\lambda)\|_S  \geq  \Delta\)</span> is found.
+Here <span class="math notranslate nohighlight">\(x(\lambda)\)</span> and its companion <span class="math notranslate nohighlight">\(y(\lambda)\)</span>
+are defined to be a solution of
+<div class="math notranslate nohighlight">
+\[(A^T A  + \lambda S)x(\lambda) = A^T b; \mspace{5em}\mbox{(2)}\]</div>
+
+along the way the possibility that
+<span class="math notranslate nohighlight">\(\|x(0)\|_S  \leq  \Delta\)</span> is examined, and if this transpires
+the process is terminated with <span class="math notranslate nohighlight">\(x_* = x(0)\)</span>. Once the terminating
+<span class="math notranslate nohighlight">\(\lambda\)</span> from the first phase has been discovered, the second phase
+consists of applying Newton or higher-order iterations to the nonlinear
+<em>secular</em> equation <span class="math notranslate nohighlight">\(\|x(\lambda)\|_S = \Delta\)</span> with
+the knowledge that such iterations are both globally and ultimately
+rapidly convergent.</p>
+<p>The dominant cost is the requirement that we solve a sequence of
+linear systems (2). This may be rewritten as
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix}\lambda S &amp; A^T \\ A &amp; - I\end{pmatrix}
+\begin{pmatrix}x(\lambda) \\ y(\lambda)\end{pmatrix} =
+\begin{pmatrix}A^T b \\ 0\end{pmatrix} \mspace{5em} \mbox{(3)}\end{split}\]</div>
+
+for some auxiliary vector <span class="math notranslate nohighlight">\(y(\lambda)\)</span>.
+In general a sparse symmetric, indefinite factorization of the
+coefficient matrix of (3) is
+often preferred to a Cholesky factorization of that of (2).</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The method is the obvious adaptation to the linear least-squares
+problem of that described in detail in</p>
+<blockquote>
+<div><p>H. S. Dollar, N. I. M. Gould and D. P. Robinson.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>On solving trust-region and other regularised subproblems in optimization’’.
+<em>Mathematical Programming Computation</em> <strong>2(1)</strong> (2010) 21–57.</p>
+</div></blockquote>
+</section>
+<section id="matrix-storage">
+<span id="details-as-storage"></span><h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<section id="unsymmetric-storage">
+<span id="details-as-storage-unsym"></span><h3>unsymmetric storage<a class="headerlink" href="#unsymmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> model matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
+and stored in a variety of convenient input formats.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,  <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n+1) holds the total number of entries plus one.
+The row indices i, <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+</section>
+<section id="symmetric-storage">
+<span id="details-as-storage-sym"></span><h3>symmetric storage<a class="headerlink" href="#symmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> scaing matrix <span class="math notranslate nohighlight">\(S\)</span> may also
+be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the <em>lower triangular</em> part
+(i.e, those entries that lie on or below the leading diagonal).</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(S\)</span> is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since <span class="math notranslate nohighlight">\(S\)</span> is
+symmetric, only the lower triangular part (that is the part
+<span class="math notranslate nohighlight">\(S_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>) need be held.
+In this case the lower triangle should be stored by rows, that is
+component <span class="math notranslate nohighlight">\((i-1) * i / 2 + j\)</span>  of the storage array S_val
+will hold the value <span class="math notranslate nohighlight">\(S_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(S_{ji}\)</span>)
+for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>.
+The string S_type = ‘dense’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(S\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(S_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays S_row and S_col and real array S_val,
+respectively, while the number of nonzeros is recorded as S_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+Note that only the entries in the lower triangle should be stored.
+The string S_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise</em> storage format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(S\)</span> the i-th component of the
+integer array S_ptr holds the position of the first entry in this row,
+while S_ptr(n+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq i\)</span>, and values <span class="math notranslate nohighlight">\(S_{ij}\)</span> of the entries
+in the i-th row are stored in components l = S_ptr(i), …, S_ptr(i+1)-1 of the
+integer array S_col, and real array S_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string S_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Diagonal</em> storage format:
+If <span class="math notranslate nohighlight">\(S\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(S_{ij} = 0\)</span> for all
+<span class="math notranslate nohighlight">\(1 \leq i \neq j \leq n\)</span>) only the diagonals entries
+<span class="math notranslate nohighlight">\(S_{ii}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq n\)</span> need be stored,
+and the first n components of the array S_val may be used for the purpose.
+The string S_type = ‘diagonal’ should be specified.</p>
+<p><em>Multiples of the identity</em> storage format:
+If <span class="math notranslate nohighlight">\(S\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
+where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of S_val.
+The string S_type = ‘scaled_identity’ should be specified.</p>
+<p>The <em>identity matrix</em> format:
+If <span class="math notranslate nohighlight">\(S\)</span> is the identity matrix, no values need be stored.
+The string S_type = ‘identity’ should be specified. Strictly
+this is not required as <span class="math notranslate nohighlight">\(S\)</span> will be assumed to be <span class="math notranslate nohighlight">\(I\)</span> if it
+is not explicitly provided.</p>
+<p>The <em>zero matrix</em> format:
+The same is true if <span class="math notranslate nohighlight">\(S\)</span> is the zero matrix, but now
+the string S_type = ‘zero’ or ‘none’ should be specified.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+<section id="introduction-to-function-calls">
+<h2>introduction to function calls<a class="headerlink" href="#introduction-to-function-calls" title="Permalink to this heading">#</a></h2>
+<p>To solve a given problem, functions from the llst package must be
+called in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span class="std std-ref">llst_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span class="std std-ref">llst_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span class="std std-ref">llst_import</span></a> - set up problem data structures and fixed values</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span class="std std-ref">llst_import_scaling</span></a> (optional) - set up problem data structures for <span class="math notranslate nohighlight">\(S\)</span> if required</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span class="std std-ref">llst_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1add75b5481c528cca64abbcdeb3a2af35"><span class="std std-ref">llst_solve_problem</span></a> - solve the trust-region problem</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span class="std std-ref">llst_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span class="std std-ref">llst_terminate</span></a> - deallocate data structures</p></li>
+</ul>
+<p>See the <a class="reference internal" href="#doxid-index-llst-examples"><span class="std std-ref">examples</span></a> section for
+illustrations of use.</p>
+</section>
+<section id="parametric-real-type-t">
+<h2>parametric real type T<a class="headerlink" href="#parametric-real-type-t" title="Permalink to this heading">#</a></h2>
+<p>Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+Calable functions as described are with T as Float64, but variants
+(with the additional suffix <code class="docutils literal notranslate"><span class="pre">_s</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">llst_initialize_s</span></code>)
+are available with T as Float32.</p>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">A_type</span><span class="p">,</span><span class="w"> </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_row</span><span class="p">,</span><span class="w"> </span><span class="n">A_col</span><span class="p">,</span><span class="w"> </span><span class="n">A_ptr</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of residuals, i.e., the number of rows of <span class="math notranslate nohighlight">\(A\)</span>. m must be positive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables, i.e., the number of columns of <span class="math notranslate nohighlight">\(A\)</span>. n must be positive.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-as-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the constraint Jacobian, <span class="math notranslate nohighlight">\(A\)</span> if any. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span>, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_row</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_col</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_import_scaling</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                 </span><span class="n">S_type</span><span class="p">,</span><span class="w"> </span><span class="n">S_ne</span><span class="p">,</span><span class="w"> </span><span class="n">S_row</span><span class="p">,</span><span class="w"> </span><span class="n">S_col</span><span class="p">,</span><span class="w"> </span><span class="n">S_ptr</span><span class="p">)</span></pre>
+<p>Import the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> into internal storage prior to solution. Thus must have been preceeded by a call to llst_import.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’ or ‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables, i.e., the number of rows and columns of <span class="math notranslate nohighlight">\(S\)</span>. n must be positive.</p></td>
+</tr>
+<tr class="row-odd"><td><p>S_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-as-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(S\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘diagonal’; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>S_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>S_row</p></td>
+<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>S_col</p></td>
+<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>S_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1add75b5481c528cca64abbcdeb3a2af35"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_solve_problem</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">S_ne</span><span class="p">,</span><span class="w"> </span><span class="n">S_val</span><span class="p">)</span></pre>
+<p>Solve the trust-region problem.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 and m &gt; 0 or requirement that
+A_type or A_type contains its relevant string
+‘dense’, ‘coordinate’, ‘sparse_by_rows’ or
+‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-15</strong></dt><dd><p>The matrix <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly
+diagonally dominant.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of residuals</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>radius</p></td>
+<td><p>is a scalar of type T that holds the trust-region radius, <span class="math notranslate nohighlight">\(\Delta\)</span>, used. radius must be strictly positive</p></td>
+</tr>
+<tr class="row-even"><td><p>A_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the observation matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_val</p></td>
+<td><p>is a one-dimensional array of size A_ne and type T that holds the values of the entries of the observation matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>b</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the values <span class="math notranslate nohighlight">\(b\)</span> of observations. The i-th component of <code class="docutils literal notranslate"><span class="pre">b</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>S_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> if it not the identity matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p>S_val</p></td>
+<td><p>is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> in any of the available storage schemes. If S_val is NULL, <span class="math notranslate nohighlight">\(S\)</span> will be taken to be the identity matrix.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span id="index-7"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">llst_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="llst-control-type-structure">
+<span id="doxid-structllst-control-type"></span><span id="index-8"></span><h2>llst_control_type structure<a class="headerlink" href="#llst-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">llst_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">new_a</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">new_s</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_factorizations</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">taylor_max_degree</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">initial_multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">lower</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">upper</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_normal</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">equality_problem</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">use_initial_multiplier</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">definite_linear_solver</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_control</span><span class="o">::</span><span class="kt">sbls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sls_control</span><span class="o">::</span><span class="kt">sls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">ir_control</span><span class="o">::</span><span class="kt">ir_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structllst-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-9"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>unit for error messages</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>unit for monitor output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>controls level of diagnostic output</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a7bea45d51fd9384037bbbf82f7750ce6"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">new_a</span></pre>
+<p>how much of <span class="math notranslate nohighlight">\(A\)</span> has changed since the previous call. Possible values are</p>
+<ul class="simple">
+<li><p>0 unchanged</p></li>
+<li><p>1 values but not indices have changed</p></li>
+<li><p>2 values and indices have changed</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a2b6594b40a418a477a825143c48da0e9"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">new_s</span></pre>
+<p>how much of <span class="math notranslate nohighlight">\(S\)</span> has changed since the previous call. Possible values are</p>
+<ul class="simple">
+<li><p>0 unchanged</p></li>
+<li><p>1 values but not indices have changed</p></li>
+<li><p>2 values and indices have changed</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a49cdbb7627ab58da229da6ccb3034bb7"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_factorizations</span></pre>
+<p>the maximum number of factorizations (=iterations) allowed. -ve implies no limit</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a338fa3956816be173e13bfd4198c4078"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">taylor_max_degree</span></pre>
+<p>maximum degree of Taylor approximant allowed (&lt;= 3)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ae8d08df3ba4988681cb5f7c33a20f287"><span id="index-17"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">initial_multiplier</span></pre>
+<p>initial estimate of the Lagrange multipler</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a965ee2cfb38687d6f158d35586595eed"><span id="index-18"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">lower</span></pre>
+<p>lower and upper bounds on the multiplier, if known</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab8b6572a40141ada6d5f0455eb806d41"><span id="index-19"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">upper</span></pre>
+<p>see lower</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a3573530258a38cc836b106b9f7a54565"><span id="index-20"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_normal</span></pre>
+<p>stop when <span class="math notranslate nohighlight">\(| \|x\| -\)</span> radius <span class="math notranslate nohighlight">\(| \leq\)</span> max( stop_normal \* max( 1, radius )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a86fd5b4cf421b63f8d908f27cf2c60bb"><span id="index-21"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">equality_problem</span></pre>
+<p>is the solution is &lt;b&lt;required to lie on the boundary (i.e., is the constraint an equality)?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a4d2667d00744ca0f4cc3a2e19bfaae17"><span id="index-22"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">use_initial_multiplier</span></pre>
+<p>ignore initial_multiplier?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-23"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if space is critical, ensure allocated arrays are no bigger than needed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-24"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>exit if any deallocation fails</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a9b46b7a8e0af020499e645bef711f634"><span id="index-25"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">definite_linear_solver</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>definite linear equation solver</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-26"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-27"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<p>control parameters for the symmetric factorization and related linear solves (see sbls_c documentation)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-28"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<p>control parameters for the factorization of S and related linear solves (see sls_c documentation)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-29"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_control_type.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span><span class="w"> </span><span class="n">ir_control</span></pre>
+<p>control parameters for iterative refinement for definite system solves (see ir_c documentation)</p>
+</section>
+</section>
+<section id="llst-time-type-structure">
+<span id="doxid-structllst-time-type"></span><span id="index-30"></span><h2>llst_time_type structure<a class="headerlink" href="#llst-time-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">llst_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">assemble</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_assemble</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_solve</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structllst-time-type">
+<span id="id3"></span><h2>detailed documentation<a class="headerlink" href="#details-structllst-time-type" title="Permalink to this heading">#</a></h2>
+<p>time derived type as a Julia structure</p>
+<section id="id4">
+<h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">total</span></pre>
+<p>total CPU time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae84d232eee798a974ebaeb9c82d623f4"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">assemble</span></pre>
+<p>CPU time assembling <span class="math notranslate nohighlight">\(K(\lambda)\)</span> in (1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">analyse</span></pre>
+<p>CPU time spent analysing <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">factorize</span></pre>
+<p>CPU time spent factorizing <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4c971b10c915041b89daa05a29125376"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">solve</span></pre>
+<p>CPU time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span id="index-36"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_total</span></pre>
+<p>total clock time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4df2b92cea9269b8f8cad7024b83a10d"><span id="index-37"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_assemble</span></pre>
+<p>clock time assembling <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span id="index-38"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_analyse</span></pre>
+<p>clock time spent analysing <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span id="index-39"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_factorize</span></pre>
+<p>clock time spent factorizing <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span id="index-40"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_solve</span></pre>
+<p>clock time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
+</section>
+</section>
+<section id="llst-history-type-structure">
+<span id="doxid-structllst-history-type"></span><span id="index-41"></span><h2>llst_history_type structure<a class="headerlink" href="#llst-history-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">llst_history_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lambda</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">x_norm</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">r_norm</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structllst-history-type">
+<span id="id5"></span><h2>detailed documentation<a class="headerlink" href="#details-structllst-history-type" title="Permalink to this heading">#</a></h2>
+<p>history derived type as a Julia structure</p>
+<section id="id6">
+<h3>components<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span id="index-42"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">lambda</span></pre>
+<p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-43"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">x_norm</span></pre>
+<p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_S\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-44"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">r_norm</span></pre>
+<p>the corresponding value of <span class="math notranslate nohighlight">\(\|A x(\lambda) - b\|_2\)</span></p>
+</section>
+</section>
+<section id="llst-inform-type-structure">
+<span id="doxid-structllst-inform-type"></span><span id="index-45"></span><h2>llst_inform_type structure<a class="headerlink" href="#llst-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">llst_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alloc_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorizations</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">len_history</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">r_norm</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">x_norm</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">multiplier</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">bad_alloc</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">time</span><span class="o">::</span><span class="kt">llst_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">history</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span><span class="kt">llst_history_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_inform</span><span class="o">::</span><span class="kt">sbls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sls_inform</span><span class="o">::</span><span class="kt">sls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">ir_inform</span><span class="o">::</span><span class="kt">ir_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span></pre>
+</section>
+<section id="details-structllst-inform-type">
+<span id="id7"></span><h2>detailed documentation<a class="headerlink" href="#details-structllst-inform-type" title="Permalink to this heading">#</a></h2>
+<p>inform derived type as a Julia structure</p>
+<section id="id8">
+<h3>components<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-46"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<p>reported return status:</p>
+<ul class="simple">
+<li><p>0 the solution has been found</p></li>
+<li><p>-1 an array allocation has failed</p></li>
+<li><p>-2 an array deallocation has failed</p></li>
+<li><p>-3 n and/or Delta is not positive</p></li>
+<li><p>-10 the factorization of <span class="math notranslate nohighlight">\(K(\lambda)\)</span> failed</p></li>
+<li><p>-15 <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant</p></li>
+<li><p>-16 ill-conditioning has prevented furthr progress</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-47"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
+<p>STAT value after allocate failure.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a9a6a5a0de7d7a6048b4170a768c0c86f"><span id="index-48"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorizations</span></pre>
+<p>the number of factorizations performed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span id="index-49"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">len_history</span></pre>
+<p>the number of (<span class="math notranslate nohighlight">\(\|x\|_S\)</span>, <span class="math notranslate nohighlight">\(\lambda\)</span>) pairs in the history</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-50"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">r_norm</span></pre>
+<p>corresponding value of the two-norm of the residual, <span class="math notranslate nohighlight">\(\|A x(\lambda) - b\|\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-51"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">x_norm</span></pre>
+<p>the S-norm of x, <span class="math notranslate nohighlight">\(\|x\|_S\)</span></p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-52"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">multiplier</span></pre>
+<p>the Lagrange multiplier corresponding to the trust-region constraint</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-53"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
+<p>name of array which provoked an allocate failure</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a10b8942e28c4ade61bd53f705e70b05f"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<p>time information</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a486763b587db55dd7984ae315c4a6513"><span id="index-55"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span><span class="w"> </span><span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
+<p>history information</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<p>information from the symmetric factorization and related linear solves (see sbls_c documentation)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-57"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<p>information from the factorization of S and related linear solves (see sls_c documentation)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
+<p>information from the iterative refinement for definite system solves (see ir_c documentation)</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+<section id="example-calls">
+<span id="doxid-index-llst-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
+<p>This is an example of how to use the package to solve a linear least-squares
+trust-region subproblem;
+the code is available in $GALAHAD/src/llst/Julia/test_llst.jl .
+A variety of supported Hessian and constraint matrix storage formats are shown.</p>
+<div class="code julia highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_llst.jl</span>
+<span class="c1"># Simple code to test the Julia interface to LLST</span>
+
+<span class="n">using</span> <span class="n">GALAHAD</span>
+<span class="n">using</span> <span class="n">Printf</span>
+
+<span class="c1"># Derived types</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Cvoid</span><span class="p">}}()]</span>
+<span class="n">control</span> <span class="o">=</span> <span class="n">llst_control_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+<span class="n">inform</span> <span class="o">=</span> <span class="n">llst_inform_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+
+<span class="c1"># Set problem data</span>
+<span class="c1"># set dimensions</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span>
+<span class="c1"># A = ( I : Diag(1:n) : e )</span>
+<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">m</span>
+<span class="n">A_row</span><span class="p">[</span><span class="n">A_ne</span><span class="p">]</span>
+<span class="n">A_col</span><span class="p">[</span><span class="n">A_ne</span><span class="p">]</span>
+<span class="n">A_ptr</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">A_val</span><span class="p">[</span><span class="n">A_ne</span><span class="p">]</span>
+
+<span class="c1"># store A in sparse formats</span>
+<span class="n">l</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span><span class="p">(</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">m</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="n">A_ptr</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="o">+</span><span class="mi">1</span>
+ <span class="n">A_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">A_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">A_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+ <span class="n">l</span><span class="o">++</span>
+ <span class="n">A_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">A_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">+</span><span class="n">i</span>
+ <span class="n">A_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">l</span><span class="o">++</span>
+ <span class="n">A_row</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">A_col</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+ <span class="n">A_val</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+ <span class="n">l</span><span class="o">++</span>
+<span class="p">]</span>
+<span class="n">A_ptr</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="c1"># store A in dense format</span>
+<span class="n">A_dense_ne</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">n</span>
+<span class="n">real_wp_</span> <span class="n">A_dense_val</span><span class="p">[</span><span class="n">A_dense_ne</span><span class="p">]</span>
+<span class="k">for</span><span class="p">(</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">A_dense_ne</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">A_dense_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">l</span><span class="o">=-</span><span class="mi">1</span>
+<span class="k">for</span><span class="p">(</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">m</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="n">A_dense_val</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+ <span class="n">A_dense_val</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="n">m</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+ <span class="n">A_dense_val</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+ <span class="n">l</span><span class="o">=</span><span class="n">l</span><span class="o">+</span><span class="n">n</span>
+<span class="p">]</span>
+
+<span class="c1"># S = diag(1:n)**2</span>
+<span class="n">S_ne</span> <span class="o">=</span> <span class="n">n</span>
+<span class="n">S_row</span><span class="p">[</span><span class="n">S_ne</span><span class="p">]</span>
+<span class="n">S_col</span><span class="p">[</span><span class="n">S_ne</span><span class="p">]</span>
+<span class="n">S_ptr</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">S_val</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Float64</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">)</span>
+
+<span class="c1"># store S in sparse formats</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">n</span>
+  <span class="n">S_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+  <span class="n">S_col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+  <span class="n">S_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+  <span class="n">S_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">end</span>
+<span class="n">S_ptr</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="o">+</span><span class="mi">2</span>
+
+<span class="c1"># store S in dense format</span>
+<span class="n">S_dense_ne</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">S_dense_val</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Float64</span><span class="p">,</span> <span class="n">S_dense_ne</span><span class="p">)</span>
+<span class="n">l</span><span class="o">=-</span><span class="mi">1</span>
+<span class="k">for</span><span class="p">(</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+  <span class="n">S_dense_val</span><span class="p">[</span><span class="n">l</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">i</span>
+  <span class="n">l</span><span class="o">=</span><span class="n">l</span><span class="o">+</span><span class="n">i</span>
+<span class="p">]</span>
+
+<span class="c1"># b is a vector of ones</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">Float64</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># observations</span>
+
+<span class="c1"># trust-region radius is one</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Set output storage</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Float64</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>  <span class="c1"># solution</span>
+<span class="n">st</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">Ref</span><span class="p">{</span><span class="n">Cint</span><span class="p">}()</span>
+
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; Fortran sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; basic tests of problem storage formats</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># loop over storage formats</span>
+<span class="k">for</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span>
+  <span class="c1"># Initialize LLST</span>
+  <span class="n">llst_initialize</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">definite_linear_solver</span><span class="p">,</span> <span class="s2">&quot;potr &quot;</span><span class="p">)</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">sbls_control</span><span class="o">.</span><span class="n">symmetric_linear_solver</span><span class="p">,</span> <span class="s2">&quot;sytr &quot;</span><span class="p">)</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">sbls_control</span><span class="o">.</span><span class="n">definite_linear_solver</span><span class="p">,</span> <span class="s2">&quot;potr &quot;</span><span class="p">)</span>
+  <span class="c1"># control.print_level = 1</span>
+
+  <span class="c1"># Set user-defined control options</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">true</span>  <span class="c1"># Fortran sparse matrix indexing</span>
+
+  <span class="c1"># use s or not (1 or 0)</span>
+  <span class="k">for</span> <span class="n">use_s</span> <span class="o">=</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span>
+    <span class="c1"># sparse co-ordinate storage</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span>
+      <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
+
+      <span class="n">llst_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                    <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">use_s</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">llst_import_scaling</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">S_row</span><span class="p">,</span> <span class="n">S_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">S_val</span> <span class="p">)</span>
+      <span class="n">end</span>
+    <span class="n">end</span>
+
+    <span class="c1"># sparse by rows</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">2</span>
+      <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span>
+
+      <span class="n">llst_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                   <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">use_s</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">llst_import_scaling</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">S_col</span><span class="p">,</span> <span class="n">S_ptr</span> <span class="p">)</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">S_val</span> <span class="p">)</span>
+      <span class="n">end</span>
+    <span class="n">end</span>
+
+    <span class="c1"># dense</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">3</span>
+      <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+
+      <span class="n">llst_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">if</span> <span class="n">use_s</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">llst_import_scaling</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">S_dense_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">S_dense_ne</span><span class="p">,</span> <span class="n">S_dense_val</span> <span class="p">)</span>
+      <span class="n">end</span>
+    <span class="n">end</span>
+
+    <span class="c1"># diagonal</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">4</span>
+      <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span>
+
+      <span class="n">llst_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">if</span> <span class="n">use_s</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+      <span class="k">else</span>
+        <span class="n">llst_import_scaling</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+        <span class="n">llst_solve_problem</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">S_ne</span><span class="p">,</span> <span class="n">S_val</span> <span class="p">)</span>
+      <span class="n">end</span>
+    <span class="n">end</span>
+
+    <span class="n">llst_information</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">inform</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span>
+      <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;storage type </span><span class="si">%c%1i</span><span class="s2">:  status = </span><span class="si">%1i</span><span class="s2">, ||r|| = </span><span class="si">%5.2f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">use_s</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">r_norm</span> <span class="p">)</span>
+    <span class="k">else</span>
+      <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;storage type </span><span class="si">%c%1i</span><span class="s2">: LLST_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">use_s</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+    <span class="n">end</span>
+  <span class="n">end</span>
+
+  <span class="c1"># @printf(&quot;x: &quot;)</span>
+  <span class="c1"># for i = 1:n</span>
+  <span class="c1">#   @printf(&quot;%f &quot;, x[i])</span>
+  <span class="c1"># end</span>
+  <span class="c1"># @printf(&quot;\n&quot;)</span>
+
+  <span class="c1"># Delete internal workspace</span>
+  <span class="n">llst_terminate</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">inform</span> <span class="p">)</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="llsr_functions.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">callable functions</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="llst_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">callable functions</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#unsymmetric-storage">
+     unsymmetric storage
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#symmetric-storage">
+     symmetric storage
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction-to-function-calls">
+   introduction to function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parametric-real-type-t">
+   parametric real type T
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#llst-control-type-structure">
+   llst_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#llst-time-type-structure">
+   llst_time_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structllst-time-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#llst-history-type-structure">
+   llst_history_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structllst-history-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#llst-inform-type-structure">
+   llst_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structllst-inform-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id8">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-calls">
+   example calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/llst.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

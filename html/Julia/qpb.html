@@ -1,0 +1,1924 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>GALAHAD QPB package &#8212; GALAHAD Julia interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'qpb';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="callable functions" href="qpb_functions.html" />
+    <link rel="prev" title="callable functions" href="qpa_functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="bqp.html">BQP - bound-constrained quadratic programming using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="bqpb.html">BQPB - bound-constrained quadratic programming using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bqpb_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cqp.html">CQP - convex quadratic programming using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="cqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="cro.html">CRO - crossover from an interior-point to basic solution for convex quadratic programming</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="cro_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="dqp.html">DQP - convex quadratic programming using a dual active-set method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="dqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="eqp.html">EQP - equality-constrained quadratic programming using an iterative method</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="eqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="lsqp.html">LSQP - linear or separable convex quadratic programming using an interior-point trust-region method</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="lsqp_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="qpa.html">QPA - non-convex quadratic programming using an active-set method</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="qpa_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">QPB - non-convex quadratic programming using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="qpb_functions.html">callable functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.qpb">
+<span id="galahad-qpb-package"></span><span id="doxid-index-qpb"></span><h1>GALAHAD QPB package<a class="headerlink" href="#module-galahad.qpb" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">qpb</span></code> package uses a
+<strong>primal-dual interior-point method</strong> to solve a given
+<strong>non-convex quadratic program</strong>.
+The aim is to minimize the quadratic objective function
+<div class="math notranslate nohighlight">
+\[q(x) = f + g^T x + \frac{1}{2} x^T H x,\]</div>
+
+subject to the general linear constraints and simple bounds
+<div class="math notranslate nohighlight">
+\[c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,\]</div>
+
+where <span class="math notranslate nohighlight">\(H\)</span> and <span class="math notranslate nohighlight">\(A\)</span> are, respectively, given
+<span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> symmetric and <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> rectangular matrices,
+<span class="math notranslate nohighlight">\(g\)</span> is a vector, <span class="math notranslate nohighlight">\(f\)</span> is a scalar, and any of the components
+of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+The method offers the choice of direct and iterative solution of the key
+regularization subproblems, and is most suitable for problems
+involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>If the matrix <span class="math notranslate nohighlight">\(H\)</span> is positive semi-definite, a global solution is found.
+However, if <span class="math notranslate nohighlight">\(H\)</span> is indefinite, the procedure may find a (weak second-order)
+critical point that is not the global solution to the given problem.</p>
+<p>See Section 4 of $GALAHAD/doc/qpb.pdf for additional details.</p>
+</section>
+<section id="terminolgy">
+<h2>terminolgy<a class="headerlink" href="#terminolgy" title="Permalink to this heading">#</a></h2>
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
+the <strong>primal optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[A x = c\;\;\mbox{(1)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(2)}\]</div>
+
+the <strong>dual optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[H x + g = A^{T} y + z,\;\;  y = y_l + y_u
+\;\;\mbox{and}\;\; z = z_l + z_u,\;\;\mbox{(3)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0
+\;\;\mbox{and}\;\; z_u \leq 0,\;\;\mbox{(4)}\]</div>
+
+and the <strong>complementary slackness conditions</strong>
+<div class="math notranslate nohighlight">
+\[( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(5)}\]</div>
+
+where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints, and the <strong>dual variables</strong> for the bounds,
+respectively, and where the vector inequalities hold component-wise.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Primal-dual interior point methods iterate towards a point
+that satisfies these conditions by ultimately aiming to satisfy
+(1), (3) and (5), while ensuring that (2) and (4) are
+satisfied as strict inequalities at each stage.
+Appropriate norms of the amounts by
+which (1), (3) and (5) fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that (2) and (4) are satisfied as strict
+inequalities gives such methods their other title, namely
+interior-point methods.</p>
+<p>The problem is solved in two phases. The goal of the first
+“initial feasible point” phase is
+to find a strictly interior point which is primal feasible, that is that
+(1) is satisfied. The package <code class="docutils literal notranslate"><span class="pre">LSQP</span></code> is used for this
+purpose, and offers the options of either accepting the first
+strictly feasible point found, or preferably of aiming for the
+so-called “analytic center” of the feasible region.
+Having found such a suitable initial feasible point, the second “optimality”
+phase ensures that (1) remains satisfied while iterating to
+satisfy dual feasibility (3) and complementary slackness (5).
+The optimality phase proceeds by approximately minimizing a
+sequence of barrier functions
+<div class="math notranslate nohighlight">
+\[\frac{1}{2} x^T H x + g^T x + f -
+\mu \left[ \sum_{i=1}^{m} \log ( c_{i}  -  c_{i}^{l} )
++ \sum_{i=1}^{m} \log ( c_{i}^{u}  -  c_{i} )
++ \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} )
++ \sum_{j=1}^{n} \log ( x_{j}^{u}  -  x_{j} ) \right] ,\]</div>
+
+for an approriate sequence of positive barrier parameters <span class="math notranslate nohighlight">\(\mu\)</span>
+converging to zero while ensuring that (1) remain satisfied and that
+<span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(c\)</span> are strictly interior points for (2).
+Note that terms in the above sumations corresponding to infinite bounds
+are ignored, and that equality constraints are treated specially.</p>
+<p>Each of the barrier subproblems is solved using a trust-region method.
+Such a method generates a trial correction step <span class="math notranslate nohighlight">\(\Delta (x, c)\)</span> to the
+current iterate <span class="math notranslate nohighlight">\((x, c)\)</span> by replacing the nonlinear barrier function
+locally by a suitable quadratic model, and approximately minimizing this
+model in the intersection of (1) and a trust region <span class="math notranslate nohighlight">\(\|\Delta (x, c)\|
+\leq \Delta\)</span> for some appropriate strictly positive trust-region radius
+<span class="math notranslate nohighlight">\(\Delta\)</span> and norm <span class="math notranslate nohighlight">\(\| \cdot \|\)</span>.  The step is accepted/rejected and the
+radius adjusted on the basis of how accurately the model reproduces the
+value of barrier function at the trial step. If the step proves to be
+unacceptable, a linesearch is performed along the step to obtain an
+acceptable new iterate. In practice, the natural primal “Newton” model
+of the barrier function is frequently less successful than an
+alternative primal-dual model, and consequently the primal-dual model is
+usually to be preferred.</p>
+<p>Once a barrier subproblem has been solved, extrapolation based on values
+and derivatives encountered on the central path is optionally used to
+determine a good starting point for the next subproblem.  Traditional
+Taylor-series extrapolation has been superceded by more accurate
+Puiseux-series methods as these are particularly suited to deal with
+degeneracy.</p>
+<p>The trust-region subproblem is approximately solved using the combined
+conjugate-gradient/Lanczos method implemented in the package <code class="docutils literal notranslate"><span class="pre">GLTR</span></code>.
+Such a method requires a suitable preconditioner, and in our case, the
+only flexibility we have is in approximating the model of the
+Hessian. Although using a fixed form of preconditioning is sometimes
+effective, we have provided the option of an automatic choice, that aims
+to balance the cost of applying the preconditioner against the needs for
+an accurate solution of the trust-region subproblem.  The preconditioner
+is applied using the matrix factorization package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, but options
+at this stage are to factorize the preconditioner as a whole (the
+so-called “augmented system” approach), or to perform a block
+elimination first (the “Schur-complement” approach). The latter is
+usually to be prefered when a (non-singular) diagonal preconditioner is
+used, but may be inefficient if any of the columns of <span class="math notranslate nohighlight">\(A\)</span> is too dense.</p>
+<p>In order to make the solution as efficient as possible, the
+variables and constraints are reordered internally
+by the package <code class="docutils literal notranslate"><span class="pre">QPP</span></code> prior to solution.
+In particular, fixed variables, and
+free (unbounded on both sides) constraints are temporarily removed.</p>
+</section>
+<section id="reference">
+<h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>A primal-dual trust-region algorithm for minimizing a non-convex
+function subject to general inequality and linear equality constraints’’.
+<em>Mathematical Programming</em> <strong>87</strong>  (1999) 215-249.</p>
+</div></blockquote>
+</section>
+<section id="matrix-storage">
+<span id="details-ah-storage"></span><h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<section id="unsymmetric-storage">
+<span id="details-ah-storage-unsym"></span><h3>unsymmetric storage<a class="headerlink" href="#unsymmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
+and stored in a variety of convenient input formats.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,  <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>,
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n+1) holds the total number of entries plus one.
+The row indices i, <span class="math notranslate nohighlight">\(1 \leq i \leq m\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columnsare stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(1 \leq j \leq n\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+</section>
+<section id="symmetric-storage">
+<span id="details-ah-storage-sym"></span><h3>symmetric storage<a class="headerlink" href="#symmetric-storage" title="Permalink to this heading">#</a></h3>
+<p>The <strong>symmetric</strong> <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(H\)</span> may also
+be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the <em>lower triangular</em> part
+(i.e, those entries that lie on or below the leading diagonal).</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(H\)</span> is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since <span class="math notranslate nohighlight">\(H\)</span> is
+symmetric, only the lower triangular part (that is the part
+<span class="math notranslate nohighlight">\(H_{ij}\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>) need be held.
+In this case the lower triangle should be stored by rows, that is
+component <span class="math notranslate nohighlight">\((i-1) * i / 2 + j\)</span>  of the storage array H_val
+will hold the value <span class="math notranslate nohighlight">\(H_{ij}\)</span> (and, by symmetry, <span class="math notranslate nohighlight">\(H_{ji}\)</span>)
+for <span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>.
+The string H_type = ‘dense’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(1 \leq l \leq ne\)</span>, of <span class="math notranslate nohighlight">\(H\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(H_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq j \leq i \leq n\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays H_row and H_col and real array H_val,
+respectively, while the number of nonzeros is recorded as H_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+Note that only the entries in the lower triangle should be stored.
+The string H_type = ‘coordinate’ should be specified.</p>
+<p><em>Sparse row-wise</em> storage format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(H\)</span> the i-th component of the
+integer array H_ptr holds the position of the first entry in this row,
+while H_ptr(n+1) holds the total number of entries plus one.
+The column indices j, <span class="math notranslate nohighlight">\(1 \leq j \leq i\)</span>, and values <span class="math notranslate nohighlight">\(H_{ij}\)</span> of the entries
+in the i-th row are stored in components l = H_ptr(i), …, H_ptr(i+1)-1 of the
+integer array H_col, and real array H_val, respectively. Note that as before
+only the entries in the lower triangle should be stored. For sparse matrices,
+this scheme almost always requires less storage than its predecessor.
+The string H_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Diagonal</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is diagonal (i.e., <span class="math notranslate nohighlight">\(H_{ij} = 0\)</span> for all
+<span class="math notranslate nohighlight">\(1 \leq i \neq j \leq n\)</span>) only the diagonals entries
+<span class="math notranslate nohighlight">\(H_{ii}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq n\)</span> need be stored,
+and the first n components of the array H_val may be used for the purpose.
+The string H_type = ‘diagonal’ should be specified.</p>
+<p><em>Multiples of the identity</em> storage format:
+If <span class="math notranslate nohighlight">\(H\)</span> is a multiple of the identity matrix, (i.e., <span class="math notranslate nohighlight">\(H = \alpha I\)</span>
+where <span class="math notranslate nohighlight">\(I\)</span> is the n by n identity matrix and <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar),
+it suffices to store <span class="math notranslate nohighlight">\(\alpha\)</span> as the first component of H_val.
+The string H_type = ‘scaled_identity’ should be specified.</p>
+<p>The <em>identity matrix</em> format:
+If <span class="math notranslate nohighlight">\(H\)</span> is the identity matrix, no values need be stored.
+The string H_type = ‘identity’ should be specified.</p>
+<p>The <em>zero matrix</em> format:
+The same is true if <span class="math notranslate nohighlight">\(H\)</span> is the zero matrix, but now
+the string H_type = ‘zero’ or ‘none’ should be specified.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+<section id="introduction-to-function-calls">
+<h2>introduction to function calls<a class="headerlink" href="#introduction-to-function-calls" title="Permalink to this heading">#</a></h2>
+<p>To solve a given problem, functions from the qpb package must be
+called in the following order:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1afdfb45debf15ddcc3d6e0feea4e34784"><span class="std std-ref">qpb_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1a162514dc80468d390e80c620890c8710"><span class="std std-ref">qpb_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1a36559bb33d97b61e94e0c7dfa73b67d8"><span class="std std-ref">qpb_import</span></a> - set up problem data structures and fixed values</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1a42484e4b1aafb880fcdb215d5683a652"><span class="std std-ref">qpb_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1ac83f8c83e64a7f130fb247f162169472"><span class="std std-ref">qpb_solve_qp</span></a> - solve the quadratic program</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1a2b77d21a6c613462657e8b7f51b6b1d2"><span class="std std-ref">qpb_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="qpb_functions.html#doxid-galahad-qpb-8h-1a35596f23213b063f1f8abfc6f796bc77"><span class="std std-ref">qpb_terminate</span></a> - deallocate data structures</p></li>
+</ul>
+<p>See the <a class="reference internal" href="#doxid-index-qpb-examples"><span class="std std-ref">examples</span></a> section for
+illustrations of use.</p>
+</section>
+<section id="parametric-real-type-t">
+<h2>parametric real type T<a class="headerlink" href="#parametric-real-type-t" title="Permalink to this heading">#</a></h2>
+<p>Below, the symbol T refers to a parametric real type that may be Float32
+(single precision) or Float64 (double precision).
+Calable functions as described are with T as Float64, but variants
+(with the additional suffix <code class="docutils literal notranslate"><span class="pre">_s</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">qpb_initialize_s</span></code>)
+are available with T as Float32.</p>
+</section>
+<section id="callable-functions">
+<h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1afdfb45debf15ddcc3d6e0feea4e34784"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_qpb_control_type.html#doxid-structqpb-control-type"><span class="std std-ref">qpb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1a162514dc80468d390e80c620890c8710"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNQPB.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/qpb.pdf for a list of keywords that may be set.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_qpb_control_type.html#doxid-structqpb-control-type"><span class="std std-ref">qpb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1a36559bb33d97b61e94e0c7dfa73b67d8"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="n">H_type</span><span class="p">,</span><span class="w"> </span><span class="n">H_ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_row</span><span class="p">,</span><span class="w"> </span><span class="n">H_col</span><span class="p">,</span><span class="w"> </span><span class="n">H_ptr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="n">A_type</span><span class="p">,</span><span class="w"> </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_row</span><span class="p">,</span><span class="w"> </span><span class="n">A_col</span><span class="p">,</span><span class="w"> </span><span class="n">A_ptr</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_qpb_control_type.html#doxid-structqpb-control-type"><span class="std std-ref">qpb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 or m &gt; 0 or requirement that
+a type contains its relevant string ‘dense’,
+‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
+‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
+been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-23</strong></dt><dd><p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
+been specified.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of general linear constraints.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-ah-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian, <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_row</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>H_col</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-ah-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the constraint Jacobian, <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_row</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_col</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>A_ptr</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1a42484e4b1aafb880fcdb215d5683a652"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_reset_control</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_qpb_control_type.html#doxid-structqpb-control-type"><span class="std std-ref">qpb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1ac83f8c83e64a7f130fb247f162169472"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_solve_qp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">h_ne</span><span class="p">,</span><span class="w"> </span><span class="n">H_val</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"></span>
+<span class="w">                          </span><span class="n">a_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"> </span><span class="n">c_l</span><span class="p">,</span><span class="w"> </span><span class="n">c_u</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"></span>
+<span class="w">                          </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">c_stat</span><span class="p">)</span></pre>
+<p>Solve the quadratic program when the Hessian <span class="math notranslate nohighlight">\(H\)</span> is available.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the
+entry and exit status from the package.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 and m &gt; 0 or requirement that
+a type contains its relevant string ‘dense’,
+‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
+‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
+been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-5</strong></dt><dd><p>The simple-bound constraints are inconsistent.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The constraints appear to have no feasible point.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-23</strong></dt><dd><p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
+been specified.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of general linear constraints.</p></td>
+</tr>
+<tr class="row-odd"><td><p>h_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>H_val</p></td>
+<td><p>is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>g</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the linear term <span class="math notranslate nohighlight">\(g\)</span> of the objective function. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>f</p></td>
+<td><p>is a scalar of type T that holds the constant term <span class="math notranslate nohighlight">\(f\)</span> of the objective function.</p></td>
+</tr>
+<tr class="row-odd"><td><p>a_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>A_val</p></td>
+<td><p>is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>c_l</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the lower bounds <span class="math notranslate nohighlight">\(c^l\)</span> on the constraints <span class="math notranslate nohighlight">\(A x\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c_l</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(c^l_i\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>c_u</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the upper bounds <span class="math notranslate nohighlight">\(c^l\)</span> on the constraints <span class="math notranslate nohighlight">\(A x\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c_u</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(c^u_i\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the upper bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_u</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>c</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the residual <span class="math notranslate nohighlight">\(c(x)\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c</span></code>, j = 1, … , m, contains <span class="math notranslate nohighlight">\(c_j(x)\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>y</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(y\)</span> of the Lagrange multipliers for the general linear constraints. The j-th component of <code class="docutils literal notranslate"><span class="pre">y</span></code>, j = 1, … , m, contains <span class="math notranslate nohighlight">\(y_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>z</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_stat</p></td>
+<td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
+</tr>
+<tr class="row-even"><td><p>c_stat</p></td>
+<td><p>is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value <span class="math notranslate nohighlight">\(a_i^Tx\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1a2b77d21a6c613462657e8b7f51b6b1d2"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_qpb_inform_type.html#doxid-structqpb-inform-type"><span class="std std-ref">qpb_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package. Possible values are
+(currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-qpb-8h-1a35596f23213b063f1f8abfc6f796bc77"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">qpb_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_qpb_control_type.html#doxid-structqpb-control-type"><span class="std std-ref">qpb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_qpb_inform_type.html#doxid-structqpb-inform-type"><span class="std std-ref">qpb_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="available-structures">
+<h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="qpb-control-type-structure">
+<span id="doxid-structqpb-control-type"></span><span id="index-7"></span><h2>qpb_control_type structure<a class="headerlink" href="#qpb-control-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">qpb_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">error</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">out</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">print_level</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">start_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_print</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">itref_max</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_maxit</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">indicator_type</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">restore_problem</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">extrapolate</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">path_history</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factor</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_col</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">indmin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">valmin</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">infeas_max</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">precon</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nsemib</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">path_derivatives</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">fit_order</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_device</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">infinity</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_d</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">stop_c</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">theta_d</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">theta_c</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">beta</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">prfeas</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">dufeas</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">muzero</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">reduce_infeas</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">obj_unbounded</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivot_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">pivot_tol_for_dependencies</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">zero_pivot</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">identical_bounds_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">inner_stop_relative</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">inner_stop_absolute</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">initial_radius</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">mu_min</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">inner_fraction_opt</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">indicator_tol_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">indicator_tol_pd</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">indicator_tol_tapia</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">cpu_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_time_limit</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">remove_dependencies</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">treat_zero_bounds_as_general</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">center</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">primal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">puiseux</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">feasol</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">array_syntax_worse_than_do_loop</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">space_critical</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">deallocate_error_fatal</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">generate_sif_file</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">sif_file_name</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">prefix</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lsqp_control</span><span class="o">::</span><span class="kt">lsqp_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">fdc_control</span><span class="o">::</span><span class="kt">fdc_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_control</span><span class="o">::</span><span class="kt">sbls_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">gltr_control</span><span class="o">::</span><span class="kt">gltr_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">fit_control</span><span class="o">::</span><span class="kt">fit_control_type</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structqpb-control-type"></span><h2>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<p>control derived type as a Julia structure</p>
+<section id="components">
+<h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-8"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<p>error and warning diagnostics occur on stream error</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<p>general output occurs on stream out</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<p>the level of output required is specified by print_level</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">start_print</span></pre>
+<p>any printing will start on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">stop_print</span></pre>
+<p>any printing will stop on this iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1ab717630b215f0362699acac11fb3652c"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">maxit</span></pre>
+<p>at most maxit inner iterations are allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a903ba4ef0869186a65d4c32459a6a0ed"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">itref_max</span></pre>
+<p>the maximum number of iterative refinements allowed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a7a1029142a22f3e2a1963c3428276849"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cg_maxit</span></pre>
+<p>the maximum number of CG iterations allowed. If cg_maxit &lt; 0, this number will be reset to the dimension of the system + 1</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a5abba51271587463f528b0cbdb478141"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">indicator_type</span></pre>
+<p>specifies the type of indicator function used. Pssible values are</p>
+<ul class="simple">
+<li><p>1 primal indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_p_tol</p></li>
+<li><p>2 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_pd * size of corresponding multiplier</p></li>
+<li><p>3 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_tapia * distance to same bound at previous iteration</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a19f10912888ac7ebd153fb21baaeaefa"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">restore_problem</span></pre>
+<p>indicate whether and how much of the input problem should be restored on output. Possible values are</p>
+<ul class="simple">
+<li><p>0 nothing restored</p></li>
+<li><p>1 scalar and vector parameters</p></li>
+<li><p>2 all parameters</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1acc457bf98691a4c5b44abe6912aaa512"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">extrapolate</span></pre>
+<p>should extrapolation be used to track the central path? Possible values</p>
+<ul class="simple">
+<li><p>0 never</p></li>
+<li><p>1 after the final major iteration</p></li>
+<li><p>2 at each major iteration</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a48cfa8490ae2df9a90dd0e4d759c391f"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">path_history</span></pre>
+<p>the maximum number of previous path points to use when fitting the data</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a42eac05293c31fef9b90c92698928d7d"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factor</span></pre>
+<p>the factorization to be used. Possible values are</p>
+<ul class="simple">
+<li><p>0 automatic</p></li>
+<li><p>1 Schur-complement factorization</p></li>
+<li><p>2 augmented-system factorization</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1abca2db33b9520095e98790d45a1be93f"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_col</span></pre>
+<p>the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a5031bbc31f94e4cba6a540a3182b6d80"><span id="index-23"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">indmin</span></pre>
+<p>an initial guess as to the integer workspace required by SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a0e142fa8dc9c363c3c2993b6129b0955"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">valmin</span></pre>
+<p>an initial guess as to the real workspace required by SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1af7d33b88b67b2366d7e2df31d42083a9"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">infeas_max</span></pre>
+<p>the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor .reduce_infeas before the problem is flagged as infeasible (see reduce_infeas)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1ab22aef71d1fbb41e515107086ef88b54"><span id="index-26"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">precon</span></pre>
+<p>the preconditioner to be used for the CG is defined by precon. Possible values are</p>
+<ul class="simple">
+<li><p>0 automatic</p></li>
+<li><p>1 no preconditioner, i.e, the identity within full factorization</p></li>
+<li><p>2 full factorization</p></li>
+<li><p>3 band within full factorization</p></li>
+<li><p>4 diagonal using the barrier terms within full factorization</p></li>
+</ul>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a2215bbe54edcdc418de8b79a995c9b75"><span id="index-27"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nsemib</span></pre>
+<p>the semi-bandwidth of a band preconditioner, if appropriate</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a67f815d63085b187a059b9db28570911"><span id="index-28"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">path_derivatives</span></pre>
+<p>the maximum order of path derivative to use</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a1942b0688f86ca01852409be7791a8e9"><span id="index-29"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">fit_order</span></pre>
+<p>the order of (Puiseux) series to fit to the path data: &lt;=0 to fit all data</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a65c6f8382f1e75cd0b8abd5d148188d0"><span id="index-30"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">sif_file_device</span></pre>
+<p>specifies the unit number to write generated SIF file describing the current problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a11a46bd456ea63bac8bdffb056fe98c9"><span id="index-31"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">infinity</span></pre>
+<p>any bound larger than infinity in modulus will be regarded as infinite</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a8933604acacc0fb4367caac730b6c79b"><span id="index-32"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_p</span></pre>
+<p>the required accuracy for the primal infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a12784541c48f57127781bc1c5937c616"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_d</span></pre>
+<p>the required accuracy for the dual infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aec5ea9177505eb7723a8e092535556cb"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c</span></pre>
+<p>the required accuracy for the complementarity</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a23a7ff0b746b90fcc4bd365c09567413"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">theta_d</span></pre>
+<p>tolerances used to terminate the inner iteration (for given mu): dual feasibility &lt;= MAX( theta_d * mu ** beta, 0.99 * stop_d ) complementarity &lt;= MAX( theta_c * mu ** beta, 0.99 * stop_d )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a0c797a01f2ae4795af06695299e25f2f"><span id="index-36"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">theta_c</span></pre>
+<p>see theta_d</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a0043ca35bb17b8202336b8fea104a5be"><span id="index-37"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">beta</span></pre>
+<p>see theta_d</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a09a0a5771a0300078ebe5f344ef4e492"><span id="index-38"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">prfeas</span></pre>
+<p>initial primal variables will not be closer than prfeas from their bound</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a2ac34c5838499ed4992037655f52134a"><span id="index-39"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">dufeas</span></pre>
+<p>initial dual variables will not be closer than dufeas from their bounds</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a8f4661dd5869e1555ba329b4bd535b4d"><span id="index-40"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">muzero</span></pre>
+<p>the initial value of the barrier parameter. If muzero is not positive, it will be reset to an appropriate value</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aaac67273a340e9f96523583bfdce4c59"><span id="index-41"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">reduce_infeas</span></pre>
+<p>if the overall infeasibility of the problem is not reduced by at least a factor reduce_infeas over .infeas_max iterations, the problem is flagged as infeasible (see infeas_max)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a7eed67e26bc4e17ca334031b7fd608a6"><span id="index-42"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">obj_unbounded</span></pre>
+<p>if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a133347eb5f45a24a77b63b4afd4212e8"><span id="index-43"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">pivot_tol</span></pre>
+<p>the threshold pivot used by the matrix factorization. See the documentation for SBLS for details</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a14e253b53c59b0850d7d3b5245d89df9"><span id="index-44"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">pivot_tol_for_dependencies</span></pre>
+<p>the threshold pivot used by the matrix factorization when attempting to detect linearly dependent constraints. See the documentation for FDC for details</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aed8525bc028ed7ae0a9dd1bb3154cda2"><span id="index-45"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">zero_pivot</span></pre>
+<p>any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1abc74ac9bbf6375075f8943aac6ee09e4"><span id="index-46"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">identical_bounds_tol</span></pre>
+<p>any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a7aedce06c5903f675a7c1496f42ff834"><span id="index-47"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">inner_stop_relative</span></pre>
+<p>the search direction is considered as an acceptable approximation to the minimizer of the model if the gradient of the model in the preconditioning(inverse) norm is less than max( inner_stop_relative * initial preconditioning(inverse) gradient norm, inner_stop_absolute )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a80ae9dce0bca96a4691b0a222e3257b5"><span id="index-48"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">inner_stop_absolute</span></pre>
+<p>see inner_stop_relative</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aa1a65cb31a449551c7819e7e886ca028"><span id="index-49"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">initial_radius</span></pre>
+<p>the initial trust-region radius</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1afe0779ad5e2d665c9cbde8a45d1ef195"><span id="index-50"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">mu_min</span></pre>
+<p>start terminal extrapolation when mu reaches mu_min</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a5840187311d612d0efdfecf7078a2b7e"><span id="index-51"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">inner_fraction_opt</span></pre>
+<p>a search direction which gives at least inner_fraction_opt times the optimal model decrease will be found</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a9f245bb23cea009fc7a95d86ebe57ddd"><span id="index-52"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">indicator_tol_p</span></pre>
+<p>if .indicator_type = 1, a constraint/bound will be deemed to be active &lt;=&gt; distance to nearest bound &lt;= .indicator_p_tol</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aa131ce5e639e5601d1b61fb540ac7187"><span id="index-53"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">indicator_tol_pd</span></pre>
+<p>if .indicator_type = 2, a constraint/bound will be deemed to be active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_pd * size of corresponding multiplier</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1abf4fb7dcdbaa9f729af1f063d357000a"><span id="index-54"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">indicator_tol_tapia</span></pre>
+<p>if .indicator_type = 3, a constraint/bound will be deemed to be active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_tapia * distance to same bound at previous iteration</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span id="index-55"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">cpu_time_limit</span></pre>
+<p>the maximum CPU time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1ab05d7c2b06d3a9fb085fa3739501d1c8"><span id="index-56"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_time_limit</span></pre>
+<p>the maximum elapsed clock time allowed (-ve means infinite)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1ae17a6b550239434c639239ddf45bc1ad"><span id="index-57"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">remove_dependencies</span></pre>
+<p>the equality constraints will be preprocessed to remove any linear dependencies if true</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a59b23877e9c8cb49f1f6261e24660295"><span id="index-58"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">treat_zero_bounds_as_general</span></pre>
+<p>any problem bound with the value zero will be treated as if it were a general value if true</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1acb46b59c24c126dd8de181aed3de0b3c"><span id="index-59"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">center</span></pre>
+<p>if .center is true, the algorithm will use the analytic center of the feasible set as its initial feasible point. Otherwise, a feasible point as close as possible to the initial point will be used. We recommend using the analytic center</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a539cfdddc36d2e16b0647e84a49a61a1"><span id="index-60"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">primal</span></pre>
+<p>if .primal, is true, a primal barrier method will be used in place of t primal-dual method</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a444d111a9f28a15760d75b6ff7eb0131"><span id="index-61"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">puiseux</span></pre>
+<p>If extrapolation is to be used, decide between Puiseux and Taylor series.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a2d28372a45268cac881a4586c4e875d6"><span id="index-62"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">feasol</span></pre>
+<p>if .feasol is true, the final solution obtained will be perturbed so that variables close to their bounds are moved onto these bounds</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a67975e9960ae3d4d79bf18b240b9f614"><span id="index-63"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">array_syntax_worse_than_do_loop</span></pre>
+<p>if .array_syntax_worse_than_do_loop is true, f77-style do loops will be used rather than f90-style array syntax for vector operations</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-64"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<p>if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-65"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<p>if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aa75b3a16d146c0d7ad57bf9817033843"><span id="index-66"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">generate_sif_file</span></pre>
+<p>if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aaa95e830b709da79d9790471bab54193"><span id="index-67"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">sif_file_name</span></pre>
+<p>name of generated SIF file containing input problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-68"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a2cda9960f4e6a417f64b213147f802e0"><span id="index-69"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lsqp_control_type.html#doxid-structlsqp-control-type"><span class="std std-ref">lsqp_control_type</span></a><span></span><span class="w"> </span><span class="n">lsqp_control</span></pre>
+<p>control parameters for LSQP</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a7bef6e4f678e16a4dcdc40677efddd80"><span id="index-70"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_control_type.html#doxid-structfdc-control-type"><span class="std std-ref">fdc_control_type</span></a><span></span><span class="w"> </span><span class="n">fdc_control</span></pre>
+<p>control parameters for FDC</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-71"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<p>control parameters for SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1aa48d482633f3788830b1d8dc85fa91d6"><span id="index-72"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="w"> </span><span class="n">gltr_control</span></pre>
+<p>control parameters for GLTR</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-control-type-1a4b2e99077c510333b6b2a6f0b59114b9"><span id="index-73"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fit_control_type.html#doxid-structfit-control-type"><span class="std std-ref">fit_control_type</span></a><span></span><span class="w"> </span><span class="n">fit_control</span></pre>
+<p>control parameters for FIT</p>
+</section>
+</section>
+<section id="qpb-time-type-structure">
+<span id="doxid-structqpb-time-type"></span><span id="index-74"></span><h2>qpb_time_type structure<a class="headerlink" href="#qpb-time-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">qpb_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">preprocess</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">find_dependent</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">solve</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">phase1_total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">phase1_analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">phase1_factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">phase1_solve</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_preprocess</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_find_dependent</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_solve</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_phase1_total</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_phase1_analyse</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_phase1_factorize</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">clock_phase1_solve</span><span class="o">::</span><span class="kt">T</span></pre>
+</section>
+<section id="details-structqpb-time-type">
+<span id="id3"></span><h2>detailed documentation<a class="headerlink" href="#details-structqpb-time-type" title="Permalink to this heading">#</a></h2>
+<p>time derived type as a Julia structure</p>
+<section id="id4">
+<h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span id="index-75"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">total</span></pre>
+<p>the total CPU time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a811a9183909ac7697f36d0ea8987715c"><span id="index-76"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">preprocess</span></pre>
+<p>the CPU time spent preprocessing the problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a30beab370e7d02ef42fe7ce99c55b147"><span id="index-77"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">find_dependent</span></pre>
+<p>the CPU time spent detecting linear dependencies</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span id="index-78"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">analyse</span></pre>
+<p>the CPU time spent analysing the required matrices prior to factorizatio</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span id="index-79"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">factorize</span></pre>
+<p>the CPU time spent factorizing the required matrices</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a4c971b10c915041b89daa05a29125376"><span id="index-80"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">solve</span></pre>
+<p>the CPU time spent computing the search direction</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a95dcb61a016bdfc124262e5fd9f20096"><span id="index-81"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">phase1_total</span></pre>
+<p>the total CPU time spent in the initial-point phase of the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a7952377524e023b6b0c848e34ea6f9da"><span id="index-82"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">phase1_analyse</span></pre>
+<p>the CPU time spent analysing the required matrices prior to factorizatio in the inital-point phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1af1eaf09b990768d50a83a025db485609"><span id="index-83"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">phase1_factorize</span></pre>
+<p>the CPU time spent factorizing the required matrices in the inital-point phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1ab446d6f2a44a1ae0e397383cf5dabebe"><span id="index-84"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">phase1_solve</span></pre>
+<p>the CPU time spent computing the search direction in the inital-point ph</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span id="index-85"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_total</span></pre>
+<p>the total clock time spent in the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a0c3b390c67037ef2fe8b4cf29e079e4e"><span id="index-86"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_preprocess</span></pre>
+<p>the clock time spent preprocessing the problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a61d58c11f3f43b2171b6fc679e9845fa"><span id="index-87"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_find_dependent</span></pre>
+<p>the clock time spent detecting linear dependencies</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span id="index-88"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_analyse</span></pre>
+<p>the clock time spent analysing the required matrices prior to factorizat</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span id="index-89"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_factorize</span></pre>
+<p>the clock time spent factorizing the required matrices</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span id="index-90"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_solve</span></pre>
+<p>the clock time spent computing the search direction</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a4a099c3231600eb61ee7b5ace493b67e"><span id="index-91"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_phase1_total</span></pre>
+<p>the total clock time spent in the initial-point phase of the package</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1ae30bf39457aaaef3ceecc84a38a36243"><span id="index-92"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_phase1_analyse</span></pre>
+<p>the clock time spent analysing the required matrices prior to factorizat in the inital-point phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a95f8dbbf28776a5cff044ad7145d0c99"><span id="index-93"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_phase1_factorize</span></pre>
+<p>the clock time spent factorizing the required matrices in the inital-poi phase</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-time-type-1a2cdc17b98a4e264d7790cf645358946e"><span id="index-94"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">clock_phase1_solve</span></pre>
+<p>the clock time spent computing the search direction in the inital-point</p>
+</section>
+</section>
+<section id="qpb-inform-type-structure">
+<span id="doxid-structqpb-inform-type"></span><span id="index-95"></span><h2>qpb_inform_type structure<a class="headerlink" href="#qpb-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">qpb_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">alloc_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">bad_alloc</span><span class="o">::</span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">iter</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">cg_iter</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_status</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_integer</span><span class="o">::</span><span class="kt">Int64</span><span class="w"></span>
+<span class="w">      </span><span class="n">factorization_real</span><span class="o">::</span><span class="kt">Int64</span><span class="w"></span>
+<span class="w">      </span><span class="n">nfacts</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nbacts</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">nmods</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">      </span><span class="n">obj</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">non_negligible_pivot</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">feasible</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
+<span class="w">      </span><span class="n">time</span><span class="o">::</span><span class="kt">qpb_time_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">lsqp_inform</span><span class="o">::</span><span class="kt">lsqp_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">fdc_inform</span><span class="o">::</span><span class="kt">fdc_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">sbls_inform</span><span class="o">::</span><span class="kt">sbls_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">gltr_inform</span><span class="o">::</span><span class="kt">gltr_inform_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="n">fit_inform</span><span class="o">::</span><span class="kt">fit_inform_type</span></pre>
+</section>
+<section id="details-structqpb-inform-type">
+<span id="id5"></span><h2>detailed documentation<a class="headerlink" href="#details-structqpb-inform-type" title="Permalink to this heading">#</a></h2>
+<p>inform derived type as a Julia structure</p>
+<section id="id6">
+<h3>components<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-96"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<p>return status. See QPB_solve for details</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-97"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
+<p>the status of the last attempted allocation/deallocation</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-98"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
+<p>the name of the array for which an allocation/deallocation error occurred</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1aab6f168571c2073e01e240524b8a3da0"><span id="index-99"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">iter</span></pre>
+<p>the total number of iterations required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1ad37cf7ad93af3413bc01b6515aad692a"><span id="index-100"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">cg_iter</span></pre>
+<p>the total number of conjugate gradient iterations required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1aa448fed9eb03e70d5a03300b4fbbf210"><span id="index-101"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">factorization_status</span></pre>
+<p>the return status from the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a29cd3a5b0f30227170f825116d9ade9e"><span id="index-102"></span><span></span><span class="kt">Int64</span><span class="w"> </span><span class="n">factorization_integer</span></pre>
+<p>the total integer workspace required for the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1ad73643c24d3cd34c356c3ccd2ebfb1cc"><span id="index-103"></span><span></span><span class="kt">Int64</span><span class="w"> </span><span class="n">factorization_real</span></pre>
+<p>the total real workspace required for the factorization</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1af54a1b17cb663c1e89a5bcd5f1e9961f"><span id="index-104"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nfacts</span></pre>
+<p>the total number of factorizations performed</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a4b9a11ae940f04846c342978808696d6"><span id="index-105"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nbacts</span></pre>
+<p>the total number of “wasted” function evaluations during the linesearch</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1aedcbf93d59a135329f358f366e37cc94"><span id="index-106"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nmods</span></pre>
+<p>the total number of factorizations which were modified to ensure that th matrix was an appropriate preconditioner</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span id="index-107"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">obj</span></pre>
+<p>the value of the objective function at the best estimate of the solution determined by QPB_solve</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a827ddb7fead8e375404c9b770b67e771"><span id="index-108"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">non_negligible_pivot</span></pre>
+<p>the smallest pivot which was not judged to be zero when detecting linear dependent constraints</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1aa43a71eb35dd7b8676c0b6236ceee321"><span id="index-109"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">feasible</span></pre>
+<p>is the returned “solution” feasible?</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1ae4e944df2baf87107a291094002befb2"><span id="index-110"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_qpb_time_type.html#doxid-structqpb-time-type"><span class="std std-ref">qpb_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<p>timings (see above)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1acc149a8b0411baab4ddd0d9e4ccf28ff"><span id="index-111"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lsqp_inform_type.html#doxid-structlsqp-inform-type"><span class="std std-ref">lsqp_inform_type</span></a><span></span><span class="w"> </span><span class="n">lsqp_inform</span></pre>
+<p>inform parameters for LSQP</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a966b6933e7b53fb2d71f55f267ad00f4"><span id="index-112"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_inform_type.html#doxid-structfdc-inform-type"><span class="std std-ref">fdc_inform_type</span></a><span></span><span class="w"> </span><span class="n">fdc_inform</span></pre>
+<p>inform parameters for FDC</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-113"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<p>inform parameters for SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1a27a98844f05f18669d3dd60d3e6a8e46"><span id="index-114"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="w"> </span><span class="n">gltr_inform</span></pre>
+<p>return information from GLTR</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structqpb-inform-type-1ac6efa45e989564727014956bf3e00deb"><span id="index-115"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fit_inform_type.html#doxid-structfit-inform-type"><span class="std std-ref">fit_inform_type</span></a><span></span><span class="w"> </span><span class="n">fit_inform</span></pre>
+<p>return information from FIT</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
+</div>
+</section>
+</section>
+<section id="example-calls">
+<span id="doxid-index-qpb-examples"></span><h2>example calls<a class="headerlink" href="#example-calls" title="Permalink to this heading">#</a></h2>
+<p>This is an example of how to use the package to solve a quadratic program;
+the code is available in $GALAHAD/src/qpb/Julia/test_qpb.jl .
+A variety of supported Hessian and constraint matrix storage formats are shown.</p>
+<div class="code julia highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_qpb.jl</span>
+<span class="c1"># Simple code to test the Julia interface to QPB</span>
+
+<span class="n">using</span> <span class="n">GALAHAD</span>
+<span class="n">using</span> <span class="n">Printf</span>
+
+<span class="c1"># Derived types</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Ptr</span><span class="p">{</span><span class="n">Cvoid</span><span class="p">}}()]</span>
+<span class="n">control</span> <span class="o">=</span> <span class="n">qpb_control_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+<span class="n">inform</span> <span class="o">=</span> <span class="n">qpb_inform_type</span><span class="p">{</span><span class="n">Float64</span><span class="p">}()</span>
+
+<span class="c1"># Set problem data</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># dimension</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># number of general constraints</span>
+<span class="n">H_ne</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Hesssian elements</span>
+<span class="n">H_row</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># row indices, NB lower triangle</span>
+<span class="n">H_col</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># column indices, NB lower triangle</span>
+<span class="n">H_ptr</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>  <span class="c1"># row pointers</span>
+<span class="n">H_val</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>  <span class="c1"># values</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>  <span class="c1"># linear term in the objective</span>
+<span class="n">f</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># constant term in the objective</span>
+<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Jacobian elements</span>
+<span class="n">A_row</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># row indices</span>
+<span class="n">A_col</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># column indices</span>
+<span class="n">A_ptr</span> <span class="o">=</span> <span class="n">Cint</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># row pointers</span>
+<span class="n">A_val</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>  <span class="c1"># values</span>
+<span class="n">c_l</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>  <span class="c1"># constraint lower bound</span>
+<span class="n">c_u</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>  <span class="c1"># constraint upper bound</span>
+<span class="n">x_l</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="n">Inf</span><span class="p">,</span> <span class="o">-</span><span class="n">Inf</span><span class="p">]</span>  <span class="c1"># variable lower bound</span>
+<span class="n">x_u</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">Inf</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>  <span class="c1"># variable upper bound</span>
+
+<span class="c1"># Set output storage</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Float64</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># constraint values</span>
+<span class="n">x_stat</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Cint</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>  <span class="c1"># variable status</span>
+<span class="n">c_stat</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">Cint</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>  <span class="c1"># constraint status</span>
+<span class="n">st</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">Ref</span><span class="p">{</span><span class="n">Cint</span><span class="p">}()</span>
+
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; Fortran sparse matrix indexing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot; basic tests of qp storage formats</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">7</span>
+  <span class="c1"># Initialize QPB</span>
+  <span class="n">qpb_initialize</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+
+  <span class="c1"># Set user-defined control options</span>
+  <span class="n">control</span><span class="o">.</span><span class="n">f_indexing</span> <span class="o">=</span> <span class="n">true</span>  <span class="c1"># Fortran sparse matrix indexing</span>
+
+  <span class="c1"># Start from 0</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+
+  <span class="c1"># sparse co-ordinate storage</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_row</span><span class="p">,</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># sparse by rows</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">H_col</span><span class="p">,</span> <span class="n">H_ptr</span><span class="p">,</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># dense</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+
+    <span class="n">H_dense_ne</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of elements of H</span>
+    <span class="n">A_dense_ne</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of elements of A</span>
+    <span class="n">H_dense</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="n">A_dense</span> <span class="o">=</span> <span class="n">Float64</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_dense_ne</span><span class="p">,</span> <span class="n">H_dense</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_dense_ne</span><span class="p">,</span> <span class="n">A_dense</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span>
+                  <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># diagonal</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">4</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;L&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># scaled identity</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">5</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;S&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;scaled_identity&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># identity</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">6</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;identity&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># zero</span>
+  <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">7</span>
+    <span class="k">global</span> <span class="n">st</span> <span class="o">=</span> <span class="s1">&#39;Z&#39;</span>
+
+    <span class="n">qpb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span>
+                <span class="s2">&quot;zero&quot;</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span>
+                <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span> <span class="p">)</span>
+
+    <span class="n">qpb_solve_qp</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">H_ne</span><span class="p">,</span> <span class="n">H_val</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                  <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span>
+                  <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> <span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="n">qpb_information</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">inform</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>
+
+  <span class="k">if</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">:</span><span class="si">%6i</span><span class="s2"> iterations. Optimal objective value = </span><span class="si">%5.2f</span><span class="s2"> status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">iter</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="nd">@printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%c</span><span class="s2">: QPB_solve exit status = </span><span class="si">%1i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">inform</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+  <span class="n">end</span>
+
+  <span class="c1"># @printf(&quot;x: &quot;)</span>
+  <span class="c1"># for i = 1:n</span>
+  <span class="c1">#   @printf(&quot;%f &quot;, x[i])</span>
+  <span class="c1"># end</span>
+  <span class="c1"># @printf(&quot;\n&quot;)</span>
+  <span class="c1"># @printf(&quot;gradient: &quot;)</span>
+  <span class="c1"># for i = 1:n</span>
+  <span class="c1">#   @printf(&quot;%f &quot;, g[i])</span>
+  <span class="c1"># end</span>
+  <span class="c1"># @printf(&quot;\n&quot;)</span>
+
+  <span class="c1"># Delete internal workspace</span>
+  <span class="n">qpb_terminate</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">control</span><span class="p">,</span> <span class="n">inform</span> <span class="p">)</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="qpa_functions.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">callable functions</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="qpb_functions.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">callable functions</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminolgy">
+   terminolgy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reference">
+   reference
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#unsymmetric-storage">
+     unsymmetric storage
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#symmetric-storage">
+     symmetric storage
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#introduction-to-function-calls">
+   introduction to function calls
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parametric-real-type-t">
+   parametric real type T
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#callable-functions">
+   callable functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#available-structures">
+   available structures
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#qpb-control-type-structure">
+   qpb_control_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#qpb-time-type-structure">
+   qpb_time_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structqpb-time-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id4">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#qpb-inform-type-structure">
+   qpb_inform_type structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#details-structqpb-inform-type">
+   detailed documentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-calls">
+   example calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/qpb.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, Julia interfaces  copyright Fowkes/Gould/Montoison/Orban.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
