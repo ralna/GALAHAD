@@ -20,7 +20,6 @@
       USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
       USE GALAHAD_PRESOLVE_precision
       USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           DEBUG                 => GALAHAD_DEBUG,                              &

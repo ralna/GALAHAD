@@ -253,7 +253,7 @@ CUTEST_TESTS = make_copyright make_userdata make_tools make_norms \
 
 #  packages that are needed for QPLIB tests
 
-QPLIB_TESTS = make_copyright make_scaling make_rpd
+QPLIB_TESTS = make_copyright make_scale make_rpd
 
 #  packages that are needed for Rutherford-Boeing tests
 

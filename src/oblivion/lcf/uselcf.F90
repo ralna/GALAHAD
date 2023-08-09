@@ -30,7 +30,6 @@
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_STRING
-      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &
@@ -173,7 +172,6 @@
 
       TYPE ( LCF_control_type ) :: LCF_control
       TYPE ( LCF_inform_type ) :: LCF_inform
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( LCF_data_type ) :: data
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PRESOLVE_control_type ) :: PRE_control
@@ -507,8 +505,6 @@
 
 !  Set all default values, and override defaults if requested
  
-      CALL SCALING_initialize( control )
-
       CALL LCF_initialize( data, LCF_control, LCF_inform )
       IF ( is_specfile )                                                       &
         CALL LCF_read_specfile( LCF_control, input_specfile )

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD RQ packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2023-06-01
+#  This version: 2023-08-08
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -38,7 +38,7 @@ PYDEPENDENCIES = make_pyiface_gltr make_pyiface_glrt \
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_scaling make_convert make_miqr make_mi35
+TESTDEPS = make_copyright make_convert make_miqr make_mi35
 
 #  packages that are needed for CUTEst interfaces (prepend with make_)
 

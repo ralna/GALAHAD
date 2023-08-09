@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -30,7 +30,6 @@
       USE GALAHAD_PRESOLVE_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &
@@ -158,7 +157,6 @@
 
 !  Arrays
 
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( CQPS_data_type ) :: data
       TYPE ( CQPS_control_type ) :: CQPS_control        
       TYPE ( CQPS_inform_type ) :: CQPS_inform
@@ -577,18 +575,11 @@
 
 !  Set all default values, and override defaults if requested
  
-      CALL SCALING_initialize( control )
-
       CALL CQPS_initialize( data, CQPS_control, CQPS_inform )
-      IF ( is_specfile )                                                       &
-        CALL CQPS_read_specfile( CQPS_control, input_specfile )
+      IF ( is_specfile ) CALL CQPS_read_specfile( CQPS_control, input_specfile )
 
-      control%print_level = CQPS_control%print_level
-      control%out         = CQPS_control%out
-      control%out_error   = CQPS_control%error
-
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
+      printo = out > 0 .AND. CQPS_control%print_level > 0
+      printe = out > 0 .AND. CQPS_control%print_level >= 0
       WRITE( out, 2200 ) n, m, A_ne, H_ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2010' )

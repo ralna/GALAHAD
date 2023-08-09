@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD PDQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-28
+#  This version: 2023-08-08
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -26,7 +26,7 @@ DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_presolve make_scaling make_trans make_scale
+TESTDEPS = make_presolve make_trans make_scale
 
 #  tests to be performed (preprend with test)
 

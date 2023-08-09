@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,7 +36,6 @@
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
@@ -213,7 +212,6 @@
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( DLP_data_type ) :: data
       TYPE ( DLP_control_type ) :: DLP_control
       TYPE ( DLP_inform_type ) :: DLP_inform
@@ -492,17 +490,11 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL SCALING_initialize( control )
-
       CALL DLP_initialize( data, DLP_control, DLP_inform )
       CALL DLP_read_specfile( DLP_control, input_specfile )
 
-      control%print_level = DLP_control%print_level
-      control%out         = DLP_control%out
-      control%out_error   = DLP_control%error
-
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
+      printo = out > 0 .AND. DLP_control%print_level > 0
+      printe = out > 0 .AND. DLP_control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne
@@ -629,7 +621,7 @@
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          CALL SCALE_get( prob, - scale, SCALE_trans, SCALE_data,              &
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
                           SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
             WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &

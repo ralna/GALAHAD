@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,7 +36,6 @@
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
@@ -232,7 +231,6 @@
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( SCALING_control_type ) :: scaling_control
       TYPE ( L1QP_data_type ) :: data
       TYPE ( L1QP_control_type ) :: control
       TYPE ( L1QP_inform_type ) :: inform
@@ -668,11 +666,6 @@
       CALL L1QP_initialize( data, control, inform )
       CALL L1QP_read_specfile( control, input_specfile )
 
-      CALL SCALING_initialize( scaling_control )
-      scaling_control%print_level = control%print_level
-      scaling_control%out = control%out
-      scaling_control%out_error = control%error
-
       printo = out > 0 .AND. control%print_level > 0
       printe = out > 0 .AND. control%print_level >= 0
 
@@ -802,7 +795,7 @@
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          CALL SCALE_get( prob, - scale, SCALE_trans, SCALE_data,              &
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
                           SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
             WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &

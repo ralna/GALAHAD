@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -28,13 +28,13 @@
       USE GALAHAD_BQP_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
+      USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
 
@@ -142,17 +142,19 @@
 
 !  Arrays
 
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( BQP_data_type ) :: data
       TYPE ( BQP_control_type ) :: BQP_control        
       TYPE ( BQP_inform_type ) :: BQP_inform
       TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
+      TYPE ( SCALE_trans_type ) :: SCALE_trans
+      TYPE ( SCALE_data_type ) :: SCALE_data
+      TYPE ( SCALE_control_type ) :: SCALE_control
+      TYPE ( SCALE_inform_type ) :: SCALE_inform
 
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME
-      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SH, SA
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HX
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, B_stat
 
@@ -413,18 +415,12 @@
 
 !  Set all default values, and override defaults if requested
  
-      CALL SCALING_initialize( control )
-
       CALL BQP_initialize( data, BQP_control, BQP_inform )
       IF ( is_specfile )                                                       &
         CALL BQP_read_specfile( BQP_control, input_specfile )
 
-      control%print_level = BQP_control%print_level
-      control%out         = BQP_control%out
-      control%out_error   = BQP_control%error
-
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
+      printo = out > 0 .AND. BQP_control%print_level > 0
+      printe = out > 0 .AND. BQP_control%print_level >= 0
       WRITE( out, 2200 ) n, H_ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2010' )
@@ -433,43 +429,20 @@
 !  If required, scale the problem
 
       IF ( scale > 0 ) THEN
-        ALLOCATE( SH( n ), SA( 0 ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          IF ( printe ) WRITE( out, 2150 ) 'SH/SA', alloc_stat ; STOP
+        CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                  &
+                        SCALE_control, SCALE_inform )
+        IF ( SCALE_inform%status < 0 ) THEN
+          WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" )   &
+            SCALE_inform%status
+          STOP
         END IF
-
-!  Scale using K
-
-        IF ( scale == 1 .OR. scale == 4 ) THEN
-          IF ( printo ) WRITE( out, 2140 ) 'K'
-          CALL SCALING_get_factors_from_K( n, 0, prob%H%val, prob%H%col,       &
-                                           prob%H%ptr, prob%A%val, prob%A%col, &
-                                           prob%A%ptr, SH, SA, control, ifail )
-!  Scale using A
-
-        ELSE IF ( scale == 2 .OR. scale == 5 ) THEN
-          IF ( printo ) WRITE( out, 2140 ) 'A'
-          CALL SCALING_get_factors_from_A( n, 0, prob%A%val, prob%A%col,       &
-                                           prob%A%ptr, SH, SA, control, ifail )
-        ELSE IF ( scale == 3 ) THEN
-          SH = one ; SA = one
+        CALL SCALE_apply( prob, SCALE_trans, SCALE_data,                       &
+                          SCALE_control, SCALE_inform )
+        IF ( SCALE_inform%status < 0 ) THEN
+          WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" )   &
+            SCALE_inform%status
+          STOP
         END IF
-
-!  Rescale A
-
-        IF ( scale >= 3 ) THEN
-          IF ( printo ) WRITE( out, 2170 )
-          CALL SCALING_normalize_rows_of_A( n, 0, prob%A%val, prob%A%col,      &
-                                            prob%A%ptr, SH, SA )
-        END IF
-
-!  Apply the scaling factors
-
-        CALL SCALING_apply_factors( n, 0, prob%H%val, prob%H%col, prob%H%ptr,  &
-                                    prob%A%val, prob%A%col, prob%A%ptr,        &
-                                    prob%G, prob%X, prob%X_l, prob%X_u,        &
-                                    prob%C_l, prob%C_u, prob%Y, prob%Z,        &
-                                    infinity, SH, SA, .TRUE. )
       END IF
 
 !  If the preprocessor is to be used, or the problem to be output,
@@ -543,12 +516,13 @@
 !  If the problem was scaled, unscale it.
 
       IF ( scale > 0 ) THEN
-        CALL SCALING_apply_factors( n, 0, prob%H%val, prob%H%col, prob%H%ptr,  &
-                                    prob%A%val, prob%A%col, prob%A%ptr,        &
-                                    prob%G, prob%X, prob%X_l, prob%X_u,        &
-                                    prob%C_l, prob%C_u, prob%Y, prob%Z,        &
-                                    infinity, SH, SA, .FALSE., C = prob%C )
-        DEALLOCATE( SH, SA )
+        CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
+                            SCALE_control, SCALE_inform )
+        IF ( SCALE_inform%status < 0 ) THEN
+          WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
+            SCALE_inform%status
+          STOP
+        END IF
       END IF
 
 !  Compute maximum complementary slackness

@@ -27,7 +27,6 @@
       USE GALAHAD_SLLS_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-!     USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS
 
       IMPLICIT NONE
@@ -135,7 +134,6 @@
 
 !  Arrays
 
-!     TYPE ( SCALING_control_type ) :: control
       TYPE ( SLLS_data_type ) :: data
       TYPE ( SLLS_control_type ) :: SLLS_control
       TYPE ( SLLS_inform_type ) :: SLLS_inform
@@ -223,7 +221,6 @@
       CALL CUTEST_ccfsg( cutest_status, n, m, X, prob%C, nnzj, prob%A%ne,      &
                          prob%A%val, prob%A%col, prob%A%row, .TRUE. )
       prob%B = - prob%C
-!write(6,*) ' count ', COUNT( prob%A%col( : nnzj ) == 0 )
 
 !  deal with slack variables
 
@@ -342,15 +339,8 @@
 
 !  Set all default values, and override defaults if requested
 
-!     CALL SCALING_initialize( control )
-
       CALL SLLS_initialize( data, SLLS_control, SLLS_inform )
-      IF ( is_specfile )                                                       &
-        CALL SLLS_read_specfile( SLLS_control, input_specfile )
-
-!     control%print_level = SLLS_control%print_level
-!     control%out         = SLLS_control%out
-!     control%out_error   = SLLS_control%error
+      IF ( is_specfile ) CALL SLLS_read_specfile( SLLS_control, input_specfile )
 
       printo = out > 0 .AND. SLLS_control%print_level > 0
       printe = out > 0 .AND. SLLS_control%print_level >= 0
@@ -359,77 +349,6 @@
 
       IF ( printo ) CALL COPYRIGHT( out, '2020' )
       X_stat = 0
-
-! ! If required, scale the problem
-
-!       IF ( scale > 0 ) THEN
-!         ALLOCATE( SH( n ), SA( 0 ), STAT = alloc_stat )
-!         IF ( alloc_stat /= 0 ) THEN
-!           IF ( printe ) WRITE( out, 2150 ) 'SH/SA', alloc_stat ; STOP
-!         END IF
-
-! !  Scale using K
-
-!         IF ( scale == 1 .OR. scale == 4 ) THEN
-!           IF ( printo ) WRITE( out, 2140 ) 'K'
-!           CALL SCALING_get_factors_from_K( n, 0, prob%H%val, prob%H%col,     &
-!                                            prob%H%ptr, prob%A%val,prob%A%col,&
-!                                            prob%A%ptr, SH, SA, control, ifail)
-! !  Scale using A
-
-!         ELSE IF ( scale == 2 .OR. scale == 5 ) THEN
-!           IF ( printo ) WRITE( out, 2140 ) 'A'
-!           CALL SCALING_get_factors_from_A( n, 0, prob%A%val, prob%A%col,     &
-!                                            prob%A%ptr, SH, SA, control,ifail )
-!         ELSE IF ( scale == 3 ) THEN
-!           SH = one ; SA = one
-!         END IF
-
-! !  Rescale A
-
-!         IF ( scale >= 3 ) THEN
-!           IF ( printo ) WRITE( out, 2170 )
-!           CALL SCALING_normalize_rows_of_A( n, 0, prob%A%val, prob%A%col,    &
-!                                             prob%A%ptr, SH, SA )
-!         END IF
-
-! !  Apply the scaling factors
-
-!         CALL SCALING_apply_factors( n, 0, prob%H%val, prob%H%col, prob%H%ptr,&
-!                                     prob%A%val, prob%A%col, prob%A%ptr,      &
-!                                     prob%G, prob%X, prob%X_l, prob%X_u,      &
-!                                     prob%C_l, prob%C_u, prob%Y, prob%Z,      &
-!                                     infinity, SH, SA, .TRUE. )
-!       END IF
-
-! !  If the preprocessor is to be used, or the problem to be output,
-! !  allocate sufficient space
-
-!       IF ( write_initial_sif ) THEN
-
-!         ALLOCATE( prob%X_status( n ), STAT = alloc_stat )
-!         IF ( alloc_stat /= 0 ) THEN
-!           IF ( printe ) WRITE( out, 2150 ) 'X_status', alloc_stat
-!           STOP
-!         END IF
-!         prob%X_status = ACTIVE
-
-!         ALLOCATE( prob%Z_l( n ), prob%Z_u( n ), STAT = alloc_stat )
-!         IF ( alloc_stat /= 0 ) THEN
-!           IF ( printe ) WRITE( out, 2150 ) 'Z_lu', alloc_stat
-!           STOP
-!         END IF
-!         prob%Z_l( : n ) = - infinity
-!         prob%Z_u( : n ) =   infinity
-
-! !  Writes the initial SIF file, if needed
-
-!         IF ( write_initial_sif ) THEN
-!           CALL QPT_write_to_sif( prob, pname, ifilename, ifiledevice,        &
-!                                  .FALSE., .FALSE., infinity )
-!           IF ( .NOT. do_solve ) STOP
-!         END IF
-!       END IF
 
 !  Solve the problem
 
@@ -450,17 +369,6 @@
 
       stopr = SLLS_control%stop_d
       CALL SLLS_terminate( data, SLLS_control, SLLS_inform )
-
-!  If the problem was scaled, unscale it.
-!
-!      IF ( scale > 0 ) THEN
-!        CALL SCALING_apply_factors( n, 0, prob%H%val, prob%H%col, prob%H%ptr, &
-!                                    prob%A%val, prob%A%col, prob%A%ptr,       &
-!                                    prob%G, prob%X, prob%X_l, prob%X_u,       &
-!                                    prob%C_l, prob%C_u, prob%Y, prob%Z,       &
-!                                    infinity, SH, SA, .FALSE., C = prob%C )
-!        DEALLOCATE( SH, SA )
-!      END IF
 
 !  Print details of the solution obtained
 
@@ -570,12 +478,8 @@
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
                  '    Lower       Upper       Dual ' )
-! 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations &', I7,    &
-!              ' are degenerate' )
-!2140 FORMAT( /, ' *** Problem will be scaled based on ', A1, ' *** ' )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
-!2170 FORMAT( /, ' *** Further scaling applied to A *** ' )
 
 !  End of subroutine USE_SLLS
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,7 +36,6 @@
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
@@ -221,7 +220,6 @@
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( DQP_data_type ) :: data
       TYPE ( DQP_control_type ) :: DQP_control
       TYPE ( DQP_inform_type ) :: DQP_inform
@@ -544,7 +542,6 @@
 !  solve ( H + lambda I ) w = d, overwriting d with the solution
 
             sls_control%max_iterative_refinements = 1
-!           control%acceptable_residual_relative = 0.0_rp_
             CALL SLS_solve( prob%H, D, sls_data, sls_control, sls_inform )
 
 !  Normalize w
@@ -662,17 +659,11 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL SCALING_initialize( control )
-
       CALL DQP_initialize( data, DQP_control, DQP_inform )
       CALL DQP_read_specfile( DQP_control, input_specfile )
 
-      control%print_level = DQP_control%print_level
-      control%out         = DQP_control%out
-      control%out_error   = DQP_control%error
-
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
+      printo = out > 0 .AND. DQP_control%print_level > 0
+      printe = out > 0 .AND. DQP_control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne, H_ne
@@ -800,7 +791,7 @@
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          CALL SCALE_get( prob, - scale, SCALE_trans, SCALE_data,              &
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
                           SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
             WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &

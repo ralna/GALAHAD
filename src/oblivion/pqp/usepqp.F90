@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,11 +21,11 @@
       USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
+      USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
 
@@ -126,12 +126,15 @@
 !  Arrays
 
       CHARACTER ( LEN = 20 ) :: action
-      TYPE ( SCALING_control_type ) :: SCALING_control
       TYPE ( PQP_interval_type ) :: PQP_interval
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PQP_data_type ) :: PQP_data
       TYPE ( PQP_control_type ) :: PQP_control        
       TYPE ( PQP_inform_type ) :: PQP_inform
+      TYPE ( SCALE_trans_type ) :: SCALE_trans
+      TYPE ( SCALE_data_type ) :: SCALE_data
+      TYPE ( SCALE_control_type ) :: SCALE_control
+      TYPE ( SCALE_inform_type ) :: SCALE_inform
 
 !  Allocatable arrays
 
@@ -627,63 +630,30 @@
 !      &               /, ' =================== ' )" ) mu
 
         PQP_control%restore_problem = 2
-        SCALING_control%print_level = PQP_control%print_level
-        SCALING_control%out         = PQP_control%out
-        SCALING_control%out_error   = PQP_control%error
-!       IF ( pass == n_pass - 1 ) SCALING_control%print_level = 1
 !       IF ( pass == n_pass - 1 ) PQP_control%print_level = 1
 
-        printo = out > 0 .AND. SCALING_control%print_level > 0
-        printe = out > 0 .AND. SCALING_control%print_level >= 0
+        printo = out > 0 .AND. PQP_control%print_level > 0
+        printe = out > 0 .AND. PQP_control%print_level >= 0
 
         IF ( printo ) CALL COPYRIGHT( out, '2002' )
 
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          ALLOCATE( SH( n ), SA( m ), STAT = alloc_stat )
-          IF ( alloc_stat /= 0 ) THEN
-            IF ( printe ) WRITE( out, 2150 ) 'SH/SA', alloc_stat ; STOP
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
+                          SCALE_control, SCALE_inform )
+          IF ( SCALE_inform%status < 0 ) THEN
+            WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
+              SCALE_inform%status
+            STOP
           END IF
-
-!  Scale using K
-
-          CALL SCALING_initialize( SCALING_control )
-          IF ( scale == 1 .OR. scale == 4 ) THEN
-            IF ( printo ) WRITE( out, 2140 ) 'K'
-            CALL SCALING_get_factors_from_K( n, m, prob%H%val, prob%H%col,     &
-                                             prob%H%ptr, prob%A%val,           &
-                                             prob%A%col, prob%A%ptr, SH, SA,   &
-                                             SCALING_control, ifail )
-
-!  Scale using A
-
-          ELSE IF ( scale == 2 .OR. scale == 5 ) THEN
-            IF ( printo ) WRITE( out, 2140 ) 'A'
-            CALL SCALING_get_factors_from_A( n, m, prob%A%val, prob%A%col,     &
-                                             prob%A%ptr, SH, SA,               &
-                                             SCALING_control, ifail )
-          ELSE IF ( scale == 3 ) THEN
-            SH = one ; SA = one
+          CALL SCALE_apply( prob, SCALE_trans, SCALE_data,                     &
+                            SCALE_control, SCALE_inform )
+          IF ( SCALE_inform%status < 0 ) THEN
+            WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
+              SCALE_inform%status
+            STOP
           END IF
-
-!  Reccale A
-
-          IF ( scale >= 3 ) THEN
-            IF ( printo ) WRITE( out, 2170 )
-            CALL SCALING_normalize_rows_of_A( n, m, prob%A%val, prob%A%col,    &
-                                              prob%A%ptr, SH, SA )
-          END IF
-
-!  Apply the scaling factors
-
-          CALL SCALING_apply_factors( n, m, prob%H%val, prob%H%col, prob%H%ptr,&
-                                      prob%A%val, prob%A%col, prob%A%ptr,      &
-                                      prob%G, prob%X, prob%X_l, prob%X_u,      &
-                                      prob%C_l, prob%C_u, prob%Y, prob%Z,      &
-                                      infinity, SH, SA, .TRUE., DG = prob%DG,  &
-                                      DX_l = prob%DX_l, DX_u = prob%DX_u,      &
-                                      DC_l = prob%DC_l, DC_u = prob%DC_u )
         END IF
 
 !  If the problem to be output, allocate sufficient space
@@ -792,14 +762,13 @@
 !  If the problem was scaled, unscale it.
 
         IF ( scale > 0 ) THEN
-          CALL SCALING_apply_factors( n, m, prob%H%val, prob%H%col, prob%H%ptr,&
-                                      prob%A%val, prob%A%col, prob%A%ptr,      &
-                                      prob%G, prob%X, prob%X_l, prob%X_u,      &
-                                      prob%C_l, prob%C_u, prob%Y, prob%Z,      &
-                                      infinity, SH, SA, .FALSE., DG = prob%DG, &
-                                      DX_l = prob%DX_l, DX_u = prob%DX_u,      &
-                                      DC_l = prob%DC_l, DC_u = prob%DC_u )
-          DEALLOCATE( SH, SA )
+          CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
+                              SCALE_control, SCALE_inform )
+          IF ( SCALE_inform%status < 0 ) THEN
+            WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
+              SCALE_inform%status
+            STOP
+          END IF
         END IF
 
 !  If required, compute the exit status for the variables and constraints

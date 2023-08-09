@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD BQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2023-05-11
+#  This version: 2023-08-08
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -44,7 +44,7 @@ PYDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_scaling
+TESTDEPS =
 
 #  tests to be performed (preprend with test_)
 

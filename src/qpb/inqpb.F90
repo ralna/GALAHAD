@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -32,7 +32,6 @@
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
@@ -222,7 +221,6 @@
       TYPE ( RPD_inform_type ) :: RPD_inform
       TYPE ( LSQP_control_type ) :: LSQP_control
       TYPE ( LSQP_inform_type ) :: LSQP_inform
-      TYPE ( SCALING_control_type ) :: control
       TYPE ( QPB_data_type ) :: data
       TYPE ( QPB_control_type ) :: QPB_control
       TYPE ( QPB_inform_type ) :: QPB_inform
@@ -510,40 +508,33 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL SCALING_initialize( control )
       IF ( islsqp ) THEN
         CALL LSQP_initialize( data, LSQP_control, LSQP_inform )
         CALL LSQP_read_specfile( LSQP_control, input_specfile )
         phase1 = LSQP_control%just_feasible
         LSQP_control%restore_problem = 2
-        control%print_level = LSQP_control%print_level
-        control%out         = LSQP_control%out
-        control%out_error   = LSQP_control%error
+        printo = out > 0 .AND. LSQP_control%print_level > 0
+        printe = out > 0 .AND. LSQP_control%print_level >= 0
       ELSE
         CALL QPB_initialize( data, QPB_control, QPB_inform )
         CALL QPB_read_specfile( QPB_control, input_specfile )
         phase1 = QPB_control%LSQP_control%just_feasible
         IF ( phase1 ) THEN
           LSQP_control = QPB_control%LSQP_control
-          control%print_level = LSQP_control%print_level
-          control%out         = LSQP_control%out
-          control%out_error   = LSQP_control%error
+          printo = out > 0 .AND. LSQP_control%print_level > 0
+          printe = out > 0 .AND. LSQP_control%print_level >= 0
         ELSE
-          control%print_level = QPB_control%print_level
-          control%out         = QPB_control%out
-          control%out_error   = QPB_control%error
+          printo = out > 0 .AND. QPB_control%print_level > 0
+          printe = out > 0 .AND. QPB_control%print_level >= 0
         END IF
         center = QPB_control%center
         QPB_control%LSQP_control%pivot_tol = QPB_control%pivot_tol
         QPB_control%LSQP_control%pivot_tol_for_dependencies =                  &
-          QPB_control%pivot_tol_for_dependencies
+        QPB_control%pivot_tol_for_dependencies
 !       QPB_control%LSQP_control%maxit = 1
 !       QPB_control%LSQP_control%print_level = 3
         QPB_control%restore_problem = 2
       END IF
-
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne, H_ne
@@ -687,7 +678,7 @@
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          CALL SCALE_get( prob, - scale, SCALE_trans, SCALE_data,              &
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
                           SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
             WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &

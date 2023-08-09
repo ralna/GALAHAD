@@ -442,11 +442,6 @@ make_scale:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
 
-make_scaling:
-	( cd $(GALAHAD)/src/scaling ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
-
 make_scu:
 	( cd $(GALAHAD)/src/scu ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scu.o \
@@ -1071,11 +1066,6 @@ make_all_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
-
-make_all_scaling:
-	( cd $(GALAHAD)/src/scaling ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
 
 make_all_scu:
 	( cd $(GALAHAD)/src/scu ; \
@@ -1733,11 +1723,6 @@ make_ciface_scale:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
 
-make_ciface_scaling:
-	( cd $(GALAHAD)/src/scaling ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
-
 make_ciface_scu:
 	( cd $(GALAHAD)/src/scu ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scu_ciface.o \
@@ -2360,11 +2345,6 @@ make_pyiface_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
-
-make_pyiface_scaling:
-	( cd $(GALAHAD)/src/scaling ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
 
 make_pyiface_scu:
 	( cd $(GALAHAD)/src/scu ; \

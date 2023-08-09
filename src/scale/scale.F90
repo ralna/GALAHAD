@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-07 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -1161,7 +1161,7 @@
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' entering SCALE_get_factors_from_K')") prefix
 
-!  Ensure that input parameters are within allowed ranges
+!  ensure that input parameters are within allowed ranges
 
       IF ( n <= 0 .OR. m < 0 .OR. .NOT. QPT_keyword_H( H%type ) .OR.           &
            .NOT. QPT_keyword_A( A%type ) ) THEN
@@ -1169,12 +1169,14 @@
         GO TO 800
       END IF
 
-!  compute matrix sizes
+!  compute the numbers of nonzeros a_ne and h_ne in the lower triangles of A & H
 
       IF ( SMT_get( A%type ) == 'DENSE' ) THEN
         a_ne = m * n
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
+      ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' ) THEN
+        a_ne = A%ptr( n + 1 ) - 1
       ELSE
         a_ne = A%ne 
       END IF
@@ -1182,14 +1184,15 @@
         h_ne = n
       ELSE IF ( SMT_get( H%type ) == 'DENSE' ) THEN
         h_ne = ( n * ( n + 1 ) ) / 2
-      ELSE IF ( SMT_get( H%type ) == 'SPARSE_BY_ROWS' ) THEN
+      ELSE IF ( SMT_get( H%type ) == 'SPARSE_BY_ROWS' .OR. &
+                SMT_get( H%type ) == 'SPARSE_BY_COLUMNS' ) THEN
         h_ne = H%ptr( n + 1 ) - 1
       ELSE
         h_ne = H%ne 
       END IF
       npm  = n + m ; ne = a_ne + h_ne
 
-!  check ne
+!  check the number of nonzeros ne in the lower triangle of K
 
       IF (  ne <= 0 ) THEN
         inform%status = GALAHAD_error_restrictions ; GO TO 800
@@ -1251,7 +1254,7 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  initialise for accumulation of sums and products
+!  initialise values for the sums and products
 
       data%ROW_val( : npm ) = zero ; data%RES( : npm ) = zero
       log2 = LOG( two )
@@ -1290,6 +1293,22 @@
             val = ABS( H%val( l ) )
             IF ( val /= zero ) THEN
               j = H%col( l )
+              IF ( j >= 1 .AND. j <= n ) THEN
+                val = LOG( val ) / log2
+                data%ROW_val( i ) = data%ROW_val( i ) + one
+                data%ROW_val( j ) = data%ROW_val( j ) + one
+                data%RES( i ) = data%RES( i ) - val
+                IF ( i /= j ) data%RES( j ) = data%RES( j ) - val
+              END IF
+            END IF
+          END DO
+        END DO
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        DO i = 1, n
+          DO l = H%ptr( i ), H%ptr( i + 1 ) - 1
+            val = ABS( H%val( l ) )
+            IF ( val /= zero ) THEN
+              j = H%row( l )
               IF ( j >= 1 .AND. j <= n ) THEN
                 val = LOG( val ) / log2
                 data%ROW_val( i ) = data%ROW_val( i ) + one
@@ -1352,6 +1371,23 @@
             END IF
           END DO
         END DO
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            val = ABS( A%val( l ) )
+            IF ( val /= zero ) THEN
+              i = A%row( l )
+              IF ( i >= 1 .AND. i <= m ) THEN
+                ii = n + i
+                val = LOG( val ) / log2
+                data%ROW_val( ii ) = data%ROW_val( ii ) + one
+                data%RES( ii ) = data%RES( ii ) - val
+                data%ROW_val( j ) = data%ROW_val( j ) + one 
+                data%RES( j ) = data%RES( j ) - val
+              END IF
+            END IF
+          END DO
+        END DO
       CASE ( 'COORDINATE' )
         DO l = 1, A%ne
           val = ABS( A%val( l ) )
@@ -1369,7 +1405,7 @@
         END DO
       END SELECT
 
-!  find the initial vectors
+!  compute initial residual and solution vectors
 
       WHERE ( data%ROW_val( : npm ) == zero ) data%ROW_val( : npm ) = one
       data%P( : npm ) = data%RES( : npm ) / data%ROW_val( : npm ) 
@@ -1381,7 +1417,7 @@
       stop_tol = control%stop_tol * ne
 
 !  --------------
-!  iteration loop
+!  main iteration
 !  --------------
 
       inform%status = GALAHAD_ok
@@ -1418,7 +1454,21 @@
                 END IF
               END DO
             END DO
-          CASE ( 'COORDINATE' )
+           CASE ( 'SPARSE_BY_COLUMNS' )
+            DO i = 1, n
+              DO l = H%ptr( i ), H%ptr( i + 1 ) - 1
+                IF ( H%val( l ) /= zero ) THEN
+                  j = H%row( l )
+                  IF ( i /= j ) THEN
+                    IF ( j >= 1 .AND.  j <= n ) THEN
+                      data%PROD( i ) = data%PROD( i ) + data%P( j )
+                      data%PROD( j ) = data%PROD( j ) + data%P( i )
+                    END IF
+                  END IF
+                END IF
+              END DO
+            END DO
+         CASE ( 'COORDINATE' )
             DO l = 1, H%ne
               IF ( H%val( l ) /= zero ) THEN
                 i = H%row( l ) ; j = H%col( l )
@@ -1460,6 +1510,19 @@
                 END IF
               END DO
             END DO
+          CASE ( 'SPARSE_BY_COLUMNS' )
+            DO j = 1, n
+              DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+                IF ( A%val( l ) /= zero ) THEN
+                  i = A%row( l )
+                  IF ( i >= 1 .AND. i <= m ) THEN
+                    ii = n + i
+                    data%PROD( ii ) = data%PROD( ii ) + data%P( j ) 
+                    data%PROD( j ) = data%PROD( j ) + data%P( ii )
+                  END IF
+                END IF
+              END DO
+            END DO
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
               IF ( A%val( l ) /= zero ) THEN
@@ -1485,6 +1548,9 @@
           trans%C_scale( : m ) =                                               &
             trans%C_scale( : m ) + alpha * data%P( n + 1 : npm )
           data%RES( : npm ) = data%RES( : npm ) - alpha * data%PROD( : npm )
+
+!  test for termination
+
           rtr_old = rtr
           rtr  = SUM( data%RES( : npm ) ** 2 / data%ROW_val( : npm ) )
           IF ( rtr <= stop_tol ) EXIT
@@ -1498,7 +1564,7 @@
           data%P( : npm ) = data%RES( : npm ) / data%ROW_val( : npm )          &
              + beta * data%P( : npm )
 
-!  compute Mp
+!  compute the product Mp
 
           data%PROD( : npm ) = data%P( : npm ) * data%ROW_val( : npm )
         END DO
@@ -1510,10 +1576,10 @@
       END IF
 
 !  ---------------------
-!  end of iteration loop
+!  end of main iteration
 !  ---------------------
 
-!  obtain the scaling factors - factors for the H rows
+!  obtain the scaling factors as powers of two - factors for the H rows
 
       trans%X_scale( : n ) = two ** ANINT( trans%X_scale( : n ) )
       s_max = MAXVAL( trans%X_scale( : n ) ) 
@@ -1532,6 +1598,8 @@
           WRITE( control%out, "( A, ' min, max   row  scaling = ', 2ES12.4 )") &
             prefix, s_min, s_max
       END IF
+
+!  normal exit
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' leaving SCALE_get_factors_from_K' )") prefix
@@ -1579,7 +1647,7 @@
 !
 !   The resulting method is to find a solution (r,c) to the linear system
 !
-!       ( M   E ) ( r ) = ( sigma )
+!       (  M  E ) ( r ) = ( sigma )
 !       ( E^T N ) ( c )   (  tau  )
 !
 !    using a few iterations of the CG method - M and N are diagonal
@@ -1624,7 +1692,7 @@
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' entering SCALE_get_factors_from_A')") prefix
 
-!  Ensure that input parameters are within allowed ranges
+!  ensure that input parameters are within allowed ranges
 
       IF ( n <= 0 .OR. m < 0 .OR. .NOT. QPT_keyword_A( A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
@@ -1637,13 +1705,11 @@
         a_ne = m * n
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
+      ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' ) THEN
+        a_ne = A%ptr( n + 1 ) - 1
       ELSE
         a_ne = A%ne 
       END IF
-
-!  set the stopping tolerance
-
-      stop_tol = a_ne * control%stop_tol
 
 !  allocate space for scale factors
 
@@ -1709,14 +1775,14 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  initialise for accumulation of sums and products
+!  initialise sums and products
 
       data%ROW_val( : m ) = zero ; data%COL_val( : n ) = zero 
       data%RES( : n ) = zero 
       log2 = LOG( two )
 
-!  count non-zeros in the rows, and compute r.h.s. vectors; use C_scale to store
-!  the row r.h.s. (sigma in Curtis+Reid)
+!  record the number of non-zeros in each row, and compute the required rhs
+!  vectors; use row_scale to store the row rhs. (sigma in Curtis+Reid)
 
       SELECT CASE ( SMT_get( A%type ) )
       CASE ( 'DENSE' ) 
@@ -1741,6 +1807,22 @@
             IF ( val /= zero ) THEN
               j = A%col( l )
               IF ( j >= 1 .AND. j <= n ) THEN
+                val = LOG( val ) / log2
+                data%ROW_val( i ) = data%ROW_val( i ) + one 
+                data%COL_val( j ) = data%COL_val( j ) + one 
+                trans%C_scale( i ) = trans%C_scale( i ) + val 
+                data%RES( j ) = data%RES( j ) + val 
+               END IF 
+             END IF 
+           END DO 
+         END DO
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            val = ABS( A%val( l ) )
+            IF ( val /= zero ) THEN
+              i = A%row( l )
+              IF ( i >= 1 .AND. i <= m ) THEN
                 val = LOG( val ) / log2
                 data%ROW_val( i ) = data%ROW_val( i ) + one 
                 data%COL_val( j ) = data%COL_val( j ) + one 
@@ -1776,7 +1858,7 @@
       data%PROD( : m ) = trans%C_scale( : m ) / data%ROW_val( : m )
       data%RES( : n ) = data%RES( : n ) / data%COL_val( : n )
 
-!  compute initial residual vector
+!  compute the initial residual vector
 
       trans%C_scale( : m ) = data%PROD( : m )
 
@@ -1801,6 +1883,17 @@
              END IF 
            END DO 
          END DO 
+      CASE ( 'SPARSE_BY_COLUMNS' )
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            val = ABS( A%val( l ) )
+            IF ( val /= zero ) THEN
+             i = A%row( l )
+             IF ( i >= 1 .AND. i <= m ) trans%C_scale( i ) =                   &
+                trans%C_scale( i ) - data%RES( j ) / data%ROW_val( i )  ! (4.3)
+             END IF 
+           END DO 
+         END DO 
       CASE ( 'COORDINATE' )
         DO l = 1, A%ne
           val = ABS( A%val( l ) )
@@ -1812,6 +1905,10 @@
           END IF
         END DO
       END SELECT
+
+!  set the stopping tolerance
+
+      stop_tol = a_ne * control%stop_tol
 
 !  set initial values
 
@@ -1829,12 +1926,12 @@
         data%P( : n ) = zero 
 
 !  --------------
-!  iteration loop
+!  main iteration
 !  --------------
 
           DO iter = 1, control%maxit
 
-!  update column residual vector
+!  update the column residual vector
 
           SELECT CASE ( SMT_get( A%type ) )
           CASE ( 'DENSE' ) 
@@ -1855,6 +1952,16 @@
                     trans%X_scale( j ) = trans%X_scale( j ) + trans%C_scale( i )
                 END IF
               END DO 
+            END DO
+          CASE ( 'SPARSE_BY_COLUMNS' )
+            DO j = 1, n
+              DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+                IF ( A%val( l ) /= zero ) THEN
+                  i = A%row( l )
+                  IF ( i >= 1 .AND. i <= m ) &
+                    trans%X_scale( j ) = trans%X_scale( j ) + trans%C_scale( i )
+                END IF
+              END DO 
             END DO 
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
@@ -1867,7 +1974,7 @@
             END DO
           END SELECT
 
-!  rescale column residual
+!  rescale the column residual vector
 
           s_old = s ; s = zero 
           DO j = 1, n 
@@ -1879,7 +1986,7 @@
           IF ( control%out > 0 .AND. control%print_level >= 2 )                &
             WRITE( control%out, "( I5, ES12.4 )" ) iter, s
 
-!  rescale row residual vector
+!  rescale the row residual vector
 
           e_old = e 
           e = q * s / s_old                                            ! (4.6)
@@ -1890,10 +1997,9 @@
 
 !  test for termination
 
-          IF ( s <= stop_tol ) GO TO 100 
-          e_prod = e * e_old 
+          IF ( s <= stop_tol ) EXIT
 
-!  update row residual
+!  update the row residual vector
 
           SELECT CASE ( SMT_get( A%type ) )
           CASE ( 'DENSE' ) 
@@ -1915,6 +2021,16 @@
                 END IF
               END DO 
             END DO 
+          CASE ( 'SPARSE_BY_COLUMNS' )
+            DO j = 1, n
+              DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+                IF ( A%val( l ) /= zero ) THEN
+                  i = A%row( l )
+                  IF ( i >= 1 .AND. i <= m ) &
+                    trans%C_scale( i ) = trans%C_scale( i ) + trans%X_scale( j )
+                END IF
+              END DO 
+            END DO 
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
               val = ABS( A%val( l ) )
@@ -1926,9 +2042,9 @@
             END DO
           END SELECT
 
-!  rescale row residual
+!  rescale the row residual vector
 
-          s_old = s ; s = zero 
+          e_prod = e * e_old ; s_old = s ; s = zero 
           DO i = 1, m 
              val = - trans%C_scale( i ) / q 
              trans%C_scale( i ) = val / data%ROW_val( i )              ! (4.4b)
@@ -1940,12 +2056,9 @@
           IF ( control%out > 0 .AND. control%print_level >= 2 )                &
             WRITE( control%out, "( I5, ES12.4 )" ) iter, s
 
-!  special fixup for last iteration
-
-          IF ( s <= stop_tol ) q = one 
-
 !  rescale column residual vector
 
+          IF ( s <= stop_tol ) q = one 
           q_prod = q * q_old 
           data%P( : n ) =                                                      &
             ( e_prod * data%P( : n ) + trans%X_scale( : n ) ) / q_prod 
@@ -1953,29 +2066,33 @@
 
 !  test for termination
 
-          IF ( s <= stop_tol ) EXIT  
+          IF ( s <= stop_tol ) THEN
+            trans%C_scale( : m ) = trans%C_scale( : m ) * data%ROW_val( : m )
+            EXIT
+          END IF
 
-!  update column scaling factors
+!  update the column scaling factors
 
           trans%X_scale( : n ) =                                               &
             e * trans%X_scale( : n ) * data%COL_val( : n )
+
+!  set row scalings if the iteration bound is achieved
+
+          IF ( iter == control%maxit ) THEN
+            inform%status = - GALAHAD_error_max_iterations
+            trans%C_scale( : m ) = trans%C_scale( : m ) * data%ROW_val( : m )
+          END IF
         END DO 
-        IF ( iter > control%maxit )                                            &
-          inform%status = - GALAHAD_error_max_iterations
         inform%iter = iter
       ELSE
         inform%iter = 0
       END IF
 
 !  ---------------------
-!  end of iteration loop
+!  end of iteration main
 !  ---------------------
 
-      trans%C_scale( : m ) = trans%C_scale( : m ) * data%ROW_val( : m )
-
 !  sweep through matrix to prepare to get row scaling powers
-
-  100 CONTINUE 
 
       SELECT CASE ( SMT_get( A%type ) )
       CASE ( 'DENSE' ) 
@@ -2008,13 +2125,13 @@
         END DO
       END SELECT
 
-!  final conversion to output values
+!  compute to output scalings
 
       trans%C_scale( : m )                                                     &
         = trans%C_scale( : m ) / data%ROW_val( : m ) - data%PROD( : m )
       trans%X_scale( : n ) = - data%RES( : n )
 
-!  obtain the scaling factors - factors for the H rows
+!  obtain the scaling factors as powers of two - factors for the columns
 
       trans%X_scale( : n ) = two ** ANINT( trans%X_scale( : n ) )
       s_max = MAXVAL( trans%X_scale( : n ) ) 
@@ -2023,7 +2140,7 @@
         WRITE( control%out, "( A, ' min, max column scaling = ', 2ES12.4 )" )  &
           prefix, s_min, s_max
 
-!  factors for the A rows
+!  factors for the rows
 
       IF ( m > 0 ) THEN
         trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
@@ -2033,6 +2150,8 @@
           WRITE( control%out, "( A, ' min, max   row  scaling = ', 2ES12.4 )") &
             prefix, s_min, s_max
       END IF
+
+!  normal exit
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' leaving SCALE_get_factors_from_A' )") prefix

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,7 +31,6 @@
    USE GALAHAD_PRESOLVE_precision
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
@@ -213,7 +212,6 @@
      TYPE ( QPA_control_type ) :: QPA_control
      TYPE ( QPA_inform_type ) :: QPA_inform
      TYPE ( QPT_problem_type ) :: prob
-     TYPE ( SCALING_control_type ) :: control
      TYPE ( RAND_seed ) :: seed
      TYPE ( PRESOLVE_control_type ) :: PRE_control
      TYPE ( PRESOLVE_inform_type )  :: PRE_inform
@@ -486,13 +484,8 @@
 
 !  Update control parameters if required.
 
-     CALL SCALING_initialize( control )
      CALL QPA_initialize( QPA_data, QPA_control, QPA_inform )
      CALL QPA_read_specfile( QPA_control, input_specfile )
-
-     control%print_level = QPA_control%print_level
-     control%out         = QPA_control%out
-     control%out_error   = QPA_control%error
 
      printo = out > 0 .AND. QPA_control%print_level > 0
      printe = out > 0 .AND. QPA_control%print_level >= 0
@@ -674,7 +667,7 @@
 !  If required, scale the problem
 
         IF ( scale > 0 ) THEN
-          CALL SCALE_get( prob, - scale, SCALE_trans, SCALE_data,              &
+          CALL SCALE_get( prob, scale, SCALE_trans, SCALE_data,                &
                           SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
             WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
