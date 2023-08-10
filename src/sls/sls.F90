@@ -7325,7 +7325,7 @@
      CASE ( 'pastix' )
        CALL pastixFinalize( data%pastix_data )
        CALL spmExit( data%spm )
-       DEALLOCATE( data%spm )
+       IF ( ALLOCATED( data%spm ) ) DEALLOCATE( data%spm )
        data%no_pastix = .FALSE.
 
 !  = MUMPS =
