@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RPD_interface_test
    USE GALAHAD_KINDS_precision
@@ -88,7 +88,7 @@
    WRITE( 6, "( ' Z =', 5F4.1 )" ) Z
 !  deallocate internal array space
    CALL RPD_terminate( data, control, inform )
-   DEALLOCATE( X, G, Y, Z, x_l, X_u, C_l, C_u, X_type )
+   DEALLOCATE( X, G, Y, Z, x_l, X_u, C_l, C_u, X_type, galahad )
    DEALLOCATE( A_val, A_row, A_col, H_val, H_row, H_col )
    DEALLOCATE( H_c_val, H_c_row, H_c_col, H_c_ptr )
 

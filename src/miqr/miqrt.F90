@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_MIQR_TEST
    USE GALAHAD_KINDS_precision
@@ -56,5 +56,6 @@
    CALL MIQR_apply( SOL, .FALSE., data, inform )
    WRITE( 6, "( ' sol ', /, ( 5ES12.4 ) )" ) SOL
    CALL MIQR_terminate( data, control, inform )  !  delete internal workspace
+   DEALLOCATE( SOL )
    END PROGRAM GALAHAD_MIQR_TEST
 

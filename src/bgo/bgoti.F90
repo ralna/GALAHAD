@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:55 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BGO_interface_test
    USE GALAHAD_USERDATA_precision            
@@ -322,7 +322,7 @@
      CALL BGO_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-   DEALLOCATE( X, X_l, x_u, G )
+   DEALLOCATE( X, X_l, X_u, G, U, V, INDEX_nz_v, INDEX_nz_u )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS
@@ -350,10 +350,10 @@ CONTAINS
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
-   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) )                  &
+   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) )                 &
              - mag * freq * SIN( freq * X( 1 ) ) + 1.0_rp_
    G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) ) + 1.0_rp_
-   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
+   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
             2.0_rp_ * ( X( 2 ) + X( 3 ) ) + 1.0_rp_
    status = 0
    RETURN

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1362,6 +1362,7 @@
            data%solver( 1 : data%len_solver ) = 'ma57'
            GO TO 10
          ELSE
+           DEALLOCATE( data%spm )
            inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF

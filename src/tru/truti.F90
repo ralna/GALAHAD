@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 10:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRU_interface_test
    USE GALAHAD_USERDATA_precision
@@ -241,7 +241,7 @@
      CALL TRU_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-   DEALLOCATE( X, G )
+   DEALLOCATE( X, G, U, V )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS

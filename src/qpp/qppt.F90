@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -608,6 +608,7 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C )
    DEALLOCATE( p%DG, p%DX_l, p%DX_u, p%DC_l, p%DC_u )
+   DEALLOCATE( X_orig, Y_orig, Z_orig )
    WRITE( 6, "( /, ' tests completed' )" )
 
 10 FORMAT( A1, I1, ': QPP_', A10, ' exit status = ', I6 )

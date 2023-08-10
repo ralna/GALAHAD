@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -2331,6 +2331,12 @@ R = Rfx
   DEALLOCATE( uBv%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
+  DEALLOCATE( u, STAT=stat )
+  IF ( stat /= 0 ) WRITE( error, 1001)
+  
+  DEALLOCATE( v, STAT=stat )
+  IF ( stat /= 0 ) WRITE( error, 1001)
+  
   IF ( print_level >= 1 ) THEN
      
      WRITE( out, 3006 ) ! header

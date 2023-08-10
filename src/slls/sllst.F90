@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
@@ -39,7 +39,8 @@
    p%n = n ; p%m = m                          ! dimensions
    p%B = (/ 0.0_rp_,  2.0_rp_,  1.0_rp_,  2.0_rp_ /) ! right-hand side
    p%X = 0.0_rp_ ! start from zero
-   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), A_ptr_row( m + 1 ) )
+   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_col( a_ne ) )
+   ALLOCATE( A_ptr( n + 1 ), A_ptr_row( m + 1 ) )
    A_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! Jacobian A by col
    A_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
    A_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
@@ -243,6 +244,7 @@
        CALL SLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
+   DEALLOCATE( DIAG )
 !  CYCLE
 
 ! generic runs to test each storage mode
@@ -427,9 +429,8 @@
                     eval_AFPROD = AFPROD_broken )
    WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
    DEALLOCATE( userdata%integer, userdata%real )
-
-
    DEALLOCATE( p%B, p%X, p%Z, X_stat )
+   DEALLOCATE( A_val, A_row, A_col, A_ptr, A_ptr_row )
 
    END PROGRAM GALAHAD_SLLS_TEST_PROGRAM
 
