@@ -1362,7 +1362,7 @@
            data%solver( 1 : data%len_solver ) = 'ma57'
            GO TO 10
          ELSE
-           DEALLOCATE( data%spm )
+!          DEALLOCATE( data%spm )
            inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF
@@ -7325,7 +7325,7 @@
      CASE ( 'pastix' )
        CALL pastixFinalize( data%pastix_data )
        CALL spmExit( data%spm )
-       IF ( ALLOCATED( data%spm ) ) DEALLOCATE( data%spm )
+       DEALLOCATE( data%spm )
        data%no_pastix = .FALSE.
 
 !  = MUMPS =
