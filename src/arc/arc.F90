@@ -2353,11 +2353,12 @@
 !  compute the new Hessian estimates
 
            CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,           &
-                              data%total_diffs, data%PAST,                     &
-                              nlp%n, data%total_diffs, data%DX_past,           &
-                              nlp%n, data%total_diffs, data%DG_past,           &
+                              data%total_diffs,                                &
+                              data%DX_past, nlp%n, data%total_diffs,           &
+                              data%DG_past, nlp%n, data%total_diffs,           &
                               data%VAL_est, data%SHA_data,                     &
-                              data%control%SHA_control, inform%SHA_inform )
+                              data%control%SHA_control, inform%SHA_inform,     &
+                              PRECEDENCE = data%PAST )
 
            IF ( inform%SHA_inform%status == 0 ) THEN
              IF ( .FALSE. ) THEN

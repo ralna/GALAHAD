@@ -1622,14 +1622,15 @@ data%control%SHA_control%print_level = 0
 !  compute the new Hessian estimates
 
 !data%control%SHA_control%print_level = 0
-!if ( inform%iter == 24603 ) data%control%SHA_control%print_level = 2
-if ( inform%iter == 5348 ) data%control%SHA_control%print_level = 2
+!if ( inform%iter == 5348 ) data%control%SHA_control%print_level = 2
+
          CALL SHA_estimate( nlp%n, nlp%H%ne, nlp%H%row, nlp%H%col,             &
-                            data%total_diffs, data%PAST,                       &
-                            nlp%n, data%total_diffs, data%DX_past,             &
-                            nlp%n, data%total_diffs, data%DG_past,             &
+                            data%total_diffs,                                  &
+                            data%DX_past, nlp%n, data%total_diffs,             &
+                            data%DG_past, nlp%n, data%total_diffs,             &
                             data%VAL_est, data%SHA_data,                       &
-                            data%control%SHA_control, inform%SHA_inform )
+                            data%control%SHA_control, inform%SHA_inform,       &
+                            PRECEDENCE = data%PAST )                        
 
          IF ( inform%SHA_inform%status == 0 ) THEN
            data%hmax_error =                                                   &

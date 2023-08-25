@@ -1154,8 +1154,8 @@
 !-*-*-*-  G A L A H A D -  S H A _ e s t i m a t e  S U B R O U T I N E -*-*-*-
 
       SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available, S, ls1, ls2,      &
-                               Y, ly1, ly2, VAL, data, control,    &
-                               inform, PRECEDENCE, VAL_true )
+                               Y, ly1, ly2, VAL, data, control, inform,        &
+                               PRECEDENCE, VAL_true )
 
 !     ********************************************************
 !     *                                                      *
