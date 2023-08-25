@@ -39,13 +39,27 @@ components
 
 return status. Possible values are:
 
-* 0 the call was successful.
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  the call was successful.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -3. The random number seed has not been set.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
+
+* **-2**
+
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
+
+* **-3**
+
+  The random number seed has not been set.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structlhs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

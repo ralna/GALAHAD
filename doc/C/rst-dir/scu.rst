@@ -22,7 +22,7 @@ called in the following order:
 
 * :ref:`scu_read_specfile <doxid->` (optional) - override control values by reading replacement values from a file
 
-* :ref:`scu_form_and_factorize <doxid->` - form and factorize the Schur-complement matrix :math:`S`
+* :ref:`scu_form_and_factorize <doxid->` - form and factorize the Schur-complement matrix $S$
 
 * :ref:`scu_solve_system <doxid->` - solve the block system (1)
 

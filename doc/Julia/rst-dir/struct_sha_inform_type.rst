@@ -59,6 +59,16 @@ the status of the last attempted allocation/deallocation.
 
 the maximum degree in the adgacency graph.
 
+.. index:: pair: variable; approximation_algorithm_used
+.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	Int32 approximation_algorithm_used
+
+the approximation algorithm actually used
+
 .. index:: pair: variable; differences_needed
 .. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6:
 

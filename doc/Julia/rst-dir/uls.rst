@@ -24,11 +24,11 @@ called in the following order:
 
 * :ref:`uls_read_specfile <doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef>` (optional) - override control values by reading replacement values from a file
 
-* :ref:`uls_factorize_matrix <doxid-galahad__uls_8h_1a6c0599479b84ee7d7c4ee7c473b76a83>` - set up matrix data structures, analyse the structure to choose a suitable order for factorization, and then factorize the matrix :math:`A`
+* :ref:`uls_factorize_matrix <doxid-galahad__uls_8h_1a6c0599479b84ee7d7c4ee7c473b76a83>` - set up matrix data structures, analyse the structure to choose a suitable order for factorization, and then factorize the matrix $A$
 
 * :ref:`uls_reset_control <doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
-* :ref:`uls_solve_system <doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518>` - solve the linear system of equations :math:`Ax=b` or :math:`A^Tx=b`
+* :ref:`uls_solve_system <doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518>` - solve the linear system of equations $Ax=b$ or $A^Tx=b$
 
 * :ref:`uls_information <doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf>` (optional) - recover information about the solution and solution process
 

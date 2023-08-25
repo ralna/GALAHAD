@@ -94,7 +94,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The initialization was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; sec_information
 .. _doxid-galahad__sec_8h_1a24da7562aed5f631b7c1e5442326f66e:
@@ -105,8 +106,6 @@ Set default control values and initialize private data
 	void sec_information(void** data, struct :ref:`sec_inform_type<doxid-structsec__inform__type>`* inform, int* status)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -129,7 +128,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sec_terminate
 .. _doxid-galahad__sec_8h_1aff9c49fd2dea47f495445d0f357a8b19:
@@ -144,8 +144,6 @@ Provides output information
 	)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

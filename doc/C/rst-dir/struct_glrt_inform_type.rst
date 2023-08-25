@@ -116,7 +116,7 @@ the value of the regularized quadratic function
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` multiplier
 
-the multiplier, :math:`\sigma \|x\|^{p-2}`
+the multiplier, $\sigma \|x\|^{p-2}$
 
 .. index:: pair: variable; xpo_norm
 .. _doxid-structglrt__inform__type_1a145ebf82ab029a86c0bd00aec2ee4ae0:
@@ -126,7 +126,7 @@ the multiplier, :math:`\sigma \|x\|^{p-2}`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` xpo_norm
 
-the value of the norm :math:`\|x\|_M`
+the value of the norm $\|x\|_M$
 
 .. index:: pair: variable; leftmost
 .. _doxid-structglrt__inform__type_1ab90b7ed1b1bfb32aeba7ad89a9a706d0:
@@ -136,7 +136,7 @@ the value of the norm :math:`\|x\|_M`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` leftmost
 
-an estimate of the leftmost generalized eigenvalue of the pencil :math:`(H,M)`
+an estimate of the leftmost generalized eigenvalue of the pencil $(H,M)$
 
 .. index:: pair: variable; negative_curvature
 .. _doxid-structglrt__inform__type_1aee928a2d12ccd5c99a5f3e65e9926021:

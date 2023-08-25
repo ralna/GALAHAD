@@ -165,7 +165,7 @@ maximum number of projected CG iterations allowed
 
 	int new_a
 
-how much has :math:`A` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $A$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; new_h
 .. _doxid-structsbls__control__type_1ae60c5b5b987dd62f25253ba4164813f5:
@@ -175,7 +175,7 @@ how much has :math:`A` changed since last factorization: 0 = not changed, 1 = va
 
 	int new_h
 
-how much has :math:`H` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $H$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; new_c
 .. _doxid-structsbls__control__type_1a9eed9b4ef920c669df5ff1a7c67e3047:
@@ -185,7 +185,7 @@ how much has :math:`H` changed since last factorization: 0 = not changed, 1 = va
 
 	int new_c
 
-how much has :math:`C` changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
+how much has $C$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; preconditioner
 .. _doxid-structsbls__control__type_1adf7719f1a4491459e361e80a00c55656:
@@ -199,23 +199,23 @@ which preconditioner to use:
 
 * 0 selected automatically
 
-* 1 explicit with :math:`G = I`
+* 1 explicit with $G = I$
 
-* 2 explicit with :math:`G = H`
+* 2 explicit with $G = H$
 
-* 3 explicit with :math:`G =` diag(max(:math:`H`,min_diag))
+* 3 explicit with $G =$ diag(max($H$,min_diag))
 
-* 4 explicit with :math:`G =` band :math:`(H)`
+* 4 explicit with $G =$ band $(H)$
 
-* 5 explicit with :math:`G =` (optional, diagonal) :math:`D`
+* 5 explicit with $G =$ (optional, diagonal) $D$
 
-* 11 explicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = H_{22}`
+* 11 explicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = H_{22}$
 
-* 12 explicit with :math:`G_{11} = 0`, :math:`G_{21} = H_{21}`, :math:`G_{22} = H_{22}`
+* 12 explicit with $G_{11} = 0$, $G_{21} = H_{21}$, $G_{22} = H_{22}$
 
-* -1 implicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = I`
+* -1 implicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = I$
 
-* -2 implicit with :math:`G_{11} = 0`, :math:`G_{21} = 0`, :math:`G_{22} = H_{22}`
+* -2 implicit with $G_{11} = 0$, $G_{21} = 0$, $G_{22} = H_{22}$
 
 .. index:: pair: variable; semi_bandwidth
 .. _doxid-structsbls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb:
@@ -239,15 +239,15 @@ the explicit factorization used:
 
 * 0 selected automatically
 
-* 1 Schur-complement if :math:`G` is diagonal and successful otherwise augmented system
+* 1 Schur-complement if $G$ is diagonal and successful otherwise augmented system
 
 * 2 augmented system
 
 * 3 null-space
 
-* 4 Schur-complement if :math:`G` is diagonal and successful otherwise failure
+* 4 Schur-complement if $G$ is diagonal and successful otherwise failure
 
-* 5 Schur-complement with pivoting if :math:`G` is diagonal and successful otherwise failure
+* 5 Schur-complement with pivoting if $G$ is diagonal and successful otherwise failure
 
 .. index:: pair: variable; max_col
 .. _doxid-structsbls__control__type_1abca2db33b9520095e98790d45a1be93f:
@@ -257,7 +257,7 @@ the explicit factorization used:
 
 	int max_col
 
-maximum number of nonzeros in a column of :math:`A` for Schur-complement factorization
+maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 
 .. index:: pair: variable; scaling
 .. _doxid-structsbls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d:
@@ -337,7 +337,7 @@ see static_tolerance
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` min_diagonal
 
-the minimum permitted diagonal in diag(max(:math:`H`,min_diag))
+the minimum permitted diagonal in diag(max($H$,min_diag))
 
 .. index:: pair: variable; stop_absolute
 .. _doxid-structsbls__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:
@@ -387,7 +387,7 @@ determine implicit factorization preconditioners using a basis of A found by exa
 
 	bool affine
 
-can the right-hand side :math:`c` be assumed to be zero?
+can the right-hand side $c$ be assumed to be zero?
 
 .. index:: pair: variable; allow_singular
 .. _doxid-structsbls__control__type_1a2ea4ee3b5051d51642fae65d6ba75e7d:

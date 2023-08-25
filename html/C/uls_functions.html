@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'uls_functions';</script>
@@ -638,8 +637,8 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
@@ -665,7 +664,7 @@
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">type</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">row</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">ptr</span><span class="p">[]</span>
@@ -682,7 +681,7 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
     <span class="kt">bool</span> <span class="n">trans</span>
 <span class="p">);</span>
 
@@ -730,18 +729,30 @@
 <tr class="row-even"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
 </li>
-<li><p>-26. The requested solver is not available.</p></li>
+<li><dl class="simple">
+<dt><strong>-26</strong></dt><dd><p>The requested solver is not available**</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">uls_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="uls.html#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNULS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/uls.pdf for a list of keywords that may be set.</p>
+<p>Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.
+An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in $GALAHAD/src/uls/ULS.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/uls.pdf for a list of how these keywords relate to the
+components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -765,7 +776,7 @@
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">type</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">row</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[],</span>
     <span class="k">const</span> <span class="kt">int</span> <span class="n">ptr</span><span class="p">[]</span>
@@ -788,17 +799,65 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
 <p>Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import, analysis and factorization were conducted successfully.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import, analysis and factorization were
+conducted successfully.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restrictions n &gt; 0 and m&gt; 0 or requirement that the matrix type must contain the relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows has been violated.</p></li>
-<li><p>-26. The requested solver is not available.</p></li>
-<li><p>-29. This option is not available with this solver.</p></li>
-<li><p>-32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.</p></li>
-<li><p>-50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 and m&gt; 0 or requirement that
+the matrix type must contain the relevant string
+‘dense’, ‘coordinate’ or ‘sparse_by_rows has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-26</strong></dt><dd><p>The requested solver is not available.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-29</strong></dt><dd><p>This option is not available with this solver.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-32</strong></dt><dd><p>More than control.max integer factor size words of
+internal integer storage are required for in-core
+factorization.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-50</strong></dt><dd><p>A solver-specific error occurred; check the
+solver-specific information component of inform
+along with the solver’s documentation for more
+details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -850,9 +909,10 @@
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful.</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -864,7 +924,7 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[],</span>
     <span class="kt">bool</span> <span class="n">trans</span>
 <span class="p">)</span></pre>
 <p>Solve the linear system <span class="math notranslate nohighlight">\(Ax=b\)</span> or <span class="math notranslate nohighlight">\(A^Tx=b\)</span>.</p>
@@ -882,14 +942,47 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
 <p>Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The required solution was obtained.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The required solution was obtained.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
-<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-34</strong></dt><dd><p>The package PARDISO failed; check the
+solver-specific information components
+inform.pardiso iparm and inform.pardiso_dparm along
+with PARDISO’s documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-35</strong></dt><dd><p>The package WSMP failed; check the solver-specific
+information components inform.wsmp_iparm and
+inform.wsmp dparm along with WSMP’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -925,9 +1018,10 @@
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>

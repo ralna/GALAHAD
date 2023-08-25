@@ -264,7 +264,7 @@ is the returned "solution" feasible?
 
 	int checkpointsIter[16]
 
-checkpoints(i) records the iteration at which the criticality measures first fall below :math:`10^{-i-1}`, i = 0, ..., 15 (-1 means not achieved)
+checkpoints(i) records the iteration at which the criticality measures first fall below $10^{-i-1}$, i = 0, ..., 15 (-1 means not achieved)
 
 .. index:: pair: variable; checkpointsTime
 .. _doxid-structlpb__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9:

@@ -103,7 +103,7 @@ controls level of diagnostic output
 
 	int new_h
 
-how much of :math:`H` has changed since the previous call. Possible values are
+how much of $H$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -129,7 +129,7 @@ maximum degree of Taylor approximant allowed
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` eigen_min
 
-smallest allowable value of an eigenvalue of the block diagonal factor of :math:`H`
+smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 
 .. index:: pair: variable; lower
 .. _doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed:
@@ -159,7 +159,7 @@ see lower
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
 
-stop trust-region solution when :math:`| ||x||_M - \delta | \leq` max( .stop_normal \* delta, .stop_absolute_normal )
+stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \* delta, .stop_absolute_normal )
 
 .. index:: pair: variable; stop_absolute_normal
 .. _doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c:

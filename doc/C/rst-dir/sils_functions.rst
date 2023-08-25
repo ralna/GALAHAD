@@ -129,7 +129,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sils_read_specfile
 .. _doxid-galahad__sils_8h_1a12447d25d91610c87b4c8ce7744aefd7:
@@ -142,9 +143,15 @@ Set default control values and initialize private data
 		const char specfile[]
 	)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSILS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sils.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list 
+of keywords with associated default values is provided in 
+\$GALAHAD/src/sils/SILS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/sils.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -194,13 +201,31 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
 .. index:: pair: function; sils_reset_control
 .. _doxid-galahad__sils_8h_1a34e5304b29c89525543cd512f426ac4f:
@@ -239,7 +264,9 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; sils_information
 .. _doxid-galahad__sils_8h_1a27320b6d18c7508283cfb19dc8fecf37:
@@ -290,7 +317,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sils_finalize
 .. _doxid-galahad__sils_8h_1aa862612cd37fce35b1d35bd6ad295d82:
@@ -325,7 +353,8 @@ Deallocate all internal private storage
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 		  
-		  * :math:`\neq` 0. The Fortran STAT value of an allocate or deallocate statement that has failed.
+		  * $\neq$ 0. The Fortran STAT value of an allocate or deallocate statement that has failed.
 

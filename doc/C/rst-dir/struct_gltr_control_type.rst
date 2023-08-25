@@ -187,7 +187,7 @@ the smallest value that the square of the M norm of the gradient of the the obje
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f_0
 
-the constant term, :math:`f_0`, in the objective function
+the constant term, $f_0$, in the objective function
 
 .. index:: pair: variable; unitm
 .. _doxid-structgltr__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c:
@@ -197,7 +197,7 @@ the constant term, :math:`f_0`, in the objective function
 
 	bool unitm
 
-is :math:`M` the identity matrix ?
+is $M$ the identity matrix ?
 
 .. index:: pair: variable; steihaug_toint
 .. _doxid-structgltr__control__type_1a33316102c81d1b21da04eb70850aae95:

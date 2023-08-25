@@ -49,19 +49,33 @@ components
 
 reported return status:
 
-* 0 the solution has been found
+* **0**
 
-* -1 an array allocation has failed
+  the solution has been found
 
-* -2 an array deallocation has failed
+* **-1**
 
-* -3 n and/or Delta is not positive
+  an array allocation has failed
 
-* -10 the factorization of :math:`K(\lambda)` failed
+* **-2**
 
-* -15 :math:`S` does not appear to be strictly diagonally dominant
+  an array deallocation has failed
 
-* -16 ill-conditioning has prevented furthr progress
+* **-3**
+
+  n and/or Delta is not positive
+
+* **-10**
+
+  the factorization of $K(\lambda)$ failed
+
+* **-15**
+
+  $S$ does not appear to be strictly diagonally dominant
+
+* **-16**
+
+  ill-conditioning has prevented furthr progress
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structllsr__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
@@ -91,7 +105,7 @@ the number of factorizations performed
 
 	int len_history
 
-the number of (:math:`\|x\|_S`, :math:`\lambda`) pairs in the history
+the number of ($\|x\|_S$, $\lambda$) pairs in the history
 
 .. index:: pair: variable; r_norm
 .. _doxid-structllsr__inform__type_1ae908410fabf891cfd89626c3605c38ca:
@@ -101,7 +115,7 @@ the number of (:math:`\|x\|_S`, :math:`\lambda`) pairs in the history
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r_norm
 
-corresponding value of the two-norm of the residual, :math:`\|A x(\lambda) - b\|`
+corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structllsr__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -111,7 +125,7 @@ corresponding value of the two-norm of the residual, :math:`\|A x(\lambda) - b\|
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
 
-the S-norm of x, :math:`\|x\|_S`
+the S-norm of x, $\|x\|_S$
 
 .. index:: pair: variable; multiplier
 .. _doxid-structllsr__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:

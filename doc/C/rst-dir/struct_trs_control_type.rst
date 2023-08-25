@@ -132,7 +132,7 @@ should the problem be solved by dense factorization? Possible values are
 
 	int new_h
 
-how much of :math:`H` has changed since the previous call. Possible values are
+how much of $H$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -148,7 +148,7 @@ how much of :math:`H` has changed since the previous call. Possible values are
 
 	int new_m
 
-how much of :math:`M` has changed since the previous call. Possible values are
+how much of $M$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -164,7 +164,7 @@ how much of :math:`M` has changed since the previous call. Possible values are
 
 	int new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are
+how much of $A$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -240,7 +240,7 @@ see lower
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
 
-stop when :math:`| ||x|| - radius | \leq` max( stop_normal \* radius, stop_absolute_normal )
+stop when $| ||x|| - radius | \leq$ max( stop_normal \* radius, stop_absolute_normal )
 
 .. index:: pair: variable; stop_absolute_normal
 .. _doxid-structtrs__control__type_1a02066d2241f2971e375ca4a56532bc2c:
@@ -260,7 +260,7 @@ see stop_normal
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_hard
 
-stop when bracket on optimal multiplier :math:`\leq` stop_hard \* max( bracket ends )
+stop when bracket on optimal multiplier $\leq$ stop_hard \* max( bracket ends )
 
 .. index:: pair: variable; start_invit_tol
 .. _doxid-structtrs__control__type_1aec94d12f2b37930ecfdb129e5c4d432d:
@@ -270,7 +270,7 @@ stop when bracket on optimal multiplier :math:`\leq` stop_hard \* max( bracket e
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` start_invit_tol
 
-start inverse iteration when bracket on optimal multiplier :math:`\leq` stop_start_invit_tol \* max( bracket ends )
+start inverse iteration when bracket on optimal multiplier $\leq$ stop_start_invit_tol \* max( bracket ends )
 
 .. index:: pair: variable; start_invitmax_tol
 .. _doxid-structtrs__control__type_1a75ff746a88cecc883d73cec9c7193bbd:
@@ -280,7 +280,7 @@ start inverse iteration when bracket on optimal multiplier :math:`\leq` stop_sta
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` start_invitmax_tol
 
-start full inverse iteration when bracket on multiplier :math:`\leq` stop_start_invitmax_tol \* max( bracket ends)
+start full inverse iteration when bracket on multiplier $\leq$ stop_start_invitmax_tol \* max( bracket ends)
 
 .. index:: pair: variable; equality_problem
 .. _doxid-structtrs__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb:
@@ -320,7 +320,7 @@ should a suitable initial eigenvector should be chosen or should a previous eige
 
 	bool force_Newton
 
-ignore the trust-region if :math:`H` is positive definite
+ignore the trust-region if $H$ is positive definite
 
 .. index:: pair: variable; space_critical
 .. _doxid-structtrs__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

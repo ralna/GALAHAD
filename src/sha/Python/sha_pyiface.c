@@ -130,7 +130,7 @@ PyObject* sha_make_options_dict(const struct sha_control_type *control){
                          PyLong_FromLong(control->out));
     PyDict_SetItemString(py_options, "print_level",
                          PyLong_FromLong(control->print_level));
-    PyDict_SetItemString(py_options, "approximation_algorithm",
+   PyDict_SetItemString(py_options, "approximation_algorithm",
                          PyLong_FromLong(control->approximation_algorithm));
     PyDict_SetItemString(py_options, "dense_linear_solver",
                          PyLong_FromLong(control->dense_linear_solver));

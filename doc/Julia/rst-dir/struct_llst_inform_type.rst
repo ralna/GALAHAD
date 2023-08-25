@@ -45,19 +45,33 @@ components
 
 reported return status:
 
-* 0 the solution has been found
+* **0**
 
-* -1 an array allocation has failed
+  the solution has been found
 
-* -2 an array deallocation has failed
+* **-1**
 
-* -3 n and/or Delta is not positive
+  an array allocation has failed
 
-* -10 the factorization of $K(\lambda)$ failed
+* **-2**
 
-* -15 $S$ does not appear to be strictly diagonally dominant
+  an array deallocation has failed
 
-* -16 ill-conditioning has prevented furthr progress
+* **-3**
+
+  n and/or Delta is not positive
+
+* **-10**
+
+  the factorization of $K(\lambda)$ failed
+
+* **-15**
+
+  $S$ does not appear to be strictly diagonally dominant
+
+* **-16**
+
+  ill-conditioning has prevented furthr progress
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structllst__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

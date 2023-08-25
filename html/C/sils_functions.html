@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sils_functions';</script>
@@ -642,46 +641,46 @@
 
 <span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1adfa46fc519194d9acfbeccac4c5a1af3"><span class="std std-ref">sils_initialize</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1a12447d25d91610c87b4c8ce7744aefd7"><span class="std std-ref">sils_read_specfile</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1a78d5647031a8a4522541064853b021ba"><span class="std std-ref">sils_import</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1a78d5647031a8a4522541064853b021ba"><span class="std std-ref">sils_import</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1a34e5304b29c89525543cd512f426ac4f"><span class="std std-ref">sils_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1a27320b6d18c7508283cfb19dc8fecf37"><span class="std std-ref">sils_information</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1aa862612cd37fce35b1d35bd6ad295d82"><span class="std std-ref">sils_finalize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span></pre>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sils-8h-1aa862612cd37fce35b1d35bd6ad295d82"><span class="std std-ref">sils_finalize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span></pre>
 </section>
 <section id="typedefs">
 <span id="id1"></span><h1>typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h1>
@@ -694,7 +693,7 @@
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1adfa46fc519194d9acfbeccac4c5a1af3"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">sils_initialize</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
@@ -709,14 +708,15 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -724,10 +724,18 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a12447d25d91610c87b4c8ce7744aefd7"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">sils_read_specfile</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">)</span></pre>
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSILS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sils.pdf for a list of keywords that may be set.</p>
+<p>Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list
+of keywords with associated default values is provided in
+$GALAHAD/src/sils/SILS.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/sils.pdf for a list of how these keywords
+relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -736,14 +744,14 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a78d5647031a8a4522541064853b021ba"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">sils_import</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a78d5647031a8a4522541064853b021ba"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">sils_import</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Import problem data into internal storage prior to solution.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -753,7 +761,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -761,20 +769,47 @@
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple">
-<li><p>The import was successful, and the package is ready for the solve phase</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restriction n &gt; 0 or requirement that type contains its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been violated.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a34e5304b29c89525543cd512f426ac4f"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">sils_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -787,7 +822,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -795,9 +830,11 @@
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple">
-<li><p>The import was successful, and the package is ready for the solve phase</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -806,9 +843,9 @@
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1a27320b6d18c7508283cfb19dc8fecf37"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">sils_information</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a><span></span><span class="o">*</span> <span class="n">ainfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a><span></span><span class="o">*</span> <span class="n">finfo</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a><span></span><span class="o">*</span> <span class="n">sinfo</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
 <p>Provides output information</p>
@@ -823,27 +860,28 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>ainfo</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sils_ainfo_type.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sils.html#doxid-structsils-ainfo-type"><span class="std std-ref">sils_ainfo_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>finfo</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sils_finfo_type.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sils.html#doxid-structsils-finfo-type"><span class="std std-ref">sils_finfo_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>sinfo</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sils_sinfo_type.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sils.html#doxid-structsils-sinfo-type"><span class="std std-ref">sils_sinfo_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1aa862612cd37fce35b1d35bd6ad295d82"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sils_finalize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sils-8h-1aa862612cd37fce35b1d35bd6ad295d82"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sils_finalize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -856,14 +894,15 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sils_control_type.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sils.html#doxid-structsils-control-type"><span class="std std-ref">sils_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 <li><p><span class="math notranslate nohighlight">\(\neq\)</span> 0. The Fortran STAT value of an allocate or deallocate statement that has failed.</p></li>
 </ul>

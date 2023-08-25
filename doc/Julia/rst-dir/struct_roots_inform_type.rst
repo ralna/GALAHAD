@@ -36,24 +36,28 @@ components
 return status. Possible values are:
 
 * **0**
-   The call was successful.
+
+  The call was successful.
 
 * **-1**
-   An allocation error occurred. A message indicating the offending
-   array is written on unit control.error, and the returned allocation
-   status and a string containing the name of the offending array are
-   held in inform.alloc_status and inform.bad_alloc respectively.
+
+  An allocation error occurred. A message indicating the offending
+  array is written on unit control.error, and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
 
 * **-2** 
-   A deallocation error occurred. A message indicating the offending
-   array is written on unit control.error and the returned allocation
-   status and a string containing the name of the offending array are
-   held in inform.alloc_status and inform.bad_alloc respectively.
+
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
 
 * **-3** 
-   Either the specified degree of the polynomial in degree is less than
-   0, or the declared dimension of the array roots is smaller than the
-   specified degree.
+
+  Either the specified degree of the polynomial in degree is less than
+  0, or the declared dimension of the array roots is smaller than the
+  specified degree.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

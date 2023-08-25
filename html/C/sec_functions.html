@@ -735,23 +735,23 @@
 
 <span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sec-8h-1adf7e7f81c32214d1e79170023d5d47e5"><span class="std std-ref">sec_initialize</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sec-8h-1a24da7562aed5f631b7c1e5442326f66e"><span class="std std-ref">sec_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sec-8h-1adf7e7f81c32214d1e79170023d5d47e5"><span class="std std-ref">sec_initialize</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sec-8h-1a24da7562aed5f631b7c1e5442326f66e"><span class="std std-ref">sec_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sec-8h-1aff9c49fd2dea47f495445d0f357a8b19"><span class="std std-ref">sec_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -763,7 +763,7 @@
 </section>
 <section id="function-calls">
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sec-8h-1adf7e7f81c32214d1e79170023d5d47e5"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">sec_initialize</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sec-8h-1adf7e7f81c32214d1e79170023d5d47e5"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">sec_initialize</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -773,21 +773,22 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The initialization was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sec-8h-1a24da7562aed5f631b7c1e5442326f66e"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">sec_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sec-8h-1a24da7562aed5f631b7c1e5442326f66e"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">sec_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -800,14 +801,15 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -816,8 +818,8 @@
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sec-8h-1aff9c49fd2dea47f495445d0f357a8b19"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">sec_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -831,10 +833,10 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sec_control_type.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sec.html#doxid-structsec-control-type"><span class="std std-ref">sec_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sec_inform_type.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sec.html#doxid-structsec-inform-type"><span class="std std-ref">sec_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

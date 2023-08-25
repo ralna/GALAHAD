@@ -42,17 +42,41 @@ components
 
 the return status. Possible values are:
 
-* 0 the update was successful.
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  the update was successful.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -3. One of the restrictions n > 0, delta > 0, lambda > 0 or s^T y > 0 has been violated and the update has been skipped.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
 
-* -10. The matrix cannot be built from the current vectors {s_k} and {y_k} and values delta_k and lambda_k and the update has been skipped.
+* **-2**
 
-* -31. A call to the function lhs_apply has been made without a prior call to lhs_form_shift or lhs_form with lambda specified when control.method = 4, or lhs_form_shift has been called when control.method = 3, or lhs_change_method has been called after control.any_method = false was specified when calling lhs_setup.
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
+
+* **-3**
+
+  One of the restrictions n > 0, delta > 0, lambda > 0 or s^T y > 0 has
+  been violated and the update has been skipped.
+
+* **-10**
+
+  The matrix cannot be built from the current vectors {s_k} and {y_k}
+  and values delta_k and lambda_k and the update has been skipped.
+
+* **-31**
+
+  A call to the function lhs_apply has been made without a prior call to
+  lhs_form_shift or lhs_form with lambda specified when control.method =
+  4, or lhs_form_shift has been called when control.method = 3, or
+  lhs_change_method has been called after control.any_method = false was
+  specified when calling lhs_setup.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

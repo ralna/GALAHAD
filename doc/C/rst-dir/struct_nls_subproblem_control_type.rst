@@ -106,13 +106,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structnls__subproblem__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -182,7 +182,7 @@ see alive_unit
 
 	int jacobian_available
 
-is the Jacobian matrix of first derivatives available (:math:`\geq` 2), is access only via matrix-vector products (=1) or is it not available (:math:`\leq` 0) ?
+is the Jacobian matrix of first derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
 .. index:: pair: variable; hessian_available
 .. _doxid-structnls__subproblem__control__type_1ae665ac50d8c985bf502ba2b90363826a:
@@ -192,7 +192,7 @@ is the Jacobian matrix of first derivatives available (:math:`\geq` 2), is acces
 
 	int hessian_available
 
-is the Hessian matrix of second derivatives available (:math:`\geq` 2), is access only via matrix-vector products (=1) or is it not available (:math:`\leq` 0) ?
+is the Hessian matrix of second derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
 .. index:: pair: variable; model
 .. _doxid-structnls__subproblem__control__type_1a027a1f1731d22465c926ce57be2364c3:
@@ -212,7 +212,7 @@ Possible values are
 
 * 2 barely second-order (identity Hessian)
 
-* 3 Gauss-Newton (:math:`J^T J` Hessian)
+* 3 Gauss-Newton ($J^T J$ Hessian)
 
 * 4 second-order (exact Hessian)
 
@@ -234,27 +234,27 @@ Possible values are
 
 the regularization norm used.
 
-The norm is defined via :math:`\|v\|^2 = v^T S v`, and will define the preconditioner used for iterative methods. Possible values for :math:`S` are
+The norm is defined via $\|v\|^2 = v^T S v$, and will define the preconditioner used for iterative methods. Possible values for $S$ are
 
 * -3 user's own regularization norm
 
-* -2 :math:`S` = limited-memory BFGS matrix (with .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
+* -2 $S$ = limited-memory BFGS matrix (with .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`S` = diag( max(:math:`J^TJ` Hessian, .PSLS_control.min_diagonal ) )
+* 1 diagonal, $S$ = diag( max($J^TJ$ Hessian, .PSLS_control.min_diagonal ) )
 
-* 2 diagonal, :math:`S` = diag( max( Hessian, .PSLS_control.min_diagonal ) )
+* 2 diagonal, $S$ = diag( max( Hessian, .PSLS_control.min_diagonal ) )
 
-* 3 banded, :math:`S` = band( Hessian ) with semi-bandwidth .PSLS_control.semi_bandwidth
+* 3 banded, $S$ = band( Hessian ) with semi-bandwidth .PSLS_control.semi_bandwidth
 
 * 4 re-ordered band, P=band(order(A)) with semi-bandwidth .PSLS_control.semi_bandwidth
 
-* 5 full factorization, :math:`S` = Hessian, Schnabel-Eskow modification
+* 5 full factorization, $S$ = Hessian, Schnabel-Eskow modification
 
-* 6 full factorization, :math:`S` = Hessian, GMPS modification (*not yet implemented*)
+* 6 full factorization, $S$ = Hessian, GMPS modification (*not yet implemented*)
 
 * 7 incomplete factorization of Hessian, Lin-More'
 
@@ -272,7 +272,7 @@ The norm is defined via :math:`\|v\|^2 = v^T S v`, and will define the precondit
 
 	int non_monotone
 
-non-monotone :math:`\leq` 0 monotone strategy used, anything else non-monotone strategy with this history length used
+non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strategy with this history length used
 
 .. index:: pair: variable; weight_update_strategy
 .. _doxid-structnls__subproblem__control__type_1a91395480b85edaac83529fc7f1605289:
@@ -292,7 +292,7 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_c_absolute
 
-overall convergence tolerances. The iteration will terminate when :math:`||c(x)||_2 \leq` MAX( .stop_c_absolute, .stop_c_relative :math:`* \|c(x_{\mbox{initial}})\|_2`, or when the norm of the gradient, :math:`g = J^T(x) c(x) / \|c(x)\|_2`, of \|\|c\|\|_2, satisfies :math:`\|g\|_2 \leq` MAX( .stop_g_absolute, .stop_g_relative :math:`* \|g_{\mbox{initial}}\|_2`, or if the step is less than .stop_s
+overall convergence tolerances. The iteration will terminate when $||c(x)||_2 \leq$ MAX( .stop_c_absolute, .stop_c_relative $* \|c(x_{\mbox{initial}})\|_2$, or when the norm of the gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of \|\|c\|\|_2, satisfies $\|g\|_2 \leq$ MAX( .stop_g_absolute, .stop_g_relative $* \|g_{\mbox{initial}}\|_2$, or if the step is less than .stop_s
 
 .. index:: pair: variable; stop_c_relative
 .. _doxid-structnls__subproblem__control__type_1a8e60a718c9c3b3bf9daf2e2be3c7dd68:
@@ -352,7 +352,7 @@ the regularization power (<2 => chosen according to the model)
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` initial_weight
 
-initial value for the regularization weight (-ve => :math:`1/\|g_0\|)`)
+initial value for the regularization weight (-ve => $1/\|g_0\|)$)
 
 .. index:: pair: variable; minimum_weight
 .. _doxid-structnls__subproblem__control__type_1a044b125f7d2b5409dde4253030798367:

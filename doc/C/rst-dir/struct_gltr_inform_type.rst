@@ -118,7 +118,7 @@ the Lagrange multiplier corresponding to the trust-region constraint
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` mnormx
 
-the :math:`M` -norm of :math:`x`
+the $M$ -norm of $x$
 
 .. index:: pair: variable; piv
 .. _doxid-structgltr__inform__type_1ae510f054ecee0c67f8ce7f27aacba706:
@@ -158,7 +158,7 @@ the current Rayleigh quotient
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` leftmost
 
-an estimate of the leftmost generalized eigenvalue of the pencil :math:`(H,M)`
+an estimate of the leftmost generalized eigenvalue of the pencil $(H,M)$
 
 .. index:: pair: variable; negative_curvature
 .. _doxid-structgltr__inform__type_1aee928a2d12ccd5c99a5f3e65e9926021:

@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'struct_rqs_inform_type';</script>
@@ -721,23 +720,23 @@
 <span class="k">struct</span> <span class="n">rqs_inform_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a9a6a5a0de7d7a6048b4170a768c0c86f"><span class="std std-ref">factorizations</span></a><span></span><span class="p">;</span>
-    <span class="kt">int64_t</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a177e429e737cfa2cd3df051a65fcfb68"><span class="std std-ref">max_entries_factors</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span class="std std-ref">len_history</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span class="std std-ref">obj</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a1631e243108715d623e2ddb83310fa33"><span class="std std-ref">obj_regularized</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span class="std std-ref">multiplier</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1ad2dc9016b1d2b00a970ec28129f7000d"><span class="std std-ref">pole</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a107cef1ccaad53efc9d7a578d400f324"><span class="std std-ref">dense_factorization</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a22215075b7081ccac9f121daf07a0f7e"><span class="std std-ref">hard_case</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_rqs_time_type.html#doxid-structrqs-time-type"><span class="std std-ref">rqs_time_type</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a7ea9c3c8923491cb7b82bc1e2eaa865e"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_rqs_history_type.html#doxid-structrqs-history-type"><span class="std std-ref">rqs_history_type</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a8a8041f7210288f13c6fa994dfc73aab"><span class="std std-ref">history</span></a><span></span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span class="std std-ref">sls_inform</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <a class="reference internal" href="#doxid-structrqs-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span class="std std-ref">ir_inform</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a9a6a5a0de7d7a6048b4170a768c0c86f"><span class="std std-ref">factorizations</span></a><span></span><span class="p">;</span>
+    <span class="kt">int64_t</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a177e429e737cfa2cd3df051a65fcfb68"><span class="std std-ref">max_entries_factors</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span class="std std-ref">len_history</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span class="std std-ref">obj</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a1631e243108715d623e2ddb83310fa33"><span class="std std-ref">obj_regularized</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span class="std std-ref">multiplier</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1ad2dc9016b1d2b00a970ec28129f7000d"><span class="std std-ref">pole</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a107cef1ccaad53efc9d7a578d400f324"><span class="std std-ref">dense_factorization</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a22215075b7081ccac9f121daf07a0f7e"><span class="std std-ref">hard_case</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="rqs.html#doxid-structrqs-time-type"><span class="std std-ref">rqs_time_type</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a7ea9c3c8923491cb7b82bc1e2eaa865e"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="rqs.html#doxid-structrqs-history-type"><span class="std std-ref">rqs_history_type</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a8a8041f7210288f13c6fa994dfc73aab"><span class="std std-ref">history</span></a><span></span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span class="std std-ref">sls_inform</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <a class="reference internal" href="rqs.html#doxid-structrqs-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span class="std std-ref">ir_inform</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -747,15 +746,31 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">int</span> <span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 the solution has been found</p></li>
-<li><p>-1 an array allocation has failed</p></li>
-<li><p>-2 an array deallocation has failed</p></li>
-<li><p>-3 n and/or sigma is not positive and/or p &lt;= 2</p></li>
-<li><p>-9 the analysis phase of the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p></li>
-<li><p>-10 the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p></li>
-<li><p>-15 <span class="math notranslate nohighlight">\(M\)</span> does not appear to be strictly diagonally dominant</p></li>
-<li><p>-16 ill-conditioning has prevented furthr progress</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the solution has been found</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>an array allocation has failed</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>an array deallocation has failed</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>n and/or sigma is not positive and/or p &lt;= 2</p>
+</li>
+<li><p><strong>-9</strong></p>
+<p>the analysis phase of the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p>
+</li>
+<li><p><strong>-15</strong></p>
+<p><span class="math notranslate nohighlight">\(M\)</span> does not appear to be strictly diagonally dominant</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>ill-conditioning has prevented furthr progress</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">int</span> <span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -765,15 +780,15 @@
 <p>the maximum number of entries in the factors</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span id="index-5"></span><span></span><span class="kt">int</span> <span class="n">len_history</span></pre>
 <p>the number of <span class="math notranslate nohighlight">\((\|x\|_M,\lambda)\)</span> pairs in the history</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span id="index-6"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">obj</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a0cbcb28977ac1f47ab67d27e4216626d"><span id="index-6"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">obj</span></pre>
 <p>the value of the quadratic function</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a1631e243108715d623e2ddb83310fa33"><span id="index-7"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">obj_regularized</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a1631e243108715d623e2ddb83310fa33"><span id="index-7"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">obj_regularized</span></pre>
 <p>the value of the regularized quadratic function</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-8"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-8"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
 <p>the <span class="math notranslate nohighlight">\(M\)</span> -norm of <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(\|x\|_M\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-9"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">multiplier</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-9"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">multiplier</span></pre>
 <p>the Lagrange multiplier corresponding to the regularization</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1ad2dc9016b1d2b00a970ec28129f7000d"><span id="index-10"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">pole</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1ad2dc9016b1d2b00a970ec28129f7000d"><span id="index-10"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">pole</span></pre>
 <p>a lower bound max <span class="math notranslate nohighlight">\((0,-\lambda_1)\)</span>, where <span class="math notranslate nohighlight">\(\lambda_1\)</span> is the left-most eigenvalue of <span class="math notranslate nohighlight">\((H,M)\)</span></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a107cef1ccaad53efc9d7a578d400f324"><span id="index-11"></span><span></span><span class="kt">bool</span> <span class="n">dense_factorization</span></pre>
 <p>was a dense factorization used?</p>
@@ -781,11 +796,11 @@
 <p>has the hard case occurred?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-13"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
 <p>name of array which provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a7ea9c3c8923491cb7b82bc1e2eaa865e"><span id="index-14"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_rqs_time_type.html#doxid-structrqs-time-type"><span class="std std-ref">rqs_time_type</span></a><span></span> <span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a7ea9c3c8923491cb7b82bc1e2eaa865e"><span id="index-14"></span><span></span><span class="k">struct</span> <a class="reference internal" href="rqs.html#doxid-structrqs-time-type"><span class="std std-ref">rqs_time_type</span></a><span></span> <span class="n">time</span></pre>
 <p>time information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a8a8041f7210288f13c6fa994dfc73aab"><span id="index-15"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_rqs_history_type.html#doxid-structrqs-history-type"><span class="std std-ref">rqs_history_type</span></a><span></span> <span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a8a8041f7210288f13c6fa994dfc73aab"><span id="index-15"></span><span></span><span class="k">struct</span> <a class="reference internal" href="rqs.html#doxid-structrqs-history-type"><span class="std std-ref">rqs_history_type</span></a><span></span> <span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
 <p>history information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-16"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-16"></span><span></span><span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <span class="n">sls_inform</span></pre>
 <p>cholesky information (see sls_c documentation)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrqs-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-17"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <span class="n">ir_inform</span></pre>
 <p>iterative_refinement information (see ir_c documentation)</p>

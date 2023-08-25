@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-19 AT 15:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SHA_test_deck
    USE GALAHAD_KINDS_precision
@@ -10,7 +10,7 @@
    TYPE ( SHA_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, j, k, l, m, algorithm
    REAL ( KIND = rp_ ) ::  v
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: RD
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PRECEDENCE
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
    TYPE ( RAND_seed ) :: seed
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, nz = 9        ! set problem data
@@ -23,7 +23,7 @@
    ROW = (/ 1, 1, 1, 1, 1, 2, 3, 4, 5 /)
    COL = (/ 1, 2, 3, 4, 5, 2, 3, 4, 5 /)
    VAL = (/ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 /)
-   DO algorithm = 1, 4
+   DO algorithm = 1, 5
      CALL SHA_initialize( data, control, inform )              ! initialize
      control%approximation_algorithm = algorithm
      WRITE( 6, "( /, ' Approximation algorithm ', I0 )" ) algorithm
@@ -35,25 +35,37 @@
      WRITE( 6, "( 1X, I0, ' differences are needed, one extra might help')")   &
        inform%differences_needed
      m = inform%differences_needed + 1 ! use as many differences as required + 1
-     ALLOCATE( S( n, m ), Y( n, m ), RD( m ) )
+     ALLOCATE( S( n, m ), Y( n, m ), PRECEDENCE( m ) )
      CALL RAND_initialize( seed )
      DO k = 1, m
-       RD( k ) = k
-       DO i = 1, n                                             ! choose random S
+       PRECEDENCE( k ) = m - k + 1
+       DO i = 1, n  ! choose random S
          CALL RAND_random_real( seed, .FALSE., S( i, k ) )
-         CALL RAND_random_real( seed, .FALSE., Y( i, k ) )
-         Y( i, k ) = Y( i, k ) * 0.001
        END DO
-       Y( : n, k ) = 0.0_rp_                                    ! form Y = H * S
+       Y( : n, k ) = 0.0_rp_  ! form Y = H * S
        DO l = 1, nz
          i = ROW( l ) ; j = COL( l ) ; v = VAL( l )
          Y( i, k ) = Y( i, k ) + v * S( j, k )
          IF ( i /= j ) Y( j, k ) = Y( j, k ) + v * S( i, k )
        END DO
      END DO
-     CALL SHA_estimate( n, nz, ROW, COL, m, RD, n, m, S, n, m,                 &
-                        Y, VAL_est, data, control, inform )     ! approximate H
-     IF ( inform%status /= 0 ) THEN             ! Failure
+     ! approximate H
+     CALL SHA_estimate( n, nz, ROW, COL, m, S, n, m, Y, n, m, VAL_est,         &
+                        data, control, inform )
+     IF ( inform%status /= 0 ) THEN ! Failure
+       WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
+         inform%status
+     ELSE
+       WRITE( 6, "( /, ' Successful run with ', I0,                            &
+      &             ' differences, estimated matrix:' )" ) m
+       DO l = 1, nz
+         WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
+          ROW( l ), COL( l ), VAL_est( l )
+       END DO
+     END IF
+     CALL SHA_estimate( n, nz, ROW, COL, m, S, n, m, Y, n, m, VAL_est,         &
+                        data, control, inform, PRECEDENCE = PRECEDENCE )
+     IF ( inform%status /= 0 ) THEN ! Failure
        WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
          inform%status
      ELSE
@@ -65,7 +77,7 @@
        END DO
      END IF
      CALL SHA_terminate( data, control, inform ) ! Delete internal workspace
-     DEALLOCATE( S, Y, RD )
+     DEALLOCATE( S, Y, PRECEDENCE )
    END DO
    WRITE( 6, "( /, ' TODO: test program is not yet exhausive' )" )
 

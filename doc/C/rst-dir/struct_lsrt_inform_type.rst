@@ -138,7 +138,7 @@ the value of the objective function
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` multiplier
 
-the multiplier, :math:`\lambda = sigma ||x||^(p-2)`
+the multiplier, $\lambda = sigma ||x||^(p-2)$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structlsrt__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -148,7 +148,7 @@ the multiplier, :math:`\lambda = sigma ||x||^(p-2)`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
 
-the Euclidean norm of :math:`x`
+the Euclidean norm of $x$
 
 .. index:: pair: variable; r_norm
 .. _doxid-structlsrt__inform__type_1ae908410fabf891cfd89626c3605c38ca:
@@ -158,7 +158,7 @@ the Euclidean norm of :math:`x`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r_norm
 
-the Euclidean norm of :math:`Ax-b`
+the Euclidean norm of $Ax-b$
 
 .. index:: pair: variable; Atr_norm
 .. _doxid-structlsrt__inform__type_1a0dc3a69b13123a76ec6ee7dd031eadff:
@@ -168,7 +168,7 @@ the Euclidean norm of :math:`Ax-b`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` Atr_norm
 
-the Euclidean norm of :math:`A^T (Ax-b) + \lambda x`
+the Euclidean norm of $A^T (Ax-b) + \lambda x$
 
 .. index:: pair: variable; biter_mean
 .. _doxid-structlsrt__inform__type_1a0c9f077f6c3bc52c519c2045c0578b22:

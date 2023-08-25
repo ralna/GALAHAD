@@ -245,6 +245,19 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
     return true;
 }
 
+/* Check that ndarray is 2D, double and of correct length */
+static inline bool check_2darray_double(char *name, PyArrayObject *arr, 
+                                        int m, int n){
+    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) && 
+         PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 && 
+         PyArray_DIM(arr,0)==m && PyArray_DIM(arr,1)==n)){
+        PyErr_Format(PyExc_TypeError, 
+                     "%s must be a 2D double array of size(%i,%i)", name, m, n);
+        return false;
+    }
+    return true;
+}
+
 /* Check that ndarray is 1D, int and of correct length */
 static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None

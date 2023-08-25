@@ -28,13 +28,13 @@ called in the following order:
 
 * :ref:`sls_reset_control <doxid-galahad__sls_8h_1aacc344b8cdf0b1c27965f191382372e4>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
-* :ref:`sls_factorize_matrix <doxid-galahad__sls_8h_1ab6666f5eb7b0bdbbc9c9b52b7a2e2c41>` - form and factorize the matrix :math:`A`
+* :ref:`sls_factorize_matrix <doxid-galahad__sls_8h_1ab6666f5eb7b0bdbbc9c9b52b7a2e2c41>` - form and factorize the matrix $A$
 
 * one of
   
-  * :ref:`sls_solve_system <doxid-galahad__sls_8h_1a1b3e7546b59b06160c51e16b6781bc0b>` - solve the linear system of equations :math:`Ax=b`
+  * :ref:`sls_solve_system <doxid-galahad__sls_8h_1a1b3e7546b59b06160c51e16b6781bc0b>` - solve the linear system of equations $Ax=b$
   
-  * :ref:`sls_partial_solve_system <doxid-galahad__sls_8h_1ac66dc50d8b54acab90d70ae649b92905>` - solve a linear system :math:`Mx=b` involving one of the matrix factors :math:`M` of :math:`A`
+  * :ref:`sls_partial_solve_system <doxid-galahad__sls_8h_1ac66dc50d8b54acab90d70ae649b92905>` - solve a linear system $Mx=b$ involving one of the matrix factors $M$ of $A$
 
 * :ref:`sls_information <doxid-galahad__sls_8h_1a0ca4a126813c3aafac9d791a152b233c>` (optional) - recover information about the solution and solution process
 

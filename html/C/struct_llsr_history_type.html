@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'struct_llsr_history_type';</script>
@@ -721,9 +720,9 @@
 <span class="k">struct</span> <span class="n">llsr_history_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllsr-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span class="std std-ref">lambda</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllsr-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllsr-history-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="llsr.html#doxid-structllsr-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span class="std std-ref">lambda</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="llsr.html#doxid-structllsr-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="llsr.html#doxid-structllsr-history-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -731,11 +730,11 @@
 <p>history derived type as a C struct</p>
 <section id="components">
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span id="index-1"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lambda</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span id="index-1"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lambda</span></pre>
 <p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-2"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-2"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
 <p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_M\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-3"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-history-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-3"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
 <p>the corresponding value of <span class="math notranslate nohighlight">\(\|A x(\lambda) - b\|_2\)</span></p>
 </section>
 </section>

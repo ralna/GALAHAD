@@ -62,9 +62,9 @@ general output occurs on stream out
 
 the level of output required. Possible values are:
 
-* :math:`\leq` 0 no output,
+* $\leq$ 0 no output,
 
-* :math:`\geq` 1 debugging
+* $\geq$ 1 debugging
 
 .. index:: pair: variable; space_critical
 .. _doxid-structhash__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

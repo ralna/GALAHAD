@@ -184,7 +184,7 @@ frequency for solving the reduced tri-diagonal problem (NOT USED)
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_relative
 
-the iteration stops successfully when :math:`\|A^Tr\|` is less than max( stop_relative \* :math:`\|A^Tr_{initial} \|`, stop_absolute )
+the iteration stops successfully when $\|A^Tr\|$ is less than max( stop_relative \* $\|A^Tr_{initial} \|$, stop_absolute )
 
 .. index:: pair: variable; stop_absolute
 .. _doxid-structl2rt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:

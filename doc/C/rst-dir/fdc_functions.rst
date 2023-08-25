@@ -117,7 +117,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; fdc_read_specfile
 .. _doxid-galahad__fdc_8h_1aa5e20e6a3ed015cdd927c1bfc7f00a2a:
@@ -127,9 +128,14 @@ Set default control values and initialize private data
 
 	void fdc_read_specfile(struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, const char specfile[])
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNEQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/fdc/FDC.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/fdc.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -168,7 +174,7 @@ Read the content of a specification file, and assign values associated with give
 		int depen[]
 	)
 
-Find dependent rows and, if any, check if :math:`A x = b` is consistent
+Find dependent rows and, if any, check if $A x = b$ is consistent
 
 
 
@@ -200,56 +206,79 @@ Find dependent rows and, if any, check if :math:`A x = b` is consistent
 		  
 		  Possible exit values are:
 		  
-		  * 0. The run was successful.
+		  * **0**
+                    The run was successful.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 and m > 0 or requirement that
+                    a type contains its relevant string 'dense',
+                    'coordinate', 'sparse_by_rows', 'diagonal',
+                    'scaled_identity', 'identity', 'zero' or 'none' has
+                    been violated.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-5**
+                    The constraints appear to be inconsistent.
 		  
-		  * -3. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 		  
-		  * -5. The constraints appear to be inconsistent.
-		  
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
-		  
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows of :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows of $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns of :math:`A`.
+		- is a scalar variable of type int, that holds the number of columns of $A$.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of nonzero entries in :math:`A`.
+		- is a scalar variable of type int, that holds the number of nonzero entries in $A$.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of :math:`A` in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
+		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of :math:`A`, as well as the total number of entries.
+		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the :math:`A` ordered as in A_col and A_ptr.
+		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the $A$ ordered as in A_col and A_ptr.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the linear term :math:`b` in the constraints. The i-th component of b, i = 0, ... , m-1, contains :math:`b_i`.
+		- is a one-dimensional array of size m and type double, that holds the linear term $b$ in the constraints. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- n_depen

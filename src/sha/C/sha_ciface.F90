@@ -23,8 +23,9 @@
         f_sha_full_data_type => SHA_full_data_type,                            &
         f_sha_initialize     => SHA_initialize,                                &
         f_sha_read_specfile  => SHA_read_specfile,                             &
-!       f_sha_import         => SHA_import,                                    &
-!       f_sha_reset_control  => SHA_reset_control,                             &
+        f_sha_reset_control  => SHA_reset_control,                             &
+        f_sha_analyse_matrix => SHA_analyse_matrix,                            &
+        f_sha_recover_matrix => SHA_recover_matrix,                            &
         f_sha_information    => SHA_information,                               &
         f_sha_terminate      => SHA_terminate
 
@@ -52,6 +53,7 @@
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       INTEGER ( KIND = ipc_ ) :: max_degree
+      INTEGER ( KIND = ipc_ ) :: approximation_algorithm_used
       INTEGER ( KIND = ipc_ ) :: differences_needed
       INTEGER ( KIND = ipc_ ) :: max_reduced_degree
       INTEGER ( KIND = ipc_ ) :: bad_row
@@ -142,6 +144,7 @@
     finform%status = cinform%status
     finform%alloc_status = cinform%alloc_status
     finform%max_degree = cinform%max_degree
+    finform%approximation_algorithm_used = cinform%approximation_algorithm_used
     finform%differences_needed = cinform%differences_needed
     finform%max_reduced_degree = cinform%max_reduced_degree
     finform%bad_row = cinform%bad_row
@@ -166,6 +169,7 @@
     cinform%status = finform%status
     cinform%alloc_status = finform%alloc_status
     cinform%max_degree = finform%max_degree
+    cinform%approximation_algorithm_used = finform%approximation_algorithm_used
     cinform%differences_needed = finform%differences_needed
     cinform%max_reduced_degree = finform%max_reduced_degree
     cinform%bad_row = finform%bad_row
@@ -273,6 +277,130 @@
   RETURN
 
   END SUBROUTINE sha_read_specfile
+
+!  ----------------------------------------
+!  C interface to fortran sha_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE sha_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_SHA_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( sha_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_sha_control_type ) :: fcontrol
+  TYPE ( f_sha_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_sha_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE sha_reset_control
+
+!  -----------------------------------------
+!  C interface to fortran sha_analyse_matrix
+!  -----------------------------------------
+
+  SUBROUTINE sha_analyse_matrix( ccontrol, cdata, status, n, ne,               &
+                                 row, col, m ) BIND( C )
+!                                row, col ) BIND( C )
+  USE GALAHAD_SHA_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( sha_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ) :: row
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ) :: col
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: m
+! INTEGER ( KIND = ipc_ ) :: m
+
+!  local variables
+
+  TYPE ( f_sha_control_type ) :: fcontrol
+  TYPE ( f_sha_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  analyse_matrix the problem data into the required SHA structure
+
+  CALL f_sha_analyse_matrix( fcontrol, fdata, status, n, ne, row, col, m )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE sha_analyse_matrix
+
+!  -----------------------------------------
+!  C interface to fortran sha_recover_matrix
+!  -----------------------------------------
+
+  SUBROUTINE sha_recover_matrix( cdata, status, ne, m, ls1, ls2, s,         &
+                                 ly1, ly2, y, val, precedence ) BIND( C )
+  USE GALAHAD_SHA_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: ne, m, ls1, ls2, ly1, ly2
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ls2, ls1 ) :: s ! reverse order
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ly2, ly1 ) :: y ! for C !!
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( ne ) :: val
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: precedence
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_sha_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   form and factorize the block matrix
+
+  CALL f_sha_recover_matrix( fdata, status, m, s, y, val,                      &
+                             precedence = precedence )
+  RETURN
+
+  END SUBROUTINE sha_recover_matrix
 
 !  --------------------------------------
 !  C interface to fortran sha_information

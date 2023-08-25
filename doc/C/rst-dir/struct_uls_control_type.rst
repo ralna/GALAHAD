@@ -120,7 +120,7 @@ controls level of diagnostic output from external solver
 
 	int initial_fill_in_factor
 
-prediction of factor by which the fill-in will exceed the initial number of nonzeros in :math:`A`
+prediction of factor by which the fill-in will exceed the initial number of nonzeros in $A$
 
 .. index:: pair: variable; min_real_factor_size
 .. _doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562:
@@ -300,7 +300,7 @@ any entry smaller than this in modulus is reset to zero
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_relative
 
-refinement will cease as soon as the residual :math:`\|Ax-b\|` falls below max( acceptable_residual_relative \* :math:`\|b\|`, acceptable_residual_absolute )
+refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
 .. index:: pair: variable; acceptable_residual_absolute
 .. _doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0:

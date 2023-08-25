@@ -129,7 +129,7 @@ should the problem be solved by dense factorization? Possible values are
 
 	int new_h
 
-how much of :math:`H` has changed since the previous call. Possible values are
+how much of $H$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -145,7 +145,7 @@ how much of :math:`H` has changed since the previous call. Possible values are
 
 	int new_m
 
-how much of :math:`M` has changed since the previous call. Possible values are
+how much of $M$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -161,7 +161,7 @@ how much of :math:`M` has changed since the previous call. Possible values are
 
 	int new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
+how much of $A$ has changed since the previous call. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
 
 .. index:: pair: variable; max_factorizations
 .. _doxid-structrqs__control__type_1a49cdbb7627ab58da229da6ccb3034bb7:
@@ -231,7 +231,7 @@ see lower
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
 
-stop when :math:`| \|x\| - (multiplier/\sigma)^(1/(p-2)) | \leq` stop_normal \* max :math:`( \|x\|, (multiplier/\sigma)^(1/(p-2)) )` REAL ( KIND = wp ) :: stop_normal = epsmch \*\* 0.75
+stop when $| \|x\| - (multiplier/\sigma)^(1/(p-2)) | \leq$ stop_normal \* max $( \|x\|, (multiplier/\sigma)^(1/(p-2)) )$ REAL ( KIND = wp ) :: stop_normal = epsmch \*\* 0.75
 
 .. index:: pair: variable; stop_hard
 .. _doxid-structrqs__control__type_1a9508356d815ae3f8eea0f0770fddb6d7:

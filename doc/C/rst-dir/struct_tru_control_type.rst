@@ -116,13 +116,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structtru__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -236,25 +236,25 @@ Possible values are
 
 the trust-region norm used.
 
-The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the preconditioner used for iterative methods. Possible values for :math:`P` are
+The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are
 
 * -3 users own preconditioner
 
-* -2 :math:`P =` limited-memory BFGS matrix (with .lbfgs_vectors history)
+* -2 $P =$ limited-memory BFGS matrix (with .lbfgs_vectors history)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`P =` diag( max( Hessian, .min_diagonal ) )
+* 1 diagonal, $P =$ diag( max( Hessian, .min_diagonal ) )
 
-* 2 banded, :math:`P =` band( Hessian ) with semi-bandwidth .semi_bandwidth
+* 2 banded, $P =$ band( Hessian ) with semi-bandwidth .semi_bandwidth
 
 * 3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth
 
-* 4 full factorization, :math:`P =` Hessian, Schnabel-Eskow modification
+* 4 full factorization, $P =$ Hessian, Schnabel-Eskow modification
 
-* 5 full factorization, :math:`P =` Hessian, GMPS modification (*not yet implemented*)
+* 5 full factorization, $P =$ Hessian, GMPS modification (*not yet implemented*)
 
 * 6 incomplete factorization of Hessian, Lin-More'
 
@@ -274,7 +274,7 @@ The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the precondit
 
 	int semi_bandwidth
 
-specify the semi-bandwidth of the band matrix :math:`P` if required
+specify the semi-bandwidth of the band matrix $P$ if required
 
 .. index:: pair: variable; lbfgs_vectors
 .. _doxid-structtru__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30:
@@ -284,7 +284,7 @@ specify the semi-bandwidth of the band matrix :math:`P` if required
 
 	int lbfgs_vectors
 
-number of vectors used by the L-BFGS matrix :math:`P` if required
+number of vectors used by the L-BFGS matrix $P$ if required
 
 .. index:: pair: variable; max_dxg
 .. _doxid-structtru__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f:
@@ -304,7 +304,7 @@ number of vectors used by the sparsity-based secant Hessian if required
 
 	int icfs_vectors
 
-number of vectors used by the Lin-More' incomplete factorization matrix :math:`P` if required
+number of vectors used by the Lin-More' incomplete factorization matrix $P$ if required
 
 .. index:: pair: variable; mi28_lsize
 .. _doxid-structtru__control__type_1a97a46af6187162b529821f79d1559827:
@@ -324,7 +324,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	int mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; stop_g_absolute
 .. _doxid-structtru__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8:
@@ -394,7 +394,7 @@ maximum permitted trust-region radius
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` eta_successful
 
-a potential iterate will only be accepted if the actual decrease :math:`f - f(x_{new})` is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful
+a potential iterate will only be accepted if the actual decrease $f - f(x_{new})$ is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful
 
 .. index:: pair: variable; eta_very_successful
 .. _doxid-structtru__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e:

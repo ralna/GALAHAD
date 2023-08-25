@@ -41,23 +41,49 @@ components
 
 the return status. Possible values are:
 
-* 0 a successful conversion.
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  a successful conversion.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -3. The restriction n > 0 or m > 0 or requirement that a type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' has been violated.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
 
-* -32 provided integer workspace is not large enough.
+* **-2**
 
-* -33 provided real workspace is not large enough.
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
 
-* -73 an input matrix entry has been repeated.
+* **-3**
 
-* -79 there are missing optional arguments.
+  The restriction n > 0 or m > 0 or requirement that a type contains its
+  relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns',
+  'dense_by_rows' or 'dense_by_columns' has been violated.
 
-* -90 a requested output format is not recognised.
+* **-32**
+
+  provided integer workspace is not large enough.
+
+* **-33**
+
+  provided real workspace is not large enough.
+
+* **-73**
+
+  an input matrix entry has been repeated.
+
+* **-79**
+
+  there are missing optional arguments.
+
+* **-90**
+
+  a requested output format is not recognised.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structconvert__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

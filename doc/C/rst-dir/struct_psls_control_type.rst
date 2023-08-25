@@ -98,25 +98,25 @@ controls level of diagnostic output
 
 which preconditioner to use:
 
-* <0 no preconditioning occurs, :math:`P = I`
+* <0 no preconditioning occurs, $P = I$
 
 * 0 the preconditioner is chosen automatically (forthcoming, and currently defaults to 1).
 
-* 1 :math:`A` is replaced by the diagonal, :math:`P` = diag( max(:math:`A`, .min_diagonal ) ).
+* 1 $A$ is replaced by the diagonal, $P$ = diag( max($A$, .min_diagonal ) ).
 
-* 2 :math:`A` is replaced by the band :math:`P` = band(:math:`A`) with semi-bandwidth .semi_bandwidth.
+* 2 $A$ is replaced by the band $P$ = band($A$) with semi-bandwidth .semi_bandwidth.
 
-* 3 :math:`A` is replaced by the reordered band :math:`P` = band( order(:math:`A`) ) with semi-bandwidth .semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal.
+* 3 $A$ is replaced by the reordered band $P$ = band( order($A$) ) with semi-bandwidth .semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal.
 
-* 4 :math:`P` is a full factorization of :math:`A` using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization.
+* 4 $P$ is a full factorization of $A$ using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization.
 
-* 5 :math:`P` is a full factorization of :math:`A` due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one.
+* 5 $P$ is a full factorization of $A$ due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one.
 
-* 6 :math:`P` is an incomplete Cholesky factorization of :math:`A` using the package ICFS due to Lin and More'.
+* 6 $P$ is an incomplete Cholesky factorization of $A$ using the package ICFS due to Lin and More'.
 
-* 7 :math:`P` is an incomplete factorization of :math:`A` implemented as HSL_MI28 from HSL.
+* 7 $P$ is an incomplete factorization of $A$ implemented as HSL_MI28 from HSL.
 
-* 8 :math:`P` is an incomplete factorization of :math:`A` due to Munskgaard (forthcoming).
+* 8 $P$ is an incomplete factorization of $A$ due to Munskgaard (forthcoming).
 
 * >8 treated as 0.
 
@@ -160,7 +160,7 @@ see scaling
 
 	int max_col
 
-maximum number of nonzeros in a column of :math:`A` for Schur-complement factorization to accommodate newly deleted rpws and columns
+maximum number of nonzeros in a column of $A$ for Schur-complement factorization to accommodate newly deleted rpws and columns
 
 .. index:: pair: variable; icfs_vectors
 .. _doxid-structpsls__control__type_1adb095f545799aab1d69fcdca912d4afd:
@@ -190,7 +190,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	int mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
 
 .. index:: pair: variable; min_diagonal
 .. _doxid-structpsls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc:

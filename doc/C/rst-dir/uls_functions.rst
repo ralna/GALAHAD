@@ -125,7 +125,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -143,9 +143,11 @@ Select solver, set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 		  
-		  * -26. The requested solver is not available.
+		  * **-26**
+                    The requested solver is not available**
 
 .. index:: pair: function; uls_read_specfile
 .. _doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef:
@@ -155,9 +157,14 @@ Select solver, set default control values and initialize private data
 
 	void uls_read_specfile(struct :ref:`uls_control_type<doxid-structuls__control__type>`* control, const char specfile[])
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNULS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/uls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.
+An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/uls/ULS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/uls.pdf for a list of how these keywords relate to the 
+components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -221,63 +228,88 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 		  
 		  Possible values are:
 		  
-		  * 0. The import, analysis and factorization were conducted successfully.
+		  * **0**
+                    The import, analysis and factorization were
+                    conducted successfully.
+
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
+		  * **-3**
+                    The restrictions n > 0 and m> 0 or requirement that
+                    the matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-29**
+                    This option is not available with this solver.
 		  
-		  * -3. The restrictions n > 0 and m> 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 		  
-		  * -26. The requested solver is not available.
-		  
-		  * -29. This option is not available with this solver.
-		  
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
-		  
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type int, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the matrix $A$ in any of the supported storage schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the matrix :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the matrix :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:
@@ -316,7 +348,8 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The import was successful.
 
 .. index:: pair: function; uls_solve_system
 .. _doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518:
@@ -333,7 +366,7 @@ Reset control parameters after import if required.
 		bool trans
 	)
 
-Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
+Solve the linear system $Ax=b$ or $A^Tx=b$.
 
 
 
@@ -355,37 +388,56 @@ Solve the linear system :math:`Ax=b` or :math:`A^Tx=b`.
 		  
 		  Possible values are:
 		  
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-		  
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`.
+		- is a one-dimensional array of size n and type double. On entry, it must hold the vector $b$. On a successful exit, its contains the solution $x$.
 
 	*
 		- trans
 
-		- is a scalar variable of type bool, that specifies whether to solve the equation :math:`A^Tx=b` (trans=true) or :math:`Ax=b` (trans=false).
+		- is a scalar variable of type bool, that specifies whether to solve the equation $A^Tx=b$ (trans=true) or $Ax=b$ (trans=false).
 
 .. index:: pair: function; uls_information
 .. _doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf:
@@ -420,7 +472,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; uls_terminate
 .. _doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435:

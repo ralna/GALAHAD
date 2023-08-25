@@ -67,7 +67,7 @@ STAT value after allocate failure.
 
 	int mod_1by1
 
-the number of 1 by 1 blocks from the factorization of H that were modified when constructing :math:`M`
+the number of 1 by 1 blocks from the factorization of H that were modified when constructing $M$
 
 .. index:: pair: variable; mod_2by2
 .. _doxid-structdps__inform__type_1a6597a7caccf77ae67ed2b86f9281804a:
@@ -77,7 +77,7 @@ the number of 1 by 1 blocks from the factorization of H that were modified when 
 
 	int mod_2by2
 
-the number of 2 by 2 blocks from the factorization of H that were modified when constructing :math:`M`
+the number of 2 by 2 blocks from the factorization of H that were modified when constructing $M$
 
 .. index:: pair: variable; obj
 .. _doxid-structdps__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
@@ -127,7 +127,7 @@ the Lagrange multiplier associated with the constraint/regularization
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pole
 
-a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of :math:`(H,M)`
+a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of $(H,M)$
 
 .. index:: pair: variable; hard_case
 .. _doxid-structdps__inform__type_1a22215075b7081ccac9f121daf07a0f7e:

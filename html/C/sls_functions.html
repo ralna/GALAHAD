@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sls_functions';</script>
@@ -638,28 +637,28 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_sls_time_type.html#doxid-structsls-time-type"><span class="std std-ref">sls_time_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-time-type"><span class="std std-ref">sls_time_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a1d8a0c73587ca6d7f5333d41b3e2472a"><span class="std std-ref">sls_initialize</span></a><span></span><span class="p">(</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">solver</span><span class="p">[],</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1ada1e7b9ed799335702f85a551b64bf88"><span class="std std-ref">sls_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1ada1e7b9ed799335702f85a551b64bf88"><span class="std std-ref">sls_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a380a7f50cc71c705d15a791acde946cf"><span class="std std-ref">sls_analyse_matrix</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -671,7 +670,7 @@
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1aacc344b8cdf0b1c27965f191382372e4"><span class="std std-ref">sls_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
@@ -680,25 +679,25 @@
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span class="std std-ref">sls_solve_system</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span class="std std-ref">sls_solve_system</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1ac66dc50d8b54acab90d70ae649b92905"><span class="std std-ref">sls_partial_solve_system</span></a><span></span><span class="p">(</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">part</span><span class="p">[],</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a0ca4a126813c3aafac9d791a152b233c"><span class="std std-ref">sls_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a0ca4a126813c3aafac9d791a152b233c"><span class="std std-ref">sls_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1aa5aafa378e3500ce31783e13c3395d30"><span class="std std-ref">sls_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -713,7 +712,7 @@
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a1d8a0c73587ca6d7f5333d41b3e2472a"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">sls_initialize</span><span class="p">(</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">solver</span><span class="p">[],</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
 <p>Select solver, set default control values and initialize private data</p>
@@ -731,23 +730,36 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
 </li>
-<li><p>-26. The requested solver is not available.</p></li>
+<li><dl class="simple">
+<dt><strong>-26</strong></dt><dd><p>The requested solver is not available.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1ada1e7b9ed799335702f85a551b64bf88"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">sls_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sls.pdf for a list of keywords that may be set.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1ada1e7b9ed799335702f85a551b64bf88"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">sls_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<p>Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list
+of keywords with associated default values is provided in
+$GALAHAD/src/sls/SLS.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/sls.pdf for a list of how these keywords
+relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -756,7 +768,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -764,7 +776,7 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a380a7f50cc71c705d15a791acde946cf"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">sls_analyse_matrix</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -783,7 +795,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -792,23 +804,108 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
 <p>Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import and analysis were conducted successfully.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import and analysis were conducted successfully.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restrictions n &gt; 0 or requirement that the matrix type must contain the relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows has been violated.</p></li>
-<li><p>-20. The matrix is not positive definite while the solver used expected it to be.</p></li>
-<li><p>-26. The requested solver is not available.</p></li>
-<li><p>-29. This option is not available with this solver.</p></li>
-<li><p>-32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.</p></li>
-<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
-<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
-<li><p>-36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.</p></li>
-<li><p>-37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.</p></li>
-<li><p>-43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.</p></li>
-<li><p>-50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 or requirement that the
+matrix type must contain the relevant string
+‘dense’, ‘coordinate’ or ‘sparse_by_rows has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-20</strong></dt><dd><p>The matrix is not positive definite while the solver
+used expected it to be.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-26</strong></dt><dd><p>The requested solver is not available.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-29</strong></dt><dd><p>This option is not available with this solver.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-32</strong></dt><dd><p>More than control.max integer factor size words of
+internal integer storage are required for in-core
+factorization.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-34</strong></dt><dd><p>The package PARDISO failed; check the
+solver-specific information components
+inform.pardiso iparm and inform.pardiso_dparm along
+with PARDISO’s documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-35</strong></dt><dd><p>The package WSMP failed; check the solver-specific
+information components inform.wsmp_iparm and
+inform.wsmp dparm along with WSMP’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-36</strong></dt><dd><p>The scaling package HSL MC64 failed; check the
+solver-specific information component
+inform.mc64_info along with HSL MC64’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-37</strong></dt><dd><p>The scaling package MC77 failed; check the
+solver-specific information components inform.mc77
+info and inform.mc77_rinfo along with MC77’s
+documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-43</strong></dt><dd><p>A direct-access file error occurred. See the value
+of inform.ma77_info.flag for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-50</strong></dt><dd><p>A solver-specific error occurred; check the
+solver-specific information component of inform
+along with the solver’s documentation for more
+details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -833,7 +930,7 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1aacc344b8cdf0b1c27965f191382372e4"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">sls_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -846,7 +943,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -867,7 +964,7 @@
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Form and factorize the symmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p>
 <p class="rubric">Parameters:</p>
@@ -884,23 +981,108 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
 <p>Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The factors were generated successfully.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The factors were generated successfully.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restrictions n &gt; 0 or requirement that the matrix type must contain the relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows has been violated.</p></li>
-<li><p>-20. The matrix is not positive definite while the solver used expected it to be.</p></li>
-<li><p>-26. The requested solver is not available.</p></li>
-<li><p>-29. This option is not available with this solver.</p></li>
-<li><p>-32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.</p></li>
-<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
-<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
-<li><p>-36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.</p></li>
-<li><p>-37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.</p></li>
-<li><p>-43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.</p></li>
-<li><p>-50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 or requirement that the
+matrix type must contain the relevant string
+‘dense’, ‘coordinate’ or ‘sparse_by_rows has been
+violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-20</strong></dt><dd><p>The matrix is not positive definite while the solver
+used expected it to be.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-26</strong></dt><dd><p>The requested solver is not available.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-29</strong></dt><dd><p>This option is not available with this solver.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-32</strong></dt><dd><p>More than control.max integer factor size words of
+internal integer storage are required for in-core
+factorization.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-34</strong></dt><dd><p>The package PARDISO failed; check the
+solver-specific information components
+inform.pardiso iparm and inform.pardiso_dparm along
+with PARDISO’s documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-35</strong></dt><dd><p>The package WSMP failed; check the solver-specific
+information components inform.wsmp_iparm and
+inform.wsmp dparm along with WSMP’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-36</strong></dt><dd><p>The scaling package HSL MC64 failed; check the
+solver-specific information component
+inform.mc64_info along with HSL MC64’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-37</strong></dt><dd><p>The scaling package MC77 failed; check the
+solver-specific information components inform.mc77
+info and inform.mc77_rinfo along with MC77’s
+documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-43</strong></dt><dd><p>A direct-access file error occurred. See the value
+of inform.ma77_info.flag for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-50</strong></dt><dd><p>A solver-specific error occurred; check the
+solver-specific information component of inform
+along with the solver’s documentation for more
+details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -912,7 +1094,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sls_solve_system</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[])</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sls_solve_system</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[])</span></pre>
 <p>Solve the linear system <span class="math notranslate nohighlight">\(Ax=b\)</span>.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -928,14 +1110,47 @@
 <td><p>is a scalar variable of type int, that gives the exit status from the package.</p>
 <p>Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The required solution was obtained.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The required solution was obtained.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
-<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-34</strong></dt><dd><p>The package PARDISO failed; check the
+solver-specific information components
+inform.pardiso iparm and inform.pardiso_dparm along
+with PARDISO’s documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-35</strong></dt><dd><p>The package WSMP failed; check the solver-specific
+information components inform.wsmp_iparm and
+inform.wsmp dparm along with WSMP’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -952,7 +1167,7 @@
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Given the factorization <span class="math notranslate nohighlight">\(A = L D U\)</span> with <span class="math notranslate nohighlight">\(U = L^T\)</span>, solve the linear system <span class="math notranslate nohighlight">\(Mx=b\)</span>, where <span class="math notranslate nohighlight">\(M\)</span> is one of <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(D\)</span>, <span class="math notranslate nohighlight">\(U\)</span> or <span class="math notranslate nohighlight">\(S = L \sqrt{D}\)</span>.</p>
 <p class="rubric">Parameters:</p>
@@ -973,14 +1188,47 @@
 <p>On initial entry, status must be set to 1.</p>
 <p>Possible exit values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The required solution was obtained.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The required solution was obtained.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.</p></li>
-<li><p>-35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-34</strong></dt><dd><p>The package PARDISO failed; check the
+solver-specific information components
+inform.pardiso iparm and inform.pardiso_dparm along
+with PARDISO’s documentation for more details.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-35</strong></dt><dd><p>The package WSMP failed; check the solver-specific
+information components inform.wsmp_iparm and
+inform.wsmp dparm along with WSMP’s documentation
+for more details.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -992,7 +1240,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a0ca4a126813c3aafac9d791a152b233c"><span id="index-9"></span><span></span><span class="kt">void</span> <span class="n">sls_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a0ca4a126813c3aafac9d791a152b233c"><span id="index-9"></span><span></span><span class="kt">void</span> <span class="n">sls_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provide output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -1005,14 +1253,15 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -1021,8 +1270,8 @@
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1aa5aafa378e3500ce31783e13c3395d30"><span id="index-10"></span><span></span><span class="kt">void</span> <span class="n">sls_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -1036,10 +1285,10 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

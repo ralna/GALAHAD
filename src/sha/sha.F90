@@ -33,7 +33,8 @@
      PRIVATE
      PUBLIC :: SHA_initialize, SHA_read_specfile, SHA_analyse,                 &
                SHA_estimate, SHA_count, SHA_terminate,                         &
-               SHA_full_initialize, SHA_full_terminate, SHA_information
+               SHA_full_initialize, SHA_full_terminate, SHA_information,       &
+               SHA_analyse_matrix, SHA_recover_matrix, SHA_reset_control
 
 !----------------------
 !   I n t e r f a c e s
@@ -74,7 +75,7 @@
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
-!    for each iteration, >= 3 gives increasingly verbose (debugging) output
+!    for each iteration, >= 3 gives increasingly verbose (debu
 
        INTEGER ( KIND = ip_ ) :: print_level = 0
 
@@ -85,7 +86,7 @@
 !    4 : composite 2 (alg 2.4 in paper)
 !    5 : cautious (alg 2.5 in paper)
 
-       INTEGER ( KIND = ip_ ) :: approximation_algorithm = 3
+       INTEGER ( KIND = ip_ ) :: approximation_algorithm = 4
 
 !  which dense linear equation solver should be used?
 !    1 : Gaussian elimination
@@ -133,7 +134,7 @@
 
        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
-!  the maximum degree in the adgacency graph
+!  the maximum degree in the adjacency graph
 
        INTEGER ( KIND = ip_ ) :: max_degree = - 1
 
@@ -141,11 +142,15 @@
 
        INTEGER ( KIND = ip_ ) :: differences_needed = - 1
 
-!  the maximum reduced degree in the adgacency graph
+!  the maximum reduced degree in the adjacency graph
 
        INTEGER ( KIND = ip_ ) :: max_reduced_degree = - 1
 
-!  a failure occured when forming the bad_row-th row or column (0 = no failure)
+!  the actual approximation algorithm used
+
+       INTEGER ( KIND = ip_ ) :: approximation_algorithm_used = - 1
+
+!  a failure occurred when forming the bad_row-th row or column (0 = no failure)
 
        INTEGER ( KIND = ip_ ) :: bad_row = 0
 
@@ -181,6 +186,8 @@
        INTEGER ( KIND = ip_ ) :: approximation_algorithm_used
        INTEGER ( KIND = ip_ ) :: dense_linear_solver = - 1
        INTEGER ( KIND = ip_ ) :: differences_needed = - 1
+       INTEGER ( KIND = ip_ ) :: l_sparse
+       INTEGER ( KIND = ip_ ) :: singular_matrices
 
 !  initial array sizes
 
@@ -199,16 +206,16 @@
        INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK_1
        REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK_1
 
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEGREE_inv
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEGREE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: STR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: STU
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LIST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIRST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LAST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COUNT
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM_inv
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_lower
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PU
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PK
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP_lower
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
@@ -220,12 +227,16 @@
 !   full_data derived type
 !  - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: SHA_full_data_type
-        LOGICAL :: f_indexing
-        TYPE ( SHA_data_type ) :: SHA_data
-        TYPE ( SHA_control_type ) :: SHA_control
-        TYPE ( SHA_inform_type ) :: SHA_inform
-      END TYPE SHA_full_data_type
+     TYPE, PUBLIC :: SHA_full_data_type
+       LOGICAL :: f_indexing
+       TYPE ( SHA_data_type ) :: SHA_data
+       TYPE ( SHA_control_type ) :: SHA_control
+       TYPE ( SHA_inform_type ) :: SHA_inform
+       INTEGER ( KIND = ip_ ) :: n, ne
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COL
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PRECEDENCE
+     END TYPE SHA_full_data_type
 
    CONTAINS
 
@@ -311,8 +322,8 @@
 !  error-printout-device                           6
 !  printout-device                                 6
 !  print-level                                     0
-!  approximation-algorithm                         1
-!  dense-linear-solver                             1
+!  approximation-algorithm                         4
+!  dense-linear-solver                             3
 !  maximum-degree-considered-sparse                50
 !  extra-differences                               0
 !  space-critical                                  F
@@ -483,6 +494,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, j1, jj, k, k1, kk, l, ll, r, c
       INTEGER ( KIND = ip_ ) :: max_row, deg, min_degree
+      LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -499,11 +511,13 @@
 
       data%n = n ; data%nz = nz
       inform%status = GALAHAD_ok
+      printi = control%out > 0 .AND. control%print_level > 0
 
-!  allocate space for starting address PK and unsymmetric row count COUNT
+!  allocate space for row starting addresses STR and unsymmetric row counts 
+!  COUNT
 
-      array_name = 'SHA: data%PK'
-      CALL SPACE_resize_array( n + 1, data%PK,                                 &
+      array_name = 'SHA: data%STR'
+      CALL SPACE_resize_array( n + 1, data%STR,                                &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -518,8 +532,8 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  determine how many nonzeros there are in each row of the whole matrix
-!  (both upper and lower parts)
+!  record the number of nonzeros in each row of the whole matrix (both upper 
+!  and lower parts) in COUNT
 
       data%COUNT = 0
       DO l = 1, nz
@@ -528,12 +542,11 @@
         IF ( i /= j ) data%COUNT( j ) = data%COUNT( j ) + 1
       END DO
 
-!  now set the starting addresses PK for each row of the whole matrix in the
-!  pointer array PTR
+!  now set the starting addresses for each row of the whole matrix in STR
 
-      data%PK( 1 ) = 1
+      data%STR( 1 ) = 1
       DO i = 1, n
-        data%PK( i + 1 ) = data%PK( i ) + data%COUNT( i )
+        data%STR( i + 1 ) = data%STR( i ) + data%COUNT( i )
       END DO
 
 !  compute the maximum degree (row length)
@@ -541,12 +554,12 @@
       max_row = MAXVAL( data%COUNT( 1 : n ) )
       inform%max_degree = max_row
 
-!  allocate space for the list of rows of increasing degrees (DEGREE), as well
-!  the first and last positions for those of a given degree (FIRST & LAST) and
-!  pointers from the rows to the list of degrees (DEGREE_inv)
+!  allocate space for the list of rows ordered by increasing degree (LIST), 
+!  as well the first and last positions for those of a given degree (FIRST 
+!  and LAST) and pointers from the the list of degrees to the rows (ROWS)
 
-      array_name = 'SHA: data%DEGREE'
-      CALL SPACE_resize_array( n, data%DEGREE,                                 &
+      array_name = 'SHA: data%LIST'
+      CALL SPACE_resize_array( n, data%LIST,                                   &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -570,28 +583,39 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%DEGREE_inv'
-      CALL SPACE_resize_array( n, data%DEGREE_inv,                             &
+      array_name = 'SHA: data%ROWS'
+      CALL SPACE_resize_array( n, data%ROWS,                                   &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  count the number of rows with each degree
+!  initialize the number of rows with each degree in LAST
 
       data%LAST( 0 : max_row ) = 0
       DO i = 1, n
         data%LAST( data%COUNT( i ) ) = data%LAST( data%COUNT( i ) ) + 1
       END DO
-      IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
-        WRITE( control%out, "( ' algorithm ', I0 )" )                          &
-          control%approximation_algorithm
+
+!  make sure that the approximation algorithm requested is possible
+
+      IF ( control%approximation_algorithm < 1 .OR.                            &
+           control%approximation_algorithm > 5 ) THEN
+        inform%approximation_algorithm_used = 4
+      ELSE
+        inform%approximation_algorithm_used = control%approximation_algorithm
+      END IF
+
+      IF ( printi ) THEN
+        WRITE( control%out, "( ' Algorithm ', I0 )" )                          &
+          inform%approximation_algorithm_used
         WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
         CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
       END IF
 
-!  set the start and finish positions for each degree in DEGREE
+!  set the start (FIRST) and finish (LAST) positions for each degree in the
+!  list LIST
 
       data%FIRST( 0 ) = 1
       DO i = 0, max_row - 1
@@ -600,16 +624,17 @@
       END DO
       data%LAST( max_row ) = data%FIRST( max_row ) + data%LAST( max_row ) - 1
 
-!  now sort the rows by increasing degree (and record their inverses) ...
+!  now sort the rows by increasing degree (LIST) (and record their inverses) 
+!  (ROWS) ...
 
       DO i = 1, n
         deg = data%COUNT( i )
-        data%DEGREE( data%FIRST( deg ) ) = i
-        data%DEGREE_inv( i ) = data%FIRST( deg )
+        data%LIST( data%FIRST( deg ) ) = i
+        data%ROWS( i ) = data%FIRST( deg )
         data%FIRST( deg ) = data%FIRST( deg ) + 1
       END DO
 
-!  .. and reset the starting positions
+!  .. and reset the starting positions (FIRST)
 
       DO i = max_row - 1, 0, - 1
         data%FIRST( i + 1 ) = data%FIRST( i )
@@ -632,55 +657,55 @@
           WRITE( control%out, "( ' degree ', I0, ' involves rows:' )" ) i
           IF ( data%FIRST( i ) <= data%LAST( i ) )                             &
             WRITE( control%out, "( 10( :, 1X, I0 ) )" )                        &
-             ( data%DEGREE( l ), l = data%FIRST( i ), data%LAST( i ) )
+             ( data%LIST( l ), l = data%FIRST( i ), data%LAST( i ) )
         END DO
-        WRITE( control%out, "( ' degree_inv:', /, 10( 1X, I0 ) )" )            &
-          data%DEGREE_inv( 1 : n )
+        WRITE( control%out, "( ' ROWS:', /, 10( 1X, I0 ) )" )                  &
+          data%ROWS( 1 : n )
       END IF
 
-!  allocate space for PTR to hold mappings from the rows back to the
-!  coordinate storage, and its "shadow" PTR_lower set so that entries k and
-!  PTR_lower(k) of PTR correspond to the "upper" and "lower" triangular entries
-!  (i,j) and (j,i)
+!  allocate space for MAP to hold mappings from the rows back to the
+!  coordinate storage, and its "shadow" MAP_lower set so that entries k and
+!  MAP_lower(k) of MAP correspond to the "upper" and "lower" triangular entries
+!  (i,j) and (j,i), i <= j
 
-      array_name = 'SHA: data%PTR'
-      CALL SPACE_resize_array( data%PK( n + 1 ) - 1, data%PTR,                 &
+      array_name = 'SHA: data%MAP'
+      CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP,                &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%PTR_lower'
-      CALL SPACE_resize_array( data%PK( n + 1 ) - 1, data%PTR_lower,           &
+      array_name = 'SHA: data%MAP_lower'
+      CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP_lower,          &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  now set the PTR and PTR_lower maps ...
+!  now set the MAP and MAP_lower maps ...
 
       DO l = 1, nz
         i = ROW( l ) ; j = COL( l )
-        data%PTR( data%PK( i ) ) = l
-        data%PK( i ) = data%PK( i ) + 1
+        data%MAP( data%STR( i ) ) = l
         IF ( i /= j ) THEN
-          data%PTR( data%PK( j ) ) = l
-          data%PK( j ) = data%PK( j ) + 1
-          data%PTR_lower( data%PK( j ) - 1 ) = data%PK( i ) - 1
-          data%PTR_lower( data%PK( i ) - 1 ) = data%PK( j ) - 1
+          data%MAP( data%STR( j ) ) = l
+          data%MAP_lower( data%STR( j ) ) = data%STR( i )
+          data%MAP_lower( data%STR( i ) ) = data%STR( j )
+          data%STR( j ) = data%STR( j ) + 1
         ELSE
-          data%PTR_lower( data%PK( i ) - 1 ) = data%PK( i ) - 1
+          data%MAP_lower( data%STR( i ) ) = data%STR( i )
         END IF
+        data%STR( i ) = data%STR( i ) + 1
       END DO
 
-!  ... and reset the starting addresses
+!  ... and reset the row starting addresses
 
       DO i = n - 1, 1, - 1
-        data%PK( i + 1 ) = data%PK( i )
+        data%STR( i + 1 ) = data%STR( i )
       END DO
-      data%PK( 1 ) = 1
+      data%STR( 1 ) = 1
 
 !  print more row statistics if required
 
@@ -688,24 +713,24 @@
         DO i = 1, n
           WRITE( control%out, "( ' row ', I0, ' has entries' )" ) i
           WRITE( control%out, "( 1X, 6( '(', I0, ',', I0, ')', : ) )" )        &
-            ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ), l = data%PK( i ),    &
-              data%PK( i + 1 ) - 1 )
+            ( ROW( data%MAP( l ) ), COL( data%MAP( l ) ), l = data%STR( i ),   &
+              data%STR( i + 1 ) - 1 )
         END DO
       END IF
 
       IF ( control%out > 0 .AND. control%print_level > 2 ) THEN
         WRITE( control%out, "( ' matrix:' )" )
-        DO l = 1, data%PK( n + 1 ) - 1
+        DO l = 1, data%STR( n + 1 ) - 1
           WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0, ')' ) )" ) l,   &
-            ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                        &
-            COL( data%PTR( data%PTR_lower( l ) ) ),                            &
-            ROW( data%PTR( data%PTR_lower( l ) ) )
+            ROW( data%MAP( l ) ), COL( data%MAP( l ) ),                        &
+            COL( data%MAP( data%MAP_lower( l ) ) ),                            &
+            ROW( data%MAP( data%MAP_lower( l ) ) )
         END DO
       END IF
-stop
+!stop
 
-!  allocate further workspace to record row (inverse) permutations and the
-!  starting addresses for undetermined entries in each row
+!  allocate further workspace to record row (inverse) permutations (PERM_inv)
+!  and the starting addresses for undetermined entries in each row (STU)
 
       array_name = 'SHA: data%PERM_inv'
       CALL SPACE_resize_array( n, data%PERM_inv,                               &
@@ -715,8 +740,8 @@ stop
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%PU'
-      CALL SPACE_resize_array( n, data%PU,                                     &
+      array_name = 'SHA: data%STU'
+      CALL SPACE_resize_array( n, data%STU,                                    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -725,22 +750,20 @@ stop
 
 !  initialize undetermined row entry pointers
 
-      data%PU( 1 : n ) = data%PK( 1 : n )
+      data%STU( 1 : n ) = data%STR( 1 : n )
 
-      data%approximation_algorithm_used = control%approximation_algorithm
+      SELECT CASE ( inform%approximation_algorithm_used )
 
-      SELECT CASE ( control%approximation_algorithm )
+!  ----------------------------------
+!  algorithms 1-3 (aka paper 2.1-2.3)
+!  ----------------------------------
 
-!  ----------------------------------------------
-!  algorithms 1-3 and 5 (aka paper 2.1-2.3 & 2.5)
-!  ----------------------------------------------
-
-      CASE ( 1 : 3, 4 )
+      CASE ( 1 : 3 )
 
 !  find a row with the lowest count
 
         DO l = 1, n
-          i = data%DEGREE( MAX( data%FIRST( min_degree ), l ) )
+          i = data%LIST( MAX( data%FIRST( min_degree ), l ) )
           data%FIRST( min_degree ) = MAX( data%FIRST( min_degree ), l ) + 1
           IF ( min_degree > 0 ) THEN
             data%LAST( min_degree - 1 ) = data%FIRST( min_degree ) - 1
@@ -759,8 +782,8 @@ stop
 
 !  reduce the row counts for each other row j that has an entry in column i
 
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
-              kk = data%PTR( k )
+            DO k = data%STU( i ), data%STR( i + 1 ) - 1
+              kk = data%MAP( k )
               r = ROW( kk ) ; c = COL( kk )
               IF ( r == c ) CYCLE
 
@@ -775,13 +798,13 @@ stop
 !  upgrade DEGREE and its pointers
 
               deg = data%COUNT( j )
-              kk = data%DEGREE_inv( j )
+              kk = data%ROWS( j )
               jj = MAX( data%FIRST( deg ), l )
               IF ( jj /= kk ) THEN
-                data%DEGREE( kk ) = data%DEGREE( jj )
-                data%DEGREE( jj ) = j
-                data%DEGREE_inv( j ) = jj
-                data%DEGREE_inv( data%DEGREE( kk ) ) = kk
+                data%LIST( kk ) = data%LIST( jj )
+                data%LIST( jj ) = j
+                data%ROWS( j ) = jj
+                data%ROWS( data%LIST( kk ) ) = kk
               END IF
               data%FIRST( deg ) = jj + 1
               data%LAST( deg - 1 ) = data%LAST( deg - 1 ) + 1
@@ -790,42 +813,42 @@ stop
 !             DO jj = 0, max_row
 !               write( control%out,"( ' degree ', I0, ' rows:' )" ) jj
 !               write( control%out,"( 6( 1X, I0 ) )" ) &
-!                ( data%DEGREE( kk ), kk = data%FIRST( jj ), data%LAST( jj ) )
+!                ( data%LIST( kk ), kk = data%FIRST( jj ), data%LAST( jj ) )
 !             END DO
 !             WRITE( control%out,"( 10( 1X, I0 ) )" )                          &
-!               ( data%DEGREE_inv( jj ), jj = 1, n )
+!               ( data%ROWS( jj ), jj = 1, n )
 
 !  reduce the count for row j
 
               data%COUNT( j ) = deg - 1
 
-!  interchange entries jj = PU(j) and kk = data%PTR_lower(k) of PTR
+!  interchange entries jj = PU(j) and kk = data%MAP_lower(k) of MAP
 !  and their shadows
 
-              jj = data%PU( j )
-              kk = data%PTR_lower( k )
+              jj = data%STU( j )
+              kk = data%MAP_lower( k )
               IF ( jj /= kk ) THEN
-                k1 = data%PTR_lower( kk )
-                j1 = data%PTR_lower( jj )
-                data%PTR_lower( jj ) = k1
-                data%PTR_lower( k1 ) = jj
-                data%PTR_lower( kk ) = j1
-                data%PTR_lower( j1 ) = kk
-                ll = data%PTR( jj )
-                data%PTR( jj ) = data%PTR( kk )
-                data%PTR( kk ) = ll
+                k1 = data%MAP_lower( kk )
+                j1 = data%MAP_lower( jj )
+                data%MAP_lower( jj ) = k1
+                data%MAP_lower( k1 ) = jj
+                data%MAP_lower( kk ) = j1
+                data%MAP_lower( j1 ) = kk
+                ll = data%MAP( jj )
+                data%MAP( jj ) = data%MAP( kk )
+                data%MAP( kk ) = ll
               END IF
-              data%PU( j ) = data%PU( j ) + 1
+              data%STU( j ) = data%STU( j ) + 1
             END DO
           END IF
           data%COUNT( i ) = n + 1
           data%PERM_inv( l ) = i
 
-!         DO ll = 1, data%PK( n + 1 ) - 1
+!         DO ll = 1, data%STR( n + 1 ) - 1
 !           write(  control%out, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) ll,    &
-!             ROW( data%PTR( ll ) ), COL( data%PTR( ll ) ),                    &
-!             ROW( data%PTR( data%PTR_lower( ll ) ) ),                         &
-!             COL( data%PTR( data%PTR_lower( ll ) ) )
+!             ROW( data%MAP( ll ) ), COL( data%MAP( ll ) ),                    &
+!             ROW( data%MAP( data%MAP_lower( ll ) ) ),                         &
+!             COL( data%MAP( data%MAP_lower( ll ) ) )
 !         END DO
 
         END DO
@@ -835,41 +858,41 @@ stop
 !      DO i = 1, n
 !        write( control%out,"( ' row ', I0 )" ) i
 !        write( control%out,"( 6( '(', I0, ',', I0, ')' ) )" )                 &
-!          ( ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                       &
-!            l = data%PU( i ),  data%PK( i + 1 ) - 1 )
+!          ( ROW( data%MAP( l ) ), COL( data%MAP( l ) ),                       &
+!            l = data%STU( i ),  data%STR( i + 1 ) - 1 )
 !      END DO
 !      DO i = 1, n
-!        write( control%out,"( 3I0 )" ) i, data%PU( i ), data%PK( i + 1 ) - 1
+!        write( control%out,"( 3I0 )" ) i, data%STU( i ), data%STR( i + 1 ) - 1
 !      END DO
 
-        IF ( control%approximation_algorithm == 2 ) THEN
+        IF ( inform%approximation_algorithm_used == 2 ) THEN
           data%differences_needed                                              &
-            = MAXVAL( data%PK( 2 : n + 1 ) -  data%PU( 1 : n ) )
-        ELSE IF ( control%approximation_algorithm == 3 ) THEN
+            = MAXVAL( data%STR( 2 : n + 1 ) -  data%STU( 1 : n ) )
+        ELSE IF ( inform%approximation_algorithm_used == 3 ) THEN
           data%differences_needed = 0
           DO i = 1, n
-            IF ( data%PK( i + 1 ) - data%PK( i ) <=                            &
+            IF ( data%STR( i + 1 ) - data%STR( i ) <=                          &
                  control%max_sparse_degree ) THEN
               data%differences_needed = MAX( data%differences_needed,          &
-                                               data%PK( i + 1 ) - data%PK( i ) )
+                                             data%STR( i + 1 ) - data%STR( i ) )
             ELSE
               data%differences_needed = MAX( data%differences_needed,          &
-                                               data%PK( i + 1 ) - data%PU( i ) )
+                                             data%STR( i + 1 ) - data%STU( i ) )
             END IF
           END DO
         ELSE
           data%differences_needed                                              &
-            = MAXVAL( data%PK( 2 : n + 1 ) -  data%PK( 1 : n ) )
+            = MAXVAL( data%STR( 2 : n + 1 ) -  data%STR( 1 : n ) )
         END IF
 
 !  report the numbers of each block size
 
         data%LAST( 0 : data%differences_needed ) = 0
         DO i = 1, n
-          l = data%PK( i + 1 ) - data%PU( i )
+          l = data%STR( i + 1 ) - data%STU( i )
           data%LAST( l ) = data%LAST( l ) + 1
         END DO
-        IF ( control%out > 0 .AND. control%print_level > 0 ) THEN
+        IF ( printi ) THEN
           WRITE( control%out, "( A, ' (block size, # with this size):' )" )    &
             prefix
           CALL SHA_write_nonzero_list( control%out, data%differences_needed,   &
@@ -877,16 +900,16 @@ stop
         END IF
 
 !  ---------------------------
-!  algorithm 3 (aka paper 2.4)
+!  algorithm 4 (aka paper 2.4)
 !  ---------------------------
 
-      CASE DEFAULT
+      CASE ( 4 )
         data%unsym_rows = 0
         DO i = 1, n
 
 !  skip rows that have more than max_sparse_degree entries
 
-          IF ( data%PK( i + 1 ) - data%PK( i ) >                               &
+          IF ( data%STR( i + 1 ) - data%STR( i ) >                             &
                control%max_sparse_degree ) CYCLE
           data%unsym_rows = data%unsym_rows + 1
           data%PERM_inv( data%unsym_rows ) = i
@@ -894,12 +917,12 @@ stop
 !  reduce the row counts for all other rows that have an entry in column i
 
           IF ( data%unsym_rows < n ) THEN
-            DO k = data%PU( i ), data%PK( i + 1 ) - 1
-              kk = data%PTR( k )
+            DO k = data%STU( i ), data%STR( i + 1 ) - 1
+              kk = data%MAP( k )
               r = ROW( kk ) ; c = COL( kk )
               IF ( r == c ) CYCLE
 
-!  determine which of row( kk ) or col( kk ) gives the column number j
+!  determine which of row(kk) or col(kk) gives the column number j
 
               IF ( c == i ) THEN
                 j = r
@@ -907,23 +930,23 @@ stop
                 j = c
               END IF
 
-!  interchange entries jj = PU(j) and kk = data%PTR_lower( k ) of PTR
+!  interchange entries jj = PU(j) and kk = data%MAP_lower( k ) of MAP
 !  and their shadows
 
-              jj = data%PU( j )
-              kk = data%PTR_lower( k )
+              jj = data%STU( j )
+              kk = data%MAP_lower( k )
               IF ( jj /= kk ) THEN
-                k1 = data%PTR_lower( kk )
-                j1 = data%PTR_lower( jj )
-                data%PTR_lower( jj ) = k1
-                data%PTR_lower( k1 ) = jj
-                data%PTR_lower( kk ) = j1
-                data%PTR_lower( j1 ) = kk
-                ll = data%PTR( jj )
-                data%PTR( jj ) = data%PTR( kk )
-                data%PTR( kk ) = ll
+                k1 = data%MAP_lower( kk )
+                j1 = data%MAP_lower( jj )
+                data%MAP_lower( jj ) = k1
+                data%MAP_lower( k1 ) = jj
+                data%MAP_lower( kk ) = j1
+                data%MAP_lower( j1 ) = kk
+                ll = data%MAP( jj )
+                data%MAP( jj ) = data%MAP( kk )
+                data%MAP( kk ) = ll
               END IF
-              data%PU( j ) = data%PU( j ) + 1
+              data%STU( j ) = data%STU( j ) + 1
             END DO
           END IF
           data%COUNT( i ) = n + 1
@@ -934,12 +957,12 @@ stop
         j = data%unsym_rows
         DO i = 1, n
           IF (  data%COUNT( i ) == n + 1 ) THEN
-            data%PU( i ) = data%PK( i )
+            data%STU( i ) = data%STR( i )
             data%differences_needed =                                          &
-              MAX( data%differences_needed, data%PK( i + 1 ) - data%PU( i ) )
+              MAX( data%differences_needed, data%STR( i + 1 ) - data%STU( i ) )
           ELSE
             inform%max_reduced_degree =                                        &
-              MAX( inform%max_reduced_degree, data%PK( i + 1 ) - data%PU( i ) )
+             MAX( inform%max_reduced_degree, data%STR( i + 1 ) - data%STU( i ) )
             j = j + 1
             data%PERM_inv( j ) = i
           END IF
@@ -953,6 +976,90 @@ stop
 !      &   ' graph = ', I0, /, 1X, I0, ' symmetric differences required ',     &
 !      &   /, ' max reduced degree = ', I0 )" )                                &
 !         inform%max_degree, data%differences_needed, inform%max_reduced_degree
+        END IF
+
+!  ---------------------------
+!  algorithm 5 (aka paper 2.5)
+!  ---------------------------
+
+      CASE ( 5 )
+ 
+        data%differences_needed = 0
+        data%l_sparse = data%LAST( MIN( max_row, control%max_sparse_degree ) )
+!write(6,*) MIN( max_row, control%max_sparse_degree )
+!write(6,*) data%LAST( MIN( max_row, control%max_sparse_degree ) )
+!stop
+        data%LAST( 0 : max_row ) = 0
+!  loop over the rows by increasing counts
+
+        DO l = 1, data%l_sparse
+          i = data%LIST( l )
+          data%PERM_inv( l ) = i
+          ll = data%STR( i + 1 ) - data%STR( i )
+          data%differences_needed = MAX( data%differences_needed, ll )
+          IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
+!         write( 6, "( ' ------ i, nz ------', 2I8 )" ) & 
+!           i, data%STR( i + 1 ) -  data%STR( i )
+
+!  loop over the entries in the chosen row
+
+!         DO k = data%STR( i ), data%STR( i + 1 ) - 1
+          DO k = data%STU( i ), data%STR( i + 1 ) - 1
+            kk = data%MAP( k )
+            r = ROW( kk ) ; c = COL( kk )
+!           write( 6, "( ' i, r, c, kk ', 4I8 )" ) i, r, c, kk
+            IF ( r == c ) CYCLE
+
+!  determine which of row(kk) or col(kk) gives the row number j
+
+            IF ( c == i ) THEN
+              j = r
+            ELSE
+              j = c
+            END IF
+
+!  interchange entries jj = PU(j) and kk = data%MAP_lower(k) of MAP
+!  and their shadows
+
+            jj = data%STU( j )
+            kk = data%MAP_lower( k )
+            IF ( jj /= kk ) THEN
+              k1 = data%MAP_lower( kk )
+              j1 = data%MAP_lower( jj )
+              data%MAP_lower( jj ) = k1
+              data%MAP_lower( k1 ) = jj
+              data%MAP_lower( kk ) = j1
+              data%MAP_lower( j1 ) = kk
+              ll = data%MAP( jj )
+              data%MAP( jj ) = data%MAP( kk )
+              data%MAP( kk ) = ll
+            END IF
+            data%STU( j ) = jj + 1
+          END DO
+        END DO
+
+        DO l = data%l_sparse + 1, n
+          i = data%LIST( l )
+          data%PERM_inv( l ) = i
+          ll = data%STR( i + 1 ) - data%STU( i )
+          data%differences_needed = MAX( data%differences_needed, ll )
+          IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
+        END DO
+!      write( 6, * ) ' n, l_sparse, differences_needed ',  &
+!        n, data%l_sparse, data%differences_needed
+!      write( 6, "( '    l    i        st        su        s+' )" )
+!      DO l = 1, n
+!        i = data%LIST( l )
+!        write(6,"(2I5,3I10)") l, i, data%STR(i), data%STU(i), data%STR(i+1)
+!       END DO
+
+!  report the numbers of each block size
+
+        IF ( printi ) THEN
+          WRITE( control%out, "( A, ' (block size, # with this size):' )" )    &
+            prefix
+          CALL SHA_write_nonzero_list( control%out, data%differences_needed,   &
+                                       data%LAST )
         END IF
       END SELECT
       inform%differences_needed = data%differences_needed
@@ -984,14 +1091,14 @@ stop
 
 !  deallocate some workspace arrays
 
-      array_name = 'SHA: data%DEGREE_inv'
-      CALL SPACE_dealloc_array( data%DEGREE_inv,                               &
+      array_name = 'SHA: data%ROWS'
+      CALL SPACE_dealloc_array( data%ROWS,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%DEGREE'
-      CALL SPACE_dealloc_array( data%DEGREE,                                   &
+      array_name = 'SHA: data%LIST'
+      CALL SPACE_dealloc_array( data%LIST,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1008,8 +1115,8 @@ stop
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%PTR_lower'
-      CALL SPACE_dealloc_array( data%PTR_lower,                                &
+      array_name = 'SHA: data%MAP_lower'
+      CALL SPACE_dealloc_array( data%MAP_lower,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1046,8 +1153,9 @@ stop
 
 !-*-*-*-  G A L A H A D -  S H A _ e s t i m a t e  S U B R O U T I N E -*-*-*-
 
-      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available, RD, ls1, ls2, S,  &
-                               ly1, ly2, Y, VAL, data, control, inform )
+      SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available, S, ls1, ls2,      &
+                               Y, ly1, ly2, VAL, data, control,    &
+                               inform, PRECEDENCE, VAL_true )
 
 !     ********************************************************
 !     *                                                      *
@@ -1062,13 +1170,18 @@ stop
 
 !     m_available is the number of differences provided; ideally this should
 !       be as large as inform%differences_needed computed by sha_analyse
-!     RD(i), i=1:m gives the index of the column of S and Y of the i-th
-!       most recent differences
 !     ls1, ls2 are the declared leading and trailing dimensions of S
-!     S(i,j) (i=1:n,j=RD(1:m_avaiable)) are the steps
+!     S(i,j) (i=1:n,j=PRECEDENCE(1:m_available)) are the steps
 !     ly1, ly2 are the declared leading and trailing dimensions of Y
-!     Y(i,j) (i=1:n,j=RD(1:m_available)) are the differences in gradients
+!     Y(i,j) (i=1:n,j=PRECEDENCE(1:m_available)) are the gradient differences
 !     VAL(i) is the i-th nonzero in the estimated Hessian matrix.(i=1,nz)
+!
+!   in addition, optional arguments are
+
+!     PRECEDENCE(i), i=1:m gives the index of the column of S and Y of the i-th
+!       most recent differences. If absent, the index will be i, i=1:m
+!     VAL_true(i) is the i-th nonzero in the true Hessian matrix.(i=1,nz),
+!       and only used for testing
 
 !   The analysed and permuted structure and the groups are stored in the
 !   derived type data (see preface)
@@ -1089,7 +1202,6 @@ stop
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, m_available
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_available ) :: RD
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( nz ) :: VAL
@@ -1097,16 +1209,22 @@ stop
       TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SHA_data_type ), INTENT( INOUT ) :: data
 
+!  optional arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                          &
+                              DIMENSION( m_available ) :: PRECEDENCE
+      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( nz ) :: VAL_true
+
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, n_max, rank
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
-      INTEGER ( KIND = ip_ ) :: m_needed, m_used, pki, pkip1, pui, status
-      INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride
+      INTEGER ( KIND = ip_ ) :: m_needed, m_used, stri, strip1, stui, status
+      INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride, pass
       INTEGER ( KIND = ip_ ) :: dense_linear_solver
-      LOGICAL :: sym
+      LOGICAL :: sym, precedence_present
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -1118,14 +1236,6 @@ stop
 
       IF ( .NOT. data%SHA_analyse_called ) THEN
         inform%status = GALAHAD_error_call_order ; GO TO 900
-      END IF
-
-      IF ( ( control%approximation_algorithm >= 4 .AND.                        &
-             data%approximation_algorithm_used < 4 ) .OR.                      &
-           ( control%approximation_algorithm < 4 .AND.                         &
-             data%approximation_algorithm_used >= 4 ) ) THEN
-        WRITE(6, "( ' incorrect approximation algorithm following analysis' )" )
-        inform%status = - 116 ; GO TO 900
       END IF
 
       IF( control%out > 0 .AND. control%print_level > 2 ) THEN
@@ -1144,6 +1254,9 @@ stop
       m_max = m_needed + control%extra_differences
       n_max = m_needed
       min_mn = MIN( m_max, n_max )
+
+      data%singular_matrices = 0
+      precedence_present = PRESENT( precedence )
 
 !  allocate workspace
 
@@ -1175,6 +1288,8 @@ stop
 
       IF ( data%dense_linear_solver /= control%dense_linear_solver ) THEN
         data%dense_linear_solver = control%dense_linear_solver
+        IF ( data%dense_linear_solver < 1 .OR.                                 &
+             data%dense_linear_solver > 4 ) data%dense_linear_solver = 3
 
 !  allocate space to hold a copy of A if needed
 
@@ -1206,9 +1321,9 @@ stop
 
 !  discover how much additional temporary real storage may be needed by LU / LQ
 
-        IF ( control%dense_linear_solver == 1 ) THEN
+        IF ( data%dense_linear_solver == 1 ) THEN
           liwork = min_mn
-        ELSE IF ( control%dense_linear_solver == 2 ) THEN
+        ELSE IF ( data%dense_linear_solver == 2 ) THEN
           m_used = m_needed
           CALL GELSY( m_used, n, 1, data%A, data%la1, data%B, data%lb1,        &
                       data%solve_system_data%IWORK, eps_singular, rank,        &
@@ -1233,7 +1348,7 @@ stop
 !  discover how much temporary integer and real storage may be needed by SVD
 
           m_used = m_needed
-          IF ( control%dense_linear_solver == 4 ) THEN
+          IF ( data%dense_linear_solver == 4 ) THEN
             CALL GELSD( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
                         data%solve_system_data%S, eps_singular, rank,          &
                         data%WORK_1, - 1, data%IWORK_1, status )
@@ -1248,7 +1363,7 @@ stop
 
 !  allocate temporary integer storage
 
-        IF ( control%dense_linear_solver /= 3 ) THEN
+        IF ( data%dense_linear_solver /= 3 ) THEN
           IF ( data%solve_system_data%liwork < liwork ) THEN
             data%solve_system_data%liwork = liwork
             array_name = 'SHA: data%solve_system_data%IWORK'
@@ -1264,7 +1379,7 @@ stop
 
 !  allocate temporary real storage
 
-        IF ( control%dense_linear_solver /= 1 ) THEN
+        IF ( data%dense_linear_solver /= 1 ) THEN
           IF ( data%solve_system_data%lwork < lwork ) THEN
             data%solve_system_data%lwork = lwork
             array_name = 'SHA: data%solve_system_data%WORK'
@@ -1283,45 +1398,62 @@ stop
 !  for permuted row i:
 
 !     - ----------- ------------------ -
-! PTR  | known     |  unknown         | .    (ROW(kk),COL(kk),VAL(kk)),
-!     - ----------- ------------------ -      kk=PTR(k) gives entries in row(i)
-!       ^           ^                  ^      for k=PK(i),..,P(i+1)-1 with
-!       |           |                  |      those for k=PU(i),..,P(i+1)-1
+! MAP  | known     |  unknown         | .    (ROW(kk),COL(kk),VAL(kk)),
+!     - ----------- ------------------ -      kk=MAP(k) gives entries in row(i)
+!       ^           ^                  ^      for k=STR(i),..,STR(i+1)-1 with
+!       |           |                  |      those for k=STU(i),..,STR(i+1)-1
 !     PK(i)        PU(i)            PK(i+1)   still to be determined
-!     = pki        = pui            = pkip1
+!     = stri       = stui           = strip1
 !
+
+!  split the main loop into two passes so that algorithm 2.5 can march
+!  backwards over separate segments (the second pass is skipped for the
+!  other algorithms)
+
+      DO pass = 1, 2
+
 !  run through the rows finding the unknown entries (backwards when
 !  not exploiting symmetry)
 
-      IF ( control%approximation_algorithm > 1 ) THEN
-        ii_start = 1 ; ii_end = n ; ii_stride = 1
-      ELSE
-        ii_start = n ; ii_end = 1 ; ii_stride = - 1
-      END IF
-
-      DO ii = ii_start, ii_end, ii_stride
-        i = data%PERM_inv( ii )
-        pki = data%PK( i ) ; pkip1 = data%PK( i + 1 ) ; nu = pkip1 - pki
-        IF ( nu == 0 ) CYCLE
+        IF ( pass == 1 ) THEN
+          IF ( inform%approximation_algorithm_used == 1 ) THEN
+            ii_start = n ; ii_end = 1 ; ii_stride = - 1
+          ELSE IF ( inform%approximation_algorithm_used == 5 ) THEN
+            ii_start = data%l_sparse ; ii_end = 1 ; ii_stride = - 1
+          ELSE
+            ii_start = 1 ; ii_end = n ; ii_stride = 1
+          END IF
+        ELSE
+          IF ( inform%approximation_algorithm_used < 5 ) EXIT
+          ii_start = n ; ii_end = data%l_sparse + 1 ; ii_stride = - 1
+        END IF
+!write(6,*) ' pass ', pass
+        DO ii = ii_start, ii_end, ii_stride
+          i = data%PERM_inv( ii )
+          stri = data%STR( i ) ; strip1 = data%STR( i + 1 ) ; nu = strip1 - stri
+          IF ( nu == 0 ) CYCLE
 
 !  decide whether to exploit symmetry or not
 
-        sym = control%approximation_algorithm == 2 .OR.                        &
-              control%approximation_algorithm == 4 .OR.                        &
-            ( control%approximation_algorithm == 3 .AND. nu > m_available )
+          sym = inform%approximation_algorithm_used == 2 .OR.                  &
+              ( inform%approximation_algorithm_used == 3 .AND.                 &
+                nu > m_available ) .OR.                                        &
+                inform%approximation_algorithm_used == 4 .OR.                  &
+              ( inform%approximation_algorithm_used == 5 .AND. pass == 2 )
 
 !  -----------------------------
 !  methods that exploit symmetry
 !  -----------------------------
 
-        IF ( sym ) THEN
-          pui = data%PU( i )
+          IF ( sym ) THEN
+            stui = data%STU( i )
 
 !  find nu new components of B given mu (s,y) data pairs
 
-          nu = pkip1 - pui
-          IF ( nu == 0 ) CYCLE
-          mu = MIN( nu + control%extra_differences, m_available )
+            nu = strip1 - stui
+            IF ( nu == 0 ) CYCLE
+!           mu = MIN( nu + control%extra_differences, m_available )
+            mu = MIN( nu, m_available )
 
 !write(6,*) ' m_available, mu, nu ', m_available, mu, nu
 
@@ -1334,172 +1466,210 @@ stop
 !  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl},
 !  initialize b to Y(i,l)
 
-          data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
+            IF ( precedence_present ) THEN
+              data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+            ELSE
+              data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+            END IF
 
 !  loop over the known entries
 
-          jj = 0
-          DO k = pki, pui - 1
-            kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-            j = COL( kk )
-            IF ( j == i ) j = ROW( kk )
-            jj = jj + 1 ; data%COUNT( jj ) = j
-
-!  subtract B_{ij} s_{jl} from b
-
-            data%B( 1 : mu, 1 )                                                &
-              = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
-          END DO
-          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
-            WRITE( control%out, "( ' known', 9( 1X, I0 ), /, ( 1X, 10I6 ) )" ) &
-              data%COUNT( : jj )
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-          jj = 0
-          DO k = pui, pkip1 - 1
-            kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-            j = COL( kk )
-            IF ( j == i ) j = ROW( kk )
-            jj = jj + 1 ; data%COUNT( jj ) = j
-
-!  set the entries of A
-
-            data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-          END DO
-
-! make a copy of A and b as a precaution for possible use later
-
-          IF ( mu + 1 <= m_max ) THEN
-            data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
-            data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
-          END IF
-          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
-            WRITE( control%out, "( ' unknown', 9( 1X, I0 ), /, ( 1X, 10I6 ) )")&
-              data%COUNT( : jj )
-
-!  solve A x = b
-
-          IF ( mu == nu ) THEN
-            dense_linear_solver = control%dense_linear_solver
-          ELSE
-            dense_linear_solver = MAX( control%dense_linear_solver, 3 )
-          END IF
-          CALL SHA_solve_system( dense_linear_solver, mu, nu,                  &
-                                 data%A, data%la1, data%B, data%lb1,           &
-                                 data%solve_system_data, i,                    &
-                                 control%out, control%print_level, info )
-
-!  if A appears to be singular, add an extra row if there is one, and
-!  solve the system as a least-squares problem
-
-          IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
-
-!  initialize b to Y(i,l)
-
-            data%B( mu + 1, 1 ) = Y( i, RD( mu + 1 ) )
-
-!  loop over the known entries
-
-            DO k = pki, pui - 1
-              kk = data%PTR( k )
+            jj = 0
+            DO k = stri, stui - 1
+              kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
               j = COL( kk )
               IF ( j == i ) j = ROW( kk )
+              jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  subtract B_{ij} s_{jl} from b
 
-              data%B( mu + 1, 1 )                                              &
-                = data%B( mu + 1, 1 ) - VAL( kk ) * S( j, RD( mu + 1 ) )
+              IF ( precedence_present ) THEN
+                data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
+                  - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+              ELSE
+                data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
+                  - VAL( kk ) * S( j, 1 : mu )
+              END IF
             END DO
+            IF ( control%out > 0 .AND. control%print_level > 1 )               &
+              WRITE( control%out, "( ' known', 9( 1X, I0 ), /,                 &
+             &  ( 1X, 10I6 ) )" ) data%COUNT( : jj )
 
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
             jj = 0
-            DO k = pui, pkip1 - 1
-              kk = data%PTR( k )
+            DO k = stui, strip1 - 1
+              kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
               j = COL( kk )
               IF ( j == i ) j = ROW( kk )
+              jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  set the entries of A
 
-              jj = jj + 1
-              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
+              IF ( precedence_present ) THEN
+                data%A( 1 : mu, jj ) = S( j, PRECEDENCE( 1 : mu ) )
+              ELSE
+                data%A( 1 : mu, jj ) = S( j, 1 : mu )
+              END IF
             END DO
+
+! make a copy of A and b as a precaution for possible use later
+
+            IF ( mu + 1 <= m_max ) THEN
+              data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+              data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+            END IF
+            IF ( control%out > 0 .AND. control%print_level > 1 )               &
+              WRITE( control%out, "( ' unknown', 9( 1X, I0 ), /,               &
+             &    ( 1X, 10I6 ) )" ) data%COUNT( : jj )
 
 !  solve A x = b
 
-            IF ( mu + 1 == nu ) THEN
-              dense_linear_solver = control%dense_linear_solver
+            IF ( mu == nu ) THEN
+              dense_linear_solver = data%dense_linear_solver
             ELSE
-              dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+              dense_linear_solver = MAX( data%dense_linear_solver, 3 )
             END IF
-            CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,            &
+            CALL SHA_solve_system( dense_linear_solver, mu, nu,                &
                                    data%A, data%la1, data%B, data%lb1,         &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
 
-!  check for errors
+!  if A appears to be singular, add an extra row if there is one, and
+!  solve the system as a least-squares problem
 
-          ELSE IF ( info /= 0 ) THEN
-            inform%status = GALAHAD_error_factorization
-            inform%bad_row = i ; GO TO 900
-          END IF
-
-!  finally, set the unknown B_{ij}
-
-          jj = 1
-          DO k = pui, pkip1 - 1
-            VAL( data%PTR( k ) ) = data%B( jj, 1 )
-            jj = jj + 1
-          END DO
-
-!  if required, compute and print the residuals
-
-          IF ( debug_residuals ) THEN
+            IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
+              data%singular_matrices = data%singular_matrices + 1
+write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
-            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
+              IF ( precedence_present ) THEN
+                data%B( mu + 1, 1 ) = Y( i, PRECEDENCE( mu + 1 ) )
+              ELSE
+                data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+              END IF
 
 !  loop over the known entries
 
-            DO k = pki, pkip1 - 1
-              kk = data%PTR( k )
+              DO k = stri, stui - 1
+                kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
+                j = COL( kk )
+                IF ( j == i ) j = ROW( kk )
 
 !  subtract B_{ij} s_{jl} from b
 
-              data%B( 1 : mu, 1 )                                              &
-                = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
+                IF ( precedence_present ) THEN
+                  data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
+                    - VAL( kk ) * S( j, PRECEDENCE( mu + 1 ) )
+                ELSE
+                  data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
+                    - VAL( kk ) * S( j, mu + 1 )
+                END IF
+              END DO
+
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
+
+              jj = 0
+              DO k = stui, strip1 - 1
+                kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                j = COL( kk )
+                IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+                jj = jj + 1
+                IF ( precedence_present ) THEN
+                  data%A( mu + 1, jj ) = S( j, PRECEDENCE( mu + 1 ) )
+                ELSE
+                  data%A( mu + 1, jj ) = S( j, mu + 1 )
+                END IF
+              END DO
+
+!  solve A x = b
+
+              IF ( mu + 1 == nu ) THEN
+                dense_linear_solver = data%dense_linear_solver
+              ELSE
+                dense_linear_solver = MAX( data%dense_linear_solver, 3 )
+              END IF
+              CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,          &
+                                     data%A, data%la1, data%B, data%lb1,       &
+                                     data%solve_system_data, i,                &
+                                     control%out, control%print_level, info )
+
+!  check for errors
+
+            ELSE IF ( info /= 0 ) THEN
+              inform%status = GALAHAD_error_factorization
+              inform%bad_row = i ; GO TO 900
+            END IF
+
+!  finally, set the unknown B_{ij}
+
+            jj = 1
+            DO k = stui, strip1 - 1
+              VAL( data%MAP( k ) ) = data%B( jj, 1 )
+              jj = jj + 1
             END DO
-            write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
-              MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
-          END IF
+
+!  if required, compute and print the residuals
+
+            IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+              IF ( precedence_present ) THEN
+                data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+              ELSE
+                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+              END IF
+
+!  loop over the known entries
+
+              DO k = stri, strip1 - 1
+                kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                j = COL( kk )
+                IF ( j == i ) j = ROW( kk )
+
+!  subtract B_{ij} s_{jl} from b
+
+                IF ( precedence_present ) THEN
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+                ELSE
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, 1 : mu )
+                END IF
+              END DO
+              write(6, "( ' max error is ', ES12.4, ' in row ', I0, 1X, I0 )" )&
+                MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i, ii
+            END IF
 
 !  -----------------------------------
 !  methods that don't exploit symmetry
 !  -----------------------------------
 
-        ELSE
-          mu = MIN( nu + control%extra_differences, m_available )
+          ELSE
+!           mu = MIN( nu + control%extra_differences, m_available )
+            mu = MIN( nu, m_available )
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
 !    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
@@ -1507,63 +1677,18 @@ stop
 
 !  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-          data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-          jj = 0
-          DO k = pki, pkip1 - 1
-            kk = data%PTR( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-            j = COL( kk )
-            IF ( j == i ) j = ROW( kk )
-
-!  set the entries of A
-
-            jj = jj + 1
-            data%A( 1 : mu, jj ) = S( j, RD( 1 : mu ) )
-          END DO
-
-! make a copy of A and b as a precaution for possible use later
-
-          IF ( mu + 1 <= m_max ) THEN
-            data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
-            data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
-          END IF
-
-!  solve A x = b
-
-          IF ( control%out > 0 .AND. control%print_level > 1 )                 &
-            WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )             &
-              COL( data%PTR( pki : pkip1 - 1 ) )
-          IF ( mu == nu ) THEN
-            dense_linear_solver = control%dense_linear_solver
-          ELSE
-            dense_linear_solver = MAX( control%dense_linear_solver, 3 )
-          END IF
-          CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,          &
-                                 data%la1, data%B, data%lb1,                   &
-                                 data%solve_system_data, i,                    &
-                                 control%out, control%print_level, info )
-
-!  if A appears to be singular, add an extra row if there is one, and
-!  solve the system as a least-squares problem
-
-          IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
-
-!  store the right-hand side y_{il}, initialize b to Y(i,l)
-
-            data%B( mu + 1, 1 ) = Y( i, RD( mu + 1 ) )
+            IF ( precedence_present ) THEN
+              data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+            ELSE
+              data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+            END IF
 
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
 
             jj = 0
-            DO k = pki, pkip1 - 1
-              kk = data%PTR( k )
+            DO k = stri, strip1 - 1
+              kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
@@ -1573,63 +1698,143 @@ stop
 !  set the entries of A
 
               jj = jj + 1
-              data%A( mu + 1, jj ) = S( j, RD( mu + 1 ) )
+              IF ( precedence_present ) THEN
+                data%A( 1 : mu, jj ) = S( j, PRECEDENCE( 1 : mu ) )
+              ELSE
+                data%A( 1 : mu, jj ) = S( j, 1 : mu )
+              END IF
             END DO
+
+! make a copy of A and b as a precaution for possible use later
+
+            IF ( mu + 1 <= m_max ) THEN
+              data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+              data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+            END IF
 
 !  solve A x = b
 
-            IF ( mu + 1 == nu ) THEN
-              dense_linear_solver = control%dense_linear_solver
+            IF ( control%out > 0 .AND. control%print_level > 1 )               &
+              WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )           &
+                COL( data%MAP( stri : strip1 - 1 ) )
+            IF ( mu == nu ) THEN
+              dense_linear_solver = data%dense_linear_solver
             ELSE
-              dense_linear_solver = MAX( control%dense_linear_solver, 3 )
+              dense_linear_solver = MAX( data%dense_linear_solver, 3 )
             END IF
-            CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,            &
-                                   data%A, data%la1, data%B, data%lb1,         &
+            CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,        &
+                                   data%la1, data%B, data%lb1,                 &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
-!  check for errors
+!write(6,*) ' mu, nu, info ', mu, nu, info
+!  if A appears to be singular, add an extra row if there is one, and
+!  solve the system as a least-squares problem
 
-          ELSE IF ( info /= 0 ) THEN
-            inform%status = GALAHAD_error_factorization
-            inform%bad_row = i ; GO TO 900
-          END IF
+            IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
+              data%singular_matrices = data%singular_matrices + 1
+!write(6,"(' singular pass, ii, i ', 5(1X, I0))" ) pass, ii, i, stri, strip1
+!  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-!  finally, set the unknown B_{ij}
+!write(6,*)  mu + 1, m_max, PRECEDENCE( mu + 1 )
+              IF ( precedence_present ) THEN
+                data%B( mu + 1, 1 ) = Y( i, PRECEDENCE( mu + 1 ) )
+              ELSE
+                data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+              END IF
 
-          jj = 0
-          DO k = pki, pkip1 - 1
-            jj = jj + 1
-            VAL( data%PTR( k ) ) = data%B( jj, 1 )
-          END DO
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
 
-!  if required, compute and print the residuals
-
-          IF ( debug_residuals ) THEN
-
-!  initialize b to Y(i,l)
-
-            data%B( 1 : mu, 1 ) = Y( i, RD( 1 : mu ) )
-
-!  loop over the known entries
-
-            DO k = pki, pkip1 - 1
-              kk = data%PTR( k )
+              jj = 0
+              DO k = stri, strip1 - 1
+                kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
+                j = COL( kk )
+                IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+                jj = jj + 1
+                IF ( precedence_present ) THEN
+                  data%A( mu + 1, jj ) = S( j, PRECEDENCE( mu + 1 ) )
+                ELSE
+                  data%A( mu + 1, jj ) = S( j, mu + 1 )
+                END IF
+              END DO
+
+!  solve A x = b
+
+              IF ( mu + 1 == nu ) THEN
+                dense_linear_solver = data%dense_linear_solver
+              ELSE
+                dense_linear_solver = MAX( data%dense_linear_solver, 3 )
+              END IF
+              CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,          &
+                                     data%A, data%la1, data%B, data%lb1,       &
+                                     data%solve_system_data, i,                &
+                                     control%out, control%print_level, info )
+
+!  check for errors
+
+            ELSE IF ( info /= 0 ) THEN
+              inform%status = GALAHAD_error_factorization
+              inform%bad_row = i ; GO TO 900
+            END IF
+
+!  finally, set the unknown B_{ij}
+
+            jj = 0
+            DO k = stri, strip1 - 1
+              jj = jj + 1
+              VAL( data%MAP( k ) ) = data%B( jj, 1 )
+            END DO
+
+!  if required, compute and print the residuals
+
+            IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+              IF ( precedence_present ) THEN
+                data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+              ELSE
+                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+              END IF
+
+!  loop over the known entries
+
+              DO k = stri, strip1 - 1
+                kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                j = COL( kk )
+                IF ( j == i ) j = ROW( kk )
 
 !  subtract B_{ij} s_{jl} from b
 
-              data%B( 1 : mu, 1 )                                              &
-                = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
-            END DO
-            write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )      &
-              MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+                IF ( precedence_present ) THEN
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+                ELSE
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, 1 : mu )
+                END IF
+              END DO
+              write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )    &
+                MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+            END IF
           END IF
-        END IF
+        END DO
       END DO
+
+!  report how many block matrices were singular
+
+      IF ( control%out > 0 .AND. control%print_level > 0 .AND.                 &
+           data%singular_matrices > 0 ) WRITE( control%out, "( A, ' *** ', I0, &
+     & ' block matrices were singular')" ) prefix, data%singular_matrices
 
 !  prepare to return
 
@@ -1684,9 +1889,11 @@ stop
 
       INTEGER ( KIND = ip_ ) :: i, rank
       REAL ( KIND = rp_ ), DIMENSION( la1, n ) :: A_save
+      REAL ( KIND = rp_ ) :: b_norm, x_norm
       LOGICAL :: printi
 
-      printi = out > 0 .AND. print_level > 0
+      printi = out > 0 .AND. print_level > 1
+!     b_norm = MAXVAL( ABS( B( : , 1 ) ) )
 
 !  solve A x = b using Gaussian elimination; A is copied to A_save as a
 !  precaution
@@ -1718,12 +1925,17 @@ stop
           CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
                       data%WORK, data%lwork, status )
         END IF
+
+!       x_norm = MAXVAL( ABS( B( : , 1 ) ) )
+!       WRITE( out, "( ' b, x, sigma_min, sigma_max =   ', 4ES11.4 )" )  &
+!         b_norm, x_norm, data%S( MIN( m, n ) ), data%S( 1 )
+
         IF ( data%S( MIN( m, n ) ) / data%S( 1 ) <= eps_singular ) THEN
           status = MAX( m, n ) + 1
-          IF( printi ) THEN
+          IF ( printi ) THEN
             WRITE( out, "( ' matrix singular, sigma_min/sigma_1 = ',           &
            &       ES11.4 )" )  data%S( MIN( m, n ) ) / data%S( 1 )
-            IF ( print_level > 1 ) THEN
+            IF ( print_level > 2 ) THEN
               WRITE( out, "( ' row ', I0, ', solver status = ',                &
              &       I0, /, ' matrix =' )" ) row, status
               DO i = 1, n
@@ -1822,20 +2034,26 @@ stop
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%PTR'
-      CALL SPACE_dealloc_array( data%PTR,                                      &
+      array_name = 'SHA: data%MAP'
+      CALL SPACE_dealloc_array( data%MAP,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%PU'
-      CALL SPACE_dealloc_array( data%PU,                                       &
+      array_name = 'SHA: data%MAP_lower'
+      CALL SPACE_dealloc_array( data%MAP_lower,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%PK'
-      CALL SPACE_dealloc_array( data%PK,                                       &
+      array_name = 'SHA: data%STU'
+      CALL SPACE_dealloc_array( data%STU,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%STR'
+      CALL SPACE_dealloc_array( data%STR,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1894,7 +2112,7 @@ stop
 
 ! -  G A L A H A D -  S H A _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
 
-     SUBROUTINE SHA_full_terminate( data, control, inform )
+      SUBROUTINE SHA_full_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1906,19 +2124,45 @@ stop
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( SHA_control_type ), INTENT( IN ) :: control
-     TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SHA_control_type ), INTENT( IN ) :: control
+      TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+      CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
 
-     CALL SHA_terminate( data%sha_data, control, inform )
+      CALL SHA_terminate( data%sha_data, control, inform )
 
-     RETURN
+!  deallocate all remaining allocated arrays
+
+      array_name = 'SHA: data%ROW'
+      CALL SPACE_dealloc_array( data%ROW,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%COL'
+      CALL SPACE_dealloc_array( data%COL,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%PRECEDENCE'
+      CALL SPACE_dealloc_array( data%PRECEDENCE,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      RETURN
 
 !  End of subroutine SHA_full_terminate
 
-     END SUBROUTINE SHA_full_terminate
+      END SUBROUTINE SHA_full_terminate
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
@@ -1927,6 +2171,253 @@ stop
 ! -----------------------------------------------------------------------------
 ! =============================================================================
 ! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  S H A _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE SHA_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See SHA_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SHA_control_type ), INTENT( IN ) :: control
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%sha_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SHA_reset_control
+
+     END SUBROUTINE SHA_reset_control
+
+!-  G A L A H A D -  S H A _ a n a l y s e _ m a t r i x _ S U B R O U T I N E -
+
+     SUBROUTINE SHA_analyse_matrix( control, data, status, n,                  &
+                                    matrix_ne, matrix_row, matrix_col, m )
+
+!  import structural matrix data into internal storage, and analyse the
+!  structure prior to recovery of the Hessian approximation
+
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to SHA_solve
+!
+!  data is a scalar variable of type SHA_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import and analysis. Possible values are:
+!
+!    0. The analysis was succesful, and the package is ready for the
+!       factorization phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in statusrm.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or matrix_ne >= 0 has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows (and columns) of the matrix H
+!
+!  matrix_ne is a scalar variable of type default integer, that holds the
+!   number of entries in the upper triangular part of H in the sparse
+!   co-ordinate storage scheme
+!
+!  matrix_row is a rank-one array of type default integer, whose first 
+!   matrix_ne entries holds the row indices of the upper triangular part 
+!   of H in the sparse co-ordinate storage scheme
+!
+!  matrix_col is a rank-one array of type default integer, whose first 
+!   matrix_ne entries holds the column indices of the upper triangular 
+!   part of H in the sparse co-ordinate scheme
+!
+!  m is a scalar variable of type default integer, that gives the minimum 
+!   number of (s^(k),y^(k)) pairs that will be needed to recover a good 
+!   Hessian approximation
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SHA_control_type ), INTENT( INOUT ) :: control
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, matrix_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, m
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: matrix_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: matrix_col
+
+!  copy control to data
+
+     data%SHA_control = control
+
+!  store the structure of H
+
+     data%n = n ; data%ne = matrix_ne
+
+     CALL SPACE_resize_array( data%ne, data%ROW,                               &
+            data%sha_inform%status, data%sha_inform%alloc_status )
+     IF ( data%sha_inform%status /= 0 ) GO TO 900
+
+     CALL SPACE_resize_array( data%ne, data%COL,                               &
+            data%sha_inform%status, data%sha_inform%alloc_status )
+     IF ( data%sha_inform%status /= 0 ) GO TO 900
+
+     IF ( data%f_indexing ) THEN
+       data%ROW( : data%ne ) = matrix_row( : data%ne )
+       data%COL( : data%ne ) = matrix_col( : data%ne )
+     ELSE
+       data%ROW( : data%ne ) = matrix_row( : data%ne ) + 1
+       data%COL( : data%ne ) = matrix_col( : data%ne ) + 1
+     END IF
+
+!  analyse the sparsity structure of the matrix prior to factorization
+
+     CALL SHA_analyse( n, data%ne, data%ROW, data%COL,                         &
+                       data%sha_data, data%sha_control, data%sha_inform )
+
+     m = data%sha_inform%differences_needed
+     status = data%sha_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%sha_inform%status
+     RETURN
+
+!  End of subroutine SHA_analyse_matrix
+
+     END SUBROUTINE SHA_analyse_matrix
+
+! G A L A H A D - S H A _ r e c o v e r _ m a t r i x  S U B R O U T I N E -
+
+     SUBROUTINE SHA_recover_matrix( data, status, m, s, y, matrix_val,         &
+                                    precedence )
+
+!  recover the values of the Hessian matrix from m pairs of differences (s,y)
+
+!  Arguments are as follows:
+
+!  data is a scalar variable of type SHA_full_data_type used for internal data
+!
+!  status is a scalar variable of type default integer that indicates the
+!   success or otherwise of the factorization. Possible values are:
+!
+!    0. The factorization was successful, and the package is ready for the
+!       solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!
+!  m is a scalar variable of type default integer, that specifies the 
+!  number of (s,y) pairs that are available
+!
+!  s is a rank-two array of type default real, that holds the step vectors s^(k)
+!   s_i^(k) should be stored in s(i,k)
+!
+!  y is a rank-two array of type default real, that holds the gradient 
+!   differencestep vectors y^(k). y_i^(k) should be stored in y(i,k)
+!
+!  matrix_val is a rank-one array of type default real, that holds the
+!   values of the upper triangular part of H input in precisely the same
+!   order as those for the row and column indices in SHA_analyse_matrix
+!
+!  precedence is a rank-one array of type default integer, whose components
+!   give the preferred order of access for the pairs (s^(k),y^(k)). 
+!   The $k$-th component of order specifies the column number of s and y 
+!   that will be used as the $k$-th most favoured.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+     REAL ( KIND = rp_ ), DIMENSION( : , : ), INTENT( IN ) :: s, y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: matrix_val
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
+                                             OPTIONAL :: precedence
+
+!---------------------------------
+!   L o c a l   V a r i a b l e s
+!---------------------------------
+
+     INTEGER ( KIND = ip_ ) :: ls1, ls2, ly1, ly2
+     LOGICAL :: allocate_precedence
+
+!  record the lengths of each dimesion of s and y
+
+     ls1 = SIZE( s, 1 ) ; ls2 = SIZE( s, 2 )
+     ly1 = SIZE( y, 1 ) ; ly2 = SIZE( y, 2 )
+
+!  store the preferred ordering for the (s,y) pairs
+
+     IF ( PRESENT( precedence ) ) THEN
+       IF ( ALLOCATED( data%precedence ) ) THEN
+         IF ( SIZE( data%precedence ) < m ) THEN
+           allocate_precedence = .TRUE.
+         ELSE
+           allocate_precedence = .FALSE.
+         END IF
+       ELSE
+         allocate_precedence = .TRUE.
+       END IF
+       IF ( allocate_precedence ) CALL SPACE_resize_array( m, data%PRECEDENCE, &
+              data%sha_inform%status, data%sha_inform%alloc_status )
+       IF ( data%sha_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%PRECEDENCE( : m ) = precedence( : m )
+       ELSE
+         data%PRECEDENCE( : m ) = precedence( : m ) + 1
+       END IF
+
+!  factorize the matrix
+
+       CALL SHA_estimate( data%n, data%ne, data%row, data%col, m,              &
+                          S, ls1, ls2, Y, ly1, ly2, matrix_val,                &
+                          data%sha_data, data%sha_control, data%sha_inform,    &
+                          PRECEDENCE = data%PRECEDENCE )
+     ELSE
+       CALL SHA_estimate( data%n, data%ne, data%row, data%col, m,              &
+                          S, ls1, ls2, Y, ly1, ly2, matrix_val,                &
+                          data%sha_data, data%sha_control, data%sha_inform )
+     END IF 
+
+     status = data%sha_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%sha_inform%status
+     RETURN
+
+!  end of subroutine SHA_recover_matrix
+
+     END SUBROUTINE SHA_recover_matrix
 
 !-*-  G A L A H A D -  S H A _ i n f o r m a t i o n   S U B R O U T I N E  -*-
 

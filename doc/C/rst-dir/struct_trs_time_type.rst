@@ -54,7 +54,7 @@ total CPU time spent in the package
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` assemble
 
-CPU time spent building :math:`H + \lambda M`.
+CPU time spent building $H + \lambda M$.
 
 .. index:: pair: variable; analyse
 .. _doxid-structtrs__time__type_1a9c5b9155e1665977103d8c32881d9f00:
@@ -64,7 +64,7 @@ CPU time spent building :math:`H + \lambda M`.
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` analyse
 
-CPU time spent reordering :math:`H + \lambda M` prior to factorization.
+CPU time spent reordering $H + \lambda M$ prior to factorization.
 
 .. index:: pair: variable; factorize
 .. _doxid-structtrs__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
@@ -74,7 +74,7 @@ CPU time spent reordering :math:`H + \lambda M` prior to factorization.
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` factorize
 
-CPU time spent factorizing :math:`H + \lambda M`.
+CPU time spent factorizing $H + \lambda M$.
 
 .. index:: pair: variable; solve
 .. _doxid-structtrs__time__type_1a4c971b10c915041b89daa05a29125376:
@@ -84,7 +84,7 @@ CPU time spent factorizing :math:`H + \lambda M`.
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` solve
 
-CPU time spent solving linear systems inolving :math:`H + \lambda M`.
+CPU time spent solving linear systems inolving $H + \lambda M$.
 
 .. index:: pair: variable; clock_total
 .. _doxid-structtrs__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
@@ -104,7 +104,7 @@ total clock time spent in the package
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_assemble
 
-clock time spent building :math:`H + \lambda M`
+clock time spent building $H + \lambda M$
 
 .. index:: pair: variable; clock_analyse
 .. _doxid-structtrs__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
@@ -114,7 +114,7 @@ clock time spent building :math:`H + \lambda M`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_analyse
 
-clock time spent reordering :math:`H + \lambda M` prior to factorization
+clock time spent reordering $H + \lambda M$ prior to factorization
 
 .. index:: pair: variable; clock_factorize
 .. _doxid-structtrs__time__type_1ad3f0f50628260b90d6cf974e02f86192:
@@ -124,7 +124,7 @@ clock time spent reordering :math:`H + \lambda M` prior to factorization
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_factorize
 
-clock time spent factorizing :math:`H + \lambda M`
+clock time spent factorizing $H + \lambda M$
 
 .. index:: pair: variable; clock_solve
 .. _doxid-structtrs__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
@@ -134,5 +134,5 @@ clock time spent factorizing :math:`H + \lambda M`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_solve
 
-clock time spent solving linear systems inolving :math:`H + \lambda M`
+clock time spent solving linear systems inolving $H + \lambda M$
 

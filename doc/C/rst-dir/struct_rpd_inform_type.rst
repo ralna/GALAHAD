@@ -42,17 +42,35 @@ components
 
 return status. Possible values are:
 
-* 0 The call was successful.
+* **0**
 
-* -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+  The call was successful.
 
-* -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+* **-1**
 
-* -22 An input/outpur error occurred.
+  An allocation error occurred. A message indicating the offending array
+  is written on unit control.error, and the returned allocation status
+  and a string containing the name of the offending array are held in
+  inform.alloc_status and inform.bad_alloc respectively.
 
-* -25 The end of the input file was reached prematurely.
+* **-2**
 
-* -29 The problem type was not recognised.
+  A deallocation error occurred. A message indicating the offending
+  array is written on unit control.error and the returned allocation
+  status and a string containing the name of the offending array are
+  held in inform.alloc_status and inform.bad_alloc respectively.
+
+* **-22**
+
+  An input/outpur error occurred.
+
+* **-25**
+
+  The end of the input file was reached prematurely.
+
+* **-29**
+
+  The problem type was not recognised.
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

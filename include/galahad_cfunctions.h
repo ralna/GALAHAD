@@ -275,6 +275,9 @@
 #define sec_terminate sec_terminate_s
 #define sha_initialize sha_initialize_s
 #define sha_read_specfile sha_read_specfile_s
+#define sha_analyse_matrix sha_analyse_matrix_s
+#define sha_recover_matrix sha_recover_matrix_s
+#define sha_information sha_information_s
 #define sha_terminate sha_terminate_s
 #define sils_initialize sils_initialize_s
 #define sils_reset_control sils_reset_control_s

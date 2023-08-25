@@ -125,7 +125,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; lstr_read_specfile
 .. _doxid-galahad__lstr_8h_1a3d3fa989fe4c3b40cd7e296249d2205d:
@@ -138,9 +139,14 @@ Set default control values and initialize private data
 		const char specfile[]
 	)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNLSTR.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lstr.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/lstr/LSTR.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/lstr.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -194,7 +200,9 @@ Import control parameters prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; lstr_solve_problem
 .. _doxid-galahad__lstr_8h_1af3355e5a8df63a9c7173eb974a1e7562:
@@ -235,15 +243,22 @@ Solve the trust-region least-squares problem using reverse communication.
 		  
 		  This must be set to
 		  
-		  * 1. on initial entry. Set u (below) to :math:`b` for this entry.
+		  * **1**
+                    on initial entry. Set u (below) to $b$ for
+                    this entry.
 		  
-		  * 5. the iteration is to be restarted with a smaller radius but with all other data unchanged. Set u (below) to :math:`b` for this entry.
+		  * **5**
+                    the iteration is to be restarted with a smaller
+                    radius but with all other data unchanged. Set u
+                    (below) to $b$ for this entry.
 		  
 		  Possible exit values are:
 		  
-		  * 0. the solution has been found
+		  * **0**
+                    the solution has been found
 		  
-		  * 2. The user must perform the operation
+		  * **2**
+                    The user must perform the operation
 		    
 		    .. math::
 		    
@@ -251,9 +266,10 @@ Solve the trust-region least-squares problem using reverse communication.
 		    
 		    \n
 		                   u := u + A v,
-		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`u` must overwrite the content of u. No argument except u should be altered before recalling the function
+		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $u$ must overwrite the content of u. No argument except u should be altered before recalling the function
 		  
-		  * 3. The user must perform the operation
+		  * **3**
+                    The user must perform the operation
 		    
 		    .. math::
 		    
@@ -261,39 +277,48 @@ Solve the trust-region least-squares problem using reverse communication.
 		    
 		    \n
 		                   v := v + A^T u,
-		    \n and recall the function. The vectors :math:`u` and :math:`v` are available in the arrays u and v (below) respectively, and the result :math:`v` must overwrite the content of v. No argument except v should be altered before recalling the function
+		    \n and recall the function. The vectors $u$ and $v$ are available in the arrays u and v (below) respectively, and the result $v$ must overwrite the content of v. No argument except v should be altered before recalling the function
 		  
-		  * 4. The user must reset u (below) to :math:`b` are recall the function. No argument except u should be altered before recalling the function
+		  * **4**
+                    The user must reset u (below) to $b$ are
+                    recall the function. No argument except u should be
+                    altered before recalling the function
 		  
-		  * -1. an array allocation has failed
+		  * **-1**
+                    an array allocation has failed
 		  
-		  * -2. an array deallocation has failed
+		  * **-2**
+                    an array deallocation has failed
 		  
-		  * -3. one or more of n, m or weight violates allowed bounds
+		  * **-3**
+                    one or more of n, m or weight violates allowed
+                    bounds
 		  
-		  * -18. the iteration limit has been exceeded
+		  * **-18**
+                    the iteration limit has been exceeded
 		  
-		  * -25. status is negative on entry
+		  * **-25**
+                    status is negative on entry
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of equations (i.e., rows of :math:`A`), :math:`m > 0`
+		- is a scalar variable of type int, that holds the number of equations (i.e., rows of $A$), $m > 0$
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables (i.e., columns of :math:`A`), :math:`n > 0`
+		- is a scalar variable of type int, that holds the number of variables (i.e., columns of $A$), $n > 0$
 
 	*
 		- radius
 
-		- is a scalar of type double, that holds the trust-region radius, :math:`\Delta > 0`
+		- is a scalar of type double, that holds the trust-region radius, $\Delta > 0$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type double, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- u
@@ -338,7 +363,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; lstr_terminate
 .. _doxid-galahad__lstr_8h_1aa198189942e179e52699e1fedfcdf9d1:

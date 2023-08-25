@@ -210,7 +210,7 @@ the average number of factorizations per sub-problem solve
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
 
-the value of the objective function :math:`\frac{1}{2}\|c(x)\|^2_W` at the best estimate the solution, x, determined by NLS_solve
+the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estimate the solution, x, determined by NLS_solve
 
 .. index:: pair: variable; norm_c
 .. _doxid-structnls__subproblem__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340:
@@ -220,7 +220,7 @@ the value of the objective function :math:`\frac{1}{2}\|c(x)\|^2_W` at the best 
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_c
 
-the norm of the residual :math:`\|c(x)\|_W` at the best estimate of the solution x, determined by NLS_solve
+the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, determined by NLS_solve
 
 .. index:: pair: variable; norm_g
 .. _doxid-structnls__subproblem__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe:
@@ -230,7 +230,7 @@ the norm of the residual :math:`\|c(x)\|_W` at the best estimate of the solution
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_g
 
-the norm of the gradient of :math:`\|c(x)\|_W` of the objective function at the best estimate, x, of the solution determined by NLS_solve
+the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best estimate, x, of the solution determined by NLS_solve
 
 .. index:: pair: variable; weight
 .. _doxid-structnls__subproblem__inform__type_1adcd20aeaf7042e972ddab56f3867ce70:

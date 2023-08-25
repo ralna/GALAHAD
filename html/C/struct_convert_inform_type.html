@@ -738,7 +738,7 @@
     <span class="kt">int</span> <a class="reference internal" href="#doxid-structconvert-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
     <span class="kt">int</span> <a class="reference internal" href="#doxid-structconvert-inform-type-1a4266bf48aafe2914b08e60d6ef9cf446"><span class="std std-ref">duplicates</span></a><span></span><span class="p">;</span>
     <span class="kt">char</span> <a class="reference internal" href="#doxid-structconvert-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_convert_time_type.html#doxid-structconvert-time-type"><span class="std std-ref">convert_time_type</span></a><span></span> <a class="reference internal" href="#doxid-structconvert-inform-type-1a9d7e0c775ea50ee659169c07a40bb27d"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="convert.html#doxid-structconvert-time-type"><span class="std std-ref">convert_time_type</span></a><span></span> <a class="reference internal" href="#doxid-structconvert-inform-type-1a9d7e0c775ea50ee659169c07a40bb27d"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -748,16 +748,42 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structconvert-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">int</span> <span class="n">status</span></pre>
 <p>the return status. Possible values are:</p>
-<ul class="simple">
-<li><p>0 a successful conversion.</p></li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restriction n &gt; 0 or m &gt; 0 or requirement that a type contains its relevant string ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense_by_rows’ or ‘dense_by_columns’ has been violated.</p></li>
-<li><p>-32 provided integer workspace is not large enough.</p></li>
-<li><p>-33 provided real workspace is not large enough.</p></li>
-<li><p>-73 an input matrix entry has been repeated.</p></li>
-<li><p>-79 there are missing optional arguments.</p></li>
-<li><p>-90 a requested output format is not recognised.</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>a successful conversion.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
+array is written on unit control.error and the returned allocation
+status and a string containing the name of the offending array are
+held in inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restriction n &gt; 0 or m &gt; 0 or requirement that a type contains its
+relevant string ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’,
+‘dense_by_rows’ or ‘dense_by_columns’ has been violated.</p>
+</li>
+<li><p><strong>-32</strong></p>
+<p>provided integer workspace is not large enough.</p>
+</li>
+<li><p><strong>-33</strong></p>
+<p>provided real workspace is not large enough.</p>
+</li>
+<li><p><strong>-73</strong></p>
+<p>an input matrix entry has been repeated.</p>
+</li>
+<li><p><strong>-79</strong></p>
+<p>there are missing optional arguments.</p>
+</li>
+<li><p><strong>-90</strong></p>
+<p>a requested output format is not recognised.</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structconvert-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">int</span> <span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation/deallocation.</p>
@@ -765,7 +791,7 @@
 <p>the number of duplicates found (-ve = not checked).</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structconvert-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-4"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
 <p>the name of the array for which an allocation/deallocation error occurred.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structconvert-inform-type-1a9d7e0c775ea50ee659169c07a40bb27d"><span id="index-5"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_convert_time_type.html#doxid-structconvert-time-type"><span class="std std-ref">convert_time_type</span></a><span></span> <span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structconvert-inform-type-1a9d7e0c775ea50ee659169c07a40bb27d"><span id="index-5"></span><span></span><span class="k">struct</span> <a class="reference internal" href="convert.html#doxid-structconvert-time-type"><span class="std std-ref">convert_time_type</span></a><span></span> <span class="n">time</span></pre>
 <p>timings (see above).</p>
 </section>
 </section>

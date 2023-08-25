@@ -48,21 +48,37 @@ components
 
 reported return status:
 
-* 0 the solution has been found
+* **0**
 
-* -1 an array allocation has failed
+  the solution has been found
 
-* -2 an array deallocation has failed
+* **-1**
 
-* -3 n and/or Delta is not positive
+  an array allocation has failed
 
-* -9 the analysis phase of the factorization of $H + \lambda M$ failed
+* **-2**
 
-* -10 the factorization of $H + \lambda M$ failed
+  an array deallocation has failed
 
-* -15 $M$ does not appear to be strictly diagonally dominant
+* **-3**
 
-* -16 ill-conditioning has prevented further progress
+  n and/or Delta is not positive
+
+* **-9**
+
+  the analysis phase of the factorization of $H + \lambda M$ failed
+
+* **-10**
+
+  the factorization of $H + \lambda M$ failed
+
+* **-15**
+
+  $M$ does not appear to be strictly diagonally dominant
+
+* **-16**
+
+  ill-conditioning has prevented further progress
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structtrs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

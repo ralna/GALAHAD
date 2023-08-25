@@ -734,13 +734,13 @@
 <span class="k">struct</span> <span class="n">sha_inform_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span class="std std-ref">max_degree</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span class="std std-ref">differences_needed</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span class="std std-ref">max_reduced_degree</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span class="std std-ref">bad_row</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span class="std std-ref">max_degree</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span class="std std-ref">differences_needed</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span class="std std-ref">max_reduced_degree</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span class="std std-ref">bad_row</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="sha.html#doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -754,13 +754,15 @@
 <p>the status of the last attempted allocation/deallocation.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span id="index-3"></span><span></span><span class="kt">int</span> <span class="n">max_degree</span></pre>
 <p>the maximum degree in the adgacency graph.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span id="index-4"></span><span></span><span class="kt">int</span> <span class="n">differences_needed</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a0"><span id="index-4"></span><span></span><span class="kt">int</span> <span class="n">approximation_algorithm_used</span></pre>
+<p>the approximation algorithm actually used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span id="index-5"></span><span></span><span class="kt">int</span> <span class="n">differences_needed</span></pre>
 <p>the number of differences that will be needed.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span id="index-5"></span><span></span><span class="kt">int</span> <span class="n">max_reduced_degree</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span id="index-6"></span><span></span><span class="kt">int</span> <span class="n">max_reduced_degree</span></pre>
 <p>the maximum reduced degree in the adgacency graph.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span id="index-6"></span><span></span><span class="kt">int</span> <span class="n">bad_row</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span id="index-7"></span><span></span><span class="kt">int</span> <span class="n">bad_row</span></pre>
 <p>a failure occured when forming the bad_row-th row (0 = no failure).</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-7"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-8"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
 <p>the name of the array for which an allocation/deallocation error occurred.</p>
 </section>
 </section>

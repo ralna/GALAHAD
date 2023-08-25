@@ -735,41 +735,41 @@
 
 <span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1ae5e561917c238f90b8f6549a80c9d3d8"><span class="std std-ref">lhs_initialize</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a38254f580fde3732f4f4e83e08180e63"><span class="std std-ref">lhs_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a38254f580fde3732f4f4e83e08180e63"><span class="std std-ref">lhs_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a2a2e504e820685237f3ec3f8c97722ad"><span class="std std-ref">lhs_ihs</span></a><span></span><span class="p">(</span>
     <span class="kt">int</span> <span class="n">n_dimen</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n_points</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">seed</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">**</span> <span class="n">X</span><span class="p">,</span>
-    <span class="k">const</span> <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span>
+    <span class="k">const</span> <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1add3dc91a7fe9b311898e516798d81e14"><span class="std std-ref">lhs_get_seed</span></a><span></span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">seed</span><span class="p">);</span>
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a5366dfb6b11cd47fbdb407ecbfcf60a9"><span class="std std-ref">lhs_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a5366dfb6b11cd47fbdb407ecbfcf60a9"><span class="std std-ref">lhs_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lhs-8h-1a24f8433561128e5c05e588d053b22f29"><span class="std std-ref">lhs_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -783,8 +783,8 @@
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1ae5e561917c238f90b8f6549a80c9d3d8"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">lhs_initialize</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
@@ -805,9 +805,15 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1a38254f580fde3732f4f4e83e08180e63"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">lhs_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
-<p>Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters.</p>
-<p>By default, the spcification file will be named RUNLHS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1a38254f580fde3732f4f4e83e08180e63"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">lhs_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<p>Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in $GALAHAD/src/lhs/LHS.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/lhs.pdf for a list of how these keywords
+relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -828,16 +834,26 @@
     <span class="kt">int</span> <span class="n">n_points</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">seed</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">**</span> <span class="n">X</span><span class="p">,</span>
-    <span class="k">const</span> <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span>
+    <span class="k">const</span> <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span>
 <span class="p">)</span></pre>
 <p>The improved distributed hyper-cube sampling algorithm.</p>
 <p>Discussion:</p>
-<p>n_points points in an n_dimen dimensional Latin hyper-cube are to be selected. Each of the coordinate dimensions is discretized to the values 1 through n. The points are to be chosen in such a way that no two points have any coordinate value in common. This is a standard Latin hypercube requirement, and there are many solutions.</p>
-<p>This algorithm differs in that it tries to pick a solution which has the property that the points are “spread out” as evenly as possible. It does this by determining an optimal even spacing, and using the DUPLICATION factor to allow it to choose the best of the various options available to it.</p>
+<p>n_points points in an n_dimen dimensional Latin hyper-cube are to be
+selected. Each of the coordinate dimensions is discretized to the values
+1 through n. The points are to be chosen in such a way that no two
+points have any coordinate value in common. This is a standard Latin
+hypercube requirement, and there are many solutions.</p>
+<p>This algorithm differs in that it tries to pick a solution which has the
+property that the points are “spread out” as evenly as possible. It does
+this by determining an optimal even spacing, and using the DUPLICATION
+factor to allow it to choose the best of the various options available
+to it.</p>
 <p>Reference:</p>
-<p>Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, American Institute of Aeronautics and Astronautics Paper 2002-1274</p>
+<p>Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube
+Sampling, American Institute of Aeronautics and Astronautics Paper
+2002-1274</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -885,7 +901,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1a5366dfb6b11cd47fbdb407ecbfcf60a9"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">lhs_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1a5366dfb6b11cd47fbdb407ecbfcf60a9"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">lhs_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -898,14 +914,15 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -914,8 +931,8 @@
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lhs-8h-1a24f8433561128e5c05e588d053b22f29"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">lhs_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -929,10 +946,10 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_lhs_control_type.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="lhs.html#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="lhs.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

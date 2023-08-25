@@ -131,7 +131,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix :math:`A`. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -149,9 +149,11 @@ Select solver, set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 		  
-		  * -26. The requested solver is not available.
+		  * **-26**
+                    The requested solver is not available.
 
 .. index:: pair: function; sls_read_specfile
 .. _doxid-galahad__sls_8h_1ada1e7b9ed799335702f85a551b64bf88:
@@ -161,9 +163,15 @@ Select solver, set default control values and initialize private data
 
 	void sls_read_specfile(struct :ref:`sls_control_type<doxid-structsls__control__type>`* control, const char specfile[])
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/sls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list 
+of keywords with associated default values is provided in 
+\$GALAHAD/src/sls/SLS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/sls.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -200,8 +208,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import structural matrix data into internal storage prior to solution
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -225,65 +231,109 @@ Import structural matrix data into internal storage prior to solution
 		  
 		  Possible values are:
 		  
-		  * 0. The import and analysis were conducted successfully.
+		  * **0**
+                    The import and analysis were conducted successfully.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 or requirement that the
+                    matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-20**
+                    The matrix is not positive definite while the solver
+                    used expected it to be.
 		  
-		  * -3. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -20. The matrix is not positive definite while the solver used expected it to be.
+		  * **-29**
+                    This option is not available with this solver.
 		  
-		  * -26. The requested solver is not available.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 		  
-		  * -29. This option is not available with this solver.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 		  
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 		  
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
+		  * **-36**
+                    The scaling package HSL MC64 failed; check the
+                    solver-specific information component
+                    inform.mc64_info along with HSL MC64’s documentation
+                    for more details.
 		  
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-37**
+                    The scaling package MC77 failed; check the
+                    solver-specific information components inform.mc77
+                    info and inform.mc77_rinfo along with MC77’s
+                    documentation for more details.
 		  
-		  * -36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.
+		  * **-43**
+                    A direct-access file error occurred. See the value
+                    of inform.ma77_info.flag for more details.
 		  
-		  * -37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.
-		  
-		  * -43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.
-		  
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix $A$.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; sls_reset_control
 .. _doxid-galahad__sls_8h_1aacc344b8cdf0b1c27965f191382372e4:
@@ -337,7 +387,7 @@ Reset control parameters after import if required.
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[]
 	)
 
-Form and factorize the symmetric matrix :math:`A`.
+Form and factorize the symmetric matrix $A$.
 
 
 
@@ -359,45 +409,89 @@ Form and factorize the symmetric matrix :math:`A`.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated successfully.
+		  * **0**
+                    The factors were generated successfully.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restrictions n > 0 or requirement that the
+                    matrix type must contain the relevant string
+                    'dense', 'coordinate' or 'sparse_by_rows has been
+                    violated.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-20**
+                    The matrix is not positive definite while the solver
+                    used expected it to be.
 		  
-		  * -3. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -20. The matrix is not positive definite while the solver used expected it to be.
+		  * **-29**
+                    This option is not available with this solver.
 		  
-		  * -26. The requested solver is not available.
+		  * **-32**
+                    More than control.max integer factor size words of
+                    internal integer storage are required for in-core
+                    factorization.
 		  
-		  * -29. This option is not available with this solver.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 		  
-		  * -32. More than control.max integer factor size words of internal integer storage are required for in-core factorization.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 		  
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
+		  * **-36**
+                    The scaling package HSL MC64 failed; check the
+                    solver-specific information component
+                    inform.mc64_info along with HSL MC64’s documentation
+                    for more details.
 		  
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-37**
+                    The scaling package MC77 failed; check the
+                    solver-specific information components inform.mc77
+                    info and inform.mc77_rinfo along with MC77’s
+                    documentation for more details.
 		  
-		  * -36. The scaling package HSL MC64 failed; check the solver-specific information component inform.mc64_info along with HSL MC64’s documentation for more details.
+		  * **-43**
+                    A direct-access file error occurred. See the value
+                    of inform.ma77_info.flag for more details.
 		  
-		  * -37. The scaling package MC77 failed; check the solver-specific information components inform.mc77 info and inform.mc77_rinfo along with MC77’s documentation for more details.
-		  
-		  * -43. A direct-access file error occurred. See the value of inform.ma77_info.flag for more details.
-		  
-		  * -50. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details.
+		  * **-50**
+                    A solver-specific error occurred; check the
+                    solver-specific information component of inform
+                    along with the solver’s documentation for more
+                    details.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 .. index:: pair: function; sls_solve_system
 .. _doxid-galahad__sls_8h_1a1b3e7546b59b06160c51e16b6781bc0b:
@@ -407,7 +501,7 @@ Form and factorize the symmetric matrix :math:`A`.
 
 	void sls_solve_system(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
 
-Solve the linear system :math:`Ax=b`.
+Solve the linear system $Ax=b$.
 
 
 
@@ -429,27 +523,46 @@ Solve the linear system :math:`Ax=b`.
 		  
 		  Possible values are:
 		  
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
+
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-		  
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type int, that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`.
+		- is a one-dimensional array of size n and type double. On entry, it must hold the vector $b$. On a successful exit, its contains the solution $x$.
 
 .. index:: pair: function; sls_partial_solve_system
 .. _doxid-galahad__sls_8h_1ac66dc50d8b54acab90d70ae649b92905:
@@ -465,7 +578,7 @@ Solve the linear system :math:`Ax=b`.
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[]
 	)
 
-Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear system :math:`Mx=b`, where :math:`M` is one of :math:`L`, :math:`D`, :math:`U` or :math:`S = L \sqrt{D}`.
+Given the factorization $A = L D U$ with $U = L^T$, solve the linear system $Mx=b$, where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 
 
 
@@ -477,7 +590,7 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 	*
 		- part
 
-		- is a one-dimensional array of type char that specifies the component :math:`M` of the factorization that is to be used. It should be one of "L", "D", "U" or "S", and these correspond to the parts :math:`L`, :math:`D`, :math:`U` and :math:`S`; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the component $M$ of the factorization that is to be used. It should be one of "L", "D", "U" or "S", and these correspond to the parts $L$, $D$, $U$ and $S$; lower or upper case variants are allowed.
 
 	*
 		- data
@@ -494,27 +607,46 @@ Given the factorization :math:`A = L D U` with :math:`U = L^T`, solve the linear
 		  
 		  Possible exit values are:
 		  
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-34**
+                    The package PARDISO failed; check the
+                    solver-specific information components
+                    inform.pardiso iparm and inform.pardiso_dparm along
+                    with PARDISO’s documentation for more details.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -34. The package PARDISO failed; check the solver-specific information components inform.pardiso iparm and inform.pardiso_dparm along with PARDISO’s documentation for more details.
-		  
-		  * -35. The package WSMP failed; check the solver-specific information components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s documentation for more details.
+		  * **-35**
+                    The package WSMP failed; check the solver-specific
+                    information components inform.wsmp_iparm and
+                    inform.wsmp dparm along with WSMP’s documentation
+                    for more details.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type int, that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`.
+		- is a one-dimensional array of size n and type double. On entry, it must hold the vector $b$. On a successful exit, its contains the solution $x$.
 
 .. index:: pair: function; sls_information
 .. _doxid-galahad__sls_8h_1a0ca4a126813c3aafac9d791a152b233c:
@@ -549,7 +681,8 @@ Provide output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; sls_terminate
 .. _doxid-galahad__sls_8h_1aa5aafa378e3500ce31783e13c3395d30:

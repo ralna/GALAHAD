@@ -96,7 +96,7 @@ maximum number of iterative refinements allowed
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_relative
 
-refinement will cease as soon as the residual :math:`\|Ax-b\|` falls below max( acceptable_residual_relative \* :math:`\|b\|`, acceptable_residual_absolute )
+refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
 .. index:: pair: variable; acceptable_residual_absolute
 .. _doxid-structir__control__type_1a5ee0e70d90b1398019054b19b68057a0:
@@ -116,7 +116,7 @@ see acceptable_residual_relative
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` required_residual_relative
 
-refinement will be judged to have failed if the residual :math:`\|Ax-b\| \geq` required_residual_relative \* :math:`\|b\|`. No checking if required_residual_relative < 0
+refinement will be judged to have failed if the residual $\|Ax-b\| \geq$ required_residual_relative \* $\|b\|$. No checking if required_residual_relative < 0
 
 .. index:: pair: variable; record_residuals
 .. _doxid-structir__control__type_1aee80ae09cedfc446424c56719b30cfca:

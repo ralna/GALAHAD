@@ -1,7 +1,7 @@
 //* \file galahad_sha.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-01-12 AT 15:20 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2023-08-22 AT 15:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SHA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,11 +21,37 @@
 
   \subsection sha_purpose Purpose
 
-  Find an approximation to a sparse Hessian using componentwise secant
-  approximation.
+  Find a <b>component-wise secant approximation to the Hessian matrix</b>
+  \f$H(x)\f$, for which \f$(H(x))_{i,j} = \partial f^2 (x) / \partial x_i \partial x_j\f$,
+  \f$1 \leq i, j \leq n\f$, using values of the gradient \f$g(x) = \nabla_x f(x)\f$ 
+  of the function \f$f(x)\f$ of \f$n\f$ unknowns \f$x = (x_1, \ldots, x_n)^T\f$
+  at a sequence of given distinct \f${x^{(k)}}\f$, \f$k \geq 0\f$.
+  More specifically, given <b>differences</b>
+  \f[s^{(k)} = x^{(k+1)} - x^{(k)}\f] 
+\manonly
+  \n
+  s^(k) = x^(k+1) - x^(k)
+  \n
+\endmanonly
+  and
+  \f[y^{(k)} = g(x^{(k+1)}) - g(x^{(k)}) \f]
+\manonly
+  \n
+  y^(k) = g(x^(k+1)) - g(x^(k))
+  \n
+\endmanonly
+  the package aims to find a good estimate \f$B\f$ of \f$H(x)\f$ for
+  which the secant conditions \f$B s^{(k)} = y^{(k)}\f$ hold 
+  approximately for a chosen set of values \f$k\f$.
+  The methods provided take advantage of the entries in the Hessian that
+  are known to be zero.
 
-  Currently, only the control and inform parameters are exposed;
-  these are provided and used by other GALAHAD packages with C interfaces.
+  The package is particularly intended to allow gradient-based
+  optimization methods, that generate iterates 
+  \f$x^{(k+1)} = x^{(k)} + s^{(k)}\f$ based upon the values \f$g( x^{(k)})\f$
+  for \f$k \geq 0\f$, to build a suitable approximation to the Hessian 
+  \f$H(x^{(k+1)})\f$. This then gives the method an opportunity to 
+  accelerate the iteration using the Hessian approximation.
 
   \subsection sha_authors Authors
 
@@ -38,6 +64,87 @@
   \subsection sha_date Originally released
 
   April 2013, C interface January 2022.
+
+  \subsection sha_method Method
+
+  The package computes the entries in the each row of \f$B\f$ one at a time.
+  The entries \f$b_{ij}\f$ in row \f$i\f$ may be chosen to
+  \f[(1) \;\;\; \minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i} 
+  \left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j} 
+  b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,
+  \f]
+\manonly
+  \n
+  (1)  min_{b_{i,j}} sum_{k \in I_i} 
+                   [ sum_{nonzeros j} b_{i,j} s_j^(k) - y_i^(k) ]^2
+  \n
+\endmanonly
+  where \f$I_i\f$ is ideally chosen to be sufficiently large so that 
+  (1) has a unique minimizer. Since this requires that there are at least
+  as many \f$(s^{(k)}, y^{(k)})\f$ pairs as the maximum number of nonzeros
+  in any row, this may be prohibitive in some cases. We might then be content 
+  with a minimum-norm (under-determined) least-squares solution. Or, we may
+  take advantage of the symmetry of the Hessian, and note that if we
+  have already found the values in row \f$j\f$, then the value 
+  \f$b_{i,j} = b_{j,i}\f$
+  in (1) is known before we process row \f$i\f$. Thus by ordering the rows 
+  and exploiting symmetry we may reduce the numbers of unknowns in 
+  future unprocessed rows.
+
+  In the analysis phase, we order the rows by constructing the connectivity
+  graph---a graph comprising nodes \f$1\f$ to \f$n\f$ and edges connecting 
+  nodes \f$i\f$ and \f$j\f$ if \f$h_{i,j}\f$ is everywhere nonzero---of 
+  \f$H(x)\f$.
+  The nodes are ordered by increasing degree (that is, the number of edges
+  emanating from the node) using a bucket sort. The row chosen to be
+  ordered next corresponds to a node of minimum degree, the node
+  is removed from the graph, the degrees updated efficiently, and the
+  process repeated until all rows have been ordered. This often leads
+  to a significant reduction in the numbers of unknown values in each
+  row as it is processed in turn, but numerical rounding can lead to
+  inaccurate values in some cases. A useful remedy is to process all
+  rows for which there are sufficient \f$(s^{(k)}, y^{(k)})\f$ as before,
+  and then process the remaining rows taking into account the symmetry.
+  That is, the rows and columns are rearranged so that the matrix
+  is in block form
+  \f[B = \mat{cc}{ B_{11} & B_{12} \\ B^T_{12} & B_{22}},\f]
+\manonly
+  \n
+  B = (  B_11  B_12 ),
+      ( B_12^T B_22 )
+  \n
+\endmanonly
+  the \f$( B_{11} \;\; B_{12})\f$ rows are processed without regard
+  for symmetry but give the \f$2,1\f$ block \f$B^T_{12}\f$, and finally
+  the \f$2,2\f$ block \f$B_{22}\f$ is processed either 
+  with the option of exploiting
+  symmetry. More details of the precise algorithms (Algorithms 2.1--2.5)
+  are given in the reference below. The linear least-squares problems (1)
+  themselves are solved by a choice of LAPACK packages.
+
+  \subsection sha_references Reference
+
+  The method employed is described in detail in
+
+  J. M. Fowkes, N. I. M. Gould and J. A. Scott,
+   Approximating large-scale Hessians using secant equations.
+   Technical Report TR-2023, Rutherford Appleton Laboratory.
+
+  \subsection sha_call_order Call order
+
+  To find the Hessian approximation, functions from the sha package 
+  must be called in the following order:
+
+  - \link sha_initialize \endlink - provide default control parameters and
+      set up initial data structures
+  - \link sha_read_specfile \endlink (optional) - override control values
+      by reading replacement values from a file
+  - \link sha_analyse_matrix \endlink - set up structures needed to
+      construct the Hessian approximation
+  - \link sha_recover_matrix \endlink - construct the Hessian approximation
+  - \link sha_information \endlink (optional) - recover information about
+    the solution and solution process
+  - \link sha_terminate \endlink - deallocate data structures
 
  */
 
@@ -81,10 +188,11 @@ struct sha_control_type {
 
     /// \brief
     /// which approximation algorithm should be used?
-    /// \li 0 : unsymmetric (alg 2.1 in paper)
-    /// \li 1 : symmetric (alg 2.2 in paper)
-    /// \li 2 : composite (alg 2.3 in paper)
-    /// \li 3 : composite 2 (alg 2.2/3 in paper)
+    /// \li 1 : unsymmetric (alg 2.1 in paper)
+    /// \li 2 : symmetric (alg 2.2 in paper)
+    /// \li 3 : composite (alg 2.3 in paper)
+    /// \li 4 : composite 2 (alg 2.4 in paper)
+    /// \li 5 : cautious (alg 2.5 in paper)
     int approximation_algorithm;
 
     /// \brief
@@ -136,6 +244,10 @@ struct sha_inform_type {
     int max_degree;
 
     /// \brief
+    /// which approximation algorithm has been used
+    int approximation_algorithm_used;
+
+    /// \brief
     /// the number of differences that will be needed.
     int differences_needed;
 
@@ -170,6 +282,153 @@ void sha_initialize( void **data,
   @param[out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
+*/
+
+//  *-*-*-*-*-*-*-*-*-   S H A _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+
+void sha_reset_control( struct sha_control_type *control,
+                        void **data,
+                        int *status );
+
+/*!<
+ Reset control parameters after import if required.
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see sha_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful.
+ */
+
+// *-*-*-*-*-*-*-*-*-    S H A  _ A N A L Y S E _ M A T R I X   -*-*-*-*-*-*-*-
+
+void sha_analyse_matrix( struct sha_control_type *control,
+                         void **data,
+                         int *status,
+                         int n,
+                         int ne,
+                         const int row[],
+                         const int col[],
+                         int *m );
+
+/*!<
+ Import structural matrix data into internal storage prior to solution
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see sha_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
+  \li  0. The import and analysis were conducted succesfully.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or ne >= 0 has been violated.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    rows in the symmetric matrix \f$H\f$.
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
+   entries in the upper triangular part of \f$H\f$ in the sparse co-ordinate
+   storage scheme
+
+ @param[in] row is a one-dimensional array of size ne and type int, that
+   holds the row indices of the upper triangular part of \f$H\f$ in the sparse
+   co-ordinate storage scheme
+
+ @param[in] col is a one-dimensional array of size ne and type int,
+   that holds the column indices of the upper triangular part of \f$H\f$ in
+   sparse row-wise storage scheme.
+
+ @param[out] m is a scalar variable of type int, that holds the minimum number
+  of \f$(s^(k),y^(k))\f$ pairs that will be needed to recover a good 
+  Hessian approximation
+
+*/
+
+//  *-*-*-*-*-*-*-   S H A _ R E C O V E R _ m a t r i x   -*-*-*-*-*-*-*-
+
+void sha_recover_matrix( void **data,
+                         int *status,
+                         int ne,
+                         int m,
+                         int ls1,
+                         int ls2,
+                         const real_wp_ strans[][ls2],
+                         int ly1,
+                         int ly2,
+                         const real_wp_ ytrans[][ly2],
+                         real_wp_ val[],
+                         const int precedence[] );
+
+/*!<
+ Form and factorize the symmetric matrix \f$A\f$.
+
+ @param[in,out] data holds private internal data
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
+  \li  0. The factors were generated succesfully.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or ne >= 0 has been violated.
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
+    entries in the upper triangular part of the symmetric matrix \f$H\f$.
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    \f$(s,y)\f$ pairs that are available.
+
+ @param[in] ls1 is a scalar variable of type int, that holds the leading 
+    dimension of the array s.
+
+ @param[in] ls2 is a scalar variable of type int, that holds the trailing
+    dimension of the array s.
+
+ @param[in] strans is a two-dimensional array of size [ls1][ls2] and 
+    type double, that holds the values of the vectors \f$s^{(k) T}\f$. 
+    Component \f$k,i\f$ holds \f$s_i^{(k)}\f$.
+
+ @param[in] ly1 is a scalar variable of type int, that holds the leading 
+    dimension of the array y.
+
+ @param[in] ly2 is a scalar variable of type int, that holds the trailing
+    dimension of the array y.
+
+ @param[in] ytrans is a two-dimensional array of size [ly1][ly2] and 
+    type double, that holds the values of the vectors \f$y^{(k) T}\f$. 
+    Component \f$k,i\f$ holds \f$y_i^{(k)}\f$.
+
+ @param[out] val is a one-dimensional array of size ne and type double,
+    that holds the values of the entries of the upper triangular part of the
+    symmetric matrix \f$H\f$ in the sparse coordinate scheme.
+
+ @param[in] precedence is a one-dimensional array of size m and type int, that
+   holds the preferred order of access for the pairs \f$(s^(k),y^(k))\f$. 
+   The \f$k\f$-th component of precedence specifies the row number of strans 
+   and ytrans that will be used as the \f$k\f$-th most favoured. precedence 
+   need not be set if the natural order, \f$k, k = 1,...,\f$ m, is desired, 
+   and this case precedence should be NULL.
 */
 
 // *-*-*-*-*-*-*-*-*-*-    S H A  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*

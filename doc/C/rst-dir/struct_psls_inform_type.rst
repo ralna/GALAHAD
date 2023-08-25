@@ -62,13 +62,21 @@ components
 
 reported return status:
 
-* 0 success
+* **0**
 
-* -1 allocation error
+  success
 
-* -2 deallocation error
+* **-1**
 
-* -3 matrix data faulty (.n < 1, .ne < 0)
+  allocation error
+
+* **-2**
+
+  deallocation error
+
+* **-3**
+
+  matrix data faulty (.n < 1, .ne < 0)
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structpsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:

@@ -112,7 +112,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The initialization was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; roots_information
 .. _doxid-galahad__roots_8h_1ac63ef195952ae821d6966a8f25ac2513:
@@ -127,8 +128,6 @@ Set default control values and initialize private data
 	)
 
 Provides output information
-
-
 
 .. rubric:: Parameters:
 
@@ -151,7 +150,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; roots_terminate
 .. _doxid-galahad__roots_8h_1a4e81f4ac6c1119dfeb3a81729c3ec997:
@@ -166,8 +166,6 @@ Provides output information
 	)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

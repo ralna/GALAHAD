@@ -81,7 +81,7 @@ the level of output required. <= 0 gives no output, >= 1 warning message
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_initial
 
-the initial Hessian approximation will be h_initial \* :math:`I`
+the initial Hessian approximation will be h_initial \* $I$
 
 .. index:: pair: variable; update_skip_tol
 .. _doxid-structsec__control__type_1a8dfc46d0fb22a5d3b62f751e8c4a024b:

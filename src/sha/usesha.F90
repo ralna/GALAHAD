@@ -65,7 +65,7 @@
 !    LOGICAL :: multiple_tests = .FALSE.
 !    LOGICAL :: multiple_tests = .TRUE.
 
-     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, RD
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, PRECEDENCE
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_COUNT
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL, VAL_est
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
@@ -333,11 +333,11 @@
 !  allocate space for the differences
 
      difs_max = MIN( inform%differences_needed, max_sy )
-     difs_max = difs_max + 1
-     ALLOCATE( S( n, difs_max ), Y( n, difs_max ), RD( difs_max ),             &
+     difs_max = difs_max + MAX( 1, control%extra_differences )
+     ALLOCATE( S( n, difs_max ), Y( n, difs_max ), PRECEDENCE( difs_max ),     &
                STAT = alloc_stat )
      IF ( alloc_stat /= 0 ) THEN
-       WRITE( out, 2000 ) 'S, Y, RD', alloc_stat ; STOP
+       WRITE( out, 2000 ) 'S, Y, PRECEDENCE', alloc_stat ; STOP
      END IF
 
 ! choose random S and compute the product Y = H * S
@@ -347,7 +347,7 @@
      reduce = 1.0_rp_
      CALL RAND_initialize( seed )
      DO k = 1, difs_max
-       RD( k ) = difs_max - k + 1
+       PRECEDENCE( k ) = difs_max - k + 1
        DO i = 1, n
          CALL RAND_random_real( seed, .FALSE., S( i, k ) )
          S( i, k ) = S( i, k ) * level
@@ -373,12 +373,12 @@
 ! approximate the Hessian ignoring symmetry
 
        IF ( inform%differences_needed <= max_sy ) THEN
-         difs = inform%differences_needed
+         difs = difs_max
          control%approximation_algorithm = 1
 
          CALL CLOCK_time( clocks )
-         CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
-                            n, difs, Y, VAL_est, data, control, inform )
+         CALL SHA_estimate( n, nnzh, ROW, COL, difs, S, n, difs, Y, n, difs,   &
+                            PRECEDENCE, VAL_est, data, control, inform )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
            WRITE( 6, "( ' return with error status ',I0,' from SHA_estimate')")&
@@ -413,8 +413,8 @@
          control%approximation_algorithm = 2
 
          CALL CLOCK_time( clocks )
-         CALL SHA_estimate( n, nnzh, ROW, COL, difs, RD, n, difs, S,           &
-                            n, difs, Y, VAL_est, data, control, inform )
+         CALL SHA_estimate( n, nnzh, ROW, COL, difs, S, n, difs, Y, n, difs,   &
+                            PRECEDENCE, VAL_est, data, control, inform )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
            WRITE( 6, "( ' return with error status ',I0,' from SHA_estimate')")&
@@ -460,8 +460,9 @@
 !      difs = inform%differences_needed
 
        CALL CLOCK_time( clocks )
-       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, RD, n, difs, S,         &
-                          n, difs, Y, VAL_est, data, control, inform )
+       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, S, n, difs, Y, n, difs, &
+                          PRECEDENCE, VAL_est, data, control, inform,          &
+                          VAL_true = VAL )
        CALL CLOCK_time( clocke )
        IF ( inform%status /= 0 ) THEN
          WRITE( 6, "( ' return with error status ', I0, ' from SHA_estimate')")&
@@ -493,9 +494,13 @@
 
      IF ( write_result_summary ) THEN
        BACKSPACE( rfiledevice )
-       WRITE( rfiledevice, "( A10, 1X, A1, 3I7, 2( ES12.4, F12.3, I4 ) )" )    &
+!      WRITE( rfiledevice, "( A10, 1X, A1, 3I7, 2( ES12.4, F12.3, I4 ) )" )    &
+!        pname, ptype, n, inform%max_degree, inform%differences_needed,        &
+!        error( 1 ), clock( 1 ), control%approximation_algorithm
+       WRITE( rfiledevice, "( A10, 1X, A1, 3I7, I6, F12.3, I4, I5 )" )         &
          pname, ptype, n, inform%max_degree, inform%differences_needed,        &
-         error( 1 ), clock( 1 ), control%approximation_algorithm
+         floor( log10( error( 1 ) ) ), clock( 1 ), &
+         control%approximation_algorithm, inform%status 
        CLOSE( rfiledevice )
      END IF
 

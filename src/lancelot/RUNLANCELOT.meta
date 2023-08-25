@@ -2,6 +2,7 @@ MAIN
 ! write-problem-data                                no
 ! problem-data-file-name                            LANB.data
 ! problem-data-file-device                          26
+! random-start                                      no
 ! write-solution                                    yes
 ! solution-file-name                                LANBSOL.d
 ! solution-file-device                              62
@@ -29,5 +30,6 @@ MAIN
 ! restart-data-file-name                            LANBSAVE.d
 ! restart-data-file-device                          59
 ! save-data-for-restart-every                       0
+! multi-start                                       1
 
 INCLUDE LANCELOT

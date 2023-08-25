@@ -34,8 +34,10 @@ components
 return status. Possible values are:
 
 * **0** 
-   A successful return
+
+  A successful return
 
 * **-85**
-   An update is inappropriate and has been skipped
+
+  An update is inappropriate and has been skipped
 

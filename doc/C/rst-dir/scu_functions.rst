@@ -75,8 +75,6 @@ function calls
 
 Provides output information
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -98,7 +96,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; scu_terminate
 .. _doxid-galahad__scu_8h_1a6fc2d5a0cb41e7c912661c5101d2ffad:
@@ -113,8 +112,6 @@ Provides output information
 	)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

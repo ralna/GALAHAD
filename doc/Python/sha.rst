@@ -145,6 +145,8 @@ functions
              error occurred.
           max_degree : int
              the maximum degree in the adgacency graph.
+          approximation_algorithm_used : int
+             the approximation algorithm used.
           differences_needed : int
              the number of differences that will be needed.
           max_reduced_degree : int

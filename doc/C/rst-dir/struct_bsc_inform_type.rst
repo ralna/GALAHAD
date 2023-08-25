@@ -95,7 +95,7 @@ the name of the array for which an allocation/deallocation error occurred.
 
 	int max_col_a
 
-the maximum number of entries in a column of :math:`A`
+the maximum number of entries in a column of $A$
 
 .. index:: pair: variable; exceeds_max_col
 .. _doxid-structbsc__inform__type_1a182eb2982f975bbbdce953a362bf0c2d:
@@ -105,7 +105,7 @@ the maximum number of entries in a column of :math:`A`
 
 	int exceeds_max_col
 
-the number of columns of :math:`A` that have more than control.max_col entries
+the number of columns of $A$ that have more than control.max_col entries
 
 .. index:: pair: variable; time
 .. _doxid-structbsc__inform__type_1afb418c91547eccd73ea85693be0e1cea:

@@ -109,7 +109,7 @@ the stopping rule used (see below). Possible values are:
 
 * 1 stopping rule = norm of the step.
 
-* 2 stopping rule is norm of the step / :math:`\sigma`.
+* 2 stopping rule is norm of the step / $\sigma$.
 
 * other. stopping rule = 1.0.
 
@@ -151,7 +151,7 @@ the unit number for writing debug Ritz values
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_relative
 
-the iteration stops successfully when the gradient in the :math:`M^{-1}` norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
+the iteration stops successfully when the gradient in the $M^{-1}$ norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
 
 .. index:: pair: variable; stop_absolute
 .. _doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:
@@ -211,7 +211,7 @@ is M the identity matrix ?
 
 	bool impose_descent
 
-is descent required i.e., should :math:`c^T x < 0`?
+is descent required i.e., should $c^T x < 0$?
 
 .. index:: pair: variable; space_critical
 .. _doxid-structglrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

@@ -1,4 +1,4 @@
-.TH "galahad_sha.h" 3 "Thu Jun 22 2023" "C interfaces to GALAHAD SHA" \" -*- nroff -*-
+.TH "galahad_sha.h" 3 "Wed Aug 23 2023" "C interfaces to GALAHAD SHA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -32,6 +32,15 @@ galahad_sha.h
 .RI "void \fBsha_initialize\fP (void **data, struct \fBsha_control_type\fP *control, int *status)"
 .br
 .ti -1c
+.RI "void \fBsha_reset_control\fP (struct \fBsha_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBsha_analyse_matrix\fP (struct \fBsha_control_type\fP *control, void **data, int *status, int n, int ne, const int row[], const int col[], int *m)"
+.br
+.ti -1c
+.RI "void \fBsha_recover_matrix\fP (void **data, int *status, int ne, int m, int ls1, int ls2, const real_wp_ s[][ls2], int ly1, int ly2, const real_wp_ y[][ly2], real_wp_ val[], const int precedence[])"
+.br
+.ti -1c
 .RI "void \fBsha_information\fP (void **data, struct \fBsha_inform_type\fP *inform, int *status)"
 .br
 .ti -1c
@@ -44,9 +53,17 @@ galahad_sha.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Find an approximation to a sparse Hessian using componentwise secant approximation\&.
+Find a \fBcomponent-wise secant approximation to the Hessian matrix\fP H(x), for which (H(x))_{i,j} = partial f^2 (x) / partial x_i partial x_j, 1 <= i, j <= n, using values of the gradient g(x) = nabla_x f(x) of the function f(x) of n unknowns x = (x_1, \&.\&.\&., x_n)^T at a sequence of given distinct {x^{(k)}}, k >= 0\&. More specifically, given \fBdifferences\fP \[s^{(k)} = x^{(k+1)} - x^{(k)}\]  
+  \n
+  s^(k) = x^(k+1) - x^(k)
+  \n
+ and \[y^{(k)} = g(x^{(k+1)}) - g(x^{(k)}) \]  
+  \n
+  y^(k) = g(x^(k+1)) - g(x^(k))
+  \n
+ the package aims to find a good estimate B of H(x) for which the secant conditions B s^{(k)} = y^{(k)} hold approximately for a chosen set of values k\&. The methods provided take advantage of the entries in the Hessian that are known to be zero\&.
 .PP
-Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
+The package is particularly intended to allow gradient-based optimization methods, that generate iterates x^{(k+1)} = x^{(k)} + s^{(k)} based upon the values g( x^{(k)}) for k >= 0, to build a suitable approximation to the Hessian H(x^{(k+1)})\&. This then gives the method an opportunity to accelerate the iteration using the Hessian approximation\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -54,7 +71,42 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .PP
 Julia interface, additionally A\&. Montoison and D\&. Orban, Polytechnique Montréal\&.
 .SS "Originally released"
-April 2013, C interface January 2022\&. 
+April 2013, C interface January 2022\&.
+.SS "Method"
+The package computes the entries in the each row of B one at a time\&. The entries b_{ij} in row i may be chosen to \[(1) \;\;\; \minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i} \left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j} b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2, \]  
+  \n
+  (1)  min_{b_{i,j}} sum_{k \in I_i} 
+                   [ sum_{nonzeros j} b_{i,j} s_j^(k) - y_i^(k) ]^2
+  \n
+ where I_i is ideally chosen to be sufficiently large so that (1) has a unique minimizer\&. Since this requires that there are at least as many (s^{(k)}, y^{(k)}) pairs as the maximum number of nonzeros in any row, this may be prohibitive in some cases\&. We might then be content with a minimum-norm (under-determined) least-squares solution\&. Or, we may take advantage of the symmetry of the Hessian, and note that if we have already found the values in row j, then the value b_{i,j} = b_{j,i} in (1) is known before we process row i\&. Thus by ordering the rows and exploiting symmetry we may reduce the numbers of unknowns in future unprocessed rows\&.
+.PP
+In the analysis phase, we order the rows by constructing the connectivity graph---a graph comprising nodes 1 to n and edges connecting nodes i and j if h_{i,j} is everywhere nonzero---of H(x)\&. The nodes are ordered by increasing degree (that is, the number of edges emanating from the node) using a bucket sort\&. The row chosen to be ordered next corresponds to a node of minimum degree, the node is removed from the graph, the degrees updated efficiently, and the process repeated until all rows have been ordered\&. This often leads to a significant reduction in the numbers of unknown values in each row as it is processed in turn, but numerical rounding can lead to inaccurate values in some cases\&. A useful remedy is to process all rows for which there are sufficient (s^{(k)}, y^{(k)}) as before, and then process the remaining rows taking into account the symmetry\&. That is, the rows and columns are rearranged so that the matrix is in block form \[B = \mat{cc}{ B_{11} & B_{12} \\ B^T_{12} & B_{22}},\]  
+  \n
+  B = (  B_11  B_12 ),
+      ( B_12^T B_22 )
+  \n
+ the ( B_{11} \\;\\; B_{12}) rows are processed without regard for symmetry but give the 2,1 block B^T_{12}, and finally the 2,2 block B_{22} is processed either with the option of exploiting symmetry\&. More details of the precise algorithms (Algorithms 2\&.1--2\&.5) are given in the reference below\&. The linear least-squares problems (1) themselves are solved by a choice of LAPACK packages\&.
+.SS "Reference"
+The method employed is described in detail in
+.PP
+J\&. M\&. Fowkes, N\&. I\&. M\&. Gould and J\&. A\&. Scott, Approximating large-scale Hessians using secant equations\&. Technical Report TR-2023, Rutherford Appleton Laboratory\&.
+.SS "Call order"
+To find the Hessian approximation, functions from the sha package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBsha_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBsha_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBsha_analyse_matrix\fP - set up structures needed to construct the Hessian approximation
+.IP "\(bu" 2
+\fBsha_recover_matrix\fP - construct the Hessian approximation
+.IP "\(bu" 2
+\fBsha_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBsha_terminate\fP - deallocate data structures 
+.PP
+
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct sha_control_type"
@@ -79,13 +131,15 @@ int \fIapproximation_algorithm\fP which approximation algorithm should be used?
 .PD 0
 
 .IP "\(bu" 2
-0 : unsymmetric (alg 2\&.1 in paper) 
+1 : unsymmetric (alg 2\&.1 in paper) 
 .IP "\(bu" 2
-1 : symmetric (alg 2\&.2 in paper) 
+2 : symmetric (alg 2\&.2 in paper) 
 .IP "\(bu" 2
-2 : composite (alg 2\&.3 in paper) 
+3 : composite (alg 2\&.3 in paper) 
 .IP "\(bu" 2
-3 : composite 2 (alg 2\&.2/3 in paper) 
+4 : composite 2 (alg 2\&.4 in paper) 
+.IP "\(bu" 2
+5 : cautious (alg 2\&.5 in paper) 
 .PP
 
 .br
@@ -137,6 +191,9 @@ int \fIalloc_status\fP the status of the last attempted allocation/deallocation\
 int \fImax_degree\fP the maximum degree in the adgacency graph\&. 
 .br
 .PP
+int \fIapproximation_algorithm_used\fP which approximation algorithm has been used 
+.br
+.PP
 int \fIdifferences_needed\fP the number of differences that will be needed\&. 
 .br
 .PP
@@ -168,6 +225,108 @@ Set default control values and initialize private data
 .IP "\(bu" 2
 0\&. The initialization was succesful\&. 
 .PP
+.RE
+.PP
+
+.SS "void sha_reset_control (struct \fBsha_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsha_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void sha_analyse_matrix (struct \fBsha_control_type\fP * control, void ** data, int * status, int n, int ne, const int row[], const int col[], int * m)"
+Import structural matrix data into internal storage prior to solution
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsha_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import and analysis were conducted succesfully\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or ne >= 0 has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of rows in the symmetric matrix H\&.
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the upper triangular part of H in the sparse co-ordinate storage scheme
+.br
+\fIrow\fP is a one-dimensional array of size ne and type int, that holds the row indices of the upper triangular part of H in the sparse co-ordinate storage scheme
+.br
+\fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the upper triangular part of H in sparse row-wise storage scheme\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the minimum number of (s^(k),y^(k)) pairs that will be needed to recover a good Hessian approximation 
+.RE
+.PP
+
+.SS "void sha_recover_matrix (void ** data, int * status, int ne, int m, int ls1, int ls2, const real_wp_ s[][ls2], int ly1, int ly2, const real_wp_ y[][ly2], real_wp_ val[], const int precedence[])"
+Form and factorize the symmetric matrix A\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The factors were generated succesfully\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or ne >= 0 has been violated\&.
+.PP
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the upper triangular part of the symmetric matrix H\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of (s,y) pairs that are available\&.
+.br
+\fIs\fP is a two-dimensional array of size (ls1,ls2) and type double, that holds the values of the vectors s^{(k)}\&. Component i,k holds s_i^{(k)}\&.
+.br
+\fIls1\fP is a scalar variable of type int, that holds the leading dimension of the array s\&.
+.br
+\fIls2\fP is a scalar variable of type int, that holds the trailing dimension of the array s\&.
+.br
+\fIy\fP is a two-dimensional array of size (ly1,ly2) and type double, that holds the values of the vectors y^{(k)}\&. Component i,k holds y_i^{(k)}\&.
+.br
+\fIlu1\fP is a scalar variable of type int, that holds the leading dimension of the array y\&.
+.br
+\fIly2\fP is a scalar variable of type int, that holds the trailing dimension of the array y\&.
+.br
+\fIval\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the upper triangular part of the symmetric matrix H in the sparse coordinate scheme\&.
+.br
+\fIprecedence\fP is a one-dimensional array of size m and type int, that holds the preferred order of access for the pairs (s^(k),y^(k))\&. The k-th component of order specifies the column number of s and y that will be used as the k-th most favoured\&. precedence need not be set if the natural order, k, k = 1,\&.\&.\&., m, is desired, and this case precedence should be NULL\&. 
 .RE
 .PP
 

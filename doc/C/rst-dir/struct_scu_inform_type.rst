@@ -57,5 +57,5 @@ the return status from the last attempted internal workspace array allocation or
 
 	int inertia[3]
 
-the inertia of :math:`S` when the extended matrix is symmetric. Specifically, inertia(i), i=0,1,2 give the number of positive, negative and zero eigenvalues of :math:`S` respectively.
+the inertia of $S$ when the extended matrix is symmetric. Specifically, inertia(i), i=0,1,2 give the number of positive, negative and zero eigenvalues of $S$ respectively.
 

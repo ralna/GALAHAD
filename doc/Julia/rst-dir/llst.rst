@@ -26,7 +26,7 @@ called in the following order:
 
 * :ref:`llst_import <doxid-galahad__llst_8h_1a4ffc854176462b1d6492b55317150236>` - set up problem data structures and fixed values
 
-* :ref:`llst_import_scaling <doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f>` (optional) - set up problem data structures for :math:`S` if required
+* :ref:`llst_import_scaling <doxid-galahad__llst_8h_1a42d56aec0cdf37373e5a50b13b4c374f>` (optional) - set up problem data structures for $S$ if required
 
 * :ref:`llst_reset_control <doxid-galahad__llst_8h_1a920e8696eea77dab3348a663a1127b41>` (optional) - possibly change control parameters if a sequence of problems are being solved
 

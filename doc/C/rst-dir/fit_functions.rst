@@ -99,7 +99,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The initialization was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; fit_information
 .. _doxid-galahad__fit_8h_1addba9b8a0adf58039c6974a4d30af840:
@@ -134,7 +135,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; fit_terminate
 .. _doxid-galahad__fit_8h_1a92659f3983205f2d9694e555b2439390:
@@ -149,8 +151,6 @@ Provides output information
 	)
 
 Deallocate all internal private storage
-
-
 
 .. rubric:: Parameters:
 

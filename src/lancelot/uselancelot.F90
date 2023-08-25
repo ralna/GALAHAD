@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-08-18 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -44,22 +44,25 @@
 !  Specfile characteristics
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 31
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 32
      CHARACTER ( LEN = 16 ) :: specname = 'RUNLANCELOT'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNLANCELOT.SPC'
 
 !  Default values for specfile-defined parameters
 
+     INTEGER ( KIND = ip_ ) :: bfiledevice = 69
      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      INTEGER ( KIND = ip_ ) :: vfiledevice = 63
      INTEGER ( KIND = ip_ ) :: wfiledevice = 59
+     LOGICAL :: random_start          = .FALSE.
      LOGICAL :: write_problem_data    = .FALSE.
      LOGICAL :: write_solution        = .FALSE.
      LOGICAL :: write_result_summary  = .FALSE.
      LOGICAL :: write_solution_vector = .FALSE.
+     CHARACTER ( LEN = 30 ) :: bfilename = 'LANCELOTBESTSOL.d'
      CHARACTER ( LEN = 30 ) :: dfilename = 'LANCELOT.data'
      CHARACTER ( LEN = 30 ) :: rfilename = 'LANCELOTRES.d'
      CHARACTER ( LEN = 30 ) :: sfilename = 'LANCELOTSOL.d'
@@ -81,6 +84,7 @@
      LOGICAL :: just_feasible = .FALSE.
      LOGICAL :: warm_start = .FALSE.
      INTEGER ( KIND = ip_ ) :: istore = 0
+     INTEGER ( KIND = ip_ ) :: multi_start = 1
 
 !  The default values for RUNLANCELOT could have been set as:
 
@@ -88,6 +92,7 @@
 !  write-problem-data                       NO
 !  problem-data-file-name                   LANCELOT.data
 !  problem-data-file-device                 26
+!  random-start                             NO
 !  write-solution                           YES
 !  solution-file-name                       LANCELOTSOL.d
 !  solution-file-device                     62
@@ -115,6 +120,7 @@
 !  restart-data-file-name                   LANCELOTSAVE.d
 !  restart-data-file-device                 59
 !  save-data-for-restart-every              0
+!  multi-start                              0
 ! END RUNLANCELOT SPECIFICATIONS
 
 !  Output file characteristics
@@ -125,24 +131,26 @@
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: binf = ( 10.0_rp_ ) ** 18
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: ntotel, nvrels, nnza  , ngpvlu, nepvlu, neltyp
+     INTEGER ( KIND = ip_ ) :: ntotel, nvrels, nnza, ngpvlu, nepvlu, neltyp
      INTEGER ( KIND = ip_ ) :: ngrtyp, ialgor, nnlneq, nlinin, nnlnin, nobjgr
-     INTEGER ( KIND = ip_ ) :: ieltyp, lfuval
-     INTEGER ( KIND = ip_ ) :: nin   , ninmax, nelmax, iauto , out
-     INTEGER ( KIND = ip_ ) :: i , j , ifflag, numvar, igrtyp, iores
+     INTEGER ( KIND = ip_ ) :: ieltyp, lfuval, seed_size
+     INTEGER ( KIND = ip_ ) :: nin, ninmax, nelmax, iauto, out
+     INTEGER ( KIND = ip_ ) :: i, j, ifflag, numvar, igrtyp, iores
      INTEGER ( KIND = ip_ ) :: norder, nfree , nfixed, alloc_status
      INTEGER ( KIND = ip_ ) :: nlower, nupper, nboth , nslack, nlinob
-     INTEGER ( KIND = ip_ ) :: nnlnob, nlineq, alive_request
-     REAL    :: time  , t     , timm  , ttotal
+     INTEGER ( KIND = ip_ ) :: nnlnob, nlineq, alive_request, pass
+     REAL    :: time, t, timm, ttotal
      REAL ( KIND = rp_ ) :: fobj, epsmch, rand
      REAL ( KIND = rp_ ), DIMENSION( 2 ) :: OBFBND
      LOGICAL :: alive, dsave, second, filexx, fdgrad, is_specfile
 !    LOGICAL :: square
+     REAL ( KIND = rp_ ) :: obj_best = HUGE( one ) / 2.0_rp_
 
      CHARACTER ( LEN = 3  ) :: minmax
      CHARACTER ( LEN = 5  ) :: optimi
@@ -154,6 +162,7 @@
 !----------------------------
 
      TYPE ( LANCELOT_control_type ) :: control
+     TYPE ( LANCELOT_control_type ) :: control_store
      TYPE ( LANCELOT_inform_type ) :: inform
      TYPE ( LANCELOT_data_type ) :: data
      TYPE ( LANCELOT_problem_type ) :: prob
@@ -183,6 +192,7 @@
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IELVAR_temp
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_temp
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SEEDS
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -394,7 +404,7 @@
        spec( 1 )%keyword  = 'write-problem-data'
        spec( 2 )%keyword  = 'problem-data-file-name'
        spec( 3 )%keyword  = 'problem-data-file-device'
-       spec( 4 )%keyword  = ''
+       spec( 4 )%keyword  = 'random-start'
        spec( 5 )%keyword  = 'write-solution'
        spec( 6 )%keyword  = 'solution-file-name'
        spec( 7 )%keyword  = 'solution-file-device'
@@ -422,6 +432,7 @@
        spec( 29 )%keyword = 'write-solution-vector'
        spec( 30 )%keyword = 'solution-vector-file-name'
        spec( 31 )%keyword = 'solution-vector-file-device'
+       spec( 32 )%keyword = 'multi-start'
 
 !   Read the specfile
 
@@ -432,6 +443,7 @@
        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
+       CALL SPECFILE_assign_logical( spec( 4 ), random_start, errout )
        CALL SPECFILE_assign_logical( spec( 5 ), write_solution, errout )
        CALL SPECFILE_assign_string ( spec( 6 ), sfilename, errout )
        CALL SPECFILE_assign_integer( spec( 7 ), sfiledevice, errout )
@@ -459,11 +471,13 @@
        CALL SPECFILE_assign_logical( spec( 29 ), write_solution_vector, errout )
        CALL SPECFILE_assign_string ( spec( 30 ), vfilename, errout )
        CALL SPECFILE_assign_integer( spec( 31 ), vfiledevice, errout )
+       CALL SPECFILE_assign_integer( spec( 32 ), multi_start, errout )
      END IF
 
      IF ( dechk .OR. testal ) THEN ; dechke = .TRUE. ; dechkg = .TRUE. ; END IF
      IF ( not_fatal ) THEN ; not_fatale = .TRUE. ; not_fatalg = .TRUE. ; END IF
      IF ( scale ) THEN ; scaleg = .TRUE. ; scalev = .TRUE. ; END IF
+     multi_start = MAX( multi_start, 1 )
 
 !  If required, print out the (raw) problem data
 
@@ -1106,6 +1120,51 @@
        END IF
      END IF
 
+!  if required, use a random starting point
+
+     pass = 1
+     IF ( random_start ) THEN
+!      CALL RANDOM_INIT( repeatable = .FALSE., image_distinct = .TRUE. )
+       CALL RANDOM_INIT( .FALSE., .TRUE. )
+       CALL RANDOM_SEED ( SIZE = seed_size )
+       ALLOCATE( SEEDS( seed_size ), STAT = alloc_status )
+       IF ( alloc_status /= 0 ) THEN
+         bad_alloc = 'SEEDS' ; GO TO 800; END IF
+       CALL RANDOM_SEED ( GET = SEEDS )
+     END IF
+
+     IF ( multi_start > 1 ) THEN
+       ALLOCATE( ISTINV( prob%nel + 1 ), STAT = alloc_status )
+       IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'ISTINV' ; GO TO 800 ; END IF
+       ISTINV( : prob%nel ) = prob%INTVAR( : prob%nel )
+       control_store = control
+     END IF
+
+ 290 CONTINUE
+     IF ( multi_start > 1 ) THEN
+       prob%INTVAR( : prob%nel ) = ISTINV( : prob%nel )
+       control = control_store
+     END IF
+     IF ( random_start ) THEN
+      prob%Y = zero
+      DO j = 1, prob%n
+         CALL RANDOM_NUMBER( rand )
+         IF ( prob%BL( j ) <= - binf ) THEN
+           IF ( prob%BU( j ) >= binf ) THEN ! unbounded
+             prob%X( j ) = rand
+           ELSE ! unbounded below
+             prob%X( j ) = prob%BU( j ) - rand
+           END IF
+         ELSE
+           IF ( prob%BU( j ) >= binf ) THEN ! unbounded above
+             prob%X( j ) = prob%BL( j ) + rand
+           ELSE ! bounded on both sides
+             prob%X( j ) = prob%BL( j ) + rand * ( prob%BU( j ) - prob%BL( j ))
+           END IF
+         END IF
+       END DO
+     END IF
+
 !  Prepare for the minimization
 
      inform%status = 0
@@ -1426,10 +1485,46 @@
 !      END IF
 !    END IF
 
+!  check to see if another pass is needed
+
+     pass = pass + 1
+     IF ( pass <= multi_start ) THEN
+       IF ( out > 0 .AND. control%print_level == 0 ) WRITE( out,               &
+         "( ' pass = ', I8, ' objective function value = ', ES22.14, 1X,       &
+        &  ' status = ', I0 )" ) pass, inform%obj, inform%status
+
+       IF ( inform%obj < obj_best .AND. inform%status == 0 ) THEN
+         obj_best = inform%obj
+         WRITE( out, "( ' ', 38( '-*' ), '-' )" )
+         INQUIRE( FILE = bfilename, EXIST = filexx )
+         IF ( filexx ) THEN
+            OPEN( bfiledevice, FILE = bfilename, FORM = 'FORMATTED',         &
+                STATUS = 'OLD', IOSTAT = iores )
+         ELSE
+            OPEN( bfiledevice, FILE = bfilename, FORM = 'FORMATTED',         &
+                STATUS = 'NEW', IOSTAT = iores )
+         END IF
+         IF ( iores /= 0 ) THEN
+           WRITE( out, 2160 ) iores, bfilename
+           STOP
+         END IF
+
+         REWIND( bfiledevice )
+         WRITE( bfiledevice, "( ES22.15 )" ) obj_best
+         DO i = 1, seed_size
+           WRITE( bfiledevice, "( I0 )" ) SEEDS( i )
+         END DO
+         DO i = 1, numvar
+           WRITE( bfiledevice, "( ES22.15 )" ) prob%X( i )
+         END DO
+         CLOSE( bfiledevice )
+       END IF
+       GO TO 290
+     END IF
+
 !  Write out any remaining details
 
  500 CONTINUE
-
      CALL CPU_TIME( t )
      ttotal = t - ttotal
      IF ( rfiledevice > 0 .OR. ( out > 0 .AND. control%print_level == 0 ) ) THEN
@@ -1442,9 +1537,11 @@
        ELSE
          WRITE( out, 2180 ) fobj
        END IF
-       DO i = 1, prob%n
-         WRITE( out, 2170 ) prob%VNAMES( i ), prob%X( i )
-       END DO
+       IF ( control%full_solution ) THEN
+         DO i = 1, prob%n
+           WRITE( out, 2170 ) prob%VNAMES( i ), prob%X( i )
+         END DO
+       END IF
        IF ( inform%status /= 0 ) WRITE( out, 2190 ) inform%status
      END IF
      IF ( out > 0 .AND. control%print_level > 0 ) THEN
@@ -1529,6 +1626,7 @@
      DEALLOCATE( prob%GSCALE, prob%VSCALE, XT    , DGRAD , STAT = alloc_status )
      DEALLOCATE( Q , FT, GVALS , prob%BL, prob%BU, ETYPES, STAT = alloc_status )
      DEALLOCATE( prob%INTREP, prob%GNAMES, prob%VNAMES, STAT = alloc_status )
+     IF ( random_start ) DEALLOCATE( SEEDS, ISTINV, STAT = alloc_status )
      IF ( ialgor > 1 ) THEN
        DEALLOCATE( prob%Y, prob%C, STAT = alloc_status )
        DEALLOCATE( prob%KNDOFG, STAT = alloc_status )

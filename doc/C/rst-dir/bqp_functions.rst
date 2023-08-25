@@ -162,7 +162,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; bqp_read_specfile
 .. _doxid-galahad__bqp_8h_1a0e3ffdd29be95753292694c7619a43e6:
@@ -172,9 +173,14 @@ Set default control values and initialize private data
 
 	void bqp_read_specfile(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const char specfile[])
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNBQP.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/bqp.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values 
+associated with given keywords to the corresponding control 
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/bqp/BQP.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/bqp.pdf for a list of how these keywords relate 
+to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -211,8 +217,6 @@ Read the content of a specification file, and assign values associated with give
 
 Import problem data into internal storage prior to solution.
 
-
-
 .. rubric:: Parameters:
 
 .. list-table::
@@ -234,13 +238,30 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
 		- n
@@ -310,11 +331,25 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
 		  * -3. The restriction n > 0 has been violated.
 
@@ -360,7 +395,9 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; bqp_solve_given_h
 .. _doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308:
@@ -383,7 +420,7 @@ Reset control parameters after import if required.
 		int x_stat[]
 	)
 
-Solve the bound-constrained quadratic program when the Hessian :math:`H` is available.
+Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 
 
 
@@ -407,35 +444,73 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 		  
 		  Possible exit values are:
 		  
-		  * 0. The run was successful.
+		  * **0**
+                    The run was successful.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restriction n > 0 or requirement that a type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-4**
+                    The simple-bound constraints are inconsistent.
 		  
-		  * -3. The restriction n > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 		  
-		  * -4. The simple-bound constraints are inconsistent.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 		  
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-11**
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
 		  
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 		  
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-17**
+                    The step is too small to make further impact.
 		  
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-18**
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 		  
-		  * -17. The step is too small to make further impact.
+		  * **-19**
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 		  
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-20**
+                    The Hessian matrix $H$ appears to be
+                    indefinite. specified.
 		  
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
-		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
-		  
-		  * -23. An entry from the strict upper triangle of :math:`H` has been
+		  * **-23**
+                    An entry from the strict upper triangle of $H$
+                    has been
 
 	*
 		- n
@@ -445,47 +520,47 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix :math:`H`.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix :math:`H` in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type double, that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type double, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type double, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type double, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; bqp_solve_reverse_h_prod
 .. _doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755:
@@ -513,7 +588,7 @@ Solve the bound-constrained quadratic program when the Hessian :math:`H` is avai
 		int nz_prod_end
 	)
 
-Solve the bound-constrained quadratic program when the products of the Hessian :math:`H` with specified vectors may be computed by the calling program.
+Solve the bound-constrained quadratic program when the products of the Hessian $H$ with specified vectors may be computed by the calling program.
 
 
 
@@ -537,39 +612,101 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 		  
 		  * 0. The run was successful.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-3**
+                    The restriction n > 0 or requirement that a type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-4**
+                    The simple-bound constraints are inconsistent.
 		  
-		  * -3. The restriction n > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-9**
+                    The analysis phase of the factorization failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status
 		  
-		  * -4. The simple-bound constraints are inconsistent.
+		  * **-10**
+                    The factorization failed; the return status from the
+                    factorization package is given in the component
+                    inform.factor_status.
 		  
-		  * -9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status
+		  * **-11**
+                    The solution of a set of linear equations using
+                    factors from the factorization package failed; the
+                    return status from the factorization package is
+                    given in the component inform.factor_status.
 		  
-		  * -10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-16**
+                    The problem is so ill-conditioned that further
+                    progress is impossible.
 		  
-		  * -11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.
+		  * **-17**
+                    The step is too small to make further impact.
 		  
-		  * -16. The problem is so ill-conditioned that further progress is impossible.
+		  * **-18**
+                    Too many iterations have been performed. This may
+                    happen if control.maxit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 		  
-		  * -17. The step is too small to make further impact.
+		  * **-19**
+                    The CPU time limit has been reached. This may happen
+                    if control.cpu_time_limit is too small, but may also
+                    be symptomatic of a badly scaled problem.
 		  
-		  * -18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem.
+		  * **-20**
+                    The Hessian matrix $H$ appears to be
+                    indefinite. specified.
 		  
-		  * -19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem.
-		  
-		  * -20. The Hessian matrix :math:`H` appears to be indefinite. specified.
-		  
-		  * -23. An entry from the strict upper triangle of :math:`H` has been specified.
+		  * **-23**
+                    An entry from the strict upper triangle of $H$
+                    has been specified.
 
-		  * 2. The product :math:`Hv` of the Hessian :math:`H` with a given output vector :math:`v` is required from the user. The vector :math:`v` will be stored in v and the product :math:`Hv` must be returned in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
+		  * **2**
+                    The product $Hv$ of the Hessian $H$ with
+                    a given output vector $v$ is required from the
+                    user. The vector $v$ will be stored in v and
+                    the product $Hv$ must be returned in prod, and
+                    bqp_solve_reverse_h_prod re-entered with all other
+                    arguments unchanged.
 		  
-		  * 3. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting product :math:`Hv` must be placed in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
+		  * **3**
+                    The product $Hv$ of the Hessian H with a given
+                    output vector $v$ is required from the
+                    user. Only components nz_v[nz_v_start-1:nz_v_end-1]
+                    of the vector $v$ stored in v are nonzero. The
+                    resulting product $Hv$ must be placed in prod,
+                    and bqp_solve_reverse_h_prod re-entered with all
+                    other arguments unchanged.
 		  
-		  * 4. The product :math:`Hv` of the Hessian H with a given output vector :math:`v` is required from the user. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector :math:`v` stored in v are nonzero. The resulting **nonzeros** in the product :math:`Hv` must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeros placed in nz_prod[0 : nz_prod_end-1]. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged. Typically v will be very sparse (i.e., nz_p_end-nz_p_start will be small).
+		  * **4**
+                    The product $Hv$ of the Hessian H with a given
+                    output vector $v$ is required from the
+                    user. Only components nz_v[nz_v_start-1:nz_v_end-1]
+                    of the vector $v$ stored in v are nonzero. The
+                    resulting **nonzeros** in the product $Hv$
+                    must be placed in their appropriate comnponents of
+                    prod, while a list of indices of the nonzeros placed
+                    in nz_prod[0 :
+                    nz_prod_end-1]. bqp_solve_reverse_h_prod should then
+                    be re-entered with all other arguments
+                    unchanged. Typically v will be very sparse (i.e.,
+                    nz_p_end-nz_p_start will be small).
 
 	*
 		- n
@@ -579,37 +716,37 @@ Solve the bound-constrained quadratic program when the products of the Hessian :
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term :math:`g` of the objective function. The j-th component of g, j = 0, ... , n-1, contains :math:`g_j`.
+		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term :math:`f` of the objective function.
+		- is a scalar of type double, that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_l, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type double, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds :math:`x^l` on the variables :math:`x`. The j-th component of x_u, j = 0, ... , n-1, contains :math:`x^l_j`.
+		- is a one-dimensional array of size n and type double, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`x` of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values :math:`z` of the dual variables. The j-th component of z, j = 0, ... , n-1, contains :math:`z_j`.
+		- is a one-dimensional array of size n and type double, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable :math:`x_j` most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v
@@ -679,7 +816,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; bqp_terminate
 .. _doxid-galahad__bqp_8h_1a34db499197d1fd6fb78b294473796fbc:

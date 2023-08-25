@@ -34,7 +34,7 @@ called in the following order:
   
   * :ref:`eqp_solve_sldqp <doxid-galahad__eqp_8h_1aaadb310c329e4857b3ad373bcee69e6f>` - solve the shifted least-distance problem
 
-* :ref:`eqp_resolve_qp <doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f>` (optional) - resolve the problem with the same Hessian and Jacobian, but different :math:`g`, :math:`f` and/or :math:`c`
+* :ref:`eqp_resolve_qp <doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f>` (optional) - resolve the problem with the same Hessian and Jacobian, but different $g$, $f$ and/or $c$
 
 * :ref:`eqp_information <doxid-galahad__eqp_8h_1aba10933446f1856fc435ecfbd98371d6>` (optional) - recover information about the solution and solution process
 

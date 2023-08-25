@@ -85,7 +85,7 @@ the level of output required is specified by print_level
 
 	int max_col
 
-maximum permitted number of nonzeros in a column of :math:`A`; -ve means unlimit
+maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 
 .. index:: pair: variable; new_a
 .. _doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6:
@@ -95,7 +95,7 @@ maximum permitted number of nonzeros in a column of :math:`A`; -ve means unlimit
 
 	int new_a
 
-how much has :math:`A` changed since it was last accessed:
+how much has $A$ changed since it was last accessed:
 
 * 0 = not changed,
 
@@ -113,7 +113,7 @@ how much has :math:`A` changed since it was last accessed:
 
 	int extra_space_s
 
-how much extra space is to be allocated in :math:`S` above that needed to hold the Schur complement
+how much extra space is to be allocated in $S$ above that needed to hold the Schur complement
 
 .. index:: pair: variable; s_also_by_column
 .. _doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd:
@@ -123,7 +123,7 @@ how much extra space is to be allocated in :math:`S` above that needed to hold t
 
 	bool s_also_by_column
 
-should s.ptr also be set to indicate the first entry in each column of :math:`S`
+should s.ptr also be set to indicate the first entry in each column of $S$
 
 .. index:: pair: variable; space_critical
 .. _doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

@@ -289,7 +289,8 @@ non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strateg
 
 	Int32 weight_update_strategy
 
-define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
+define the weight-update strategy: 1 (basic), 2 (reset to zero when very
+successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
 
 .. index:: pair: variable; stop_c_absolute
 .. _doxid-structnls__control__type_1add1b86a6f37634dcbf1e5f55807eac2b:
@@ -299,7 +300,12 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 
 	T stop_c_absolute
 
-overall convergence tolerances. The iteration will terminate when $||c(x)||_2 \leq$ MAX( .stop_c_absolute, .stop_c_relative :math:`* \|c(x_{\mbox{initial}})\|_2` or when the norm of the gradient, $g = J^T(x) c(x) / \|c(x)\|_2$, of \|\|c(x)\|\|_2 satisfies $\|g\|_2 \leq$ MAX( .stop_g_absolute, .stop_g_relative :math:`* \|g_{\mbox{initial}}\|_2`, or if the step is less than .stop_s
+overall convergence tolerances. The iteration will terminate when
+$||c(x)||_2 \leq$ MAX( .stop_c_absolute, .stop_c_relative $*
+\|c(x_{\mbox{initial}})\|_2$ or when the norm of the gradient, $g =
+J^T(x) c(x) / \|c(x)\|_2$, of \|\|c(x)\|\|_2 satisfies $\|g\|_2 \leq$
+MAX( .stop_g_absolute, .stop_g_relative $* \|g_{\mbox{initial}}\|_2$, or
+if the step is less than .stop_s
 
 .. index:: pair: variable; stop_c_relative
 .. _doxid-structnls__control__type_1a8e60a718c9c3b3bf9daf2e2be3c7dd68:

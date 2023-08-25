@@ -26,17 +26,17 @@ called in the following order:
 
 * set up problem data structures and fixed values by caling one of
   
-  * :ref:`bqp_import <doxid-galahad__bqp_8h_1a0cfa65e832fd80e3dfcf9e0c65a69e56>` - in the case that :math:`H` is explicitly available
+  * :ref:`bqp_import <doxid-galahad__bqp_8h_1a0cfa65e832fd80e3dfcf9e0c65a69e56>` - in the case that $H$ is explicitly available
   
-  * :ref:`bqp_import_without_h <doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e>` - in the case that only the effect of applying :math:`H` to a vector is possible
+  * :ref:`bqp_import_without_h <doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e>` - in the case that only the effect of applying $H$ to a vector is possible
 
 * :ref:`bqp_reset_control <doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
   
-  * :ref:`bqp_solve_given_h <doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308>` - solve the problem using values of :math:`H`
+  * :ref:`bqp_solve_given_h <doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308>` - solve the problem using values of $H$
   
-  * :ref:`bqp_solve_reverse_h_prod <doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755>` - solve the problem by returning to the caller for products of :math:`H` with specified vectors
+  * :ref:`bqp_solve_reverse_h_prod <doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755>` - solve the problem by returning to the caller for products of $H$ with specified vectors
 
 * :ref:`bqp_information <doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362>` (optional) - recover information about the solution and solution process
 

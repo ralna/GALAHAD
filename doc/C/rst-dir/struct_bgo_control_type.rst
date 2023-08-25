@@ -89,13 +89,13 @@ general output occurs on stream out
 
 the level of output required. Possible values are:
 
-* :math:`\leq` 0 no output,
+* $\leq$ 0 no output,
 
 * 1 a one-line summary for every improvement
 
 * 2 a summary of each iteration
 
-* :math:`\geq` 3 increasingly verbose (debugging) output
+* $\geq$ 3 increasingly verbose (debugging) output
 
 .. index:: pair: variable; attempts_max
 .. _doxid-structbgo__control__type_1adf3a400ef30c3d5d65bfc00c68fc291b:

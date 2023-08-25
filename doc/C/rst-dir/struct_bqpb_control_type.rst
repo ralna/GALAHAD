@@ -128,13 +128,13 @@ general output occurs on stream out
 
 the level of output required is specified by print_level
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structbqpb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -212,11 +212,11 @@ indicate whether and how much of the input problem should be restored on output.
 
 specifies the type of indicator function used. Pssible values are
 
-* 1 primal indicator: a constraint is active if and only if the distance to its nearest bound :math:`\leq`.indicator_p_tol
+* 1 primal indicator: a constraint is active if and only if the distance to its nearest bound $\leq$.indicator_p_tol
 
-* 2 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+* 2 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
-* 3 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+* 3 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; arc
 .. _doxid-structbqpb__control__type_1a30b5726116ac85ea64777e5d6e333894:
@@ -436,7 +436,7 @@ if the objective function value is smaller than obj_unbounded, it will be flagge
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` potential_unbounded
 
-if W=0 and the potential function value is smaller than .potential_unbounded :math:`\ast` number of one-sided bounds, the analytic center will be flagged as unbounded
+if W=0 and the potential function value is smaller than .potential_unbounded $\ast$ number of one-sided bounds, the analytic center will be flagged as unbounded
 
 .. index:: pair: variable; identical_bounds_tol
 .. _doxid-structbqpb__control__type_1abc74ac9bbf6375075f8943aac6ee09e4:
@@ -446,7 +446,7 @@ if W=0 and the potential function value is smaller than .potential_unbounded :ma
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` identical_bounds_tol
 
-any pair of constraint bounds :math:`(c_l,c_u)` or :math:`(x_l,x_u)` that are closer than .identical_bounds_tol will be reset to the average of their values
+any pair of constraint bounds $(c_l,c_u)$ or $(x_l,x_u)$ that are closer than .identical_bounds_tol will be reset to the average of their values
 
 .. index:: pair: variable; mu_lunge
 .. _doxid-structbqpb__control__type_1a32eb4d353d409b46521eb28008a74c36:
@@ -466,7 +466,7 @@ start terminal extrapolation when mu reaches mu_lunge
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_p
 
-if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound :math:`\leq`.indicator_p_tol
+if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound $\leq$.indicator_p_tol
 
 .. index:: pair: variable; indicator_tol_pd
 .. _doxid-structbqpb__control__type_1aa131ce5e639e5601d1b61fb540ac7187:
@@ -476,7 +476,7 @@ if .indicator_type = 1, a constraint/bound will be deemed to be active if and on
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_pd
 
-if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
 .. index:: pair: variable; indicator_tol_tapia
 .. _doxid-structbqpb__control__type_1abf4fb7dcdbaa9f729af1f063d357000a:
@@ -486,7 +486,7 @@ if .indicator_type = 2, a constraint/bound will be deemed to be active if and on
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_tapia
 
-if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; cpu_time_limit
 .. _doxid-structbqpb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:

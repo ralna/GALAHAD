@@ -107,7 +107,7 @@ Controls level of diagnostic output.
 
 	int btf
 
-Minimum block size for block-triangular form (BTF). Set to :math:`n` to avoid.
+Minimum block size for block-triangular form (BTF). Set to $n$ to avoid.
 
 .. index:: pair: variable; maxit
 .. _doxid-structgls__control_1ab717630b215f0362699acac11fb3652c:

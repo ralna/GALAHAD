@@ -36,7 +36,7 @@ components
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` lambda
 
-the value of :math:`\lambda`
+the value of $\lambda$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structtrs__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -46,5 +46,5 @@ the value of :math:`\lambda`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
 
-the corresponding value of :math:`\|x(\lambda)\|_M`
+the corresponding value of $\|x(\lambda)\|_M$
 

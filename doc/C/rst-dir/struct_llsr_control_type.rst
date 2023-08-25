@@ -94,7 +94,7 @@ controls level of diagnostic output
 
 	int new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are
+how much of $A$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -110,7 +110,7 @@ how much of :math:`A` has changed since the previous call. Possible values are
 
 	int new_s
 
-how much of :math:`S` has changed since the previous call. Possible values are
+how much of $S$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -176,7 +176,7 @@ see lower
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
 
-stop when :math:`| \|x\| - (\lambda/\sigma)^{1/(p-2)| \leq` stop_normal \* max( 1, :math:`\|x\|`)
+stop when $| \|x\| - (\lambda/\sigma)^{1/(p-2)| \leq$ stop_normal \* max( 1, $\|x\|$)
 
 .. index:: pair: variable; use_initial_multiplier
 .. _doxid-structllsr__control__type_1a4d2667d00744ca0f4cc3a2e19bfaae17:

@@ -41,7 +41,6 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'llst';</script>
@@ -928,31 +927,31 @@ illustrations of use.</p>
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span class="std std-ref">llst_initialize</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span class="std std-ref">llst_read_specfile</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span class="std std-ref">llst_import</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
@@ -965,7 +964,7 @@ illustrations of use.</p>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span class="std std-ref">llst_import_scaling</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -977,7 +976,7 @@ illustrations of use.</p>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span class="std std-ref">llst_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
@@ -987,21 +986,21 @@ illustrations of use.</p>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">A_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">S_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">S_val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">S_val</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span class="std std-ref">llst_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span class="std std-ref">llst_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span class="std std-ref">llst_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -1015,7 +1014,7 @@ illustrations of use.</p>
 <h2>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">llst_initialize</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
@@ -1030,14 +1029,15 @@ illustrations of use.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The import was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -1045,10 +1045,17 @@ illustrations of use.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">llst_read_specfile</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">)</span></pre>
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
+<p>Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in $GALAHAD/src/llst/LLST.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/llst.pdf for a list of how these keywords
+relate to the components of the control structure.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -1057,7 +1064,7 @@ illustrations of use.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -1065,7 +1072,7 @@ illustrations of use.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">llst_import</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
@@ -1085,7 +1092,7 @@ illustrations of use.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1093,13 +1100,40 @@ illustrations of use.</p>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple">
-<li><p>The import was successful, and the package is ready for the solve phase</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restriction n &gt; 0 or requirement that type contains its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been violated.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’, ‘diagonal’ or ‘absent’ has been
+violated.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -1127,7 +1161,7 @@ illustrations of use.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">llst_import_scaling</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -1146,7 +1180,7 @@ illustrations of use.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1154,13 +1188,39 @@ illustrations of use.</p>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple">
-<li><p>The import was successful, and the package is ready for the solve phase</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restriction n &gt; 0 or requirement that type contains its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’ or ‘diagonal’ has been violated.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restriction n &gt; 0 or requirement that type
+contains its relevant string ‘dense’, ‘coordinate’,
+‘sparse_by_rows’ or ‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -1185,7 +1245,7 @@ illustrations of use.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">llst_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -1198,7 +1258,7 @@ illustrations of use.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1206,9 +1266,11 @@ illustrations of use.</p>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple">
-<li><p>The import was successful, and the package is ready for the solve phase</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>1</strong></dt><dd><p>The import was successful, and the package is ready
+for the solve phase</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -1220,13 +1282,13 @@ illustrations of use.</p>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">A_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">S_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">S_val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">S_val</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Solve the trust-region problem.</p>
 <p class="rubric">Parameters:</p>
@@ -1243,19 +1305,78 @@ illustrations of use.</p>
 <td><p>is a scalar variable of type int, that gives the entry and exit status from the package.</p>
 <p>Possible exit values are:</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The run was successful.</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
 </li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-3. The restrictions n &gt; 0 and m &gt; 0 or requirement that A_type or A_type contains its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’ or ‘diagonal’ has been violated.</p></li>
-<li><p>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status</p></li>
-<li><p>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status.</p></li>
-<li><p>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status.</p></li>
-<li><p>-15. The matrix <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant.</p></li>
-<li><p>-16. The problem is so ill-conditioned that further progress is impossible.</p></li>
-<li><p>-17. The step is too small to make further impact.</p></li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0 and m &gt; 0 or requirement that
+A_type or A_type contains its relevant string
+‘dense’, ‘coordinate’, ‘sparse_by_rows’ or
+‘diagonal’ has been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-15</strong></dt><dd><p>The matrix <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly
+diagonally dominant.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </td>
 </tr>
@@ -1288,7 +1409,7 @@ illustrations of use.</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">llst_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">llst_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -1301,14 +1422,15 @@ illustrations of use.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
 <ul class="simple">
-<li><ol class="arabic simple" start="0">
-<li><p>The values were recorded successfully</p></li>
-</ol>
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
 </li>
 </ul>
 </td>
@@ -1317,8 +1439,8 @@ illustrations of use.</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span id="index-9"></span><span></span><span class="kt">void</span> <span class="n">llst_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -1332,10 +1454,10 @@ illustrations of use.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1352,27 +1474,27 @@ illustrations of use.</p>
 <span class="k">struct</span> <span class="n">llst_control_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">bool</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span class="std std-ref">f_indexing</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a11614f44ef4d939bdd984953346a7572"><span class="std std-ref">error</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span class="std std-ref">out</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span class="std std-ref">print_level</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a7bea45d51fd9384037bbbf82f7750ce6"><span class="std std-ref">new_a</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a2b6594b40a418a477a825143c48da0e9"><span class="std std-ref">new_s</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a49cdbb7627ab58da229da6ccb3034bb7"><span class="std std-ref">max_factorizations</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a338fa3956816be173e13bfd4198c4078"><span class="std std-ref">taylor_max_degree</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1ae8d08df3ba4988681cb5f7c33a20f287"><span class="std std-ref">initial_multiplier</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a965ee2cfb38687d6f158d35586595eed"><span class="std std-ref">lower</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1ab8b6572a40141ada6d5f0455eb806d41"><span class="std std-ref">upper</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a3573530258a38cc836b106b9f7a54565"><span class="std std-ref">stop_normal</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a86fd5b4cf421b63f8d908f27cf2c60bb"><span class="std std-ref">equality_problem</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a4d2667d00744ca0f4cc3a2e19bfaae17"><span class="std std-ref">use_initial_multiplier</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span class="std std-ref">space_critical</span></a><span></span><span class="p">;</span>
-    <span class="kt">bool</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span class="std std-ref">deallocate_error_fatal</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a9b46b7a8e0af020499e645bef711f634"><span class="std std-ref">definite_linear_solver</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
-    <span class="kt">char</span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span class="std std-ref">prefix</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span class="std std-ref">sbls_control</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1a31b308b91955ee385daacc3de00f161b"><span class="std std-ref">sls_control</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_ir_control_type.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span> <a class="reference internal" href="struct_llst_control_type.html#doxid-structllst-control-type-1ab87f601227d3bf99916ff3caa3413404"><span class="std std-ref">ir_control</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structllst-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span class="std std-ref">f_indexing</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a11614f44ef4d939bdd984953346a7572"><span class="std std-ref">error</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span class="std std-ref">out</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span class="std std-ref">print_level</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a7bea45d51fd9384037bbbf82f7750ce6"><span class="std std-ref">new_a</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a2b6594b40a418a477a825143c48da0e9"><span class="std std-ref">new_s</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a49cdbb7627ab58da229da6ccb3034bb7"><span class="std std-ref">max_factorizations</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-control-type-1a338fa3956816be173e13bfd4198c4078"><span class="std std-ref">taylor_max_degree</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1ae8d08df3ba4988681cb5f7c33a20f287"><span class="std std-ref">initial_multiplier</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1a965ee2cfb38687d6f158d35586595eed"><span class="std std-ref">lower</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1ab8b6572a40141ada6d5f0455eb806d41"><span class="std std-ref">upper</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1a3573530258a38cc836b106b9f7a54565"><span class="std std-ref">stop_normal</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structllst-control-type-1a86fd5b4cf421b63f8d908f27cf2c60bb"><span class="std std-ref">equality_problem</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structllst-control-type-1a4d2667d00744ca0f4cc3a2e19bfaae17"><span class="std std-ref">use_initial_multiplier</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structllst-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span class="std std-ref">space_critical</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structllst-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span class="std std-ref">deallocate_error_fatal</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structllst-control-type-1a9b46b7a8e0af020499e645bef711f634"><span class="std std-ref">definite_linear_solver</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structllst-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span class="std std-ref">prefix</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span class="std std-ref">sbls_control</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1a31b308b91955ee385daacc3de00f161b"><span class="std std-ref">sls_control</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="ir.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-control-type-1ab87f601227d3bf99916ff3caa3413404"><span class="std std-ref">ir_control</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -1406,14 +1528,14 @@ illustrations of use.</p>
 <p>the maximum number of factorizations (=iterations) allowed. -ve implies no limit</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a338fa3956816be173e13bfd4198c4078"><span id="index-18"></span><span></span><span class="kt">int</span> <span class="n">taylor_max_degree</span></pre>
 <p>maximum degree of Taylor approximant allowed (&lt;= 3)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ae8d08df3ba4988681cb5f7c33a20f287"><span id="index-19"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">initial_multiplier</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ae8d08df3ba4988681cb5f7c33a20f287"><span id="index-19"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">initial_multiplier</span></pre>
 <p>initial estimate of the Lagrange multipler</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a965ee2cfb38687d6f158d35586595eed"><span id="index-20"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lower</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a965ee2cfb38687d6f158d35586595eed"><span id="index-20"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lower</span></pre>
 <p>lower and upper bounds on the multiplier, if known</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab8b6572a40141ada6d5f0455eb806d41"><span id="index-21"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">upper</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab8b6572a40141ada6d5f0455eb806d41"><span id="index-21"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">upper</span></pre>
 <p>see lower</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a3573530258a38cc836b106b9f7a54565"><span id="index-22"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">stop_normal</span></pre>
-<p>stop when <span class="math notranslate nohighlight">\(| \|x\| -\)</span> radius <span class="math notranslate nohighlight">\(| \leq\)</span> max( stop_normal * max( 1, radius )</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a3573530258a38cc836b106b9f7a54565"><span id="index-22"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">stop_normal</span></pre>
+<p>stop when <span class="math notranslate nohighlight">\(| \|x\| -\)</span> radius <span class="math notranslate nohighlight">\(| \leq\)</span> max( stop_normal \* max( 1, radius )</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a86fd5b4cf421b63f8d908f27cf2c60bb"><span id="index-23"></span><span></span><span class="kt">bool</span> <span class="n">equality_problem</span></pre>
 <p>is the solution is &lt;b&lt;required to lie on the boundary (i.e., is the constraint an equality)?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a4d2667d00744ca0f4cc3a2e19bfaae17"><span id="index-24"></span><span></span><span class="kt">bool</span> <span class="n">use_initial_multiplier</span></pre>
@@ -1426,11 +1548,11 @@ illustrations of use.</p>
 <p>definite linear equation solver</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-28"></span><span></span><span class="kt">char</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-29"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <span class="n">sbls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-29"></span><span></span><span class="k">struct</span> <a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <span class="n">sbls_control</span></pre>
 <p>control parameters for the symmetric factorization and related linear solves (see sbls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-30"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span> <span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-30"></span><span></span><span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span> <span class="n">sls_control</span></pre>
 <p>control parameters for the factorization of S and related linear solves (see sls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-31"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_ir_control_type.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span> <span class="n">ir_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-31"></span><span></span><span class="k">struct</span> <a class="reference internal" href="ir.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span> <span class="n">ir_control</span></pre>
 <p>control parameters for iterative refinement for definite system solves (see ir_c documentation)</p>
 </section>
 </section>
@@ -1443,16 +1565,16 @@ illustrations of use.</p>
 <span class="k">struct</span> <span class="n">llst_time_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span class="std std-ref">total</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1ae84d232eee798a974ebaeb9c82d623f4"><span class="std std-ref">assemble</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span class="std std-ref">analyse</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span class="std std-ref">factorize</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1a4c971b10c915041b89daa05a29125376"><span class="std std-ref">solve</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span class="std std-ref">clock_total</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1a4df2b92cea9269b8f8cad7024b83a10d"><span class="std std-ref">clock_assemble</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span class="std std-ref">clock_analyse</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span class="std std-ref">clock_factorize</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span class="std std-ref">clock_solve</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span class="std std-ref">total</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1ae84d232eee798a974ebaeb9c82d623f4"><span class="std std-ref">assemble</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span class="std std-ref">analyse</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span class="std std-ref">factorize</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1a4c971b10c915041b89daa05a29125376"><span class="std std-ref">solve</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span class="std std-ref">clock_total</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1a4df2b92cea9269b8f8cad7024b83a10d"><span class="std std-ref">clock_assemble</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span class="std std-ref">clock_analyse</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span class="std std-ref">clock_factorize</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span class="std std-ref">clock_solve</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="details-structllst-time-type">
@@ -1460,25 +1582,25 @@ illustrations of use.</p>
 <p>time derived type as a C struct</p>
 <section id="id4">
 <h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span id="index-33"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">total</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3803b3bb79c5c74d9300520fbe733f4"><span id="index-33"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">total</span></pre>
 <p>total CPU time spent in the package</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae84d232eee798a974ebaeb9c82d623f4"><span id="index-34"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">assemble</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae84d232eee798a974ebaeb9c82d623f4"><span id="index-34"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">assemble</span></pre>
 <p>CPU time assembling <span class="math notranslate nohighlight">\(K(\lambda)\)</span> in (1)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span id="index-35"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">analyse</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a9c5b9155e1665977103d8c32881d9f00"><span id="index-35"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">analyse</span></pre>
 <p>CPU time spent analysing <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span id="index-36"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">factorize</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a79e62dbb4cbb6e99d82167e60c703015"><span id="index-36"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">factorize</span></pre>
 <p>CPU time spent factorizing <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4c971b10c915041b89daa05a29125376"><span id="index-37"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">solve</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4c971b10c915041b89daa05a29125376"><span id="index-37"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">solve</span></pre>
 <p>CPU time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K(\lambda)\)</span>.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span id="index-38"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_total</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ae9145eea8e19f9cae77904d3d00c5d1f"><span id="index-38"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_total</span></pre>
 <p>total clock time spent in the package</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4df2b92cea9269b8f8cad7024b83a10d"><span id="index-39"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_assemble</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a4df2b92cea9269b8f8cad7024b83a10d"><span id="index-39"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_assemble</span></pre>
 <p>clock time assembling <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span id="index-40"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_analyse</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1a3394e706afb175d930c81c4b86fe8f4b"><span id="index-40"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_analyse</span></pre>
 <p>clock time spent analysing <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span id="index-41"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_factorize</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1ad3f0f50628260b90d6cf974e02f86192"><span id="index-41"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_factorize</span></pre>
 <p>clock time spent factorizing <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span id="index-42"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_solve</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-time-type-1af569df4b8828eb7ac8a05ef1030d1358"><span id="index-42"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_solve</span></pre>
 <p>clock time spent solving linear systems inolving <span class="math notranslate nohighlight">\(K(\lambda)\)</span></p>
 </section>
 </section>
@@ -1491,9 +1613,9 @@ illustrations of use.</p>
 <span class="k">struct</span> <span class="n">llst_history_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span class="std std-ref">lambda</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span class="std std-ref">lambda</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-history-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="details-structllst-history-type">
@@ -1501,11 +1623,11 @@ illustrations of use.</p>
 <p>history derived type as a C struct</p>
 <section id="id6">
 <h3>components<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span id="index-44"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lambda</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a69856cb11373bfb6f36d8a28df6dd08f"><span id="index-44"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">lambda</span></pre>
 <p>the value of <span class="math notranslate nohighlight">\(\lambda\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-45"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-45"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
 <p>the corresponding value of <span class="math notranslate nohighlight">\(\|x(\lambda)\|_S\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-46"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-history-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-46"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
 <p>the corresponding value of <span class="math notranslate nohighlight">\(\|A x(\lambda) - b\|_2\)</span></p>
 </section>
 </section>
@@ -1518,19 +1640,19 @@ illustrations of use.</p>
 <span class="k">struct</span> <span class="n">llst_inform_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a9a6a5a0de7d7a6048b4170a768c0c86f"><span class="std std-ref">factorizations</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span class="std std-ref">len_history</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span class="std std-ref">multiplier</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a10b8942e28c4ade61bd53f705e70b05f"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a486763b587db55dd7984ae315c4a6513"><span class="std std-ref">history</span></a><span></span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span class="std std-ref">sbls_inform</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span class="std std-ref">sls_inform</span></a><span></span><span class="p">;</span>
-    <span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span class="std std-ref">ir_inform</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-inform-type-1a9a6a5a0de7d7a6048b4170a768c0c86f"><span class="std std-ref">factorizations</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structllst-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span class="std std-ref">len_history</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1ae908410fabf891cfd89626c3605c38ca"><span class="std std-ref">r_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span class="std std-ref">x_norm</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span class="std std-ref">multiplier</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structllst-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1a10b8942e28c4ade61bd53f705e70b05f"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1a486763b587db55dd7984ae315c4a6513"><span class="std std-ref">history</span></a><span></span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span class="std std-ref">sbls_inform</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span class="std std-ref">sls_inform</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <a class="reference internal" href="#doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span class="std std-ref">ir_inform</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="details-structllst-inform-type">
@@ -1540,14 +1662,28 @@ illustrations of use.</p>
 <h3>components<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-48"></span><span></span><span class="kt">int</span> <span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 the solution has been found</p></li>
-<li><p>-1 an array allocation has failed</p></li>
-<li><p>-2 an array deallocation has failed</p></li>
-<li><p>-3 n and/or Delta is not positive</p></li>
-<li><p>-10 the factorization of <span class="math notranslate nohighlight">\(K(\lambda)\)</span> failed</p></li>
-<li><p>-15 <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant</p></li>
-<li><p>-16 ill-conditioning has prevented furthr progress</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the solution has been found</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>an array allocation has failed</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>an array deallocation has failed</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>n and/or Delta is not positive</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>the factorization of <span class="math notranslate nohighlight">\(K(\lambda)\)</span> failed</p>
+</li>
+<li><p><strong>-15</strong></p>
+<p><span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>ill-conditioning has prevented furthr progress</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-49"></span><span></span><span class="kt">int</span> <span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -1555,21 +1691,21 @@ illustrations of use.</p>
 <p>the number of factorizations performed</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a2087c1ee7c5859aa738d2f07ba91b4a6"><span id="index-51"></span><span></span><span class="kt">int</span> <span class="n">len_history</span></pre>
 <p>the number of (<span class="math notranslate nohighlight">\(\|x\|_S\)</span>, <span class="math notranslate nohighlight">\(\lambda\)</span>) pairs in the history</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-52"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae908410fabf891cfd89626c3605c38ca"><span id="index-52"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r_norm</span></pre>
 <p>corresponding value of the two-norm of the residual, <span class="math notranslate nohighlight">\(\|A x(\lambda) - b\|\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-53"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a32b3ba51ed1b0d7941f34e736da26ae3"><span id="index-53"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_norm</span></pre>
 <p>the S-norm of x, <span class="math notranslate nohighlight">\(\|x\|_S\)</span></p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-54"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">multiplier</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ac8bfb1ed777319ef92b7039c66f9a9b0"><span id="index-54"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">multiplier</span></pre>
 <p>the Lagrange multiplier corresponding to the trust-region constraint</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-55"></span><span></span><span class="kt">char</span> <span class="n">bad_alloc</span><span class="p">[</span><span class="mi">81</span><span class="p">]</span></pre>
 <p>name of array which provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a10b8942e28c4ade61bd53f705e70b05f"><span id="index-56"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_llst_time_type.html#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span> <span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a10b8942e28c4ade61bd53f705e70b05f"><span id="index-56"></span><span></span><span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-time-type"><span class="std std-ref">llst_time_type</span></a><span></span> <span class="n">time</span></pre>
 <p>time information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a486763b587db55dd7984ae315c4a6513"><span id="index-57"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_llst_history_type.html#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span> <span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a486763b587db55dd7984ae315c4a6513"><span id="index-57"></span><span></span><span class="k">struct</span> <a class="reference internal" href="#doxid-structllst-history-type"><span class="std std-ref">llst_history_type</span></a><span></span> <span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
 <p>history information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-58"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span> <span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-58"></span><span></span><span class="k">struct</span> <a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span> <span class="n">sbls_inform</span></pre>
 <p>information from the symmetric factorization and related linear solves (see sbls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-59"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-59"></span><span></span><span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span> <span class="n">sls_inform</span></pre>
 <p>information from the factorization of S and related linear solves (see sls_c documentation)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-60"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span> <span class="n">ir_inform</span></pre>
 <p>information from the iterative refinement for definite system solves (see ir_c documentation)</p>

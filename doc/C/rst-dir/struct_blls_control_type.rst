@@ -162,7 +162,7 @@ cold_start should be set to 0 if a warm start is required (with variable assigne
 
 	int preconditioner
 
-the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of :math:`A`. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.
+the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of $A$. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.
 
 .. index:: pair: variable; ratio_cg_vs_sd
 .. _doxid-structblls__control__type_1ab589a429c71e34b9c07c4d79a1e02902:

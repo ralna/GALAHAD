@@ -128,11 +128,14 @@ Set default control values and initialize private data
 
 	void lhs_read_specfile(struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control, const char specfile[])
 
-Read the content of a specification file, and perform the assignment of values associated with given keywords to the corresponding control parameters.
-
-By default, the spcification file will be named RUNLHS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/lhs/LHS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/lhs.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -169,13 +172,23 @@ The improved distributed hyper-cube sampling algorithm.
 
 Discussion:
 
-n_points points in an n_dimen dimensional Latin hyper-cube are to be selected. Each of the coordinate dimensions is discretized to the values 1 through n. The points are to be chosen in such a way that no two points have any coordinate value in common. This is a standard Latin hypercube requirement, and there are many solutions.
+n_points points in an n_dimen dimensional Latin hyper-cube are to be
+selected. Each of the coordinate dimensions is discretized to the values
+1 through n. The points are to be chosen in such a way that no two
+points have any coordinate value in common. This is a standard Latin
+hypercube requirement, and there are many solutions.
 
-This algorithm differs in that it tries to pick a solution which has the property that the points are "spread out" as evenly as possible. It does this by determining an optimal even spacing, and using the DUPLICATION factor to allow it to choose the best of the various options available to it.
+This algorithm differs in that it tries to pick a solution which has the
+property that the points are "spread out" as evenly as possible. It does
+this by determining an optimal even spacing, and using the DUPLICATION
+factor to allow it to choose the best of the various options available
+to it.
 
 Reference:
 
-Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, American Institute of Aeronautics and Astronautics Paper 2002-1274
+Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube
+Sampling, American Institute of Aeronautics and Astronautics Paper
+2002-1274
 
 
 
@@ -274,7 +287,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; lhs_terminate
 .. _doxid-galahad__lhs_8h_1a24f8433561128e5c05e588d053b22f29:

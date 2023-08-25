@@ -24,19 +24,19 @@ called in the following order:
 
 * :ref:`psls_read_specfile <doxid-galahad__psls_8h_1a34b978446b6aa5636f9e6efc18860366>` (optional) - override control values by reading replacement values from a file
 
-* :ref:`psls_import <doxid-galahad__psls_8h_1a3ff902c85fb82f1929a93514bb63c5d6>` - set up matrix data structures for :math:`A` prior to solution
+* :ref:`psls_import <doxid-galahad__psls_8h_1a3ff902c85fb82f1929a93514bb63c5d6>` - set up matrix data structures for $A$ prior to solution
 
 * :ref:`psls_reset_control <doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * one of
   
-  * :ref:`psls_form_preconditioner <doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1>` - form and factorize a preconditioner :math:`P` of the matrix :math:`A`
+  * :ref:`psls_form_preconditioner <doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1>` - form and factorize a preconditioner $P$ of the matrix $A$
   
-  * :ref:`psls_form_subset_preconditioner <doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65>` - form and factorize a preconditioner :math:`P` of a symmetric submatrix of the matrix :math:`A`
+  * :ref:`psls_form_subset_preconditioner <doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65>` - form and factorize a preconditioner $P$ of a symmetric submatrix of the matrix $A$
 
-* :ref:`psls_update_preconditioner <doxid-galahad__psls_8h_1a42a8097e64b527cff18ab66c07a32d1d>` (optional) - update the preconditioner :math:`P` when rows (amd columns) are removed
+* :ref:`psls_update_preconditioner <doxid-galahad__psls_8h_1a42a8097e64b527cff18ab66c07a32d1d>` (optional) - update the preconditioner $P$ when rows (amd columns) are removed
 
-* :ref:`psls_apply_preconditioner <doxid-galahad__psls_8h_1a1bae97d4a0e63bce7380422ed83306e8>` - solve the linear system of equations :math:`Px=b`
+* :ref:`psls_apply_preconditioner <doxid-galahad__psls_8h_1a1bae97d4a0e63bce7380422ed83306e8>` - solve the linear system of equations $Px=b$
 
 * :ref:`psls_information <doxid-galahad__psls_8h_1ace5f302a9ccb0c3f8c29b28b42da7793>` (optional) - recover information about the preconditioner and solution process
 

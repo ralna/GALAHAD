@@ -83,9 +83,9 @@ general output occurs on stream out
 
 the level of output required is specified by print_level
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
-* :math:`\geq` 1 gives increasingly verbose (debugging) output
+* $\geq$ 1 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; space_critical
 .. _doxid-structrpd__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

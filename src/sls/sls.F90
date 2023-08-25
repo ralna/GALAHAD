@@ -10625,7 +10625,7 @@
 !
 !  data is a scalar variable of type SLS_full_data_type used for internal data
 !
-!  status is a scalar variable of type default intege that indicates the
+!  status is a scalar variable of type default integer that indicates the
 !   success or otherwise of the import and analysis. Possible values are:
 !
 !    0. The analysis was succesful, and the package is ready for the
@@ -10659,7 +10659,7 @@
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
-!  matrix_col is a rank-one array of type default integer ( KIND = ip_ ),
+!  matrix_col is a rank-one array of type default integer,
 !   that holds the column indices of the  lower triangular part of A in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
@@ -10858,7 +10858,7 @@
 
 !  data is a scalar variable of type SLS_full_data_type used for internal data
 !
-!  status is a scalar variable of type default intege that indicates the
+!  status is a scalar variable of type default integer that indicates the
 !   success or otherwise of the factorization. Possible values are:
 !
 !    0. The factorization was succesful, and the package is ready for the
@@ -10936,7 +10936,7 @@
 
 !  data is a scalar variable of type SLS_full_data_type used for internal data
 !
-!  status is a scalar variable of type default intege that indicates the
+!  status is a scalar variable of type default integer that indicates the
 !   success or otherwise of the import. Possible values are:
 !
 !    0. The solve was succesful

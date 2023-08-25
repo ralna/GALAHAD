@@ -255,11 +255,11 @@ indicate whether and how much of the input problem should be restored on output.
 
 specifies the type of indicator function used. Possible values are
 
-* 1 primal indicator: constraint active if and only if the distance to nearest bound :math:`\leq`.indicator_p_tol
+* 1 primal indicator: constraint active if and only if the distance to nearest bound $\leq$.indicator_p_tol
 
-* 2 primal-dual indicator: constraint active if and only if the distance to nearest bound :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+* 2 primal-dual indicator: constraint active if and only if the distance to nearest bound $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
-* 3 primal-dual indicator: constraint active if and only if the distance to the nearest bound :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+* 3 primal-dual indicator: constraint active if and only if the distance to the nearest bound $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; extrapolate
 .. _doxid-structlsqp__control__type_1acc457bf98691a4c5b44abe6912aaa512:
@@ -471,7 +471,7 @@ start terminal extrapolation when mu reaches mu_min
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_p
 
-if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_p_tol
+if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_p_tol
 
 .. index:: pair: variable; indicator_tol_pd
 .. _doxid-structlsqp__control__type_1aa131ce5e639e5601d1b61fb540ac7187:
@@ -481,7 +481,7 @@ if .indicator_type = 1, a constraint/bound will be deemed to be active if and on
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_pd
 
-if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_tol_pd \* size of corresponding multiplier
+if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_tol_pd \* size of corresponding multiplier
 
 .. index:: pair: variable; indicator_tol_tapia
 .. _doxid-structlsqp__control__type_1abf4fb7dcdbaa9f729af1f063d357000a:
@@ -491,7 +491,7 @@ if .indicator_type = 2, a constraint/bound will be deemed to be active if and on
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` indicator_tol_tapia
 
-if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ :math:`\leq`.indicator_tol_tapia \* distance to same bound at previous iteration
+if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to nearest bound $ $\leq$.indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; cpu_time_limit
 .. _doxid-structlsqp__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:

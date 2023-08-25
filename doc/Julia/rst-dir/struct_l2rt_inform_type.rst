@@ -134,7 +134,7 @@ the value of the objective function
 
 	T multiplier
 
-the multiplier, :math:`\lambda = \mu + \sigma \|x\|^{p-2} * \sqrt{\|Ax-b\|^2 + \mu \|x\|^2}`
+the multiplier, $\lambda = \mu + \sigma \|x\|^{p-2} * \sqrt{\|Ax-b\|^2 + \mu \|x\|^2}$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structl2rt__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:

@@ -159,7 +159,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; psls_read_specfile
 .. _doxid-galahad__psls_8h_1a34b978446b6aa5636f9e6efc18860366:
@@ -172,9 +173,15 @@ Set default control values and initialize private data
 		const char specfile[]
 	)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNPSLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/psls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list 
+of keywords with associated default values is provided in 
+\$GALAHAD/src/psls/PSLS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/psls.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -234,43 +241,60 @@ Import structural matrix data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows' or 'diagonal' has been violated.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows in the symmetric matrix $A$.
 
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix :math:`A`. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of :math:`A` in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of :math:`A` in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of :math:`A`, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; psls_reset_control
 .. _doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab:
@@ -309,7 +333,9 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; psls_form_preconditioner
 .. _doxid-galahad__psls_8h_1a9cd4c449dcc5133932972866fd58cfc1:
@@ -324,7 +350,7 @@ Reset control parameters after import if required.
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[]
 	)
 
-Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
+Form and factorize a preconditioner $P$ of the matrix $A$.
 
 
 
@@ -346,27 +372,40 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated successfully.
+		  * **0**
+                    The factors were generated successfully.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -26. The requested solver is not available.
-		  
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 .. index:: pair: function; psls_form_subset_preconditioner
 .. _doxid-galahad__psls_8h_1a75fa79fcbe08ab367b9fa0b7f39adf65:
@@ -383,7 +422,7 @@ Form and factorize a preconditioner :math:`P` of the matrix :math:`A`.
 		const int sub[]
 	)
 
-Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the matrix :math:`A`.
+Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $A$.
 
 
 
@@ -405,32 +444,45 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated successfully.
+		  * **0**
+                    The factors were generated successfully.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -26. The requested solver is not available.
-		  
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 	*
 		- n_sub
 
-		- is a scalar variable of type int, that holds the number of rows (and columns) of the required submatrix of :math:`A`.
+		- is a scalar variable of type int, that holds the number of rows (and columns) of the required submatrix of $A$.
 
 	*
 		- sub
@@ -452,7 +504,7 @@ Form and factorize a :math:`P` preconditioner of a symmetric submatrix of the ma
 		const int del[]
 	)
 
-Update the preconditioner :math:`P` when rows (amd columns) are removed.
+Update the preconditioner $P$ when rows (amd columns) are removed.
 
 
 
@@ -474,27 +526,40 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 		  
 		  Possible values are:
 		  
-		  * 0. The factors were generated successfully.
+		  * **0**
+                    The factors were generated successfully.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-26**
+                    The requested solver is not available.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -26. The requested solver is not available.
-		  
-		  * -29. This option is not available with this solver.
+		  * **-29**
+                    This option is not available with this solver.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix :math:`A`.
+		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix :math:`A` in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix $A$ in any of the supported storage schemes.
 
 	*
 		- n_del
@@ -514,7 +579,7 @@ Update the preconditioner :math:`P` when rows (amd columns) are removed.
 
 	void psls_apply_preconditioner(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[])
 
-Solve the linear system :math:`Px=b`.
+Solve the linear system $Px=b$.
 
 
 
@@ -536,23 +601,34 @@ Solve the linear system :math:`Px=b`.
 		  
 		  Possible values are:
 		  
-		  * 0. The required solution was obtained.
+		  * **0**
+                    The required solution was obtained.
 		  
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
-		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of entries in the vectors :math:`b` and :math:`x`.
+		- is a scalar variable of type int, that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
 
-		- is a one-dimensional array of size n and type double. On entry, it must hold the vector :math:`b`. On a successful exit, its contains the solution :math:`x`. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered.
+		- is a one-dimensional array of size n and type double. On entry, it must hold the vector $b$. On a successful exit, its contains the solution $x$. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered.
 
 .. index:: pair: function; psls_information
 .. _doxid-galahad__psls_8h_1ace5f302a9ccb0c3f8c29b28b42da7793:
@@ -587,7 +663,8 @@ Provide output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; psls_terminate
 .. _doxid-galahad__psls_8h_1ab62a2e262e7466fac3a2dc8cd300720d:

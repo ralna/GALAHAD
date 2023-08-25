@@ -26,17 +26,17 @@ called in the following order:
 
 * set up problem data structures and fixed values by caling one of
   
-  * :ref:`blls_import <doxid-galahad__blls_8h_1afacd84f0b7592f4532cf7b77d278282f>` - in the case that :math:`A` is explicitly available
+  * :ref:`blls_import <doxid-galahad__blls_8h_1afacd84f0b7592f4532cf7b77d278282f>` - in the case that $A$ is explicitly available
   
-  * :ref:`blls_import_without_a <doxid-galahad__blls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c>` - in the case that only the effect of applying :math:`A` and its transpose to a vector is possible
+  * :ref:`blls_import_without_a <doxid-galahad__blls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c>` - in the case that only the effect of applying $A$ and its transpose to a vector is possible
 
 * :ref:`blls_reset_control <doxid-galahad__blls_8h_1a96981ac9a0e3f44b2b38362fc3ab9991>` (optional) - possibly change control parameters if a sequence of problems are being solved
 
 * solve the problem by calling one of
   
-  * :ref:`blls_solve_given_a <doxid-galahad__blls_8h_1acf6d292989a5ac09f7f3e507283fb5bf>` - solve the problem using values of :math:`A`
+  * :ref:`blls_solve_given_a <doxid-galahad__blls_8h_1acf6d292989a5ac09f7f3e507283fb5bf>` - solve the problem using values of $A$
   
-  * :ref:`blls_solve_reverse_a_prod <doxid-galahad__blls_8h_1ac139bc1c65cf12cb532c4ab09f3af9d0>` - solve the problem by returning to the caller for products of :math:`A` and its transpose with specified vectors
+  * :ref:`blls_solve_reverse_a_prod <doxid-galahad__blls_8h_1ac139bc1c65cf12cb532c4ab09f3af9d0>` - solve the problem by returning to the caller for products of $A$ and its transpose with specified vectors
 
 * :ref:`blls_information <doxid-galahad__blls_8h_1a457b8ee7c630715bcb43427f254b555f>` (optional) - recover information about the solution and solution process
 

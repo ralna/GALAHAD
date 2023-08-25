@@ -120,13 +120,13 @@ general output occurs on stream out
 
 the level of output required.
 
-* :math:`\leq` 0 gives no output,
+* $\leq$ 0 gives no output,
 
 * = 1 gives a one-line summary for every iteration,
 
 * = 2 gives a summary of the inner iteration for each iteration,
 
-* :math:`\geq` 3 gives increasingly verbose (debugging) output
+* $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
 .. _doxid-structtrb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
@@ -242,25 +242,25 @@ Possible values are
 
 	int norm
 
-The norm is defined via :math:`\|v\|^2 = v^T P v`, and will define the preconditioner used for iterative methods. Possible values for :math:`P` are.
+The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are.
 
 * -3 users own preconditioner
 
-* -2 :math:`P =` limited-memory BFGS matrix (with .lbfgs_vectors history)
+* -2 $P =$ limited-memory BFGS matrix (with .lbfgs_vectors history)
 
 * -1 identity (= Euclidan two-norm)
 
 * 0 automatic (*not yet implemented*)
 
-* 1 diagonal, :math:`P =` diag( max( Hessian, .min_diagonal ) )
+* 1 diagonal, $P =$ diag( max( Hessian, .min_diagonal ) )
 
-* 2 banded, :math:`P =` band( Hessian ) with semi-bandwidth .semi_bandwidth
+* 2 banded, $P =$ band( Hessian ) with semi-bandwidth .semi_bandwidth
 
 * 3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth
 
-* 4 full factorization, :math:`P =` Hessian, Schnabel-Eskow modification
+* 4 full factorization, $P =$ Hessian, Schnabel-Eskow modification
 
-* 5 full factorization, :math:`P =` Hessian, GMPS modification (*not yet implemented*)
+* 5 full factorization, $P =$ Hessian, GMPS modification (*not yet implemented*)
 
 * 6 incomplete factorization of Hessian, Lin-More'
 
@@ -328,7 +328,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 
 	int mi28_rsize
 
-the maximum number of entries within each column of the strictly lower triangular matrix :math:`R` used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold :math:`R`. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
+the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; advanced_start
 .. _doxid-structtrb__control__type_1a7565611061db14e471a4f68e6dabbc17:

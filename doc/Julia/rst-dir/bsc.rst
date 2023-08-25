@@ -22,11 +22,11 @@ called in the following order:
 
 * :ref:`bsc_read_specfile <doxid->` (optional) - override control values by reading replacement values from a file
 
-* :ref:`bsc_import <doxid->` - set up matrix data structures for :math:`A`.
+* :ref:`bsc_import <doxid->` - set up matrix data structures for $A$.
 
 * :ref:`bsc_reset_control <doxid->` (optional) - possibly change control parameters if a sequence of problems are being solved
 
-* :ref:`bsc_form <doxid->` - form the Schur complement :math:`S`
+* :ref:`bsc_form <doxid->` - form the Schur complement $S$
 
 * :ref:`bsc_information <doxid-galahad__bsc_8h_1a4c0ae2150d39c240539e1d3be836b0af>` (optional) - recover information about the process
 

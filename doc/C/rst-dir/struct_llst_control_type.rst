@@ -95,7 +95,7 @@ controls level of diagnostic output
 
 	int new_a
 
-how much of :math:`A` has changed since the previous call. Possible values are
+how much of $A$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -111,7 +111,7 @@ how much of :math:`A` has changed since the previous call. Possible values are
 
 	int new_s
 
-how much of :math:`S` has changed since the previous call. Possible values are
+how much of $S$ has changed since the previous call. Possible values are
 
 * 0 unchanged
 
@@ -177,7 +177,7 @@ see lower
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
 
-stop when :math:`| \|x\| -` radius :math:`| \leq` max( stop_normal \* max( 1, radius )
+stop when $| \|x\| -$ radius $| \leq$ max( stop_normal \* max( 1, radius )
 
 .. index:: pair: variable; equality_problem
 .. _doxid-structllst__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb:

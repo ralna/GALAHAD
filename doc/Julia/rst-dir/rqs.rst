@@ -26,9 +26,9 @@ called in the following order:
 
 * :ref:`rqs_import <doxid-galahad__rqs_8h_1af815172e77293aa2a7c9dbcac2379f50>` - set up problem data structures and fixed values
 
-* :ref:`rqs_import_m <doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b>` - (optional) set up problem data structures and fixed values for the scaling matrix :math:`M`, if any
+* :ref:`rqs_import_m <doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b>` - (optional) set up problem data structures and fixed values for the scaling matrix $M$, if any
 
-* :ref:`rqs_import_a <doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5>` - (optional) set up problem data structures and fixed values for the constraint matrix :math:`A`, if any
+* :ref:`rqs_import_a <doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5>` - (optional) set up problem data structures and fixed values for the constraint matrix $A$, if any
 
 * :ref:`rqs_reset_control <doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f>` (optional) - possibly change control parameters if a sequence of problems are being solved
 

@@ -154,7 +154,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; hash_terminate
 .. _doxid-galahad__hash_8h_1a0aece137337307f3c98e9b201205170d:

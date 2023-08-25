@@ -37,7 +37,7 @@ components
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` lambda
 
-the value of :math:`\lambda`
+the value of $\lambda$
 
 .. index:: pair: variable; x_norm
 .. _doxid-structllsr__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
@@ -47,7 +47,7 @@ the value of :math:`\lambda`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
 
-the corresponding value of :math:`\|x(\lambda)\|_M`
+the corresponding value of $\|x(\lambda)\|_M$
 
 .. index:: pair: variable; r_norm
 .. _doxid-structllsr__history__type_1ae908410fabf891cfd89626c3605c38ca:
@@ -57,5 +57,5 @@ the corresponding value of :math:`\|x(\lambda)\|_M`
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r_norm
 
-the corresponding value of :math:`\|A x(\lambda) - b\|_2`
+the corresponding value of $\|A x(\lambda) - b\|_2$
 

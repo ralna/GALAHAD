@@ -142,7 +142,7 @@ how many of the diagonals in the factorization are positive
 
 	int rank
 
-the computed rank of :math:`A`
+the computed rank of $A$
 
 .. index:: pair: variable; rank_def
 .. _doxid-structsbls__inform__type_1aad74061a53e6daf7ca65b2e82290871b:
@@ -192,7 +192,7 @@ the norm of the residual
 
 	bool alternative
 
-has an "alternative" :math:`y` : :math:`K y = 0` and :math:`y^T c > 0` been found when trying to solve :math:`K y = c` for generic :math:`K`?
+has an "alternative" $y$ : $K y = 0$ and $y^T c > 0$ been found when trying to solve $K y = c$ for generic $K$?
 
 .. index:: pair: variable; time
 .. _doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639:

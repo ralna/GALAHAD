@@ -106,9 +106,14 @@ Set default control values and initialize private data
 
 	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[])
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLS.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/gls/GLS.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/gls.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -158,13 +163,31 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 		  
-		  * -1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-1**
+                    An allocation error occurred. A message indicating
+                    the offending array is written on unit
+                    control.error, and the returned allocation status
+                    and a string containing the name of the offending
+                    array are held in inform.alloc_status and
+                    inform.bad_alloc respectively.
 		  
-		  * -2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.
+		  * **-2**
+                    A deallocation error occurred. A message indicating
+                    the offending array is written on unit control.error
+                    and the returned allocation status and a string
+                    containing the name of the offending array are held
+                    in inform.alloc_status and inform.bad_alloc
+                    respectively.
 		  
-		  * -3. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated.
+		  * **-3**
+                    The restriction n > 0 or requirement that type
+                    contains its relevant string 'dense', 'coordinate',
+                    'sparse_by_rows', 'diagonal' or 'absent' has been
+                    violated.
 
 .. index:: pair: function; gls_reset_control
 .. _doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07:
@@ -199,7 +222,8 @@ Reset control parameters after import if required.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1** The import was successful, and the package is
+                    ready for the solve phase
 
 .. index:: pair: function; gls_information
 .. _doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47:
@@ -285,5 +309,6 @@ Deallocate all internal private storage
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 

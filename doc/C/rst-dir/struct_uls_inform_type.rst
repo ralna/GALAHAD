@@ -59,25 +59,45 @@ components
 
 reported return status:
 
-* 0 success
+* **0**
 
-* -1 allocation error
+  success
 
-* -2 deallocation error
+* **-1**
 
-* -3 matrix data faulty (m < 1, n < 1, ne < 0)
+  allocation error
 
-* -26 unknown solver
+* **-2**
 
-* -29 unavailable option
+  deallocation error
 
-* -31 input order is not a permutation or is faulty in some other way
+* **-3**
 
-* -32 error with integer workspace
+  matrix data faulty (m < 1, n < 1, ne < 0)
 
-* -33 error with real workspace
+* **-26**
 
-* -50 solver-specific error; see the solver's info parameter
+  unknown solver
+
+* **-29**
+
+  unavailable option
+
+* **-31**
+
+  input order is not a permutation or is faulty in some other way
+
+* **-32**
+
+  error with integer workspace
+
+* **-33**
+
+  error with real workspace
+
+* **-50**
+
+  solver-specific error; see the solver's info parameter
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structuls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
@@ -199,15 +219,25 @@ structural rank of the matrix
 
 pivot control:
 
-* 1 Threshold Partial Pivoting has been used
+* **1**
 
-* 2 Threshold Rook Pivoting has been used
+  Threshold Partial Pivoting has been used
 
-* 3 Threshold Complete Pivoting has been desired
+* **2**
 
-* 4 Threshold Symmetric Pivoting has been desired
+  Threshold Rook Pivoting has been used
 
-* 5 Threshold Diagonal Pivoting has been desired
+* **3**
+
+  Threshold Complete Pivoting has been desired
+
+* **4**
+
+  Threshold Symmetric Pivoting has been desired
+
+* **5**
+
+  Threshold Diagonal Pivoting has been desired
 
 .. index:: pair: variable; iterative_refinements
 .. _doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1:

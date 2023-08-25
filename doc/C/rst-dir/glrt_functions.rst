@@ -125,7 +125,8 @@ Set default control values and initialize private data
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The import was successful.
+		  * **0**
+                    The initialization was successful.
 
 .. index:: pair: function; glrt_read_specfile
 .. _doxid-galahad__glrt_8h_1a4a436dfac6a63cf991cd629b3ed0e725:
@@ -138,9 +139,14 @@ Set default control values and initialize private data
 		const char specfile[]
 	)
 
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters. By default, the spcification file will be named RUNGLRT.SPC and lie in the current directory. Refer to Table 2.1 in the fortran documentation provided in $GALAHAD/doc/glrt.pdf for a list of keywords that may be set.
-
-
+Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is 
+:ref:`available<details-spec_file>`, and a detailed list of keywords 
+with associated default values is provided in \$GALAHAD/src/glrt/GLRT.template. 
+See also Table 2.1 in the Fortran documentation provided in 
+\$GALAHAD/doc/glrt.pdf for a list of how these keywords 
+relate to the components of the control structure.
 
 .. rubric:: Parameters:
 
@@ -194,7 +200,9 @@ Import control parameters prior to solution.
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 1. The import was successful, and the package is ready for the solve phase
+		  * **1**
+                    The import was successful, and the package is ready
+                    for the solve phase
 
 .. index:: pair: function; glrt_solve_problem
 .. _doxid-galahad__glrt_8h_1aa5e9905bd3a79584bc5133b7f7a6816f:
@@ -235,31 +243,56 @@ Solve the regularized-quadratic problem using reverse communication.
 		  
 		  This must be set to
 		  
-		  * 1. on initial entry. Set r (below) to :math:`c` for this entry.
+		  * **1**
+                    on initial entry. Set r (below) to $c$ for
+                    this entry.
 		  
-		  * 6. the iteration is to be restarted with a larger weight but with all other data unchanged. Set r (below) to :math:`c` for this entry.
+		  * **6**
+                    the iteration is to be restarted with a larger
+                    weight but with all other data unchanged. Set r
+                    (below) to $c$ for this entry.
 		  
 		  Possible exit values are:
 		  
-		  * 0. the solution has been found
+		  * **0**
+                    the solution has been found
 		  
-		  * 2. the inverse of :math:`M` must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged. This will only happen if control.unitm is false
+		  * **2**
+                    the inverse of $M$ must be applied to vector
+                    with the result returned in vector and the function
+                    re-entered with all other data unchanged. This will
+                    only happen if control.unitm is false
 		  
-		  * 3. the product :math:`H` \* vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
+		  * **3**
+                    the product $H$ \* **vector must be formed, with
+                    the result returned in vector and the function
+                    re-entered with all other data unchanged
 		  
-		  * 4. The iteration must be restarted. Reset r (below) to :math:`c` and re-enter with all other data unchanged.
+		  * 4**
+                    The iteration must be restarted. Reset r (below) to
+                    $c$ and re-enter with all other data
+                    unchanged.
 		  
-		  * -1. an array allocation has failed
+		  * **-1**
+                    an array allocation has failed
 		  
-		  * -2. an array deallocation has failed
+		  * **-2**
+                    an array deallocation has failed
 		  
-		  * -3. n and/or radius is not positive
+		  * **-3**
+                    n and/or radius is not positive
 		  
-		  * -7. the problem is unbounded from below. This can only happen if power = 2, and in this case the objective is unbounded along the arc x + t vector as t goes to infinity
+		  * **-7**
+                    the problem is unbounded from below. This can only
+                    happen if power = 2, and in this case the objective
+                    is unbounded along the arc x + t vector as t goes to
+                    infinity
 		  
-		  * -15. the matrix :math:`M` appears to be indefinite
+		  * **-15**
+                    the matrix $M$ appears to be indefinite
 		  
-		  * -18. the iteration limit has been exceeded
+		  * **-18**
+                    the iteration limit has been exceeded
 
 	*
 		- n
@@ -269,22 +302,22 @@ Solve the regularized-quadratic problem using reverse communication.
 	*
 		- power
 
-		- is a scalar of type double, that holds the egularization power, :math:`p \geq 2`
+		- is a scalar of type double, that holds the egularization power, $p \geq 2$
 
 	*
 		- weight
 
-		- is a scalar of type double, that holds the positive regularization weight, :math:`\sigma`
+		- is a scalar of type double, that holds the positive regularization weight, $\sigma$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution :math:`x`. The j-th component of x, j = 0, ... , n-1, contains :math:`x_j`.
+		- is a one-dimensional array of size n and type double, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- r
 
-		- is a one-dimensional array of size n and type double, that that must be set to :math:`c` on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual :math:`H x + c`.
+		- is a one-dimensional array of size n and type double, that that must be set to $c$ on entry (status = 1) and re-entry (status = 4, 5). On exit, r contains the resiual $H x + c$.
 
 	*
 		- vector
@@ -324,7 +357,8 @@ Provides output information
 		- 
 		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
 		  
-		  * 0. The values were recorded successfully
+		  * **0**
+                    The values were recorded successfully
 
 .. index:: pair: function; glrt_terminate
 .. _doxid-galahad__glrt_8h_1a107fe137aba04a93fdbcbb0b9e768812:
