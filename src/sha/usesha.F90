@@ -65,7 +65,7 @@
 !    LOGICAL :: multiple_tests = .FALSE.
 !    LOGICAL :: multiple_tests = .TRUE.
 
-     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, PRECEDENCE
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, ORDER
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_COUNT
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL, VAL_est
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
@@ -334,10 +334,10 @@
 
      difs_max = MIN( inform%differences_needed, max_sy )
      difs_max = difs_max + MAX( 1, control%extra_differences )
-     ALLOCATE( S( n, difs_max ), Y( n, difs_max ), PRECEDENCE( difs_max ),     &
+     ALLOCATE( S( n, difs_max ), Y( n, difs_max ), ORDER( difs_max ),     &
                STAT = alloc_stat )
      IF ( alloc_stat /= 0 ) THEN
-       WRITE( out, 2000 ) 'S, Y, PRECEDENCE', alloc_stat ; STOP
+       WRITE( out, 2000 ) 'S, Y, ORDER', alloc_stat ; STOP
      END IF
 
 ! choose random S and compute the product Y = H * S
@@ -347,7 +347,7 @@
      reduce = 1.0_rp_
      CALL RAND_initialize( seed )
      DO k = 1, difs_max
-       PRECEDENCE( k ) = difs_max - k + 1
+       ORDER( k ) = difs_max - k + 1
        DO i = 1, n
          CALL RAND_random_real( seed, .FALSE., S( i, k ) )
          S( i, k ) = S( i, k ) * level
@@ -378,7 +378,7 @@
 
          CALL CLOCK_time( clocks )
          CALL SHA_estimate( n, nnzh, ROW, COL, difs, S, n, difs, Y, n, difs,   &
-                            PRECEDENCE, VAL_est, data, control, inform )
+                            VAL_est, data, control, inform, ORDER = ORDER )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
            WRITE( 6, "( ' return with error status ',I0,' from SHA_estimate')")&
@@ -414,7 +414,7 @@
 
          CALL CLOCK_time( clocks )
          CALL SHA_estimate( n, nnzh, ROW, COL, difs, S, n, difs, Y, n, difs,   &
-                            PRECEDENCE, VAL_est, data, control, inform )
+                            VAL_est, data, control, inform, ORDER = ORDER )
          CALL CLOCK_time( clocke )
          IF ( inform%status /= 0 ) THEN
            WRITE( 6, "( ' return with error status ',I0,' from SHA_estimate')")&
@@ -461,7 +461,7 @@
 
        CALL CLOCK_time( clocks )
        CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, S, n, difs, Y, n, difs, &
-                          PRECEDENCE, VAL_est, data, control, inform,          &
+                          VAL_est, data, control, inform, ORDER = ORDER,       &
                           VAL_true = VAL )
        CALL CLOCK_time( clocke )
        IF ( inform%status /= 0 ) THEN

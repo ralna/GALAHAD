@@ -2037,7 +2037,7 @@ if ( data%s_norm <= 0.01_rp_ ) then
                             data%DG_past, nlp%n, data%total_diffs,             &
                             data%VAL_est, data%SHA_data,                       &
                             data%control%SHA_control, inform%SHA_inform,       &
-                            PRECEDENCE = data%PAST )                        
+                            ORDER = data%PAST )                        
 
          IF ( inform%SHA_inform%status == 0 ) THEN
            data%hmax_error =                                                   &
