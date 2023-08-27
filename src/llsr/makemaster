@@ -22,8 +22,8 @@ DEPENDENCIES = make_sbls_deps make_sbls make_rand make_mop make_ir
 
 #  other packages that depend on package
 
-
 DEPENDS =
+
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 

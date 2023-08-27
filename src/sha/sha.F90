@@ -235,7 +235,7 @@
        INTEGER ( KIND = ip_ ) :: n, ne
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COL
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PRECEDENCE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ORDER
      END TYPE SHA_full_data_type
 
    CONTAINS
@@ -1155,7 +1155,7 @@
 
       SUBROUTINE SHA_estimate( n, nz, ROW, COL, m_available, S, ls1, ls2,      &
                                Y, ly1, ly2, VAL, data, control, inform,        &
-                               PRECEDENCE, VAL_true )
+                               ORDER, VAL_true )
 
 !     ********************************************************
 !     *                                                      *
@@ -1171,14 +1171,14 @@
 !     m_available is the number of differences provided; ideally this should
 !       be as large as inform%differences_needed computed by sha_analyse
 !     ls1, ls2 are the declared leading and trailing dimensions of S
-!     S(i,j) (i=1:n,j=PRECEDENCE(1:m_available)) are the steps
+!     S(i,j) (i=1:n,j=ORDER(1:m_available)) are the steps
 !     ly1, ly2 are the declared leading and trailing dimensions of Y
-!     Y(i,j) (i=1:n,j=PRECEDENCE(1:m_available)) are the gradient differences
+!     Y(i,j) (i=1:n,j=ORDER(1:m_available)) are the gradient differences
 !     VAL(i) is the i-th nonzero in the estimated Hessian matrix.(i=1,nz)
 !
 !   in addition, optional arguments are
 
-!     PRECEDENCE(i), i=1:m gives the index of the column of S and Y of the i-th
+!     ORDER(i), i=1:m gives the index of the column of S and Y of the i-th
 !       most recent differences. If absent, the index will be i, i=1:m
 !     VAL_true(i) is the i-th nonzero in the true Hessian matrix.(i=1,nz),
 !       and only used for testing
@@ -1212,7 +1212,7 @@
 !  optional arguments
 
       INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                          &
-                              DIMENSION( m_available ) :: PRECEDENCE
+                              DIMENSION( m_available ) :: ORDER
       REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( nz ) :: VAL_true
 
 !---------------------------------
@@ -1224,7 +1224,7 @@
       INTEGER ( KIND = ip_ ) :: m_needed, m_used, stri, strip1, stui, status
       INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride, pass
       INTEGER ( KIND = ip_ ) :: dense_linear_solver
-      LOGICAL :: sym, precedence_present
+      LOGICAL :: sym, order_present
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -1256,7 +1256,7 @@
       min_mn = MIN( m_max, n_max )
 
       data%singular_matrices = 0
-      precedence_present = PRESENT( precedence )
+      order_present = PRESENT( order )
 
 !  allocate workspace
 
@@ -1466,8 +1466,8 @@
 !  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl},
 !  initialize b to Y(i,l)
 
-            IF ( precedence_present ) THEN
-              data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+            IF ( order_present ) THEN
+              data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
             ELSE
               data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
             END IF
@@ -1486,9 +1486,9 @@
 
 !  subtract B_{ij} s_{jl} from b
 
-              IF ( precedence_present ) THEN
+              IF ( order_present ) THEN
                 data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
-                  - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+                  - VAL( kk ) * S( j, ORDER( 1 : mu ) )
               ELSE
                 data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
                   - VAL( kk ) * S( j, 1 : mu )
@@ -1513,8 +1513,8 @@
 
 !  set the entries of A
 
-              IF ( precedence_present ) THEN
-                data%A( 1 : mu, jj ) = S( j, PRECEDENCE( 1 : mu ) )
+              IF ( order_present ) THEN
+                data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
               ELSE
                 data%A( 1 : mu, jj ) = S( j, 1 : mu )
               END IF
@@ -1551,8 +1551,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
-              IF ( precedence_present ) THEN
-                data%B( mu + 1, 1 ) = Y( i, PRECEDENCE( mu + 1 ) )
+              IF ( order_present ) THEN
+                data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
               ELSE
                 data%B( mu + 1, 1 ) = Y( i, mu + 1 )
               END IF
@@ -1569,9 +1569,9 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  subtract B_{ij} s_{jl} from b
 
-                IF ( precedence_present ) THEN
+                IF ( order_present ) THEN
                   data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
-                    - VAL( kk ) * S( j, PRECEDENCE( mu + 1 ) )
+                    - VAL( kk ) * S( j, ORDER( mu + 1 ) )
                 ELSE
                   data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
                     - VAL( kk ) * S( j, mu + 1 )
@@ -1593,8 +1593,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !  set the entries of A
 
                 jj = jj + 1
-                IF ( precedence_present ) THEN
-                  data%A( mu + 1, jj ) = S( j, PRECEDENCE( mu + 1 ) )
+                IF ( order_present ) THEN
+                  data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
                 ELSE
                   data%A( mu + 1, jj ) = S( j, mu + 1 )
                 END IF
@@ -1633,8 +1633,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
-              IF ( precedence_present ) THEN
-                data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+              IF ( order_present ) THEN
+                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
               ELSE
                 data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
               END IF
@@ -1651,9 +1651,9 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  subtract B_{ij} s_{jl} from b
 
-                IF ( precedence_present ) THEN
+                IF ( order_present ) THEN
                   data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+                    - VAL( kk ) * S( j, ORDER( 1 : mu ) )
                 ELSE
                   data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
                     - VAL( kk ) * S( j, 1 : mu )
@@ -1677,8 +1677,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-            IF ( precedence_present ) THEN
-              data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+            IF ( order_present ) THEN
+              data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
             ELSE
               data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
             END IF
@@ -1698,8 +1698,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !  set the entries of A
 
               jj = jj + 1
-              IF ( precedence_present ) THEN
-                data%A( 1 : mu, jj ) = S( j, PRECEDENCE( 1 : mu ) )
+              IF ( order_present ) THEN
+                data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
               ELSE
                 data%A( 1 : mu, jj ) = S( j, 1 : mu )
               END IF
@@ -1735,9 +1735,9 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !write(6,"(' singular pass, ii, i ', 5(1X, I0))" ) pass, ii, i, stri, strip1
 !  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-!write(6,*)  mu + 1, m_max, PRECEDENCE( mu + 1 )
-              IF ( precedence_present ) THEN
-                data%B( mu + 1, 1 ) = Y( i, PRECEDENCE( mu + 1 ) )
+!write(6,*)  mu + 1, m_max, ORDER( mu + 1 )
+              IF ( order_present ) THEN
+                data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
               ELSE
                 data%B( mu + 1, 1 ) = Y( i, mu + 1 )
               END IF
@@ -1757,8 +1757,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !  set the entries of A
 
                 jj = jj + 1
-                IF ( precedence_present ) THEN
-                  data%A( mu + 1, jj ) = S( j, PRECEDENCE( mu + 1 ) )
+                IF ( order_present ) THEN
+                  data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
                 ELSE
                   data%A( mu + 1, jj ) = S( j, mu + 1 )
                 END IF
@@ -1797,8 +1797,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
-              IF ( precedence_present ) THEN
-                data%B( 1 : mu, 1 ) = Y( i, PRECEDENCE( 1 : mu ) )
+              IF ( order_present ) THEN
+                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
               ELSE
                 data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
               END IF
@@ -1815,9 +1815,9 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  subtract B_{ij} s_{jl} from b
 
-                IF ( precedence_present ) THEN
+                IF ( order_present ) THEN
                   data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, PRECEDENCE( 1 : mu ) )
+                    - VAL( kk ) * S( j, ORDER( 1 : mu ) )
                 ELSE
                   data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
                     - VAL( kk ) * S( j, 1 : mu )
@@ -2152,8 +2152,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%PRECEDENCE'
-      CALL SPACE_dealloc_array( data%PRECEDENCE,                               &
+      array_name = 'SHA: data%ORDER'
+      CALL SPACE_dealloc_array( data%ORDER,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2307,7 +2307,7 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 ! G A L A H A D - S H A _ r e c o v e r _ m a t r i x  S U B R O U T I N E -
 
      SUBROUTINE SHA_recover_matrix( data, status, m, s, y, matrix_val,         &
-                                    precedence )
+                                    order )
 
 !  recover the values of the Hessian matrix from m pairs of differences (s,y)
 
@@ -2343,7 +2343,7 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !   values of the upper triangular part of H input in precisely the same
 !   order as those for the row and column indices in SHA_analyse_matrix
 !
-!  precedence is a rank-one array of type default integer, whose components
+!  order is a rank-one array of type default integer, whose components
 !   give the preferred order of access for the pairs (s^(k),y^(k)). 
 !   The $k$-th component of order specifies the column number of s and y 
 !   that will be used as the $k$-th most favoured.
@@ -2358,14 +2358,14 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
      REAL ( KIND = rp_ ), DIMENSION( : , : ), INTENT( IN ) :: s, y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: matrix_val
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
-                                             OPTIONAL :: precedence
+                                             OPTIONAL :: order
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
      INTEGER ( KIND = ip_ ) :: ls1, ls2, ly1, ly2
-     LOGICAL :: allocate_precedence
+     LOGICAL :: allocate_order
 
 !  record the lengths of each dimesion of s and y
 
@@ -2374,24 +2374,24 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  store the preferred ordering for the (s,y) pairs
 
-     IF ( PRESENT( precedence ) ) THEN
-       IF ( ALLOCATED( data%precedence ) ) THEN
-         IF ( SIZE( data%precedence ) < m ) THEN
-           allocate_precedence = .TRUE.
+     IF ( PRESENT( order ) ) THEN
+       IF ( ALLOCATED( data%order ) ) THEN
+         IF ( SIZE( data%order ) < m ) THEN
+           allocate_order = .TRUE.
          ELSE
-           allocate_precedence = .FALSE.
+           allocate_order = .FALSE.
          END IF
        ELSE
-         allocate_precedence = .TRUE.
+         allocate_order = .TRUE.
        END IF
-       IF ( allocate_precedence ) CALL SPACE_resize_array( m, data%PRECEDENCE, &
+       IF ( allocate_order ) CALL SPACE_resize_array( m, data%ORDER, &
               data%sha_inform%status, data%sha_inform%alloc_status )
        IF ( data%sha_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%PRECEDENCE( : m ) = precedence( : m )
+         data%ORDER( : m ) = order( : m )
        ELSE
-         data%PRECEDENCE( : m ) = precedence( : m ) + 1
+         data%ORDER( : m ) = order( : m ) + 1
        END IF
 
 !  factorize the matrix
@@ -2399,7 +2399,7 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
        CALL SHA_estimate( data%n, data%ne, data%row, data%col, m,              &
                           S, ls1, ls2, Y, ly1, ly2, matrix_val,                &
                           data%sha_data, data%sha_control, data%sha_inform,    &
-                          PRECEDENCE = data%PRECEDENCE )
+                          ORDER = data%ORDER )
      ELSE
        CALL SHA_estimate( data%n, data%ne, data%row, data%col, m,              &
                           S, ls1, ls2, Y, ly1, ly2, matrix_val,                &

@@ -396,34 +396,26 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structroots-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>return status. Possible values are:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>0</strong></dt><dd><p>The call was successful.</p>
-</dd>
-</dl>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was successful.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating the offending
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending
 array is written on unit control.error, and the returned allocation
 status and a string containing the name of the offending array are
 held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating the offending
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
 array is written on unit control.error and the returned allocation
 status and a string containing the name of the offending array are
 held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>-3</strong></dt><dd><p>Either the specified degree of the polynomial in degree is less than
+<li><p><strong>-3</strong></p>
+<p>Either the specified degree of the polynomial in degree is less than
 0, or the declared dimension of the array roots is smaller than the
 specified degree.</p>
-</dd>
-</dl>
 </li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structroots-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>

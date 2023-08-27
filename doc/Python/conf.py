@@ -61,12 +61,12 @@ todo_include_todos = False
 
 # prevent MathJax from parsing dollar signs which are ignored by the 
 # extension because they should not be parsed as math.
-mathjax_config = {
-    'tex2jax': {
-        'inlineMath': [ ["\\(","\\)"] ],
-        'displayMath': [["\\[","\\]"] ],
-    },
-}
+#mathjax_config = {
+#    'tex2jax': {
+#        'inlineMath': [ ["\\(","\\)"] ],
+#        'displayMath': [["\\[","\\]"] ],
+#    },
+#}
 
 mathjax3_config = {
   "tex": {

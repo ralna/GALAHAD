@@ -39,7 +39,6 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'qpa_intro';</script>
@@ -385,7 +384,7 @@
 <h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">qpa</span></code> package uses a <strong>working-set method</strong> to solve
 <strong>non-convex quadratic programs</strong> in various guises.
-The first is the <strong><span class="math notranslate nohighlight">\(\mathbf{\ell_1}\)</span> quadratic programming problem</strong>
+The first is the <strong>l<span class="math notranslate nohighlight">\({}_1\)</span> quadratic programming problem</strong>
 that aims to minimize
 <div class="math notranslate nohighlight">
 \[f(x;\rho_g,\rho_b) = q(x) + \rho_g v_g(x) + \rho_b v_b(x)\]</div>
@@ -421,7 +420,7 @@ subject to the general linear constraints and simple bounds
 by automatically adjusting the parameters <span class="math notranslate nohighlight">\(\rho_g\)</span> and <span class="math notranslate nohighlight">\(\rho_b\)</span> in
 <span class="math notranslate nohighlight">\(f(x;\rho_g,\rho_b)\)</span>.</p>
 <p>Similarly, the package is capable of solving the
-<strong>bound-constrained <span class="math notranslate nohighlight">\(\mathbf{\ell_1}\)</span> quadratic programming problem</strong>
+<strong>bound-constrained l<span class="math notranslate nohighlight">\({}_1\)</span> quadratic programming problem</strong>
 whose intention is to minimize <span class="math notranslate nohighlight">\(q(x) + \rho_g v_g(x),\)</span>
 subject to the above simple bound constraints
 by automatically adjusting <span class="math notranslate nohighlight">\(\rho_b\)</span> in <span class="math notranslate nohighlight">\(f(x;\rho_g,\rho_b)\)</span>.</p>

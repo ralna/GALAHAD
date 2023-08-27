@@ -416,17 +416,37 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 success</p></li>
-<li><p>-1 allocation error</p></li>
-<li><p>-2 deallocation error</p></li>
-<li><p>-3 matrix data faulty (m &lt; 1, n &lt; 1, ne &lt; 0)</p></li>
-<li><p>-26 unknown solver</p></li>
-<li><p>-29 unavailable option</p></li>
-<li><p>-31 input order is not a permutation or is faulty in some other way</p></li>
-<li><p>-32 error with integer workspace</p></li>
-<li><p>-33 error with real workspace</p></li>
-<li><p>-50 solver-specific error; see the solver’s info parameter</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>success</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>allocation error</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>deallocation error</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>matrix data faulty (m &lt; 1, n &lt; 1, ne &lt; 0)</p>
+</li>
+<li><p><strong>-26</strong></p>
+<p>unknown solver</p>
+</li>
+<li><p><strong>-29</strong></p>
+<p>unavailable option</p>
+</li>
+<li><p><strong>-31</strong></p>
+<p>input order is not a permutation or is faulty in some other way</p>
+</li>
+<li><p><strong>-32</strong></p>
+<p>error with integer workspace</p>
+</li>
+<li><p><strong>-33</strong></p>
+<p>error with real workspace</p>
+</li>
+<li><p><strong>-50</strong></p>
+<p>solver-specific error; see the solver’s info parameter</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -452,12 +472,22 @@
 <p>structural rank of the matrix</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a7489428a42ce1420b4891f638153c99f"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">pivot_control</span></pre>
 <p>pivot control:</p>
-<ul class="simple">
-<li><p>1 Threshold Partial Pivoting has been used</p></li>
-<li><p>2 Threshold Rook Pivoting has been used</p></li>
-<li><p>3 Threshold Complete Pivoting has been desired</p></li>
-<li><p>4 Threshold Symmetric Pivoting has been desired</p></li>
-<li><p>5 Threshold Diagonal Pivoting has been desired</p></li>
+<ul>
+<li><p><strong>1</strong></p>
+<p>Threshold Partial Pivoting has been used</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>Threshold Rook Pivoting has been used</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>Threshold Complete Pivoting has been desired</p>
+</li>
+<li><p><strong>4</strong></p>
+<p>Threshold Symmetric Pivoting has been desired</p>
+</li>
+<li><p><strong>5</strong></p>
+<p>Threshold Diagonal Pivoting has been desired</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a22c83a8ec8964a169bdd9d0cdf196cf1"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">iterative_refinements</span></pre>
 <p>number of iterative refinements performed</p>
@@ -465,11 +495,11 @@
 <p>has an “alternative” y: A^T y = 0 and yT b &gt; 0 been found when trying to solve A x = b ?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1af335c33211ea78f2d5b7314d7b1c210d"><span id="index-16"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">solver</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span></pre>
 <p>name of external solver used to factorize and solve</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span id="index-17"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_ainfo.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="w"> </span><span class="n">gls_ainfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8fb46433ac34c44f07902189c1c9d028"><span id="index-17"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-ainfo"><span class="std std-ref">gls_ainfo</span></a><span></span><span class="w"> </span><span class="n">gls_ainfo</span></pre>
 <p>the analyse output structure from gls</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span id="index-18"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_finfo.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="w"> </span><span class="n">gls_finfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a8da479a8d3bd8e6b4070e73dc8a3d52a"><span id="index-18"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-finfo"><span class="std std-ref">gls_finfo</span></a><span></span><span class="w"> </span><span class="n">gls_finfo</span></pre>
 <p>the factorize output structure from gls</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span id="index-19"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_gls_sinfo.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="w"> </span><span class="n">gls_sinfo</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1acbf9c9748ab5d9c111befc05c395059a"><span id="index-19"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="gls.html#doxid-structgls-sinfo"><span class="std std-ref">gls_sinfo</span></a><span></span><span class="w"> </span><span class="n">gls_sinfo</span></pre>
 <p>the solve output structure from gls</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a9487553043c4ec110826e99e071ce9bc"><span id="index-20"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_hsl_types.html#details-structma48-ainfo"><span class="std std-ref">ma48_ainfo</span></a><span></span><span class="w"> </span><span class="n">ma48_ainfo</span></pre>
 <p>the analyse output structure from hsl_ma48</p>

@@ -393,7 +393,7 @@ are found by component-wise secant approximation, is called as follows:
 \vspace*{-1mm}
 
 \hspace{42mm}
-{\tt Y, ly1, ly2, VAL, data, control, inform[, PRECEDENCE] )}
+{\tt Y, ly1, ly2, VAL, data, control, inform[, ORDER] )}
 
 \vspace*{-2mm}
 \begin{description}
@@ -463,15 +463,15 @@ A successful call to
 is indicated when the  component {\tt status} has the value 0. 
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
-\itt{PRECEDENCE} is an \optional\ scalar \intentin\ rank-one array argument 
+\itt{ORDER} is an \optional\ scalar \intentin\ rank-one array argument 
 of type default integer and dimension {\tt m\_available}, that can be set
 to the preferred order of access of the differences stored 
 in {\tt S} and {\tt Y}. The calculation of each row of the 
 Hessian approximation $\bmB$ depends on the number of nonzeros in the row,
-and {\tt PRECEDENCE} allows the user to specify the order in which the columns
+and {\tt ORDER} allows the user to specify the order in which the columns
 of  {\tt S} and {\tt Y} are accessed to determine these row values. 
-If {\tt PRECEDENCE} is \present\, the $i$-th accessed column will be
-{\tt PRECEDENCE(}$i${\tt )}. Otherwise the columns will be accessed
+If {\tt ORDER} is \present\, the $i$-th accessed column will be
+{\tt ORDER(}$i${\tt )}. Otherwise the columns will be accessed
 in their natural order $i, i = 1, \ldots ,$ {\tt m\_available}.
 
 \end{description}

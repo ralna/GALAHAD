@@ -39,6 +39,8 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sha_intro';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -380,13 +382,83 @@
               
   <section id="purpose">
 <h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package <strong>finds an approximation to a sparse Hessian</strong>
-using componentwise secant approximation.</p>
-<p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
-provided and used by other GALAHAD packages with Python interfaces.
-Please contact us if you would like full functionality!</p>
-<p>See Section 4 of $GALAHAD/doc/sha.pdf for a brief description of the
-method employed and other details.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package
+<strong>finds a component-wise secant approximation to the Hessian matrix</strong> <span class="math notranslate nohighlight">\(H(x)\)</span>,
+for which <span class="math notranslate nohighlight">\((H(x))_{i,j} = \partial f^2 (x) / \partial x_i \partial x_j\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i, j \leq n\)</span>,
+using values of the gradient <span class="math notranslate nohighlight">\(g(x) = \nabla_x f(x)\)</span>
+of the function <span class="math notranslate nohighlight">\(f(x)\)</span> of <span class="math notranslate nohighlight">\(n\)</span> unknowns <span class="math notranslate nohighlight">\(x = (x_1, \ldots, x_n)^T\)</span>
+at a sequence of given distinct <span class="math notranslate nohighlight">\(\{x^{(k)}\}\)</span>, <span class="math notranslate nohighlight">\(k \geq 0\)</span>.
+More specifically, given <strong>differences</strong>
+<div class="math notranslate nohighlight">
+\[s^{(k)} = x^{(k+1)} - x^{(k)} \;\;\mbox{and}\;\;
+y^{(k)} = g(x^{(k+1)}) - g(x^{(k)})\]</div>
+</p>
+<p>the package aims to find an approximation <span class="math notranslate nohighlight">\(B\)</span> to <span class="math notranslate nohighlight">\(H(x)\)</span> for
+which the secant conditions <span class="math notranslate nohighlight">\(B s^{(k)} \approx y^{(k)}\)</span> hold for
+a chosen set of values <span class="math notranslate nohighlight">\(k\)</span>.
+The methods provided take advantage of the entries in the Hessian that
+are known to be zero.</p>
+<p>The package is particularly intended to allow gradient-based
+optimization methods, that generate iterates
+<span class="math notranslate nohighlight">\(x^{(k+1)} = x^{(k)} + s^{(k)}\)</span> based upon the values <span class="math notranslate nohighlight">\(g( x^{(k)})\)</span>
+for <span class="math notranslate nohighlight">\(k \geq 0\)</span>, to build a suitable approximation to the Hessian
+<span class="math notranslate nohighlight">\(H(x^{(k+1)})\)</span>. This then gives the method an opportunity to
+accelerate the iteration using the Hessian approximation.</p>
+<p>See Section 4 of $GALAHAD/doc/sha.pdf for additional details.</p>
+</section>
+<section id="method">
+<h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
+<p>The package computes the entries in the each row of <span class="math notranslate nohighlight">\(B\)</span> one at a time.
+The entries <span class="math notranslate nohighlight">\(b_{ij}\)</span> in row <span class="math notranslate nohighlight">\(i\)</span> may be chosen to</p>
+<p><div class="math notranslate nohighlight">
+\[(1) \;\;\; \min_{b_{i,j}}\!\mbox{imize} \;\; \sum_{k \in {\cal I}_i}
+\left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j}
+b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,\]</div>
+</p>
+<p>where <span class="math notranslate nohighlight">\({\cal I}_i\)</span> is ideally chosen to be sufficiently large so that (1)
+has a unique minimizer. Since this requires that there are at least
+as many <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> pairs as the maximum number of nonzeros
+in any row, this may be prohibitive in some cases. We might then be content
+with a minimum-norm (under-determined) least-squares solution. Or, we may
+take advantage of the symmetry of the Hessian, and note that if we
+have already found the values in row <span class="math notranslate nohighlight">\(j\)</span>, then the value <span class="math notranslate nohighlight">\(b_{i,j} = b_{j,i}\)</span>
+in (1) is known before we process row <span class="math notranslate nohighlight">\(i\)</span>. Thus by ordering the rows
+and exploiting symmetry we may reduce the numbers of unknowns in
+future unprocessed rows.</p>
+<p>In the analysis phase, we order the rows by constructing the connectivity
+graph—a graph comprising nodes <span class="math notranslate nohighlight">\(1\)</span> to <span class="math notranslate nohighlight">\(n\)</span> and edges connecting
+nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> if <span class="math notranslate nohighlight">\(h_{i,j}\)</span> is everywhere nonzero—of <span class="math notranslate nohighlight">\(H(x)\)</span>.
+The nodes are ordered by increasing degree (that is, the number of edges
+emanating from the node) using a bucket sort. The row chosen to be
+ordered next corresponds to a node of minimum degree, the node
+is removed from the graph, the degrees updated efficiently, and the
+process repeated until all rows have been ordered. This often leads
+to a significant reduction in the numbers of unknown values in each
+row as it is processed in turn, but numerical rounding can lead to
+inaccurate values in some cases. A useful remedy is to process all
+rows for which there are sufficient <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> as before,
+and then process the remaining rows taking into account the symmetry.
+That is, the rows and columns are rearranged so that the matrix
+is in block form
+<div class="math notranslate nohighlight">
+\[\begin{split}B = \begin{pmatrix} B_{11} &amp; B_{12} \\ B^T_{12} &amp; B_{22}\end{pmatrix},\end{split}\]</div>
+</p>
+<p>the <span class="math notranslate nohighlight">\(( B_{11} \;\; B_{12})\)</span> rows are processed without regard
+for symmetry but give the <span class="math notranslate nohighlight">\(2,1\)</span> block <span class="math notranslate nohighlight">\(B^T_{12}\)</span>, and finally
+the <span class="math notranslate nohighlight">\(2,2\)</span> block <span class="math notranslate nohighlight">\(B_{22}\)</span> is processed either with the option of exploiting
+symmetry. More details of the precise algorithms (Algorithms 2.1–2.5)
+are given in the reference below. The linear least-squares problems (1)
+themselves are solved by a choice of LAPACK packages.</p>
+</section>
+<section id="references">
+<h1>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>J. M. Fowkes, N. I. M. Gould and J. A. Scott,
+“Approximating large-scale Hessians using secant equations”.
+Technical Report TR-2023, Rutherford Appleton Laboratory.</p>
+</div></blockquote>
 </section>
 
 
@@ -406,6 +478,33 @@ method employed and other details.</p>
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
 <div class="toc-item">
   
 <div id="searchbox"></div>

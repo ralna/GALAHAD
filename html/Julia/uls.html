@@ -645,13 +645,13 @@ The string A_type = ‘sparse_by_columns’ should be specified.</p>
 <p>To solve a given problem, functions from the uls package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a7afb5f2dde112e60686a5527a8f37ca4"><span class="std std-ref">uls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span class="std std-ref">uls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a6c0599479b84ee7d7c4ee7c473b76a83"><span class="std std-ref">uls_factorize_matrix</span></a> - set up matrix data structures, analyse the structure to choose a suitable order for factorization, and then factorize the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ad2ad6daa4d54d75e40fbe253f2bc5881"><span class="std std-ref">uls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a01d3e7c19415125c660eba51d99c7518"><span class="std std-ref">uls_solve_system</span></a> - solve the linear system of equations <span class="math notranslate nohighlight">\(Ax=b\)</span> or <span class="math notranslate nohighlight">\(A^Tx=b\)</span></p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1ab41cc4ccba208d7de3a0ccbc4b4efbcf"><span class="std std-ref">uls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="uls_functions.html#doxid-galahad-uls-8h-1a36b2ea1ade2cdd8bca238f46e9e98435"><span class="std std-ref">uls_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1a7afb5f2dde112e60686a5527a8f37ca4"><span class="std std-ref">uls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1a5e2c9573bc8661114e9f073782b460ef"><span class="std std-ref">uls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1a6c0599479b84ee7d7c4ee7c473b76a83"><span class="std std-ref">uls_factorize_matrix</span></a> - set up matrix data structures, analyse the structure to choose a suitable order for factorization, and then factorize the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1ad2ad6daa4d54d75e40fbe253f2bc5881"><span class="std std-ref">uls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1a01d3e7c19415125c660eba51d99c7518"><span class="std std-ref">uls_solve_system</span></a> - solve the linear system of equations <span class="math notranslate nohighlight">\(Ax=b\)</span> or <span class="math notranslate nohighlight">\(A^Tx=b\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1ab41cc4ccba208d7de3a0ccbc4b4efbcf"><span class="std std-ref">uls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-uls-8h-1a36b2ea1ade2cdd8bca238f46e9e98435"><span class="std std-ref">uls_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-uls-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -819,7 +819,7 @@ details.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of columns in the unsymmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="wcp.html#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -1127,17 +1127,37 @@ for more details.</p>
 <h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-35"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 success</p></li>
-<li><p>-1 allocation error</p></li>
-<li><p>-2 deallocation error</p></li>
-<li><p>-3 matrix data faulty (m &lt; 1, n &lt; 1, ne &lt; 0)</p></li>
-<li><p>-26 unknown solver</p></li>
-<li><p>-29 unavailable option</p></li>
-<li><p>-31 input order is not a permutation or is faulty in some other way</p></li>
-<li><p>-32 error with integer workspace</p></li>
-<li><p>-33 error with real workspace</p></li>
-<li><p>-50 solver-specific error; see the solver’s info parameter</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>success</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>allocation error</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>deallocation error</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>matrix data faulty (m &lt; 1, n &lt; 1, ne &lt; 0)</p>
+</li>
+<li><p><strong>-26</strong></p>
+<p>unknown solver</p>
+</li>
+<li><p><strong>-29</strong></p>
+<p>unavailable option</p>
+</li>
+<li><p><strong>-31</strong></p>
+<p>input order is not a permutation or is faulty in some other way</p>
+</li>
+<li><p><strong>-32</strong></p>
+<p>error with integer workspace</p>
+</li>
+<li><p><strong>-33</strong></p>
+<p>error with real workspace</p>
+</li>
+<li><p><strong>-50</strong></p>
+<p>solver-specific error; see the solver’s info parameter</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-36"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -1163,12 +1183,22 @@ for more details.</p>
 <p>structural rank of the matrix</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a7489428a42ce1420b4891f638153c99f"><span id="index-47"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">pivot_control</span></pre>
 <p>pivot control:</p>
-<ul class="simple">
-<li><p>1 Threshold Partial Pivoting has been used</p></li>
-<li><p>2 Threshold Rook Pivoting has been used</p></li>
-<li><p>3 Threshold Complete Pivoting has been desired</p></li>
-<li><p>4 Threshold Symmetric Pivoting has been desired</p></li>
-<li><p>5 Threshold Diagonal Pivoting has been desired</p></li>
+<ul>
+<li><p><strong>1</strong></p>
+<p>Threshold Partial Pivoting has been used</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>Threshold Rook Pivoting has been used</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>Threshold Complete Pivoting has been desired</p>
+</li>
+<li><p><strong>4</strong></p>
+<p>Threshold Symmetric Pivoting has been desired</p>
+</li>
+<li><p><strong>5</strong></p>
+<p>Threshold Diagonal Pivoting has been desired</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structuls-inform-type-1a22c83a8ec8964a169bdd9d0cdf196cf1"><span id="index-48"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">iterative_refinements</span></pre>
 <p>number of iterative refinements performed</p>

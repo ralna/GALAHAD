@@ -399,13 +399,31 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrpd-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>return status. Possible values are:</p>
-<ul class="simple">
-<li><p>0 The call was successful.</p></li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-22 An input/outpur error occurred.</p></li>
-<li><p>-25 The end of the input file was reached prematurely.</p></li>
-<li><p>-29 The problem type was not recognised.</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was successful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
+array is written on unit control.error and the returned allocation
+status and a string containing the name of the offending array are
+held in inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-22</strong></p>
+<p>An input/outpur error occurred.</p>
+</li>
+<li><p><strong>-25</strong></p>
+<p>The end of the input file was reached prematurely.</p>
+</li>
+<li><p><strong>-29</strong></p>
+<p>The problem type was not recognised.</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrpd-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation or deallocation</p>

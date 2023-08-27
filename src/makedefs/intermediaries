@@ -1711,7 +1711,8 @@ make_ciface_rqs:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
 
 make_ciface_sbls_deps: make_ciface_sls_deps make_ciface_sls \
-                       make_ciface_uls_deps make_ciface_uls
+                       make_ciface_uls_deps make_ciface_uls \
+                       make_ciface_roots
 
 make_ciface_sbls:
 	( cd $(GALAHAD)/src/sbls ; \

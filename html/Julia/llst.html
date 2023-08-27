@@ -638,14 +638,14 @@ the string S_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the llst package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span class="std std-ref">llst_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span class="std std-ref">llst_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span class="std std-ref">llst_import</span></a> - set up problem data structures and fixed values</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span class="std std-ref">llst_import_scaling</span></a> (optional) - set up problem data structures for <span class="math notranslate nohighlight">\(S\)</span> if required</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span class="std std-ref">llst_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1add75b5481c528cca64abbcdeb3a2af35"><span class="std std-ref">llst_solve_problem</span></a> - solve the trust-region problem</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span class="std std-ref">llst_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="llst_functions.html#doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span class="std std-ref">llst_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a9da7a4daba2ceaf875fbd24fe42fbe1f"><span class="std std-ref">llst_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a9bcda9a7420b5de742370e1464d5b0c2"><span class="std std-ref">llst_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a4ffc854176462b1d6492b55317150236"><span class="std std-ref">llst_import</span></a> - set up problem data structures and fixed values</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a42d56aec0cdf37373e5a50b13b4c374f"><span class="std std-ref">llst_import_scaling</span></a> (optional) - set up problem data structures for <span class="math notranslate nohighlight">\(S\)</span> if required</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a920e8696eea77dab3348a663a1127b41"><span class="std std-ref">llst_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1add75b5481c528cca64abbcdeb3a2af35"><span class="std std-ref">llst_solve_problem</span></a> - solve the trust-region problem</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a88854815d1c936131dcc762c64275d6f"><span class="std std-ref">llst_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-llst-8h-1a3d7693551362082a30094e7dea5a2a66"><span class="std std-ref">llst_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-llst-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -1034,7 +1034,7 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1067,7 +1067,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structllst-control-type"><span class="std std-ref">llst_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llst_inform_type.html#doxid-structllst-inform-type"><span class="std std-ref">llst_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1252,14 +1252,28 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-46"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 the solution has been found</p></li>
-<li><p>-1 an array allocation has failed</p></li>
-<li><p>-2 an array deallocation has failed</p></li>
-<li><p>-3 n and/or Delta is not positive</p></li>
-<li><p>-10 the factorization of <span class="math notranslate nohighlight">\(K(\lambda)\)</span> failed</p></li>
-<li><p>-15 <span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant</p></li>
-<li><p>-16 ill-conditioning has prevented furthr progress</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the solution has been found</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>an array allocation has failed</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>an array deallocation has failed</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>n and/or Delta is not positive</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>the factorization of <span class="math notranslate nohighlight">\(K(\lambda)\)</span> failed</p>
+</li>
+<li><p><strong>-15</strong></p>
+<p><span class="math notranslate nohighlight">\(S\)</span> does not appear to be strictly diagonally dominant</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>ill-conditioning has prevented furthr progress</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-47"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -1283,7 +1297,7 @@ status from the package. Possible values are
 <p>information from the symmetric factorization and related linear solves (see sbls_c documentation)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-57"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>information from the factorization of S and related linear solves (see sls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="ir.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllst-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-58"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
 <p>information from the iterative refinement for definite system solves (see ir_c documentation)</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

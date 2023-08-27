@@ -488,7 +488,7 @@ are available with T as Float32.</p>
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -554,7 +554,7 @@ to it.</p>
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>data</p></td>
 <td><ul class="simple">
@@ -591,7 +591,7 @@ to it.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -624,7 +624,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlhs-control-type"><span class="std std-ref">lhs_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lhs_inform_type.html#doxid-structlhs-inform-type"><span class="std std-ref">lhs_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -686,26 +686,24 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlhs-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-15"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>return status. Possible values are:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>0</strong></dt><dd><p>The call was successful.</p>
-</dd>
-</dl>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was successful.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
+array is written on unit control.error and the returned allocation
+status and a string containing the name of the offending array are
+held in inform.alloc_status and inform.bad_alloc respectively.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-3</strong></dt><dd><p>The random number seed has not been set.</p>
-</dd>
-</dl>
+<li><p><strong>-3</strong></p>
+<p>The random number seed has not been set.</p>
 </li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlhs-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>

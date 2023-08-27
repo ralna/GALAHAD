@@ -87,13 +87,15 @@ the level of output required. <= 0 gives no output, = 1 gives a one-line summary
 
 which approximation algorithm should be used?
 
-* 0 : unsymmetric (alg 2.1 in paper)
+* 1 : unsymmetric (alg 2.1 in paper)
 
-* 1 : symmetric (alg 2.2 in paper)
+* 2 : symmetric (alg 2.2 in paper)
 
-* 2 : composite (alg 2.3 in paper)
+* 3 : composite (alg 2.3 in paper)
 
-* 3 : composite 2 (alg 2.2/3 in paper)
+* 4 : composite 2 (alg 2.4 in paper)
+
+* 5 : cautious (alg 2.5 in paper)
 
 .. index:: pair: variable; dense_linear_solver
 .. _doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1:

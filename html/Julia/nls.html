@@ -676,20 +676,20 @@ the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 called in the following order:</p>
 <p>To solve a given problem, functions from the nls package must be called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1aa344bb15b74ab3b3ee6afb2de072b19f"><span class="std std-ref">nls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1adf9db7eff2fce137ae2abd2e013c47b3"><span class="std std-ref">nls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a3f0eb83fd31ee4108156f2e84176389d"><span class="std std-ref">nls_import</span></a> - set up problem data structures and fixed values</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a07f0857c9923ad0f92d51ed00833afda"><span class="std std-ref">nls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1aa344bb15b74ab3b3ee6afb2de072b19f"><span class="std std-ref">nls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1adf9db7eff2fce137ae2abd2e013c47b3"><span class="std std-ref">nls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a3f0eb83fd31ee4108156f2e84176389d"><span class="std std-ref">nls_import</span></a> - set up problem data structures and fixed values</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a07f0857c9923ad0f92d51ed00833afda"><span class="std std-ref">nls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
 <li><p>solve the problem by calling one of</p>
 <ul>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1ae923c2e6afabb3563fe0998d45b715c4"><span class="std std-ref">nls_solve_with_mat</span></a> - solve using function calls to evaluate function, gradient and Hessian values</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a692ecbfaa428584e60aa4c33d7278a64"><span class="std std-ref">nls_solve_without_mat</span></a> - solve using function calls to evaluate function and gradient values and Hessian-vector products</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a9ad89605640c53c33ddd5894b5e3edd1"><span class="std std-ref">nls_solve_reverse_with_mat</span></a> - solve returning to the calling program to obtain function, gradient and Hessian values, or</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a6dddd928c19adec0abf76bdb2d75da17"><span class="std std-ref">nls_solve_reverse_without_mat</span></a> - solve returning to the calling prorgram to obtain function and gradient values and Hessian-vector products</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1ae923c2e6afabb3563fe0998d45b715c4"><span class="std std-ref">nls_solve_with_mat</span></a> - solve using function calls to evaluate function, gradient and Hessian values</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a692ecbfaa428584e60aa4c33d7278a64"><span class="std std-ref">nls_solve_without_mat</span></a> - solve using function calls to evaluate function and gradient values and Hessian-vector products</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a9ad89605640c53c33ddd5894b5e3edd1"><span class="std std-ref">nls_solve_reverse_with_mat</span></a> - solve returning to the calling program to obtain function, gradient and Hessian values, or</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a6dddd928c19adec0abf76bdb2d75da17"><span class="std std-ref">nls_solve_reverse_without_mat</span></a> - solve returning to the calling prorgram to obtain function and gradient values and Hessian-vector products</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a765da96b0a1f3d07dab53cc3400c22d8"><span class="std std-ref">nls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="nls_functions.html#doxid-galahad-nls-8h-1a7babe9112dfad1eb7b57b70135704ab0"><span class="std std-ref">nls_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a765da96b0a1f3d07dab53cc3400c22d8"><span class="std std-ref">nls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-nls-8h-1a7babe9112dfad1eb7b57b70135704ab0"><span class="std std-ref">nls_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-nls-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -717,7 +717,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
@@ -741,7 +741,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -761,7 +761,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -874,7 +874,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1762,7 +1762,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_nls_control_type.html#doxid-structnls-control-type"><span class="std std-ref">nls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structnls-inform-type"><span class="std std-ref">nls_inform_type</span></a>)</p></td>
@@ -1897,9 +1897,15 @@ status from the package. Possible values are
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-control-type-1a856b2df558071805c217b6d72a1e215b"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">non_monotone</span></pre>
 <p>non-monotone <span class="math notranslate nohighlight">\(\leq\)</span> 0 monotone strategy used, anything else non-monotone strategy with this history length used</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-control-type-1a91395480b85edaac83529fc7f1605289"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">weight_update_strategy</span></pre>
-<p>define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)</p>
+<p>define the weight-update strategy: 1 (basic), 2 (reset to zero when very
+successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-control-type-1add1b86a6f37634dcbf1e5f55807eac2b"><span id="index-26"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c_absolute</span></pre>
-<p>overall convergence tolerances. The iteration will terminate when <span class="math notranslate nohighlight">\(||c(x)||_2 \leq\)</span> MAX( .stop_c_absolute, .stop_c_relative <span class="math notranslate nohighlight">\(* \|c(x_{\mbox{initial}})\|_2\)</span>, or when the norm of the gradient, <span class="math notranslate nohighlight">\(g = J^T(x) c(x) / \|c(x)\|_2\)</span>, of \|\|c\|\|_2, satisfies <span class="math notranslate nohighlight">\(\|g\|_2 \leq\)</span> MAX( .stop_g_absolute, .stop_g_relative <span class="math notranslate nohighlight">\(* \|g_{\mbox{initial}}\|_2\)</span>, or if the step is less than .stop_s</p>
+<p>overall convergence tolerances. The iteration will terminate when
+<span class="math notranslate nohighlight">\(||c(x)||_2 \leq\)</span> MAX( .stop_c_absolute, .stop_c_relative <span class="math notranslate nohighlight">\(*
+\|c(x_{\mbox{initial}})\|_2\)</span>, or when the norm of the gradient, <span class="math notranslate nohighlight">\(g =
+J^T(x) c(x) / \|c(x)\|_2\)</span>, of \|\|c\|\|_2, satisfies <span class="math notranslate nohighlight">\(\|g\|_2 \leq\)</span> MAX(
+.stop_g_absolute, .stop_g_relative <span class="math notranslate nohighlight">\(* \|g_{\mbox{initial}}\|_2\)</span>, or if
+the step is less than .stop_s</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-control-type-1a8e60a718c9c3b3bf9daf2e2be3c7dd68"><span id="index-27"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c_relative</span></pre>
 <p>see stop_c_absolute</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-control-type-1a6182fed3e6c11b9aa39e1460c1def7f8"><span id="index-28"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_g_absolute</span></pre>
@@ -2097,9 +2103,15 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a856b2df558071805c217b6d72a1e215b"><span id="index-75"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">non_monotone</span></pre>
 <p>non-monotone <span class="math notranslate nohighlight">\(\leq\)</span> 0 monotone strategy used, anything else non-monotone strategy with this history length used</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a91395480b85edaac83529fc7f1605289"><span id="index-76"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">weight_update_strategy</span></pre>
-<p>define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)</p>
+<p>define the weight-update strategy: 1 (basic), 2 (reset to zero when very
+successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1add1b86a6f37634dcbf1e5f55807eac2b"><span id="index-77"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c_absolute</span></pre>
-<p>overall convergence tolerances. The iteration will terminate when <span class="math notranslate nohighlight">\(||c(x)||_2 \leq\)</span> MAX( .stop_c_absolute, .stop_c_relative <span class="math notranslate nohighlight">\(* \|c(x_{\mbox{initial}})\|_2\)</span> or when the norm of the gradient, <span class="math notranslate nohighlight">\(g = J^T(x) c(x) / \|c(x)\|_2\)</span>, of \|\|c(x)\|\|_2 satisfies <span class="math notranslate nohighlight">\(\|g\|_2 \leq\)</span> MAX( .stop_g_absolute, .stop_g_relative <span class="math notranslate nohighlight">\(* \|g_{\mbox{initial}}\|_2\)</span>, or if the step is less than .stop_s</p>
+<p>overall convergence tolerances. The iteration will terminate when
+<span class="math notranslate nohighlight">\(||c(x)||_2 \leq\)</span> MAX( .stop_c_absolute, .stop_c_relative <span class="math notranslate nohighlight">\(*
+\|c(x_{\mbox{initial}})\|_2\)</span> or when the norm of the gradient, <span class="math notranslate nohighlight">\(g =
+J^T(x) c(x) / \|c(x)\|_2\)</span>, of \|\|c(x)\|\|_2 satisfies <span class="math notranslate nohighlight">\(\|g\|_2 \leq\)</span>
+MAX( .stop_g_absolute, .stop_g_relative <span class="math notranslate nohighlight">\(* \|g_{\mbox{initial}}\|_2\)</span>, or
+if the step is less than .stop_s</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a8e60a718c9c3b3bf9daf2e2be3c7dd68"><span id="index-78"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_c_relative</span></pre>
 <p>see stop_c_absolute</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a6182fed3e6c11b9aa39e1460c1def7f8"><span id="index-79"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">stop_g_absolute</span></pre>
@@ -2169,7 +2181,7 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <p>control parameters for BSC</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a08df6708e7b5364ff3e8fbde29f29014"><span id="index-110"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="roots.html#doxid-structroots-control-type"><span class="std std-ref">roots_control_type</span></a><span></span><span class="w"> </span><span class="n">roots_control</span></pre>
 <p>control parameters for ROOTS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a00b9f02fd328ee8fcd289b0a36ae8218"><span id="index-111"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structnls-subproblem-control-type"><span class="std std-ref">nls_subproblem_control_type</span></a><span></span><span class="w"> </span><span class="n">subproblem_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-control-type-1a00b9f02fd328ee8fcd289b0a36ae8218"><span id="index-111"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_nls_subproblem_control_type.html#doxid-structnls-subproblem-control-type"><span class="std std-ref">nls_subproblem_control_type</span></a><span></span><span class="w"> </span><span class="n">subproblem_control</span></pre>
 <p>control parameters for the step-finding subproblem</p>
 </section>
 </section>
@@ -2292,15 +2304,15 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <p>the final regularization weight used</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a44dc03b1a33bf900f668c713cbac9498"><span id="index-143"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structnls-time-type"><span class="std std-ref">nls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-144"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="rqs.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-144"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_rqs_inform_type.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
 <p>inform parameters for RQS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1aa5a47a840c1f9680ac8b9e4db3eb9e88"><span id="index-145"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="glrt.html#doxid-structglrt-inform-type"><span class="std std-ref">glrt_inform_type</span></a><span></span><span class="w"> </span><span class="n">glrt_inform</span></pre>
 <p>inform parameters for GLRT</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-146"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-146"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_inform_type.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
 <p>inform parameters for PSLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1ab95c5e6786b9d93eb147f64fbf14da17"><span id="index-147"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="bsc.html#doxid-structbsc-inform-type"><span class="std std-ref">bsc_inform_type</span></a><span></span><span class="w"> </span><span class="n">bsc_inform</span></pre>
 <p>inform parameters for BSC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a68574d04a336f7be88a151fa8b975885"><span id="index-148"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="roots.html#doxid-structroots-inform-type"><span class="std std-ref">roots_inform_type</span></a><span></span><span class="w"> </span><span class="n">roots_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-subproblem-inform-type-1a68574d04a336f7be88a151fa8b975885"><span id="index-148"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_roots_inform_type.html#doxid-structroots-inform-type"><span class="std std-ref">roots_inform_type</span></a><span></span><span class="w"> </span><span class="n">roots_inform</span></pre>
 <p>inform parameters for ROOTS</p>
 </section>
 </section>
@@ -2383,15 +2395,15 @@ regularization parameter in the adaptive cubic regularization algorithm” RAL-T
 <p>timings (see above)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1afe321f4b9cfc27d8927047e53e2f288a"><span id="index-170"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structnls-subproblem-inform-type"><span class="std std-ref">nls_subproblem_inform_type</span></a><span></span><span class="w"> </span><span class="n">subproblem_inform</span></pre>
 <p>inform parameters for subproblem</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-171"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="rqs.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a68497e7bbd1695ac9b830fc8fe594d60"><span id="index-171"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_rqs_inform_type.html#doxid-structrqs-inform-type"><span class="std std-ref">rqs_inform_type</span></a><span></span><span class="w"> </span><span class="n">rqs_inform</span></pre>
 <p>inform parameters for RQS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1aa5a47a840c1f9680ac8b9e4db3eb9e88"><span id="index-172"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="glrt.html#doxid-structglrt-inform-type"><span class="std std-ref">glrt_inform_type</span></a><span></span><span class="w"> </span><span class="n">glrt_inform</span></pre>
 <p>inform parameters for GLRT</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-173"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a57ca5ed37882eb917736f845d3cdb8ee"><span id="index-173"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_inform_type.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a><span></span><span class="w"> </span><span class="n">psls_inform</span></pre>
 <p>inform parameters for PSLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1ab95c5e6786b9d93eb147f64fbf14da17"><span id="index-174"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="bsc.html#doxid-structbsc-inform-type"><span class="std std-ref">bsc_inform_type</span></a><span></span><span class="w"> </span><span class="n">bsc_inform</span></pre>
 <p>inform parameters for BSC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a68574d04a336f7be88a151fa8b975885"><span id="index-175"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="roots.html#doxid-structroots-inform-type"><span class="std std-ref">roots_inform_type</span></a><span></span><span class="w"> </span><span class="n">roots_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structnls-inform-type-1a68574d04a336f7be88a151fa8b975885"><span id="index-175"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_roots_inform_type.html#doxid-structroots-inform-type"><span class="std std-ref">roots_inform_type</span></a><span></span><span class="w"> </span><span class="n">roots_inform</span></pre>
 <p>inform parameters for ROOTS</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

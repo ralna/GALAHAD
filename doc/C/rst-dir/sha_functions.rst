@@ -26,7 +26,7 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`sha_initialize<doxid-galahad__sha_8h_1aa4f01a598c5cef45420937d4951519a9>`(void** data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, int* status);
+	void :ref:`sha_initialize<doxid-galahad__sha_8h_initialize>`(void** data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, int* status);
 
 	void :ref:`sha_read_specfile<doxid-galahad__sha_8h_read_specfile>`(struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, const char specfile[]);
 
@@ -48,18 +48,18 @@ overview of functions provided
 		int m,
 		int ls1,
 		int ls2,
-                const real_wp_ s[][ls2],
+                const real_wp_ strans[][ls2],
                 int ly1,
                 int ly2,
-                const real_wp_ y[][ly2],
+                const real_wp_ ytrans[][ly2],
                 real_wp_ val[],
-                const int precedence[]
+                const int order[]
 	);
 
 
-	void :ref:`sha_information<doxid-galahad__sha_8h_1ace357a88ad000654a0ec0817d6d28ece>`(void** data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, int* status);
+	void :ref:`sha_information<doxid-galahad__sha_8h_information>`(void** data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, int* status);
 
-	void :ref:`sha_terminate<doxid-galahad__sha_8h_1a9ea67bcd115e6479e7d93faf3445405a>`(
+	void :ref:`sha_terminate<doxid-galahad__sha_8h_terminate>`(
 		void** data,
 		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
 		struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform
@@ -95,7 +95,7 @@ function calls
 --------------
 
 .. index:: pair: function; sha_initialize
-.. _doxid-galahad__sha_8h_1aa4f01a598c5cef45420937d4951519a9:
+.. _doxid-galahad__sha_8h_initialize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -187,7 +187,7 @@ relate to the components of the control structure.
 		int* m
 	)
 
-Analsyse the sparsity structure of $H$ to generate informationn that will be 
+Analsyse the sparsity structure of $H$ to generate information that will be 
 used when estimating its values.
 
 .. rubric:: Parameters:
@@ -294,7 +294,7 @@ used when estimating its values.
                 int ly2,
                 const real_wp_ ytrans[][ly2],
                 real_wp_ val[],
-                const int precedence[]
+                const int order[]
 	)
 
 
@@ -319,7 +319,7 @@ approximation.
 		  status from the package. Possible values are:
 		  
 		  * **0**
-                    The import was successful
+                    The recovery was successful
 		  
 		  * **-1**
                     An allocation error occurred. A message indicating
@@ -378,8 +378,8 @@ approximation.
 
 		- 
                   is a two-dimensional array of size [ls1][ls2] and type
-                  double, that holds the values of the vectors $\{s^{(k)
-                  T}\}$. Component [$k$][$i$] should hold $s_i^{(k)}$.
+                  double, that holds the values of the vectors $\{s^{(k) T}\}$.
+                  Component [$k$][$i$] should hold $s_i^{(k)}$.
 
 	*
 		- ly1
@@ -400,8 +400,8 @@ approximation.
 
 		- 
                   is a two-dimensional array of size [ly1][ly2] and type
-                  double, that holds the values of the vectors $\{y^{(k)
-                  T}\}$. Component [$k$][$i$] should hold $y_i^{(k)}$.
+                  double, that holds the values of the vectors $\{y^{(k) T}\}$.
+                  Component [$k$][$i$] should hold $y_i^{(k)}$.
 
 	*
 		- val
@@ -413,20 +413,20 @@ approximation.
                   sparse coordinate scheme.
 
 	*
-		- precedence
+		- order
 
 		- 
                   is a one-dimensional array of size m and type int,
                   that holds the preferred order of access for the pairs
                   $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of
-                  precedence specifies the row number of strans and
+                  order specifies the row number of strans and
                   ytrans that will be used as the $k$-th most
-                  favoured. precedence need not be set if the natural
+                  favoured. order need not be set if the natural
                   order, $k, k = 1,...,$ m, is desired, and this case
-                  precedence should be NULL.
+                  order should be NULL.
 
 .. index:: pair: function; sha_information
-.. _doxid-galahad__sha_8h_1ace357a88ad000654a0ec0817d6d28ece:
+.. _doxid-galahad__sha_8h_information:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -464,7 +464,7 @@ Provides output information
                     The values were recorded successfully
 
 .. index:: pair: function; sha_terminate
-.. _doxid-galahad__sha_8h_1a9ea67bcd115e6479e7d93faf3445405a:
+.. _doxid-galahad__sha_8h_terminate:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

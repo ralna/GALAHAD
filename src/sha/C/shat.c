@@ -30,7 +30,7 @@ int main(void) {
     int ly1 = m_max, ly2 = n; // dimensions of y
     real_wp_ strans[ls1][ls2];
     real_wp_ ytrans[ly1][ly2];
-    int precedence[m_max]; // diffference precedence
+    int order[m_max]; // diffference precedence order
 
     printf(" C sparse matrix indexing\n\n");
 
@@ -68,12 +68,12 @@ int main(void) {
             ytrans[k][i] = ytrans[k][i] + v * strans[k][j];
             if ( i != j ) ytrans[k][j] = ytrans[k][j] + v * strans[k][i];
           }
-          precedence[k] = m - k - 1; // pick the (s,y) vectors in reverse order
+          order[k] = m - k - 1; // pick the (s,y) vectors in reverse order
         }
 
         // recover the matrix
         sha_recover_matrix( &data, &status, ne, m, ls1, ls2, strans, 
-                            ly1, ly2, ytrans, val_est, precedence );
+                            ly1, ly2, ytrans, val_est, order );
         //                  ly1, ly2, ytrans, val_est, NULL );
         //                  if the natural order is ok
 

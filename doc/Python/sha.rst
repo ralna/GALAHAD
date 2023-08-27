@@ -41,21 +41,25 @@ functions
           approximation_algorithm : int
              which approximation algorithm should be used? Possible values are:
               
-             * **0**
+             * **1**
               
                unsymmetric (alg 2.1 in paper).
               
-             * **1**
+             * **2**
               
                symmetric (alg 2.2 in paper).
 
-             * **2**
+             * **3**
 
                composite (alg 2.3 in paper).
 
-             * **3**
+             * **4**
 
-               composite 2 (alg 2.2/3 in paper).
+               composite 2 (alg 2.4 in paper).
+
+             * **5**
+
+               cautious (alg 2.5 in paper).
 
           dense_linear_solver : int
              which dense linear equation solver should be used?
@@ -76,6 +80,7 @@ functions
              * **4**
 
                singular-value decomposition with divide-and-conquer.
+
           max_sparse_degree : int
              the maximum sparse degree if the combined version is used.
           extra_differences : int
@@ -92,6 +97,74 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
+
+
+
+   .. function:: sha.analyse_matrix(n, ne, row, col, options=None)
+
+      Import problem data into internal storage and compute sparsity-based 
+      reorderings prior to factorization.
+
+      **Parameters:**
+
+      n : int
+          holds the dimension of the system, $n$.
+      ne : int
+          holds the number of entries in the  upper triangular part of $H.
+      row : ndarray(ne)
+          holds the row indices of the upper triangular part of $H$.
+      col : ndarray(ne)
+          holds the column indices of the  upper triangular part of $H$.
+      options : dict, optional
+          dictionary of control options (see ``sha.initialize``).
+
+      **Returns:**
+
+      m : int
+          gives the minimum number of $(s^{(k)},y^{(k)})$ pairs that will
+	  be needed to recover a good Hessian approximation.
+
+   .. function:: sha.recover_matrix(ne, m, ls1, ls2, strans, ly1, ly2, ytrans, order=None)
+
+      Factorize the matrix $A$ prior to solution.
+
+      **Parameters:**
+
+      ne : int
+          holds the number of entries in the upper triangular part of 
+          the matrix $H$.
+      m : int
+          gives the number of $(s^{(k)},y^{(k)})$ pairs that are provided
+	  to recover the Hessian approximation (see ``sha.analyse_matrix``
+          for the minimum necessary).
+      ls1 : int
+          holds the leading (first) dimension of the array strans (below).
+      ls2 : int
+          holds the trailing (second) dimension of the array strans (below).
+      strans : ndarray(ls1,ls2)
+          holds the values of the vectors $\{s^{(k) T}\}$.
+          Component [$k,i$] should hold $s_i^{(k)}$.
+      ly1 : int
+          holds the leading (first) dimension of the array ytrans (below).
+      ly2 : int
+          holds the trailing (second) dimension of the array ytrans (below).
+      ytrans : ndarray(ly1,ly2)
+          holds the values of the vectors $\{y^{(k) T}\}$.
+          Component [$k,i$] should hold $y_i^{(k)}$.
+      order : ndarray(m), optional
+          holds the preferred order of access for the pairs
+          $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of order
+          specifies the row number of strans and ytrans that will be
+          used as the $k$-th most favoured. order need not be set
+          if the natural order, $k, k = 1,...,$ m, is desired, and this
+          case order should be None.
+
+      **Returns:**
+
+      val : ndarray(ne)
+          holds the values of the nonzeros in the upper triangle of the matrix
+          $H$ in the same order as specified in the sparsity pattern in 
+          ``sha.analyse_matrix``.
 
    .. function:: [optional] sha.information()
 
@@ -126,18 +199,13 @@ functions
 
             * **-3**
 
-              The restriction n > 0 or nz >= 0 has been violated.
-
-            * **-11**
-
-              The solution of a set of linear equations using factors
-              from the factorization package options['dense_linear_solver']
-              failed when forming row ``bad_row``.
+              The restriction n > 0 or nz >= 0 or 
+              $\leq$ row[i] $\leq$ col[i] $\leq$ n has been violated.
 
             * **-31**
 
               The call to ``sha_estimate`` was not preceded by a call to 
-              ``sha_analyse``.
+              ``sha_analyse_matrix``.
           alloc_status : int
              the status of the last attempted allocation/deallocation.
           bad_alloc : str
@@ -146,7 +214,7 @@ functions
           max_degree : int
              the maximum degree in the adgacency graph.
           approximation_algorithm_used : int
-             the approximation algorithm used.
+             the approximation algorithm actually used.
           differences_needed : int
              the number of differences that will be needed.
           max_reduced_degree : int
@@ -155,6 +223,6 @@ functions
              a failure occured when forming the bad_row-th row
              (0 = no failure).
 
-   .. function:: sha.finalize()
+   .. function:: sha.terminate()
 
      Deallocate all internal private storage.

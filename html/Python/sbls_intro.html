@@ -39,7 +39,6 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}})</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sbls_intro';</script>
@@ -394,7 +393,7 @@ the <code class="docutils literal notranslate"><span class="pre">sbls</span></co
 Here, the leading-block matrix <span class="math notranslate nohighlight">\(G\)</span> is a suitably-chosen
 approximation to <span class="math notranslate nohighlight">\(H\)</span>; it may either be prescribed <strong>explicitly</strong>, in
 which case a symmetric indefinite factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span>
-will be formed using the \galahad\ package {\tt SLS},
+will be formed using the GALAHAD package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>,
 or <strong>implicitly</strong>, by requiring certain sub-blocks of <span class="math notranslate nohighlight">\(G\)</span>
 be zero. In the latter case, a factorization of <span class="math notranslate nohighlight">\(K_{G}\)</span> will be
 obtained implicitly (and more efficiently) without recourse to <code class="docutils literal notranslate"><span class="pre">sls</span></code>.

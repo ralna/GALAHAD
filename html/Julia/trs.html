@@ -649,15 +649,15 @@ the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the trs package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1acb066d992c4ec394402bc7b7317e1163"><span class="std std-ref">trs_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1adc7c56e7be2f7cc9d32921582d379b13"><span class="std std-ref">trs_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1a4becded30e9b95fe7028b7799292c0af"><span class="std std-ref">trs_import</span></a> - set up problem data structures and fixed values</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1a427420b6025d522bb7b3c652e8c2be48"><span class="std std-ref">trs_import_m</span></a> - (optional) set up problem data structures and fixed values for the scaling matrix <span class="math notranslate nohighlight">\(M\)</span>, if any</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1ad726ff8f6c25c4384d2b952e8fab4409"><span class="std std-ref">trs_import_a</span></a> - (optional) set up problem data structures and fixed values for the constraint matrix <span class="math notranslate nohighlight">\(A\)</span>, if any</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1aae677e64bacb35354f49326815b694c3"><span class="std std-ref">trs_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1aadb8a751c29efcef663bf9560a1f9a8e"><span class="std std-ref">trs_solve_problem</span></a> - solve the trust-region problem</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1a3dda24010e564e2d6536cc7ea518451e"><span class="std std-ref">trs_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="trs_functions.html#doxid-galahad-trs-8h-1ab5cf0077db0631814fdd03599a585376"><span class="std std-ref">trs_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1acb066d992c4ec394402bc7b7317e1163"><span class="std std-ref">trs_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1adc7c56e7be2f7cc9d32921582d379b13"><span class="std std-ref">trs_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1a4becded30e9b95fe7028b7799292c0af"><span class="std std-ref">trs_import</span></a> - set up problem data structures and fixed values</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1a427420b6025d522bb7b3c652e8c2be48"><span class="std std-ref">trs_import_m</span></a> - (optional) set up problem data structures and fixed values for the scaling matrix <span class="math notranslate nohighlight">\(M\)</span>, if any</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1ad726ff8f6c25c4384d2b952e8fab4409"><span class="std std-ref">trs_import_a</span></a> - (optional) set up problem data structures and fixed values for the constraint matrix <span class="math notranslate nohighlight">\(A\)</span>, if any</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1aae677e64bacb35354f49326815b694c3"><span class="std std-ref">trs_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1aadb8a751c29efcef663bf9560a1f9a8e"><span class="std std-ref">trs_solve_problem</span></a> - solve the trust-region problem</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1a3dda24010e564e2d6536cc7ea518451e"><span class="std std-ref">trs_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-trs-8h-1ab5cf0077db0631814fdd03599a585376"><span class="std std-ref">trs_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-trs-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -1374,15 +1374,31 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrs-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-57"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 the solution has been found</p></li>
-<li><p>-1 an array allocation has failed</p></li>
-<li><p>-2 an array deallocation has failed</p></li>
-<li><p>-3 n and/or Delta is not positive</p></li>
-<li><p>-9 the analysis phase of the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p></li>
-<li><p>-10 the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p></li>
-<li><p>-15 <span class="math notranslate nohighlight">\(M\)</span> does not appear to be strictly diagonally dominant</p></li>
-<li><p>-16 ill-conditioning has prevented further progress</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the solution has been found</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>an array allocation has failed</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>an array deallocation has failed</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>n and/or Delta is not positive</p>
+</li>
+<li><p><strong>-9</strong></p>
+<p>the analysis phase of the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>the factorization of <span class="math notranslate nohighlight">\(H + \lambda M\)</span> failed</p>
+</li>
+<li><p><strong>-15</strong></p>
+<p><span class="math notranslate nohighlight">\(M\)</span> does not appear to be strictly diagonally dominant</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>ill-conditioning has prevented further progress</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrs-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-58"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -1412,7 +1428,7 @@ status from the package. Possible values are
 <p>history information</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrs-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-71"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>cholesky information (see sls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrs-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-72"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="ir.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structtrs-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-72"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
 <p>iterative_refinement information (see ir_c documentation)</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

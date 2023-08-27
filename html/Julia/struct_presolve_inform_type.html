@@ -400,76 +400,253 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>The presolve exit condition. It can take the following values (symbol in parentheses is the related Fortran code):</p>
-<ul class="simple">
-<li><p>(OK) successful exit;</p></li>
-<li><p>1 (MAX_NBR_TRANSF) the maximum number of problem transformation has been reached NOTE: this exit is not really an error, since the problem can nevertheless be permuted and solved. It merely signals that further problem reduction could possibly be obtained with a larger value of the parameter <code class="docutils literal notranslate"><span class="pre">control.max_nbr_transforms</span></code></p></li>
-<li><p>-21 (PRIMAL_INFEASIBLE) the problem is primal infeasible;</p></li>
-<li><p>-22 (DUAL_INFEASIBLE) the problem is dual infeasible;</p></li>
-<li><p>-23 (WRONG_G_DIMENSION) the dimension of the gradient is incompatible with the problem dimension;</p></li>
-<li><p>-24 (WRONG_HVAL_DIMENSION) the dimension of the vector containing the entries of the Hessian is erroneously specified;</p></li>
-<li><p>-25 (WRONG_HPTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Hessian row is erroneously specified;</p></li>
-<li><p>-26 (WRONG_HCOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Hessian entries is erroneously specified;</p></li>
-<li><p>-27 (WRONG_HROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Hessian entries is erroneously specified;</p></li>
-<li><p>-28 (WRONG_AVAL_DIMENSION) the dimension of the vector containing the entries of the Jacobian is erroneously specified;</p></li>
-<li><p>-29 (WRONG_APTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Jacobian row is erroneously specified;</p></li>
-<li><p>-30 (WRONG_ACOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Jacobian entries is erroneously specified;</p></li>
-<li><p>-31 (WRONG_AROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Jacobian entries is erroneously specified;</p></li>
-<li><p>-32 (WRONG_X_DIMENSION) the dimension of the vector of variables is incompatible with the problem dimension;</p></li>
-<li><p>-33 (WRONG_XL_DIMENSION) the dimension of the vector of lower bounds on the variables is incompatible with the problem dimension;</p></li>
-<li><p>-34 (WRONG_XU_DIMENSION) the dimension of the vector of upper bounds on the variables is incompatible with the problem dimension;</p></li>
-<li><p>-35 (WRONG_Z_DIMENSION) the dimension of the vector of dual variables is incompatible with the problem dimension;</p></li>
-<li><p>-36 (WRONG_ZL_DIMENSION) the dimension of the vector of lower bounds on the dual variables is incompatible with the problem dimension;</p></li>
-<li><p>-37 (WRONG_ZU_DIMENSION) the dimension of the vector of upper bounds on the dual variables is incompatible with the problem dimension;</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>(OK) successful exit;</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>(MAX_NBR_TRANSF) the maximum number of problem transformation has been
+reached NOTE: this exit is not really an error, since the problem can
+nevertheless be permuted and solved. It merely signals that further
+problem reduction could possibly be obtained with a larger value of
+the parameter <code class="docutils literal notranslate"><span class="pre">control.max_nbr_transforms</span></code></p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>(MEMORY_FULL) memory allocation failed</p>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong> (FILE_NOT_OPENED) a file intended for saving problem</dt><dd><p>transformations could not be opened;</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong> (COULD_NOT_WRITE) an IO error occurred while saving</dt><dd><p>transformations on the relevant disk file;</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>-4</strong></p>
+<p>(TOO_FEW_BITS_PER_BYTE) an integer contains less than NBRH + 1 bits.</p>
+</li>
+<li><p><strong>-21</strong></p>
+<p>(PRIMAL_INFEASIBLE) the problem is primal infeasible;</p>
+</li>
+<li><p><strong>-22</strong></p>
+<p>(DUAL_INFEASIBLE) the problem is dual infeasible;</p>
+</li>
+<li><p><strong>-23</strong></p>
+<p>(WRONG_G_DIMENSION) the dimension of the gradient is incompatible with
+the problem dimension;</p>
+</li>
+<li><p><strong>-24</strong></p>
+<p>(WRONG_HVAL_DIMENSION) the dimension of the vector containing the
+entries of the Hessian is erroneously specified;</p>
+</li>
+<li><p><strong>-25</strong></p>
+<p>(WRONG_HPTR_DIMENSION) the dimension of the vector containing the
+addresses of the first entry of each Hessian row is erroneously
+specified;</p>
+</li>
+<li><p><strong>-26</strong></p>
+<p>(WRONG_HCOL_DIMENSION) the dimension of the vector containing the
+column indices of the nonzero Hessian entries is erroneously
+specified;</p>
+</li>
+<li><p><strong>-27</strong></p>
+<p>(WRONG_HROW_DIMENSION) the dimension of the vector containing the row
+indices of the nonzero Hessian entries is erroneously specified;</p>
+</li>
+<li><p><strong>-28</strong></p>
+<p>(WRONG_AVAL_DIMENSION) the dimension of the vector containing the
+entries of the Jacobian is erroneously specified;</p>
+</li>
+<li><p><strong>-29</strong></p>
+<p>(WRONG_APTR_DIMENSION) the dimension of the vector containing the
+addresses of the first entry of each Jacobian row is erroneously
+specified;</p>
+</li>
+<li><dl class="simple">
+<dt><strong>-30</strong> (WRONG_ACOL_DIMENSION) the dimension of the vector containing</dt><dd><p>the column indices of the nonzero Jacobian entries is erroneously
+specified;</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>-31</strong></p>
+<p>(WRONG_AROW_DIMENSION) the dimension of the vector containing the row
+indices of the nonzero Jacobian entries is erroneously specified;</p>
+</li>
+<li><p><strong>-32</strong></p>
+<p>(WRONG_X_DIMENSION) the dimension of the vector of variables is
+incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-33</strong></p>
+<p>(WRONG_XL_DIMENSION) the dimension of the vector of lower bounds on
+the variables is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-34</strong></p>
+<p>(WRONG_XU_DIMENSION) the dimension of the vector of upper bounds on
+the variables is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-35</strong></p>
+<p>(WRONG_Z_DIMENSION) the dimension of the vector of dual variables is
+incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-36</strong></p>
+<p>(WRONG_ZL_DIMENSION) the dimension of the vector of lower bounds on
+the dual variables is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-37</strong></p>
+<p>(WRONG_ZU_DIMENSION) the dimension of the vector of upper bounds on
+the dual variables is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-38</strong></p>
+<p>(WRONG_C_DIMENSION) the dimension of the vector of constraints values
+is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-39</strong></p>
+<p>(WRONG_CL_DIMENSION) the dimension of the vector of lower bounds on
+the constraints is incompatible with the problem dimension;</p>
+</li>
+<li><dl class="simple">
+<dt><strong>-40</strong> (WRONG_CU_DIMENSION) the dimension of the vector of upper</dt><dd><p>bounds on the constraints is incompatible with the problem dimension;</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>-41</strong></p>
+<p>(WRONG_Y_DIMENSION) the dimension of the vector of multipliers values
+is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-42</strong></p>
+<p>(WRONG_YL_DIMENSION) the dimension of the vector of lower bounds on
+the multipliers is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-43</strong></p>
+<p>(WRONG_YU_DIMENSION) the dimension of the vector of upper bounds on
+the multipliers is incompatible with the problem dimension;</p>
+</li>
+<li><p><strong>-44</strong></p>
+<p>(STRUCTURE_NOT_SET) the problem structure has not been set or has been
+cleaned up before an attempt to analyze;</p>
+</li>
+<li><p><strong>-45</strong></p>
+<p>(PROBLEM_NOT_ANALYZED) the problem has not been analyzed before an
+attempt to permute it;</p>
+</li>
+<li><p><strong>-46</strong></p>
+<p>(PROBLEM_NOT_PERMUTED) the problem has not been permuted or fully
+reduced before an attempt to restore it</p>
+</li>
+<li><p><strong>-47</strong></p>
+<p>(H_MISSPECIFIED) the column indices of a row of the sparse Hessian are
+not in increasing order, in that they specify an entry above the
+diagonal;</p>
+</li>
+<li><p><strong>-48</strong></p>
+<p>(CORRUPTED_SAVE_FILE) one of the files containing saved problem
+transformations has been corrupted between writing and reading;</p>
+</li>
+<li><p><strong>-49</strong></p>
+<p>(WRONG_XS_DIMENSION) the dimension of the vector of variables’ status
+is incompatible with the problem dimension;</p>
+</li>
+<li><dl class="simple">
+<dt><strong>-50</strong> (WRONG_CS_DIMENSION) the dimension of the vector of</dt><dd><p>constraints’ status is incompatible with the problem dimension;</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>-52</strong></p>
+<p>(WRONG_N) the problem does not contain any (active) variable;</p>
+</li>
+<li><p><strong>-53</strong></p>
+<p>(WRONG_M) the problem contains a negative number of constraints;</p>
+</li>
+<li><p><strong>-54</strong></p>
+<p>(SORT_TOO_LONG) the vectors are too long for the sorting routine;</p>
+</li>
+<li><p><strong>-55</strong></p>
+<p>(X_OUT_OF_BOUNDS) the value of a variable that is obtained by
+substitution from a constraint is incoherent with the variable’s
+bounds. This may be due to a relatively loose accuracy on the linear
+constraints. Try to increase control.c_accuracy.</p>
+</li>
+<li><p><strong>-56</strong></p>
+<p>(X_NOT_FEASIBLE) the value of a constraint that is obtained by
+recomputing its value on input of <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> from
+the current x is incompatible with its declared value or its
+bounds. This may caused the restored problem to be infeasible.</p>
+</li>
+<li><p><strong>-57</strong></p>
+<p>(Z_NOT_FEASIBLE) the value of a dual variable that is obtained by
+recomputing its value on input to <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code>
+(assuming dual feasibility) from the current values of <span class="math notranslate nohighlight">\((x, y, z)\)</span> is
+incompatible with its declared value. This may caused the restored
+problem to be infeasible or suboptimal.</p>
+</li>
+<li><p><strong>-58</strong></p>
+<p>(Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because
+the corresponding primal is at an artificial bound cannot be zeroed
+while maintaining dual feasibility (on restoration). This can happen
+when <span class="math notranslate nohighlight">\(( x, y, z)\)</span> on input of RESTORE are not (sufficiently) optimal.</p>
+</li>
+<li><p><strong>-60</strong></p>
+<p>(UNRECOGNIZED_KEYWORD) a keyword was not recognized in the analysis of
+the specification file</p>
+</li>
+<li><p><strong>-61</strong></p>
+<p>(UNRECOGNIZED_VALUE) a value was not recognized in the analysis of the
+specification file</p>
+</li>
+<li><p><strong>-63</strong></p>
+<p>(G_NOT_ALLOCATED) the vector G has not been allocated although it has
+general values</p>
+</li>
+<li><p><strong>-64</strong></p>
+<p>(C_NOT_ALLOCATED) the vector C has not been allocated although m &gt; 0</p>
+</li>
+<li><p><strong>-65</strong></p>
+<p>(AVAL_NOT_ALLOCATED) the vector A.val has not been allocated although
+m &gt; 0</p>
+</li>
+<li><p><strong>-66</strong></p>
+<p>(APTR_NOT_ALLOCATED) the vector A.ptr has not been allocated although
+m &gt; 0 and A is stored in row-wise sparse format</p>
+</li>
+<li><p><strong>-67</strong></p>
+<p>(ACOL_NOT_ALLOCATED) the vector A.col has not been allocated although
+m &gt; 0 and A is stored in row-wise sparse format or sparse coordinate
+format</p>
+</li>
+<li><p><strong>-68</strong></p>
+<p>(AROW_NOT_ALLOCATED) the vector A.row has not been allocated although
+m &gt; 0 and A is stored in sparse coordinate format</p>
+</li>
+<li><dl class="simple">
+<dt><strong>-69</strong> (HVAL_NOT_ALLOCATED) the vector H.val has not been allocated</dt><dd><p>although H.ne &gt; 0</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>-70</strong></p>
+<p>(HPTR_NOT_ALLOCATED) the vector H.ptr has not been allocated although
+H.ne &gt; 0 and H is stored in row-wise sparse format</p>
+</li>
+<li><p><strong>-71</strong></p>
+<p>(HCOL_NOT_ALLOCATED) the vector H.col has not been allocated although
+H.ne &gt; 0 and H is stored in row-wise sparse format or sparse
+coordinate format</p>
+</li>
+<li><p><strong>-72</strong></p>
+<p>(HROW_NOT_ALLOCATED) the vector H.row has not been allocated although
+H.ne &gt; 0 and A is stored in sparse coordinate format</p>
+</li>
+<li><p><strong>-73</strong></p>
+<p>(WRONG_ANE) incompatible value of A_ne</p>
+</li>
+<li><p><strong>-74</strong></p>
+<p>(WRONG_HNE) incompatible value of H_ne</p>
+</li>
 </ul>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ab9d0ea9275be048bd854d13bd68b06d1"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status_continue</span></pre>
-<p>continuation of status (name in previous column should be status, doxygen issue):</p>
-<ul class="simple">
-<li><p>-38 (WRONG_C_DIMENSION) the dimension of the vector of constraints values is incompatible with the problem dimension;</p></li>
-<li><p>-39 (WRONG_CL_DIMENSION) the dimension of the vector of lower bounds on the constraints is incompatible with the problem dimension;</p></li>
-<li><p>-40 (WRONG_CU_DIMENSION) the dimension of the vector of upper bounds on the constraints is incompatible with the problem dimension;</p></li>
-<li><p>-41 (WRONG_Y_DIMENSION) the dimension of the vector of multipliers values is incompatible with the problem dimension;</p></li>
-<li><p>-42 (WRONG_YL_DIMENSION) the dimension of the vector of lower bounds on the multipliers is incompatible with the problem dimension;</p></li>
-<li><p>-43 (WRONG_YU_DIMENSION) the dimension of the vector of upper bounds on the multipliers is incompatible with the problem dimension;</p></li>
-<li><p>-44 (STRUCTURE_NOT_SET) the problem structure has not been set or has been cleaned up before an attempt to analyze;</p></li>
-<li><p>-45 (PROBLEM_NOT_ANALYZED) the problem has not been analyzed before an attempt to permute it;</p></li>
-<li><p>-46 (PROBLEM_NOT_PERMUTED) the problem has not been permuted or fully reduced before an attempt to restore it</p></li>
-<li><p>-47 (H_MISSPECIFIED) the column indices of a row of the sparse Hessian are not in increasing order, in that they specify an entry above the diagonal;</p></li>
-<li><p>-48 (CORRUPTED_SAVE_FILE) one of the files containing saved problem transformations has been corrupted between writing and reading;</p></li>
-<li><p>-49 (WRONG_XS_DIMENSION) the dimension of the vector of variables’ status is incompatible with the problem dimension;</p></li>
-<li><p>-50 (WRONG_CS_DIMENSION) the dimension of the vector of constraints’ status is incompatible with the problem dimension;</p></li>
-<li><p>-52 (WRONG_N) the problem does not contain any (active) variable;</p></li>
-<li><p>-53 (WRONG_M) the problem contains a negative number of constraints;</p></li>
-<li><p>-54 (SORT_TOO_LONG) the vectors are too long for the sorting routine;</p></li>
-<li><p>-55 (X_OUT_OF_BOUNDS) the value of a variable that is obtained by substitution from a constraint is incoherent with the variable’s bounds. This may be due to a relatively loose accuracy on the linear constraints. Try to increase control.c_accuracy.</p></li>
-<li><p>-56 (X_NOT_FEASIBLE) the value of a constraint that is obtained by recomputing its value on input of <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> from the current x is incompatible with its declared value or its bounds. This may caused the restored problem to be infeasible.</p></li>
-<li><p>-57 (Z_NOT_FEASIBLE) the value of a dual variable that is obtained by recomputing its value on input to <code class="docutils literal notranslate"><span class="pre">presolve_restore_solution</span></code> (assuming dual feasibility) from the current values of <span class="math notranslate nohighlight">\((x, y, z)\)</span> is incompatible with its declared value. This may caused the restored problem to be infeasible or suboptimal.</p></li>
-</ul>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ae9021be7a578e777cc20e3cd5f0ab51d"><span id="index-3"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status_continued</span></pre>
-<p>continuation of status (name in previous column should be status, doxygen issue):</p>
-<ul class="simple">
-<li><p>-58 (Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because the corresponding primal is at an artificial bound cannot be zeroed while maintaining dual feasibility (on restoration). This can happen when <span class="math notranslate nohighlight">\(( x, y, z)\)</span> on input of RESTORE are not (sufficiently) optimal.</p></li>
-<li><p>-1 (MEMORY_FULL) memory allocation failed</p></li>
-<li><p>-2 (FILE_NOT_OPENED) a file intended for saving problem transformations could not be opened;</p></li>
-<li><p>-3 (COULD_NOT_WRITE) an IO error occurred while saving transformations on the relevant disk file;</p></li>
-<li><p>-4 (TOO_FEW_BITS_PER_BYTE) an integer contains less than NBRH + 1 bits.</p></li>
-<li><p>-60 (UNRECOGNIZED_KEYWORD) a keyword was not recognized in the analysis of the specification file</p></li>
-<li><p>-61 (UNRECOGNIZED_VALUE) a value was not recognized in the analysis of the specification file</p></li>
-<li><p>-63 (G_NOT_ALLOCATED) the vector G has not been allocated although it has general values</p></li>
-<li><p>-64 (C_NOT_ALLOCATED) the vector C has not been allocated although m &gt; 0</p></li>
-<li><p>-65 (AVAL_NOT_ALLOCATED) the vector A.val has not been allocated although m &gt; 0</p></li>
-<li><p>-66 (APTR_NOT_ALLOCATED) the vector A.ptr has not been allocated although m &gt; 0 and A is stored in row-wise sparse format</p></li>
-<li><p>-67 (ACOL_NOT_ALLOCATED) the vector A.col has not been allocated although m &gt; 0 and A is stored in row-wise sparse format or sparse coordinate format</p></li>
-<li><p>-68 (AROW_NOT_ALLOCATED) the vector A.row has not been allocated although m &gt; 0 and A is stored in sparse coordinate format</p></li>
-<li><p>-69 (HVAL_NOT_ALLOCATED) the vector H.val has not been allocated although H.ne &gt; 0</p></li>
-<li><p>-70 (HPTR_NOT_ALLOCATED) the vector H.ptr has not been allocated although H.ne &gt; 0 and H is stored in row-wise sparse format</p></li>
-<li><p>-71 (HCOL_NOT_ALLOCATED) the vector H.col has not been allocated although H.ne &gt; 0 and H is stored in row-wise sparse format or sparse coordinate format</p></li>
-<li><p>-72 (HROW_NOT_ALLOCATED) the vector H.row has not been allocated although H.ne &gt; 0 and A is stored in sparse coordinate format</p></li>
-<li><p>-73 (WRONG_ANE) incompatible value of A_ne</p></li>
-<li><p>-74 (WRONG_HNE) incompatible value of H_ne</p></li>
-</ul>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ac678d67797411ebadaab2a5e07f62e8a"><span id="index-4"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nbr_transforms</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ac678d67797411ebadaab2a5e07f62e8a"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">nbr_transforms</span></pre>
 <p>The final number of problem transformations, as reported to the user at exit.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ad3ed7aeb962cfe24345625354d733206"><span id="index-5"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">message</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">81</span><span class="p">]</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpresolve-inform-type-1ad3ed7aeb962cfe24345625354d733206"><span id="index-3"></span><span></span><span class="n">char</span><span class="w"> </span><span class="n">message</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">81</span><span class="p">]</span></pre>
 <p>A few lines containing a description of the exit condition on exit of PRESOLVE, typically including more information than indicated in the description of control.status above. It is printed out on device errout at the end of execution if control.print_level &gt;= 1.</p>
 </section>
 </section>

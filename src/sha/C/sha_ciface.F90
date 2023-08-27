@@ -372,7 +372,7 @@
 !  -----------------------------------------
 
   SUBROUTINE sha_recover_matrix( cdata, status, ne, m, ls1, ls2, s,         &
-                                 ly1, ly2, y, val, precedence ) BIND( C )
+                                 ly1, ly2, y, val, order ) BIND( C )
   USE GALAHAD_SHA_precision_ciface
   IMPLICIT NONE
 
@@ -383,7 +383,7 @@
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ls2, ls1 ) :: s ! reverse order
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ly2, ly1 ) :: y ! for C !!
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( ne ) :: val
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: precedence
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: order
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -397,7 +397,7 @@
 !   form and factorize the block matrix
 
   CALL f_sha_recover_matrix( fdata, status, m, s, y, val,                      &
-                             precedence = precedence )
+                             order = order )
   RETURN
 
   END SUBROUTINE sha_recover_matrix

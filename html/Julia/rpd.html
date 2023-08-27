@@ -500,24 +500,24 @@ H_ptr. Once again, only the lower traingle is stored.</p>
 <p>To solve a given problem, functions from the rpd package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a6805ebb5cc097db7df39723c64cef793"><span class="std std-ref">rpd_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1ad0148374adcd7bf5f34f378ba0995a21"><span class="std std-ref">rpd_get_stats</span></a> - read a given QPLIB file into internal data structures, and report vital statistics</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a6805ebb5cc097db7df39723c64cef793"><span class="std std-ref">rpd_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1ad0148374adcd7bf5f34f378ba0995a21"><span class="std std-ref">rpd_get_stats</span></a> - read a given QPLIB file into internal data structures, and report vital statistics</p></li>
 <li><p>(optionally, and in any order, where relevant)</p>
 <ul>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1aa5be687c00e4a7980c5ea7c258717d3a"><span class="std std-ref">rpd_get_g</span></a> - get the objective gradient term <span class="math notranslate nohighlight">\(g\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a38dc68ed79b192e3fcd961b8589d202c"><span class="std std-ref">rpd_get_f</span></a> - get the objective constant term <span class="math notranslate nohighlight">\(f\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span class="std std-ref">rpd_get_xlu</span></a> - get the variable bounds <span class="math notranslate nohighlight">\(x_l\)</span> and <span class="math notranslate nohighlight">\(x_u\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span class="std std-ref">rpd_get_xlu</span></a> - get the constraint bounds <span class="math notranslate nohighlight">\(c_l\)</span> and <span class="math notranslate nohighlight">\(c_u\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a02021324df6f485160d327f2f5fca0d3"><span class="std std-ref">rpd_get_h</span></a> - get the objective Hessian term <span class="math notranslate nohighlight">\(H\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a8b0c3c507b12512b09ee4ec92596148e"><span class="std std-ref">rpd_get_a</span></a> - get the constrain Jacobian term <span class="math notranslate nohighlight">\(A\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1a55ae091188ad0d88920565549bd47451"><span class="std std-ref">rpd_get_h_c</span></a> - get the constraint Hessian terms <span class="math notranslate nohighlight">\(H_c\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1af784ecc65c925575788a494bd8118f4d"><span class="std std-ref">rpd_get_x_type</span></a> - determine the type of each variable <span class="math notranslate nohighlight">\(x\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1afbc831595295e9153e4740d852a35c27"><span class="std std-ref">rpd_get_x</span></a> - get initial value of the variable <span class="math notranslate nohighlight">\(x\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1ac9fd1a08acf460b7962ad5393d69fff5"><span class="std std-ref">rpd_get_y</span></a> - get initial value of Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span></p></li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1ab1579a81766096bd1764f0fb0cc10db3"><span class="std std-ref">rpd_get_z</span></a> - get initial value of the dual variables <span class="math notranslate nohighlight">\(z\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1aa5be687c00e4a7980c5ea7c258717d3a"><span class="std std-ref">rpd_get_g</span></a> - get the objective gradient term <span class="math notranslate nohighlight">\(g\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a38dc68ed79b192e3fcd961b8589d202c"><span class="std std-ref">rpd_get_f</span></a> - get the objective constant term <span class="math notranslate nohighlight">\(f\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span class="std std-ref">rpd_get_xlu</span></a> - get the variable bounds <span class="math notranslate nohighlight">\(x_l\)</span> and <span class="math notranslate nohighlight">\(x_u\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a6a5cbf68b561cc6db0ba08304d28787c"><span class="std std-ref">rpd_get_xlu</span></a> - get the constraint bounds <span class="math notranslate nohighlight">\(c_l\)</span> and <span class="math notranslate nohighlight">\(c_u\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a02021324df6f485160d327f2f5fca0d3"><span class="std std-ref">rpd_get_h</span></a> - get the objective Hessian term <span class="math notranslate nohighlight">\(H\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a8b0c3c507b12512b09ee4ec92596148e"><span class="std std-ref">rpd_get_a</span></a> - get the constrain Jacobian term <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1a55ae091188ad0d88920565549bd47451"><span class="std std-ref">rpd_get_h_c</span></a> - get the constraint Hessian terms <span class="math notranslate nohighlight">\(H_c\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1af784ecc65c925575788a494bd8118f4d"><span class="std std-ref">rpd_get_x_type</span></a> - determine the type of each variable <span class="math notranslate nohighlight">\(x\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1afbc831595295e9153e4740d852a35c27"><span class="std std-ref">rpd_get_x</span></a> - get initial value of the variable <span class="math notranslate nohighlight">\(x\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1ac9fd1a08acf460b7962ad5393d69fff5"><span class="std std-ref">rpd_get_y</span></a> - get initial value of Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1ab1579a81766096bd1764f0fb0cc10db3"><span class="std std-ref">rpd_get_z</span></a> - get initial value of the dual variables <span class="math notranslate nohighlight">\(z\)</span></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="rpd_functions.html#doxid-galahad-rpd-8h-1af49fc46839c605dd71d2666189d0d8a9"><span class="std std-ref">rpd_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-rpd-8h-1af49fc46839c605dd71d2666189d0d8a9"><span class="std std-ref">rpd_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-rpd-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -1121,7 +1121,7 @@ status from the package. Possible values are:</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1154,7 +1154,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1219,13 +1219,31 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrpd-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>return status. Possible values are:</p>
-<ul class="simple">
-<li><p>0 The call was successful.</p></li>
-<li><p>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p></li>
-<li><p>-22 An input/outpur error occurred.</p></li>
-<li><p>-25 The end of the input file was reached prematurely.</p></li>
-<li><p>-29 The problem type was not recognised.</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The call was successful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
+array is written on unit control.error and the returned allocation
+status and a string containing the name of the offending array are
+held in inform.alloc_status and inform.bad_alloc respectively.</p>
+</li>
+<li><p><strong>-22</strong></p>
+<p>An input/outpur error occurred.</p>
+</li>
+<li><p><strong>-25</strong></p>
+<p>The end of the input file was reached prematurely.</p>
+</li>
+<li><p><strong>-29</strong></p>
+<p>The problem type was not recognised.</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structrpd-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation or deallocation</p>

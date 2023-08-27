@@ -545,7 +545,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -578,7 +578,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlms-control-type"><span class="std std-ref">lms_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lms_inform_type.html#doxid-structlms-inform-type"><span class="std std-ref">lms_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -691,45 +691,36 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlms-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>the return status. Possible values are:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><strong>0</strong></dt><dd><p>the update was successful.</p>
-</dd>
-</dl>
+<ul>
+<li><p><strong>0</strong></p>
+<p>the update was successful.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the offending array
+is written on unit control.error, and the returned allocation status
+and a string containing the name of the offending array are held in
+inform.alloc_status and inform.bad_alloc respectively.</p>
 </li>
-<li><dl class="simple">
-<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating the offending
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred. A message indicating the offending
 array is written on unit control.error and the returned allocation
 status and a string containing the name of the offending array are
 held in inform.alloc_status and inform.bad_alloc respectively.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>-3</strong></dt><dd><p>One of the restrictions <span class="math notranslate nohighlight">\(n &gt; 0\)</span>, <span class="math notranslate nohighlight">\(\delta_k &gt; 0\)</span>, <span class="math notranslate nohighlight">\(\lambda_k &gt; 0\)</span> or
+<li><p><strong>-3</strong></p>
+<p>One of the restrictions <span class="math notranslate nohighlight">\(n &gt; 0\)</span>, <span class="math notranslate nohighlight">\(\delta_k &gt; 0\)</span>, <span class="math notranslate nohighlight">\(\lambda_k &gt; 0\)</span> or
 <span class="math notranslate nohighlight">\(s_k^T y_k &gt; 0\)</span> has been violated and the update has been skipped.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>-10</strong></dt><dd><p>The matrix cannot be built from the current vectors <span class="math notranslate nohighlight">\(\{s_k\}\)</span> and <span class="math notranslate nohighlight">\(\{y_k\}\)</span>
+<li><p><strong>-10</strong></p>
+<p>The matrix cannot be built from the current vectors <span class="math notranslate nohighlight">\(\{s_k\}\)</span> and <span class="math notranslate nohighlight">\(\{y_k\}\)</span>
 and values <span class="math notranslate nohighlight">\(\delta_k\)</span> and <span class="math notranslate nohighlight">\(\lambda_k\)</span> and the update has been skipped.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>-31</strong></dt><dd><p>A call to the function lhs_apply has been made without a prior call
+<li><p><strong>-31</strong></p>
+<p>A call to the function lhs_apply has been made without a prior call
 to lhs_form_shift or lhs_form with lambda specified when
 control.method = 4, or lhs_form_shift has been called when
 control.method = 3, or lhs_change_method has been called after
 control.any_method = false was specified when calling lhs_setup.</p>
-</dd>
-</dl>
 </li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlms-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>

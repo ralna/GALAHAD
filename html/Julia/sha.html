@@ -41,6 +41,8 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sha';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -453,13 +455,83 @@
 <span id="galahad-sha-package"></span><span id="doxid-index-sha"></span><h1>GALAHAD SHA package<a class="headerlink" href="#module-galahad.sha" title="Permalink to this heading">#</a></h1>
 <section id="purpose">
 <h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package <strong>finds an approximation to a sparse Hessian</strong>
-using componentwise secant approximation.</p>
-<p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
-provided and used by other GALAHAD packages with Python interfaces.
-Please contact us if you would like full functionality!</p>
-<p>See Section 4 of $GALAHAD/doc/sha.pdf for a brief description of the
-method employed and other details.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package
+<strong>finds a component-wise secant approximation to the Hessian matrix</strong> <span class="math notranslate nohighlight">\(H(x)\)</span>,
+for which <span class="math notranslate nohighlight">\((H(x))_{i,j} = \partial f^2 (x) / \partial x_i \partial x_j\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i, j \leq n\)</span>,
+using values of the gradient <span class="math notranslate nohighlight">\(g(x) = \nabla_x f(x)\)</span>
+of the function <span class="math notranslate nohighlight">\(f(x)\)</span> of <span class="math notranslate nohighlight">\(n\)</span> unknowns <span class="math notranslate nohighlight">\(x = (x_1, \ldots, x_n)^T\)</span>
+at a sequence of given distinct <span class="math notranslate nohighlight">\(\{x^{(k)}\}\)</span>, <span class="math notranslate nohighlight">\(k \geq 0\)</span>.
+More specifically, given <strong>differences</strong>
+<div class="math notranslate nohighlight">
+\[s^{(k)} = x^{(k+1)} - x^{(k)} \;\;\mbox{and}\;\;
+y^{(k)} = g(x^{(k+1)}) - g(x^{(k)})\]</div>
+</p>
+<p>the package aims to find an approximation <span class="math notranslate nohighlight">\(B\)</span> to <span class="math notranslate nohighlight">\(H(x)\)</span> for
+which the secant conditions <span class="math notranslate nohighlight">\(B s^{(k)} \approx y^{(k)}\)</span> hold for
+a chosen set of values <span class="math notranslate nohighlight">\(k\)</span>.
+The methods provided take advantage of the entries in the Hessian that
+are known to be zero.</p>
+<p>The package is particularly intended to allow gradient-based
+optimization methods, that generate iterates
+<span class="math notranslate nohighlight">\(x^{(k+1)} = x^{(k)} + s^{(k)}\)</span> based upon the values <span class="math notranslate nohighlight">\(g( x^{(k)})\)</span>
+for <span class="math notranslate nohighlight">\(k \geq 0\)</span>, to build a suitable approximation to the Hessian
+<span class="math notranslate nohighlight">\(H(x^{(k+1)})\)</span>. This then gives the method an opportunity to
+accelerate the iteration using the Hessian approximation.</p>
+<p>See Section 4 of $GALAHAD/doc/sha.pdf for additional details.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The package computes the entries in the each row of <span class="math notranslate nohighlight">\(B\)</span> one at a time.
+The entries <span class="math notranslate nohighlight">\(b_{ij}\)</span> in row <span class="math notranslate nohighlight">\(i\)</span> may be chosen to</p>
+<p><div class="math notranslate nohighlight">
+\[(1) \;\;\; \min_{b_{i,j}}\!\mbox{imize} \;\; \sum_{k \in {\cal I}_i}
+\left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j}
+b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,\]</div>
+</p>
+<p>where <span class="math notranslate nohighlight">\({\cal I}_i\)</span> is ideally chosen to be sufficiently large so that (1)
+has a unique minimizer. Since this requires that there are at least
+as many <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> pairs as the maximum number of nonzeros
+in any row, this may be prohibitive in some cases. We might then be content
+with a minimum-norm (under-determined) least-squares solution. Or, we may
+take advantage of the symmetry of the Hessian, and note that if we
+have already found the values in row <span class="math notranslate nohighlight">\(j\)</span>, then the value <span class="math notranslate nohighlight">\(b_{i,j} = b_{j,i}\)</span>
+in (1) is known before we process row <span class="math notranslate nohighlight">\(i\)</span>. Thus by ordering the rows
+and exploiting symmetry we may reduce the numbers of unknowns in
+future unprocessed rows.</p>
+<p>In the analysis phase, we order the rows by constructing the connectivity
+graph—a graph comprising nodes <span class="math notranslate nohighlight">\(1\)</span> to <span class="math notranslate nohighlight">\(n\)</span> and edges connecting
+nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> if <span class="math notranslate nohighlight">\(h_{i,j}\)</span> is everywhere nonzero—of <span class="math notranslate nohighlight">\(H(x)\)</span>.
+The nodes are ordered by increasing degree (that is, the number of edges
+emanating from the node) using a bucket sort. The row chosen to be
+ordered next corresponds to a node of minimum degree, the node
+is removed from the graph, the degrees updated efficiently, and the
+process repeated until all rows have been ordered. This often leads
+to a significant reduction in the numbers of unknown values in each
+row as it is processed in turn, but numerical rounding can lead to
+inaccurate values in some cases. A useful remedy is to process all
+rows for which there are sufficient <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> as before,
+and then process the remaining rows taking into account the symmetry.
+That is, the rows and columns are rearranged so that the matrix
+is in block form
+<div class="math notranslate nohighlight">
+\[\begin{split}B = \begin{pmatrix} B_{11} &amp; B_{12} \\ B^T_{12} &amp; B_{22}\end{pmatrix},\end{split}\]</div>
+</p>
+<p>the <span class="math notranslate nohighlight">\(( B_{11} \;\; B_{12})\)</span> rows are processed without regard
+for symmetry but give the <span class="math notranslate nohighlight">\(2,1\)</span> block <span class="math notranslate nohighlight">\(B^T_{12}\)</span>, and finally
+the <span class="math notranslate nohighlight">\(2,2\)</span> block <span class="math notranslate nohighlight">\(B_{22}\)</span> is processed either with the option of exploiting
+symmetry. More details of the precise algorithms (Algorithms 2.1–2.5)
+are given in the reference below. The linear least-squares problems (1)
+themselves are solved by a choice of LAPACK packages.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>J. M. Fowkes, N. I. M. Gould and J. A. Scott,
+“Approximating large-scale Hessians using secant equations”.
+Technical Report TR-2023, Rutherford Appleton Laboratory.</p>
+</div></blockquote>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -473,7 +545,7 @@ are available with T as Float32.</p>
 </section>
 <section id="callable-functions">
 <h2>callable functions<a class="headerlink" href="#callable-functions" title="Permalink to this heading">#</a></h2>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-1aa4f01a598c5cef45420937d4951519a9"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-initialize"><span id="index-0"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_initialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -486,7 +558,8 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see
+<a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -503,7 +576,230 @@ status from the package. Possible values are
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-1ace357a88ad000654a0ec0817d6d28ece"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-read-specfile"><span id="index-1"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_read_specfile</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">specfile</span><span class="p">)</span></pre>
+<p>Read the content of a specification file, and assign values associated
+with given keywords to the corresponding control parameters.  An
+in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in
+$GALAHAD/src/sha/SHA.template.  See also Table 2.1 in the Fortran
+documentation provided in $GALAHAD/doc/sha.pdf for a list of how these
+keywords relate to the components of the control structure.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure containing control information (see
+<a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that
+must give the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-analyse-matrix"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_analyse_matrix</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span></pre>
+<p>Analsyse the sparsity structure of <span class="math notranslate nohighlight">\(H\)</span> to generate information that will be
+used when estimating its values.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a structure whose members provide control paramters
+for the remaining prcedures (see
+<a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import and analysis were conducted successfully.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>A restriction n &gt; 0, ne <span class="math notranslate nohighlight">\(\geq\)</span> 0 or 0 <span class="math notranslate nohighlight">\(\leq\)</span> row[i] <span class="math notranslate nohighlight">\(\leq\)</span>
+col[i] <span class="math notranslate nohighlight">\(\leq\)</span> n has been violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+number of variables</p></td>
+</tr>
+<tr class="row-odd"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+number of entries in the upper triangular part of <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>row</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32,
+that holds the row indices of the upper triangular
+part of <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>col</p></td>
+<td><p>is a one-dimensional array of size ne and type Int32,
+that holds the column indices of the upper triangular
+part of <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>m</p></td>
+<td><p>is a scalar variable of type Int32, that gives the
+minimum number of <span class="math notranslate nohighlight">\((s^{(k)},y^{(k)})\)</span> pairs that will
+be needed to recover a good Hessian approximation.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-recover-matrix"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_recover_matrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">ls1</span><span class="p">,</span><span class="w"> </span><span class="n">ls2</span><span class="p">,</span><span class="w"> </span><span class="n">strans</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">ly1</span><span class="p">,</span><span class="w"> </span><span class="n">ly2</span><span class="p">,</span><span class="w"> </span><span class="n">ytrans</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">order</span><span class="p">)</span></pre>
+<p>Estimate the nonzero entries of the Hessian <span class="math notranslate nohighlight">\(H\)</span> by component-wise secant
+approximation.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type Int32 that gives the exit
+status from the package.</p>
+<p>Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The recovery was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-31</strong></dt><dd><p>sha.recover_matrix has been called before
+sha.analyse_matrix.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>val</p></td>
+<td><p>is a one-dimensional array of size ne and type T that holds the values of the entries of the lower triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the supported storage schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ne</p></td>
+<td><p>is a scalar variable of type Int32, that holds the number
+of entries in the upper triangular part of <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>m_available</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+number of differences provided. Ideally this will be
+as large as m as reported by sha_analyse_matrix, but
+better still there should be a further
+control.extra_differences to allow for unlikely
+singularities.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ls1</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+leading (first) dimension of the array strans.</p></td>
+</tr>
+<tr class="row-even"><td><p>ls2</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+trailing (second) dimension of the array strans.</p></td>
+</tr>
+<tr class="row-odd"><td><p>strans</p></td>
+<td><p>is a two-dimensional array of size [ls1][ls2] and type
+T, that holds the values of the vectors <span class="math notranslate nohighlight">\(\{s^{(k) T}\}\)</span>.
+Component [<span class="math notranslate nohighlight">\(k\)</span>][<span class="math notranslate nohighlight">\(i\)</span>] should hold <span class="math notranslate nohighlight">\(s_i^{(k)}\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>ly1</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+leading (first) dimension of the array ytrans.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ly2</p></td>
+<td><p>is a scalar variable of type Int32, that holds the
+trailing (second) dimension of the array ytrans.</p></td>
+</tr>
+<tr class="row-even"><td><p>ytrans</p></td>
+<td><p>is a two-dimensional array of size [ly1][ly2] and type
+T, that holds the values of the vectors <span class="math notranslate nohighlight">\(\{y^{(k) T}\}\)</span>.
+Component [<span class="math notranslate nohighlight">\(k\)</span>][<span class="math notranslate nohighlight">\(i\)</span>] should hold <span class="math notranslate nohighlight">\(y_i^{(k)}\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>val</p></td>
+<td><p>is a one-dimensional array of size ne and type T,
+that holds the values of the entries of the upper
+triangular part of the symmetric matrix <span class="math notranslate nohighlight">\(H\)</span> in the
+sparse coordinate scheme.</p></td>
+</tr>
+<tr class="row-even"><td><p>order</p></td>
+<td><p>is a one-dimensional array of size m and type Int32,
+that holds the preferred order of access for the pairs
+<span class="math notranslate nohighlight">\(\{(s^{(k)},y^{(k)})\}\)</span>. The <span class="math notranslate nohighlight">\(k\)</span>-th component of
+order specifies the row number of strans and
+ytrans that will be used as the <span class="math notranslate nohighlight">\(k\)</span>-th most
+favoured. order need not be set if the natural
+order, <span class="math notranslate nohighlight">\(k, k = 1,...,\)</span> m, is desired, and this case
+order should be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-information"><span id="index-4"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_information</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -516,7 +812,8 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see
+<a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -533,7 +830,7 @@ status from the package. Possible values are
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-1a9ea67bcd115e6479e7d93faf3445405a"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-terminate"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">sha_terminate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">inform</span><span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -546,10 +843,12 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see
+<a class="reference internal" href="#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see
+<a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -558,7 +857,7 @@ status from the package. Possible values are
 <h2>available structures<a class="headerlink" href="#available-structures" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="sha-control-type-structure">
-<span id="doxid-structsha-control-type"></span><span id="index-3"></span><h2>sha_control_type structure<a class="headerlink" href="#sha-control-type-structure" title="Permalink to this heading">#</a></h2>
+<span id="doxid-structsha-control-type"></span><span id="index-6"></span><h2>sha_control_type structure<a class="headerlink" href="#sha-control-type-structure" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sha_control_type</span><span class="w"></span>
@@ -579,15 +878,15 @@ status from the package. Possible values are
 <p>control derived type as a Julia structure</p>
 <section id="components">
 <h3>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-4"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-7"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">f_indexing</span></pre>
 <p>use C or Fortran sparse matrix indexing</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-5"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">error</span></pre>
 <p>error and warning diagnostics occur on stream error</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-6"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">out</span></pre>
 <p>general output occurs on stream out</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-7"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">print_level</span></pre>
 <p>the level of output required. &lt;= 0 gives no output, = 1 gives a one-line summary for every iteration, = 2 gives a summary of the inner iteration for each iteration, &gt;= 3 gives increasingly verbose (debugging) output</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1af04b00dd3ef8468bec194d10ee43f8b7"><span id="index-8"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">approximation_algorithm</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1af04b00dd3ef8468bec194d10ee43f8b7"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">approximation_algorithm</span></pre>
 <p>which approximation algorithm should be used?</p>
 <ul class="simple">
 <li><p>0 : unsymmetric (alg 2.1 in paper)</p></li>
@@ -595,7 +894,7 @@ status from the package. Possible values are
 <li><p>2 : composite (alg 2.3 in paper)</p></li>
 <li><p>3 : composite 2 (alg 2.2/3 in paper)</p></li>
 </ul>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a59b9cb51e0d19a10a7714b4582a883b1"><span id="index-9"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dense_linear_solver</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a59b9cb51e0d19a10a7714b4582a883b1"><span id="index-12"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">dense_linear_solver</span></pre>
 <p>which dense linear equation solver should be used?</p>
 <ul class="simple">
 <li><p>1 : Gaussian elimination</p></li>
@@ -603,20 +902,20 @@ status from the package. Possible values are
 <li><p>3 : singular-value decomposition</p></li>
 <li><p>4 : singular-value decomposition with divide-and-conquer</p></li>
 </ul>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a22a3fbc66d8826eb54a1708046e3c4f0"><span id="index-10"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_sparse_degree</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a22a3fbc66d8826eb54a1708046e3c4f0"><span id="index-13"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_sparse_degree</span></pre>
 <p>the maximum sparse degree if the combined version is used</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a16e4be90c05808f00af594b1feabadbe"><span id="index-11"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">extra_differences</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a16e4be90c05808f00af594b1feabadbe"><span id="index-14"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">extra_differences</span></pre>
 <p>if available use an addition extra_differences differences</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-12"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-15"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
 <p>if space is critical, ensure allocated arrays are no bigger than needed</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-13"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-16"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
 <p>exit if any deallocation fails</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-14"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-17"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
 </section>
 </section>
 <section id="sha-inform-type-structure">
-<span id="doxid-structsha-inform-type"></span><span id="index-15"></span><h2>sha_inform_type structure<a class="headerlink" href="#sha-inform-type-structure" title="Permalink to this heading">#</a></h2>
+<span id="doxid-structsha-inform-type"></span><span id="index-18"></span><h2>sha_inform_type structure<a class="headerlink" href="#sha-inform-type-structure" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">sha_inform_type</span><span class="w"></span>
@@ -633,19 +932,21 @@ status from the package. Possible values are
 <p>inform derived type as a Julia structure</p>
 <section id="id2">
 <h3>components<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-16"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>return status. See SHA_solve for details</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-17"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation/deallocation.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span id="index-18"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_degree</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_degree</span></pre>
 <p>the maximum degree in the adgacency graph.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span id="index-19"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">differences_needed</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a0"><span id="index-22"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">approximation_algorithm_used</span></pre>
+<p>the approximation algorithm actually used</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span id="index-23"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">differences_needed</span></pre>
 <p>the number of differences that will be needed.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span id="index-20"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_reduced_degree</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span id="index-24"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">max_reduced_degree</span></pre>
 <p>the maximum reduced degree in the adgacency graph.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span id="index-21"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">bad_row</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span id="index-25"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">bad_row</span></pre>
 <p>a failure occured when forming the bad_row-th row (0 = no failure).</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-22"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-26"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
 <p>the name of the array for which an allocation/deallocation error occurred.</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>
@@ -695,6 +996,16 @@ status from the package. Possible values are
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#purpose">
    purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

@@ -103,8 +103,8 @@ functions
              * **3**
 
                No pivoting will be performed and an error exit will
+               occur if a zero pivot is detected.
 
-                 occur if a zero pivot is detected.
              * **4**
 
                No pivoting is performed but pivots are changed to all

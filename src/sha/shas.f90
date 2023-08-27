@@ -9,7 +9,7 @@
    TYPE ( SHA_inform_type ) :: inform
    INTEGER :: i, j, k, k_s, l
    REAL ( KIND = wp ) ::  v
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: PRECEDENCE
+   INTEGER, ALLOCATABLE, DIMENSION( : ) :: ORDER
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
    TYPE ( RAND_seed ) :: seed
    INTEGER, PARAMETER :: n = 5, nz = 9  ! set problem data
@@ -30,7 +30,7 @@
    control%extra_differences = 1 ! use as many differences as required + 1
    k_s = inform%differences_needed + control%extra_differences
 !  artifical setup: compute random s_i and then form y_i = Hessian * s_i
-   ALLOCATE( S( n, k_s ), Y( n, k_s ), PRECEDENCE( k_s ) )
+   ALLOCATE( S( n, k_s ), Y( n, k_s ), ORDER( k_s ) )
    CALL RAND_initialize( seed )
    DO k = 1, k_s
      DO i = 1, n  ! choose random S
@@ -44,11 +44,11 @@
        Y( i, k ) = Y( i, k ) + v * S( j, k )
        IF ( i /= j ) Y( j, k ) = Y( j, k ) + v * S( i, k )
      END DO
-     PRECEDENCE( k ) = k_s - k + 1  ! pick the (s,y) vectors in reverse order
+     ORDER( k ) = k_s - k + 1  ! pick the (s,y) vectors in reverse order
    END DO
 !  approximate the Hessian
    CALL SHA_estimate( n, nz, ROW, COL, k_s, S, n, k_s, Y, n, k_s, VAL_est,     &
-                      data, control, inform, PRECEDENCE = PRECEDENCE )
+                      data, control, inform, ORDER = ORDER )
    IF ( inform%status /= 0 ) THEN  ! Failure
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_estimate' )" )&
        inform%status ; STOP

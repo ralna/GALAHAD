@@ -419,11 +419,19 @@
 <h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-1"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 success</p></li>
-<li><p>-1 allocation error</p></li>
-<li><p>-2 deallocation error</p></li>
-<li><p>-3 matrix data faulty (.n &lt; 1, .ne &lt; 0)</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>success</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>allocation error</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>deallocation error</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>matrix data faulty (.n &lt; 1, .ne &lt; 0)</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-2"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>STAT value after allocate failure.</p>
@@ -469,9 +477,9 @@
 <p>the integer and real output arrays from mc61</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a6966776cf11a3b9c447f7a1c9621152f"><span id="index-23"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">mc61_rinfo</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span></pre>
 <p>see mc61_info</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a4e85e8fc22799defca71ba5c448216ed"><span id="index-24"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_time_type.html#doxid-structpsls-time-type"><span class="std std-ref">psls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a4e85e8fc22799defca71ba5c448216ed"><span id="index-24"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="psls.html#doxid-structpsls-time-type"><span class="std std-ref">psls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>times for various stages</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-25"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-25"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>inform values from SLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1aa5913427f989eb08152b78bf6390c0b9"><span id="index-26"></span><span></span><span class="n">struct</span><span class="w"> </span>mi28_info<span></span><span class="w"> </span><span class="n">mi28_info</span></pre>
 <p>the output info structure from HSL’s mi28</p>

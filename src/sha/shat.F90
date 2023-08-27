@@ -10,7 +10,7 @@
    TYPE ( SHA_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, j, k, l, m, algorithm
    REAL ( KIND = rp_ ) ::  v
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PRECEDENCE
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ORDER
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
    TYPE ( RAND_seed ) :: seed
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, nz = 9        ! set problem data
@@ -35,10 +35,10 @@
      WRITE( 6, "( 1X, I0, ' differences are needed, one extra might help')")   &
        inform%differences_needed
      m = inform%differences_needed + 1 ! use as many differences as required + 1
-     ALLOCATE( S( n, m ), Y( n, m ), PRECEDENCE( m ) )
+     ALLOCATE( S( n, m ), Y( n, m ), ORDER( m ) )
      CALL RAND_initialize( seed )
      DO k = 1, m
-       PRECEDENCE( k ) = m - k + 1
+       ORDER( k ) = m - k + 1
        DO i = 1, n  ! choose random S
          CALL RAND_random_real( seed, .FALSE., S( i, k ) )
        END DO
@@ -64,7 +64,7 @@
        END DO
      END IF
      CALL SHA_estimate( n, nz, ROW, COL, m, S, n, m, Y, n, m, VAL_est,         &
-                        data, control, inform, PRECEDENCE = PRECEDENCE )
+                        data, control, inform, ORDER = ORDER )
      IF ( inform%status /= 0 ) THEN ! Failure
        WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
          inform%status
@@ -77,7 +77,7 @@
        END DO
      END IF
      CALL SHA_terminate( data, control, inform ) ! Delete internal workspace
-     DEALLOCATE( S, Y, PRECEDENCE )
+     DEALLOCATE( S, Y, ORDER )
    END DO
    WRITE( 6, "( /, ' TODO: test program is not yet exhausive' )" )
 

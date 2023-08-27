@@ -39,6 +39,8 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sha';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -412,13 +414,83 @@
 <span id="sha"></span><h1>SHA<a class="headerlink" href="#module-galahad.sha" title="Permalink to this heading">#</a></h1>
 <section id="purpose">
 <h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package <strong>finds an approximation to a sparse Hessian</strong>
-using componentwise secant approximation.</p>
-<p><strong>Currently only the options and inform dictionaries are exposed</strong>; these are
-provided and used by other GALAHAD packages with Python interfaces.
-Please contact us if you would like full functionality!</p>
-<p>See Section 4 of $GALAHAD/doc/sha.pdf for a brief description of the
-method employed and other details.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sha</span></code> package
+<strong>finds a component-wise secant approximation to the Hessian matrix</strong> <span class="math notranslate nohighlight">\(H(x)\)</span>,
+for which <span class="math notranslate nohighlight">\((H(x))_{i,j} = \partial f^2 (x) / \partial x_i \partial x_j\)</span>,
+<span class="math notranslate nohighlight">\(1 \leq i, j \leq n\)</span>,
+using values of the gradient <span class="math notranslate nohighlight">\(g(x) = \nabla_x f(x)\)</span>
+of the function <span class="math notranslate nohighlight">\(f(x)\)</span> of <span class="math notranslate nohighlight">\(n\)</span> unknowns <span class="math notranslate nohighlight">\(x = (x_1, \ldots, x_n)^T\)</span>
+at a sequence of given distinct <span class="math notranslate nohighlight">\(\{x^{(k)}\}\)</span>, <span class="math notranslate nohighlight">\(k \geq 0\)</span>.
+More specifically, given <strong>differences</strong>
+<div class="math notranslate nohighlight">
+\[s^{(k)} = x^{(k+1)} - x^{(k)} \;\;\mbox{and}\;\;
+y^{(k)} = g(x^{(k+1)}) - g(x^{(k)})\]</div>
+</p>
+<p>the package aims to find an approximation <span class="math notranslate nohighlight">\(B\)</span> to <span class="math notranslate nohighlight">\(H(x)\)</span> for
+which the secant conditions <span class="math notranslate nohighlight">\(B s^{(k)} \approx y^{(k)}\)</span> hold for
+a chosen set of values <span class="math notranslate nohighlight">\(k\)</span>.
+The methods provided take advantage of the entries in the Hessian that
+are known to be zero.</p>
+<p>The package is particularly intended to allow gradient-based
+optimization methods, that generate iterates
+<span class="math notranslate nohighlight">\(x^{(k+1)} = x^{(k)} + s^{(k)}\)</span> based upon the values <span class="math notranslate nohighlight">\(g( x^{(k)})\)</span>
+for <span class="math notranslate nohighlight">\(k \geq 0\)</span>, to build a suitable approximation to the Hessian
+<span class="math notranslate nohighlight">\(H(x^{(k+1)})\)</span>. This then gives the method an opportunity to
+accelerate the iteration using the Hessian approximation.</p>
+<p>See Section 4 of $GALAHAD/doc/sha.pdf for additional details.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>The package computes the entries in the each row of <span class="math notranslate nohighlight">\(B\)</span> one at a time.
+The entries <span class="math notranslate nohighlight">\(b_{ij}\)</span> in row <span class="math notranslate nohighlight">\(i\)</span> may be chosen to</p>
+<p><div class="math notranslate nohighlight">
+\[(1) \;\;\; \min_{b_{i,j}}\!\mbox{imize} \;\; \sum_{k \in {\cal I}_i}
+\left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j}
+b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,\]</div>
+</p>
+<p>where <span class="math notranslate nohighlight">\({\cal I}_i\)</span> is ideally chosen to be sufficiently large so that (1)
+has a unique minimizer. Since this requires that there are at least
+as many <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> pairs as the maximum number of nonzeros
+in any row, this may be prohibitive in some cases. We might then be content
+with a minimum-norm (under-determined) least-squares solution. Or, we may
+take advantage of the symmetry of the Hessian, and note that if we
+have already found the values in row <span class="math notranslate nohighlight">\(j\)</span>, then the value <span class="math notranslate nohighlight">\(b_{i,j} = b_{j,i}\)</span>
+in (1) is known before we process row <span class="math notranslate nohighlight">\(i\)</span>. Thus by ordering the rows
+and exploiting symmetry we may reduce the numbers of unknowns in
+future unprocessed rows.</p>
+<p>In the analysis phase, we order the rows by constructing the connectivity
+graph—a graph comprising nodes <span class="math notranslate nohighlight">\(1\)</span> to <span class="math notranslate nohighlight">\(n\)</span> and edges connecting
+nodes <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> if <span class="math notranslate nohighlight">\(h_{i,j}\)</span> is everywhere nonzero—of <span class="math notranslate nohighlight">\(H(x)\)</span>.
+The nodes are ordered by increasing degree (that is, the number of edges
+emanating from the node) using a bucket sort. The row chosen to be
+ordered next corresponds to a node of minimum degree, the node
+is removed from the graph, the degrees updated efficiently, and the
+process repeated until all rows have been ordered. This often leads
+to a significant reduction in the numbers of unknown values in each
+row as it is processed in turn, but numerical rounding can lead to
+inaccurate values in some cases. A useful remedy is to process all
+rows for which there are sufficient <span class="math notranslate nohighlight">\((s^{(k)}, y^{(k)})\)</span> as before,
+and then process the remaining rows taking into account the symmetry.
+That is, the rows and columns are rearranged so that the matrix
+is in block form
+<div class="math notranslate nohighlight">
+\[\begin{split}B = \begin{pmatrix} B_{11} &amp; B_{12} \\ B^T_{12} &amp; B_{22}\end{pmatrix},\end{split}\]</div>
+</p>
+<p>the <span class="math notranslate nohighlight">\(( B_{11} \;\; B_{12})\)</span> rows are processed without regard
+for symmetry but give the <span class="math notranslate nohighlight">\(2,1\)</span> block <span class="math notranslate nohighlight">\(B^T_{12}\)</span>, and finally
+the <span class="math notranslate nohighlight">\(2,2\)</span> block <span class="math notranslate nohighlight">\(B_{22}\)</span> is processed either with the option of exploiting
+symmetry. More details of the precise algorithms (Algorithms 2.1–2.5)
+are given in the reference below. The linear least-squares problems (1)
+themselves are solved by a choice of LAPACK packages.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The method is described in detail in</p>
+<blockquote>
+<div><p>J. M. Fowkes, N. I. M. Gould and J. A. Scott,
+“Approximating large-scale Hessians using secant equations”.
+Technical Report TR-2023, Rutherford Appleton Laboratory.</p>
+</div></blockquote>
 </section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
@@ -453,17 +525,20 @@ method employed and other details.</p>
 </dd>
 <dt>approximation_algorithm<span class="classifier">int</span></dt><dd><p>which approximation algorithm should be used? Possible values are:</p>
 <ul>
-<li><p><strong>0</strong></p>
+<li><p><strong>1</strong></p>
 <p>unsymmetric (alg 2.1 in paper).</p>
 </li>
-<li><p><strong>1</strong></p>
+<li><p><strong>2</strong></p>
 <p>symmetric (alg 2.2 in paper).</p>
 </li>
-<li><p><strong>2</strong></p>
+<li><p><strong>3</strong></p>
 <p>composite (alg 2.3 in paper).</p>
 </li>
-<li><p><strong>3</strong></p>
-<p>composite 2 (alg 2.2/3 in paper).</p>
+<li><p><strong>4</strong></p>
+<p>composite 2 (alg 2.4 in paper).</p>
+</li>
+<li><p><strong>5</strong></p>
+<p>cautious (alg 2.5 in paper).</p>
 </li>
 </ul>
 </dd>
@@ -508,6 +583,76 @@ will result in the prefix word.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="galahad.sha.sha.analyse_matrix">
+<span class="sig-prename descclassname"><span class="pre">sha.</span></span><span class="sig-name descname"><span class="pre">analyse_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sha.sha.analyse_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Import problem data into internal storage and compute sparsity-based
+reorderings prior to factorization.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the dimension of the system, <span class="math notranslate nohighlight">\(n\)</span>.</p>
+</dd>
+<dt>ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the  upper triangular part of $H.</p>
+</dd>
+<dt>row<span class="classifier">ndarray(ne)</span></dt><dd><p>holds the row indices of the upper triangular part of <span class="math notranslate nohighlight">\(H\)</span>.</p>
+</dd>
+<dt>col<span class="classifier">ndarray(ne)</span></dt><dd><p>holds the column indices of the  upper triangular part of <span class="math notranslate nohighlight">\(H\)</span>.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">sha.initialize</span></code>).</p>
+</dd>
+</dl>
+<p><strong>Returns:</strong></p>
+<dl class="simple">
+<dt>m<span class="classifier">int</span></dt><dd><p>gives the minimum number of <span class="math notranslate nohighlight">\((s^{(k)},y^{(k)})\)</span> pairs that will
+be needed to recover a good Hessian approximation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.sha.sha.recover_matrix">
+<span class="sig-prename descclassname"><span class="pre">sha.</span></span><span class="sig-name descname"><span class="pre">recover_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ls1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ls2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ly1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ly2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ytrans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sha.sha.recover_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Factorize the matrix <span class="math notranslate nohighlight">\(A\)</span> prior to solution.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the upper triangular part of
+the matrix <span class="math notranslate nohighlight">\(H\)</span>.</p>
+</dd>
+<dt>m<span class="classifier">int</span></dt><dd><p>gives the number of <span class="math notranslate nohighlight">\((s^{(k)},y^{(k)})\)</span> pairs that are provided
+to recover the Hessian approximation (see <code class="docutils literal notranslate"><span class="pre">sha.analyse_matrix</span></code>
+for the minimum necessary).</p>
+</dd>
+<dt>ls1<span class="classifier">int</span></dt><dd><p>holds the leading (first) dimension of the array strans (below).</p>
+</dd>
+<dt>ls2<span class="classifier">int</span></dt><dd><p>holds the trailing (second) dimension of the array strans (below).</p>
+</dd>
+<dt>strans<span class="classifier">ndarray(ls1,ls2)</span></dt><dd><p>holds the values of the vectors <span class="math notranslate nohighlight">\(\{s^{(k) T}\}\)</span>.
+Component [<span class="math notranslate nohighlight">\(k,i\)</span>] should hold <span class="math notranslate nohighlight">\(s_i^{(k)}\)</span>.</p>
+</dd>
+<dt>ly1<span class="classifier">int</span></dt><dd><p>holds the leading (first) dimension of the array ytrans (below).</p>
+</dd>
+<dt>ly2<span class="classifier">int</span></dt><dd><p>holds the trailing (second) dimension of the array ytrans (below).</p>
+</dd>
+<dt>ytrans<span class="classifier">ndarray(ly1,ly2)</span></dt><dd><p>holds the values of the vectors <span class="math notranslate nohighlight">\(\{y^{(k) T}\}\)</span>.
+Component [<span class="math notranslate nohighlight">\(k,i\)</span>] should hold <span class="math notranslate nohighlight">\(y_i^{(k)}\)</span>.</p>
+</dd>
+<dt>order<span class="classifier">ndarray(m), optional</span></dt><dd><p>holds the preferred order of access for the pairs
+<span class="math notranslate nohighlight">\(\{(s^{(k)},y^{(k)})\}\)</span>. The <span class="math notranslate nohighlight">\(k\)</span>-th component of order
+specifies the row number of strans and ytrans that will be
+used as the <span class="math notranslate nohighlight">\(k\)</span>-th most favoured. order need not be set
+if the natural order, <span class="math notranslate nohighlight">\(k, k = 1,...,\)</span> m, is desired, and this
+case order should be None.</p>
+</dd>
+</dl>
+<p><strong>Returns:</strong></p>
+<dl class="simple">
+<dt>val<span class="classifier">ndarray(ne)</span></dt><dd><p>holds the values of the nonzeros in the upper triangle of the matrix
+<span class="math notranslate nohighlight">\(H\)</span> in the same order as specified in the sparsity pattern in
+<code class="docutils literal notranslate"><span class="pre">sha.analyse_matrix</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">sha.information()</span></span></dt>
 <dd><p>Provide optional output information.</p>
@@ -535,16 +680,12 @@ the name of the offending array are held in
 inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-3</strong></p>
-<p>The restriction n &gt; 0 or nz &gt;= 0 has been violated.</p>
-</li>
-<li><p><strong>-11</strong></p>
-<p>The solution of a set of linear equations using factors
-from the factorization package options[‘dense_linear_solver’]
-failed when forming row <code class="docutils literal notranslate"><span class="pre">bad_row</span></code>.</p>
+<p>The restriction n &gt; 0 or nz &gt;= 0 or
+<span class="math notranslate nohighlight">\(\leq\)</span> row[i] <span class="math notranslate nohighlight">\(\leq\)</span> col[i] <span class="math notranslate nohighlight">\(\leq\)</span> n has been violated.</p>
 </li>
 <li><p><strong>-31</strong></p>
 <p>The call to <code class="docutils literal notranslate"><span class="pre">sha_estimate</span></code> was not preceded by a call to
-<code class="docutils literal notranslate"><span class="pre">sha_analyse</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">sha_analyse_matrix</span></code>.</p>
 </li>
 </ul>
 </dd>
@@ -554,6 +695,8 @@ failed when forming row <code class="docutils literal notranslate"><span class="
 error occurred.</p>
 </dd>
 <dt>max_degree<span class="classifier">int</span></dt><dd><p>the maximum degree in the adgacency graph.</p>
+</dd>
+<dt>approximation_algorithm_used<span class="classifier">int</span></dt><dd><p>the approximation algorithm actually used.</p>
 </dd>
 <dt>differences_needed<span class="classifier">int</span></dt><dd><p>the number of differences that will be needed.</p>
 </dd>
@@ -570,8 +713,8 @@ error occurred.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="galahad.sha.sha.finalize">
-<span class="sig-prename descclassname"><span class="pre">sha.</span></span><span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sha.sha.finalize" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="galahad.sha.sha.terminate">
+<span class="sig-prename descclassname"><span class="pre">sha.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.sha.sha.terminate" title="Permalink to this definition">#</a></dt>
 <dd><p>Deallocate all internal private storage.</p>
 </dd></dl>
 
@@ -623,6 +766,16 @@ error occurred.</p>
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#functions">
    functions
   </a>
@@ -637,10 +790,28 @@ error occurred.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#galahad.sha.sha.finalize">
+    <a class="reference internal nav-link" href="#galahad.sha.sha.analyse_matrix">
      <code class="docutils literal notranslate">
       <span class="pre">
-       sha.finalize()
+       sha.analyse_matrix()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.sha.sha.recover_matrix">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       sha.recover_matrix()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.sha.sha.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       sha.terminate()
       </span>
      </code>
     </a>

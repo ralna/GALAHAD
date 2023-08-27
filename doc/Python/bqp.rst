@@ -3,9 +3,9 @@ BQP
 
 .. module:: galahad.bqp
 
-.. include:: bqpb_intro.rst
+.. include:: bqp_intro.rst
 
-.. include:: bqpb_storage.rst
+.. include:: bqp_storage.rst
 
 functions
 ---------

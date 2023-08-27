@@ -566,23 +566,23 @@ the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the bqp package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span class="std std-ref">bqp_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span class="std std-ref">bqp_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span class="std std-ref">bqp_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span class="std std-ref">bqp_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
 <li><p>set up problem data structures and fixed values by caling one of</p>
 <ul>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span class="std std-ref">bqp_import</span></a> - in the case that <span class="math notranslate nohighlight">\(H\)</span> is explicitly available</p></li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span class="std std-ref">bqp_import_without_h</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(H\)</span> to a vector is possible</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span class="std std-ref">bqp_import</span></a> - in the case that <span class="math notranslate nohighlight">\(H\)</span> is explicitly available</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span class="std std-ref">bqp_import_without_h</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(H\)</span> to a vector is possible</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span class="std std-ref">bqp_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span class="std std-ref">bqp_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
 <li><p>solve the problem by calling one of</p>
 <ul>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span class="std std-ref">bqp_solve_given_h</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(H\)</span></p></li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span class="std std-ref">bqp_solve_reverse_h_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(H\)</span> with specified vectors</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span class="std std-ref">bqp_solve_given_h</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(H\)</span></p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span class="std std-ref">bqp_solve_reverse_h_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(H\)</span> with specified vectors</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span class="std std-ref">bqp_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span class="std std-ref">bqp_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span class="std std-ref">bqp_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span class="std std-ref">bqp_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-bqp-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -709,7 +709,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 <td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="bqpb.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
@@ -1176,7 +1176,7 @@ nz_p_end-nz_p_start will be small).</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1209,7 +1209,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1365,12 +1365,22 @@ status from the package. Possible values are
 <h3>components<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-45"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
 <p>reported return status:</p>
-<ul class="simple">
-<li><p>0 success</p></li>
-<li><p>-1 allocation error</p></li>
-<li><p>-2 deallocation error</p></li>
-<li><p>-3 matrix data faulty (.n &lt; 1, .ne &lt; 0)</p></li>
-<li><p>-20 alegedly +ve definite matrix is not</p></li>
+<ul>
+<li><p><strong>0</strong></p>
+<p>success</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>allocation error</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>deallocation error</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>matrix data faulty (.n &lt; 1, .ne &lt; 0)</p>
+</li>
+<li><p><strong>-20</strong></p>
+<p>alegedly +ve definite matrix is not</p>
+</li>
 </ul>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-46"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>Fortran STAT value after allocate failure.</p>

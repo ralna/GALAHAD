@@ -3,9 +3,9 @@ NLS
 
 .. module:: galahad.nls
 
-.. include:: cqp_intro.rst
+.. include:: nls_intro.rst
 
-.. include:: cqp_storage.rst
+.. include:: nls_storage.rst
 
 functions
 ---------
