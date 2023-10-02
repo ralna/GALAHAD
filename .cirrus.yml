@@ -9,8 +9,9 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y py310-pip meson bash gcc12 openblas
+      pkg install -y py39-pip bash gcc12 openblas
       pip install numpy
+      pkg install meson
     else
       brew install python meson gcc openblas
       pip3 install numpy
