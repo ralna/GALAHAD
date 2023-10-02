@@ -113,15 +113,19 @@ if fc.get_id() == 'nagfor'
 elif fc.get_id() == 'gcc'
   add_global_arguments('-fopenmp', language : 'fortran')
   add_global_link_arguments('-fopenmp', language : 'fortran')
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
   add_global_arguments('-qopenmp', language : 'fortran')
   add_global_link_arguments('-qopenmp', language : 'fortran')
+elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
+  add_global_arguments('/Qopenmp', language : 'fortran')
 endif
 
 if cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
   add_global_arguments('-fopenmp', language : 'cpp')
-elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm' or cxx.get_id() == 'intel-llvm-cl'
+elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
   add_global_arguments('-qopenmp', language : 'cpp')
+elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
+  add_global_arguments('/Qopenmp', language : 'cpp')
 endif
 
 libmpi = dependency('mpi', language : 'fortran', required : false)
