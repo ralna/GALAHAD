@@ -69,7 +69,6 @@
       USE GALAHAD_SBLS_precision
       USE GALAHAD_CRO_precision
       USE GALAHAD_FIT_precision
-      USE GALAHAD_NORMS_precision, ONLY: TWO_norm
       USE GALAHAD_CHECKPOINT_precision
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
@@ -4234,7 +4233,7 @@
               RHS( : n ) = H_val( : n ) * ABS( X( : n ) )
             ELSE
               RHS( : n ) = zero
-              CALL CCQP_abs_HX( dims, n, RHS( : n ) ,                           &
+              CALL CCQP_abs_HX( dims, n, RHS( : n ) ,                          &
                                h_ne, H_val, H_col, H_ptr, X )
             END IF
           END IF
@@ -4578,11 +4577,11 @@
 
 !  factorize
 
-!   ( H + (X-X_l)^-1 Z_l               A^T )
-!   (   - (X_u-X)^-1 Z_u                   )
-!   (                    (C-C_l)^-1 Y_l -I )
-!   (                   -(C_u-C)^-1 Y_u    )
-!   (       A               -I             )
+!   ( H + (X-X_l)^-1 Z_l                 A^T )
+!   (   - (X_u-X)^-1 Z_u                     )
+!   (                     (C-C_l)^-1 Y_l  -S )
+!   (                    -(C_u-C)^-1 Y_u     )
+!   (       A                    -S          )
 
 !  either explicitly or implicitly (via its Schur complement)
 
@@ -4789,7 +4788,7 @@
 !  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
 
 !  H x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) + g = dual(theta)
-!                            A x(theta) - b                = prim(theta)
+!                        A x(theta) - S c(theta)           = prim(theta)
 !                           X(theta) z(theta)              = comp(theta)
 
 !  for suitable
@@ -4804,8 +4803,8 @@
 !  solve the equations
 
 !   (  H       A^T   -I    -I               ) (  x^k  )   (  h^k  )
-!   (          -I                 -I   -I   ) (  c^k  )   (  d^k  )
-!   (  A   -I                               ) ( -y^k  )   (  a^k  )
+!   (          -S                 -I   -I   ) (  c^k  )   (  d^k  )
+!   (  A   -S                               ) ( -y^k  )   (  a^k  )
 !   (  Z_l         X-X_l                    ) ( z_l^k ) = ( r_l^k )
 !   ( -Z_u               X_u-X              ) ( z_u^k )   ( r_u^k )
 !   (      Y_l                  C-C_l       ) ( y_l^k )   ( s_l^k )
@@ -4824,8 +4823,8 @@
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
-!     d^i = y - y_l - y_u
-!     a^1 =  A x - b
+!     d^i = S y - y_l - y_u
+!     a^1 =  A x - S c
 !     r_l^1 = - mu e + (X-X_l)z_l                    (store in z_l^1)
 !     r_u^1 =   mu e + (X_u-X)z_u                    (store in z_u^1)
 !     s_l^1 = - mu e + (C-C_l)y_l                    (store in y_l^1)
@@ -4844,8 +4843,8 @@
 !  (k>1) for the Taylor arc,
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
-!     d^i = y - y_l - y_u
-!     a^1 = A x - b
+!     d^i = S y - y_l - y_u
+!     a^1 = A x - S c
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -4874,8 +4873,8 @@
 !  (k>2) for the Zhang-Puiseux Taylor arc, or
 
 !     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
-!     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - b )
+!     d^i = 2 ( S y - y_l - y_u )
+!     a^1 = 2 ( A x - S c )
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -4884,8 +4883,8 @@
 !  (k=1),
 
 !     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
-!     d^2 = 2 ( y - y_l - y_u )
-!     a^2 = 2 ( A x - b )
+!     d^2 = 2 ( S y - y_l - y_u )
+!     a^2 = 2 ( A x - S c )
 !     r_l^2 = 2 ( - mu e + (X-X_l)z_l - X^1 z_l^1 )  (store in z_l^2)
 !     r_u^2 = 2 (   mu e + (X_u-X)z_u + X^1 z_u^1 )  (store in z_u^2)
 !     s_l^2 = 2 ( - mu e + (C-C_l)y_l - C^1 y_l^1 )  (store in y_l^2)
@@ -4914,8 +4913,8 @@
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
-!     d^i = y - y_l - y_u
-!     a^1 =  A x - b
+!     d^i = S y - y_l - y_u
+!     a^1 =  A x - S c
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + (X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + (X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + (C-C_l)y_l  (store in y_l^1)
@@ -4945,7 +4944,7 @@
 
 !     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - b )
+!     a^1 = 2 ( A x - S c )
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + 2(C-C_l)y_l  (store in y_l^1)
@@ -4955,7 +4954,7 @@
 
 !     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
-!     a^2 = 2 ( A x - b )
+!     a^2 = 2 ( A x - S c )
 !     r_l^2 = - 4 sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l - 2 X^1 z_l^1
 !                                                              (store in z_l^2)
 !     r_u^2 =   4 sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u + 2 X^1 z_u^1
@@ -5001,9 +5000,9 @@
 
 !  ( H + (X-X_l)^-1 Z_l               A^T ) ( x^k )   ( h^k + (X-X_l)^-1 r_l^k )
 !  (   - (X_u-X)^-1 Z_u                   ) (     )   (     + (X_u-X)^-1 r_u^k )
-!  (                    (C-C_l)^-1 Y_l -I ) ( c^k ) = ( d^k + (C-C_l)^-1 s_l^k )
+!  (                    (C-C_l)^-1 Y_l -S ) ( c^k ) = ( d^k + (C-C_l)^-1 s_l^k )
 !  (                   -(C_u-C)^-1 Y_u    ) (     )   (     + (C_u-C)^-1 s_u^k )
-!  (       A               -I             ) (-y^k )   (           a^k          )
+!  (       A               -S             ) (-y^k )   (           a^k          )
 
 !  record the 0-th order coefficients
 
@@ -5177,7 +5176,7 @@
                 END DO
               END IF
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
               RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -5232,7 +5231,7 @@
                                                + two_mu / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -5479,7 +5478,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - b )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -5530,7 +5529,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
               END IF
@@ -5586,7 +5585,7 @@
                     Y_u_coef( i, 2 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - b )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -6000,7 +5999,7 @@
             RHS( dims%c_b + i ) = Y( i ) + mu / DIST_C_u( i )
           END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
           IF ( m > 0 ) THEN
             RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
@@ -7210,6 +7209,35 @@
 
   600 CONTINUE
 
+!  compute the gradient of the Lagrangian function ..
+
+      CALL CCQP_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,     &
+                                     a_ne, A_val, A_col, A_ptr,                &
+                                     DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
+                                     GRAD_L( dims%x_s : dims%x_e ),            &
+                                     .FALSE., dufeas,                          &
+                                     control%perturb_h,                        &
+                                     Hessian_kind, gradient_kind,              &
+                                     target_kind,                              &
+                                     h_ne = h_ne, H_val = H_val,               &
+                                     H_col = H_col, H_ptr = H_ptr,             &
+                                     H_lm = H_lm, G = G,                       &
+                                     WEIGHT = WEIGHT, X0 = X0 )
+
+!  ... and the norm of the projected gradient
+
+      pjgnrm = zero
+      DO i = 1, n
+        gi = GRAD_L( i )
+        IF ( gi < zero ) THEN
+          gi = - MIN( ABS( X_u( i ) - X( i ) ), - gi )
+        ELSE
+          gi = MIN( ABS( X_l( i ) - X( i ) ), gi )
+        END IF
+        pjgnrm = MAX( pjgnrm, ABS( gi ) )
+      END DO
+
+
 !  compute the final objective function value
 
       IF ( Hessian_kind == 0 ) THEN
@@ -8278,7 +8306,7 @@
 
      END SUBROUTINE CCQP_full_terminate
 
-!-*-*-*-*-*-*-*-*-   C C Q P _ P U N T   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-   C C Q P _ P O U N C E   S U B R O U T I N E   -*-*-*-*-*-*-*-
 
       SUBROUTINE CCQP_pounce( n, m, A_val, A_col, A_ptr,                      &
                               C_l, C_u, X_l, X_u, X, C, Y, Z,                  &
@@ -8368,8 +8396,8 @@
 !  may either be solved "as is", or by eliminating x_B = b_B, 
 !  solving the "reduced" system
 
-!     (  H_FF   A_AF^T  ) (   x_F )   ( - g_F - H_BF x_B )       (2)
-!     (  A_AF     0     ) ( - y_A )   (   c_A - A_AB x_B )
+!     (  H_FF   A_AF^T  ) (   x_F ) =  ( - g_F - H_BF x_B )       (2)
+!     (  A_AF     0     ) ( - y_A )    (   c_A - A_AB x_B )
 
 !  and then recovering
 
@@ -8384,7 +8412,7 @@
       IF ( control%reduced_pounce_system .AND. .NOT. lmh ) THEN
 
 !  count the number of free variables (variables in F), and flag their
-!  indices in X_flag (a 0 value indicates a fixed variable). Also set
+!  indices in X_free (a 0 value indicates a fixed variable). Also set
 !  the active components of x to their appropriate bounds and the
 !  inactive dual variables z to zero, and initialize the active dual
 !  varaibles to g_B

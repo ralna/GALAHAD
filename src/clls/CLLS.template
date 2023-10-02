@@ -50,5 +50,6 @@
 ! deallocate-error-fatal                            no
 ! generate-sif-file                                 no
 ! generate-qplib-file                               no
+! symmetric-linear-equation-solver                  ssids
 ! sif-file-name                                     CLLSPROB.SIF
 ! qplib-file-name                                   CLLSPROB.qplib

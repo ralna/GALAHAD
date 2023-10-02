@@ -8207,7 +8207,7 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, nroots, n, rank
-      REAL ( KIND = rp_ ) :: root1, root2, dmax, dmin
+      REAL ( KIND = rp_ ) :: root1, root2
       LOGICAL ::  twobytwo
 !     INTEGER ( KIND = ip_ ) :: P( data%efactors%K%n )
       REAL ( KIND = rp_ ) :: D( 2, data%efactors%K%n )
@@ -8218,8 +8218,6 @@
       CALL SLS_enquire( data%efactors%K_data, inform%SLS_inform, D = D )
 
       twobytwo = .FALSE.
-      dmax = zero
-      dmin = HUGE( one )
       DO i = 1, rank
         IF ( twobytwo ) THEN
           twobytwo = .FALSE.

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-20 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-08-31 AT 10:15 GMT.
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_CLLS_double         ! double precision version
    IMPLICIT NONE
@@ -9,42 +9,51 @@
    TYPE ( CLLS_control_type ) :: control
    TYPE ( CLLS_inform_type ) :: inform
    INTEGER :: s
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, l_ne = 4
+   INTEGER, PARAMETER :: n = 3, o = 4, m = 2, ao_ne = 7, a_ne = 4
 ! start problem data
-   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
+   ALLOCATE( p%B( o ), p%R( o ) )
+   ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.           ! new structure
-   p%n = n ; p%m = m ; p%f = 1.0_wp           ! dimensions & objective constant
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
+   p%n = n ; p%o = o ; p%m = m ;              ! dimensions
+   p%B = (/ 2.0_wp, 2.0_wp, 3.0_wp, 1.0_wp /) ! observations
    p%C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
    p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
 !  sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE', s )     ! Specify co-ordinate
-   CALL SMT_put( p%L%type, 'COORDINATE', s )     ! storage for H and A
-   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%col( l_ne ) )
-   p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
-   p%H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
-   p%H%col = (/ 1, 2, 2, 3 /) ; p%H%ne = h_ne
-   p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
-   p%L%row = (/ 1, 1, 2, 2 /)
-   p%L%col = (/ 1, 2, 2, 3 /) ; p%L%ne = l_ne
+   CALL SMT_put( p%Ao%type, 'COORDINATE', s )    ! Specify co-ordinate
+   CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for Ao and A
+   ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Ao
+   p%Ao%row = (/ 1, 1, 2, 2, 3, 3, 4 /) 
+   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /) ; p%Ao%ne = ao_ne
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! A
+   p%A%row = (/ 1, 1, 2, 2 /)
+   p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
 ! problem data complete
    CALL CLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 11
+   control%print_level = 1
+   control%symmetric_linear_solver = 'sytr '
+   control%FDC_control%symmetric_linear_solver = 'sytr '
+!  control%FDC_control%print_level = 1
+   control%FDC_control%use_sls = .TRUE.
+!  control%reduced_pounce_system = .FALSE.
+!  control%SLS_control%print_level = 101
+!  control%SLS_control%print_level_solver = 101
+
    control%infinity = infinity                  ! Set infinity
-   CALL CLLS_solve( p, data, control, inform ) ! Solve
-   IF ( inform%status == 0 ) THEN               !  Successful return
+   CALL CLLS_solve( p, data, control, inform )  ! Solve
+   IF ( inform%status == 0 ) THEN               ! Successful return
      WRITE( 6, "( ' CLLS: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, p%X
-   ELSE                                         !  Error returns
+   ELSE                                         ! Error returns
      WRITE( 6, "( ' CLLS_solve exit status = ', I6 ) " ) inform%status
    END IF
    CALL CLLS_terminate( data, control, inform )  !  delete internal workspace

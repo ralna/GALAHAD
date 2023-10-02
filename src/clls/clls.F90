@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-07-01 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-09-03 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,7 +19,7 @@
 !      -----------------------------------------------
 !     | Minimize the least-squares objective function |
 !     |                                               |
-!     |  1/2 || A_o x - b ||^2 + 1/2 sigma || x ||^2  |
+!     |  1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2 |
 !     |                                               |
 !     | subject to the linear constraints and bounds  |
 !     |                                               |
@@ -42,9 +42,9 @@
       USE GALAHAD_LSP_precision, CLLS_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_precision, CLLS_data_type => QPD_data_type,              &
                                  CLLS_AX => QPD_AX, CLLS_abs_AX => QPD_abs_AX, &
-                                 CLLS_Aox => QPD_A_by_col_x
+                                 CLLS_AoX => QPD_A_by_col_X,                   &
+                                 CLLS_abs_AoX => QPD_abs_A_by_col_X
       USE GALAHAD_CQP_precision, CLLS_merit_value => CQP_merit_value,          &
-                              CLLS_potential_value => CQP_potential_value,     &
                               CLLS_compute_stepsize => CQP_compute_stepsize,   &
                               CLLS_compute_v_alpha => CQP_compute_v_alpha,     &
                               CLLS_compute_lmaxstep => CQP_compute_lmaxstep,   &
@@ -56,7 +56,6 @@
       USE GALAHAD_SLS_precision
       USE GALAHAD_CRO_precision
       USE GALAHAD_FIT_precision
-      USE GALAHAD_NORMS_precision, ONLY: TWO_norm
       USE GALAHAD_CHECKPOINT_precision
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
@@ -115,7 +114,11 @@
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
-      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( -15 )
+#ifdef GALAHAD_SINGLE
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 7 )
+#else
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 15 )
+#endif
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
 
 !-------------------------------------------------
@@ -380,6 +383,11 @@
 !    problem is to be generated
 
         LOGICAL :: generate_qplib_file = .FALSE.
+
+!  symmetric (indefinite) linear equation solver
+
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+                                                             REPEAT( ' ', 25 )
 
 !  name of generated SIF file containing input problem
 
@@ -658,11 +666,14 @@
 
 !  Initalize SLS components
 
-      CALL SLS_initialize( data%SLS_data, control%SLS_control,                 &
-                            inform%SLS_inform )
+      CALL SLS_initialize( control%symmetric_linear_solver,                    &
+                           data%SLS_data, control%SLS_control,                 &
+                           inform%SLS_inform )
       control%SLS_control%prefix = '" - SLS:"                     '
+      control%symmetric_linear_solver = inform%SLS_inform%solver
 
-      CALL SLS_initialize( data%SLS_pounce_data,                               &
+      CALL SLS_initialize( control%symmetric_linear_solver,                    &
+                           data%SLS_pounce_data,                               &
                            control%SLS_pounce_control,                         &
                            inform%SLS_pounce_inform )
       control%SLS_pounce_control%prefix = '" - SLS:"                     '
@@ -793,6 +804,7 @@
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
 !  generate-qplib-file                               F
+!  symmetric-linear-equation-solver                  ssids
 !  sif-file-name                                     CLLSPROB.SIF
 !  qplib-file-name                                   CLLSPROB.qplib
 !  output-line-prefix                                ""
@@ -874,8 +886,10 @@
                                              = deallocate_error_fatal + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: generate_qplib_file                 &
                                              = generate_sif_file + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
+      INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver             &
                                              = generate_qplib_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
+                                             = symmetric_linear_solver + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_name = sif_file_name + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: prefix = qplib_file_name + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
@@ -948,6 +962,8 @@
 
 !  Character key-words
 
+      spec( symmetric_linear_solver )%keyword =                                &
+        'symmetric-linear-equation-solver'
       spec( sif_file_name )%keyword = 'sif-file-name'
       spec( qplib_file_name )%keyword = 'qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
@@ -1128,6 +1144,9 @@
 
 !  Set character values
 
+     CALL SPECFILE_assign_value( spec( symmetric_linear_solver ),              &
+                                 control%symmetric_linear_solver,              &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( sif_file_name ),                        &
                                  control%sif_file_name,                        &
                                  control%error )
@@ -1200,7 +1219,7 @@
 !
 !  Minimize the linear least-squares objective function
 !
-!         1/2 || A_o x - b ||^2 + 1/2 sigma || x ||^2
+!         1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2
 !
 !  where
 !
@@ -1293,42 +1312,42 @@
 !    of the observations, b. The i-th component of B, i = 1, ...., o should
 !    contain the value of b_i.
 !
-!   %L is a structure of type SMT_type used to hold the matrix L.
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
 !
 !       In this case, the following must be set:
 !
-!       L%type( 1 : 10 ) = TRANSFER( 'COORDINATE', L%type )
-!       L%val( : )   the values of the components of L
-!       L%row( : )   the row indices of the components of L
-!       L%col( : )   the column indices of the components of L
-!       L%ne         the number of nonzeros used to store L
+!       A%type( 1 : 10 ) = TRANSFER( 'COORDINATE', A%type )
+!       A%val( : )   the values of the components of L
+!       A%row( : )   the row indices of the components of L
+!       A%col( : )   the column indices of the components of L
+!       A%ne         the number of nonzeros used to store L
 !
 !    ii) sparse, by rows
 !
 !       In this case, the following must be set:
 !
-!       L%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', L%type )
-!       L%val( : )   the values of the components of L, stored row by row
-!       L%col( : )   the column indices of the components of L
-!       L%ptr( : )   pointers to the start of each row, and past the end of
+!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
+!       A%val( : )   the values of the components of L, stored row by row
+!       A%col( : )   the column indices of the components of L
+!       A%ptr( : )   pointers to the start of each row, and past the end of
 !                    the last row
 !
 !    iii) dense, by rows
 !
 !       In this case, the following must be set:
 !
-!       L%type( 1 : 5 ) = TRANSFER( 'DENSE', L%type )
-!       L%val( : )   the values of the components of L, stored row by row,
+!       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
+!       A%val( : )   the values of the components of L, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
-!    However, if scheme (i) is used for input, the output L%row will contain
-!    the row numbers corresponding to the values in L%val, and thus in this
+!    However, if scheme (i) is used for input, the output A%row will contain
+!    the row numbers corresponding to the values in A%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (ii).
 !
 !   %C is a REAL array of length %m, which is used to store the values of
@@ -1458,15 +1477,15 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc
+      INTEGER ( KIND = ip_ ) :: i, j, n_depen, nzc
       REAL :: time_start, time_record, time_now
       REAL ( KIND = rp_ ) :: time_analyse, time_factorize
       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, cro_clock_matrix
       REAL ( KIND = rp_ ) :: av_bnd
 !     REAL ( KIND = rp_ ) :: fixed_sum, xi
-      LOGICAL :: printi, printa, remap_freed, reset_bnd
-      LOGICAL :: separable_bqp
+      LOGICAL :: printi, remap_freed, reset_bnd
+!     LOGICAL :: printa
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -1524,11 +1543,12 @@
 !  basic single line of output per iteration
 
       printi = control%out > 0 .AND. control%print_level >= 1
-      printa = control%out > 0 .AND. control%print_level >= 101
+!     printa = control%out > 0 .AND. control%print_level >= 101
 
 !  ensure that input parameters are within allowed ranges
 
       IF ( prob%n < 1 .OR. prob%o < 0 .OR. prob%m < 0 .OR.                     &
+           prob%regularization_weight < zero .OR.                              &
            .NOT. QPT_keyword_A( prob%Ao%type ) .OR.                            &
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
@@ -1596,6 +1616,17 @@
 
 !  store the problem dimensions
 
+        SELECT CASE ( SMT_get( prob%Ao%type ) )
+        CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+          data%ao_ne = prob%o * prob%n
+        CASE ( 'SPARSE_BY_ROWS' )
+          data%ao_ne = prob%AO%ptr( prob%m + 1 ) - 1
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          data%ao_ne = prob%AO%ptr( prob%n + 1 ) - 1
+        CASE ( 'COORDINATE' )
+          data%ao_ne = prob%Ao%ne
+        END SELECT
+
         SELECT CASE ( SMT_get( prob%A%type ) )
         CASE ( 'DENSE' )
           data%a_ne = prob%m * prob%n
@@ -1604,57 +1635,6 @@
         CASE ( 'COORDINATE' )
           data%a_ne = prob%A%ne
         END SELECT
-
-        SELECT CASE ( SMT_get( prob%H%type ) )
-        CASE ( 'NONE', 'ZERO', 'IDENTITY' )
-          data%h_ne = 0
-        CASE ( 'SCALED_IDENTITY' )
-          data%h_ne = 1
-        CASE ( 'DIAGONAL' )
-          data%h_ne = prob%n
-        CASE ( 'DENSE' )
-          data%h_ne = ( prob%n * ( prob%n + 1 ) ) / 2
-        CASE ( 'SPARSE_BY_ROWS' )
-          data%h_ne = prob%H%ptr( prob%n + 1 ) - 1
-        CASE ( 'COORDINATE' )
-          data%h_ne = prob%H%ne
-        END SELECT
-      END IF
-
-!  if the problem has no general constraints, check to see if it is separable
-
-      IF ( data%a_ne <= 0 ) THEN
-        separable_bqp = .TRUE.
-        SELECT CASE ( SMT_get( prob%H%type ) )
-        CASE ( 'NONE', 'ZERO', 'IDENTITY', 'SCALED_IDENTITY', 'DIAGONAL' )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, prob%n
-            DO j = 1, i
-              l = l + 1
-              IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
-                separable_bqp = .FALSE. ; GO TO 10
-              END IF
-            END DO
-          END DO
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, prob%n
-            DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-              j = prob%H%col( l )
-              IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
-                separable_bqp = .FALSE. ; GO TO 10
-              END IF
-            END DO
-          END DO
-        CASE ( 'COORDINATE' )
-          DO l = 1, prob%H%ne
-            i = prob%H%row( l ) ; j = prob%H%col( l )
-            IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
-              separable_bqp = .FALSE. ; GO TO 10
-            END IF
-          END DO
-        END SELECT
- 10     CONTINUE
 
 !  make sure that X_status, C_status, C and R have been allocated and are 
 !  large enough
@@ -1690,45 +1670,6 @@
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  the problem is a separable bound-constrained QP. Solve it explicitly
-
-        IF ( control%treat_separable_as_general ) separable_bqp = .FALSE.
-        IF ( separable_bqp ) THEN
-          IF ( printi ) WRITE( control%out,                                    &
-            "( /, A, ' Solving separable bound-constrained QP -' )" ) prefix
-          CALL QPD_solve_separable_BQP( prob, control%infinity,                &
-                                        control%obj_unbounded,  inform%obj,    &
-                                        inform%feasible, inform%status,        &
-                                        B_stat = prob%X_status( : prob%n ) )
-          IF ( printi ) THEN
-            CALL CLOCK_time( clock_now )
-            WRITE( control%out,                                                &
-               "( A, ' On exit from QPD_solve_separable_BQP: status = ',       &
-            &   I0, ', time = ', F0.2, /, A, ' objective value =', ES12.4 )",  &
-              advance = 'no' ) prefix, inform%status, inform%time%clock_total  &
-                + clock_now - clock_start, prefix, inform%obj
-            WRITE( control%out, "( ', active bounds: ', I0, ' from ', I0 )" )  &
-              COUNT( prob%X_status( : prob%n ) /= 0 ), prob%n
-          END IF
-          inform%iter = 0 ; inform%non_negligible_pivot = zero
-          inform%factorization_integer = 0 ; inform%factorization_real = 0
-
-          IF ( printi ) then
-            SELECT CASE( inform%status )
-              CASE( GALAHAD_error_restrictions  ) ; WRITE( control%out,        &
-                "( /, A, '  Warning - input paramters incorrect' )" ) prefix
-              CASE( GALAHAD_error_primal_infeasible ) ; WRITE( control%out,    &
-                "( /, A, '  Warning - the constraints appear to be',           &
-               &   ' inconsistent' )" ) prefix
-              CASE( GALAHAD_error_unbounded ) ; WRITE( control%out,            &
-                "( /, A, '  Warning - problem appears to be unbounded from',   &
-               & ' below' )") prefix
-            END SELECT
-          END IF
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-          GO TO 800
-        END IF
       END IF
 
 !  perform the preprocessing
@@ -1738,12 +1679,12 @@
           IF ( prob%m > 0 ) THEN
             WRITE( control%out,                                                &
                "(  A, ' problem dimensions before preprocessing: ', /,  A,     &
-           &   ' n = ', I0, ' m = ', I0, ' a_ne = ', I0, ' h_ne = ', I0 )" )   &
-               prefix, prefix, prob%n, prob%m, data%a_ne, data%h_ne
+           &   ' n = ', I0, ' m = ', I0, ' ao_ne = ', I0, ' a_ne = ', I0 )" )  &
+               prefix, prefix, prob%n, prob%m, data%ao_ne, data%a_ne
           ELSE
             WRITE( control%out,                                                &
                "(  A, ' problem dimensions before preprocessing:',             &
-           &   ' n = ', I0, ' h_ne = ', I0 )" ) prefix, prob%n, data%h_ne
+           &   ' n = ', I0, ' ao_ne = ', I0 )" ) prefix, prob%n, data%ao_ne
           END IF
         END IF
 
@@ -1776,6 +1717,17 @@
 
 !  record array lengths
 
+        SELECT CASE ( SMT_get( prob%Ao%type ) )
+        CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+          data%ao_ne = prob%o * prob%n
+        CASE ( 'SPARSE_BY_ROWS' )
+          data%ao_ne = prob%AO%ptr( prob%m + 1 ) - 1
+        CASE ( 'SPARSE_BY_COLUMNS' )
+          data%ao_ne = prob%AO%ptr( prob%n + 1 ) - 1
+        CASE ( 'COORDINATE' )
+          data%ao_ne = prob%Ao%ne
+        END SELECT
+
         SELECT CASE ( SMT_get( prob%A%type ) )
         CASE ( 'DENSE' )
           data%a_ne = prob%m * prob%n
@@ -1785,31 +1737,16 @@
           data%a_ne = prob%A%ne
         END SELECT
 
-        SELECT CASE ( SMT_get( prob%H%type ) )
-        CASE ( 'NONE', 'ZERO', 'IDENTITY' )
-          data%h_ne = 0
-        CASE ( 'SCALED_IDENTITY' )
-          data%h_ne = 1
-        CASE ( 'DIAGONAL' )
-          data%h_ne = prob%n
-        CASE ( 'DENSE' )
-          data%h_ne = ( prob%n * ( prob%n + 1 ) ) / 2
-        CASE ( 'SPARSE_BY_ROWS' )
-          data%h_ne = prob%H%ptr( prob%n + 1 ) - 1
-        CASE ( 'COORDINATE' )
-          data%h_ne = prob%H%ne
-        END SELECT
-
         IF ( printi ) THEN
           IF ( prob%m > 0 ) THEN
             WRITE( control%out,                                                &
                "(  A, ' problem dimensions after preprocessing: ', /,  A,      &
-           &   ' n = ', I0, ' m = ', I0, ' a_ne = ', I0, ' h_ne = ', I0 )" )   &
-               prefix, prefix, prob%n, prob%m, data%a_ne, data%h_ne
+           &   ' n = ', I0, ' m = ', I0, ' ao_ne = ', I0, ' a_ne = ', I0 )" )  &
+               prefix, prefix, prob%n, prob%m, data%ao_ne, data%a_ne
           ELSE
             WRITE( control%out,                                                &
                "(  A, ' problem dimensions after  preprocessing:',             &
-           &   ' n = ', I0, ' h_ne = ', I0 )" ) prefix, prob%n, data%h_ne
+           &   ' n = ', I0, ' ao_ne = ', I0 )" ) prefix, prob%n, data%ao_ne
           END IF
         END IF
 
@@ -2020,7 +1957,9 @@
         data%LSP_dims%y_s = data%LSP_dims%c_e + 1
         data%LSP_dims%y_e = data%LSP_dims%c_e + prob%m
         data%LSP_dims%y_i = data%LSP_dims%c_s + prob%m
-        data%LSP_dims%v_e = data%LSP_dims%y_e + o
+        data%LSP_dims%r_s = data%LSP_dims%y_e + 1
+        data%LSP_dims%r_e = data%LSP_dims%y_e + prob%o
+        data%LSP_dims%v_e = data%LSP_dims%r_e
 
 !  test for satisfactory termination
 
@@ -2060,19 +1999,19 @@
 !  arrays containing data relating to the composite vector ( x  c  y  r )
 !  are partitioned as follows:
 
-!   <---------- n --------->  <---- nc ------>  <-------- m --------->  <- o ->
-!                             <-------- m --------->
-!                        <-------- m --------->
-!   ----------------------------------------------------------------------------
-!   |                   |    |                 |    |                 |        |
-!   |         x              |       c         |          y           |    r   |
-!   |                   |    |                 |    |                 |        |
-!   ----------------------------------------------------------------------------
-!    ^                 ^    ^ ^               ^ ^    ^               ^        ^
-!    |                 |    | |               | |    |               |        |
-!   x_s                |    |c_s              |y_s  y_i             y_e      v_e
-!                      |    |                 |
-!                     c_b  x_e               c_e
+!  <---------- n --------->  <---- nc ------>  <-------- m ---------> <-- o ->
+!                            <-------- m --------->
+!                       <-------- m --------->
+!  ----------------------------------------------------------------------------
+!  |                   |    |                 |    |                 |        |
+!  |         x              |       c         |          y           |    r   |
+!  |                   |    |                 |    |                 |        |
+!  ----------------------------------------------------------------------------
+!   ^                 ^    ^ ^               ^ ^    ^               ^ ^       ^
+!   |                 |    | |               | |    |               | |       |
+!  x_s                |    |c_s              |y_s  y_i              |r_s     r_e
+!                     |    |                 |                      |         =
+!                    c_b  x_e               c_e                    y_e       v_e
 
       data%LSP_dims%x_s = 1 ; data%LSP_dims%x_e = prob%n
       data%LSP_dims%c_s = data%LSP_dims%x_e + 1
@@ -2081,14 +2020,16 @@
       data%LSP_dims%y_s = data%LSP_dims%c_e + 1
       data%LSP_dims%y_e = data%LSP_dims%c_e + prob%m
       data%LSP_dims%y_i = data%LSP_dims%c_s + prob%m
-      data%LSP_dims%v_e = data%LSP_dims%y_e + o
+      data%LSP_dims%r_s = data%LSP_dims%y_e + 1
+      data%LSP_dims%r_e = data%LSP_dims%y_e + prob%o
+      data%LSP_dims%v_e = data%LSP_dims%r_e
 
 !  ----------------
 !  set up workspace
 !  ----------------
 
-      data%ao_ne = Ao_ptr( n + 1 ) - 1
-      data%a_ne = A_ptr( m + 1 ) - 1
+      data%ao_ne = prob%Ao%ptr( prob%n + 1 ) - 1
+      data%a_ne = prob%A%ptr( prob%m + 1 ) - 1
 
       CALL CLLS_workspace( prob%n, prob%o, prob%m, data%LSP_dims, data%ao_ne,  &
                            data%a_ne, data%order, data%GRAD_L, data%DIST_X_l,  &
@@ -2102,7 +2043,8 @@
                            data%DZ_l_zh, data%DZ_u_zh, data%X_coef,            &
                            data%C_coef, data%Y_coef, data%Y_l_coef,            &
                            data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,        &
-                           data%K_s, data%Y_last, data%Z_last,                 &
+                           data%R_last, data%c_last, data%X_last,              &
+                           data%Y_last, data%Z_last,                           &
                            data%K_sls, control%error, control%series_order,    &
                            control%deallocate_error_fatal,                     &
                            control%space_critical, inform%status,              &
@@ -2131,8 +2073,9 @@
                             data%Z_l, data%Z_u, data%BARRIER_X,                &
                             data%Y_l, data%DIST_C_l, data%Y_u,                 &
                             data%DIST_C_u, data%C, data%BARRIER_C,             &
-                            data%SCALE_C, data%RHS, data%K_sls,                &
-                            data%K_free, data%X_free,                          &
+                            data%SCALE_C, data%RHS, data%R_last, data%C_last,  &
+                            data%X_last, data%Y_last, data%Z_last,             &
+                            data%K_sls, data%X_free,                           &
                             data%order, data%X_coef, data%C_coef,              &
                             data%Y_coef, data%Y_l_coef, data%Y_u_coef,         &
                             data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,       &
@@ -2142,8 +2085,7 @@
                             data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,          &
                             data%OPT_alpha, data%OPT_merit,                    &
                             data%SLS_data, data%SLS_pounce_data,               &
-                            prefix, control, inform,                           &
-                            data%A_s, data%H_s, data%Y_last, data%Z_last )
+                            prefix, control, inform, data%K_sls_pounce )
 
       inform%time%analyse = inform%time%analyse +                              &
         inform%FDC_inform%time%analyse - time_analyse
@@ -2153,84 +2095,6 @@
         inform%FDC_inform%time%factorize - time_factorize
       inform%time%clock_factorize = inform%time%clock_factorize +              &
         inform%FDC_inform%time%clock_factorize - clock_factorize
-
-!  crossover solution if required
-
-! ** NB. No crossover for shifted least-norm problems currently
-
-      IF ( .FALSE. ) THEN
-!     IF ( control%crossover .AND. inform%status == GALAHAD_ok ) THEN
-        IF ( printa ) THEN
-          WRITE( control%out, "( A, ' Before crossover:' )" ) prefix
-          WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
-         &   '          X_u            Z        st' )" ) prefix
-          DO i = 1, prob%n
-            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ),            &
-            prob%X_status( i )
-          END DO
-
-          WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
-         &   '          C_u            Y        st' )" ) prefix
-          DO i = 1, prob%m
-            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ),            &
-            prob%C_status( i )
-          END DO
-        END IF
-        data%CRO_control = control%CRO_control
-        data%CRO_control%feasibility_tolerance =                               &
-          MAX( inform%primal_infeasibility, inform%dual_infeasibility,         &
-               inform%complementary_slackness,                                 &
-               control%CRO_control%feasibility_tolerance )
-        IF ( data%CRO_control%feasibility_tolerance < infinity / two ) THEN
-          data%CRO_control%feasibility_tolerance =                             &
-            two * data%CRO_control%feasibility_tolerance
-        ELSE
-          data%CRO_control%feasibility_tolerance = infinity
-        END IF
-        time_analyse = inform%CRO_inform%time%analyse
-        clock_analyse = inform%CRO_inform%time%clock_analyse
-        time_factorize = inform%CRO_inform%time%factorize
-        clock_factorize = inform%CRO_inform%time%clock_factorize
-!       CALL CRO_crossover( prob%n, prob%m, data%LSP_dims%c_equality,          &
-!                           prob%H%val, prob%H%col, prob%H%ptr, prob%A%val,    &
-!                           prob%A%col, prob%A%ptr, prob%G, prob%C_l,          &
-!                           prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,      &
-!                           prob%Y, prob%Z, prob%C_status, prob%X_status,      &
-!                           data%CRO_data, data%CRO_control,                   &
-!                           inform%CRO_inform )
-        inform%time%analyse = inform%time%analyse +                            &
-          inform%CRO_inform%time%analyse - time_analyse
-        inform%time%clock_analyse = inform%time%clock_analyse +                &
-          inform%CRO_inform%time%clock_analyse - clock_analyse
-        inform%time%factorize = inform%time%factorize +                        &
-          inform%CRO_inform%time%factorize - time_factorize
-        inform%time%clock_factorize = inform%time%clock_factorize +            &
-          inform%CRO_inform%time%clock_factorize - clock_factorize
-        cro_clock_matrix =                                                     &
-          inform%CRO_inform%time%clock_analyse - clock_analyse +               &
-          inform%CRO_inform%time%clock_factorize - clock_factorize
-
-        IF ( printa ) THEN
-          WRITE( control%out, "( A, ' After crossover:' )" ) prefix
-          WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
-         &   '          X_u            Z        st' )" ) prefix
-          DO i = 1, prob%n
-            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ),            &
-            prob%X_status( i )
-          END DO
-
-          WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
-         &   '          C_u            Y        st' )" ) prefix
-          DO i = 1, prob%m
-            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ),            &
-            prob%C_status( i )
-          END DO
-        END IF
-      END IF
 
 !  if some of the constraints were freed during the computation, refix them now
 
@@ -2285,7 +2149,7 @@
 
         ELSE IF ( control%restore_problem == 1 ) THEN
           CALL LSP_restore( data%LSP_map, data%LSP_inform, prob,               &
-                            get_f = .TRUE., get_g = .TRUE.,                    &
+                            get_b = .TRUE.,                                    &
                             get_x = .TRUE., get_x_bounds = .TRUE.,             &
                             get_y = .TRUE., get_z = .TRUE.,                    &
                             get_c = .TRUE., get_c_bounds = .TRUE. )
@@ -2363,11 +2227,13 @@
 
       SUBROUTINE CLLS_solve_main( dims, n, o, m, weight, Ao_val, Ao_row,       &
                                   Ao_ptr, B, A_val, A_col, A_ptr,              &
-                                  C_l, C_u, X_l, X_u, RES, C_RES,              &
+                                  C_l, C_u, X_l, X_u, R, C_RES,                &
                                   X, Y, Z, C_stat, X_Stat, GRAD_L,             &
                                   DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,     &
                                   Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,  &
-                                  SCALE_C, RHS, K_sls, K_free, X_free, order,  &
+                                  SCALE_C, RHS, &
+                                  R_last, C_last, X_last, Y_last, Z_last,      &
+                                  K_sls, X_free,   &
                                   order, X_coef, C_coef, Y_coef, Y_l_coef,     &
                                   Y_u_coef, Z_l_coef, Z_u_coef, BINOMIAL,      &
                                   CS_coef, COEF, ROOTS, ROOTS_data,            &
@@ -2375,13 +2241,13 @@
                                   DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
                                   OPT_alpha, OPT_merit, SLS_data,              &
                                   SLS_pounce_data, prefix, control, inform,    &
-                                  C_last, X_last, Y_last, Z_last )
+                                  K_sls_pounce )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Minimize the quadratic objective function
 !
-!         1/2 || A_o x - b ||^2 + 1/2 sigma || x ||^2
+!         1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2
 !
 !  subject to the constraints
 !
@@ -2509,6 +2375,9 @@
 !  m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m.  RESTRICTION: m >= 0
 !
+!  weight is a REAL variable, that must be set to the regularization weight.
+!    RESTRICTION: weight >= 0
+
 !  Ao_row//ptr/val is used to hold the matrix A by columns. In particular:
 !      Ao_col( : )   the row indices of the components of A
 !      Ao_ptr( : )   pointers to the start of each column, and past the end of
@@ -2599,9 +2468,9 @@
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, X_last
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, R_last
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y, Y_last
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z, Z_last
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( o ) :: RES
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES, C_last
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%v_e ) :: RHS
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
@@ -2657,7 +2526,7 @@
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( order ) :: OPT_alpha
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( order ) :: OPT_merit
       TYPE ( SMT_type ), INTENT( INOUT ) :: K_sls
-      TYPE ( SMT_type ), INTENT( OUT ) :: K_free
+      TYPE ( SMT_type ), INTENT( INOUT ) :: K_sls_pounce
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( INOUT ) :: inform
@@ -2673,8 +2542,8 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: Ao_ne, A_ne, i, j, k, l, b_change, c_change
-      INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level, n_sbls
+      INTEGER ( KIND = ip_ ) :: Ao_ne, A_ne, i, ii, j, k, l, b_change, c_change
+      INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_level
       INTEGER ( KIND = ip_ ) :: nbnds, nbnds_x, nbnds_c, muzero_fixed, nbact
       INTEGER ( KIND = ip_ ) :: out, error, it_best, infeas_max, iorder, sorder
       INTEGER ( KIND = ip_ ) :: primal_nonopt, dual_nonopt, cs_nonopt
@@ -2690,17 +2559,17 @@
       REAL ( KIND = rp_ ) :: slkmin_x, slkmin_c, res_primal, res_primal_dual
       REAL ( KIND = rp_ ) :: merit, merit_trial, merit_best, merit_model
       REAL ( KIND = rp_ ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
-      REAL ( KIND = rp_ ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
+      REAL ( KIND = rp_ ) :: pivot_tol, min_pivot_tol
       REAL ( KIND = rp_ ) :: alpha, alpha_l, alpha_u, alpha_max, one_minus_alpha
-      REAL ( KIND = rp_ ) :: sigma, gamma_c, gi, co, sigma_mu, sigma_mu2, curv
-      REAL ( KIND = rp_ ) :: one_plus_sigma_mu, two_plus_sigma_mu, balance, xi
+      REAL ( KIND = rp_ ) :: sigma, gamma_c, gi, co, sigma_mu, sigma_mu2
+      REAL ( KIND = rp_ ) :: one_plus_sigma_mu, two_plus_sigma_mu, balance
       REAL ( KIND = rp_ ) :: one_plus_2_sigma_mu, two_sigma_mu2, two_sigma_mu
       REAL ( KIND = rp_ ) :: opt_alpha_guarantee, opt_merit_guarantee
       REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, two_mu
 
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
-      LOGICAL :: maxpiv, guarantee, unbounded, optimal
+      LOGICAL :: maxpiv, guarantee, optimal
 !     LOGICAL :: root_arc
       LOGICAL :: puiseux, get_stat, stat_known
       LOGICAL :: use_scale_c = .FALSE.
@@ -2725,13 +2594,13 @@
 
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
 !     IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
-        WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
-       &                       ES24.16 )" ) prefix, n, m, f
+        WRITE( control%out, "( /, A, ' n = ', I0, ', o = ', I0,                &
+       &                      ', m = ', I0 )" ) prefix, n, o, m
         WRITE( control%out, "( A, ' A0 (column-wise) =' )" ) prefix
         DO j = 1, n
          IF ( A_ptr( j ) <= A_ptr( j + 1 ) - 1 )                               &
             WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
-            ( j, A_row( i ), A_val( i ), i = A_ptr( j ), A_ptr( j + 1 ) - 1 )
+            ( j, Ao_row( i ), Ao_val( i ), i = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1)
         END DO
         WRITE( control%out, "( A, ' B =', /, ( 5X, 3ES24.16 ) )" )             &
           prefix, B( : o )
@@ -2763,10 +2632,10 @@
         END DO
 
         WRITE( sif, "( /, 'GROUPS', / )" )
-        DO i = 1, o
+        DO j = 1, n
           DO l = Ao_ptr( i ), Ao_ptr( i + 1 ) - 1
             WRITE( sif, "( ' N  R', I8, ' X', I8, ' ', ES12.5 )" )             &
-              i, Ao_col( l ), Ao_val( l )
+              Ao_row( l ), j, Ao_val( l )
           END DO
         END DO
         DO i = 1, dims%c_l_start - 1
@@ -2789,6 +2658,10 @@
         END DO
 
         WRITE( sif, "( /, 'CONSTANTS', / )" )
+        DO i = 1, o
+          IF ( B( i ) /= zero )                                                &
+          WRITE( sif, "( '    RHS      ', ' R', I8, ' ', ES12.5 )" ) i, B( i )
+        END DO
         DO i = 1, dims%c_l_end
           IF ( C_l( i ) /= zero )                                              &
           WRITE( sif, "( '    RHS      ', ' C', I8, ' ', ES12.5 )" ) i, C_l( i )
@@ -2829,8 +2702,8 @@
         END DO
 
         WRITE( sif, "( /, 'GROUP TYPE', //,                                    &
-                          ' GV LS        GVAR', //,                            &
-                          'GROUP USES', // )" )
+       &                  ' GV LS        GVAR', //,                            &
+       &                  'GROUP USES', // )" )
         DO i = 1, o
           DO l = Ao_ptr( i ), Ao_ptr( i + 1 ) - 1
             WRITE( sif, "( ' XT  R', I8, ' L2' )" ) i
@@ -2838,13 +2711,13 @@
         END DO
 
         WRITE( sif, "( /, 'ENDATA', //,                                        &
-                          'GROUPS        CLLS_OUT', //,                        &
-                          'INDIVIDUALS', //,                                   &
-                          ' T  LS', /,                                         &
-                          ' F                      0.5 * GVAR * GVAR', /,      &
-                          ' G                      GVAR', /,                   &
-                          ' H                      1.0', /,                    &
-                          'ENDATA' )" )
+       &                  'GROUPS        CLLS_OUT', //,                        &
+       &                  'INDIVIDUALS', //,                                   &
+       &                  ' T  LS', /,                                         &
+       &                  ' F                      0.5 * GVAR * GVAR', /,      &
+       &                  ' G                      GVAR', /,                   &
+       &                  ' H                      1.0', /,                    &
+       &                  'ENDATA' )" )
       END IF
 
 !  SIF file generated
@@ -2945,34 +2818,56 @@
       get_stat = .FALSE.
       stat_known = .FALSE.
       iorder = 0
+      optimal = .FALSE.
 
-!  set up structure for the matrix (whose lower triangle is)
+!  find the largest components of Ao and A
 
-!       ( sigma I + D            )   ( n  dimensional )
-!       (              E         )   ( nc dimensional )
-!       (     A       -S   0     )   ( m  dimensional )
-!       (     Ao              -I )   ( o  dimensional )
+      Ao_ne = Ao_ptr( n + 1 ) - 1
+      IF ( Ao_ne > 0 ) THEN
+        aomax = MAXVAL( ABS( Ao_val( : Ao_ne ) ) )
+      ELSE
+        aomax = zero
+      END IF
+
+      A_ne = A_ptr( m + 1 ) - 1
+      IF ( A_ne > 0 ) THEN
+        amax = MAXVAL( ABS( A_val( : A_ne ) ) )
+      ELSE
+        amax = zero
+      END IF
+
+      IF ( printi ) WRITE( out,                                                &
+        "( /, A, '  maximum element of Ao =', ES11.4 )" )  prefix, aomax
+      IF ( printi .AND. m > 0 ) WRITE( out,                                    &
+         "( A, '  maximum element of A  =', ES11.4 )" ) prefix, amax
+
+!  set up structure for the matrix K (whose lower triangle is)
+
+!       ( weight I + D     A  Ao^T )   ( n  dimensional )
+!       (               E -S       )   ( nc dimensional )
+!       (     A        -S  0       )   ( m  dimensional )
+!       (     Ao               -I  )   ( o  dimensional )
 
 !  where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !        E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
-!  and   S is a diagonal constraint scaling matrix (by default I) 
+!  and S is a diagonal constraint scaling matrix (by default I) 
 
 !  K will be stored in coordinate form
 
-      CALL SMT_put( K_sls%type, 'COORDINATE', inform%alloc_status )
       npnc = n + dims%nc
       npncpm = npnc + m
 
-!  input the 1,1 block, sigma I + D (structure only)
+!  input the 1,1 block, weight I + D (structure only)
 
       d_start = 0
       DO l = 1, n
         K_sls%row( l ) = l ; K_sls%col( l ) = l
       END DO
-
+      
 !  input the 2,2 block, E (structure only)
 
-      e_start = l
+      e_start = n
+      l = e_start
       DO j = n + 1, npnc
         l = l + 1
         K_sls%row( l ) = j ; K_sls%col( l ) = j
@@ -3009,7 +2904,7 @@
 
 !  input the 4,4 block, -I
 
-      DO l = npncpm + 1, npncpm + o
+      DO i = npncpm + 1, npncpm + o
         l = l + 1
         K_sls%row( l ) = i ; K_sls%col( l ) = i
         K_sls%val( l ) = - one
@@ -3019,12 +2914,22 @@
 
       K_sls%n = npncpm + o ; K_sls%ne = l
 
+!  record the required linear solver, and ammend if necessary
+
+      CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
+                                  SLS_data, inform%SLS_inform, check = .TRUE. )
+      IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
+        inform%status = GALAHAD_error_unknown_solver ; GO TO 700
+      ELSE
+        CALL SLS_initialize_solver( inform%SLS_inform%solver, SLS_pounce_data, &
+                                    inform%SLS_pounce_inform )
+      END IF
+
 !  analyse the sparsity pattern of K to build a tentaive ordering
 !  for the sparse factorization
 
       time_analyse = inform%SLS_inform%time%analyse
       clock_analyse = inform%SLS_inform%time%clock_analyse
-
       CALL SLS_analyse( K_sls, SLS_data, SLS_control, inform%SLS_inform )
 
       inform%time%analyse = inform%time%analyse +                              &
@@ -3197,7 +3102,7 @@
           ELSE
             Y_l( i ) = MAX( ABS( SCALE_C( i ) * Y( i ) ),  dufeas )
           END IF
-          IF ( printd ) WRITE( out,  "( A, I6, 2ES12.4, '      -     ',       &
+          IF ( printd ) WRITE( out,  "( A, I6, 2ES12.4, '      -     ',        &
          &  ES12.4, '      -    ' )" ) prefix, i, C_RES( i ), C_l( i ), Y_l( i )
         END DO
 
@@ -3319,40 +3224,20 @@
         Z_last( i ) = Z_u( i )
       END DO
 
-!  compute the initial objective value
+!  compute the objective residual
 
-      curv = zero
-      DO i = 1, n
-        xi = X( i )
-        DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
-          j = H_col( l )
-          IF ( i == j ) THEN
-            curv = curv + xi * xi * H_val( l )
-          ELSE
-            curv = curv + two * xi * X( j ) * H_val( l )
-          END IF
-        END DO
-      END DO
-      inform%obj = f + half * curv
+      R = - B
+      CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+!write(6,*) ' c ', K_sls%val( K_sls%ne )
+!write(6,*) ' r ', R
+      R_last = R
+!write(6,*) ' d ', K_sls%val( K_sls%ne )
 
-!  find the largest components of Ao and A
+!  compute the objective function
 
-      IF ( Ao_ne > 0 ) THEN
-        aomax = MAXVAL( ABS( Ao_val( : Ao_ne ) ) )
-      ELSE
-        aomax = zero
-      END IF
-
-      IF ( A_ne > 0 ) THEN
-        amax = MAXVAL( ABS( A_val( : A_ne ) ) )
-      ELSE
-        amax = zero
-      END IF
-
-      IF ( printi ) WRITE( out,                                                &
-        "( /, A, '  maximum element of Ao =', ES11.4 )" )  prefix, aomax
-      IF ( printi .AND. m > 0 ) WRITE( out,                                    &
-         "( /, A, '  maximum element of A =', ES11.4 )" ) prefix, amax
+      inform%obj = half * DOT_PRODUCT( R, R )
+      IF ( weight > zero )                                                     &
+        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
 !  test to see if we are feasible
 
@@ -3367,18 +3252,13 @@
         END IF
       END IF
 
-!  compute the residual
+!  compute the gradient of the Lagrangian function
 
-      RES( : o ) = - B( : o )
-      CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
-
-!  compute the gradient of the Lagrangian function.
-
-      CALL CLLS_Lagrangian_gradient( dims, n, o, m, X, Y, Y_l, Y_u, Z_l, Z_u,  &
+      CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                    &
+                                     X, R, Y, Y_l, Y_u, Z_l, Z_u,              &
                                      Ao_ne, Ao_val, Ao_row, Ao_ptr,            &
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
-                                     RES, weight,                              &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
                                      control%getdua, dufeas )
 
@@ -3579,7 +3459,6 @@
       re = ' ' ; nbact = 0
       pivot_tol = SLS_control%relative_pivot_tolerance
       min_pivot_tol = SLS_control%minimum_pivot_tolerance
-      relative_pivot_tol = pivot_tol
       maxpiv = pivot_tol >= half
 
       IF ( printi ) WRITE( out,                                                &
@@ -3684,10 +3563,16 @@
 
 !  evaluate abs(dual)
 
-        RHS( : n ) = zero
-        CALL CLLS_abs_HX( dims, n, RHS( : n ) ,                                &
-                          h_ne, H_val, H_col, H_ptr, X )
-        RHS( : n ) = RHS( : n ) + ABS( G )
+        R_last = ABS( B )
+        CALL CLLS_abs_AoX( o, R_last, n, Ao_ne, Ao_val, Ao_row, Ao_ptr,        &
+                           n, X, ' ' )
+        IF ( weight > zero ) THEN
+          RHS( : n ) = weight * ABS( X )
+        ELSE
+          RHS( : n ) = zero
+        END IF
+        CALL CLLS_abs_AoX( n, RHS, n, Ao_ne, Ao_val, Ao_row, Ao_ptr,           &
+                           o, R_last, 'T' )
         CALL CLLS_abs_AX( n, RHS( : n ), m, A_ne, A_val, A_col, A_ptr, m, Y,   &
                           'T' )
         dual_nonopt = 0
@@ -3937,25 +3822,24 @@
           K_sls%val( d_start + 1 : d_start + dims%x_free ) = zero
           K_sls%val( d_start + dims%x_free + 1 : d_start + n ) = BARRIER_X
         END IF
-
         K_sls%val( e_start + 1 : e_start + dims%nc ) = BARRIER_C
 
 ! ::::::::::::::::::::::::::::::
 !  Factorize the required matrix
 ! ::::::::::::::::::::::::::::::
 
-  200   CONTINUE
+   200  CONTINUE
 
 !  factorize
 
-!   ( sigma I + D     A^T  Ao^T )   ( n  dimensional )
-!   (              E   -S       )   ( nc dimensional )
-!   (     A       -S            )   ( m  dimensional )
-!   (     Ao                -I  )   ( o  dimensional )
+!   ( weight I + D     A  Ao^T )   ( n  dimensional )
+!   (               E -S       )   ( nc dimensional )
+!   (     A        -S  0       )   ( m  dimensional )
+!   (     Ao               -I  )   ( o  dimensional )
 
 !   where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !         E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
-!  and   S is a diagonal constraint scaling matrix (by default I) 
+!   and S is a diagonal constraint scaling matrix (by default I) 
 
         IF ( printw ) WRITE( out, "( A,                                        &
        &  ' ......... factorization of KKT matrix ............... ' )" ) prefix
@@ -4073,7 +3957,7 @@
 !  series approximation of the arc v(1-alpha)) about alpha = 0 (equiv theta
 !  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
 
-!  ( Ao^T Ao + sigma I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) 
+!  ( Ao^T Ao + weight I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) 
 !       - Ao^T b           = dual(theta)
 !  A x(theta) - S c(theta) = prim(theta)
 !  X(theta) z(theta)       = comp(theta)
@@ -4086,18 +3970,18 @@
 !      dual(theta) = theta^2 ( Ao^T Ao x - A^T y - z - Ao^T b )
 !  (Puiseux) and various possible comp(theta)
 
-!  Let r = Ao x - b, g_l = Ao^T r + sigma x - A^T y and r_c = A x - S c
+!  Let r = Ao x - b, g_l = Ao^T r + weight x - A^T y and r_c = A x - S c
 
 !  To find the coefficients v^k = ( x^k, c^k, y^k, z_l^k, z_u^k, y_l^k, y_u^k ),
 !  solve the equations
 
-!   (  Ao^T Ao + sigma I   A^T  -I    -I                ) (  x^k  )   (  h^k  )
-!   (                      -S                -I   -I    ) (  c^k  )   (  d^k  )
-!   (  A             -S                                 ) ( -y^k  )   (  a^k  )
-!   (  Z_l                     X-X_l                    ) ( z_l^k ) = ( r_l^k )
-!   ( -Z_u                           X_u-X              ) ( z_u^k )   ( r_u^k )
-!   (                Y_l                    C-C_l       ) ( y_l^k )   ( s_l^k )
-!   (               -Y_u                          C_u-C ) ( y_u^k )   ( s_u^k )
+!   (  Ao^T Ao + weight I     A^T -I   -I             ) (  x^k  )   (  h^k  )
+!   (                         -S            -I  -I    ) (  c^k  )   (  d^k  )
+!   (  A                  -S                          ) ( -y^k  )   (  a^k  )
+!   (  Z_l                       X-X_l                ) ( z_l^k ) = ( r_l^k )
+!   ( -Z_u                            X_u-X           ) ( z_u^k )   ( r_u^k )
+!   (                     Y_l              C-C_l      ) ( y_l^k )   ( s_l^k )
+!   (                    -Y_u                   C_u-C ) ( y_u^k )   ( s_u^k )
 
 !  for k > 0 for which
 
@@ -4113,7 +3997,7 @@
 
 !     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 =  A x - c
+!     a^1 = r_c
 !     r_l^1 = - mu e + (X-X_l)z_l                    (store in z_l^1)
 !     r_u^1 =   mu e + (X_u-X)z_u                    (store in z_u^1)
 !     s_l^1 = - mu e + (C-C_l)y_l                    (store in y_l^1)
@@ -4133,7 +4017,7 @@
 
 !     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 = A x - c
+!     a^1 = r_c
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -4163,7 +4047,7 @@
 
 !     h^1 = 2 ( g_l - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - c )
+!     a^1 = 2 r_c
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -4173,7 +4057,7 @@
 
 !     h^1 = 2 ( g_l - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
-!     a^2 = 2 ( A x - c )
+!     a^2 = 2 r_c
 !     r_l^2 = 2 ( - mu e + (X-X_l)z_l - X^1 z_l^1 )  (store in z_l^2)
 !     r_u^2 = 2 (   mu e + (X_u-X)z_u + X^1 z_u^1 )  (store in z_u^2)
 !     s_l^2 = 2 ( - mu e + (C-C_l)y_l - C^1 y_l^1 )  (store in y_l^2)
@@ -4203,7 +4087,7 @@
 
 !     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 =  A x - c
+!     a^1 =  r_c
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + (X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + (X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + (C-C_l)y_l  (store in y_l^1)
@@ -4233,7 +4117,7 @@
 
 !     h^1 = 2 ( g - A^Ty - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - c )
+!     a^1 = 2 r_c
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + 2(C-C_l)y_l  (store in y_l^1)
@@ -4243,7 +4127,7 @@
 
 !     h^2 = 2 ( g - A^Ty - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
-!     a^2 = 2 ( A x - c )
+!     a^2 = 2 r_c
 !     r_l^2 = - 4 sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l - 2 X^1 z_l^1
 !                                                              (store in z_l^2)
 !     r_u^2 =   4 sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u + 2 X^1 z_u^1
@@ -4290,10 +4174,10 @@
 !
 !  and introducing r^k = Ao x^k, we find on substitution that
 !
-!   ( sigma I + D     A^T  Ao^T ) ( x^k )
-!   (              E   -S       ) ( c^k ) = 
-!   (     A       -S            ) (-y^k )
-!   (     Ao                -I  ) ( r^k )
+!   ( weight I + D     A  Ao^T ) ( x^k )
+!   (               E -S       ) ( c^k ) = rhs =
+!   (     A        -S  0       ) (-y^k )
+!   (     Ao               -I  ) ( r^k )
 !
 !      ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
 !      ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
@@ -4303,7 +4187,7 @@
 !  where we recall that 
 !      D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !  and E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
-
+!
 !  record the 0-th order coefficients
 
         X_coef( : , 0 ) = X
@@ -4477,7 +4361,7 @@
                 END DO
               END IF
 
-!  rhs for constraint infeasibilities: A x - c
+!  rhs for constraint infeasibilities: A x - S c
 
               RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -4532,7 +4416,7 @@
                                                + two_mu / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - c
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -4779,7 +4663,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - c )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -4830,7 +4714,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - c
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
               END IF
@@ -4886,7 +4770,7 @@
                     Y_u_coef( i, 2 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - c )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -5055,7 +4939,7 @@
 
 !  rhs for Ao x^k - r_0 = 0: 0
 
-          RHS( dims%y_e + 1 : dims%v_e  ) = zero
+          RHS( dims%r_s : dims%r_e  ) = zero
 
           IF ( printd ) THEN
             WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
@@ -5067,10 +4951,10 @@
 ! 3b. Compute the series coefficients
 ! :::::::::::::::::::::::::::::::::::
 
-!  solve  ( sigma I + D     A^T  Ao^T ) ( x^k )
-!         (              E   -S       ) ( c^k ) = rhs
-!         (     A       -S            ) (-y^k )
-!         (     Ao                -I  ) ( r^k )
+!   solve ( weight I + D     A  Ao^T ) ( x^k )
+!         (               E -S       ) ( c^k ) = rhs
+!         (     A        -S  0       ) (-y^k )
+!         (     Ao               -I  ) ( r^k )
 
           IF ( printw ) THEN
             IF ( puiseux ) THEN
@@ -5086,6 +4970,13 @@
 
 !  use a direct method
 
+          IF ( printd ) THEN
+            WRITE( out, 2120 ) prefix, ' row ', K_sls%row( : K_sls%ne )
+            WRITE( out, 2120 ) prefix, ' col ', K_sls%col( : K_sls%ne )
+            WRITE( out, 2100 ) prefix, ' K ', K_sls%val( : K_sls%ne )
+            WRITE( out, 2100 ) prefix, ' RHS ', RHS( : K_sls%n )
+          END IF
+
           CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
           CALL SLS_solve( K_sls, RHS, SLS_data, SLS_control, inform%SLS_inform )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -5096,6 +4987,7 @@
           IF ( inform%status /= GALAHAD_ok ) GO TO 700
 
           IF ( printd ) THEN
+!           WRITE( out, 2100 ) prefix, ' SOL ', RHS( : K_sls%n )
             WRITE( out, 2100 ) prefix, ' SOL_x ', RHS( dims%x_s : dims%x_e )
             IF ( m > 0 )                                                       &
               WRITE( out, 2100 ) prefix, ' SOL_y ', RHS( dims%y_s : dims%y_e )
@@ -5104,7 +4996,7 @@
 !  if the residual of the linear system is larger than the current
 !  optimality residual, no further progress is likely
 
-          IF ( inform%backward_error_1 > merit ) THEN
+          IF ( inform%SLS_inform%backward_error_1 > merit ) THEN
 
 !  it didn't. We might have run out of options ...
 
@@ -5135,8 +5027,6 @@
             END IF
             alpha = zero ; nbact = 0
 
-!  refactorize
-
             GO TO 200
           END IF
 
@@ -5153,7 +5043,6 @@
 !     z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
 !     y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
 !   & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ]
-
 
           DO i = dims%x_free + 1, dims%x_l_start - 1
             Z_l_coef( i, k ) =                                                 &
@@ -5281,7 +5170,7 @@
             RHS( dims%c_b + i ) = Y( i ) + mu / DIST_C_u( i )
           END DO
 
-!  rhs for constraint infeasibilities: A x - c
+!  rhs for constraint infeasibilities: A x - S c
 
           IF ( m > 0 ) THEN
             RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
@@ -5295,7 +5184,7 @@
 
 !  rhs for Ao x^k - r_0 = 0: 0
 
-          RHS( dims%y_e + 1 : dims%v_e  ) = zero
+          RHS( dims%r_s : dims%r_e  ) = zero
 
           IF ( printd ) THEN
             WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
@@ -5305,11 +5194,10 @@
 
 ! Compute the coefficients
 
-!  solve ( H + (X-X_l)^-1 Z_l               A^T ) (  x^k )
-!        (   - (X_u-X)^-1 Z_u                   ) (      )
-!        (                    (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
-!        (                   -(C_u-C)^-1 Y_u    ) (      )
-!        (       A               -I             ) ( -y^k )
+!   solve ( weight I + D     A  Ao^T ) ( x^k )
+!         (               E -S       ) ( c^k ) = rhs
+!         (     A        -S  0       ) (-y^k )
+!         (     Ao               -I  ) ( r^k )
 
           IF ( printw ) WRITE( out, "( A, ' ............... compute',          &
          &        ' Zhang-Taylor coefficients  ............... ' )" )  prefix
@@ -5317,14 +5205,8 @@
 !  use a direct method
 
           CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-          IF ( inform%preconditioner == 2 ) THEN
-            CALL SBLS_solve( A_sbls%n, A_sbls%m, A_sbls, C_sbls,               &
-                             SBLS_data, SBLS_control, inform%SBLS_inform, RHS )
-          ELSE
-            CALL SBLS_solve_iterative( A_sbls%n, A_sbls%m, H_sbls, A_sbls,     &
-                                       RHS, SBLS_data, control%SBLS_control,   &
-                                       inform%SBLS_inform )
-          END IF
+          CALL SLS_solve( K_sls, RHS, SLS_data, SLS_control,                   &
+                          inform%SLS_inform )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           time_solve = time_solve + time_now - time_record
           clock_solve = clock_solve + clock_now - clock_record
@@ -5338,37 +5220,26 @@
           inform%status = inform%status
           IF ( inform%status /= GALAHAD_ok ) GO TO 700
 
+
 !  if the residual of the linear system is larger than the current
 !  optimality residual, no further progress is likely
 
-          IF ( inform%norm_residual > merit ) THEN
+          IF ( inform%SLS_inform%backward_error_1 > merit ) THEN
 
 !  it didn't. We might have run out of options ...
 
-            IF ( SBLS_control%factorization == 2 .AND. maxpiv ) THEN
+            IF ( maxpiv ) THEN
               inform%status = GALAHAD_error_ill_conditioned ; GO TO 600
-
-!  ... or we may change the method ...
-
-            ELSE IF ( SBLS_control%factorization < 2 .AND. maxpiv ) THEN
-              pivot_tol = relative_pivot_tol
-              maxpiv = pivot_tol >= half
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-              SBLS_control%factorization = 2
-              IF ( printi ) WRITE( out,                                        &
-                "( A, '    ** Switching to augmented system method' )" ) prefix
 
 !  ... or we can increase the pivot tolerance
 
-            ELSE IF ( SBLS_control%SLS_control%relative_pivot_tolerance        &
+            ELSE IF ( SLS_control%relative_pivot_tolerance                     &
                       < relative_pivot_default ) THEN
               pivot_tol = relative_pivot_default
               min_pivot_tol = relative_pivot_default
               maxpiv = .FALSE.
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-!             SBLS_control%factorization = 2
+              SLS_control%relative_pivot_tolerance = pivot_tol
+              SLS_control%minimum_pivot_tolerance = min_pivot_tol
               IF ( printi ) WRITE( out,                                        &
                 "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
                 prefix, pivot_tol
@@ -5376,16 +5247,13 @@
               pivot_tol = half
               min_pivot_tol = half
               maxpiv = .TRUE.
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-!             SBLS_control%factorization = 2
+              SLS_control%relative_pivot_tolerance = pivot_tol
+              SLS_control%minimum_pivot_tolerance = min_pivot_tol
               IF ( printi ) WRITE( out,                                        &
                 "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
                 prefix, pivot_tol
             END IF
             alpha = zero ; nbact = 0
-
-!  refactorize
 
             GO TO 200
           END IF
@@ -5810,18 +5678,17 @@
 
 !  compute the residual
 
-          RES( : o ) = - B( : o )
-          CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+          R( : o ) = - B( : o )
+          CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
 
 !  compute the gradient of the Lagrangian function
 
-          CALL CLLS_Lagrangian_gradient( dims, n, o, m,                        &
-                                         X, Y, Y_l, Y_u, Z_l, Z_u,             &
+          CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                &
+                                         X, R, Y, Y_l, Y_u, Z_l, Z_u,          &
                                          Ao_ne, Ao_val, Ao_row, Ao_ptr,        &
                                          A_ne, A_val, A_col, A_ptr,            &
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
-                                         RES, weight,                          &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
                                          control%getdua, dufeas )
 
@@ -5869,26 +5736,21 @@
 
             CALL CPU_TIME( time_record )
             CALL CHECKPOINT( inform%iter, time_record - time_start,            &
-               MAX( inform%primal_infeasibility,                               &
-               inform%dual_infeasibility, slknes ),                            &
-               inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+                             MAX( inform%primal_infeasibility,                 &
+                                 inform%dual_infeasibility, slknes ),          &
+                             inform%checkpointsIter, inform%checkpointsTime,   &
+                             1, 16 )
 
-!  if optimal, compute the objective function value
+!  if optimal, compute the objective residual ...
 
-            curv = zero
-            DO i = 1, n
-              xi = X( i )
-              DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
-                j = H_col( l )
-                IF ( i == j ) THEN
-                  curv = curv + xi * xi * H_val( l )
-                ELSE
-                  curv = curv + two * xi * X( j ) * H_val( l )
-                END IF
-              END DO
-            END DO
-            inform%obj = f + half * curv
-            inform%obj = inform%obj + DOT_PRODUCT( G, X )
+            R = - B
+            CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
+!  ... and the objective function
+
+            inform%obj = half * DOT_PRODUCT( R, R )
+            IF ( weight > zero )                                               &
+              inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
             IF ( .NOT. inform%feasible ) THEN
               IF ( printi ) WRITE( out, 2070 ) prefix
@@ -6051,17 +5913,16 @@
 
 !  compute the residual
 
-        RES( : o ) = - B( : o )
-        CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+        R( : o ) = - B( : o )
+        CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
 
 !  compute the gradient of the Lagrangian function
 
-        CALL CLLS_Lagrangian_gradient( dims, n, o, m,                          &
-                                       X, Y, Y_l, Y_u, Z_l, Z_u,               &
+        CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                  &
+                                       X, R, Y, Y_l, Y_u, Z_l, Z_u,            &
                                        Ao_ne, Ao_val, Ao_row, Ao_ptr,          &
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
-                                       RES, weight,                            &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
                                        control%getdua, dufeas )
 
@@ -6077,30 +5938,24 @@
 
 !       inform%primal_infeasibility =one_minus_alpha*inform%primal_infeasibility
 
-!  compute the objective function value
+!  compute the objective residual ...
 
-        curv = zero
-        DO i = 1, n
-          xi = X( i )
-          DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
-            j = H_col( l )
-            IF ( i == j ) THEN
-              curv = curv + xi * xi * H_val( l )
-            ELSE
-              curv = curv + two * xi * X( j ) * H_val( l )
-            END IF
-          END DO
-        END DO
-        inform%obj = f + half * curv
-        inform%obj = inform%obj + DOT_PRODUCT( G, X )
+        R = - B
+        CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
+!  ... and the objective function
+
+        inform%obj = half * DOT_PRODUCT( R, R )
+        IF ( weight > zero )                                                   &
+          inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
 !  evaluate the merit function
 
         merit = CLLS_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,        &
-                                 DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,       &
-                                 GRAD_L( dims%x_s : dims%x_e ), C_RES,         &
-                                 tau, res_primal, inform%dual_infeasibility,   &
-                                 res_primal_dual, res_cs )
+                                  DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,      &
+                                  GRAD_L( dims%x_s : dims%x_e ), C_RES,        &
+                                  tau, res_primal, inform%dual_infeasibility,  &
+                                  res_primal_dual, res_cs )
 
 !  compute the complementary slackness, and the min/max components
 !  of the primal/dual infeasibilities
@@ -6192,9 +6047,9 @@
 
         CALL CPU_TIME( time_record )
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
-           MAX( inform%primal_infeasibility,                                   &
-           inform%dual_infeasibility, slknes ),                                &
-           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+                         MAX( inform%primal_infeasibility,                     &
+                              inform%dual_infeasibility, slknes ),             &
+                         inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
 
 !  test for optimality
 
@@ -6314,17 +6169,19 @@
 
           IF ( b_change + c_change /= 0 ) THEN
             IF ( printi ) WRITE( out,                                          &
-              "( A, 7X, ' changes in predicted X/C_stat = ',                   &
+              "( A, '  changes in predicted X/C_stat = ',                      &
             &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
-            CALL CLLS_pounce( dims, n, o, m, Ao_val, Ao_row, Ao_ptr,           &
-                              A_val, A_col, A_ptr, C_l, C_u,                   &
-                              X_l, X_u, X_last, C_last, Y_last, Z_last,        &
-                              C_stat, X_Stat, X_free, RHS, H_free, A_active,   &
-                              SBLS_pounce_data, control, inform, optimal )
+            CALL CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
+                              B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,      &
+                              X_last, R_last, C_last, Y_last, Z_last,          &
+                              C_stat, X_Stat, X_free, RHS, K_sls_pounce,       &
+                              SLS_pounce_data, control, inform, optimal )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
               WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
+              WRITE( out, "( ' R before ', /, ( 5ES12.4 ) )" ) R
+              WRITE( out, "( ' R ', /, ( 5ES12.4 ) )" ) R_last 
               WRITE( out, "( ' C before ', /, ( 5ES12.4 ) )" ) C_res
               WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last 
               WRITE( out, "( ' Y before ', /, ( 5ES12.4 ) )" ) Y
@@ -6334,14 +6191,14 @@
             END IF
 
             IF ( optimal ) THEN
-              IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' pounce successful, optimal solution found' )" ) prefix
-              X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
+              IF ( printi ) WRITE( out, "( A,                                  &
+             &   '  pounce successful, optimal solution found' )" ) prefix
+              X = X_last ; R = R_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
               stat_known = .TRUE.
               GO TO 500
             ELSE
-              IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' pounce unsuccessful, continuing' )" ) prefix
+              IF ( printi ) WRITE( out, "( A,                                  &
+             &   '  pounce unsuccessful, continuing' )" ) prefix
             END IF
           END IF
         END IF
@@ -6417,27 +6274,44 @@
 
   600 CONTINUE
 
-!  compute the final objective function value
+!  compute the final objective residual ...
 
-      curv = zero
+      R = - B
+      CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
+!  ... the objective function ...
+
+      inform%obj = half * DOT_PRODUCT( R, R )
+      IF ( weight > zero )                                                     &
+        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+
+!  ... the gradient of the Lagrangian function ..
+
+      CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                    &
+                                     X, R, Y, Y_l, Y_u, Z_l, Z_u,              &
+                                     Ao_ne, Ao_val, Ao_row, Ao_ptr,            &
+                                     A_ne, A_val, A_col, A_ptr,                &
+                                     DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
+                                     GRAD_L( dims%x_s : dims%x_e ),            &
+                                     .FALSE., dufeas )
+
+!  ... and the norm of the projected gradient
+
+      pjgnrm = zero
       DO i = 1, n
-        xi = X( i )
-        DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
-          j = H_col( l )
-          IF ( i == j ) THEN
-            curv = curv + xi * xi * H_val( l )
-          ELSE
-            curv = curv + two * xi * X( j ) * H_val( l )
-          END IF
-        END DO
+        gi = GRAD_L( i )
+        IF ( gi < zero ) THEN
+          gi = - MIN( ABS( X_u( i ) - X( i ) ), - gi )
+        ELSE
+          gi = MIN( ABS( X_l( i ) - X( i ) ), gi )
+        END IF
+        pjgnrm = MAX( pjgnrm, ABS( gi ) )
       END DO
-      inform%obj = f + half * curv
-      inform%obj = inform%obj + DOT_PRODUCT( G, X )
 
 !  print statistics
 
       IF ( printi ) THEN
-        WRITE( out, "( /, A, '  Final objective function value is', ES22.14,   &
+        WRITE( out, "( /, A, '  Final objective function value is', ES21.14,   &
       &       /, A, '  Total number of iterations = ', I0,                     &
       &       /, A, '  Total number of backtracks = ', I0 )" )                 &
           prefix, inform%obj, prefix, inform%iter, prefix, inform%nbacts
@@ -6604,7 +6478,8 @@
 
 !  estimate the variable and constraint exit status
 
-      IF ( .NOT. stat_known ) THEN
+      IF ( .NOT. stat_known .AND. inform%status >= 0 ) THEN
+!     IF ( .NOT. stat_known ) THEN
         X_stat_old = X_stat ; C_stat_old = C_stat
         CALL CLLS_indicators( dims, n, m, C_l, C_u, C_last, C,                 &
                               DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,         &
@@ -6623,27 +6498,35 @@
         b_change = COUNT( X_stat_old - X_stat /= 0 )
         c_change = COUNT( C_stat_old - C_stat /= 0 )
 
+!      WRITE( 6, * ) ' before pounce'
+!      WRITE( 6, "( ' b ', 5ES12.4 )" ) B
+!      WRITE( 6, "( ' x ', 5ES12.4 )" ) X
+!      WRITE( 6, "( ' y ', 5ES12.4 )" ) Y
+!      WRITE( 6, "( ' z ', 5ES12.4 )" ) Z
+!      WRITE( 6, "( ' c ', 5ES12.4 )" ) C
+!      WRITE( 6, "( ' r ', 5ES12.4 )" ) R
+
 !  if desired, see if the predicted variable and constraint exit status
 !  provides an optimal solution
 
         IF ( b_change + c_change /= 0 ) THEN
           IF ( printi ) WRITE( out,                                            &
-            "( A, 7X, ' changes in predicted X/C_stat = ',                     &
+            "( A,  '  changes in predicted X/C_stat = ',                       &
           &    I0, ', ', I0, ', pouncing for solution ...' )" )                &
              prefix, b_change, c_change
-          CALL CLLS_pounce( dims, n, o, m, Ao_val, Ao_row, Ao_ptr,             &
-                            A_val, A_col, A_ptr, C_l, C_u,                     &
-                            X_l, X_u, X_last, C_last, Y_last, Z_last,          &
-                            C_stat, X_Stat, X_free, RHS, H_free, A_active,     &
-                            SBLS_pounce_data, control, inform, optimal )
+          CALL CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,           &
+                            B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,        &
+                            X_last, R_last, C_last, Y_last, Z_last,            &
+                            C_stat, X_Stat, X_free, RHS, K_sls_pounce,         &
+                            SLS_pounce_data, control, inform, optimal )
           IF ( optimal ) THEN
-            IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' pounce successful, optimal solution found' )" ) prefix
-            X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
+            IF ( printi ) WRITE( out, "( A,                                    &
+           &   '  pounce successful, optimal solution found' )" ) prefix
+            X = X_last ; R = R_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
             stat_known = .TRUE.
           ELSE
-            IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' pounce unsuccessful' )" ) prefix
+            IF ( printi ) WRITE( out, "( A,                                    &
+           &   '  pounce unsuccessful, status = ', I0 )" ) prefix, inform%status
           END IF
         END IF
       END IF
@@ -6651,9 +6534,6 @@
 !  If necessary, print warning messages
 
   810 CONTINUE
-
-      SBLS_data%last_preconditioner = no_last
-      SBLS_data%last_factorization = no_last
 
       IF ( printi ) then
         SELECT CASE( inform%status )
@@ -6677,24 +6557,8 @@
           CASE( GALAHAD_error_unbounded ) ; WRITE( out, "( /, A,               &
          &   '  Warning - problem appears to be unbounded from below' )") prefix
         END SELECT
-        IF ( inform%factorization == 0 .OR.                        &
-             inform%factorization == 1 ) THEN
-          WRITE( control%out, "( A, '  Schur-complement factorization is',     &
-         &       ' used (pivot tol =', ES9.2, ')' )" ) prefix,                 &
-            SBLS_control%SLS_control%relative_pivot_tolerance
-        ELSE
-          WRITE( control%out, "( A, '  Augmented system factorization is',     &
-         &       ' used (pivot tol =', ES9.2, ')' )" ) prefix,                 &
-            SBLS_control%SLS_control%relative_pivot_tolerance
-        END IF
-        WRITE( out, "( A, '  Linear system solver ', A,                        &
-       &               ' (preconditioner = ', I0, ') is used' )" )             &
-            prefix, TRIM( SBLS_control%symmetric_linear_solver ),              &
-            inform%preconditioner
-        IF ( inform%preconditioner /= 2 .AND.                      &
-             inform%preconditioner /= 7 )                          &
-          WRITE( out, "( A, 2X, I0, ' projected CG iterations taken ' )" )     &
-            prefix, inform%iter_pcg
+        WRITE( out, "( A, '  Linear system solver ', A, ' is used' )" )        &
+            prefix, TRIM( control%symmetric_linear_solver )
         SELECT CASE ( control%indicator_type )
         CASE( 1 ) 
           WRITE( out, "( A, '  Primal indicators used' )" ) prefix
@@ -6720,6 +6584,7 @@
  2070 FORMAT( /, A, ' ========================= feasible point found',         &
                     ' =========================', / )
  2100 FORMAT( A, A, /, ( 10X, 7ES10.2 ) )
+ 2120 FORMAT( A, A, /, ( 10X, 7I7 ) )
  2110 FORMAT( /, A, '  Norm of projected gradient is', ES11.4,                 &
               /, A, '  Norm of infeasibility is', ES11.4 )
  2130 FORMAT( A, 21X, ' == >  mu estimated   = ', ES10.2, /,                   &
@@ -6796,7 +6661,7 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-!  Deallocate all arrays allocated within SBLS
+!  Deallocate all arrays allocated within SLS
 
       CALL SLS_terminate( data%SLS_data, control%SLS_control,                  &
                           inform%SLS_inform )
@@ -6807,7 +6672,7 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-!  Deallocate all arrays allocated within SBLS_pounce
+!  Deallocate all arrays allocated within SLS_pounce
 
       CALL SLS_terminate( data%SLS_pounce_data,                                &
                           control%SLS_pounce_control,                          &
@@ -6815,14 +6680,14 @@
       inform%status = inform%SLS_pounce_inform%status
       IF ( inform%SLS_pounce_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'clls: data%SBLS_pounce'
+        inform%bad_alloc = 'clls: data%SLS_pounce'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
 !  Deallocate FIT internal arrays
 
       CALL FIT_terminate( data%FIT_data, control%FIT_control,                  &
-                           inform%FIT_inform )
+                          inform%FIT_inform )
       IF ( inform%FIT_inform%status /= GALAHAD_ok )                            &
         inform%status = inform%FIT_inform%status
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -6831,7 +6696,7 @@
 !  Deallocate ROOTS internal arrays
 
       CALL ROOTS_terminate( data%ROOTS_data, control%ROOTS_control,            &
-                           inform%ROOTS_inform )
+                            inform%ROOTS_inform )
       IF ( inform%ROOTS_inform%status /= GALAHAD_ok )                          &
         inform%status = inform%ROOTS_inform%status
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -6988,15 +6853,15 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'clls: data%H_s'
-      CALL SPACE_dealloc_array( data%H_s,                                      &
+      array_name = 'clls: data%R_last'
+      CALL SPACE_dealloc_array( data%R_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'clls: data%A_s'
-      CALL SPACE_dealloc_array( data%A_s,                                      &
+      array_name = 'clls: data%X_last'
+      CALL SPACE_dealloc_array( data%C_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -7093,6 +6958,27 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'clls: data%COEF'
+      CALL SPACE_dealloc_array( data%COEF,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'clls: data%CS_COEF'
+      CALL SPACE_dealloc_array( data%CS_COEF,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'clls: data%ROOTS'
+      CALL SPACE_dealloc_array( data%ROOTS,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'clls: data%DX_zh'
       CALL SPACE_dealloc_array( data%DX_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -7142,90 +7028,6 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'clls: data%A_sbls%row'
-      CALL SPACE_dealloc_array( data%A_sbls%row,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%A_sbls%col'
-      CALL SPACE_dealloc_array( data%A_sbls%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%A_sbls%val'
-      CALL SPACE_dealloc_array( data%A_sbls%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_sbls%row'
-      CALL SPACE_dealloc_array( data%H_sbls%row,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_sbls%col'
-      CALL SPACE_dealloc_array( data%H_sbls%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_sbls%val'
-      CALL SPACE_dealloc_array( data%H_sbls%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%A_active%ptr'
-      CALL SPACE_dealloc_array( data%A_active%ptr,                             &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%A_active%col'
-      CALL SPACE_dealloc_array( data%A_active%col,                             &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%A_active%val'
-      CALL SPACE_dealloc_array( data%A_active%val,                             &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_free%ptr'
-      CALL SPACE_dealloc_array( data%H_free%ptr,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_free%col'
-      CALL SPACE_dealloc_array( data%H_free%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'clls: data%H_free%val'
-      CALL SPACE_dealloc_array( data%H_free%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
       array_name = 'clls: data%X_free'
       CALL SPACE_dealloc_array( data%X_free,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -7233,13 +7035,61 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+     array_name = 'clls: data%K_sls%row'
+     CALL SPACE_dealloc_array( data%K_sls%row,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%K_sls%col'
+     CALL SPACE_dealloc_array( data%K_sls%col,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%K_sls%val'
+     CALL SPACE_dealloc_array( data%K_sls%val,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%K_sls%type'
+     CALL SPACE_dealloc_array( data%K_sls%type,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'clls: data%K_sls_pounce%row'
+      CALL SPACE_dealloc_array( data%K_sls_pounce%row,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'clls: data%K_sls_pounce%col'
+      CALL SPACE_dealloc_array( data%K_sls_pounce%col,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'clls: data%K_sls_pounce%val'
+      CALL SPACE_dealloc_array( data%K_sls_pounce%val,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'clls: data%K_sls_pounce%type'
+      CALL SPACE_dealloc_array( data%K_sls_pounce%type,                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       RETURN
 
 !  End of subroutine CLLS_terminate
 
       END SUBROUTINE CLLS_terminate
 
-! -  G A L A H A D -  C L L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+! - G A L A H A D -  C L L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E 
 
      SUBROUTINE CLLS_full_terminate( data, control, inform )
 
@@ -7323,60 +7173,35 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%K_sls%row'
-     CALL SPACE_dealloc_array( data%K_sls%row,                                 &
+     array_name = 'clls: data%prob%Ao%ptr'
+     CALL SPACE_dealloc_array( data%prob%Ao%ptr,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%K_sls%col'
-     CALL SPACE_dealloc_array( data%K_sls%col,                                 &
+     array_name = 'clls: data%prob%Ao%row'
+     CALL SPACE_dealloc_array( data%prob%Ao%row,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%K_sls%val'
-     CALL SPACE_dealloc_array( data%K_sls%val,                                 &
+     array_name = 'clls: data%prob%Ao%col'
+     CALL SPACE_dealloc_array( data%prob%Ao%col,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%K_sls%type'
-     CALL SPACE_dealloc_array( data%K_sls%type,                                &
+     array_name = 'clls: data%prob%Ao%val'
+     CALL SPACE_dealloc_array( data%prob%Ao%val,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%prob%H%ptr'
-     CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
+     array_name = 'clls: data%prob%Ao%type'
+     CALL SPACE_dealloc_array( data%prob%Ao%type,                              &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%H%row'
-     CALL SPACE_dealloc_array( data%prob%H%row,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%H%col'
-     CALL SPACE_dealloc_array( data%prob%H%col,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%H%val'
-     CALL SPACE_dealloc_array( data%prob%H%val,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%H%type'
-     CALL SPACE_dealloc_array( data%prob%H%type,                               &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
 
      array_name = 'clls: data%prob%A%ptr'
      CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
@@ -7403,7 +7228,7 @@
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
      array_name = 'clls: data%prob%Atype'
-     CALL SPACE_dealloc_array( data%prob%Atype,                                &
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -7426,22 +7251,23 @@
 
      END SUBROUTINE CLLS_full_terminate
 
-!-*-*-*-*-*-*-*-*-   C L L S _ P U N T   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-   C L L S _ P O U N C E   S U B R O U T I N E   -*-*-*-*-*-*-*-
 
-      SUBROUTINE CLLS_pounce( dims, n, o, m, Ao_val, A_row, Ao_ptr, A_val,     &
-                              A_col, A_ptr, C_l, C_u, X_l, X_u, X, C, Y, Z,    &
-                              C_stat, X_stat, X_free, SOL, H_free, A_active,   &
-                              SBLS_data, control, inform, optimal )
+      SUBROUTINE CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
+                              B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u, X,   &
+                              R, C, Y, Z, C_stat, X_stat, X_free, SOL, K_sls,  &
+                              SLS_data, control, inform, optimal )
 
 !  Dummy arguments
 
-      TYPE ( CLLS_dims_type ), INTENT( IN ) :: dims
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, o, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: Ao_ptr
       INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
                               DIMENSION( Ao_ptr( n + 1 ) - 1 ) :: Ao_row
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                            DIMENSION( Ao_ptr( n + 1 ) - 1 ) :: Ao_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: B
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
       INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
                               DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
@@ -7450,18 +7276,19 @@
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( o ) :: R
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: Y
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: Z
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_free
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
-      TYPE ( SMT_type ) :: H_free, A_active
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + o + m ) :: SOL
+      TYPE ( SMT_type ), INTENT( INOUT ) :: K_sls
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( INOUT ) :: inform
       LOGICAL, INTENT( OUT ) :: optimal
-      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: sbls_data
+      TYPE ( SLS_data_type ), INTENT( INOUT ) :: sls_data
 
 !  construct the equality-constrained linear least-squares problem according
 !   to the variables and constraints that are predicted to be active via
@@ -7484,144 +7311,91 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is likely not in the active set
 
-!  Report whether the solution to this EQP is optimal for the original problem
+!  Report whether the solution to this equality-constrained linear 
+!  least-squares problem is optimal for the original problem
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, alloc_status
-      INTEGER ( KIND = ip_ ) :: n_free, m_active, nz_a_active, nz_h_free
-      REAL ( KIND = rp_ ) :: ci, ei, gj
+      INTEGER ( KIND = ip_ ) :: i, j, jj, k, l, alloc_status
+      INTEGER ( KIND = ip_ ) :: n_free, n_fixed, m_active, nfpo, npo, next
+      INTEGER ( KIND = ip_ ) :: nz_a_active, nz_ao_free, nz_ao, nz_k_sls
+      REAL ( KIND = rp_ ) :: time_analyse, time_factorize, time_solve
+      REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, clock_solve
+      REAL ( KIND = rp_ ) :: ci, ei
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
       LOGICAL :: x_feas, c_feas, y_feas, z_feas
       CHARACTER ( LEN = 80 ) :: array_name
-      TYPE ( SMT_type ) :: C_zero
 
 !  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 } 
 !  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system 
 
-!     (  H_BB  H_BF^T  A_AB^T  I_B^T  ) (   x_B ) = ( - g_B )
-!     (  H_BF   H_FF   A_AF^T    0    ) (   x_F )   ( - g_F )    (1)
-!     (  A_AB   A_AF     0       0    ) ( - y_A )   (  c_A  )
-!     (  I_B     0       0       0    ) ( - z_B )   (  b_B  )
+!     ( weight I_B      0      Ao_B^T  A_AB^T  I_B^T ) (   x_B )   (  0  )
+!     (     0      weight I_F  Ao_F^T  A_AF^T    0   ) (   x_F )   (  0  )
+!     (    Ao_B        Ao_F     - I      0       0   ) (    r  ) = (  b  )  (1)
+!     (    A_AB        A_AF              0       0   ) ( - y_A )   ( c_A )
+!     (    I_B          0                0       0   ) ( - z_B )   ( b_B )
 
 !  may either be solved "as is", or by eliminating x_B = b_B, 
 !  solving the "reduced" system
 
-!     (  H_FF   A_AF^T  ) (   x_F )   ( - g_F - H_BF x_B )       (2)
-!     (  A_AF     0     ) ( - y_A )   (   c_A - A_AB x_B )
+!     ( weight I_F  Ao_F^T  A_AF^T ) (   x_F )   (        0       )
+!     (    Ao_F      - I     0     ) (    r  ) = (   b - Ao_B x_b )         (2)
+!     (    A_AF              0     ) ( - y_A )   ( c_A - A_AB x_b )
 
 !  and then recovering
 
-!     z_B = g_B + H_BB x_B + H_BF^T x_F - A_AB^T y_A         (3)
+!     z_B = weight x_B + Ao_B^T r - A_AB^T y_A                              (3)
 
-!  -------------------------------
-!  1. solve via the reduced system
-!  -------------------------------
+!  1. Set up the matrices and right-hand sides involved
+
+!  --------------------------------
+!  1a. solve via the reduced system
+!  --------------------------------
 
       IF ( control%reduced_pounce_system ) THEN
 
 !  count the number of free variables (variables in F), and flag their
-!  indices in X_flag (a 0 value indicates a fixed variable). Also set
+!  indices in X_free (a 0 value indicates a fixed variable). Also set
 !  the active components of x to their appropriate bounds and the
 !  inactive dual variables z to zero, and initialize the active dual
 !  varaibles to g_B
       
         n_free = 0
         DO j = 1, n
-          IF ( X_stat( j ) == 0 ) THEN
+          IF ( X_stat( j ) == 0 ) THEN ! free variable
             n_free = n_free + 1
             X_free( j ) = n_free
-            Z( j ) = zero
-          ELSE
+            Z( j ) = zero ! set z_F = 0
+          ELSE ! fixed variable, set x_B = b_B accordingly
             X_free( j ) = 0
             IF ( X_stat( j ) < 0 ) THEN
               X( j ) = X_l( j )
             ELSE
               X( j ) = X_u( j )
             END IF
-            Z( j ) = G( j )
+            Z( j ) = weight * X( j ) ! initialize z_B = weight x_B
           END IF
         END DO
 
-!  count the number of nonzeros in the (upper triangle of the) free Hessian,
-!  H_FF. Also set minus the free gradient in SOL( : n_free )
+!  form the (lower triangle of the) reduced matrix
 
-        nz_h_free = 0
+!          ( weight I_F  Ao_F^T  A_AF^T )  ( n_free   dimensional )
+!    K_r = (    Ao_F      - I     0     )  ( o        dimensional )
+!          (    A_AF       0      0     )  ( m_active dimensional )
+
+!  first, count the number of nonzeros in the reduced Jacobian, Ao_F ...
+
+        nz_ao_free = 0
         DO j = 1, n
-          IF ( X_stat( j ) == 0 ) THEN
-            gj = G( j )
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              IF ( X_free( H_col( l ) ) > 0 ) nz_h_free = nz_h_free + 1
-            END DO
-            SOL( X_free( j ) ) = - gj
-          END IF
+          IF ( X_stat( j ) == 0 )                                              &
+            nz_ao_free = nz_ao_free + Ao_ptr( j + 1 ) - Ao_ptr( j )
         END DO
-!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) - SOL( : n_free )
 
-!  allocate space to hold the free Hessian
-
-        array_name = 'clls: data%H_free%ptr'
-        CALL SPACE_resize_array( n_free + 1, H_free%ptr,                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'clls: data%H_free%col'
-        CALL SPACE_resize_array( nz_h_free, H_free%col,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'clls: data%H_free%val'
-        CALL SPACE_resize_array( nz_h_free, H_free%val,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-  
-!  set up H_FF, and add H_BF x_B to g_F
-
-        CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
-        n_free = 0 ; nz_h_free = 0
-        H_free%ptr( 1 ) = 1
-        DO j = 1, n
-          IF ( X_stat( j ) == 0 ) THEN
-            n_free = n_free + 1
-            jj = n_free
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              i = H_col( l )
-              ii = X_free( i )
-              IF ( ii > 0 ) THEN
-                nz_h_free = nz_h_free + 1
-                H_free%col( nz_h_free ) = ii
-                H_free%val( nz_h_free ) = H_val( l )
-              ELSE
-                SOL( jj ) = SOL( jj ) - H_val( l ) * X( i )
-              END IF
-            END DO
-            H_free%ptr( n_free + 1 ) = nz_h_free + 1
-          ELSE
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              i = H_col( l )
-              ii = X_free( i )
-              IF ( ii > 0 ) THEN
-                SOL( ii ) = SOL( ii ) + H_val( l ) * X( j )
-              END IF 
-            END DO
-          END IF
-        END DO
-!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) - SOL( : n_free )
-
-!  count the number of nonzeros in the reduced active Jacobian, A_AF
+!  ... and the number of nonzeros in the reduced active Jacobian, A_AF
 
         m_active = 0 ; nz_a_active = 0
         DO i = 1, m
-          IF ( C_stat( i ) /= 0 ) THEN
+          IF ( C_stat( i ) /= 0 ) THEN  ! active constraint
             m_active = m_active + 1
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
               IF ( X_free( A_col( l ) ) > 0 ) nz_a_active = nz_a_active + 1
@@ -7629,338 +7403,395 @@
           END IF
         END DO
 
-        array_name = 'clls: data%A_active%ptr'
-        CALL SPACE_resize_array( m_active + 1, A_active%ptr,                   &
+!  record the total number of nonzeros in the lower triangle of K
+
+        nz_k_sls = nz_ao_free + nz_a_active + o
+        IF ( weight /= zero ) nz_k_sls = nz_k_sls + n_free
+        nfpo = n_free + o
+
+!  allocate space for K
+
+        K_sls%n = nfpo + m_active ; K_sls%ne = nz_k_sls
+        CALL SMT_put( K_sls%type, 'COORDINATE', alloc_status )
+
+        array_name = 'clls: data%K_sls_pounce%row'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%row,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'clls: data%A_active%col'
-        CALL SPACE_resize_array( nz_a_active, A_active%col,                    &
+        array_name = 'clls: data%K_sls_pounce%col'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%col,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'clls: data%A_active%val'
-        CALL SPACE_resize_array( nz_a_active, A_active%val,                    &
+        array_name = 'clls: data%K_sls_pounce%val'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%val,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  set up Ao_AF, and subtract Ao_AB x_B from c_A; store c_A in 
-!  SOL(n_free+1:n_free+m_actve)
+!  initialize the first terms in the right hand sides
+!    (       0        )
+!    (  b - Ao_B x_b  )
+!    ( c_A - A_AB x_b )
 
-        CALL SMT_put( A_active%type, 'SPARSE_BY_ROWS', alloc_status )
-        m_active = 0 ; nz_a_active = 0
-        A_active%ptr( 1 ) = 1
-        DO i = 1, m
-          IF ( C_stat( i ) /= 0 ) THEN
-            m_active = m_active + 1
-            IF ( C_stat( i ) > 0 ) THEN
-              SOL( n_free + m_active ) = C_u( i )
-            ELSE
-              SOL( n_free + m_active ) = C_l( i )
-            END IF
-            DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-              j = A_col( l )
-              jj = X_free( j )
-              IF ( jj > 0 ) THEN
-                nz_a_active = nz_a_active + 1
-                A_active%col( nz_a_active ) = jj
-                A_active%val( nz_a_active ) = A_val( l )
-              ELSE
-                SOL( n_free + m_active )                                       &
-                  = SOL( n_free + m_active ) - A_val( l ) * X( j )
-              END IF
-            END DO
-            A_active%ptr( m_active + 1 ) = nz_a_active + 1
-          END IF
-        END DO
+        SOL( 1 : n_free ) = zero
+        SOL( n_free + 1 : nfpo ) = B( 1 : o )
 
-!  record a zero 2,2 block, C_zero, of the augmented system
 
-        CALL SMT_put( C_zero%type, 'ZERO', alloc_status )
+!     ( weight I_F  Ao_F^T  A_AF^T ) (   x_F )   (        0       )
+!     (    Ao_F      - I     0     ) (    r  ) = (   b - Ao_B x_b )         (2)
+!     (    A_AF              0     ) ( - y_A )   ( c_A - A_AB x_b )
 
-!  factorize the reduced matrix
+!  fill in the values of K: the 1,1 block weight I_F
 
-!     (  H_FF   A_AF^T  )
-!     (  A_AF     0     )
-
-        CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
-                                      C_zero, sbls_data,                       &
-                                      control%sbls_pounce_control,             &
-                                      inform%sbls_pounce_inform )
-
-!  check that the factorization succeeded
-
-        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
-          inform%status = GALAHAD_error_factorization
-          GO TO 900
-        END IF
-
-!  solve the reduced system (2) with ( - g_F - H_BF x_B, c_A - A_AB x_B )
-!  input in sol and (x_F, -y_A) output in the same vector
-
-        CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         control%sbls_pounce_control,                          &
-                         inform%sbls_pounce_inform, SOL )
-
-!  check that the solution succeeded
-
-        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
-          inform%status = GALAHAD_error_factorization
-          GO TO 900
-        END IF
-
-!  recover x_F
-
-        n_free = 0
-        DO j = 1, n
-          IF ( X_stat( j ) == 0 ) THEN
-            n_free = n_free + 1
-            X( j ) = SOL( n_free )
-          END IF
-        END DO
-
-!  recover y
-
-        l = n_free
-        DO i = 1, m
-          IF ( C_stat( i ) /= 0 ) THEN
-            l = l + 1
-            Y( i ) = - SOL( l )
-          ELSE
-            Y( i ) = zero
-          END IF
-        END DO
-
-!  recover z_B = g_B + H_BB x_B + H_BF^T x_F - A_AB^T y_A
-
-!  H_BB x_B + H_BF^T x_F contributions
-
-        DO j = 1, n
-          DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-            i = H_col( l )
-            IF ( X_stat( j ) /= 0 ) THEN
-              IF ( X_stat( i ) /= 0 ) THEN ! entry from H_BB
-                Z( j ) = Z( j ) + H_val( l ) * X( i )
-                IF ( j /= i ) Z( i ) = Z( i ) + H_val( l ) * X( j )
-              ELSE ! entry from H_BF^T
-                Z( j ) = Z( j ) + H_val( l ) * X( i )
-              END IF
-            ELSE
-              IF ( X_stat( i ) /= 0 ) THEN  ! entry from H_BF^T
-                Z( i ) = Z( i ) + H_val( l ) * X( j )
-              END IF
-            END IF
+        IF ( weight /= zero ) THEN
+          DO j = 1, n_free
+            K_sls%row( j ) = j ;  K_sls%col( j ) = j ; K_sls%val( j ) = weight
           END DO
+          l = n_free
+        ELSE
+          l = 0
+        END IF
+
+!  the 2,1 block Ao_F
+
+        DO j = 1, n
+          jj = X_free( j )
+          IF ( jj > 0 ) THEN ! free variable
+            DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+              l = l + 1
+              K_sls%row( l ) = n_free + Ao_row( k )
+              K_sls%col( l ) = jj
+              K_sls%val( l ) = Ao_val( k )
+            END DO
+          ELSE ! fixed variable, update the right-hand side b - Ao_B x_b
+            DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+              i = n_free + Ao_row( k )
+              SOL( i ) = SOL( i ) - Ao_val( k ) * X( j )
+            END DO
+          END IF
         END DO
 
-!  - A_AB^T y_A contributions
+!  the 2,2 block - I
 
+        DO j = n_free + 1, nfpo
+          l = l + 1
+          K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
+        END DO
+
+!  the 3,1 block A_AF
+
+        next = nfpo
         DO i = 1, m
-          IF ( C_stat( i ) /= 0 ) THEN
-            DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-              j = A_col( l ) 
-              IF ( X_stat( j ) /= 0 ) THEN ! entry from A_AB
-                Z( j ) = Z( j ) - A_val( l ) * Y( i )
+          IF ( C_stat( i ) /= 0 ) THEN  ! active constraint
+            next = next + 1
+            IF ( C_stat( i ) > 0 ) THEN ! initialize the right-hand side c_A
+              SOL( next ) = C_u( i )
+            ELSE
+              SOL( next ) = C_l( i )
+            END IF
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              j = A_col( k )
+              jj = X_free( j )
+              IF ( jj > 0 ) THEN ! free variable
+                l = l + 1
+                K_sls%row( l ) = next
+                K_sls%col( l ) = jj
+                K_sls%val( l ) = A_val( k )
+              ELSE ! fixed variable, update the right-hand side c_A - A_AB x_b
+                SOL( next ) = SOL( next ) - A_val( k ) * X( j )
               END IF
             END DO
           END IF
         END DO
 
-!  ----------------------------
-!  2. solve via the full system
-!  ----------------------------
+!  -----------------------------
+!  1b. solve via the full system
+!  -----------------------------
 
       ELSE
 
-!  compute the number of active constraints, and the number of nonzeros 
-!  in the active Jacobian A_active
+!  count the number of fixed variables (variables in B)
+      
+        n_fixed = COUNT( X_stat( 1 : n ) /= 0 )
 
-        n_free = n
+!  form the (lower triangle of the) matrix
 
-!  set up H_free and g_free; minus g_free is stored in SOL(:n_free);
-!  allocate space to hold the free Hessian if necessary
+!     ( weight I   Ao^T  A_A^T  I_B^T )
+!     (   Ao       - I    0       0   )
+!     (   A_A       0     0       0   )
+!     (   I_B       0     0       0   )
 
-        SOL( : n_free ) = - G( : n_free )
+!  first, count the number of nonzeros in the Jacobian, Ao ...
 
-        H_free%n = n_free
-        nz_h_free = H_ptr( n + 1 ) - 1
-        array_name = 'clls: data%H_free%ptr'
-        CALL SPACE_resize_array( n_free + 1, H_free%ptr,                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        nz_ao = Ao_ptr( n + 1 ) - 1
 
-        array_name = 'clls: data%H_free%col'
-        CALL SPACE_resize_array( nz_h_free, H_free%col,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'clls: data%H_free%val'
-        CALL SPACE_resize_array( nz_h_free, H_free%val,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        ALLOCATE( H_free%val( nz_h_free ), STAT = alloc_status )
-        CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
-        H_free%ptr( : n_free + 1 ) = H_ptr( : n_free + 1 )
-        H_free%col( : nz_h_free ) = H_col( : nz_h_free )
-        H_free%val( : nz_h_free ) = H_val( : nz_h_free )
-
-!  compute the number of active constraints, and the number of nonzeros 
-!  in the active Jacobian A_active
+!  ... and the number of nonzeros in the active Jacobian, A_A
 
         m_active = 0 ; nz_a_active = 0
         DO i = 1, m
-!         IF ( C_stat( i ) /= 0 ) THEN
-          IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+          IF ( C_stat( i ) /= 0 ) THEN ! active constraint
             m_active = m_active + 1
             nz_a_active = nz_a_active + A_ptr( i + 1 ) - A_ptr( i )
           END IF
         END DO
 
+!  record the total number of nonzeros in the lower triangle of K
+
+        nz_k_sls = nz_ao + nz_a_active + o + n_fixed
+        IF ( weight /= zero ) nz_k_sls = nz_k_sls + n
+        npo = n + o
+
+!  allocate space for K
+
+        K_sls%n = npo + m_active + n_fixed ; K_sls%ne = nz_k_sls
+        CALL SMT_put( K_sls%type, 'COORDINATE', alloc_status )
+
+        array_name = 'clls: data%K_sls_pounce%row'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%row,                          &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'clls: data%K_sls_pounce%col'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%col,                          &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'clls: data%K_sls_pounce%val'
+        CALL SPACE_resize_array( nz_k_sls, K_sls%val,                          &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  set the right hand sides
+!     (  0  )
+!     (  b  )
+
+        SOL( 1 : n ) = zero
+        SOL( n + 1 : npo ) = B( 1 : o )
+
+!  fill in the values of K: the 1,1 block weight I
+
+        IF ( weight /= zero ) THEN
+          DO j = 1, n
+            K_sls%row( j ) = j ;  K_sls%col( j ) = j ; K_sls%val( j ) = weight
+          END DO
+          l = n
+        ELSE
+          l = 0
+        END IF
+
+!  the 2,1 block Ao
+
         DO j = 1, n
-!         IF ( X_stat( j ) /= 0 ) THEN
-          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
-            m_active = m_active + 1 ; nz_a_active = nz_a_active + 1
-          END IF
-        END DO
-
-!  allocate space to hold the active Jacobian
-
-        array_name = 'clls: data%A_active%ptr'
-        CALL SPACE_resize_array( m_active + 1, A_active%ptr,                   &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'clls: data%A_active%col'
-        CALL SPACE_resize_array( nz_a_active, A_active%col,                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-        array_name = 'clls: data%A_active%val'
-        CALL SPACE_resize_array( nz_a_active, A_active%val,                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
-!  set up A_active and c_active
-
-        CALL SMT_put( A_active%type, 'SPARSE_BY_ROWS', alloc_status )
-        A_active%m = m_active
-        A_active%n = n_free
-
-        m_active = 0 ; nz_a_active = 0
-        A_active%ptr( 1 ) = 1
-        DO i = 1, m
-!         IF ( C_stat( i ) /= 0 ) THEN
-          IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
-            m_active = m_active + 1
-            IF ( C_stat( i ) > 0 ) THEN
-              SOL( n_free + m_active ) = C_u( i )
-            ELSE
-              SOL( n_free + m_active ) = C_l( i )
-            END IF
-            DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-              nz_a_active = nz_a_active + 1
-              A_active%col( nz_a_active ) = A_col( l )
-              A_active%val( nz_a_active ) = A_val( l )
+          DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+            l = l + 1
+            K_sls%row( l ) = n + Ao_row( k )
+            K_sls%col( l ) = j
+            K_sls%val( l ) = Ao_val( k )
             END DO
-            A_active%ptr( m_active + 1 ) = nz_a_active + 1
-          END IF
         END DO
 
-        DO j = 1, n
-!         IF ( X_stat( j ) /= 0 ) THEN
-          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
-            m_active = m_active + 1
-            IF ( X_stat( j ) > 0 ) THEN
-              SOL( n_free + m_active ) = X_u( j )
+!  the 2,2 block - I
+
+        DO j = n + 1, npo
+          l = l + 1
+          K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
+        END DO
+
+!  the 3,1 block A_AF
+
+        next = npo
+        DO i = 1, m
+          IF ( C_stat( i ) /= 0 ) THEN ! active constraint
+            next = next + 1
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              l = l + 1
+              K_sls%row( l ) = next
+              K_sls%col( l ) = A_col( k )
+              K_sls%val( l ) = A_val( k )
+            END DO
+            IF ( C_stat( i ) > 0 ) THEN ! set the right-hand side c_A
+              SOL( next ) = C_u( i )
             ELSE
-              SOL( n_free + m_active ) = X_l( j )
+              SOL( next ) = C_l( i )
             END IF
-            nz_a_active = nz_a_active + 1
-            A_active%col( nz_a_active ) = j
-            A_active%val( nz_a_active ) = one
-            A_active%ptr( m_active + 1 ) = nz_a_active + 1
           END IF
         END DO
 
-!  record a zero 2,2 block, C_zero, of the augmented system
+!  the 4,1 block I_B
 
-        CALL SMT_put( C_zero%type, 'ZERO', alloc_status )
+        next = npo
+        DO j = 1, n
+          IF ( X_stat( j ) /= 0 ) THEN ! fixed variable
+            l = l + 1
+            next = next + 1
+            K_sls%row( l ) = next
+            K_sls%col( l ) = j
+            K_sls%val( l ) = one
+            IF ( X_stat( j ) < 0 ) THEN ! set the right hand side b_B
+              SOL( next ) = X_l( j )
+            ELSE
+              SOL( next ) = X_u( j )
+            END IF
+          END IF
+        END DO
+      END IF
 
-!  factorize the full matrix
+!  2. Analyse and factorize the system matrix K, and solve the resulting system
 
-!     (    H      A_active^T )
-!     ( A_active      0      )
+!  analyse K
 
-        CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
-                                      C_zero, sbls_data,                       &
-                                      control%sbls_pounce_control,             &
-                                      inform%sbls_pounce_inform )
+      time_analyse = inform%SLS_inform%time%analyse
+      clock_analyse = inform%SLS_inform%time%clock_analyse
+
+      CALL SLS_analyse( K_sls, SLS_data, control%SLS_control,                  &
+                        inform%SLS_inform )
+
+      inform%time%analyse = inform%time%analyse +                              &
+        inform%SLS_inform%time%analyse - time_analyse
+      inform%time%clock_analyse = inform%time%clock_analyse +                  &
+        inform%SLS_inform%time%clock_analyse - clock_analyse
+
+!  check that the analysis succeeded
+
+      IF ( inform%sls_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_factorization
+        GO TO 900
+      END IF
+
+!  factorize K
+
+      time_factorize = inform%SLS_inform%time%factorize
+      clock_factorize = inform%SLS_inform%time%clock_factorize
+
+      CALL SLS_factorize( K_sls, SLS_data, control%SLS_control,                &
+                          inform%SLS_inform )
+      inform%nfacts = inform%nfacts + 1
+
+      inform%time%factorize = inform%time%factorize +                          &
+        inform%SLS_inform%time%factorize - time_factorize
+      inform%time%clock_factorize = inform%time%clock_factorize +              &
+        inform%SLS_inform%time%clock_factorize - clock_factorize
 
 !  check that the factorization succeeded
 
-        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
-          inform%status = GALAHAD_error_factorization
-          GO TO 900
-        END IF
+      IF ( inform%sls_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_factorization
+        GO TO 900
+      END IF
 
-!  solve the full system (1)
+!  solve the required optimality system
 
-!     (    H     A_active^T ) (   x ) =  ( - g_free )
-!     ( A_active     0      ) ( - y )    ( c_active )
+      time_solve = inform%SLS_inform%time%solve
+      clock_solve = inform%SLS_inform%time%clock_solve
 
-!  with (-g_free, c_active ) input in sol and (x,-y) output in the same vector
+      CALL SLS_solve( K_sls, SOL, SLS_data, control%SLS_control,               &
+                      inform%SLS_inform )
+      inform%nfacts = inform%nfacts + 1
 
-        CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         control%sbls_pounce_control,                          &
-                         inform%sbls_pounce_inform, SOL )
+      inform%time%solve = inform%time%solve +                                  &
+        inform%SLS_inform%time%solve - time_solve
+      inform%time%clock_solve = inform%time%clock_solve +                      &
+        inform%SLS_inform%time%clock_solve - clock_solve
 
-!  check that the solution succeeded
+!  check that the solve succeeded
 
-        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
-          inform%status = GALAHAD_error_factorization
-          GO TO 900
-        END IF
+      IF ( inform%sls_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_factorization
+        GO TO 900
+      END IF
+
+!  --------------------------------------------------------
+!  3a. recover the solution from that of the reduced system
+!  --------------------------------------------------------
+
+      IF ( control%reduced_pounce_system ) THEN
 
 !  recover x
 
         X( : n_free ) = SOL( : n_free )
 
+!  recover r
+
+        R( : o ) = SOL( n_free + 1 : nfpo )
+
 !  recover y
 
-        l = n_free
+        next = nfpo
         DO i = 1, m
-!        IF ( C_stat( i ) /= 0 ) THEN
          IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
-            l = l + 1
-            Y( i ) = - SOL( l )
+            next = next + 1
+            Y( i ) = - SOL( next )
+          ELSE
+            Y( i ) = zero
+          END IF
+        END DO
+
+!  recover z_B <- z_B + Ao_B^T r ...
+
+        DO j = 1, n
+          IF ( X_free( j ) == 0 ) THEN ! fixed variable
+            DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+              i = Ao_row( k )
+              Z( j ) = Z( j ) + Ao_val( k ) * R( i )
+            END DO
+          END IF
+        END DO
+
+!  and then z_B <- z_B - A_AB^T y_A
+
+        next = nfpo
+        DO i = 1, m
+          IF ( C_stat( i ) /= 0 ) THEN  ! active constraint
+            next = next + 1
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              j = A_col( k )
+              IF ( X_free( j ) == 0 ) THEN ! fixed variable
+                Z( j ) = Z( j ) - A_val( k ) * Y( i )
+              END IF
+            END DO
+          END IF
+        END DO
+
+!  -----------------------------------------------------
+!  3b. recover the solution from that of the full system
+!  -----------------------------------------------------
+
+      ELSE
+
+!  recover x
+
+        X( : n ) = SOL( : n )
+
+!  recover r
+
+        R( : o ) = SOL( n + 1 : npo )
+
+!  recover y
+
+        next = npo
+        DO i = 1, m
+         IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
+            next = next + 1
+            Y( i ) = - SOL( next )
           ELSE
             Y( i ) = zero
           END IF
@@ -7969,20 +7800,19 @@
 !  recover z
 
         DO j = 1, n
-!         IF ( X_stat( j ) /= 0 ) THEN
           IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
-           l = l + 1
-            Z( j ) = - SOL( l )
+            next = next + 1
+            Z( j ) = - SOL( next )
           ELSE
             Z( j ) = zero
           END IF
         END DO
       END IF
 
+! 4. Check if the pounced solution is feasibile
+
 !  compute c and an estimate e of the error in c (stored in SOL(:m))
 
-!     ALLOCATE( E( m ), STAT = alloc_status )
-!write( 6, "( '     c_l          c          c_u' )" )
       DO i = 1, m
         ci = zero ; ei = zero
         DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
@@ -8071,9 +7901,7 @@
         END IF
       END DO
 
-!write(6,*) ' x_feas, c_feas, y_feas, z_feas ', x_feas, c_feas, y_feas, z_feas
       optimal = x_feas .AND. c_feas .AND. y_feas .AND. z_feas
-
       RETURN
 
 !  error return
@@ -8089,12 +7917,12 @@
 
 !-*-  C L L S _ L A G R A N G I A N _ G R A D I E N T   S U B R O U T I N E  -*-
 
-      SUBROUTINE CLLS_Lagrangian_gradient( dims, n, o, m, X, Y,                &
-                                           Y_l, Y_u, Z_l, Z_u,                 &
+      SUBROUTINE CLLS_Lagrangian_gradient( dims, n, o, m, weight,              &
+                                           X, R, Y, Y_l, Y_u, Z_l, Z_u,        &
                                            Ao_ne, Ao_val, Ao_row, Ao_ptr,      &
                                            A_ne, A_val, A_col, A_ptr,          &
                                            DIST_X_l, DIST_X_u, DIST_C_l,       &
-                                           DIST_C_u, R, weight, GRAD_L,        &
+                                           DIST_C_u, GRAD_L,                   &
                                            getdua, dufeas )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -8108,36 +7936,36 @@
 !  Dummy arguments
 
       TYPE ( CLLS_dims_type ), INTENT( IN ) :: dims
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, Ao_ne, A_ne
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ao_ne ) :: Ao_row
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: Ao_ptr
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_col
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( Ao_ne ) :: Ao_val
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( A_ne ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, o, m, Ao_ne, A_ne
+      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( Ao_ne ) :: Ao_row
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: Ao_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( Ao_ne ) :: Ao_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
-      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       REAL ( KIND = rp_ ), INTENT( IN ) :: dufeas
       LOGICAL, INTENT( IN ) :: getdua
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
-      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
-      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
 
 !  Local variables
 
@@ -8242,7 +8070,6 @@
 
       END SUBROUTINE CLLS_Lagrangian_gradient
 
-
 !-*-*-*-*-*-*-   C L L S _ w o r k s p a c e   S U B R O U T I N E  -*-*-*-*-*-
 
       SUBROUTINE CLLS_workspace( n, o, m, dims, ao_ne, a_ne, order, GRAD_L,    &
@@ -8252,8 +8079,8 @@
                                  BINOMIAL, CS_coef, COEF, ROOTS, DX_zh,        &
                                  DY_zh, DC_zh, DY_l_zh, DY_u_zh, DZ_l_zh,      &
                                  DZ_u_zh, X_coef, C_coef, Y_coef, Y_l_coef,    &
-                                 Y_u_coef, Z_l_coef, Z_u_coef, K_s,            &
-                                 Y_last, Z_last, K_sls,                        &
+                                 Y_u_coef, Z_l_coef, Z_u_coef, R_last,         &
+                                 C_last, X_last, Y_last, Z_last, K_sls,        &
                                  error, series_order, deallocate_error_fatal,  &
                                  space_critical, status, alloc_status,         &
                                  bad_alloc )
@@ -8262,7 +8089,7 @@
 
 !  Dummy arguments
 
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, ao_ne, a_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, o, n, ao_ne, a_ne
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: error, series_order
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: order
       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status, alloc_status
@@ -8273,7 +8100,7 @@
            GRAD_L, DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X, Y_l, DIST_C_l,     &
            Y_u, DIST_C_u, C, BARRIER_C, SCALE_C, RHS, OPT_alpha, OPT_merit,    &
            CS_coef, COEF, ROOTS, DX_zh, DY_zh, DC_zh, DY_l_zh,                 &
-           DY_u_zh, DZ_l_zh, DZ_u_zh, K_s, Y_last, Z_last
+           DY_u_zh, DZ_l_zh, DZ_u_zh, R_last, C_last, X_last, Y_last, Z_last
       REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) ::  &
            X_coef, C_coef, Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
            BINOMIAL
@@ -8281,7 +8108,6 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: k_n, k_ne
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  allocate workspace arrays
@@ -8564,41 +8390,24 @@
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
-!  K will be in coordinate form
-
-      k_n = o + n + dims%nc + m
-      k_ne = o + ao_ne + n + dims%nc + a_ne + dims%nc
-
-!  allocate space for K
-
-      array_name = 'clls: K_sls%row'
-      CALL SPACE_resize_array( k_ne, K_sls%row,                                &
+      array_name = 'clls: R_last'
+      CALL SPACE_resize_array( o, R_last,                                      &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
-      array_name = 'clls: K_sls%col'
-      CALL SPACE_resize_array( k_ne, K_sls%col,                                &
+      array_name = 'clls: C_last'
+      CALL SPACE_resize_array( m, C_last,                                      &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
-      array_name = 'clls: K_sls%val'
-      CALL SPACE_resize_array( k_ne, K_sls%val,                                &
-             status, alloc_status, array_name = array_name,                    &
-             deallocate_error_fatal = deallocate_error_fatal,                  &
-             exact_size = space_critical,                                      &
-             bad_alloc = bad_alloc, out = error )
-      IF ( status /= GALAHAD_ok ) RETURN
-
-!  allocate optional extra arrays
-
-      array_name = 'clls: K_s'
-      CALL SPACE_resize_array( k_n, K_s,                                       &
+      array_name = 'clls: X_last'
+      CALL SPACE_resize_array( n, X_last,                                      &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8615,6 +8424,38 @@
 
       array_name = 'clls: Z_last'
       CALL SPACE_resize_array( n, Z_last,                                      &
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
+
+!  K will be in coordinate form
+
+      CALL SMT_put( K_sls%type, 'COORDINATE', alloc_status )
+      K_sls%n = n + dims%nc + m + o
+      K_sls%ne = n + dims%nc + a_ne + dims%nc + ao_ne + o
+
+!  allocate space for K
+
+      array_name = 'clls: K_sls%row'
+      CALL SPACE_resize_array( K_sls%ne, K_sls%row,                            &
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
+
+      array_name = 'clls: K_sls%col'
+      CALL SPACE_resize_array( K_sls%ne, K_sls%col,                            &
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
+
+      array_name = 'clls: K_sls%val'
+      CALL SPACE_resize_array( K_sls%ne, K_sls%val,                            &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -9200,7 +9041,7 @@
 !-*-*-  G A L A H A D -  C L L S _ s o l v e _ c l l s  S U B R O U T I N E  -*-
 
      SUBROUTINE CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,   &
-                                 X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+                                 X_l, X_u, X, R, C, Y, Z, X_stat, C_stat )
 
 !  solve the quadratic programming problem whose structure was previously
 !  imported. See CLLS_solve for a description of the required arguments.
@@ -9249,6 +9090,10 @@
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
+!  R is a rank-one array of dimension m and type default
+!   real, that holds the vector of residuals Ao x - b.
+!   The i-th component of R, i = 1, ... , m, contains (Ao x - b)_i.
+!
 !  C is a rank-one array of dimension m and type default
 !   real, that holds the vector of the constraints A x.
 !   The i-th component of C, i = 1, ... , m, contains (A x)_i.
@@ -9287,17 +9132,16 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, C
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: C_stat, X_stat
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: m, n
-     CHARACTER ( LEN = 80 ) :: array_name
+     INTEGER ( KIND = ip_ ) :: m, o, n
 
 !  recover the dimensions
 
-     m = data%prob%m ; n = data%prob%n
+     n = data%prob%n ; o = data%prob%o ; m = data%prob%m
 
 !  save the observations
 
@@ -9341,15 +9185,10 @@
      Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
+     R( : m ) = data%prob%R( : m )
      C_stat( : m ) = data%prob%C_status( : m )
      X_stat( : n ) = data%prob%X_status( : n )
 
-     status = data%clls_inform%status
-     RETURN
-
-!  error returns
-
- 900 CONTINUE
      status = data%clls_inform%status
      RETURN
 

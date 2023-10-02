@@ -4045,7 +4045,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ALLOCATED( array) ) THEN
+     IF ( ALLOCATED( array ) ) THEN
        DEALLOCATE( array, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate

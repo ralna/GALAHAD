@@ -25,7 +25,7 @@
      USE GALAHAD_STRING, ONLY: STRING_real_12
      USE GALAHAD_SYMBOLS
      USE GALAHAD_RAND_precision, ONLY: RAND_seed
-     USE GALAHAD_SMT_precision, ONLY: SMT_put, SMT_get
+     USE GALAHAD_SMT_precision, ONLY: SMT_get
      USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_control,             &
                                        SILS_ainfo, SILS_finfo, SMT_type
      USE GALAHAD_ULS_precision, ONLY: ULS_data_type, ULS_control_type
@@ -50,8 +50,8 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: QPD_HX, QPD_AX, QPD_A_by_col_x, QPD_abs_HX, QPD_abs_AX,         &
-               QPD_SIF, QPD_solve_separable_BQP
+     PUBLIC :: QPD_HX, QPD_AX, QPD_A_by_col_X, QPD_abs_HX, QPD_abs_AX,         &
+               QPD_abs_A_by_col_X, QPD_SIF, QPD_solve_separable_BQP
 
 
 !  ==============================
@@ -399,6 +399,14 @@
 
        TYPE ( SMT_type ) :: H_free, A_active
        TYPE ( SBLS_data_type ) :: SBLS_pounce_data
+
+!  CLLS derived type components
+
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_last
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_last
+       TYPE ( SLS_data_type ) :: SLS_pounce_data
+       TYPE ( QPT_dimensions_type ) :: LSP_dims_save_freed
+       TYPE ( SMT_type ) :: K_sls, K_sls_pounce
 
 !  EQP derived type components
 
@@ -1357,6 +1365,77 @@
 !  End of subroutine QPD_abs_AX
 
       END SUBROUTINE QPD_abs_AX
+
+!-*-*-*-*-   Q P D _ A B S _ A _ B Y _ C O L _X  S U B R O U T I N E  -*-*-*-*-
+
+      SUBROUTINE QPD_abs_A_by_col_X( dim_r, R, n, A_ne, A_val, A_row, A_ptr,   &
+                                     dim_x, X, op )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!      ...................................................
+!      .                                                 .
+!      .  Perform the operation r := r + | A | * | x |   .
+!      .                     or r := r + | A^T | * | x | .
+!      .                                                 .
+!      .  when Ao is stored by columns                   .
+!      .                                                 .
+!      ...................................................
+
+!  Arguments:
+!  =========
+
+!   R      the result r of adding ABS(A) * ABS(x) or ABS(A^T) * ABS(x) to r
+!   X      the vector x
+!   op     1 string character: possible values are
+!          ' '   r <- r + | A | * | x |
+!          'T'   r <- r + | A^T | * | x |
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dim_x, dim_r, n, A_ne
+      CHARACTER( LEN = 1 ), INTENT( IN ) :: op
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) ::  A_row
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( dim_x ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
+
+!  Local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: xj, rj
+
+!  r <- r + A^T * x
+
+      IF ( op( 1 : 1 ) == 'T' .OR. op( 1 : 1 ) == 't' ) THEN
+        DO j = 1, n
+          rj = R( j )
+          DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+            rj = rj + ABS( A_val( l ) * X( A_row( l ) ) )
+          END DO
+          R( j ) = rj
+        END DO
+
+!  r <- r + A * x
+
+      ELSE
+        DO j = 1, n
+          xj = X( j )
+          DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+            i = A_row( l )
+            R( i ) = R( i ) + ABS( A_val( l ) * xj )
+          END DO
+        END DO
+      END IF
+
+      RETURN
+
+!  End of subroutine QPD_abs_A_by_col_X
+
+      END SUBROUTINE QPD_abs_A_by_col_X
 
 !-*-*-*-*-*-*-*-*-*-*-   Q P D _ S I F  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 

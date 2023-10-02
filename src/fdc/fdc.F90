@@ -1062,7 +1062,7 @@
           WRITE( out, "( A, ' smallest non-negligible eigenvalue =',           &
          &               ES12.4 )" ) prefix, one / dmax_allowed
         END IF
-        WRITE( out, "( A, I7, ' constraint', A, ' appear', A, ' to be ',       &
+        WRITE( out, "( A, 1X, I0, ' constraint', A, ' appear', A, ' to be ',   &
        &   'dependent ' )" ) prefix, n_depen,                                  &
           TRIM( STRING_pleural( n_depen ) ),                                   &
           TRIM( STRING_verb_pleural( n_depen ) )
@@ -1400,8 +1400,8 @@
 !  Record warning conditions
 
         IF ( out > 0 .AND. data%control%print_level >= 1 )                     &
-          WRITE( out, "( A, I7, ' constraint', A, ' appear', A, ' to be ',     &
-         &   'dependent ' )" ) prefix, n_depen,                                &
+          WRITE( out, "( A, 1X, I0, ' constraint', A, ' appear', A,            &
+         &   ' to be dependent ' )" ) prefix, n_depen,                         &
             TRIM( STRING_pleural( n_depen ) ),                                 &
             TRIM( STRING_verb_pleural( n_depen ) )
 

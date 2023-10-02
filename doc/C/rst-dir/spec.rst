@@ -1,0 +1,1 @@
+../../share/rst/spec.rst

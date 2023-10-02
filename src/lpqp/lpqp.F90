@@ -2457,7 +2457,8 @@
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
      TYPE ( LPQP_data_type ), INTENT( IN ) :: data
-     INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
+     INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE,                            &
+                             DIMENSION( : ) :: B_stat, C_stat
 
 !  Local variables
 

@@ -3081,6 +3081,20 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'lsp: map%ao_map'
+      CALL SPACE_dealloc_array( map%ao_map,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lsp: map%ao_map_inverse'
+      CALL SPACE_dealloc_array( map%ao_map_inverse,                            &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'lsp: map%a_map_inverse'
       CALL SPACE_dealloc_array( map%a_map_inverse,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &

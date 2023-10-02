@@ -267,7 +267,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
     static char *kwlist[] = {"ne","m","ls1","ls2","s","ly1","ly2","y",
                              "order",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOiiOO", 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOiiO|O", 
                                     kwlist, &ne, &m, &ls1, &ls2, &py_s1, 
                                     &ly1, &ly2, &py_y1, &py_order))
         return NULL;

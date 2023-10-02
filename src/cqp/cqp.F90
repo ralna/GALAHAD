@@ -59,7 +59,6 @@
       USE GALAHAD_SBLS_precision
       USE GALAHAD_CRO_precision
       USE GALAHAD_FIT_precision
-      USE GALAHAD_NORMS_precision, ONLY: TWO_norm
       USE GALAHAD_CHECKPOINT_precision
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
@@ -4787,11 +4786,11 @@
 
 !  factorize
 
-!   ( H + (X-X_l)^-1 Z_l               A^T )
-!   (   - (X_u-X)^-1 Z_u                   )
-!   (                    (C-C_l)^-1 Y_l -I )
-!   (                   -(C_u-C)^-1 Y_u    )
-!   (       A               -I             )
+!   ( H + (X-X_l)^-1 Z_l                 A^T )
+!   (   - (X_u-X)^-1 Z_u                     )
+!   (                     (C-C_l)^-1 Y_l  -S )
+!   (                    -(C_u-C)^-1 Y_u     )
+!   (       A                  -S            )
 
 !  either explicitly or implicitly (via its Schur complement)
 
@@ -4999,14 +4998,14 @@
 !  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
 
 !  H x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) + g = dual(theta)
-!                            A x(theta) - b                = prim(theta)
+!                        A x(theta) - S c(theta            = prim(theta)
 !                           X(theta) z(theta)              = comp(theta)
 
 !  for suitable
-!      prim(theta) = theta ( A x - b )
+!      prim(theta) = theta ( A x - S c )
 !      dual(theta) = theta ( H x - A^T y - z + g )
 !  (Taylor or Taylor-Puisuex) or
-!      prim(theta) = theta^2 ( A x - b )
+!      prim(theta) = theta^2 ( A x - S c )
 !      dual(theta) = theta^2 ( H x - A^T y - z + g )
 !  (Puiseux) and various possible comp(theta)
 
@@ -5014,8 +5013,8 @@
 !  solve the equations
 
 !   (  H       A^T   -I    -I               ) (  x^k  )   (  h^k  )
-!   (          -I                 -I   -I   ) (  c^k  )   (  d^k  )
-!   (  A   -I                               ) ( -y^k  )   (  a^k  )
+!   (          -S                 -I   -I   ) (  c^k  )   (  d^k  )
+!   (  A   -S                               ) ( -y^k  )   (  a^k  )
 !   (  Z_l         X-X_l                    ) ( z_l^k ) = ( r_l^k )
 !   ( -Z_u               X_u-X              ) ( z_u^k )   ( r_u^k )
 !   (      Y_l                  C-C_l       ) ( y_l^k )   ( s_l^k )
@@ -5035,7 +5034,7 @@
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 =  A x - b
+!     a^1 =  A x - S c
 !     r_l^1 = - mu e + (X-X_l)z_l                    (store in z_l^1)
 !     r_u^1 =   mu e + (X_u-X)z_u                    (store in z_u^1)
 !     s_l^1 = - mu e + (C-C_l)y_l                    (store in y_l^1)
@@ -5055,7 +5054,7 @@
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 = A x - b
+!     a^1 = A x - S c
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -5085,7 +5084,7 @@
 
 !     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - b )
+!     a^1 = 2 ( A x - S c )
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
 !     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
 !     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
@@ -5125,7 +5124,7 @@
 
 !     h^1 = g + Hx - A^Ty - z_l - z_u
 !     d^i = y - y_l - y_u
-!     a^1 =  A x - b
+!     a^1 =  A x - S c
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + (X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + (X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + (C-C_l)y_l  (store in y_l^1)
@@ -5155,7 +5154,7 @@
 
 !     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
-!     a^1 = 2 ( A x - b )
+!     a^1 = 2 ( A x - S c )
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l  (store in z_l^1)
 !     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u  (store in z_u^1)
 !     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + 2(C-C_l)y_l  (store in y_l^1)
@@ -5165,7 +5164,7 @@
 
 !     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
-!     a^2 = 2 ( A x - b )
+!     a^2 = 2 ( A x - S c )
 !     r_l^2 = - 4 sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l - 2 X^1 z_l^1
 !                                                              (store in z_l^2)
 !     r_u^2 =   4 sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u + 2 X^1 z_u^1
@@ -5211,9 +5210,9 @@
 
 !  ( H + (X-X_l)^-1 Z_l               A^T ) ( x^k )   ( h^k + (X-X_l)^-1 r_l^k )
 !  (   - (X_u-X)^-1 Z_u                   ) (     )   (     + (X_u-X)^-1 r_u^k )
-!  (                    (C-C_l)^-1 Y_l -I ) ( c^k ) = ( d^k + (C-C_l)^-1 s_l^k )
+!  (                    (C-C_l)^-1 Y_l -S ) ( c^k ) = ( d^k + (C-C_l)^-1 s_l^k )
 !  (                   -(C_u-C)^-1 Y_u    ) (     )   (     + (C_u-C)^-1 s_u^k )
-!  (       A               -I             ) (-y^k )   (           a^k          )
+!  (       A               -S             ) (-y^k )   (           a^k          )
 
 !  record the 0-th order coefficients
 
@@ -5387,7 +5386,7 @@
                 END DO
               END IF
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
               RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -5442,7 +5441,7 @@
                                                + two_mu / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
@@ -5689,7 +5688,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - b )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -5740,7 +5739,7 @@
                     Y_u_coef( i, 1 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
                 RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
               END IF
@@ -5796,7 +5795,7 @@
                     Y_u_coef( i, 2 ) / DIST_C_u( i )
                 END DO
 
-!  rhs for constraint infeasibilities: 2 ( A x - b )
+!  rhs for constraint infeasibilities: 2 ( A x - S c )
 
                 RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
 
@@ -5973,11 +5972,11 @@
 ! 3b. Compute the series coefficients
 ! :::::::::::::::::::::::::::::::::::
 
-!  solve ( H + (X-X_l)^-1 Z_l               A^T ) (  x^k )
-!        (   - (X_u-X)^-1 Z_u                   ) (      )
-!        (                    (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
-!        (                   -(C_u-C)^-1 Y_u    ) (      )
-!        (       A               -I             ) ( -y^k )
+!  solve ( H + (X-X_l)^-1 Z_l                  A^T ) (  x^k )
+!        (   - (X_u-X)^-1 Z_u                      ) (      )
+!        (                     (C-C_l)^-1 Y_l   -S ) (  c^k ) = rhs
+!        (                    -(C_u-C)^-1 Y_u      ) (      )
+!        (       A                  -S             ) ( -y^k )
 
           IF ( printw ) THEN
             IF ( puiseux ) THEN
@@ -6210,7 +6209,7 @@
             RHS( dims%c_b + i ) = Y( i ) + mu / DIST_C_u( i )
           END DO
 
-!  rhs for constraint infeasibilities: A x - b
+!  rhs for constraint infeasibilities: A x - S c
 
           IF ( m > 0 ) THEN
             RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
@@ -6230,11 +6229,11 @@
 
 ! Compute the coefficients
 
-!  solve ( H + (X-X_l)^-1 Z_l               A^T ) (  x^k )
-!        (   - (X_u-X)^-1 Z_u                   ) (      )
-!        (                    (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
-!        (                   -(C_u-C)^-1 Y_u    ) (      )
-!        (       A               -I             ) ( -y^k )
+!  solve ( H + (X-X_l)^-1 Z_l                 A^T ) (  x^k )
+!        (   - (X_u-X)^-1 Z_u                     ) (      )
+!        (                     (C-C_l)^-1 Y_l  -S ) (  c^k ) = rhs
+!        (                    -(C_u-C)^-1 Y_u     ) (      )
+!        (       A                  -S            ) ( -y^k )
 
           IF ( printw ) WRITE( out, "( A, ' ............... compute',          &
          &        ' Zhang-Taylor coefficients  ............... ' )" )  prefix
@@ -8355,14 +8354,16 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Compute the value of the merit function
 !
-!     | < z_l . ( x - x_l ) > +  < z_u . ( x_u - x ) > +
-!       < y_l . ( c - c_l ) > +  < y_u . ( c_u - c ) > | +
-!            || ( GRAD_L - z_l - z_u ) ||
-!      tau * || (   y - y_l - y_u    ) ||
-!            || (  A x - SCALE_c * c ) ||_2
-!
+!  Compute the norms of the primal, dual and complementarity slacknesses 
+!    res_primal      = || (  A x - SCALE_c * c ) ||
+!                      || (   y - y_l - y_u    ) ||_2
+!    res_dual        = || ( GRAD_L - z_l - z_u ) ||_2
+!    res_primal_dual = root( res_primal^2 + res_dual^2 )
+!    res_cs          =  | < z_l . ( x - x_l ) > +  < z_u . ( x_u - x ) > +
+!                         < y_l . ( c - c_l ) > +  < y_u . ( c_u - c ) > |
+!  and the value of the merit function 
+!    res_cs + tau res_primal_dual 
 !  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g - A(transpose) y
 !  is the gradient of the Lagrangian
 !
@@ -8467,13 +8468,13 @@
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
 
 ! Compute the potential terms

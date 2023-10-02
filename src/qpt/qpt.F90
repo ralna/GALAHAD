@@ -77,7 +77,7 @@
 !     Storing limited-memory matrices
 
       USE GALAHAD_LMT_precision, LMS_control_type => LMT_control_type,         &
-                              LMS_data_type => LMT_data_type
+                                 LMS_data_type => LMT_data_type
 
 !     Special values
 
@@ -388,6 +388,7 @@
 
       TYPE, PUBLIC :: QPT_dimensions_type
         INTEGER ( KIND = ip_ ) :: nc = -1 , x_s = - 1, x_e = - 1
+        INTEGER ( KIND = ip_ ) :: r_s = - 1, r_e = - 1
         INTEGER ( KIND = ip_ ) :: c_b = - 1, c_s = - 1, c_e = - 1
         INTEGER ( KIND = ip_ ) :: y_s = - 1, y_i = - 1, y_e = - 1, v_e = - 1
         INTEGER ( KIND = ip_ ) :: x_free = - 1, x_l_start = - 1, x_l_end = - 1
