@@ -10,7 +10,10 @@ task:
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
       pkg install -y py39-pip meson cmake bash gcc12 openblas
+      mkdir deps
+      cd deps
       pip install numpy
+      cd ..
       /usr/local/bin/python3.9 -c 'import numpy; print(numpy.get_include())'
     else
       brew install python meson gcc openblas
