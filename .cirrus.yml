@@ -9,10 +9,10 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y py39-pip meson bash gcc12
+      pkg install -y py39-pip meson cmake bash gcc12 openblas
       pip install numpy
     else
-      brew install python meson gcc
+      brew install python meson gcc openblas
       pip3 install numpy
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
@@ -21,7 +21,7 @@ task:
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
-      FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir -Dpythoniface=true
+      FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir -Dpythoniface=false
     else
       FC=gfortran-12 CC=gcc-12 CXX=g++-12 meson setup builddir -Dpythoniface=true
     fi
