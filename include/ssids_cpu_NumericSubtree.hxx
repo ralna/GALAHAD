@@ -93,6 +93,10 @@ public:
       for(int i=0; i<num_threads; ++i)
          work.emplace_back(PAGE_SIZE);
 
+       // initialise stats already so we can safely early-return in case of
+       // failure if not compiled with OpenMP (instead of omp cancel)
+       stats = ThreadStats();
+
       // Each node is depend(inout) on itself and depend(in) on its parent.
       // Whilst this isn't really what's happening it does ensure our
       // ordering is correct: each node cannot be scheduled until all its
@@ -104,7 +108,7 @@ public:
       {
          /* Loop over small leaf subtrees */
          for(unsigned int si=0; si<symb_.small_leafs_.size(); ++si) {
-            auto* parent_lcol = &nodes_[symb_.small_leafs_[si].get_parent()];
+            auto* parent_lcol = nodes_.data() + symb_.small_leafs_[si].get_parent();
             #pragma omp task default(none) \
                firstprivate(si) \
                shared(aval, abort, options, scaling, thread_stats, work) \
@@ -167,7 +171,7 @@ public:
          for(int ni=0; ni<symb_.nnodes_; ++ni) {
             if(symb_[ni].insmallleaf) continue; // already handled
             auto* this_lcol = &nodes_[ni]; // for depend
-            auto* parent_lcol = &nodes_[symb_[ni].parent]; // for depend
+            auto* parent_lcol = nodes_.data() + symb_[ni].parent; // for depend
             #pragma omp task default(none) \
                firstprivate(ni) \
                shared(aval, abort, child_contrib, options, scaling, \
@@ -193,7 +197,10 @@ public:
                   int nrow = symb_[ni].nrow + nodes_[ni].ndelay_in;
                   thread_stats[this_thread].maxfront =
                      std::max(thread_stats[this_thread].maxfront, nrow);
-                  
+                  int ncol = symb_[ni].ncol + nodes_[ni].ndelay_in;
+                  thread_stats[this_thread].maxsupernode =
+                     std::max(thread_stats[this_thread].maxsupernode, ncol);
+
                   // Factorization
                   factor_node<posdef>
                      (ni, symb_[ni], nodes_[ni], options,
@@ -244,8 +251,7 @@ public:
       } // taskgroup
 
 
-      // Reduce thread_stats
-      stats = ThreadStats(); // initialise
+      // Reduce thread_stats (stats already initialised above)
       for(auto tstats : thread_stats)
          stats += tstats;
       if(stats.flag < 0) return;

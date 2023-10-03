@@ -2418,7 +2418,7 @@ public:
          for(int jblk=0, insert=0, fail_insert=0; jblk<nblk; jblk++) {
             cdata[jblk].move_back(
                   get_ncol(jblk, n, block_size), &perm[jblk*block_size],
-                  &perm[insert], &failed_perm[fail_insert]
+                  &perm[insert], failed_perm.data() + fail_insert
                   );
             insert += cdata[jblk].nelim;
             fail_insert += get_ncol(jblk, n, block_size) - cdata[jblk].nelim;
@@ -2439,7 +2439,7 @@ public:
                      cdata[iblk], cdata[jblk],
                      &failed_diag[jinsert*nfail+ifail],
                      &failed_diag[iinsert*nfail+jfail],
-                     &failed_diag[num_elim*nfail+jfail*nfail+ifail],
+                     failed_diag.data() + (num_elim*nfail+jfail*nfail+ifail),
                      nfail, &a[jblk*block_size*lda+iblk*block_size], lda
                      );
                iinsert += cdata[iblk].nelim;
@@ -2451,14 +2451,14 @@ public:
                   get_nrow(nblk-1, m, block_size), 
                   get_ncol(jblk, n, block_size),
                   get_ncol(nblk-1, n, block_size), cdata[jblk],
-                  &failed_rect[jfail*(m-n)+(nblk-1)*block_size-n], m-n,
+                  failed_rect.data() + (jfail*(m-n)+(nblk-1)*block_size-n), m-n,
                   &a[jblk*block_size*lda+(nblk-1)*block_size], lda
                   );
             for(int iblk=nblk; iblk<mblk; ++iblk) {
                copy_failed_rect(
                      get_nrow(iblk, m, block_size),
                      get_ncol(jblk, n, block_size), 0, cdata[jblk],
-                     &failed_rect[jfail*(m-n)+iblk*block_size-n], m-n,
+                     failed_rect.data() + (jfail*(m-n)+iblk*block_size-n), m-n,
                      &a[jblk*block_size*lda+iblk*block_size], lda
                      );
             }

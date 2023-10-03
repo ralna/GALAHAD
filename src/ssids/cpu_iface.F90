@@ -82,10 +82,13 @@ module spral_ssids_cpu_iface_precision
    type, bind(C) :: cpu_factor_stats
       integer(C_IP_) :: flag
       integer(C_IP_) :: num_delay
+      integer(C_INT64_T) :: num_factor
+      integer(C_INT64_T) :: num_flops
       integer(C_IP_) :: num_neg
       integer(C_IP_) :: num_two
       integer(C_IP_) :: num_zero
       integer(C_IP_) :: maxfront
+      integer(C_IP_) :: maxsupernode
       integer(C_IP_) :: not_first_pass
       integer(C_IP_) :: not_second_pass
    end type cpu_factor_stats
@@ -122,9 +125,12 @@ subroutine cpu_copy_stats_out(cstats, finform)
       finform%flag = max(finform%flag, cstats%flag) ! success or warning
    endif
    finform%num_delay    = finform%num_delay + cstats%num_delay
+   finform%num_factor   = finform%num_factor + cstats%num_factor
+   finform%num_flops    = finform%num_flops + cstats%num_flops
    finform%num_neg      = finform%num_neg + cstats%num_neg
    finform%num_two      = finform%num_two + cstats%num_two
    finform%maxfront     = max(finform%maxfront, cstats%maxfront)
+   finform%maxsupernode = max(finform%maxsupernode, cstats%maxsupernode)
    finform%not_first_pass = finform%not_first_pass + cstats%not_first_pass
    finform%not_second_pass = finform%not_second_pass + cstats%not_second_pass
    finform%matrix_rank  = finform%matrix_rank - cstats%num_zero

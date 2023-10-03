@@ -173,7 +173,8 @@ void assemble_pre(
    typename FAPrecisionTraits::allocator_type factor_alloc_precision(factor_alloc);
    typedef typename std::allocator_traits<FactorAlloc>::template rebind_traits<int> FAIntTraits;
    typename FAIntTraits::allocator_type factor_alloc_int(factor_alloc);
-   typedef typename std::allocator_traits<PoolAlloc>::template rebind_alloc<int> PoolAllocInt;
+   typedef typename std::allocator_traits<PoolAlloc>::template rebind_traits<int> PAIntTraits;
+   typename PAIntTraits::allocator_type pool_alloc_int(pool_alloc);
 
    /* Count incoming delays and determine size of node */
    node.ndelay_in = 0;
@@ -242,7 +243,11 @@ void assemble_pre(
    /* Build lookup vector, allowing for insertion of delayed vars */
    /* Note that while rlist[] is 1-indexed this is fine so long as lookup
     * is also 1-indexed (which it is as it is another node's rlist[] */
-   std::vector<int, PoolAllocInt> map(n+1, PoolAllocInt(pool_alloc));
+   const auto map_deleter = [&pool_alloc_int, n](int* p) {
+      PAIntTraits::deallocate(pool_alloc_int, p, n+1);
+    };
+    auto map = std::unique_ptr<int[], decltype(map_deleter)>(
+          PAIntTraits::allocate(pool_alloc_int, n+1), map_deleter);
    for(int i=0; i<snode.ncol; i++)
       map[ snode.rlist[i] ] = i;
    for(int i=snode.ncol; i<snode.nrow; i++)

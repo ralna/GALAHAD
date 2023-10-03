@@ -71,6 +71,8 @@ public:
          // Update stats
          int nrow = symb_.symb_[ni].nrow;
          stats.maxfront = std::max(stats.maxfront, nrow);
+         int ncol = symb_.symb_[ni].ncol;
+         stats.maxsupernode = std::max(stats.maxsupernode, ncol);
          // Factorization
          precision_ one_val = 1.0;
          factor_node_posdef
@@ -215,6 +217,8 @@ public:
          // Update stats
          int nrow = symb_.symb_[ni].nrow + old_nodes_[ni].ndelay_in;
          stats.maxfront = std::max(stats.maxfront, nrow);
+         int ncol = symb_.symb_[ni].ncol + old_nodes_[ni].ndelay_in;
+         stats.maxsupernode = std::max(stats.maxsupernode, ncol);
 
          // Factorization
          factor_node
@@ -389,6 +393,10 @@ private:
       /* Record information */
       node->ndelay_out = n - node->nelim;
       stats.num_delay += node->ndelay_out;
+      for (int64_t j = m; j >= m-(node->nelim)+1; --j) {
+          stats.num_factor += j;
+          stats.num_flops += j*j;
+      }
 
       /* Mark as no contribution if we make no contribution */
       if(node->nelim==0 && !node->first_child) {

@@ -63,12 +63,13 @@ struct spral_ssids_inform {
    int stat;
    int cuda_error;
    int cublas_error;
+   int maxsupernode;
    int not_first_pass;
    int not_second_pass;
    int nparts;
    int64_t cpu_flops;
    int64_t gpu_flops;
-   // char unused[80]; // Allow for future expansion
+   // char unused[76]; // Allow for future expansion
 };
 
 /************************************

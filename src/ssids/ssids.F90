@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-10-03 AT 14:10 GMT.
+! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
 
@@ -48,7 +49,7 @@ module spral_ssids_precision
 
   !> \brief Caches user OpenMP ICV values for later restoration
   type :: omp_settings
-     logical :: nested, dynamic
+     logical :: dynamic
      integer(ip_) :: max_active_levels
   end type omp_settings
 
@@ -833,6 +834,8 @@ contains
 
     ! Initialize
     inform = akeep%inform
+    inform%num_factor = 0
+    inform%num_flops = 0
     st = 0
     n = akeep%n
 
@@ -1074,12 +1077,14 @@ contains
        write (options%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
        write (options%unit_diagnostics, &
-            '(a,2(/a,i12),2(/a,es12.4),5(/a,i12))') &
+            '(a,3(/a,i12),2(/a,es12.4),5(/a,i12))') &
             ' information parameters (inform%) :', &
             ' flag                   Error flag                               = ',&
             inform%flag, &
             ' maxfront               Maximum frontsize                        = ',&
             inform%maxfront, &
+           ' maxsupernode           Maximum supernode size                   = ',&
+            inform%maxsupernode, &
             ' num_factor             Number of entries in L                   = ',&
             real(inform%num_factor), &
             ' num_flops              Number of flops performed                = ',&
@@ -1449,7 +1454,7 @@ contains
 !!$  ompgc = omp_get_cancellation()
 !!$  write(6,*) ' ompgc ', ompgc
     ! Dummy, for now.
-    user_settings%nested = .true.
+!   user_settings%nested = .true.
     user_settings%max_active_levels = huge(user_settings%max_active_levels)
 
 !$  ! issue an error if we don't have cancellation (could lead to segfaults)
@@ -1462,9 +1467,9 @@ contains
 !$  if (omp_get_proc_bind() .eq. OMP_PROC_BIND_FALSE) &
 !$       flag = SSIDS_WARNING_OMP_PROC_BIND
 
-!$  ! must have nested enabled
-!$  user_settings%nested = omp_get_nested()
-!$  if (.not. user_settings%nested) call omp_set_nested(.true.)
+!!$  ! must have nested enabled
+!!$  user_settings%nested = omp_get_nested()
+!!$  if (.not. user_settings%nested) call omp_set_nested(.true.)
 
 !$  ! we need OMP_DYNAMIC to be unset, to guarantee the number of threads
 !$  user_settings%dynamic = omp_get_dynamic()
@@ -1482,7 +1487,7 @@ contains
     implicit none
     type(omp_settings), intent(in) :: user_settings
 
-!$  if (.not. user_settings%nested) call omp_set_nested(user_settings%nested)
+!!$  if (.not. user_settings%nested) call omp_set_nested(user_settings%nested)
 !$  if (user_settings%dynamic) call omp_set_dynamic(user_settings%dynamic)
 !$  if (user_settings%max_active_levels .lt. 2) &
 !$       call omp_set_max_active_levels(user_settings%max_active_levels)

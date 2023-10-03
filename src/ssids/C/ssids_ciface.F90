@@ -74,6 +74,7 @@
        INTEGER ( KIND = ipc_ ) :: matrix_rank
        INTEGER ( KIND = ipc_ ) :: maxdepth
        INTEGER ( KIND = ipc_ ) :: maxfront
+       INTEGER ( KIND = ipc_ ) :: maxsupernode
        INTEGER ( KIND = ipc_ ) :: num_delay
        INTEGER ( KIND = longc_ ) :: num_factor
        INTEGER ( KIND = longc_ ) :: num_flops
@@ -84,6 +85,7 @@
 !    type(auction_inform) :: auction
        INTEGER ( KIND = ipc_ ) :: cuda_error
        INTEGER ( KIND = ipc_ ) :: cublas_error
+       CHARACTER(C_CHAR) :: unused(76)
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
@@ -143,6 +145,7 @@
     cinform%matrix_rank = finform%matrix_rank
     cinform%maxdepth = finform%maxdepth
     cinform%maxfront = finform%maxfront
+    cinform%maxsupernode = finform%maxsupernode
     cinform%num_delay = finform%num_delay
     cinform%num_factor = finform%num_factor
     cinform%num_flops = finform%num_flops

@@ -144,7 +144,8 @@ SPRALRBS = $(RLGS)(spral_kinds.o) $(RLGS)(matrix_util_single.o) \
 SPRALRBD = $(RLGD)(spral_kinds.o) $(RLGD)(matrix_util_double.o) \
            $(RLGD)(random_double.o) $(RLGD)(rutherford_boeing_double.o)
 
-SSIDSS = $(SPRALRBS) $(CUDASUSE) $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
+SSIDSS = extend basics \
+         $(SPRALRBS) $(CUDASUSE) $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
          $(RLGS)(omp.o) $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) \
          $(RLGS)(NumericSubtree_single.o) \
          $(RLGS)(cholesky_single.o) $(RLGS)(ldlt_app_single.o) \
@@ -162,7 +163,8 @@ SSIDSS = $(SPRALRBS) $(CUDASUSE) $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
          $(RLGS)(profile_iface.o) $(GPUSUSE) \
          $(RLGS)(anal_single.o) $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o) 
-SSIDSD = $(SPRALRBD) $(CUDADUSE) $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
+SSIDSD = extend basics \
+         $(SPRALRBD) $(CUDADUSE) $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
          $(RLGD)(NumericSubtree_double.o) \
          $(RLGD)(cholesky_double.o) $(RLGD)(ldlt_app_double.o) \
@@ -308,6 +310,15 @@ ssidsst: $(SSIDSST)
 	- ../ssids/run_ssids > ../ssids/ssidst.output 2>&1
 	cat ../ssids/ssidst.output
 	rm ../ssids/run_ssids
+
+#  basic packages
+
+extend:
+	( cd ../extend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
 #  individual compilations
 

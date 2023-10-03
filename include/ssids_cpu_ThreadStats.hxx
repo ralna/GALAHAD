@@ -47,10 +47,13 @@ public:
 struct ThreadStats {
    Flag flag = Flag::SUCCESS; ///< Error flag for thread
    int num_delay = 0;   ///< Number of delays
+   int64_t num_factor = 0;    ///< Number of entries in factors
+   int64_t num_flops = 0;     ///< Number of floating point operations
    int num_neg = 0;     ///< Number of negative pivots
    int num_two = 0;     ///< Number of 2x2 pivots
    int num_zero = 0;    ///< Number of zero pivots
    int maxfront = 0;    ///< Maximum front size
+   int maxsupernode = 0;      ///< Maximum supernode size
    int not_first_pass = 0;    ///< Number of pivots not eliminated in APP
    int not_second_pass = 0;   ///< Number of pivots not eliminated in APP or TPP
 

@@ -501,7 +501,8 @@ contains
           blkn = sptr(node+1) - sptr(node) + ndelay
           blkm = int(rptr(node+1) - rptr(node)) + ndelay
     
-          stats%maxfront = max(stats%maxfront, blkn)
+          stats%maxfront = max(stats%maxfront, blkm)
+          stats%maxsupernode = max(stats%maxsupernode, blkn)
 
           ! Allocate memory for the local permutation (lperm).
           call smalloc(alloc, nodes(node)%perm, blkn+0_long, &

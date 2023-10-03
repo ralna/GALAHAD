@@ -33,6 +33,7 @@ module spral_ssids_inform_precision
                                      ! fact=actual)
      integer(ip_) :: maxdepth = 0 ! Maximum depth of tree
      integer(ip_) :: maxfront = 0 ! Maximum front size
+     integer(ip_) :: maxsupernode = 0 ! Maximum supernode size
      integer(ip_) :: num_delay = 0 ! Number of delayed variables
      integer(long_) :: num_factor = 0_long_ ! Number of entries in factors
      integer(long_) :: num_flops = 0_long_ ! Number of floating point operations
@@ -50,6 +51,7 @@ module spral_ssids_inform_precision
      integer(ip_) :: nparts = 0
      integer(long_) :: cpu_flops = 0
      integer(long_) :: gpu_flops = 0
+     ! character(C_CHAR) :: unused(76)
    contains
      procedure :: flag_to_character
      procedure :: print_flag
@@ -203,6 +205,7 @@ contains
     this%matrix_rank = this%matrix_rank + other%matrix_rank
     this%maxdepth = max(this%maxdepth, other%maxdepth)
     this%maxfront = max(this%maxfront, other%maxfront)
+    this%maxsupernode = max(this%maxsupernode, other%maxsupernode)
     this%num_delay = this%num_delay + other%num_delay
     this%num_factor = this%num_factor + other%num_factor
     this%num_flops = this%num_flops + other%num_flops

@@ -441,6 +441,7 @@ contains
    end if
    if (stats%st .ne. 0) inform%stat = stats%st
    inform%maxfront = max(inform%maxfront, stats%maxfront)
+   inform%maxsupernode = max(inform%maxsupernode, stats%maxsupernode)
    inform%num_factor = inform%num_factor+stats%num_factor
    inform%num_flops = inform%num_flops+stats%num_flops
    inform%num_delay = inform%num_delay+stats%num_delay

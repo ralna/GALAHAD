@@ -18,10 +18,13 @@ ThreadStats& ThreadStats::operator+=(ThreadStats const& other) {
    flag = (flag<0 || other.flag<0) ? std::min(flag, other.flag) // error
                                    : std::max(flag, other.flag);// warning/pass
    num_delay += other.num_delay;
+   num_factor += other.num_factor;
+   num_flops += other.num_flops;
    num_neg += other.num_neg;
    num_two += other.num_two;
    num_zero += other.num_zero;
    maxfront = std::max(maxfront, other.maxfront);
+   maxsupernode = std::max(maxsupernode, other.maxsupernode);
    not_first_pass += other.not_first_pass;
    not_second_pass += other.not_second_pass;
 
