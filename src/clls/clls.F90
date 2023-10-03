@@ -1213,13 +1213,14 @@
 
 !-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
-      SUBROUTINE CLLS_solve( prob, data, control, inform )
+      SUBROUTINE CLLS_solve( prob, data, control, inform,                      &
+                             W, regularization_weight )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Minimize the linear least-squares objective function
 !
-!         1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2
+!         1/2 || A_o x - b ||_W^2 + 1/2 weight || x ||^2
 !
 !  where
 !
@@ -1227,10 +1228,11 @@
 !
 !  and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
-!  where x is a vector of n components ( x_1, .... , x_n ),
-!  A_o and A are o by n and m by n matrices, and any of the bounds 
-!  (c_l)_i, (c_u)_i, (x_l)_i, (x_u)_i may be infinite, using a primal-dual 
-!  method. The subroutine is particularly appropriate when A_0 and A are sparse.
+!  x is a vector of n components ( x_1, .... , x_n ),  A_o and A are o by n 
+!  and m by n matrices, any of the bounds (c_l)_i, (c_u)_i, (x_l)_i, (x_u)_i 
+!  may be infinite, and the weighted norm ||v||_W = sqrt( sum_i=1^o w_i v_i^2 ),
+!  using a primal-dual method. The subroutine is particularly appropriate 
+!  when A_0 and A are sparse.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1313,36 +1315,58 @@
 !    contain the value of b_i.
 !
 !   %A is a structure of type SMT_type used to hold the matrix A.
-!    Three storage formats are permitted:
+!    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 10 ) = TRANSFER( 'COORDINATE', A%type )
-!       A%val( : )   the values of the components of L
-!       A%row( : )   the row indices of the components of L
-!       A%col( : )   the column indices of the components of L
-!       A%ne         the number of nonzeros used to store L
+!       %A%type( 1 : 10 ) = TRANSFER( 'COORDINATE', %A%type )
+!       %A%val( : ) the values of the components of A
+!       %A%row( : ) the row indices of the components of A
+!       %A%col( : ) the column indices of the components of A
+!       %A%ne       the number of nonzeros used to store A
 !
 !    ii) sparse, by rows
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
-!       A%val( : )   the values of the components of L, stored row by row
-!       A%col( : )   the column indices of the components of L
-!       A%ptr( : )   pointers to the start of each row, and past the end of
+!       %A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', %A%type )
+!       %A%val( : ) the values of the components of A, stored row by row
+!       %A%col( : ) the column indices of the components of A
+!       %A%ptr( : ) pointers to the start of each row, and past the end of
 !                    the last row
 !
-!    iii) dense, by rows
+!    iii) sparse, by columns
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
-!       A%val( : )   the values of the components of L, stored row by row,
+!       %A%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', %A%type )
+!       %A%val( : ) the values of the components of A, stored column 
+!                    by column
+!       %A%row( : ) the row indices of the components of A
+!       %A%ptr( : ) pointers to the start of each column, and past the end of
+!                    the last column
+!
+!    iv) dense, by rows
+!
+!       In this case, the following must be set:
+!
+!       %A%type( 1 : 5 ) = TRANSFER( 'DENSE', %A%type )
+!         [ or %A%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', %A%type ) ]
+!       %A%val( : ) the values of the components of A, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
+!
+!    v) dense, by columns
+!
+!       In this case, the following must be set:
+!
+!       %A%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', %A%type )
+!       %A%val( : ) the values of the components of A, stored column 
+!                    by column with each the entries in each column in order
+!                    of increasing row indicies.
+!
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
@@ -1466,6 +1490,14 @@
 !
 !  On exit from CLLS_solve, other components of inform are given in the preamble
 !
+!  regularization_weight is an OPTIONAL REAL, that may be set by the user 
+!   to the value of the non-negative regularization weight. If it is absent,
+!   the regularization weight will be zero.
+!
+!  W is an OPTIONAL REAL array of length prob%o, that may be set by the user 
+!   to the values of the components of the weights W. If it is absent,
+!   the weights will all be taken to be 1.0.
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -1475,6 +1507,11 @@
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( OUT ) :: inform
 
+!  optional dummy argument
+
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%o ) :: W
+
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, j, n_depen, nzc
@@ -1482,7 +1519,7 @@
       REAL ( KIND = rp_ ) :: time_analyse, time_factorize
       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, cro_clock_matrix
-      REAL ( KIND = rp_ ) :: av_bnd
+      REAL ( KIND = rp_ ) :: av_bnd, weight
 !     REAL ( KIND = rp_ ) :: fixed_sum, xi
       LOGICAL :: printi, remap_freed, reset_bnd
 !     LOGICAL :: printa
@@ -1545,10 +1582,15 @@
       printi = control%out > 0 .AND. control%print_level >= 1
 !     printa = control%out > 0 .AND. control%print_level >= 101
 
+      IF ( PRESENT( regularization_weight ) ) THEN
+        weight = regularization_weight
+      ELSE
+        weight = zero
+      END IF
+
 !  ensure that input parameters are within allowed ranges
 
-      IF ( prob%n < 1 .OR. prob%o < 0 .OR. prob%m < 0 .OR.                     &
-           prob%regularization_weight < zero .OR.                              &
+      IF ( prob%n < 1 .OR. prob%o < 0 .OR. prob%m < 0 .OR. weight < zero .OR.  &
            .NOT. QPT_keyword_A( prob%Ao%type ) .OR.                            &
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
@@ -1557,10 +1599,19 @@
         GO TO 800
       END IF
 
+      IF ( PRESENT( W ) ) THEN
+        IF ( MINVAL( W ) <= zero ) THEN
+          inform%status = GALAHAD_error_restrictions
+          IF ( control%error > 0 .AND. control%print_level > 0 )               &
+            WRITE( control%error, 2010 ) prefix, inform%status
+          GO TO 800
+        END IF
+      END IF
+
 !  if required, write out problem
 
       IF ( control%out > 0 .AND. control%print_level >= 20 )                   &
-        CALL QPT_summarize_problem( control%out, prob )
+        CALL CLLS_summarize_problem( control%out, prob )
 
 !  check that problem bounds are consistent; reassign any pair of bounds
 !  that are "essentially" the same
@@ -2062,8 +2113,7 @@
 !  Solve the problem
 !  =================
 
-      CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m,             &
-                            prob%regularization_weight,                        &
+      CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight,     &
                             prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B,     &
                             prob%A%val, prob%A%col, prob%A%ptr,                &
                             prob%C_l, prob%C_u, prob%X_l, prob%X_u,            &
@@ -2085,7 +2135,7 @@
                             data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,          &
                             data%OPT_alpha, data%OPT_merit,                    &
                             data%SLS_data, data%SLS_pounce_data,               &
-                            prefix, control, inform, data%K_sls_pounce )
+                            prefix, control, inform, data%K_sls_pounce, W )
 
       inform%time%analyse = inform%time%analyse +                              &
         inform%FDC_inform%time%analyse - time_analyse
@@ -2241,7 +2291,7 @@
                                   DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
                                   OPT_alpha, OPT_merit, SLS_data,              &
                                   SLS_pounce_data, prefix, control, inform,    &
-                                  K_sls_pounce )
+                                  K_sls_pounce, W )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -2378,20 +2428,20 @@
 !  weight is a REAL variable, that must be set to the regularization weight.
 !    RESTRICTION: weight >= 0
 
-!  Ao_row//ptr/val is used to hold the matrix A by columns. In particular:
-!      Ao_col( : )   the row indices of the components of A
+!  Ao_row//ptr/val is used to hold the matrix A_o by columns. In particular:
+!      Ao_row( : )   the row indices of the components of A_o
 !      Ao_ptr( : )   pointers to the start of each column, and past the end of
-!                   the last row.
-!      Ao_val( : )   the values of the components of A
+!                    the last column.
+!      Ao_val( : )   the values of the components of A_o
 !
 !  B is a REAL array of length o, which must be set by the user to the values
 !   of the observations b.
 !
 !  A_col/ptr/val is used to hold the matrix L by rows. In particular:
-!      A_col( : )   the column indices of the components of L
+!      A_col( : )   the column indices of the components of A
 !      A_ptr( : )   pointers to the start of each row, and past the end of
 !                   the last row.
-!      A_val( : )   the values of the components of L
+!      A_val( : )   the values of the components of A
 !
 !  C_l, C_u are REAL arrays of length m, which must be set by the user to
 !   the values of the arrays x_l and x_u of lower and upper bounds on x, ordered
@@ -2440,6 +2490,10 @@
 !   CLLS_solve, Z will contain the best estimates obtained
 !
 !  control and inform are exactly as for CLLS_solve
+!
+!  W is an OPTIONAL REAL array of length o, that, if PRESENT, must be set 
+!   by the user to the values of the vector of weights W. If W is absent, 
+!   weights of 1.0 will be used.
 !
 !  The remaining arguments are used as internal workspace, and need not be
 !  set on entry
@@ -2534,6 +2588,10 @@
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_pounce_data
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
 
+!  optional dummy argument
+
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
+
 !  Parameters
 
       REAL ( KIND = rp_ ), PARAMETER :: eta = tenm4
@@ -2569,7 +2627,7 @@
 
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
-      LOGICAL :: maxpiv, guarantee, optimal
+      LOGICAL :: maxpiv, guarantee, optimal, present_weight
 !     LOGICAL :: root_arc
       LOGICAL :: puiseux, get_stat, stat_known
       LOGICAL :: use_scale_c = .FALSE.
@@ -2599,7 +2657,7 @@
         WRITE( control%out, "( A, ' A0 (column-wise) =' )" ) prefix
         DO j = 1, n
          IF ( A_ptr( j ) <= A_ptr( j + 1 ) - 1 )                               &
-            WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
+            WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )                  &
             ( j, Ao_row( i ), Ao_val( i ), i = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1)
         END DO
         WRITE( control%out, "( A, ' B =', /, ( 5X, 3ES24.16 ) )" )             &
@@ -2612,7 +2670,7 @@
           WRITE( control%out, "( A, ' A (row-wise) =' )" ) prefix
           DO i = 1, m
            IF ( A_ptr( i ) <= A_ptr( i + 1 ) - 1 )                             &
-              WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )            &
+              WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )                &
               ( i, A_col( j ), A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
           END DO
           WRITE( control%out, "( A,                                            &
@@ -2809,6 +2867,7 @@
 
 !  set control parameters
 
+      present_weight = PRESENT( W )
       muzero_fixed = control%muzero_fixed
       prfeas = MAX( control%prfeas, epsmch )
       dufeas = MAX( control%dufeas, epsmch )
@@ -2843,10 +2902,10 @@
 
 !  set up structure for the matrix K (whose lower triangle is)
 
-!       ( weight I + D     A  Ao^T )   ( n  dimensional )
-!       (               E -S       )   ( nc dimensional )
-!       (     A        -S  0       )   ( m  dimensional )
-!       (     Ao               -I  )   ( o  dimensional )
+!       ( weight I + D     A    Ao^T  )   ( n  dimensional )
+!       (               E -S          )   ( nc dimensional )
+!       (     A        -S  0          )   ( m  dimensional )
+!       (     Ao              -W^{-1} )   ( o  dimensional )
 
 !  where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !        E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
@@ -2902,13 +2961,21 @@
         END DO
       END DO
 
-!  input the 4,4 block, -I
+!  input the 4,4 block, -W^{-1}
 
-      DO i = npncpm + 1, npncpm + o
-        l = l + 1
-        K_sls%row( l ) = i ; K_sls%col( l ) = i
-        K_sls%val( l ) = - one
-      END DO
+      IF ( present_weight ) THEN
+        DO i = npncpm + 1, npncpm + o
+          l = l + 1
+          K_sls%row( l ) = i ; K_sls%col( l ) = i
+          K_sls%val( l ) = - one / W( i - npncpm )
+        END DO
+      ELSE
+        DO i = npncpm + 1, npncpm + o
+          l = l + 1
+          K_sls%row( l ) = i ; K_sls%col( l ) = i
+          K_sls%val( l ) = - one
+        END DO
+      END IF
 
 !  record the dimensions of K
 
@@ -3235,7 +3302,11 @@
 
 !  compute the objective function
 
-      inform%obj = half * DOT_PRODUCT( R, R )
+      IF ( present_weight ) THEN
+        inform%obj = half * DOT_PRODUCT( R, W * R )
+      ELSE
+        inform%obj = half * DOT_PRODUCT( R, R )
+      END IF
       IF ( weight > zero )                                                     &
         inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
@@ -3260,7 +3331,7 @@
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
-                                     control%getdua, dufeas )
+                                     control%getdua, dufeas, W )
 
 !  evaluate the merit function
 
@@ -3832,10 +3903,10 @@
 
 !  factorize
 
-!   ( weight I + D     A  Ao^T )   ( n  dimensional )
-!   (               E -S       )   ( nc dimensional )
-!   (     A        -S  0       )   ( m  dimensional )
-!   (     Ao               -I  )   ( o  dimensional )
+!   ( weight I + D     A    Ao^T  )   ( n  dimensional )
+!   (               E -S          )   ( nc dimensional )
+!   (     A        -S  0          )   ( m  dimensional )
+!   (     Ao               W^{-1} )   ( o  dimensional )
 
 !   where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !         E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
@@ -3957,31 +4028,31 @@
 !  series approximation of the arc v(1-alpha)) about alpha = 0 (equiv theta
 !  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
 
-!  ( Ao^T Ao + weight I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) 
-!       - Ao^T b           = dual(theta)
+!  ( Ao^T W Ao + weight I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) 
+!       - Ao^T W b         = dual(theta)
 !  A x(theta) - S c(theta) = prim(theta)
 !  X(theta) z(theta)       = comp(theta)
 
 !  for suitable
 !      prim(theta) = theta ( A x - S c )
-!      dual(theta) = theta ( Ao^T A_o x - A^T y - z - A_o^T b )
+!      dual(theta) = theta ( Ao^T W A_o x - A^T y - z - A_o^T W b )
 !  (Taylor or Taylor-Puisuex) or
 !      prim(theta) = theta^2 ( A x - S c )
-!      dual(theta) = theta^2 ( Ao^T Ao x - A^T y - z - Ao^T b )
+!      dual(theta) = theta^2 ( Ao^T W Ao x - A^T y - z - Ao^T W b )
 !  (Puiseux) and various possible comp(theta)
 
-!  Let r = Ao x - b, g_l = Ao^T r + weight x - A^T y and r_c = A x - S c
+!  Let r = W ( Ao x - b ), g_l = Ao^T r + weight x - A^T y and r_c = A x - S c
 
 !  To find the coefficients v^k = ( x^k, c^k, y^k, z_l^k, z_u^k, y_l^k, y_u^k ),
 !  solve the equations
 
-!   (  Ao^T Ao + weight I     A^T -I   -I             ) (  x^k  )   (  h^k  )
-!   (                         -S            -I  -I    ) (  c^k  )   (  d^k  )
-!   (  A                  -S                          ) ( -y^k  )   (  a^k  )
-!   (  Z_l                       X-X_l                ) ( z_l^k ) = ( r_l^k )
-!   ( -Z_u                            X_u-X           ) ( z_u^k )   ( r_u^k )
-!   (                     Y_l              C-C_l      ) ( y_l^k )   ( s_l^k )
-!   (                    -Y_u                   C_u-C ) ( y_u^k )   ( s_u^k )
+!   (  Ao^T W Ao + weight I     A^T -I   -I             ) (  x^k  )   (  h^k  )
+!   (                           -S            -I  -I    ) (  c^k  )   (  d^k  )
+!   (  A                    -S                          ) ( -y^k  )   (  a^k  )
+!   (  Z_l                         X-X_l                ) ( z_l^k ) = ( r_l^k )
+!   ( -Z_u                              X_u-X           ) ( z_u^k )   ( r_u^k )
+!   (                       Y_l              C-C_l      ) ( y_l^k )   ( s_l^k )
+!   (                      -Y_u                   C_u-C ) ( y_u^k )   ( s_u^k )
 
 !  for k > 0 for which
 
@@ -4172,12 +4243,12 @@
 !        y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
 !      & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ]
 !
-!  and introducing r^k = Ao x^k, we find on substitution that
+!  and introducing r^k = W Ao x^k, we find on substitution that
 !
-!   ( weight I + D     A  Ao^T ) ( x^k )
-!   (               E -S       ) ( c^k ) = rhs =
-!   (     A        -S  0       ) (-y^k )
-!   (     Ao               -I  ) ( r^k )
+!   ( weight I + D     A     Ao^T  ) ( x^k )
+!   (               E -S           ) ( c^k ) = rhs =
+!   (     A        -S  0           ) (-y^k )
+!   (     Ao               -W^{-1} ) ( r^k )
 !
 !      ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
 !      ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
@@ -4951,10 +5022,10 @@
 ! 3b. Compute the series coefficients
 ! :::::::::::::::::::::::::::::::::::
 
-!   solve ( weight I + D     A  Ao^T ) ( x^k )
-!         (               E -S       ) ( c^k ) = rhs
-!         (     A        -S  0       ) (-y^k )
-!         (     Ao               -I  ) ( r^k )
+!   solve ( weight I + D     A    Ao^T  ) ( x^k )
+!         (               E -S          ) ( c^k ) = rhs
+!         (     A        -S  0          ) (-y^k )
+!         (     Ao              -W^{-1} ) ( r^k )
 
           IF ( printw ) THEN
             IF ( puiseux ) THEN
@@ -5194,10 +5265,10 @@
 
 ! Compute the coefficients
 
-!   solve ( weight I + D     A  Ao^T ) ( x^k )
-!         (               E -S       ) ( c^k ) = rhs
-!         (     A        -S  0       ) (-y^k )
-!         (     Ao               -I  ) ( r^k )
+!   solve ( weight I + D     A    Ao^T  ) ( x^k )
+!         (               E -S          ) ( c^k ) = rhs
+!         (     A        -S  0          ) (-y^k )
+!         (     Ao              -W^{-1} ) ( r^k )
 
           IF ( printw ) WRITE( out, "( A, ' ............... compute',          &
          &        ' Zhang-Taylor coefficients  ............... ' )" )  prefix
@@ -5690,7 +5761,7 @@
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
-                                         control%getdua, dufeas )
+                                         control%getdua, dufeas, W )
 
 !  evaluate the primal and dual infeasibility and merit function
 
@@ -5748,7 +5819,11 @@
 
 !  ... and the objective function
 
-            inform%obj = half * DOT_PRODUCT( R, R )
+            IF ( present_weight ) THEN
+              inform%obj = half * DOT_PRODUCT( R, W * R )
+            ELSE
+              inform%obj = half * DOT_PRODUCT( R, R )
+            END IF
             IF ( weight > zero )                                               &
               inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
@@ -5924,7 +5999,7 @@
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
-                                       control%getdua, dufeas )
+                                       control%getdua, dufeas, W )
 
 !  update the values of the merit function, the gradient of the Lagrangian,
 !  and the constraint residuals
@@ -5945,7 +6020,11 @@
 
 !  ... and the objective function
 
-        inform%obj = half * DOT_PRODUCT( R, R )
+        IF ( present_weight ) THEN
+          inform%obj = half * DOT_PRODUCT( R, W * R )
+        ELSE
+          inform%obj = half * DOT_PRODUCT( R, R )
+        END IF
         IF ( weight > zero )                                                   &
           inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
@@ -6176,7 +6255,7 @@
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,      &
                               X_last, R_last, C_last, Y_last, Z_last,          &
                               C_stat, X_Stat, X_free, RHS, K_sls_pounce,       &
-                              SLS_pounce_data, control, inform, optimal )
+                              SLS_pounce_data, control, inform, optimal, W )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
               WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
@@ -6281,7 +6360,11 @@
 
 !  ... the objective function ...
 
-      inform%obj = half * DOT_PRODUCT( R, R )
+      IF ( present_weight ) THEN
+        inform%obj = half * DOT_PRODUCT( R, W * R )
+      ELSE
+        inform%obj = half * DOT_PRODUCT( R, R )
+      END IF
       IF ( weight > zero )                                                     &
         inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
 
@@ -6293,7 +6376,7 @@
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
-                                     .FALSE., dufeas )
+                                     .FALSE., dufeas, W )
 
 !  ... and the norm of the projected gradient
 
@@ -6518,7 +6601,7 @@
                             B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,        &
                             X_last, R_last, C_last, Y_last, Z_last,            &
                             C_stat, X_Stat, X_free, RHS, K_sls_pounce,         &
-                            SLS_pounce_data, control, inform, optimal )
+                            SLS_pounce_data, control, inform, optimal, W )
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A,                                    &
            &   '  pounce successful, optimal solution found' )" ) prefix
@@ -7256,7 +7339,7 @@
       SUBROUTINE CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u, X,   &
                               R, C, Y, Z, C_stat, X_stat, X_free, SOL, K_sls,  &
-                              SLS_data, control, inform, optimal )
+                              SLS_data, control, inform, optimal, W )
 
 !  Dummy arguments
 
@@ -7289,6 +7372,10 @@
       TYPE ( CLLS_inform_type ), INTENT( INOUT ) :: inform
       LOGICAL, INTENT( OUT ) :: optimal
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: sls_data
+
+!  optional dummy argument
+
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
 
 !  construct the equality-constrained linear least-squares problem according
 !   to the variables and constraints that are predicted to be active via
@@ -7323,7 +7410,7 @@
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, clock_solve
       REAL ( KIND = rp_ ) :: ci, ei
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
-      LOGICAL :: x_feas, c_feas, y_feas, z_feas
+      LOGICAL :: x_feas, c_feas, y_feas, z_feas, present_weight
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 } 
@@ -7345,6 +7432,8 @@
 !  and then recovering
 
 !     z_B = weight x_B + Ao_B^T r - A_AB^T y_A                              (3)
+
+      present_weight = PRESENT( W )
 
 !  1. Set up the matrices and right-hand sides involved
 
@@ -7447,9 +7536,9 @@
         SOL( n_free + 1 : nfpo ) = B( 1 : o )
 
 
-!     ( weight I_F  Ao_F^T  A_AF^T ) (   x_F )   (        0       )
-!     (    Ao_F      - I     0     ) (    r  ) = (   b - Ao_B x_b )         (2)
-!     (    A_AF              0     ) ( - y_A )   ( c_A - A_AB x_b )
+!     ( weight I_F    Ao_F^T  A_AF^T ) (   x_F )   (        0       )
+!     (    Ao_F      - W^{-1}   0    ) (    r  ) = (   b - Ao_B x_b )        (2)
+!     (    A_AF          0      0    ) ( - y_A )   ( c_A - A_AB x_b )
 
 !  fill in the values of K: the 1,1 block weight I_F
 
@@ -7481,12 +7570,20 @@
           END IF
         END DO
 
-!  the 2,2 block - I
+!  the 2,2 block - W^{-1}
 
-        DO j = n_free + 1, nfpo
-          l = l + 1
-          K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
-        END DO
+        IF ( present_weight ) THEN
+          DO j = n_free + 1, nfpo
+            l = l + 1
+            K_sls%row( l ) = j ;  K_sls%col( l ) = j 
+            K_sls%val( l ) = - one / W( j - n_free )
+          END DO
+        ELSE
+          DO j = n_free + 1, nfpo
+            l = l + 1
+            K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
+          END DO
+        END IF
 
 !  the 3,1 block A_AF
 
@@ -7526,10 +7623,10 @@
 
 !  form the (lower triangle of the) matrix
 
-!     ( weight I   Ao^T  A_A^T  I_B^T )
-!     (   Ao       - I    0       0   )
-!     (   A_A       0     0       0   )
-!     (   I_B       0     0       0   )
+!     ( weight I    Ao^T   A_A^T  I_B^T )
+!     (   Ao      - W^{-1}   0      0   )
+!     (   A_A        0       0      0   )
+!     (   I_B        0       0      0   )
 
 !  first, count the number of nonzeros in the Jacobian, Ao ...
 
@@ -7609,12 +7706,20 @@
             END DO
         END DO
 
-!  the 2,2 block - I
+!  the 2,2 block - W^{-1}
 
-        DO j = n + 1, npo
-          l = l + 1
-          K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
-        END DO
+        IF ( present_weight ) THEN
+          DO j = n + 1, npo
+            l = l + 1
+            K_sls%row( l ) = j ;  K_sls%col( l ) = j
+            K_sls%val( l ) = - one / W( j - n )
+          END DO
+        ELSE
+          DO j = n + 1, npo
+            l = l + 1
+            K_sls%row( l ) = j ;  K_sls%col( l ) = j ; K_sls%val( l ) = - one
+          END DO
+        END IF
 
 !  the 3,1 block A_AF
 
@@ -7923,13 +8028,13 @@
                                            A_ne, A_val, A_col, A_ptr,          &
                                            DIST_X_l, DIST_X_u, DIST_C_l,       &
                                            DIST_C_u, GRAD_L,                   &
-                                           getdua, dufeas )
+                                           getdua, dufeas, W )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Compute the gradient of the Lagrangian function
 !
-!  GRAD_L = Ao^T r + weight x - A^T y, where r = Ao x - b
+!  GRAD_L = Ao^T W r + weight x - A^T y, where r = Ao x - b
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -7967,6 +8072,10 @@
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
 
+!  optional dummy argument
+
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
+
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i
@@ -7980,9 +8089,14 @@
         GRAD_L = weight * X
       END IF
 
-!  add the Ao^T r term
+!  add the Ao^T W r term
 
-      CALL CLLS_AoX( n, GRAD_L, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, o, R, '+T' )
+      IF ( PRESENT( W ) ) THEN
+        CALL CLLS_AoX( n, GRAD_L, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, o, W * R,  &
+                       '+T' )
+      ELSE
+        CALL CLLS_AoX( n, GRAD_L, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, o, R, '+T' )
+      END IF
 
 !  subtract the A^T y term
 
@@ -8467,6 +8581,97 @@
 !  End of subroutine CLLS_workspace
 
       END SUBROUTINE CLLS_workspace
+
+!-*-*-  C L L S _ s u m m a r i z e _ p r o b l e m   S U B R O U T I N E  -*-*-
+
+     SUBROUTINE CLLS_summarize_problem( out, prob )
+
+!  Summarizes the problem prob on output device out
+
+!  Nick Gould, December 23rd 2014
+
+!  Dummy arguments
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+      TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j
+
+      WRITE( out, "( ' n, o, m = ', I0, 1X, I0, 1X, I0 )" )                    &
+        prob%n, prob%o, prob%m
+
+!  objective function
+
+      WRITE( out, "( ' B = ', /, ( 5ES12.4 ) )" ) prob%B( : prob%o )
+      IF ( prob%o > 0 ) THEN
+        IF ( SMT_get( prob%Ao%type ) == 'DENSE' .OR.                           &
+             SMT_get( prob%Ao%type ) == 'DENSE_BY_COLUMNS' ) THEN
+          WRITE( out, "( ' Ao (dense) = ', /, ( 5ES12.4 ) )" )                 &
+            prob%Ao%val( : prob%n * prob%o )
+        ELSE IF ( SMT_get( prob%Ao%type ) == 'SPARSE_BY_ROWS' ) THEN
+          WRITE( out, "( ' Ao (row-wise) = ' )" )
+          DO i = 1, prob%o
+            WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                           &
+              ( i, prob%Ao%col( j ), prob%Ao%val( j ),                         &
+                j = prob%Ao%ptr( i ), prob%Ao%ptr( i + 1 ) - 1 )
+          END DO
+        ELSE IF ( SMT_get( prob%Ao%type ) == 'SPARSE_BY_COLUMNS' ) THEN
+          WRITE( out, "( ' Ao (column-wise) = ' )" )
+          DO j = 1, prob%n
+            WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                           &
+              ( j, prob%Ao%row( i ), prob%Ao%val( i ),                         &
+                i = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1 )
+          END DO
+        ELSE
+          WRITE( out, "( ' Ao (co-ordinate) = ' )" )
+          WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                             &
+          ( prob%Ao%row( i ), prob%Ao%col( i ), prob%Ao%val( i ),              &
+            i = 1, prob%Ao%ne)
+        END IF
+      END IF
+
+!  simple bounds
+
+      WRITE( out, "( ' X_l = ', /, ( 5ES12.4 ) )" ) prob%X_l( : prob%n )
+      WRITE( out, "( ' X_u = ', /, ( 5ES12.4 ) )" ) prob%X_u( : prob%n )
+
+!  general constraints
+
+      IF ( prob%m > 0 ) THEN
+        IF ( SMT_get( prob%A%type ) == 'DENSE' .OR.                            &
+             SMT_get( prob%A%type ) == 'DENSE_BY_COLUMNS' ) THEN
+          WRITE( out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )                  &
+            prob%A%val( : prob%n * prob%m )
+        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
+          WRITE( out, "( ' A (row-wise) = ' )" )
+          DO i = 1, prob%m
+            WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                           &
+              ( i, prob%A%col( j ), prob%A%val( j ),                           &
+                j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
+          END DO
+        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS' ) THEN
+          WRITE( out, "( ' A (column-wise) = ' )" )
+          DO j = 1, prob%n
+            WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                           &
+              ( j, prob%A%row( i ), prob%A%val( i ),                           &
+                i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1 )
+          END DO
+        ELSE
+          WRITE( out, "( ' A (co-ordinate) = ' )" )
+          WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                             &
+          ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne)
+        END IF
+        WRITE( out, "( ' C_l = ', /, ( 5ES12.4 ) )" ) prob%C_l( : prob%m )
+        WRITE( out, "( ' C_u = ', /, ( 5ES12.4 ) )" ) prob%C_u( : prob%m )
+      END IF
+
+      RETURN
+
+!  end of subroutine CLLS_summarize_problem
+
+      END SUBROUTINE CLLS_summarize_problem
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================

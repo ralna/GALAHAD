@@ -406,26 +406,16 @@
      END IF
    END DO
    CALL CLLS_terminate( data, control, info )
-write(6,*) ' a ', i
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u, STAT = i )
-write(6,*) ' b ', i
    DEALLOCATE( p%X, STAT = i )
-write(6,*) ' b ', i, ALLOCATED( p%Y )
    DEALLOCATE( p%Y, STAT = i )
-write(6,*) ' b ', i
    DEALLOCATE( p%Z, STAT = i )
-write(6,*) ' b ', i
    DEALLOCATE( p%C, STAT = i )
-write(6,*) ' b ', i
    DEALLOCATE( p%C_status, p%X_status, STAT = i )
-write(6,*) ' b ', i
    DEALLOCATE( p%Ao%ptr, p%A%ptr, STAT = i )
-write(6,*) ' b ', i
-write(6,*) ' c '
    DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, STAT = i )
-write(6,*) ' c ', i
    DEALLOCATE( p%A%val, p%A%row, p%A%col, STAT = i )
-stop
+!stop
 
 !  ============================
 !  full test of generic problem
@@ -496,6 +486,7 @@ stop
    control%error = scratch_out
 !  control%out = 6
 !  control%error = 6
+!  control%out = 6 ; control%print_level = 101
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL CLLS_solve( p, data, control, info )

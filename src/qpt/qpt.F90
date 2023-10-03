@@ -377,6 +377,10 @@
 
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
 
+!  Jacobian weights
+
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+
 !  matrices
 
         TYPE ( SMT_type ) :: Ao, A, H, H_c

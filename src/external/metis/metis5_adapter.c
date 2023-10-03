@@ -41,6 +41,7 @@ void metis5_adapter(int* nvtxs, int* xadj, int* adjncy, int* numflag,
             options5[METIS_OPTION_RTYPE] = METIS_RTYPE_SEP1SIDED;
 
         options5[METIS_OPTION_DBGLVL] = options[4];
+        options5[METIS_DBG_INFO] = options[4];
 
         switch(options[5]){
             case 0:  /* do not try to compress or order connected components */

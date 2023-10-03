@@ -10,6 +10,8 @@
    TYPE ( CLLS_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, o = 4, m = 2, ao_ne = 7, a_ne = 4
+   REAL ( KIND = wp ) :: regularization_weight
+   REAL ( KIND = wp ), DIMENSION( o ) :: W
 ! start problem data
    ALLOCATE( p%B( o ), p%R( o ) )
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
@@ -24,6 +26,8 @@
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
+   regularization_weight = 0.0_wp             ! no regularization
+   W = 1.0_wp                                 ! weights of one
 !  sparse co-ordinate storage format
    CALL SMT_put( p%Ao%type, 'COORDINATE', s )    ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for Ao and A
@@ -47,7 +51,9 @@
 !  control%SLS_control%print_level_solver = 101
 
    control%infinity = infinity                  ! Set infinity
-   CALL CLLS_solve( p, data, control, inform )  ! Solve
+   CALL CLLS_solve( p, data, control, inform,                                  &
+                    regularization_weight = regularization_weight,             &
+                    W = W )                     ! Solve
    IF ( inform%status == 0 ) THEN               ! Successful return
      WRITE( 6, "( ' CLLS: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &
