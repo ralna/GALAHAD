@@ -85,12 +85,12 @@
 !    type(auction_inform) :: auction
        INTEGER ( KIND = ipc_ ) :: cuda_error
        INTEGER ( KIND = ipc_ ) :: cublas_error
-       CHARACTER(C_CHAR) :: unused(76)
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
        INTEGER ( KIND = longc_ ) :: cpu_flops
        INTEGER ( KIND = longc_ ) :: gpu_flops
+!      CHARACTER(C_CHAR) :: unused(76)
     END TYPE ssids_inform
 
 !----------------------

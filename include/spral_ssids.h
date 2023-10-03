@@ -54,6 +54,7 @@ struct spral_ssids_inform {
    int matrix_rank;
    int maxdepth;
    int maxfront;
+   int maxsupernode;
    int num_delay;
    int64_t num_factor;
    int64_t num_flops;
@@ -63,7 +64,6 @@ struct spral_ssids_inform {
    int stat;
    int cuda_error;
    int cublas_error;
-   int maxsupernode;
    int not_first_pass;
    int not_second_pass;
    int nparts;
