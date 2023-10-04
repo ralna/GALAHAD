@@ -169,15 +169,21 @@ libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
                       include_directories('src/ampl')] + libhsl_modules + libcutest_modules
 
-# TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
-extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
-if libhwloc.found()
-  extra_args += '-DSPRAL_HAVE_HWLOC'
+if host_machine.system() == 'linux'
+  add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
 else
-  extra_args += '-DSPRAL_NO_HWLOC'
+  add_global_arguments('-DSPRAL_NO_SCHED_GETCPU', language : 'cpp')
 endif
-extra_args_single = extra_args + '-DGALAHAD_SINGLE' + '-DSPRAL_SINGLE'
-extra_args_double = extra_args + '-DGALAHAD_DOUBLE' + '-DSPRAL_DOUBLE'
+
+# HWLOC
+if libhwloc.found()
+  add_global_arguments('-DSPRAL_HAVE_HWLOC', language : 'cpp')
+else
+  add_global_arguments('-DSPRAL_NO_HWLOC', language : 'cpp')
+endif
+
+extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
+extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
 # Sources
 subdir('bin')
