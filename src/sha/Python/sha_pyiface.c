@@ -254,7 +254,7 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_RECOVER_MATRIX   -*-*-*-*-*-*-*-*-*
 
 static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_order;
+    PyArrayObject *py_order = NULL;
     PyArrayObject *py_s1, *py_y1;
     int ne, m, ls1, ls2, ly1, ly2;
     int *order = NULL;
@@ -287,11 +287,11 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
     if(!check_2darray_double("y", py_y, ly1, ly2))
         return NULL;
-    if(!check_array_int("order", py_order, m))
-        return NULL;
 
     // Convert 64bit integer order to 32bit
-    if((PyObject *) py_order != Py_None){
+    if((PyObject *) py_order != NULL){
+        if(!check_array_int("order", py_order, m))
+            return NULL;
         order = malloc(m * sizeof(int));
         long int *order_long = (long int *) PyArray_DATA(py_order);
         for(int i = 0; i < m; i++) order[i] = (int) order_long[i];
@@ -375,7 +375,8 @@ static PyMethodDef sha_module_methods[] = {
     {"initialize", (PyCFunction) py_sha_initialize, METH_NOARGS,NULL},
     {"analyse_matrix", (PyCFunction) py_sha_analyse_matrix, 
        METH_VARARGS | METH_KEYWORDS, NULL},
-    {"recover_matrix", (PyCFunction) py_sha_recover_matrix, METH_VARARGS, NULL},
+    {"recover_matrix", (PyCFunction) py_sha_recover_matrix, 
+       METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_sha_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_sha_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

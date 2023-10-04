@@ -168,7 +168,6 @@ subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
 
    ! Carry out ordering
    call METIS_SetDefaultOptions(metis_opts) ! C-style (0-based) indexing
-!  metis_opts(METIS_OPTION_NUMBERING) = 1 ! Fortran-style numbering
    metis_flag = METIS_NodeND(int(n, kind=metis_idx_t), ptr2, row2, C_NULL_PTR, &
                              metis_opts, invp2, perm2)
    select case(metis_flag)

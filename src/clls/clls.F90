@@ -1593,6 +1593,7 @@
       IF ( prob%n < 1 .OR. prob%o < 0 .OR. prob%m < 0 .OR. weight < zero .OR.  &
            .NOT. QPT_keyword_A( prob%Ao%type ) .OR.                            &
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
+write(6,*) ' a'
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error, 2010 ) prefix, inform%status
@@ -1601,6 +1602,7 @@
 
       IF ( PRESENT( W ) ) THEN
         IF ( MINVAL( W ) <= zero ) THEN
+write(6,*) ' b'
           inform%status = GALAHAD_error_restrictions
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
             WRITE( control%error, 2010 ) prefix, inform%status
@@ -8969,7 +8971,7 @@
          data%prob%Ao%ne = Ao_ptr( o + 1 )
        END IF
        array_name = 'clls: data%prob%Ao%ptr'
-       CALL SPACE_resize_array( m + 1, data%prob%Ao%ptr,                       &
+       CALL SPACE_resize_array( o + 1, data%prob%Ao%ptr,                       &
               data%clls_inform%status, data%clls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -9245,11 +9247,13 @@
 
 !-*-*-  G A L A H A D -  C L L S _ s o l v e _ c l l s  S U B R O U T I N E  -*-
 
-     SUBROUTINE CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,   &
-                                 X_l, X_u, X, R, C, Y, Z, X_stat, C_stat )
+     SUBROUTINE CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,     &
+                                 X_l, X_u, X, R, C, Y, Z, X_stat, C_stat,      &
+                                 W, regularization_weight )
 
-!  solve the quadratic programming problem whose structure was previously
-!  imported. See CLLS_solve for a description of the required arguments.
+!  solve the constrained linear least-squares problem whose structure was 
+!  previously imported. See CLLS_solve for a description of the required 
+!  arguments.
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
@@ -9328,6 +9332,15 @@
 !               > 0, the i-th constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
+!
+!  regularization_weight is an optional scalar of type default real that
+!   may be set to the value of the non-negative regularization weight. 
+!   If it is absent, the regularization weight will be zero.
+!
+!  W is an optional rank-one array of type default real that may be
+!   set to the values of the components of the weights W. 
+!   The i-th component of W, i = 1, ... , o, contains (w)_i.
+!   If it is absent, the weights will all be taken to be 1.0.
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( CLLS_full_data_type ), INTENT( INOUT ) :: data
@@ -9339,6 +9352,8 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, C
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( data%prob%o ) :: W
 
 !  local variables
 
@@ -9381,7 +9396,7 @@
 !  call the solver
 
      CALL CLLS_solve( data%prob, data%clls_data, data%clls_control,            &
-                      data%clls_inform )
+                      data%clls_inform, W, regularization_weight )
 
 !  recover the optimal primal and dual variables, Lagrange multipliers,
 !  constraint values and status values for constraints and simple bounds
@@ -9390,7 +9405,7 @@
      Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
-     R( : m ) = data%prob%R( : m )
+     R( : o ) = data%prob%R( : o )
      C_stat( : m ) = data%prob%C_status( : m )
      X_stat( : n ) = data%prob%X_status( : n )
 

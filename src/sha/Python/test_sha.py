@@ -73,6 +73,12 @@ for algorithm in range(1,6):
 
   print(" H from", m, "differences:", val)
 
+  # recover the values of the Hessian
+  print(" now use default order")
+  val = sha.recover_matrix(ne, m, ls1, ls2, s, ly1, ly2, y )
+
+  print(" H from", m, "differences:", val)
+
   # get information
   inform = sha.information()
   print(' ** sha exit status:', inform['status'])

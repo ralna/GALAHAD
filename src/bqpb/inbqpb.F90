@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-10-04 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -107,7 +107,7 @@
 
 !  Scalars
 
-      INTEGER ( KIND = ip_ ) :: n, ir, ic, ifail, liw, iores, smt_stat, H_ne, l
+      INTEGER ( KIND = ip_ ) :: n, ir, ic, liw, iores, smt_stat, H_ne, l
 !     INTEGER ( KIND = ip_ ) :: np1, npm
 !     INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
       INTEGER ( KIND = ip_ ) :: i, j, nfixed, ndegen, status, alloc_stat, iter
@@ -704,10 +704,8 @@
               ' are on bounds &', I7, ' are dual degenerate' )
 ! 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations &', I7,    &
 !              ' are degenerate' )
- 2140 FORMAT( /, ' *** Problem will be scaled based on ', A1, ' *** ' )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2170 FORMAT( /, ' *** Further scaling applied to A *** ' )
  2180 FORMAT( A10 )
  2190 FORMAT( A10, I7, I6, ES13.4, I6, 0P, F8.2 )
  2200 FORMAT( /, ' problem dimensions:  n = ', I0, ' h_ne = ', I0 )
