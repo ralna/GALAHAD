@@ -168,6 +168,11 @@ option('libhsl_modules',
        value : [],
        description : 'Additional directories to search for the HSL modules')
 
+option('libcutest_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the CUTEST modules')
+
 option('libmetis_version',
        type : 'combo',
        choices : ['4', '5'],
