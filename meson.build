@@ -87,6 +87,7 @@ libampl_path = get_option('libampl_path')
 
 libmetis_version = get_option('libmetis_version')
 
+libcutest_modules = get_option('libcutest_modules')
 libhsl_modules = get_option('libhsl_modules')
 
 # Dependencies
@@ -166,7 +167,7 @@ galahad_python_tests = []
 # Headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
-                      include_directories('src/ampl')] + libhsl_modules
+                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules
 
 # TODO: -DSPRAL_NO_SCHED_GETCPU | DSPRAL_HAVE_SCHED_GETCPU
 extra_args = ['-DSPRAL_NO_SCHED_GETCPU']
