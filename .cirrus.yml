@@ -31,3 +31,6 @@ task:
     meson install -C builddir
   test_script: |
     meson test -C builddir
+  on_failure:
+    log_artifacts:
+      path: builddir/meson-logs/*log.txt
