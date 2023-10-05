@@ -319,6 +319,8 @@ if build_single
   to_process_single = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src]
   if libcutest_single.found()
     to_process_single += libgalahad_cutest_src
+  else
+    to_process_single += libgalahad_cutest_dummy_src
   endif
   pp_sources_single = gen_single.process(to_process_single)
 
@@ -348,6 +350,8 @@ if build_double
   to_process_double = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src]
   if libcutest_double.found()
     to_process_double += libgalahad_cutest_src
+  else
+    to_process_single += libgalahad_cutest_dummy_src
   endif
   pp_sources_double = gen_single.process(to_process_double)
 
@@ -372,7 +376,6 @@ if build_pythoniface and build_ciface and build_double
     ['-c', 'import numpy; print(numpy.get_include())'],
     check : true
   ).stdout().strip()
-  libgalahad_include += [incdir_numpy]
 
   # install python metadata
   install_data(files('doc/PYTHON_METADATA'), install_dir : join_paths(py.get_install_dir(),'galahad-'+meson.project_version()+'.dist-info'))
@@ -386,7 +389,7 @@ if build_pythoniface and build_ciface and build_double
                         sources : file,
                         link_with : libgalahad_double,
                         link_language : 'c',
-                        include_directories : libgalahad_double_include,
+                        include_directories : libgalahad_double_include + incdir_numpy,
                         subdir : 'galahad',
                         install : true)
   endforeach
