@@ -351,7 +351,7 @@ if build_double
   if libcutest_double.found()
     to_process_double += libgalahad_cutest_src
   else
-    to_process_single += libgalahad_cutest_dummy_src
+    to_process_double += libgalahad_cutest_dummy_src
   endif
   pp_sources_double = gen_single.process(to_process_double)
 
