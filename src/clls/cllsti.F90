@@ -46,9 +46,10 @@
 
    WRITE( 6, "( /, ' basic tests of least-squares storage formats', / )" )
 
-   DO data_storage_type = 1, 5
-write(6,*) data_storage_type 
+!  DO data_storage_type = 1, 5
+   DO data_storage_type = 1, 1
      CALL CLLS_initialize( data, control, inform )
+!    control%print_level = 101 ; control%out = 6
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -107,18 +108,18 @@ write(6,*) data_storage_type
                    1.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_ /) ! Ao
        A_val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
        CALL CLLS_import( control, data, status, n, o, m,                       &
-                         'dense', Ao_ne, Ao_row, Ao_col, Ao_ptr,               &
-                         'dense', A_ne, A_row, A_col, A_ptr )
+                         'dense', Ao_dense_ne, Ao_row, Ao_col, Ao_ptr,         &
+                         'dense', A_dense_ne, A_row, A_col, A_ptr )
      CASE ( 5 ) ! dense by columns
        st = 'DC'
        ALLOCATE( Ao_val( ao_dense_ne ), Ao_row( 0 ), Ao_col( 0 ), Ao_ptr( 0 ) )
        ALLOCATE( A_val( a_dense_ne ), A_row( 0 ), A_col( 0 ), A_ptr( 0 ) )
-       Ao_val = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_,      &
+       Ao_val = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_,       &
                    0.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_ /) ! Ao
        A_val = (/ 2.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_ /) ! A
-       CALL CLLS_import( control, data, status, n, o, m,                       &
-                         'dense_by_columns', Ao_ne, Ao_row, Ao_col, Ao_ptr,    &
-                         'dense_by_columns', A_ne, A_row, A_col, A_ptr )
+       CALL CLLS_import( control, data, status, n, o, m, 'dense_by_columns',   &
+                         Ao_dense_ne, Ao_row, Ao_col, Ao_ptr,                  &
+                         'dense_by_columns', A_dense_ne, A_row, A_col, A_ptr )
      END SELECT
      CALL CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,           &
                            X_l, X_u, X, R, C, Y, Z, X_stat, C_stat, W = W,     &

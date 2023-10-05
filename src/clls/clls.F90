@@ -2658,9 +2658,9 @@ write(6,*) ' b'
        &                      ', m = ', I0 )" ) prefix, n, o, m
         WRITE( control%out, "( A, ' A0 (column-wise) =' )" ) prefix
         DO j = 1, n
-         IF ( A_ptr( j ) <= A_ptr( j + 1 ) - 1 )                               &
-            WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )                  &
-            ( j, Ao_row( i ), Ao_val( i ), i = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1)
+         IF ( Ao_ptr( j ) <= Ao_ptr( j + 1 ) - 1 )                             &
+           WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )                   &
+           ( Ao_row( i ), j, Ao_val( i ), i = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1 )
         END DO
         WRITE( control%out, "( A, ' B =', /, ( 5X, 3ES24.16 ) )" )             &
           prefix, B( : o )
@@ -8805,7 +8805,7 @@ write(6,*) ' b'
 
 !  allocate vector space if required
 
-     array_name = 'clls: data%prob%G'
+     array_name = 'clls: data%prob%B'
      CALL SPACE_resize_array( o, data%prob%B,                                  &
             data%clls_inform%status, data%clls_inform%alloc_status,            &
             array_name = array_name,                                           &
@@ -8908,7 +8908,7 @@ write(6,*) ' b'
 
 !  put data into the required components of the qpt storage type
 
-     data%prob%n = n ; data%prob%m = m
+     data%prob%n = n ; data%prob%o = o ; data%prob%m = m
 
 !  set Ao appropriately in the qpt storage type
 
