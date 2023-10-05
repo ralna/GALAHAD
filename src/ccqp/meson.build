@@ -3,9 +3,8 @@ galahad_binaries += [['inccqp', files('inccqp.F90')]]
 if build_ciface
   libgalahad_c_src += files('C/ccqp_ciface.F90')
 endif
-if libcutest.found()
-  libgalahad_cutest_src += files('useccqp.F90', 'runccqp_sif.F90')
-endif
+
+libgalahad_cutest_src += files('useccqp.F90', 'runccqp_sif.F90')
 
 galahad_tests += [['ccqp', 'ccqpt', files('ccqpt.F90')],
                   ['ccqp', 'ccqpti', files('ccqpti.F90')]]

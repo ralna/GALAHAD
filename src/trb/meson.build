@@ -11,9 +11,7 @@ if build_pythoniface
                                           '../sha/Python/sha_pyiface.c','../sils/Python/sils_pyiface.c')]]
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('usetrb.F90', 'runtrb_sif.F90')
-endif
+libgalahad_cutest_src += files('usetrb.F90', 'runtrb_sif.F90')
 
 galahad_tests += [['trb', 'trbt', files('trbt.F90')],
                   ['trb', 'trbti', files('trbti.F90')]]

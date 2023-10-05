@@ -15,9 +15,7 @@ if build_pythoniface
                                            '../fdc/Python/fdc_pyiface.c')]]
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('usebqpb.F90', 'runbqpb_sif.F90')
-endif
+libgalahad_cutest_src += files('usebqpb.F90', 'runbqpb_sif.F90')
 
 galahad_tests += [['bqpb', 'bqpbt', files('bqpbt.F90')],
                   ['bqpb', 'bqpbti', files('bqpbti.F90')]]

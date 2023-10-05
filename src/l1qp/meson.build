@@ -1,7 +1,6 @@
 libgalahad_src += files('l1qp.F90')
-if libcutest.found()
-  libgalahad_cutest_src += files('usel1qp.F90', 'runl1qp_sif.F90')
-endif
+
+libgalahad_cutest_src += files('usel1qp.F90', 'runl1qp_sif.F90')
 
 galahad_tests += [['l1qp', 'l1qpt', files('l1qpt.F90')]]
 

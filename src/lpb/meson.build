@@ -15,9 +15,7 @@ if build_pythoniface
                                           '../lms/Python/lms_pyiface.c',)]]
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('uselpb.F90', 'runlpb_sif.F90')
-endif
+libgalahad_cutest_src += files('uselpb.F90', 'runlpb_sif.F90')
 
 galahad_tests += [['lpb', 'lpbt', files('lpbt.F90')],
                   ['lpb', 'lpbti', files('lpbti.F90')]]

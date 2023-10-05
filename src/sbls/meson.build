@@ -10,9 +10,7 @@ if build_pythoniface
                                            '../gls/Python/gls_pyiface.c')]]
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('usesbls.F90', 'runsbls_sif.F90')
-endif
+libgalahad_cutest_src += files('usesbls.F90', 'runsbls_sif.F90')
 
 galahad_tests += [['sbls', 'sblst', files('sblst.F90')],
                   ['sbls', 'sblsti', files('sblsti.F90')]]
