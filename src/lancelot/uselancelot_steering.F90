@@ -62,7 +62,7 @@
      CHARACTER ( LEN = 30 ) :: rfilename = 'LANCELOTRES.d'
      CHARACTER ( LEN = 30 ) :: sfilename = 'LANCELOTSOL.d'
      CHARACTER ( LEN = 30 ) :: wfilename = 'LANCELOTSAVE.d'
-
+     LOGICAL :: testal = .FALSE.
      LOGICAL :: dechk  = .FALSE.
      LOGICAL :: dechke = .FALSE.
      LOGICAL :: dechkg = .FALSE.
@@ -125,13 +125,14 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: ntotel, nvrels, nnza  , ngpvlu, nepvlu
-     INTEGER ( KIND = ip_ ) :: neltyp, ngrtyp, ialgor, nnlneq, nlinin, nnlnin, nobjgr
-     INTEGER ( KIND = ip_ ) :: ieltyp, lfuval
-     INTEGER ( KIND = ip_ ) :: nin   , ninmax, nelmax, iauto , out
-     INTEGER ( KIND = ip_ ) :: i , j , ifflag, numvar, igrtyp, iores
-     INTEGER ( KIND = ip_ ) :: norder, nfree , nfixed, alloc_status, alive_request
-     INTEGER ( KIND = ip_ ) :: nlower, nupper, nboth , nslack, nlinob, nnlnob, nlineq
-     REAL    :: time  , t     , timm  , ttotal
+     INTEGER ( KIND = ip_ ) :: neltyp, ngrtyp, ialgor, nnlneq, nlinin
+     INTEGER ( KIND = ip_ ) :: nnlnin, nobjgr, ieltyp, lfuval
+     INTEGER ( KIND = ip_ ) :: nin, ninmax, nelmax, iauto , out
+     INTEGER ( KIND = ip_ ) :: i, j, ifflag, numvar, igrtyp, iores
+     INTEGER ( KIND = ip_ ) :: norder, nfree, nfixed, nnlnob, nlineq
+     INTEGER ( KIND = ip_ ) :: alloc_status, alive_request
+     INTEGER ( KIND = ip_ ) :: nlower, nupper, nboth, nslack, nlinob
+     REAL :: time, t, timm, ttotal
      REAL ( KIND = rp_ ) :: fobj, epsmch, rand
      REAL ( KIND = rp_ ), DIMENSION( 2 ) :: OBFBND
      LOGICAL :: alive, dsave, second, filexx, fdgrad, is_specfile
@@ -173,7 +174,8 @@
 
 !  locally used arrays
 
-     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST, IELVAR_temp
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IELVAR_temp
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_temp
 
 !-----------------------------------------------
@@ -191,7 +193,8 @@
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
-       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
 !  Interface block for ELFUN
@@ -841,13 +844,13 @@
              prob, ICALCF, inform%ncalcf, XT, FUVALS, lfuval, IELVAR_temp,     &
              X_temp, nelmax, ninmax, epsmch, second, ITEST,                    &
              control%print_level, out,                                         &
-             RANGE , inform%status, DRCHE_S, ELFUN  = ELFUN  )
+             RANGE, inform%status, DRCHE_S, ELFUN  = ELFUN  )
        ELSE
          CALL DRCHE_check_element_derivatives(                                 &
              prob, ICALCF, inform%ncalcf, XT, FUVALS, lfuval, IELVAR_temp,     &
              X_temp, nelmax, ninmax, epsmch, second, ITEST,                    &
              control%print_level, out,                                         &
-             RANGE , inform%status, DRCHE_S )
+             RANGE, inform%status, DRCHE_S )
        END IF
 
 !  compute group values and derivatives as required
@@ -1122,7 +1125,7 @@
            Q, DGRAD , control, inform, data, GROUP = GROUP )
      ELSE
        CALL LANCELOT_solve(                                                    &
-           prob, RANGE , GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
+           prob, RANGE, GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
            Q, DGRAD , control, inform, data )
      END IF
 

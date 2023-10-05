@@ -20,7 +20,7 @@ PROGRAM RUN_LANCELOT_simple
 !                                                                            !
 !-----------------------------------------------------------------------------
 !
-    USE LANCELOT_PRECISION
+    USE LANCELOT_precision
     USE LANCELOT_simple_precision
 
     IMPLICIT NONE
