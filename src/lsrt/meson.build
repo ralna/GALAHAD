@@ -8,9 +8,7 @@ if build_pythoniface
   libgalahad_python_src += [['lsrt', files('Python/lsrt_pyiface.c')]]
 endif
 
-if libcutest.found()
-  libgalahad_cutest_src += files('uselsrt.F90', 'runlsrt_sif.F90')
-endif
+libgalahad_cutest_src += files('uselsrt.F90', 'runlsrt_sif.F90')
 
 galahad_tests += [['lsrt', 'lsrtt', files('lsrtt.F90')],
                   ['lsrt', 'lsrtti', files('lsrtti.F90')]]

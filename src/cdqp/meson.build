@@ -2,9 +2,7 @@ libgalahad_src += files('cdqp.F90')
 
 galahad_binaries += [['incdqp', files('incdqp.F90')]]
 
-if libcutest.found()
-  libgalahad_cutest_src += files('usecdqp.F90', 'runcdqp_sif.F90')
-endif
+libgalahad_cutest_src += files('usecdqp.F90', 'runcdqp_sif.F90')
 
 galahad_tests += [['cdqp', 'cdqpt', files('cdqpt.F90')]]
 

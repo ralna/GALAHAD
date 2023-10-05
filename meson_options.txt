@@ -58,10 +58,15 @@ option('libhsl',
        value : 'hsl',
        description : 'HSL library against which to link')
 
-option('libcutest',
+option('libcutest_single',
        type : 'string',
-       value : 'cutest',
-       description : 'CUTEST library against which to link')
+       value : 'cutest_single',
+       description : 'CUTEST library in single precision against which to link')
+
+option('libcutest_double',
+       type : 'string',
+       value : 'cutest_double',
+       description : 'CUTEST library in double precision against which to link')
 
 option('libwsmp',
        type : 'string',
@@ -118,10 +123,15 @@ option('libhsl_path',
        value : [],
        description : 'Additional directories to search for the HSL library')
 
-option('libcutest_path',
+option('libcutest_single_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the CUTEST library')
+       description : 'Additional directories to search for the CUTEST library in single precision')
+
+option('libcutest_double_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the CUTEST library in double precision')
 
 option('libwsmp_path',
        type : 'array',
@@ -168,10 +178,15 @@ option('libhsl_modules',
        value : [],
        description : 'Additional directories to search for the HSL modules')
 
-option('libcutest_modules',
+option('libcutest_single_modules',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the CUTEST modules')
+       description : 'Additional directories to search for the CUTEST modules in single precision')
+
+option('libcutest_double_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the CUTEST modules in double precision')
 
 option('libmetis_version',
        type : 'combo',
