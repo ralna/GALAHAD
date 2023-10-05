@@ -353,7 +353,7 @@ if build_double
   else
     to_process_double += libgalahad_cutest_dummy_src
   endif
-  pp_sources_double = gen_single.process(to_process_double)
+  pp_sources_double = gen_double.process(to_process_double)
 
   sources_double = [libgalahad_multi_src, libgalahad_double_src, libgalahad_integer_src,
                     libgalahad_c_double_src, libgalahad_c_integer_src,
