@@ -12,3 +12,8 @@ subroutine galahad_metis(n,iptr,irn,metftn,metopt,invprm,perm)
     ! Dummy ordering
     perm(1) = -1
 end subroutine galahad_metis
+
+subroutine galahad_metis_setopt(metopt)
+    integer, intent(out) :: metopt(8)
+    metopt = 0
+end subroutine galahad_metis_setopt

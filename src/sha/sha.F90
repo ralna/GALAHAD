@@ -1889,7 +1889,7 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 
       INTEGER ( KIND = ip_ ) :: i, rank
       REAL ( KIND = rp_ ), DIMENSION( la1, n ) :: A_save
-      REAL ( KIND = rp_ ) :: b_norm, x_norm
+!     REAL ( KIND = rp_ ) :: b_norm, x_norm
       LOGICAL :: printi
 
       printi = out > 0 .AND. print_level > 1

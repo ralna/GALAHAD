@@ -978,15 +978,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
-     INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: & ! Metis 5 default options
-                 ICNTL_metis = (/ 1, & ! set options
-                                  0, & ! METIS_OPTION_CTYPE
-                                  1, & ! METIS_OPTION_IPTYPE
-                                  0, & ! METIS_OPTION_RTYPE
-                                  0, & ! METIS_OPTION_DBGLVL (not default)
-                                  1, & ! METIS_OPTION_COMPRESS and _CCORDER
-                                  0, & ! METIS_OPTION_PFACTOR
-                                  1 /) ! METIS_OPTION_NSEPS
+     INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
      TYPE ( mc68_control ) :: control_mc68
      TYPE ( mc68_info ) :: info_mc68
@@ -1007,6 +999,7 @@
 
 !  check to see if the MeTiS ordering packages is available
 
+     CALL galahad_metis_setopt( ICNTL_metis )
      CALL galahad_metis( n_dummy, PTR, ROW, 1, ICNTL_metis, INVP, PERM )
      metis_available = PERM( 1 ) > 0
 !write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available

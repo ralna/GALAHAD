@@ -24,3 +24,16 @@ subroutine galahad_metis(n,iptr,irn,metftn,metopt,invprm,perm)
     ! Call MeTiS 5 to get ordering via C MeTiS 4 to 5 adapter
     call metis5_adapter(n,iptr,irn,metftn,metopt,invprm,perm)
 end subroutine galahad_metis
+
+subroutine galahad_metis_setopt(metopt)
+    integer, intent(out) :: metopt(8)
+    metopt = (/ 1, & ! set options
+                0, & ! METIS_OPTION_CTYPE
+                1, & ! METIS_OPTION_IPTYPE
+                0, & ! METIS_OPTION_RTYPE
+                0, & ! METIS_OPTION_DBGLVL (not default)
+                1, & ! METIS_OPTION_COMPRESS and _CCORDER
+                0, & ! METIS_OPTION_PFACTOR
+                1 /) ! METIS_OPTION_NSEPS
+end subroutine galahad_metis_setopt
+

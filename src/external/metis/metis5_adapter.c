@@ -3,6 +3,7 @@
  * This file is distributed under the Eclipse Public License.
  */
 #include "metis.h" /* from MeTiS 5 */
+#include "stdio.h"
 
 void metis5_adapter(int* nvtxs, int* xadj, int* adjncy, int* numflag,
                     int* options, int* perm, int* iperm){
@@ -21,6 +22,7 @@ void metis5_adapter(int* nvtxs, int* xadj, int* adjncy, int* numflag,
     /* Set default MeTiS 5 options */
     METIS_SetDefaultOptions(options5);
     options5[METIS_OPTION_NUMBERING] = *numflag;
+    // options5[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_NODE;
 
     /* Translate MeTiS 4 options MeTiS 5 options */
     if(options[0] != 0){
@@ -41,7 +43,6 @@ void metis5_adapter(int* nvtxs, int* xadj, int* adjncy, int* numflag,
             options5[METIS_OPTION_RTYPE] = METIS_RTYPE_SEP1SIDED;
 
         options5[METIS_OPTION_DBGLVL] = options[4];
-        options5[METIS_DBG_INFO] = options[4];
 
         switch(options[5]){
             case 0:  /* do not try to compress or order connected components */

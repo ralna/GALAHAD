@@ -9005,7 +9005,7 @@ write(6,*) ' b'
          data%prob%Ao%col( : data%prob%Ao%ne ) = Ao_col( : data%prob%Ao%ne ) + 1
        END IF
 
-     CASE ( 'sparse_by_colums', 'SPARSE_BY_COLUMNS' )
+     CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
        IF ( .NOT. ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) ) ) THEN
          data%clls_inform%status = GALAHAD_error_optional
          GO TO 900
@@ -9068,7 +9068,7 @@ write(6,*) ' b'
               bad_alloc = data%clls_inform%bad_alloc, out = error )
        IF ( data%clls_inform%status /= 0 ) GO TO 900
 
-     CASE ( 'dense_by_colums', 'DENSE_BY_COLUMNS' )
+     CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
        CALL SMT_put( data%prob%Ao%type, 'DENSE_BY_COLUMNS',                    &
                      data%clls_inform%alloc_status )
        data%prob%Ao%n = n ; data%prob%Ao%m = o
@@ -9184,8 +9184,71 @@ write(6,*) ' b'
          data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
        END IF
 
-     CASE ( 'dense', 'DENSE' )
+     CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) ) ) THEN
+         data%clls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_COLUMNS',                   &
+                     data%clls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( n + 1 )
+       END IF
+       array_name = 'clls: data%prob%A%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%A%ptr,                        &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'clls: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'clls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 ) + 1
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &
+                     data%clls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'clls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
+       CALL SMT_put( data%prob%A%type, 'DENSE_BY_COLUMNS',                     &
                      data%clls_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
        data%prob%A%ne = m * n

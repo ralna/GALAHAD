@@ -46,8 +46,8 @@
 
    WRITE( 6, "( /, ' basic tests of least-squares storage formats', / )" )
 
-!  DO data_storage_type = 1, 5
-   DO data_storage_type = 1, 1
+   DO data_storage_type = 1, 5
+!  DO data_storage_type = 1, 1
      CALL CLLS_initialize( data, control, inform )
 !    control%print_level = 101 ; control%out = 6
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
@@ -96,7 +96,7 @@
        Ao_ptr = (/ 1, 3, 6, 8 /)
        A_val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
        A_row = (/ 1, 1, 2, 2 /)
-       A_col = (/ 1, 2, 4, 5 /)
+       A_ptr = (/ 1, 2, 4, 5 /)
        CALL CLLS_import( control, data, status, n, o, m,                       &
                          'sparse_by_columns', Ao_ne, Ao_row, Ao_col, Ao_ptr,   &
                          'sparse_by_columns', A_ne, A_row, A_col, A_ptr )
@@ -121,9 +121,11 @@
                          Ao_dense_ne, Ao_row, Ao_col, Ao_ptr,                  &
                          'dense_by_columns', A_dense_ne, A_row, A_col, A_ptr )
      END SELECT
-     CALL CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,           &
-                           X_l, X_u, X, R, C, Y, Z, X_stat, C_stat, W = W,     &
-                           regularization_weight = regularization_weight )
+     IF ( status == 0 ) THEN
+       CALL CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,         &
+                             X_l, X_u, X, R, C, Y, Z, X_stat, C_stat, W = W,   &
+                             regularization_weight = regularization_weight )
+     END IF
      DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr )
      DEALLOCATE( A_val, A_row, A_col, A_ptr )
      CALL CLLS_information( data, inform, status )
