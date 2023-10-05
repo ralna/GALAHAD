@@ -1,4 +1,4 @@
-libgalahad_cutest_src += files('cutest_dummy.F90')
+libgalahad_cutest_dummy_src = files('cutest_dummy.F90')
 
 if not libhsl.found()
   if build_ciface
