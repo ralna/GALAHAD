@@ -23,18 +23,18 @@
 
   This package uses a primal-dual interior-point crossover method
   to solve the <b>constrained linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A x - b \|^2
+  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A_o x - b \|_W^2
     + \frac{1}{2} \sigma \| x \|^2 \f]
 \manonly
   \n
-  minimize f(x) := 1/2 ||Ax-b||^2 + 1/2 sigma ||x||^2
+  minimize f(x) := 1/2 ||Ax-b||_W^2 + 1/2 sigma ||x||^2
   \n
 \endmanonly
   subject to the general linear constraints
   \f[c_i^l  \leq  l_i^Tx  \leq c_i^u, \;\;\; i = 1, \ldots , m,\f]
 \manonly
   \n
-   c_i^l \[<=] l_i^Tx \[<=] c_i^u, i = 1, ... , m,
+   c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
 \endmanonly
   and the simple bound constraints
@@ -44,12 +44,13 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$m\f$ by \f$n\f$ matrix
-  \f$A\f$, the vectors \f$l_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
-  \f$x^u\f$ and the scalar \f$\sigma\f$ are given.
+  where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$, 
+  the \f$o\f$ by \f$n\f$ matrix \f$A_o\f$
+  \f$A\f$, the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
+  \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
   \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
-  Full advantage is taken of any zero coefficients in the matrix \f$A\f$
+  Full advantage is taken of any zero coefficients in the matrix \f$A_o\f$
   or the matrix \f$A\f$ of vectors \f$l_i\f$.
 
   \subsection clls_authors Authors
@@ -59,11 +60,9 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
-  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
-
   \subsection clls_date Originally released
 
-  July 2022.
+  October 2022.
 
   \subsection clls_terminology Terminology
 
@@ -83,10 +82,10 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[\mbox{(2a) $\hspace{3mm} A^T ( Ax-b ) = L^T y + z\f]
+  \f[\mbox{(2a) $\hspace{3mm} A_o^T W ( A_o x-b ) + \sigma x = A^T y + z\f]
 \manonly
   \n
-  (2a) A^T ( A x - b ) = A^T y + z
+  (2a) A_o^T W ( A_o x - b ) + \sigma x = A^T y + z
   \n
 \endmanonly
   where
@@ -109,8 +108,8 @@
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
 \endmanonly
-  where the diagonal matrix \f$W^2\f$ has diagonal entries \f$w_j^2\f$,
-  \f$j = 1, \ldots , n\f$, where the vectors \f$y\f$ and \f$z\f$ are
+  where the diagonal matrix \f$W\f$ has diagonal entries \f$w_j^2\f$,
+  \f$j = 1, \ldots , o\f$, where the vectors \f$y\f$ and \f$z\f$ are
   known as the Lagrange multipliers for
   the general linear constraints, and the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
@@ -181,7 +180,9 @@
   N. I. M. Gould, D. Orban and D. P. Robinson (2013).
   Trajectory-following methods for large-scale  degenerate convex quadratic
   programming,
-  Mathematical Programming Computation 5(2) 113-142.
+  Mathematical Programming Computation 5(2) 113-142
+
+  and tailored for a regularized linear least-squares objective.
 
   \subsection clls_call_order Call order
 
@@ -215,8 +216,11 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
-  and stored in a variety of convenient input formats.
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ 
+  and the \f$o\f$ by \f$n\f$ constraint matrix \f$A\f$ objective matrix 
+  may be presented and stored in a variety of convenient input formats.
+  We focus on \f$A\f$, bt everything applies equally to \f$A_o\f$
+  (with \f$o\f$ replacing \f$m\f$).
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
   Choose \c control.f_indexing as \c false for C style and \c true for
@@ -230,10 +234,13 @@
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
 
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
-  the values of the entries of each row in turn are
+  The matrix \f$A\f$ is stored as a compact dense matrix either by rows
+  or by colums, that is,   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
-  In this case, component \f$n \ast i + j\f$  of the storage array A_val
+  In the row case, component \f$n \ast i + j\f$  of the storage array A_val
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
+  \f$0 \leq j \leq n-1\f$. By contrast, 
+  in the column case, component \f$m \ast j + i\f$  of the storage array A_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
@@ -262,73 +269,18 @@
   For sparse matrices, this scheme almost always requires less storage than
   its predecessor.
 
-  \subsection main_symmetric_matrices Symmetric matrix storage formats
-
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix
-  \f$H\f$ may be presented
-  and stored in a variety of formats. But crucially symmetry is exploited
-  by only storing values from the lower triangular part
-  (i.e, those entries that lie on or below the leading diagonal).
-
-  \subsubsection symmetric_matrix_dense Dense storage format
-
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
-  the values of the entries of each row in turn are
-  stored in order within an appropriate real one-dimensional array.
-  Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
-  In this case the lower triangle should be stored by rows, that is
-  component \f$i \ast i / 2 + j\f$  of the storage array H_val
-  will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
-  for \f$0 \leq j \leq i \leq n-1\f$.
-
-  \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
-
-  Only the nonzero entries of the matrices are stored.
-  For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j
-  and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
-  the \f$l\f$-th components of the integer arrays H_row and
-  H_col and real array H_val, respectively, while the number of nonzeros
-  is recorded as H_ne = \f$ne\f$.
-  Note that only the entries in the lower triangle should be stored.
-
-  \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
-
-  Again only the nonzero entries are stored, but this time
-  they are ordered so that those in row i appear directly before those
-  in row i+1. For the i-th row of \f$H\f$ the i-th component of the
-  integer array H_ptr holds the position of the first entry in this row,
-  while H_ptr(n) holds the total number of entries.
-  The column indices j, \f$0 \leq j \leq i\f$, and values
-  \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
-  l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
-  integer array H_col, and real array H_val, respectively.
-  Note that as before only the entries in the lower triangle should be stored.
-  For sparse matrices, this scheme almost always requires less storage than
-  its predecessor.
-
-  \subsubsection symmetric_matrix_diagonal Diagonal storage format
-
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
-  \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
-  be stored, and the first n components of the array H_val may be
-  used for the purpose.
-
-  \subsubsection symmetric_matrix_scaled_identity Multiples of the identity storage format
-
-  If \f$H\f$ is a multiple of the identity matrix, (i.e., \f$H = \alpha I\f$
-  where \f$I\f$ is the n by n identity matrix and \f$\alpha\f$ is a scalar),
-  it suffices to store \f$\alpha\f$ as the first component of H_val.
-
-  \subsubsection symmetric_matrix_identity The identity matrix format
-
-  If \f$H\f$ is the identity matrix, no values need be stored.
-
-  \subsubsection symmetric_matrix_zero The zero matrix format
-
-  The same is true if \f$H\f$ is the zero matrix.
+  \subsubsection unsymmetric_matrix_column_wise Sparse column-wise storage format
+  Once again only the nonzero entries are stored, but this time
+  they are ordered so that those in column j appear directly before those
+  in column j+1. For the j-th column of \f$A\f$ the j-th component of the
+  integer array A_ptr holds the position of the first entry in this column,
+  while A_ptr(m) holds the total number of entries.
+  The row indices i, \f$0 \leq i \leq m-1\f$, and values   \f$A_{ij}\f$ 
+  of the  nonzero entries in the j-th column are stored in components
+  l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1,  \f$0 \leq j \leq n-1\f$,
+  of the integer array A_row, and real array A_val, respectively.
+  As before, For sparse matrices, this scheme almost always requires less 
+  storage than the co-ordinate format.
 
  */
 
@@ -474,10 +426,6 @@ struct clls_control_type {
     real_wp_ stop_rel_c;
 
     /// \brief
-    /// .perturb_h will be added to the Hessian
-    real_wp_ perturb_h;
-
-    /// \brief
     /// initial primal variables will not be closer than .prfeas from their
     /// bounds
     real_wp_ prfeas;
@@ -512,23 +460,6 @@ struct clls_control_type {
     /// a factor .reduce_infeas over .infeas_max iterations, the problem is
     /// flagged as infeasible (see infeas_max)
     real_wp_ reduce_infeas;
-
-    /// \brief
-    /// if the objective function value is smaller than obj_unbounded, it will
-    /// be flagged as unbounded from below.
-    real_wp_ obj_unbounded;
-
-    /// \brief
-    /// if W=0 and the potential function value is smaller than
-    /// .potential_unbounded \f$\ast\f$ number of one-sided bounds,
-    /// the analytic center will be flagged as unbounded
-    real_wp_ potential_unbounded;
-
-    /// \brief
-    /// any pair of constraint bounds \f$(c_l,c_u)\f$ or \f$(x_l,x_u)\f$ that
-    /// are closer than .identical_bounds_tol will be reset to the average
-    /// of their values
-    real_wp_ identical_bounds_tol;
 
     /// \brief
     /// start terminal extrapolation when mu reaches mu_lunge
@@ -632,6 +563,10 @@ struct clls_control_type {
     /// problem is to be generated
     bool generate_qplib_file;
 
+ /// \brief
+    /// the symmetric (indefinite) linear equation solver used
+    char symmetric_linear_solver[31];
+
     /// \brief
     /// name of generated SIF file containing input problem
     char sif_file_name[31];
@@ -651,8 +586,12 @@ struct clls_control_type {
     struct fdc_control_type fdc_control;
 
     /// \brief
-    /// control parameters for SBLS
-    struct sbls_control_type sbls_control;
+    /// control parameters for SLS
+    struct sls_control_type sls_control;
+
+    /// \brief
+    /// control parameters for SLS used by CLLS_pounce
+    struct sls_control_type sls_pounce_control;
 
     /// \brief
     /// control parameters for FIT
@@ -795,11 +734,6 @@ struct clls_inform_type {
     real_wp_ init_complementary_slackness;
 
     /// \brief
-    /// the value of the logarithmic potential function
-    /// sum -log(distance to constraint boundary)
-    real_wp_ potential;
-
-    /// \brief
     /// the smallest pivot which was not judged to be zero when detecting linear
     /// dependent constraints
     real_wp_ non_negligible_pivot;
@@ -824,8 +758,12 @@ struct clls_inform_type {
     struct fdc_inform_type fdc_inform;
 
     /// \brief
-    /// inform parameters for SBLS
+    /// inform parameters for SLS
     struct sbls_inform_type sbls_inform;
+
+    /// \brief
+    /// inform parameters for SLS using CLLS_pounce
+    struct sbls_inform_type sbls_pounce_inform;
 
     /// \brief
     /// return information from FIT
@@ -844,7 +782,7 @@ struct clls_inform_type {
     struct rpd_inform_type rpd_inform;
 };
 
-// *-*-*-*-*-*-*-*-*-*-    C Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    C L L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void clls_initialize( void **data,
                       struct clls_control_type *control,
@@ -863,7 +801,7 @@ void clls_initialize( void **data,
   \li  0. The import was succesful.
 */
 
-// *-*-*-*-*-*-*-*-*-    C Q P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-    C L L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
 void clls_read_specfile( struct clls_control_type *control,
                          const char specfile[] );
@@ -883,23 +821,26 @@ void clls_read_specfile( struct clls_control_type *control,
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    C Q P  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-*-*-    C L L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
 void clls_import( struct clls_control_type *control,
                   void **data,
                   int *status,
                   int n,
+                  int o,
                   int m,
-                  const char H_type[],
-                  int H_ne,
-                  const int H_row[],
-                  const int H_col[],
-                  const int H_ptr[],
-                  const char L_type[],
-                  int L_ne,
-                  const int L_row[],
-                  const int L_col[],
-                  const int L_ptr[] );
+                  const char Ao_type[],
+                  int Ao_ne,
+                  const int Ao_row[],
+                  const int Ao_col[],
+                  int Ao_ptr_ne,
+                  const int Ao_ptr[],
+                  const char A_type[],
+                  int A_ne,
+                  const int A_row[],
+                  const int A_col[],
+                  int A_ptr_ne,
+                  const int A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -922,75 +863,93 @@ void clls_import( struct clls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
-        has been violated.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
-       specified.
+  \li -3. The restrictions n > 0, o > 0 or m >= 0 or requirement that a type 
+       contains its relevant string 'dense', 'dense_by_column', 'coordinate', 
+       'sparse_by_rows' or 'sparse_by_columns' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
+ @param[in] o is a scalar variable of type int, that holds the number of
+    residuals.
+
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
- @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
-   'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
-   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
-   case variants are allowed.
-
- @param[in]  H_ne is a scalar variable of type int, that holds the number of
-   entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
-   storage scheme. It need not be set for any of the other schemes.
-
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
-   holds the row indices of the lower triangular part of \f$H\f$ in the sparse
-   co-ordinate storage scheme. It need not be set for any of the other
-   three schemes, and in this case can be NULL.
-
- @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
-   need not be set when the dense, diagonal or (scaled) identity storage
-   schemes are used,  and in this case can be NULL.
-
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of  each row of the lower
-   triangular part of \f$H\f$, as well as the total number of entries,
-   in the sparse row-wise storage scheme. It need not be set when the
-   other schemes are used, and in this case can be NULL.
-
- @param[in]  L_type is a one-dimensional array of type char that specifies the
+ @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
-   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
-  'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+   used for the objective Jacobian, \f$A_o\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns'; 
+   lower or upper case variants are allowed.
 
- @param[in]  L_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
-   It need not be set for any of the other schemes.
+ @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A_o\f$ in the sparse storage schemes.
+   It need not be set for either of the dense schemes.
 
- @param[in]  L_row is a one-dimensional array of size L_ne and type int, that
-   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
-   It need not be set for any of the other schemes,
+ @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type int, that
+   holds the row indices of \f$A_o\f$ in the sparse co-ordinate 
+   or sparse column-wise storage schemes. It need not be set for any of the 
+   other schemes, and in this case can be NULL.
+
+ @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type int,
+   that holds the column indices of \f$A_o\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
+   dense or diagonal storage schemes are used, and in this case can be NULL.
+
+ @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the 
+   length of the pointer array if sparse row or column storage scheme is
+   used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least 
+   o+1, while for the sparse column scheme,  it should be at least n+1,
+   It need not be set when the other schemes are used.
+
+ @param[in]  Ao_ptr is a one-dimensional array of size o+1 and type int,
+   that holds the starting position of each row of \f$A_o\f$, as well as the
+   total number of entries, in the sparse row-wise storage scheme.
+   By contrast, it is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each column of \f$A_o\f$, as well as the
+   total number of entries, in the sparse column-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 
- @param[in]  L_col is a one-dimensional array of size L_ne and type int,
+ @param[in]  A_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns'; 
+   lower or upper case variants are allowed.
+
+ @param[in]  A_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A\f$ in the sparse storage schemes.
+   It need not be set for either of the dense schemes.
+
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate 
+   or sparse column-wise storage schemes. It need not be set for any of the 
+   other schemes, and in this case can be NULL.
+
+ @param[in]  A_col is a one-dimensional array of size A_ne and type int,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  L_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr_ne is a scalar variable of type int, that holds the 
+   length of the row pointer array if sparse row or column storage scheme is
+   used for \f$A\f$. For the sparse row scheme,  A_ptr_ne should be at least 
+   m+1, while for the sparse column scheme,  it should be at least n+1,
+   It need not be set when the other schemes are used.
+
+ @param[in]  A_ptr is a one-dimensional array of size m+1 and type int,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
+   By contrast, it is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each column of \f$A\f$, as well as the
+   total number of entries, in the sparse column-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
+
 */
 
 
-//  *-*-*-*-*-*-*-*-*-   C Q P _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-   C L L S _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
 
 void clls_reset_control( struct clls_control_type *control,
                          void **data,
@@ -1009,18 +968,18 @@ void clls_reset_control( struct clls_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-*-*-   C Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
 
-void clls_solve_qp( void **data,
+void clls_solve_clls( void **data,
                     int *status,
                     int n,
+                    int o,
                     int m,
-                    int h_ne,
-                    const real_wp_ H_val[],
-                    const real_wp_ g[],
-                    const real_wp_ f,
-                    int L_ne,
-                    const real_wp_ L_val[],
+                    int Ao_ne,
+                    const real_wp_ Ao_val[],
+                    const real_wp_ b[],
+                    int A_ne,
+                    const real_wp_ A_val[],
                     const real_wp_ c_l[],
                     const real_wp_ c_u[],
                     const real_wp_ x_l[],
@@ -1030,7 +989,9 @@ void clls_solve_qp( void **data,
                     real_wp_ y[],
                     real_wp_ z[],
                     int x_stat[],
-                    int c_stat[] );
+                    int c_stat[],
+                    real_wp_ w[],
+                    real_wp_ regularization_weight );
 
 /*!<
  Solve the quadratic program when the Hessian \f$H\f$ is available.
@@ -1073,33 +1034,31 @@ void clls_solve_qp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
-           specified.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
+ @param[in] o is a scalar variable of type int, that holds the number of
+    residuals.
+
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of
-    entries in the lower triangular part of the Hessian matrix \f$H\f$.
+  @param[in] ao_ne is a scalar variable of type int, that holds the number of
+    entries in the objective Jacobian \f$A_o\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double,
-    that holds the values of the entries of the lower triangular part of the
-    Hessian matrix \f$H\f$ in any of the available storage schemes.
+  @param[in] Ao_val is a one-dimensional array of size ao_ne and type double,
+    that holds the values of the entries of the objective Jacobian
+    Hessian matrix \f$A_o\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that
-    holds the linear term \f$g\f$ of the objective function.
-    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+ @param[in] b is a one-dimensional array of size o and type double, that
+    holds the linear term \f$b\f$ of observations.
+    The j-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
- @param[in] f is a scalar of type double, that
-    holds the constant term \f$f\f$ of the objective function.
-
- @param[in] L_ne is a scalar variable of type int, that holds the number of
+ @param[in] A_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[in] L_val is a one-dimensional array of size L_ne and type double,
+ @param[in] A_val is a one-dimensional array of size L_ne and type double,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in any of the available storage schemes.
 
@@ -1147,146 +1106,19 @@ void clls_solve_qp( void **data,
     negative, the constraint value \f$l_i^Tx\f$ most likely lies on its
     lower bound, if it is positive, it lies on its upper bound, and if it
     is zero, it lies  between its bounds.
+
+ @param[out] w is a one-dimensional array of size o and type double, that
+   holds the vector of strictly-positive observation weights \f$w\f$.
+   If the weights are all one, w can be set to NULL.
+
+ @param[in] regularization_weight is a scalar of type double, that
+    holds the non-negative regularization weight \f$\sigma\f$. It need only 
+    be set if \f$\sigma>0\f$, and will be taken to be zero if 
+    regularization_weight is NULL.
 */
 
-//  *-*-*-*-*-*-*-*-*-*-   C Q P _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
 
-void clls_solve_sldqp( void **data,
-                       int *status,
-                       int n,
-                       int m,
-                       const real_wp_ w[],
-                       const real_wp_ x0[],
-                       const real_wp_ g[],
-                       const real_wp_ f,
-                       int L_ne,
-                       const real_wp_ L_val[],
-                       const real_wp_ c_l[],
-                       const real_wp_ c_u[],
-                       const real_wp_ x_l[],
-                       const real_wp_ x_u[],
-                       real_wp_ x[],
-                       real_wp_ c[],
-                       real_wp_ y[],
-                       real_wp_ z[],
-                       int x_stat[],
-                       int c_stat[] );
-
-/*!<
- Solve the shifted least-distance quadratic program
-
- @param[in,out] data holds private internal data
-
- @param[in,out] status is a scalar variable of type int, that gives
-    the entry and exit status from the package. \n
-    Possible exit are:
-  \li  0. The run was succesful
-
-  \li -1. An allocation error occurred. A message indicating the offending
-       array is written on unit control.error, and the returned allocation
-       status and a string containing the name of the offending array
-       are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the offending
-       array is written on unit control.error and the returned allocation
-       status and a string containing the name of the offending array
-       are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 and m > 0 or requirement that a type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
-        has been violated.
-  \li -5. The simple-bound constraints are inconsistent.
-  \li -7. The constraints appear to have no feasible point.
-  \li -9. The analysis phase of the factorization failed; the return status
-         from the factorization package is given in the component
-         inform.factor_status
-  \li -10. The factorization failed; the return status from the factorization
-         package is given in the component inform.factor_status.
-  \li -11. The solution of a set of linear equations using factors from the
-         factorization package failed; the return status from the factorization
-         package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is
-           impossible.
-  \li -17. The step is too small to make further impact.
-  \li -18. Too many iterations have been performed. This may happen if
-         control.maxit is too small, but may also be symptomatic of
-         a badly scaled problem.
-  \li -19. The CPU time limit has been reached. This may happen if
-         control.cpu_time_limit is too small, but may also be symptomatic of
-         a badly scaled problem.
-
- @param[in] n is a scalar variable of type int, that holds the number of
-    variables
-
- @param[in] m is a scalar variable of type int, that holds the number of
-    general linear constraints.
-
-  @param[in] w is a one-dimensional array of size n and type double,
-    that holds the values of the weights \f$w\f$.
-
-  @param[in] x0 is a one-dimensional array of size n and type double,
-    that holds the values of the shifts \f$x^0\f$.
-
- @param[in] g is a one-dimensional array of size n and type double, that
-    holds the linear term \f$g\f$ of the objective function.
-    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-
- @param[in] f is a scalar of type double, that
-    holds the constant term \f$f\f$ of the objective function.
-
- @param[in] L_ne is a scalar variable of type int, that holds the number of
-    entries in the constraint Jacobian matrix \f$A\f$.
-
-@param[in] L_val is a one-dimensional array of size L_ne and type double,
-    that holds the values of the entries of the constraint Jacobian matrix
-    \f$A\f$ in any of the available storage schemes.
-
- @param[in] c_l is a one-dimensional array of size m and type double, that
-    holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
-    The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
-
- @param[in] c_u is a one-dimensional array of size m and type double, that
-    holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
-    The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
-
- @param[in] x_l is a one-dimensional array of size n and type double, that
-    holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
-    The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-
- @param[in] x_u is a one-dimensional array of size n and type double, that
-    holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
-    The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-
- @param[in,out] x is a one-dimensional array of size n and type double, that
-    holds the values \f$x\f$ of the optimization variables. The j-th component
-    of x, j = 0, ... , n-1, contains \f$x_j\f$.
-
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the residual \f$c(x)\f$.
-    The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i(x) \f$.
-
- @param[in,out] y is a one-dimensional array of size n and type double, that
-    holds the values \f$y\f$ of the Lagrange multipliers for the general
-    linear constraints. The j-th component
-    of y, i = 0, ... , m-1, contains \f$y_i\f$.
-
- @param[in,out] z is a one-dimensional array of size n and type double, that
-    holds the values \f$z\f$ of the dual variables.
-    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-
- @param[out] x_stat is a one-dimensional array of size n and type int, that
-    gives the optimal status of the problem variables. If x_stat(j) is negative,
-    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
-    positive, it lies on its upper bound, and if it is zero, it lies
-    between its bounds.
-
- @param[out] c_stat is a one-dimensional array of size m and type int, that
-    gives the optimal status of the general linear constraints. If c_stat(i) is
-    negative, the constraint value \f$a_i^T x\f$ most likely lies on its
-    lower bound, if it is positive, it lies on its upper bound, and if it
-    is zero, it lies  between its bounds.
-*/
-
-// *-*-*-*-*-*-*-*-*-*-    C Q P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    C L L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void clls_information( void **data,
                        struct clls_inform_type *inform,
@@ -1306,7 +1138,7 @@ void clls_information( void **data,
   \li  0. The values were recorded succesfully
 */
 
-// *-*-*-*-*-*-*-*-*-*-    C Q P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    C L L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void clls_terminate( void **data,
                      struct clls_control_type *control,
@@ -1328,8 +1160,9 @@ void clls_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example cllst.c
-   This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are
+   This is an example of how to use the package to solve a polyhedrally 
+   constrained, regularlized linear least-squares problem.
+   A variety of supported objective and constraint matrix storage formats are
    shown.
 
    Notice that C-style indexing is used, and that this is flaggeed by

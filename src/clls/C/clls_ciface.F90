@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-10-06 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -9,7 +9,7 @@
 !  Principal authors: Jaroslav Fowkes & Nick Gould
 
 !  History -
-!    originally released GALAHAD Version 4.1. July 20 2022
+!    originally released GALAHAD Version 4.2. October 6 2023
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -114,8 +114,6 @@
       REAL ( KIND = rpc_ ) :: gamma_c
       REAL ( KIND = rpc_ ) :: gamma_f
       REAL ( KIND = rpc_ ) :: reduce_infeas
-      REAL ( KIND = rpc_ ) :: obj_unbounded
-      REAL ( KIND = rpc_ ) :: potential_unbounded
       REAL ( KIND = rpc_ ) :: identical_bounds_tol
       REAL ( KIND = rpc_ ) :: mu_pounce
       REAL ( KIND = rpc_ ) :: indicator_tol_p
@@ -137,6 +135,7 @@
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
       LOGICAL ( KIND = C_BOOL ) :: generate_qplib_file
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: symmetric_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: qplib_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
@@ -242,8 +241,6 @@
     fcontrol%gamma_c = ccontrol%gamma_c
     fcontrol%gamma_f = ccontrol%gamma_f
     fcontrol%reduce_infeas = ccontrol%reduce_infeas
-    fcontrol%obj_unbounded = ccontrol%obj_unbounded
-    fcontrol%potential_unbounded = ccontrol%potential_unbounded
     fcontrol%identical_bounds_tol = ccontrol%identical_bounds_tol
     fcontrol%mu_pounce = ccontrol%mu_pounce
     fcontrol%indicator_tol_p = ccontrol%indicator_tol_p
@@ -272,12 +269,19 @@
 
     ! Derived types
     CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
-    CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
+    CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
+    CALL copy_sls_control_in( ccontrol%sls_pounce_control,                     &
+                              fcontrol%sls_pounce_control )
     CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
     CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
     CALL copy_cro_control_in( ccontrol%cro_control, fcontrol%cro_control )
 
     ! Strings
+    DO i = 1, LEN( fcontrol%symmetric_linear_solver )
+      IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
+    END DO
     DO i = 1, LEN( fcontrol%sif_file_name )
       IF ( ccontrol%sif_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%sif_file_name( i : i ) = ccontrol%sif_file_name( i )
@@ -337,8 +341,6 @@
     ccontrol%gamma_f = fcontrol%gamma_f
     ccontrol%reduce_infeas = fcontrol%reduce_infeas
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
-    ccontrol%potential_unbounded = fcontrol%potential_unbounded
-    ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
     ccontrol%mu_pounce = fcontrol%mu_pounce
     ccontrol%indicator_tol_p = fcontrol%indicator_tol_p
     ccontrol%indicator_tol_pd = fcontrol%indicator_tol_pd
@@ -366,12 +368,20 @@
 
     ! Derived types
     CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
-    CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
+    CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
+    CALL copy_sls_control_out( fcontrol%sls_pounce_control,                    &
+                               ccontrol%sls_pounce_control )
     CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
     CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control)
     CALL copy_cro_control_out( fcontrol%cro_control, ccontrol%cro_control )
 
     ! Strings
+    l = LEN( fcontrol%symmetric_linear_solver )
+    DO i = 1, l
+      ccontrol%symmetric_linear_solver( i )                                    &
+        = fcontrol%symmetric_linear_solver( i : i )
+    END DO
+    ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%sif_file_name )
     DO i = 1, l
       ccontrol%sif_file_name( i ) = fcontrol%sif_file_name( i : i )
@@ -474,7 +484,9 @@
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
-    CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
+    CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
+    CALL copy_sls_inform_in( cinform%sls_pounce_inform,                        &
+                             finform%sls_pounce_inform )
     CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
     CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
     CALL copy_cro_inform_in( cinform%cro_inform, finform%cro_inform )
@@ -516,7 +528,6 @@
     cinform%init_primal_infeasibility = finform%init_primal_infeasibility
     cinform%init_dual_infeasibility = finform%init_dual_infeasibility
     cinform%init_complementary_slackness = finform%init_complementary_slackness
-    cinform%potential = finform%potential
     cinform%non_negligible_pivot = finform%non_negligible_pivot
     cinform%checkpointsTime = finform%checkpointsTime
 
@@ -526,7 +537,9 @@
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
-    CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
+    CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
+    CALL copy_sls_inform_out( finform%sls_pounce_inform,                       &
+                              cinform%sls_pounce_inform )
     CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
     CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
     CALL copy_cro_inform_out( finform%cro_inform, cinform%cro_inform )
@@ -642,8 +655,8 @@
 !  ---------------------------------
 
   SUBROUTINE clls_import( ccontrol, cdata, status, n, o, m,                    &
-                          caotype, aone, aorow, aocol, aoptr,                  &
-                          catype, ane, arow, acol, aptr ) BIND( C )
+                          caotype, aone, aorow, aocol, aoptrne, aoptr,         &
+                          catype, ane, arow, acol, aptrne, aptr ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
 
@@ -652,14 +665,15 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( clls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m, aone, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: aone, aoptrne ane, aptrne
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aorow
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aocol
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: aoptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aoptrne ), OPTIONAL :: aoptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: caotype
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aptrne ), OPTIONAL :: aptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
@@ -743,20 +757,19 @@
 !  C interface to fortran clls_solve_clls
 !  ------------------------------------
 
-  SUBROUTINE clls_solve_clls( cdata, status, n, m, aone, aoval, g, f,          &
+  SUBROUTINE clls_solve_clls( cdata, status, n, o, m, aone, aoval, b,          &
                               ane, aval, cl, cu, xl, xu, x, c, y, z,           &
-                              xstat, cstat ) BIND( C )
+                              xstat, cstat, w, regularization_weight ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, aone, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m, aone, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( aone ) :: aoval
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( o ) :: b
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
-  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
@@ -764,6 +777,8 @@
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, VALUE :: regularization_weight
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -776,8 +791,8 @@
 
 !  solve the qp
 
-  CALL f_clls_solve_clls( fdata, status, aoval, g, f, aval, cl, cu, xl, xu,    &
-                          x, c, y, z, xstat, cstat )
+  CALL f_clls_solve_clls( fdata, status, aoval, b, aval, cl, cu, xl, xu,       &
+                          x, c, y, z, xstat, cstat, w, regularization_weight )
   RETURN
 
   END SUBROUTINE clls_solve_clls

@@ -21,6 +21,10 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
+   CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
+!  symmetric_linear_solver = 'ssids'
+!  symmetric_linear_solver = 'ma97 '
+   symmetric_linear_solver = 'sytr '
 
 ! set up problem data
 
@@ -50,6 +54,9 @@
 !  DO data_storage_type = 1, 1
      CALL CLLS_initialize( data, control, inform )
 !    control%print_level = 101 ; control%out = 6
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%FDC_control%use_sls = .TRUE.
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage

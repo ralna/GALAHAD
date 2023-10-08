@@ -265,17 +265,6 @@
 
         REAL ( KIND = rp_ ) :: reduce_infeas = one - point01
 
-!   if the objective function value is smaller than obj_unbounded, it will be
-!    flagged as unbounded from below.
-
-        REAL ( KIND = rp_ ) :: obj_unbounded = - one / epsmch
-
-!   if W=0 and the potential function value is smaller than
-!         potential_unbounded * number of one-sided bounds,
-!     the analytic center will be flagged as unbounded
-
-        REAL ( KIND = rp_ ) :: potential_unbounded = - 10.0_rp_
-
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
 !    identical_bounds_tol will be reset to the average of their values
 
@@ -554,11 +543,6 @@
         REAL ( KIND = rp_ ) :: init_dual_infeasibility = HUGE( one )
         REAL ( KIND = rp_ ) :: init_complementary_slackness = HUGE( one )
 
-!  the value of the logarithmic potential function
-!      sum -log(distance to constraint boundary)
-
-        REAL ( KIND = rp_ ) :: potential
-
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
@@ -654,7 +638,6 @@
 !     control%stop_rel_c = epsmch ** 0.33
       control%stop_abs_d = epsmch ** 0.33
 !     control%stop_rel_d = epsmch ** 0.33
-      control%obj_unbounded = - epsmch ** ( - 2 )
       control%indicator_tol_p = control%stop_abs_p
 
 !  Initalize FDC components
@@ -780,8 +763,6 @@
 !  balance-complentarity-factor                      1.0D-5
 !  balance-feasibility-factor                        1.0D-5
 !  poor-iteration-tolerance                          0.98
-!  minimum-objective-before-unbounded                -1.0D+32
-!  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
 !  barrier-rqeuired-before-final-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
@@ -849,11 +830,8 @@
       INTEGER ( KIND = ip_ ), PARAMETER :: gamma_c = tau + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: gamma_f = gamma_c + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: reduce_infeas = gamma_f + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = reduce_infeas + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: potential_unbounded                 &
-                                             = obj_unbounded + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol                &
-                                             = potential_unbounded + 1
+                                             = reduce_infeas + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: mu_pounce = identical_bounds_tol + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_pounce + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_pd                    &
@@ -931,8 +909,6 @@
       spec( gamma_c )%keyword = 'balance-complentarity-factor'
       spec( gamma_f )%keyword = 'balance-feasibility-factor'
       spec( reduce_infeas )%keyword = 'poor-iteration-tolerance'
-      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
-      spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
       spec( mu_pounce )%keyword = 'minimum-barrier-before-final-extrapolation'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
@@ -1068,12 +1044,6 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( reduce_infeas ),                        &
                                  control%reduce_infeas,                        &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
-                                 control%obj_unbounded,                        &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( potential_unbounded ),                  &
-                                 control%potential_unbounded,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
                                  control%identical_bounds_tol,                 &
@@ -1571,7 +1541,7 @@
       inform%factorization_status = 0
       inform%iter = - 1 ; inform%nfacts = - 1 ; inform%nbacts = 0
       inform%factorization_integer = - 1 ; inform%factorization_real = - 1
-      inform%obj = - one ; inform%potential = infinity
+      inform%obj = - one
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
 !$    inform%threads = OMP_GET_MAX_THREADS( )
@@ -3809,7 +3779,7 @@ write(6,*) ' b'
           END IF
         END IF
 
-!  test to see if the potential function appears to be unbounded from below
+!  compute the barrier terms
 
 !  problem variables:
 
