@@ -513,7 +513,7 @@
       inform%status = GALAHAD_ok
       printi = control%out > 0 .AND. control%print_level > 0
 
-!  allocate space for row starting addresses STR and unsymmetric row counts 
+!  allocate space for row starting addresses STR and unsymmetric row counts
 !  COUNT
 
       array_name = 'SHA: data%STR'
@@ -532,7 +532,7 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  record the number of nonzeros in each row of the whole matrix (both upper 
+!  record the number of nonzeros in each row of the whole matrix (both upper
 !  and lower parts) in COUNT
 
       data%COUNT = 0
@@ -554,8 +554,8 @@
       max_row = MAXVAL( data%COUNT( 1 : n ) )
       inform%max_degree = max_row
 
-!  allocate space for the list of rows ordered by increasing degree (LIST), 
-!  as well the first and last positions for those of a given degree (FIRST 
+!  allocate space for the list of rows ordered by increasing degree (LIST),
+!  as well the first and last positions for those of a given degree (FIRST
 !  and LAST) and pointers from the the list of degrees to the rows (ROWS)
 
       array_name = 'SHA: data%LIST'
@@ -624,7 +624,7 @@
       END DO
       data%LAST( max_row ) = data%FIRST( max_row ) + data%LAST( max_row ) - 1
 
-!  now sort the rows by increasing degree (LIST) (and record their inverses) 
+!  now sort the rows by increasing degree (LIST) (and record their inverses)
 !  (ROWS) ...
 
       DO i = 1, n
@@ -983,7 +983,7 @@
 !  ---------------------------
 
       CASE ( 5 )
- 
+
         data%differences_needed = 0
         data%l_sparse = data%LAST( MIN( max_row, control%max_sparse_degree ) )
 !write(6,*) MIN( max_row, control%max_sparse_degree )
@@ -998,7 +998,7 @@
           ll = data%STR( i + 1 ) - data%STR( i )
           data%differences_needed = MAX( data%differences_needed, ll )
           IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
-!         write( 6, "( ' ------ i, nz ------', 2I8 )" ) & 
+!         write( 6, "( ' ------ i, nz ------', 2I8 )" ) &
 !           i, data%STR( i + 1 ) -  data%STR( i )
 
 !  loop over the entries in the chosen row
@@ -1263,7 +1263,8 @@
 !  generic solver workspace
 
       IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
-        data%la1 = m_max ; data%la2 = n_max
+!       data%la1 = m_max ; data%la2 = n_max
+        data%la1 = MAX( m_max, m_available ) ; data%la2 = n_max + 1
         array_name = 'SHA: data%A'
         CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1274,7 +1275,8 @@
       END IF
 
       IF ( data%lb1 < m_max ) THEN
-        data%lb1 = m_max
+!       data%lb1 = m_max
+        data%lb1 = MAX( m_max, m_available )
         array_name = 'SHA: data%B'
         CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1334,7 +1336,8 @@
 
         ELSE
           IF ( data%ls < min_mn ) THEN
-            data%ls = min_mn
+!           data%ls = min_mn
+            data%ls = min_mn + 1
             array_name = 'SHA: data%solve_syetem_data%S'
             CALL SPACE_resize_array( data%ls, data%solve_system_data%S,        &
                    inform%status, inform%alloc_status,                         &
@@ -1547,7 +1550,7 @@
 
             IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
               data%singular_matrices = data%singular_matrices + 1
-write(6,*) ' singular pass, ii, i ', pass, ii, i
+!write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
@@ -2238,16 +2241,16 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !   number of entries in the upper triangular part of H in the sparse
 !   co-ordinate storage scheme
 !
-!  matrix_row is a rank-one array of type default integer, whose first 
-!   matrix_ne entries holds the row indices of the upper triangular part 
+!  matrix_row is a rank-one array of type default integer, whose first
+!   matrix_ne entries holds the row indices of the upper triangular part
 !   of H in the sparse co-ordinate storage scheme
 !
-!  matrix_col is a rank-one array of type default integer, whose first 
-!   matrix_ne entries holds the column indices of the upper triangular 
+!  matrix_col is a rank-one array of type default integer, whose first
+!   matrix_ne entries holds the column indices of the upper triangular
 !   part of H in the sparse co-ordinate scheme
 !
-!  m is a scalar variable of type default integer, that gives the minimum 
-!   number of (s^(k),y^(k)) pairs that will be needed to recover a good 
+!  m is a scalar variable of type default integer, that gives the minimum
+!   number of (s^(k),y^(k)) pairs that will be needed to recover a good
 !   Hessian approximation
 !
 !-----------------------------------------------
@@ -2330,13 +2333,13 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !
-!  m is a scalar variable of type default integer, that specifies the 
+!  m is a scalar variable of type default integer, that specifies the
 !  number of (s,y) pairs that are available
 !
 !  s is a rank-two array of type default real, that holds the step vectors s^(k)
 !   s_i^(k) should be stored in s(i,k)
 !
-!  y is a rank-two array of type default real, that holds the gradient 
+!  y is a rank-two array of type default real, that holds the gradient
 !   differencestep vectors y^(k). y_i^(k) should be stored in y(i,k)
 !
 !  matrix_val is a rank-one array of type default real, that holds the
@@ -2344,8 +2347,8 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
 !   order as those for the row and column indices in SHA_analyse_matrix
 !
 !  order is a rank-one array of type default integer, whose components
-!   give the preferred order of access for the pairs (s^(k),y^(k)). 
-!   The $k$-th component of order specifies the column number of s and y 
+!   give the preferred order of access for the pairs (s^(k),y^(k)).
+!   The $k$-th component of order specifies the column number of s and y
 !   that will be used as the $k$-th most favoured.
 
 !--------------------------------
@@ -2404,7 +2407,7 @@ write(6,*) ' singular pass, ii, i ', pass, ii, i
        CALL SHA_estimate( data%n, data%ne, data%row, data%col, m,              &
                           S, ls1, ls2, Y, ly1, ly2, matrix_val,                &
                           data%sha_data, data%sha_control, data%sha_inform )
-     END IF 
+     END IF
 
      status = data%sha_inform%status
      RETURN

@@ -500,10 +500,11 @@
        WRITE( rfiledevice, "( A10, 1X, A1, 3I7, I6, F12.3, I4, I5 )" )         &
          pname, ptype, n, inform%max_degree, inform%differences_needed,        &
          floor( log10( error( 1 ) ) ), clock( 1 ), &
-         control%approximation_algorithm, inform%status 
+         control%approximation_algorithm, inform%status
        CLOSE( rfiledevice )
      END IF
 
+write(6,*) ' a '
      IF ( write_solution ) THEN
        WRITE( sfiledevice, "( A, ': dimension = ', I0, ', nonzeros = ', I0,    &
       &  ', row, col, val, true val =', /, ( 2I10, 2ES24.16, ES11.4 ) )" )     &
@@ -512,6 +513,7 @@
           MAX( 1.0_rp_, ABS( VAL( i ) ) ), i = 1, nnzh )
        CLOSE( sfiledevice )
      END IF
+write(6,*) ' b '
 
 !  close any opened files and deallocate arrays
 
@@ -521,6 +523,7 @@
      ELSE
        CALL CUTEST_uterminate( status )
      END IF
+write(6,*) ' b '
      RETURN
 
  910 CONTINUE
