@@ -389,7 +389,7 @@
           END IF
           DO i = ir, ic
             state = ' FREE'
-            IF ( ABS( prob%X( i ) < ten * stopr ) ) state = 'LOWER'
+            IF ( ABS( prob%X( i ) ) < ten * stopr ) state = 'LOWER'
             WRITE( out, 2050 ) i, VNAME( i ), state, prob%X( i ),              &
                                prob%Z( i )
           END DO
