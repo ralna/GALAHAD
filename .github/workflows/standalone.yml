@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          echo "DEPS="$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
+          echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
           echo "ARCHDEFS=$DEPS/ARCHDefs" >> $GITHUB_ENV
           echo "SIFDECODE=$DEPS/SIFDecode" >> $GITHUB_ENV
           echo "CUTEST=$DEPS/CUTEst" >> $GITHUB_ENV
