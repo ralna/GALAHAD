@@ -50,9 +50,9 @@ jobs:
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
           echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
-          echo "ARCHDEFS=$DEPS/ARCHDefs" >> $GITHUB_ENV
-          echo "SIFDECODE=$DEPS/SIFDecode" >> $GITHUB_ENV
-          echo "CUTEST=$DEPS/CUTEst" >> $GITHUB_ENV
+          echo "ARCHDEFS=$GITHUB_WORKSPACE/../ARCHDefs" >> $GITHUB_ENV
+          echo "SIFDECODE=$GITHUB_WORKSPACE/../SIFDecode" >> $GITHUB_ENV
+          echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
           echo "MYARCH=pc64.lnx.gfo" >> $GITHUB_ENV
 
       - name: Set the environment variable LD_LIBRARY_PATH
