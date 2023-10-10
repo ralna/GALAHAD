@@ -47,7 +47,13 @@ jobs:
 
       - name: Set the environment variable GALAHAD
         shell: bash
-        run: echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+        run: |
+          echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "DEPS="$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
+          echo "ARCHDEFS=$DEPS/ARCHDefs" >> $GITHUB_ENV
+          echo "SIFDECODE=$DEPS/SIFDecode" >> $GITHUB_ENV
+          echo "CUTEST=$DEPS/CUTEst" >> $GITHUB_ENV
+          echo "MYARCH=pc64.lnx.gfo" >> $GITHUB_ENV
 
       - name: Set the environment variable LD_LIBRARY_PATH
         if: matrix.os != 'windows-latest'
@@ -83,10 +89,42 @@ jobs:
           compiler: intel
           version: ${{ matrix.compiler_version }}
 
+      - name: Install CUTEst
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'gnu'
+        shell: bash
+        run: |
+          cd $DEPS
+          wget https://github.com/ralna/ARCHDefs/archive/refs/tags/v2.1.24.tar.gz
+          tar -xzvf ARCHDefs-v2.1.24.tar.gz -C ARCHDefs
+          wget https://github.com/ralna/SIFDecode/archive/refs/tags/v2.0.6.tar.gz
+          tar -xzvf SIFDecode-2.0.6.tar.gz -C SIFDecode
+          wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.0.17.tar.gz
+          tar -xzvf CUTEst-2.0.17.tar.gz -C CUTEst
+          cd $SIFDECODE               # build SIFDecode
+          echo "6" > sifdecode.opts   # PC64
+          echo "2" >> sifdecode.opts  # Linux
+          echo "6" >> sifdecode.opts  # gfortran
+          echo "nny" >> sifdecode.opts
+          ./install_sifdecode < sifdecode.opts
+          cd $CUTEST               # build CUTEst
+          echo "6" > cutest.opts   # PC64
+          echo "2" >> cutest.opts  # Linux
+          echo "6" >> cutest.opts  # gfortran
+          echo "2" >> cutest.opts  # build all tools except Matlab
+          echo "8" >> cutest.opts  # gcc
+          echo "nnydy" >> cutest.opts
+          ./install_cutest < cutest.opts
+          mv $CUTEST/objects/$MYARCH/single/licutest.a $CUTEST/objects/$MYARCH/single/libcutest_single.a
+          mv $CUTEST/objects/$MYARCH/double/licutest.a $CUTEST/objects/$MYARCH/double/libcutest_double.a
+
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
+                               -Dlibcutest_single_path=$CUTEST/objects/$MYARCH/single \
+                               -Dlibcutest_double_path=$CUTEST/objects/$MYARCH/double \
+                               -Dlibcutest_single_modules=$CUTEST/modules/$MYARCH/single \
+                               -Dlibcutest_double_modules=$CUTEST/modules/$MYARCH/double
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
