@@ -9,7 +9,9 @@ if build_pythoniface
                                           '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../sils/Python/sils_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usetrs.F90', 'runtrs_sif.F90')
+libgalahad_cutest_src += files('usetrs.F90')
+
+galahad_cutest_binaries += [['runtrs_sif', files('runtrs_sif.F90')]]
 
 galahad_tests += [['trs', 'trst', files('trst.F90')],
                   ['trs', 'trsti', files('trsti.F90')]]

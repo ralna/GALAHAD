@@ -12,7 +12,9 @@ if build_pythoniface
                                           '../ugo/Python/ugo_pyiface.c','../sils/Python/sils_pyiface.c','../rpd/Python/rpd_pyiface.c')]]                                  
 endif
 
-libgalahad_cutest_src += files('usebgo.F90', 'runbgo_sif.F90')
+libgalahad_cutest_src += files('usebgo.F90')
+
+galahad_cutest_binaries += [['runbgo_sif', files('runbgo_sif.F90')]]
 
 galahad_tests += [['bgo', 'bgot', files('bgot.F90')],
                   ['bgo', 'bgoti', files('bgoti.F90')]]

@@ -14,7 +14,9 @@ if build_pythoniface
                                           '../gls/Python/gls_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usedqp.F90', 'rundqp_sif.F90')
+libgalahad_cutest_src += files('usedqp.F90')
+
+galahad_cutest_binaries += [['rundqp_sif', files('rundqp_sif.F90')]]
 
 galahad_tests += [['dqp', 'dqpt', files('dqpt.F90')],
                   ['dqp', 'dqpti', files('dqpti.F90')]]

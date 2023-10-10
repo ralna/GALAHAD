@@ -11,7 +11,9 @@ if build_pythoniface
                                           '../rpd/Python/rpd_pyiface.c','../lms/Python/lms_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('uselpa.F90', 'runlpa_sif.F90')
+libgalahad_cutest_src += files('uselpa.F90')
+
+galahad_cutest_binaries += [['runlpa_sif', files('runlpa_sif.F90')]]
 
 galahad_tests += [['lpa', 'lpat', files('lpat.F90')],
                   ['lpa', 'lpati', files('lpati.F90')]]

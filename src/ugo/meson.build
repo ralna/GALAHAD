@@ -8,7 +8,9 @@ if build_pythoniface
   libgalahad_python_src += [['ugo', files('Python/ugo_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('useugo.F90', 'runugo_sif.F90')
+libgalahad_cutest_src += files('useugo.F90')
+
+galahad_cutest_binaries += [['runugo_sif', files('runugo_sif.F90')]]
 
 galahad_tests += [['ugo', 'ugot', files('ugot.F90')]]
 

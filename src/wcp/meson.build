@@ -10,7 +10,9 @@ if build_pythoniface
                                           '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usewcp.F90', 'runwcp_sif.F90')
+libgalahad_cutest_src += files('usewcp.F90')
+
+galahad_cutest_binaries += [['runwcp_sif', files('runwcp_sif.F90')]]
 
 galahad_tests += [['wcp', 'wcpt', files('wcpt.F90')],
                   ['wcp', 'wcpti', files('wcpti.F90')]]

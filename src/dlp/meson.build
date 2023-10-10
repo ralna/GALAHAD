@@ -4,7 +4,9 @@ if build_ciface
   libgalahad_c_src += files('C/dlp_ciface.F90')
 endif
 
-libgalahad_cutest_src += files('usedlp.F90', 'rundlp_sif.F90')
+libgalahad_cutest_src += files('usedlp.F90')
+
+galahad_cutest_binaries += [['rundlp_sif', files('rundlp_sif.F90')]]
 
 galahad_tests += [['dlp', 'dlpt', files('dlpt.F90')]]
 

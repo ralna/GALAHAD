@@ -151,6 +151,7 @@ libgalahad_aux = []
 
 galahad_headers = []
 galahad_binaries = []
+galahad_cutest_binaries = []
 
 libgalahad_c_single_src = []
 libgalahad_c_double_src = []
@@ -396,11 +397,19 @@ if build_pythoniface and build_ciface and build_double
 endif
 
 # Binaries
-foreach binary: galahad_binaries
-  binname = binary[0]
-  binfile = binary[1]
+galahad_binaries_single = galahad_binaries
+galahad_binaries_double = galahad_binaries
+if libcutest_single.found()
+  galahad_binaries_single += galahad_cutest_binaries
+endif
+if libcutest_double.found()
+  galahad_binaries_double += galahad_cutest_binaries
+endif
 
-  if build_single
+if build_single
+  foreach binary: galahad_binaries_single
+    binname = binary[0]
+    binfile = binary[1]
     executable(binname+'_single', binfile,
                dependencies : libgalahad_single_deps + libgalahad_deps,
                fortran_args : extra_args_single,
@@ -408,8 +417,13 @@ foreach binary: galahad_binaries
                link_language : 'fortran',
                include_directories: libgalahad_single_include,
                install : true)
-  endif
-  if build_double
+  endforeach
+endif
+
+if build_double
+  foreach binary: galahad_binaries_double
+    binname = binary[0]
+    binfile = binary[1]
     executable(binname+'_double', binfile,
                dependencies : libgalahad_double_deps + libgalahad_deps,
                fortran_args : extra_args_double,
@@ -417,8 +431,8 @@ foreach binary: galahad_binaries
                link_language : 'fortran',
                include_directories: libgalahad_double_include,
                install : true)
-  endif
-endforeach
+  endforeach
+endif
 
 # Headers
 install_headers(galahad_headers)
