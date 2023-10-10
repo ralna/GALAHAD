@@ -40,10 +40,11 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,         &
-                                       SCU_inform_type, SCU_factorize,         &
-                                       SCU_terminate
-     USE LANCELOT_ASMBL_precision, ONLY : ASMBL_save_type
-     USE GALAHAD_EXTEND_precision, ONLY : EXTEND_save_type
+                                       SCU_factorize, SCU_terminate
+!                                      SCU_inform_type, SCU_factorize,         &
+!                                      SCU_terminate
+!    USE LANCELOT_ASMBL_precision, ONLY : ASMBL_save_type
+!    USE GALAHAD_EXTEND_precision, ONLY : EXTEND_save_type
      USE LANCELOT_HSL_routines, ONLY : MA61_initialize
 
      IMPLICIT NONE
@@ -1037,6 +1038,7 @@
 
        data%S%nmhist = control%non_monotone
 
+
 !  The problem is generally constrained
 
        IF ( data%S%p_type == 3 ) THEN
@@ -1047,7 +1049,6 @@
          data%S%gamma1 = point1
          data%S%alphae = point1 ; data%S%alphao = one
          data%S%betae = point9 ; data%S%betao = one
-         data%S%epstol = epsmch ** 0.75
          inform%mu = MAX( epsmch, control%initial_mu )
          inform%cnorm = HUGE( one ) ; data%S%cnorm_major = inform%cnorm
          data%S%omega_min = control%stopg ; data%S%eta_min = control%stopc
@@ -1071,6 +1072,8 @@
        ELSE
          data%S%omegak = control%stopg
        END IF
+       data%S%epstol = epsmch ** 0.75
+       data%S%cnorm = zero
      END IF
 
      IF ( inform%status == 0 ) THEN

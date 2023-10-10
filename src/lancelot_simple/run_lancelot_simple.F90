@@ -46,12 +46,12 @@ PROGRAM RUN_LANCELOT_simple
 !
 ! starting point
 !
-    X(1) = -1.2_rp_                 ! starting point (componentwise)
+    X(1) = -1.2_rp_                ! starting point (componentwise)
     X(2) =  1.0_rp_
 !
 ! bounds on the variables
 !
-    BL(1) =  0.0_rp_                ! lower bounds (componentwise)
+    BL(1) =  0.0_rp_               ! lower bounds (componentwise)
     BL(2) = -infinity
     BU(1) =  infinity              ! upper bounds (componentwise)
     BU(2) =  3.0_rp_
@@ -66,16 +66,16 @@ PROGRAM RUN_LANCELOT_simple
 ! algorithmic parameters
 !
     maxit       = 100
-    gradtol     = 0.00001_rp_       ! identical to default
-    feastol     = 0.00001_rp_       ! identical to default
+    gradtol     = 0.00001_rp_      ! identical to default
+    feastol     = 0.00001_rp_      ! identical to default
     print_level = 1                ! identical to default
 !
 ! solve by calling LANCELOT B
 !
-    CALL LANCELOT_simple( n,  X, fx, exit_code,                                &
-                          MY_FUN = FUN, MY_GRAD = GRAD , MY_HESS = HESS,       &
-                          BL = BL, BU = BU, VNAMES   =  VNAMES,                &
-                          CNAMES =  CNAMES, neq = neq, nin = nin,              &
+    CALL LANCELOT_simple( n, X, FUN, fx, exit_code,                            &
+                          MY_GRAD = GRAD , MY_HESS = HESS,                     &
+                          BL = BL, BU = BU, VNAMES =  VNAMES,                  &
+                          CNAMES = CNAMES, neq = neq, nin = nin,               &
                           CX = CX, Y = Y, ITERS  = iters, MAXIT = maxit,       &
                           GRADTOL = gradtol, FEASTOL = feastol,                &
                           PRINT_LEVEL = print_level )

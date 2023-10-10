@@ -2,7 +2,7 @@
 
 #include "galahad_modules.h"
 
-      PROGRAM LANCELOT_simplet
+      PROGRAM LANCELOT_simple_test
 
 !-------------------------------------------------------------------------------
 !                                                                              !
@@ -144,7 +144,7 @@
 !
        STOP
 !
-       END PROGRAM LANCELOT_simplet
+       END PROGRAM LANCELOT_simple_test
 !
 !...............................................................................
 !

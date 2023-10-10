@@ -109,8 +109,8 @@
 !
        CALL LANCELOT_simple( n,  X, FUN, fx, exit_code,                        &
                              MY_GRAD = GRAD , MY_HESS = HESS,                  &
-                             BL = BL, BU = BU, VNAMES   =  VNAMES,             &
-                             CNAMES =  CNAMES, NEQ = neq, NIN = nin,           &
+                             BL = BL, BU = BU, VNAMES =  VNAMES,               &
+                             CNAMES = CNAMES, NEQ = neq, NIN = nin,            &
                              CX = CX, Y = Y, ITERS  = iters, MAXIT = maxit,    &
                              GRADTOL = gradtol, FEASTOL = feastol,             &
                              PRINT_LEVEL = print_level )

@@ -1414,6 +1414,7 @@
    END DO
 
    END DO
+   WRITE( 6, "( /, ' tests completed' )" )
 
    DEALLOCATE( IVAR, ICALCF, ICALCG, ELDERS )
    DEALLOCATE( GVALUE, FVALUE, DGRAD, XT, Q )
