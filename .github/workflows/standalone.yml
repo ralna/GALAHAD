@@ -123,8 +123,8 @@ jobs:
           meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
                                -Dlibcutest_single_path=$CUTEST/objects/$MYARCH/single \
                                -Dlibcutest_double_path=$CUTEST/objects/$MYARCH/double \
-                               -Dlibcutest_single_modules=$CUTEST/modules/$MYARCH/single \
-                               -Dlibcutest_double_modules=$CUTEST/modules/$MYARCH/double
+                               -Dlibcutest_single_modules=../CUTEst/modules/$MYARCH/single \
+                               -Dlibcutest_double_modules=../CUTEst/modules/$MYARCH/double
           else
             meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
           fi
