@@ -457,12 +457,12 @@
 
 !    IF ( inform%differences_needed <= max_sy ) THEN
 !      control%approximation_algorithm = 1
-!      difs = inform%differences_needed
+       difs = inform%differences_needed
 
        CALL CLOCK_time( clocks )
-       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, S, n, difs, Y, n, difs, &
-                          VAL_est, data, control, inform, ORDER = ORDER,       &
-                          VAL_true = VAL )
+       CALL SHA_estimate( n, nnzh, ROW, COL, difs_max, S, n, difs_max,         &
+                          Y, n, difs_max, VAL_est, data, control, inform,      &
+                          ORDER = ORDER, VAL_true = VAL )
        CALL CLOCK_time( clocke )
        IF ( inform%status /= 0 ) THEN
          WRITE( 6, "( ' return with error status ', I0, ' from SHA_estimate')")&
@@ -504,7 +504,6 @@
        CLOSE( rfiledevice )
      END IF
 
-write(6,*) ' a '
      IF ( write_solution ) THEN
        WRITE( sfiledevice, "( A, ': dimension = ', I0, ', nonzeros = ', I0,    &
       &  ', row, col, val, true val =', /, ( 2I10, 2ES24.16, ES11.4 ) )" )     &
@@ -513,7 +512,6 @@ write(6,*) ' a '
           MAX( 1.0_rp_, ABS( VAL( i ) ) ), i = 1, nnzh )
        CLOSE( sfiledevice )
      END IF
-write(6,*) ' b '
 
 !  close any opened files and deallocate arrays
 
@@ -523,7 +521,6 @@ write(6,*) ' b '
      ELSE
        CALL CUTEST_uterminate( status )
      END IF
-write(6,*) ' b '
      RETURN
 
  910 CONTINUE

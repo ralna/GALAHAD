@@ -1681,7 +1681,6 @@
 !  store the right-hand side y_{il}, initialize b to Y(i,l)
 
             IF ( order_present ) THEN
-write(6,*) ' size Y ', size( Y, 1 ), size( Y, 2 ), ly1, ly2
               data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
             ELSE
               data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
@@ -1726,7 +1725,6 @@ write(6,*) ' size Y ', size( Y, 1 ), size( Y, 2 ), ly1, ly2
             ELSE
               dense_linear_solver = MAX( data%dense_linear_solver, 3 )
             END IF
-write(6,*) ' mu, la1 ', mu, data%la1
             CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,        &
                                    data%la1, data%B, data%lb1,                 &
                                    data%solve_system_data, i,                  &
