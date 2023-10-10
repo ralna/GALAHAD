@@ -112,8 +112,8 @@ jobs:
           echo "2" >> cutest.opts  # gcc
           echo "nnydy" >> cutest.opts
           ./install_cutest < cutest.opts
-          mv $CUTEST/objects/$MYARCH/single/licutest.a $CUTEST/objects/$MYARCH/single/libcutest_single.a
-          mv $CUTEST/objects/$MYARCH/double/licutest.a $CUTEST/objects/$MYARCH/double/libcutest_double.a
+          mv $CUTEST/objects/$MYARCH/single/libcutest.a $CUTEST/objects/$MYARCH/single/libcutest_single.a
+          mv $CUTEST/objects/$MYARCH/double/libcutest.a $CUTEST/objects/$MYARCH/double/libcutest_double.a
 
       - name: Setup GALAHAD
         shell: bash
