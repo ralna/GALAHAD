@@ -95,11 +95,14 @@ jobs:
         run: |
           cd $DEPS
           wget https://github.com/ralna/ARCHDefs/archive/refs/tags/v2.1.24.tar.gz
-          tar -xzvf v2.1.24.tar.gz -C ARCHDefs
+          tar -xzvf v2.1.24.tar.gz
+          mv ARCHDefs-2.1.24 ARCHDefs
           wget https://github.com/ralna/SIFDecode/archive/refs/tags/v2.0.6.tar.gz
-          tar -xzvf 2.0.6.tar.gz -C SIFDecode
+          tar -xzvf 2.0.6.tar.gz
+          mv SIFDecode-2.0.6 SIFDecode
           wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.0.17.tar.gz
-          tar -xzvf 2.0.17.tar.gz -C CUTEst
+          tar -xzvf 2.0.17.tar.gz
+          mv CUTEst-2.0.17 CUTEst
           cd $SIFDECODE               # build SIFDecode
           echo "6" > sifdecode.opts   # PC64
           echo "2" >> sifdecode.opts  # Linux
@@ -120,7 +123,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          if [[ "${{matrix.compiler}}" == "gnu" ] && [ "${{matrix.os}}" == "ubuntu-latest"]]; then
+          if [[ "${{matrix.compiler}}" == "gnu" && "${{matrix.os}}" == "ubuntu-latest" ]]; then
 
           meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
                                -Dlibcutest_single_path=$CUTEST/objects/$MYARCH/single \
