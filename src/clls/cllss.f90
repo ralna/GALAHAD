@@ -27,16 +27,16 @@
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
    W = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)   ! weights
 !  sparse co-ordinate storage format
-   CALL SMT_put( p%Ao%type, 'COORDINATE', s )    ! Specify co-ordinate
-   CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for Ao and A
-   ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
-   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Ao
-   p%Ao%row = (/ 1, 1, 2, 2, 3, 3, 4 /) 
-   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /) ; p%Ao%ne = ao_ne
-   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! A
-   p%A%row = (/ 1, 1, 2, 2 /)
-   p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
+   CALL SMT_put( p%Ao%type, 'COORDINATE', s ) ! Specify co-ordinate
+   CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for Ao and A
+   ALLOCATE( p%Ao%row( ao_ne ), p%Ao%col( ao_ne ), p%Ao%val( ao_ne ) )
+   ALLOCATE( p%A%col( a_ne ), p%A%val( a_ne ), p%A%row( a_ne ) )
+   p%Ao%row = (/ 1, 1, 2, 2, 3, 3, 4 /) ; p%Ao%ne = ao_ne  ! Ao
+   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)
+   p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   p%A%row = (/ 1, 1, 2, 2 /) ; p%A%ne = a_ne  ! A
+   p%A%col = (/ 1, 2, 2, 3 /)
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
 ! problem data complete
    CALL CLLS_initialize( data, control, inform ) ! Initialize control parameters
    control%symmetric_linear_solver = 'sytr '
