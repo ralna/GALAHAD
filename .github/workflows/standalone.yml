@@ -103,18 +103,13 @@ jobs:
           wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.0.17.tar.gz
           tar -xzvf v2.0.17.tar.gz
           mv CUTEst-2.0.17 CUTEst
-          cd $SIFDECODE               # build SIFDecode
-          echo "6" > sifdecode.opts   # PC64
-          echo "2" >> sifdecode.opts  # Linux
-          echo "6" >> sifdecode.opts  # gfortran
-          echo "nny" >> sifdecode.opts
-          ./install_sifdecode < sifdecode.opts
           cd $CUTEST               # build CUTEst
-          echo "6" > cutest.opts   # PC64
-          echo "2" >> cutest.opts  # Linux
-          echo "6" >> cutest.opts  # gfortran
+          echo "1" > cutest.opts   # PC64
+          echo "1" >> cutest.opts  # Linux
+          echo "n" >> cutest.opts  # No, I don't want to review and modify the system commands
+          echo "1" >> cutest.opts  # gfortran
           echo "2" >> cutest.opts  # build all tools except Matlab
-          echo "8" >> cutest.opts  # gcc
+          echo "2" >> cutest.opts  # gcc
           echo "nnydy" >> cutest.opts
           ./install_cutest < cutest.opts
           mv $CUTEST/objects/$MYARCH/single/licutest.a $CUTEST/objects/$MYARCH/single/libcutest_single.a
