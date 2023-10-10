@@ -1,6 +1,8 @@
 libgalahad_src += files('lqt.F90')
 
-libgalahad_cutest_src += files('uselqt.F90', 'runlqt_sif.F90')
+libgalahad_cutest_src += files('uselqt.F90')
+
+galahad_cutest_binaries += [['runlqt_sif', files('runlqt_sif.F90')]]
 
 galahad_tests += [['lqt', 'lqtt', files('lqtt.F90')],
                   ['lqt', 'lqtt2', files('lqtt2.F90')]]

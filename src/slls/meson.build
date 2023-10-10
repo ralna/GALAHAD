@@ -3,7 +3,9 @@ if build_ciface
   libgalahad_c_src += files('C/slls_ciface.F90')
 endif
 
-libgalahad_cutest_src += files('useslls.F90', 'runslls_sif.F90')
+libgalahad_cutest_src += files('useslls.F90')
+
+galahad_cutest_binaries += [['runslls_sif', files('runslls_sif.F90')]]
 
 galahad_tests += [['slls', 'sllst', files('sllst.F90')],
                   ['slls', 'sllsti', files('sllsti.F90')]]

@@ -8,7 +8,9 @@ if build_pythoniface
   libgalahad_python_src += [['l2rt', files('Python/l2rt_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usel2rt.F90', 'runl2rt_sif.F90')
+libgalahad_cutest_src += files('usel2rt.F90')
+
+galahad_cutest_binaries += [['runl2rt_sif', files('runl2rt_sif.F90')]]
 
 galahad_tests += [['l2rt', 'l2rtt', files('l2rtt.F90')],
                   ['l2rt', 'l2rtti', files('l2rtti.F90')]]

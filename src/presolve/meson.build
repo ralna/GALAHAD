@@ -8,7 +8,9 @@ if build_pythoniface
   libgalahad_python_src += [['presolve', files('Python/presolve_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usepresolve.F90', 'runpresolve_sif.F90')
+libgalahad_cutest_src += files('usepresolve.F90')
+
+galahad_cutest_binaries += [['runpresolve_sif', files('runpresolve_sif.F90')]]
 
 galahad_tests += [['presolve', 'presolvet', files('presolvet.F90')],
                   ['presolve', 'presolveti', files('presolveti.F90')]]

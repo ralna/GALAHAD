@@ -12,7 +12,9 @@ if build_pythoniface
                                           '../rpd/Python/rpd_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usearc.F90', 'runarc_sif.F90')
+libgalahad_cutest_src += files('usearc.F90')
+
+galahad_cutest_binaries += [['runarc_sif', files('runarc_sif.F90')]]
 
 galahad_tests += [['arc', 'arct', files('arct.F90')],
                   ['arc', 'arcti', files('arcti.F90')]]

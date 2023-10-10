@@ -8,7 +8,9 @@ if build_pythoniface
   libgalahad_python_src += [['gltr', files('Python/gltr_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usegltr.F90', 'rungltr_sif.F90')
+libgalahad_cutest_src += files('usegltr.F90')
+
+galahad_cutest_binaries += [['rungltr_sif', files('rungltr_sif.F90')]]
 
 galahad_tests += [['gltr', 'gltrt', files('gltrt.F90')],
                   ['gltr', 'gltrti', files('gltrti.F90')]]

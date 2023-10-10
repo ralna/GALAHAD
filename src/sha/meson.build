@@ -8,7 +8,9 @@ if build_pythoniface
   libgalahad_python_src += [['sha', files('Python/sha_pyiface.c')]]
 endif
 
-libgalahad_cutest_src += files('usesha.F90', 'runsha_sif.F90')
+libgalahad_cutest_src += files('usesha.F90')
+
+galahad_cutest_binaries += [['runsha_sif', files('runsha_sif.F90')]]
 
 galahad_tests += [['sha', 'shat', files('shat.F90')]]
 

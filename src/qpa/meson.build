@@ -12,7 +12,9 @@ if build_pythoniface
                                           '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c', '../gls/Python/gls_pyiface.c',)]]
 endif
 
-libgalahad_cutest_src += files('useqpa.F90', 'runqpa_sif.F90')
+libgalahad_cutest_src += files('useqpa.F90')
+
+galahad_cutest_binaries += [['runqpa_sif', files('runqpa_sif.F90')]]
 
 galahad_tests += [['qpa', 'qpat', files('qpat.F90')],
                   ['qpa', 'qpati', files('qpati.F90')]]

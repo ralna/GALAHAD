@@ -1,6 +1,8 @@
 libgalahad_src += files('fdh.F90')
 
-libgalahad_cutest_src += files('usefdh.F90', 'runfdh_sif.F90')
+libgalahad_cutest_src += files('usefdh.F90')
+
+galahad_cutest_binaries += [['runfdh_sif', files('runfdh_sif.F90')]]
 
 galahad_tests += [['fdh', 'fdht', files('fdht.F90')]]
 

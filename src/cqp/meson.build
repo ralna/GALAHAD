@@ -15,7 +15,9 @@ if build_pythoniface
                                           '../lms/Python/lms_pyiface.c',)]]
 endif
 
-libgalahad_cutest_src += files('usecqp.F90', 'runcqp_sif.F90')
+libgalahad_cutest_src += files('usecqp.F90')
+
+galahad_cutest_binaries += [['runcqp_sif', files('runcqp_sif.F90')]]
 
 galahad_tests += [['cqp', 'cqpt', files('cqpt.F90')],
                   ['cqp', 'cqpti', files('cqpti.F90')]]
