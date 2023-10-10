@@ -389,7 +389,7 @@
           END IF
           DO i = ir, ic
             state = ' FREE'
-            IF ( ABS( prob%X( i ) < ten * stopr ) state = 'LOWER'
+            IF ( ABS( prob%X( i ) < ten * stopr ) ) state = 'LOWER'
             WRITE( out, 2050 ) i, VNAME( i ), state, prob%X( i ),              &
                                prob%Z( i )
           END DO
@@ -397,7 +397,7 @@
 
 !  Compute the number of fixed and degenerate variables.
 
-        nfixed = COUNT( prob%X( : n ) < ten * stop )
+        nfixed = COUNT( prob%X( : n ) < ten * stopr )
 
         WRITE( out, "( /, ' Of the ', I0, ' variables, ', I0,                  &
        &                  ' are at zero' )" ) prob%n, nfixed
