@@ -30,7 +30,7 @@ jobs:
             compiler_version: 2023.2
             cc_cmd: icx
             fc_cmd: ifort
-            cxx_cmd: icpx
+            cxx_cmd: icx
             allow_failure: true
           # - os: ubuntu-latest
           #   compiler: intel-llvm
